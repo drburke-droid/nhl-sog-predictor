@@ -237,6 +237,26 @@ def api_refresh_status():
 # Startup logic (works for both gunicorn and direct run)
 # ---------------------------------------------------------------------------
 
+def _needs_refresh() -> bool:
+    """Check if the database is stale (no games from today or yesterday)."""
+    import os
+    from datetime import date, timedelta
+    if not os.path.exists(str(data_collector.DB_PATH)):
+        return True
+    try:
+        conn = data_collector.get_db()
+        yesterday = (date.today() - timedelta(days=1)).isoformat()
+        row = conn.execute(
+            "SELECT MAX(date) as last_date FROM games"
+        ).fetchone()
+        conn.close()
+        if not row or not row["last_date"]:
+            return True
+        return row["last_date"] < yesterday
+    except Exception:
+        return True
+
+
 def _startup():
     """Run on app startup: train model if data exists, start scheduler."""
     import os
@@ -250,7 +270,7 @@ def _startup():
     except Exception:
         logger.warning("Could not train model on startup (probably no data yet)")
 
-    # Schedule automatic daily refresh at 9:00 AM
+    # Schedule daily refresh at 9:00 AM with generous misfire grace
     scheduler = BackgroundScheduler()
     scheduler.add_job(
         _do_refresh,
@@ -258,10 +278,16 @@ def _startup():
         hour=9,
         minute=0,
         id="daily_refresh",
-        misfire_grace_time=3600,
+        misfire_grace_time=14400,  # 4 hours — catches wake-from-sleep up to 1 PM
     )
     scheduler.start()
     logger.info("Scheduled daily data refresh at 9:00 AM")
+
+    # If data is stale (missed yesterday's refresh), trigger one now
+    if _needs_refresh():
+        logger.info("Database is stale — triggering background refresh on startup.")
+        thread = threading.Thread(target=_do_refresh, daemon=True)
+        thread.start()
 
 
 # Run startup for both gunicorn and direct execution
