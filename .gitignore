@@ -3,5 +3,4 @@ __pycache__/
 app.log
 .claude/
 *.vbs
-*.bat
 analysis.py

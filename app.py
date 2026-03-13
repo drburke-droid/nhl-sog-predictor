@@ -37,6 +37,33 @@ app = Flask(__name__)
 _refresh_status = {"running": False, "message": "idle"}
 
 
+def _sync_db_to_github():
+    """Push updated database to GitHub so Render gets fresh data."""
+    import subprocess
+    try:
+        result = subprocess.run(
+            ["git", "add", "nhl_data.db"],
+            cwd=str(data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+        result = subprocess.run(
+            ["git", "commit", "-m", "Auto-update database"],
+            cwd=str(data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+        result = subprocess.run(
+            ["git", "push"],
+            cwd=str(data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode == 0:
+            logger.info("Database synced to GitHub successfully.")
+        else:
+            logger.warning("Git push failed: %s", result.stderr)
+    except Exception as exc:
+        logger.warning("Database sync to GitHub failed: %s", exc)
+
+
 def _do_refresh():
     """Run data collection and model training in background."""
     global _refresh_status
@@ -49,6 +76,8 @@ def _do_refresh():
         data_collector.collect_season_data(progress_callback=progress)
         _refresh_status["message"] = "Training model..."
         model.train_model()
+        _refresh_status["message"] = "Syncing database to GitHub..."
+        _sync_db_to_github()
         _refresh_status = {"running": False, "message": "Refresh complete."}
     except Exception as exc:
         logger.exception("Refresh failed")
