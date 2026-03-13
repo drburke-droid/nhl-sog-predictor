@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+nhl_data.db
+app.log
+.claude/
+*.vbs
+*.bat
+analysis.py
