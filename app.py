@@ -8,9 +8,11 @@ team defensive profiles, and machine-learning predictions for upcoming games.
 import sys
 import logging
 import threading
-from datetime import date, datetime
+from datetime import date, datetime, timezone, timedelta
 
 from flask import Flask, jsonify, render_template, request
+
+MST = timezone(timedelta(hours=-7))
 from apscheduler.schedulers.background import BackgroundScheduler
 
 import nhl_api
@@ -75,10 +77,10 @@ def _do_refresh():
             logger.info(msg)
 
         data_collector.collect_season_data(progress_callback=progress)
-        _timestamps["db_updated"] = datetime.now().isoformat(timespec="minutes")
+        _timestamps["db_updated"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
         _refresh_status["message"] = "Training model..."
         model.train_model()
-        _timestamps["model_trained"] = datetime.now().isoformat(timespec="minutes")
+        _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
         _refresh_status["message"] = "Syncing database to GitHub..."
         _sync_db_to_github()
         _refresh_status = {"running": False, "message": "Refresh complete."}
@@ -281,7 +283,7 @@ def _startup():
     try:
         if os.path.exists(str(data_collector.DB_PATH)):
             metrics = model.train_model()
-            _timestamps["model_trained"] = datetime.now().isoformat(timespec="minutes")
+            _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
             # Get last game date from DB
             try:
                 conn = data_collector.get_db()
