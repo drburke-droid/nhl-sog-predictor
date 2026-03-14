@@ -262,6 +262,30 @@
         <!-- ============================================================= -->
         <div class="tab-pane fade" id="teams" role="tabpanel">
             <div class="card mb-4 p-3">
+                <h5 class="mb-3">Today's Game SOG Predictions</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="teamPredTable">
+                        <thead>
+                            <tr>
+                                <th>Away</th>
+                                <th>Home</th>
+                                <th class="text-center">Away SOG</th>
+                                <th class="text-center">Home SOG</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center text-secondary" style="font-size:0.75rem">Away Avg</th>
+                                <th class="text-center text-secondary" style="font-size:0.75rem">Home Avg</th>
+                                <th class="text-center text-secondary" style="font-size:0.75rem">Home SA</th>
+                                <th class="text-center text-secondary" style="font-size:0.75rem">Away SA</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div id="teamPredLoading" class="text-center py-4 text-secondary">
+                    Loading game predictions...
+                </div>
+            </div>
+            <div class="card mb-4 p-3">
                 <h5 class="mb-3">Team Defensive Profiles</h5>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" id="teamsTable">
@@ -832,6 +856,31 @@ async function showPlayer(playerId) {
 // =====================================================================
 // Teams
 // =====================================================================
+async function loadTeamPredictions() {
+    const preds = await fetchJSON('/api/team-predictions');
+    document.getElementById('teamPredLoading').classList.add('d-none');
+    if (!preds || preds.length === 0) {
+        document.getElementById('teamPredLoading').textContent = 'No games today';
+        document.getElementById('teamPredLoading').classList.remove('d-none');
+        return;
+    }
+
+    const tbody = document.querySelector('#teamPredTable tbody');
+    tbody.innerHTML = preds.map(g => `
+        <tr>
+            <td class="fw-bold">${g.away_team}</td>
+            <td class="fw-bold">${g.home_team}</td>
+            <td class="text-center prediction-high" style="font-size:1.1rem">${g.away_sog_pred}</td>
+            <td class="text-center prediction-high" style="font-size:1.1rem">${g.home_sog_pred}</td>
+            <td class="text-center fw-bold" style="font-size:1.1rem; color:var(--accent)">${g.total_pred}</td>
+            <td class="text-center text-secondary">${g.away_sog_hist}</td>
+            <td class="text-center text-secondary">${g.home_sog_hist}</td>
+            <td class="text-center text-secondary">${g.home_sa_hist}</td>
+            <td class="text-center text-secondary">${g.away_sa_hist}</td>
+        </tr>
+    `).join('');
+}
+
 async function loadTeams() {
     const teams = await fetchJSON('/api/teams');
     document.getElementById('teamsLoading').classList.add('d-none');
@@ -1046,6 +1095,7 @@ function pollRefreshStatus() {
             loadPredictions();
             loadPlayers();
             loadTeams();
+            loadTeamPredictions();
             loadStatusBar();
         }
     }, 2000);

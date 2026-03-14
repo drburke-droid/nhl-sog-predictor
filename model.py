@@ -862,7 +862,132 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     }
 
 
-def predict_upcoming_games() -> list[dict]:
+def predict_team_sog() -> list[dict]:
+    """
+    Predict team-level SOG for and against for today's games.
+
+    Blends bottom-up (sum of player predictions) with top-down
+    (team historical averages and opponent defensive profiles).
+    Weights: 60% bottom-up, 40% top-down.
+    """
+    if _model_fwd is None and _model_def is None:
+        return []
+
+    from datetime import date as date_cls
+    today = date_cls.today().isoformat()
+    sched = nhl_api.get_schedule(today)
+    if not sched:
+        return []
+
+    games = []
+    for week in sched.get("gameWeek", []):
+        if week.get("date", "") != today:
+            continue
+        for g in week.get("games", []):
+            games.append(g)
+
+    if not games:
+        return []
+
+    conn = data_collector.get_db()
+
+    # Team-level historical SOG for/against
+    team_sog_for = {}
+    team_sog_against = {}
+    rows = conn.execute(
+        """SELECT team, AVG(shots) as avg_sog_per_player, COUNT(DISTINCT game_id) as games
+           FROM player_game_stats
+           WHERE position IN ('L', 'C', 'R', 'D')
+           GROUP BY team"""
+    ).fetchall()
+    for r in rows:
+        team_sog_for[r["team"]] = r["avg_sog_per_player"] * _approx_skaters_per_game(conn, r["team"])
+
+    # Shots against from team_defense table
+    def_rows = conn.execute("SELECT team, shots_allowed_per_game FROM team_defense").fetchall()
+    for r in def_rows:
+        team_sog_against[r["team"]] = r["shots_allowed_per_game"]
+
+    results = []
+    for game in games:
+        home = game.get("homeTeam", {}).get("abbrev", "")
+        away = game.get("awayTeam", {}).get("abbrev", "")
+        if not home or not away:
+            continue
+
+        # Get player-level predictions for each team
+        home_player_preds = []
+        away_player_preds = []
+        for team_abbrev, opp, is_home, bucket in [
+            (home, away, True, home_player_preds),
+            (away, home, False, away_player_preds),
+        ]:
+            player_rows = conn.execute(
+                """SELECT DISTINCT player_id, player_name, position
+                   FROM player_game_stats
+                   WHERE team = ? AND position IN ('L', 'C', 'R', 'D')
+                   GROUP BY player_id
+                   HAVING COUNT(*) >= 3
+                   ORDER BY AVG(toi) DESC
+                   LIMIT 18""",
+                (team_abbrev,),
+            ).fetchall()
+            for pr in player_rows:
+                pred = predict_player(int(pr["player_id"]), opp, is_home)
+                if pred:
+                    bucket.append(pred)
+
+        # Bottom-up: sum of player predictions
+        home_bu = sum(p["predicted_sog"] for p in home_player_preds)
+        away_bu = sum(p["predicted_sog"] for p in away_player_preds)
+
+        # Top-down: blend team SOG avg with opponent SA
+        home_for_hist = team_sog_for.get(home, 28.0)
+        away_for_hist = team_sog_for.get(away, 28.0)
+        home_sa = team_sog_against.get(home, 28.0)
+        away_sa = team_sog_against.get(away, 28.0)
+
+        # Team's offensive avg blended with opponent's defensive avg
+        home_td = (home_for_hist + away_sa) / 2
+        away_td = (away_for_hist + home_sa) / 2
+
+        # Blend: 60% bottom-up, 40% top-down
+        home_pred = round(0.60 * home_bu + 0.40 * home_td, 1)
+        away_pred = round(0.60 * away_bu + 0.40 * away_td, 1)
+
+        results.append({
+            "home_team": home,
+            "away_team": away,
+            "home_sog_pred": home_pred,
+            "away_sog_pred": away_pred,
+            "total_pred": round(home_pred + away_pred, 1),
+            "home_sog_hist": round(home_for_hist, 1),
+            "away_sog_hist": round(away_for_hist, 1),
+            "home_sa_hist": round(home_sa, 1),
+            "away_sa_hist": round(away_sa, 1),
+            "home_players": len(home_player_preds),
+            "away_players": len(away_player_preds),
+        })
+
+    conn.close()
+    return results
+
+
+def _approx_skaters_per_game(conn, team: str) -> float:
+    """Average number of skaters per game for a team."""
+    row = conn.execute(
+        """SELECT AVG(cnt) as avg_skaters FROM (
+               SELECT game_id, COUNT(*) as cnt
+               FROM player_game_stats
+               WHERE team = ? AND position IN ('L', 'C', 'R', 'D')
+               GROUP BY game_id
+           )""",
+        (team,),
+    ).fetchone()
+    return row["avg_skaters"] if row and row["avg_skaters"] else 18.0
+
+
+
     """Get today's schedule and predict SOG for every skater in today's games."""
     if _model_fwd is None and _model_def is None:
         return []

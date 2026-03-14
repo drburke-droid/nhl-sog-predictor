@@ -238,6 +238,13 @@ def api_refresh_status():
     return jsonify(_refresh_status)
 
 
+@app.route("/api/team-predictions")
+def api_team_predictions():
+    """Team-level SOG predictions for today's games."""
+    preds = model.predict_team_sog()
+    return jsonify(preds)
+
+
 @app.route("/api/status")
 def api_status():
     """Return DB and model timestamps."""
