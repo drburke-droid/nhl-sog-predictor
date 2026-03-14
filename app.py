@@ -257,9 +257,17 @@ def _needs_refresh() -> bool:
         return True
 
 
+def _is_render() -> bool:
+    """Detect if we're running on Render."""
+    import os
+    return bool(os.environ.get("RENDER"))
+
+
 def _startup():
     """Run on app startup: train model if data exists, start scheduler."""
     import os
+    on_render = _is_render()
+
     # Train model on startup if data exists
     try:
         if os.path.exists(str(data_collector.DB_PATH)):
@@ -269,6 +277,12 @@ def _startup():
             logger.info("No database found. Use /api/refresh to collect data.")
     except Exception:
         logger.warning("Could not train model on startup (probably no data yet)")
+
+    if on_render:
+        # On Render: NHL API blocks shared IPs, so skip data collection.
+        # The local PC pushes fresh DB via git; Render just trains the model.
+        logger.info("Running on Render — skipping data refresh (using committed DB).")
+        return
 
     # Schedule daily refresh at 9:00 AM with generous misfire grace
     scheduler = BackgroundScheduler()
