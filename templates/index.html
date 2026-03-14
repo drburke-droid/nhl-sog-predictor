@@ -608,7 +608,7 @@ function updateOdds(playerId) {
         const wager = Math.round(bankroll * bestKelly);
         kellyEl.textContent = `$${wager} ${bestSide}`;
         kellyEl.className = wager >= bankroll * 0.03 ? 'ev-positive' : 'ev-neutral';
-        kellyEl.title = `Kelly fraction: ${(bestKelly*100).toFixed(2)}% of bankroll\nHalf Kelly (50%)\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}`;
+        kellyEl.title = `Kelly fraction: ${(bestKelly*100).toFixed(2)}% of bankroll\nQuarter Kelly (25%)\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}`;
     } else if (bestKelly > 0) {
         kellyEl.textContent = `${(bestKelly*100).toFixed(1)}% ${bestSide}`;
         kellyEl.className = 'ev-neutral';
@@ -1019,8 +1019,8 @@ let bankroll = parseFloat(localStorage.getItem('sogBankroll')) || 0;
 
 // Kelly fraction: f* = (bp - q) / b
 // where b = decimal profit per $1, p = model prob of winning, q = 1 - p
-// Use half Kelly (50%) — balances growth with drawdown protection
-function kellyFraction(probWin, americanOdds, fraction = 0.50) {
+// Use quarter Kelly (25%) — conservative, limits drawdown risk
+function kellyFraction(probWin, americanOdds, fraction = 0.25) {
     const b = americanToDecimalProfit(americanOdds);
     if (b <= 0) return 0;
     const p = probWin;
