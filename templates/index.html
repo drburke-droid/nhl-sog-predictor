@@ -195,8 +195,8 @@
                         <thead>
                             <tr>
                                 <th>Player</th>
-                                <th>Team</th>
-                                <th>Opp</th>
+                                <th class="sort-btn" onclick="sortPredictions('team')">Team</th>
+                                <th class="sort-btn" onclick="sortPredictions('opponent')">Opp</th>
                                 <th>Pos</th>
                                 <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred SOG</th>
                                 <th>O 0.5</th>
@@ -682,17 +682,23 @@ function sortPredictions(field) {
         predSortAsc = false;
     }
 
+    const stringFields = ['team', 'opponent', 'player_name', 'position'];
     const sorted = [...allPredictions].sort((a, b) => {
+        let cmp = 0;
         if (field === 'variance' || field === 'variance_pct') {
-            return predSortAsc ? Math.abs(a[field]) - Math.abs(b[field])
-                               : Math.abs(b[field]) - Math.abs(a[field]);
+            cmp = Math.abs(a[field]) - Math.abs(b[field]);
+        } else if (stringFields.includes(field)) {
+            cmp = (a[field] || '').localeCompare(b[field] || '');
+        } else {
+            cmp = (a[field] || 0) - (b[field] || 0);
         }
-        if (field === 'ev_over' || field === 'ev_under') {
-            const va = a[field] || 0;
-            const vb = b[field] || 0;
-            return predSortAsc ? va - vb : vb - va;
+        if (!predSortAsc) cmp = -cmp;
+
+        // Secondary sort: edge_score descending when primary values are equal
+        if (cmp === 0) {
+            cmp = (Math.abs(b.edge_score || 0)) - (Math.abs(a.edge_score || 0));
         }
-        return predSortAsc ? a[field] - b[field] : b[field] - a[field];
+        return cmp;
     });
 
     renderPredictions(sorted);
