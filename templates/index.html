@@ -188,7 +188,19 @@
             <div class="card mb-4 p-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Upcoming Game Predictions</h5>
-                    <div id="modelMetrics" class="text-secondary small"></div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-info rounded-pill px-3" id="bestBetsBtn"
+                                    onclick="toggleBestBets()">Best Bets</button>
+                            <label class="text-secondary small mb-0" title="Minimum Kelly % to show in Best Bets view">
+                                Min Kelly %
+                                <input type="number" class="odds-input" id="kellyThreshold"
+                                       style="width:55px; margin-left:4px" value="1" step="0.5" min="0"
+                                       onchange="if(bestBetsMode) renderBestBets();">
+                            </label>
+                        </div>
+                        <div id="modelMetrics" class="text-secondary small"></div>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" id="predictionsTable">
@@ -705,6 +717,125 @@ function sortPredictions(field) {
     renderPredictions(sorted);
 }
 
+// =====================================================================
+// Best Bets mode — filter to top Kelly picks grouped by game
+// =====================================================================
+let bestBetsMode = false;
+
+function toggleBestBets() {
+    bestBetsMode = !bestBetsMode;
+    const btn = document.getElementById('bestBetsBtn');
+    if (bestBetsMode) {
+        btn.classList.remove('btn-outline-info');
+        btn.classList.add('btn-info');
+        renderBestBets();
+    } else {
+        btn.classList.remove('btn-info');
+        btn.classList.add('btn-outline-info');
+        renderPredictions(allPredictions);
+    }
+}
+
+function renderBestBets() {
+    const threshold = parseFloat(document.getElementById('kellyThreshold').value) || 1;
+    const minKelly = threshold / 100;
+
+    // Filter to players with Kelly edge above threshold
+    const qualified = allPredictions.filter(p => (p.kelly_best || 0) >= minKelly);
+
+    if (qualified.length === 0) {
+        const tbody = document.querySelector('#predictionsTable tbody');
+        tbody.innerHTML = `<tr><td colspan="24" class="text-center text-secondary py-4">
+            No bets above ${threshold}% Kelly threshold. Paste odds first, then toggle Best Bets.
+        </td></tr>`;
+        return;
+    }
+
+    // Group by game (away @ home)
+    const gameMap = {};
+    qualified.forEach(p => {
+        const gameKey = p.is_home
+            ? `${p.opponent} @ ${p.team}`
+            : `${p.team} @ ${p.opponent}`;
+        if (!gameMap[gameKey]) gameMap[gameKey] = [];
+        gameMap[gameKey].push(p);
+    });
+
+    // Sort players within each game by kelly descending
+    Object.values(gameMap).forEach(players => {
+        players.sort((a, b) => (b.kelly_best || 0) - (a.kelly_best || 0));
+    });
+
+    // Build rows with game headers
+    const tbody = document.querySelector('#predictionsTable tbody');
+    let html = '';
+    for (const [game, players] of Object.entries(gameMap)) {
+        html += `<tr style="background:var(--bg-secondary)">
+            <td colspan="26" class="fw-bold py-2" style="color:var(--accent); font-size:0.95rem; border-bottom:2px solid var(--accent)">
+                ${game} &nbsp;&mdash;&nbsp; ${players.length} bet${players.length > 1 ? 's' : ''}
+            </td></tr>`;
+        players.forEach(p => {
+            const saved = oddsInputs[p.player_id] || {};
+            const pid = p.player_id;
+            const side = (p._kellySide || 'O');
+            const lineVal = saved.line || '';
+            const kellyPct = ((p.kelly_best || 0) * 100).toFixed(1);
+            const wager = bankroll > 0 ? `$${Math.round(bankroll * p.kelly_best)}` : `${kellyPct}%`;
+
+            // Determine best side
+            let bestSide = 'O', bestEv = p.ev_over || 0;
+            if ((p.ev_under || 0) > bestEv) { bestSide = 'U'; bestEv = p.ev_under; }
+
+            const vr = p.var_ratio || 1.0;
+            const buckets = [0.5, 1.5, 2.5, 3.5, 4.5].map(line => {
+                const pct = +(calcProbOver(p.predicted_sog, line, vr) * 100).toFixed(0);
+                return `<td class="prob-bucket ${probBucketClass(pct)}">${pct}%</td>`;
+            }).join('');
+
+            const cls = p.predicted_sog >= 4 ? 'prediction-high' :
+                        p.predicted_sog >= 2.5 ? 'prediction-med' : 'prediction-low';
+
+            html += `<tr>
+                <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
+                <td>${p.team}</td>
+                <td>${p.opponent}</td>
+                <td><span class="badge badge-position badge-${p.position}">${p.position}</span></td>
+                <td class="${cls}">${p.predicted_sog}</td>
+                ${buckets}
+                <td colspan="2" class="text-center fw-bold" style="color:var(--accent2); font-size:1rem">
+                    ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${lineVal}
+                </td>
+                <td>${p.rolling_5}</td>
+                <td>${p.season_avg}</td>
+                <td><input class="odds-input" id="line-${pid}" type="text" placeholder="3.5"
+                           value="${saved.line || ''}"
+                           oninput="updateOdds(${pid}); if(bestBetsMode) setTimeout(renderBestBets, 100);" onclick="event.stopPropagation()"></td>
+                <td><input class="odds-input" id="over-${pid}" type="text" placeholder="+132"
+                           value="${saved.overOdds || ''}"
+                           oninput="updateOdds(${pid}); if(bestBetsMode) setTimeout(renderBestBets, 100);" onclick="event.stopPropagation()"></td>
+                <td><input class="odds-input" id="under-${pid}" type="text" placeholder="-182"
+                           value="${saved.underOdds || ''}"
+                           oninput="updateOdds(${pid}); if(bestBetsMode) setTimeout(renderBestBets, 100);" onclick="event.stopPropagation()"></td>
+                <td class="prob-cell" id="prob-over-${pid}">—</td>
+                <td class="ev-neutral" id="ev-over-${pid}">—</td>
+                <td class="ev-neutral" id="ev-under-${pid}">—</td>
+                <td class="ev-positive fw-bold" id="kelly-${pid}">${wager} ${bestSide}</td>
+                <td class="ev-neutral" id="edge-${pid}">—</td>
+                <td class="${p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none'}">${p.signal > 0 ? (p.variance > 0 ? '+' : '-') + p.signal : '—'}</td>
+                <td>${p.player_cv || '—'}</td>
+                <td>${p.rest_days >= 0 ? (p.rest_days === 0 ? 'B2B' : p.rest_days + 'd') : '—'}</td>
+                <td>${p.is_home ? 'H' : 'A'}</td>
+            </tr>`;
+        });
+    }
+    tbody.innerHTML = html;
+
+    // Re-trigger odds calc for rendered rows
+    qualified.forEach(p => {
+        if (oddsInputs[p.player_id]) updateOdds(p.player_id);
+    });
+}
+
 function probBucketClass(pct) {
     if (pct >= 60) return 'prob-high';
     if (pct >= 35) return 'prob-mid';
@@ -1009,7 +1140,11 @@ function clearAllOdds() {
         p.kelly_best = 0; p.kelly_over = 0; p.kelly_under = 0;
         p.edge_score = 0;
     });
-    renderPredictions(allPredictions);
+    if (bestBetsMode) {
+        renderBestBets();
+    } else {
+        renderPredictions(allPredictions);
+    }
 }
 
 // =====================================================================
@@ -1161,6 +1296,8 @@ function applyPastedOdds() {
 
     // Re-render with applied odds
     renderPredictions(allPredictions);
+    // If in best bets mode, switch to that view after odds are calculated
+    if (bestBetsMode) setTimeout(renderBestBets, 200);
 
     // Close modal after short delay
     if (matched > 0) {
