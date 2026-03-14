@@ -1115,6 +1115,11 @@ function clearAllOdds() {
         p.ev_over = 0; p.ev_under = 0;
         p.kelly_best = 0; p.suggested_bet = 0;
     });
+    // Clear paste bin
+    const textarea = document.getElementById('oddsTextarea');
+    if (textarea) textarea.value = '';
+    const result = document.getElementById('pasteResult');
+    if (result) result.textContent = '';
     if (bestBetsMode) {
         renderBestBets();
     } else {
