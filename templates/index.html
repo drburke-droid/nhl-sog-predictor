@@ -359,7 +359,8 @@
                 <div class="mb-3">
                     <label class="form-label text-secondary small">BANKROLL ($)</label>
                     <input type="number" class="odds-input" id="bankrollInput" placeholder="1000"
-                           style="width:140px" value="">
+                           style="width:140px" value=""
+                           onchange="bankroll = parseFloat(this.value) || 0; localStorage.setItem('sogBankroll', bankroll);">
                 </div>
                 <div class="mb-2">
                     <label class="form-label text-secondary small">PASTE ODDS DATA BELOW</label>
@@ -607,7 +608,7 @@ function updateOdds(playerId) {
         const wager = Math.round(bankroll * bestKelly);
         kellyEl.textContent = `$${wager} ${bestSide}`;
         kellyEl.className = wager >= bankroll * 0.03 ? 'ev-positive' : 'ev-neutral';
-        kellyEl.title = `Kelly fraction: ${(bestKelly*100).toFixed(2)}% of bankroll\n25% Kelly (conservative)\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}`;
+        kellyEl.title = `Kelly fraction: ${(bestKelly*100).toFixed(2)}% of bankroll\nHalf Kelly (50%)\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}`;
     } else if (bestKelly > 0) {
         kellyEl.textContent = `${(bestKelly*100).toFixed(1)}% ${bestSide}`;
         kellyEl.className = 'ev-neutral';
@@ -1002,21 +1003,24 @@ let refreshPollTimer = null;
 
 function clearAllOdds() {
     oddsInputs = {};
-    bankroll = 0;
-    document.getElementById('bankrollInput').value = '';
-    allPredictions.forEach(p => { p.ev_over = 0; p.ev_under = 0; p.kelly_over = 0; p.kelly_under = 0; });
+    // Keep bankroll persistent — don't clear it
+    allPredictions.forEach(p => {
+        p.ev_over = 0; p.ev_under = 0;
+        p.kelly_best = 0; p.kelly_over = 0; p.kelly_under = 0;
+        p.edge_score = 0;
+    });
     renderPredictions(allPredictions);
 }
 
 // =====================================================================
 // Kelly Criterion
 // =====================================================================
-let bankroll = 0;
+let bankroll = parseFloat(localStorage.getItem('sogBankroll')) || 0;
 
 // Kelly fraction: f* = (bp - q) / b
 // where b = decimal profit per $1, p = model prob of winning, q = 1 - p
-// Use fractional Kelly (25%) to be conservative
-function kellyFraction(probWin, americanOdds, fraction = 0.25) {
+// Use half Kelly (50%) — balances growth with drawdown protection
+function kellyFraction(probWin, americanOdds, fraction = 0.50) {
     const b = americanToDecimalProfit(americanOdds);
     if (b <= 0) return 0;
     const p = probWin;
@@ -1119,7 +1123,10 @@ function matchPlayerName(parsedName, predictionName) {
 function applyPastedOdds() {
     const text = document.getElementById('oddsTextarea').value;
     const br = document.getElementById('bankrollInput').value;
-    bankroll = parseFloat(br) || 0;
+    if (br) {
+        bankroll = parseFloat(br) || 0;
+        localStorage.setItem('sogBankroll', bankroll);
+    }
 
     const entries = parseOddsText(text);
     let matched = 0;
@@ -1197,6 +1204,11 @@ function pollRefreshStatus() {
 // Init
 // =====================================================================
 document.addEventListener('DOMContentLoaded', async () => {
+    // Restore bankroll from localStorage
+    if (bankroll > 0) {
+        document.getElementById('bankrollInput').value = bankroll;
+    }
+
     loadPredictions();
     loadPlayers();
     loadTeams();
