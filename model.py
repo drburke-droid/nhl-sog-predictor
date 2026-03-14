@@ -66,6 +66,8 @@ FEATURE_COLS = [
     "rest_days", "is_back_to_back",
     # Linemate
     "linemate_quality",
+    # Venue bias (scorekeeper generosity)
+    "arena_bias",
 ]
 
 
@@ -186,6 +188,73 @@ def _build_feature_dataframe() -> pd.DataFrame:
         return defense_by_date
 
     rolling_defense = _build_rolling_defense(opp_shots_df)
+
+    # --- Arena bias: per-player SOG deviation from league average by arena ---
+    # Group by (home_team, game_id) to get total per-player SOG per game in each arena
+    arena_game_df = pd.read_sql_query(
+        """SELECT g.home_team as arena, g.game_id, g.date,
+                  AVG(pgs.shots) as avg_player_sog
+           FROM player_game_stats pgs
+           JOIN games g ON pgs.game_id = g.game_id
+           WHERE pgs.position IN ('L', 'C', 'R', 'D')
+           GROUP BY g.game_id""",
+        data_collector.get_db(),
+    ).sort_values("date")
+
+    # Build expanding arena bias (only prior games, no leakage)
+    def _build_arena_bias(arena_df):
+        """Return dict of (arena, game_date) -> bias (arena avg - league avg)."""
+        bias_by_date = {}
+        arena_history = {}   # arena -> list of per-player avg SOG
+        league_history = []  # all per-player avg SOG values
+
+        prev_date = None
+        date_buffer = []
+
+        for _, row in arena_df.iterrows():
+            game_date = row["date"]
+            arena = row["arena"]
+            avg_sog = row["avg_player_sog"]
+
+            if prev_date is not None and game_date != prev_date:
+                # Compute bias for each arena using data before this date
+                if len(league_history) >= 50:
+                    league_avg = np.mean(league_history)
+                    for a, hist in arena_history.items():
+                        if len(hist) >= 5:
+                            bias_by_date[(a, game_date)] = np.mean(hist) - league_avg
+                # Flush buffer
+                for buf_arena, buf_sog in date_buffer:
+                    if buf_arena not in arena_history:
+                        arena_history[buf_arena] = []
+                    arena_history[buf_arena].append(buf_sog)
+                    league_history.append(buf_sog)
+                date_buffer = []
+
+            date_buffer.append((arena, avg_sog))
+            prev_date = game_date
+
+        # Final flush for "latest" lookup
+        if date_buffer:
+            for buf_arena, buf_sog in date_buffer:
+                if buf_arena not in arena_history:
+                    arena_history[buf_arena] = []
+                arena_history[buf_arena].append(buf_sog)
+                league_history.append(buf_sog)
+        if len(league_history) >= 50:
+            league_avg = np.mean(league_history)
+            for a, hist in arena_history.items():
+                if len(hist) >= 5:
+                    bias_by_date[(a, "latest")] = np.mean(hist) - league_avg
+
+        return bias_by_date
+
+    arena_bias_map = _build_arena_bias(arena_game_df)
+
+    def _get_arena_bias(arena, game_date):
+        if (arena, game_date) in arena_bias_map:
+            return arena_bias_map[(arena, game_date)]
+        return arena_bias_map.get((arena, "latest"), 0.0)
 
     def _get_defense_at_date(team, game_date):
         if (team, game_date) in rolling_defense:
@@ -323,6 +392,10 @@ def _build_feature_dataframe() -> pd.DataFrame:
 
             cv = _get_expanding_cv(pid, game_date)
 
+            # Arena bias (home_team = arena)
+            arena = row["home_team"]
+            arena_bias = _get_arena_bias(arena, game_date)
+
             avg_shift_len = (
                 row["avg_toi"] / row["avg_shifts"]
                 if row["avg_shifts"] > 0 else 0.0
@@ -371,6 +444,8 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 "is_back_to_back": is_b2b,
                 # Linemate
                 "linemate_quality": lm_quality,
+                # Venue
+                "arena_bias": arena_bias,
             })
 
     return pd.DataFrame(records)
@@ -722,6 +797,27 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
 
     is_home_val = 1 if is_home else 0
 
+    # Arena bias — arena is always the home team
+    arena_team = team if is_home else opponent_team
+    conn3 = data_collector.get_db()
+    arena_row = conn3.execute(
+        """SELECT g.home_team, AVG(pgs.shots) as avg_player_sog
+           FROM player_game_stats pgs
+           JOIN games g ON pgs.game_id = g.game_id
+           WHERE pgs.position IN ('L', 'C', 'R', 'D')
+           GROUP BY g.home_team""",
+        [],
+    ).fetchall()
+    league_avg_sog = conn3.execute(
+        """SELECT AVG(pgs.shots) as avg_sog
+           FROM player_game_stats pgs
+           WHERE pgs.position IN ('L', 'C', 'R', 'D')""",
+    ).fetchone()
+    conn3.close()
+    league_avg = league_avg_sog["avg_sog"] if league_avg_sog else 2.0
+    arena_avg_map = {r["home_team"]: r["avg_player_sog"] for r in arena_row}
+    arena_bias = arena_avg_map.get(arena_team, league_avg) - league_avg
+
     features = np.array([[
         baseline,
         is_home_val,
@@ -733,6 +829,7 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         pct_3plus,
         rest, is_b2b,
         lm_quality,
+        arena_bias,
     ]])
 
     # Predict residual, reconstruct final SOG
