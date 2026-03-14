@@ -152,11 +152,11 @@
 <body>
 
 <nav class="navbar navbar-expand-lg mb-4">
-    <div class="container-fluid">
+    <div class="container-fluid d-flex align-items-center">
         <span class="navbar-brand fw-bold" style="color:var(--accent)">
             NHL SOG Predictor
         </span>
-        <ul class="nav nav-pills" id="mainTabs" role="tablist">
+        <ul class="nav nav-pills me-auto" id="mainTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="pred-tab" data-bs-toggle="pill"
                         data-bs-target="#predictions" type="button" role="tab">Predictions</button>
@@ -170,7 +170,7 @@
                         data-bs-target="#teams" type="button" role="tab">Teams</button>
             </li>
         </ul>
-        <span id="statusBar" class="ms-auto small" style="color:var(--text-secondary)"></span>
+        <span id="statusBar" class="small text-nowrap" style="color:var(--text-secondary)"></span>
     </div>
 </nav>
 
