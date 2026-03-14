@@ -227,6 +227,7 @@
                                 <th class="sort-btn" onclick="sortPredictions('ev_over')">EV Over</th>
                                 <th class="sort-btn" onclick="sortPredictions('ev_under')">EV Under</th>
                                 <th class="sort-btn" onclick="sortPredictions('suggested_bet')">Bet $</th>
+                                <th class="sort-btn" onclick="sortPredictions('signal')">Conf</th>
                                 <th class="sort-btn" onclick="sortPredictions('player_cv')">CV</th>
                                 <th>Rest</th>
                                 <th>H/A</th>
@@ -665,8 +666,9 @@ async function loadPredictions() {
         return { ...p, variance, variance_pct, signal, kelly_best: 0, suggested_bet: 0 };
     });
 
-    // Default sort by predicted SOG descending
-    sortPredictions('predicted_sog');
+    // Default sort by signal — best proxy for likely Bet $ before odds are pasted
+    // Signal = |variance from avg| / CV: big deviation + predictable = likely edge
+    sortPredictions('signal');
 }
 
 function sortPredictions(field) {
@@ -869,6 +871,8 @@ function renderPredictions(list) {
             <td class="ev-neutral" id="ev-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-under-${pid}">—</td>
             <td class="ev-neutral" id="bet-${pid}">—</td>
+            <td class="${p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none'}"
+                title="Confidence = |vs Avg| / CV&#10;Higher = bigger edge on predictable player&#10;Direction: ${p.variance > 0 ? 'OVER' : 'UNDER'}">${p.signal > 0 ? (p.variance > 0 ? '+' : '-') + p.signal : '—'}</td>
             <td class="${(p.player_cv||1) <= 0.6 ? 'ev-positive' : (p.player_cv||1) >= 0.9 ? 'ev-negative' : 'ev-neutral'}"
                 title="Lower = more predictable">${p.player_cv || '—'}</td>
             <td class="${p.rest_days === 0 ? 'ev-negative' : ''}"
@@ -1274,10 +1278,15 @@ function applyPastedOdds() {
     resultEl.textContent = msg;
     resultEl.className = unmatched.length > 0 ? 'small text-warning mb-2' : 'small text-success mb-2';
 
-    // Re-render with applied odds
+    // Re-render with applied odds, then sort by Bet $
     renderPredictions(allPredictions);
-    // If in best bets mode, switch to that view after odds are calculated
-    if (bestBetsMode) setTimeout(renderBestBets, 200);
+    setTimeout(() => {
+        if (bestBetsMode) {
+            renderBestBets();
+        } else {
+            sortPredictions('suggested_bet');
+        }
+    }, 200);
 
     // Close modal after short delay
     if (matched > 0) {
