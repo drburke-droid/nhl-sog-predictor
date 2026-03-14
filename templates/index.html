@@ -417,38 +417,80 @@ async function fetchJSON(url) {
 }
 
 // =====================================================================
-// Poisson & EV math
+// Negative Binomial & EV math
 // =====================================================================
+// NegBin is more accurate than Poisson for SOG because real player
+// shot distributions are overdispersed (variance > mean).
+// var_ratio = variance / mean. When var_ratio = 1, NegBin = Poisson.
 
-// Poisson PMF: P(X = k) where X ~ Poisson(lambda)
-function poissonPMF(lambda, k) {
-    if (lambda <= 0) return k === 0 ? 1 : 0;
-    let logP = -lambda + k * Math.log(lambda);
-    for (let i = 2; i <= k; i++) logP -= Math.log(i);
+// Log-gamma via Lanczos approximation (for NegBin PMF)
+function logGamma(z) {
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - logGamma(1 - z);
+    z -= 1;
+    const g = 7;
+    const c = [0.99999999999980993,676.5203681218851,-1259.1392167224028,
+        771.32342877765313,-176.61502916214059,12.507343278686905,
+        -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+    let x = c[0];
+    for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    const t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+}
+
+// NegBin PMF: P(X = k) with params r, p where mean = r(1-p)/p, var = r(1-p)/p^2
+function negbinPMF(r, p, k) {
+    if (k < 0) return 0;
+    // log P(X=k) = logGamma(r+k) - logGamma(r) - logGamma(k+1) + r*log(p) + k*log(1-p)
+    const logP = logGamma(r + k) - logGamma(r) - logGamma(k + 1)
+                 + r * Math.log(p) + k * Math.log(1 - p);
     return Math.exp(logP);
 }
 
-// Poisson CDF: P(X <= k)
-function poissonCDF(lambda, k) {
+// NegBin CDF: P(X <= k)
+function negbinCDF(r, p, k) {
     let sum = 0;
     for (let i = 0; i <= Math.floor(k); i++) {
-        sum += poissonPMF(lambda, i);
+        sum += negbinPMF(r, p, i);
     }
     return Math.min(sum, 1.0);
 }
 
-// P(Over line) using Poisson — for half lines like 3.5, P(X >= 4)
-// For whole lines like 3.0, over means X > 3, so P(X >= 4) — push at exactly 3
-function calcProbOver(predSOG, line) {
-    // P(X > line) if whole number push scenario, P(X >= ceil(line)) for .5 lines
-    const isHalf = (line % 1 !== 0);
-    if (isHalf) {
-        // e.g., line=3.5 → P(X >= 4) = 1 - P(X <= 3)
-        return 1 - poissonCDF(predSOG, Math.floor(line));
-    } else {
-        // e.g., line=3.0 → P(X > 3) = 1 - P(X <= 3), push at exactly 3
-        return 1 - poissonCDF(predSOG, line);
+// Poisson fallback CDF for when var_ratio <= 1
+function poissonCDF(lambda, k) {
+    if (lambda <= 0) return 1.0;
+    let sum = 0;
+    let logP = -lambda;
+    sum += Math.exp(logP);
+    for (let i = 1; i <= Math.floor(k); i++) {
+        logP += Math.log(lambda) - Math.log(i);
+        sum += Math.exp(logP);
     }
+    return Math.min(sum, 1.0);
+}
+
+// P(Over line) using NegBin (or Poisson when var_ratio ≈ 1)
+// varRatio = player's variance / mean from historical data
+function calcProbOver(predSOG, line, varRatio) {
+    varRatio = varRatio || 1.0;
+    const k = Math.floor(line);  // P(X >= k+1) = 1 - P(X <= k)
+
+    if (predSOG <= 0) return 0;
+
+    // If underdispersed or near Poisson, use Poisson
+    if (varRatio <= 1.05) {
+        return 1 - poissonCDF(predSOG, k);
+    }
+
+    // NegBin parameterization: mean = r(1-p)/p, var = mean * varRatio
+    // So: r = mean / (varRatio - 1), p = 1 / varRatio
+    const r = predSOG / (varRatio - 1);
+    const p = 1 / varRatio;
+
+    if (r <= 0 || p <= 0 || p >= 1) {
+        return 1 - poissonCDF(predSOG, k);
+    }
+
+    return 1 - negbinCDF(r, p, k);
 }
 
 // Convert American odds to decimal payout (profit per $1 risked)
@@ -509,7 +551,7 @@ function updateOdds(playerId) {
         return;
     }
 
-    const pOver = calcProbOver(pred.predicted_sog, line);
+    const pOver = calcProbOver(pred.predicted_sog, line, pred.var_ratio);
     const pUnder = 1 - pOver;
 
     probOverEl.textContent = (pOver * 100).toFixed(1) + '%';

@@ -32,8 +32,9 @@ logger = logging.getLogger(__name__)
 _model_fwd: XGBRegressor | None = None
 _model_def: XGBRegressor | None = None
 _model_metrics: dict = {}
-# Player predictability cache: player_id -> CV
+# Player predictability cache: player_id -> CV and variance/mean ratio
 _player_cv: dict[int, float] = {}
+_player_var_ratio: dict[int, float] = {}
 
 
 # ---------------------------------------------------------------------------
@@ -287,15 +288,21 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 np.mean(mate_avgs) if mate_avgs else 0.0
             )
 
-    # --- Expanding player CV (no leakage) ---
-    global _player_cv
-    player_cv_data = df.groupby("player_id")["shots"].agg(["mean", "std", "count"])
+    # --- Expanding player CV and variance ratio (no leakage) ---
+    global _player_cv, _player_var_ratio
+    player_cv_data = df.groupby("player_id")["shots"].agg(["mean", "std", "count", "var"])
     player_cv_data["cv"] = np.where(
         (player_cv_data["mean"] > 0) & (player_cv_data["count"] >= 10),
         player_cv_data["std"] / player_cv_data["mean"],
         1.0,
     )
+    player_cv_data["var_ratio"] = np.where(
+        (player_cv_data["mean"] > 0) & (player_cv_data["count"] >= 10),
+        player_cv_data["var"] / player_cv_data["mean"],
+        1.0,  # 1.0 = Poisson assumption
+    )
     _player_cv = player_cv_data["cv"].to_dict()
+    _player_var_ratio = player_cv_data["var_ratio"].to_dict()
 
     def _get_expanding_cv(player_id, game_date):
         history = player_shots_by_date.get(player_id, [])
@@ -858,6 +865,7 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         "opp_shots_allowed": opp_sa,
         "opp_shots_allowed_pos": round(opp_sa_pos, 2),
         "player_cv": round(cv, 3),
+        "var_ratio": round(_player_var_ratio.get(player_id, 1.0), 3),
         "rest_days": rest,
     }
 
