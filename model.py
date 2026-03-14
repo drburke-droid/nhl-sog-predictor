@@ -995,7 +995,7 @@ def _approx_skaters_per_game(conn, team: str) -> float:
     return row["avg_skaters"] if row and row["avg_skaters"] else 18.0
 
 
-
+def predict_upcoming_games() -> list[dict]:
     """Get today's schedule and predict SOG for every skater in today's games."""
     if _model_fwd is None and _model_def is None:
         return []

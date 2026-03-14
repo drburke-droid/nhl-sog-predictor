@@ -102,6 +102,10 @@
         .ev-negative { color: #f85149; font-weight: 600; }
         .ev-neutral { color: var(--text-secondary); }
         .prob-cell { font-size: 0.85rem; color: var(--text-secondary); }
+        .prob-bucket { font-size: 0.78rem; text-align: center; white-space: nowrap; }
+        .prob-high { color: #3fb950; font-weight: 700; }
+        .prob-mid  { color: #d29922; font-weight: 600; }
+        .prob-low  { color: var(--text-secondary); }
         .signal-fire { background: rgba(63,185,80,0.25); color: #3fb950; font-weight: 800; font-size: 0.95rem; }
         .signal-strong { background: rgba(63,185,80,0.12); color: #56d364; font-weight: 700; }
         .signal-mild { color: #d29922; font-weight: 600; }
@@ -195,6 +199,11 @@
                                 <th>Opp</th>
                                 <th>Pos</th>
                                 <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred SOG</th>
+                                <th>O 0.5</th>
+                                <th>O 1.5</th>
+                                <th>O 2.5</th>
+                                <th>O 3.5</th>
+                                <th>O 4.5</th>
                                 <th class="sort-btn" onclick="sortPredictions('variance')">vs Avg</th>
                                 <th class="sort-btn" onclick="sortPredictions('variance_pct')">vs Avg %</th>
                                 <th>5G Avg</th>
@@ -689,6 +698,12 @@ function sortPredictions(field) {
     renderPredictions(sorted);
 }
 
+function probBucketClass(pct) {
+    if (pct >= 60) return 'prob-high';
+    if (pct >= 35) return 'prob-mid';
+    return 'prob-low';
+}
+
 function renderPredictions(list) {
     const tbody = document.querySelector('#predictionsTable tbody');
     tbody.innerHTML = list.map(p => {
@@ -706,12 +721,20 @@ function renderPredictions(list) {
         const saved = oddsInputs[p.player_id] || {};
         const pid = p.player_id;
 
+        // Bucket probabilities
+        const vr = p.var_ratio || 1.0;
+        const buckets = [0.5, 1.5, 2.5, 3.5, 4.5].map(line => {
+            const pct = +(calcProbOver(p.predicted_sog, line, vr) * 100).toFixed(0);
+            return `<td class="prob-bucket ${probBucketClass(pct)}">${pct}%</td>`;
+        }).join('');
+
         return `<tr>
             <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
             <td>${p.team}</td>
             <td>${p.opponent}</td>
             <td><span class="badge badge-position badge-${p.position}">${p.position}</span></td>
             <td class="${cls}">${p.predicted_sog}</td>
+            ${buckets}
             <td class="${vCls}">${vSign}${p.variance}</td>
             <td class="${vCls}">${vpSign}${p.variance_pct}%</td>
             <td>${p.rolling_5}</td>
