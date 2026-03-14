@@ -1052,10 +1052,19 @@ function pollRefreshStatus() {
 // =====================================================================
 // Init
 // =====================================================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     loadPredictions();
     loadPlayers();
     loadTeams();
+
+    // Auto-detect if a background refresh is running (e.g. Render cold start)
+    const status = await fetchJSON('/api/refresh/status');
+    if (status && status.running) {
+        const el = document.getElementById('refreshStatus');
+        el.classList.remove('d-none');
+        el.textContent = 'Data refresh in progress — predictions will update automatically...';
+        pollRefreshStatus();
+    }
 });
 </script>
 </body>

@@ -67,43 +67,175 @@ def _build_feature_dataframe() -> pd.DataFrame:
         conn.close()
         return pd.DataFrame()
 
-    # Load team defense profiles
-    defense = pd.read_sql_query("SELECT * FROM team_defense", conn)
-    defense_map = {
-        row["team"]: row.to_dict() for _, row in defense.iterrows()
-    }
-
     # Load linemate data
     linemate_df = pd.read_sql_query(
         "SELECT player_id, linemate_id, game_id, shared_toi_seconds FROM linemates",
         conn,
     )
+
+    # Load opponent shot data per game for computing rolling defense profiles
+    opp_shots_df = pd.read_sql_query(
+        """SELECT pgs.game_id, g.date, pgs.team, pgs.position, pgs.shots,
+                  g.home_team, g.away_team
+           FROM player_game_stats pgs
+           JOIN games g ON pgs.game_id = g.game_id
+           WHERE pgs.position IN ('L', 'C', 'R', 'D')
+           ORDER BY g.date""",
+        conn,
+    )
     conn.close()
 
-    # Pre-compute linemate avg SOG
-    player_season_avg = df.groupby("player_id")["shots"].mean().to_dict()
+    # Build game-date lookup for ordering
+    game_dates = df.drop_duplicates("game_id")[["game_id", "date"]].set_index("game_id")["date"].to_dict()
+
+    # Pre-compute per-game opponent defense using only prior games (no leakage)
+    # For each game, compute each team's shots-allowed stats from games BEFORE that date
+    opp_shots_df["opponent"] = np.where(
+        opp_shots_df["team"] == opp_shots_df["home_team"],
+        opp_shots_df["away_team"],
+        opp_shots_df["home_team"],
+    )
+    # Group: for each (opponent_team, game_date), what shots did they allow?
+    # We need: shots allowed BY a team = shots scored AGAINST that team
+    opp_shots_df["defending_team"] = opp_shots_df["opponent"]
+
+    # Sort by date for expanding calculations
+    opp_shots_df = opp_shots_df.sort_values("date")
+
+    # Build expanding defense profiles per defending team
+    # For each game, compute cumulative shots allowed before that game
+    def _build_rolling_defense(opp_df):
+        """Build a map: (defending_team, game_date) -> defense profile using only prior games."""
+        defense_by_date = {}
+        team_history = {}  # team -> list of (date, position, shots)
+
+        for _, row in opp_df.iterrows():
+            def_team = row["defending_team"]
+            game_date = row["date"]
+            pos = row["position"]
+            shots = row["shots"]
+
+            # Record the current game's data
+            if def_team not in team_history:
+                team_history[def_team] = []
+            team_history[def_team].append((game_date, pos, shots))
+
+        # Now compute cumulative stats at each date for each team
+        for team, history in team_history.items():
+            history.sort(key=lambda x: x[0])
+            cumul_shots = 0
+            cumul_games = set()
+            cumul_by_pos = {"C": 0, "L": 0, "R": 0, "D": 0}
+            cumul_by_pos_count = {"C": 0, "L": 0, "R": 0, "D": 0}
+
+            prev_date = None
+            buffer = []
+
+            for game_date, pos, shots in history:
+                if prev_date is not None and game_date != prev_date:
+                    # Flush buffer: stats available as of prev_date (for any game AFTER prev_date)
+                    n_games = len(cumul_games)
+                    if n_games > 0:
+                        profile = {
+                            "shots_allowed_per_game": cumul_shots / n_games,
+                        }
+                        for p in ["C", "L", "R", "D"]:
+                            cnt = cumul_by_pos_count[p]
+                            profile[f"shots_allowed_to_{p}"] = (
+                                cumul_by_pos[p] / cnt if cnt > 0
+                                else profile["shots_allowed_per_game"] / 4
+                            )
+                        defense_by_date[(team, game_date)] = profile
+
+                    # Process buffered entries into cumulative
+                    for bd, bp, bs in buffer:
+                        cumul_shots += bs
+                        cumul_games.add(bd)
+                        if bp in cumul_by_pos:
+                            cumul_by_pos[bp] += bs
+                            cumul_by_pos_count[bp] += 1
+                    buffer = []
+
+                buffer.append((game_date, pos, shots))
+                prev_date = game_date
+
+            # Final flush
+            if buffer:
+                n_games = len(cumul_games)
+                if n_games > 0:
+                    last_date = buffer[-1][0]
+                    profile = {
+                        "shots_allowed_per_game": cumul_shots / n_games,
+                    }
+                    for p in ["C", "L", "R", "D"]:
+                        cnt = cumul_by_pos_count[p]
+                        profile[f"shots_allowed_to_{p}"] = (
+                            cumul_by_pos[p] / cnt if cnt > 0
+                            else profile["shots_allowed_per_game"] / 4
+                        )
+                    # Use a sentinel for "latest available"
+                    defense_by_date[(team, "latest")] = profile
+
+        return defense_by_date
+
+    rolling_defense = _build_rolling_defense(opp_shots_df)
+
+    def _get_defense_at_date(team, game_date):
+        """Get the most recent defense profile for a team before game_date."""
+        if (team, game_date) in rolling_defense:
+            return rolling_defense[(team, game_date)]
+        # Fall back to latest available
+        return rolling_defense.get((team, "latest"), None)
+
+    # Pre-compute expanding linemate quality (only using prior games' data)
+    # player -> sorted list of (date, shots) for expanding avg
+    player_shots_by_date = {}
+    for _, row in df.sort_values("date").iterrows():
+        pid = int(row["player_id"])
+        if pid not in player_shots_by_date:
+            player_shots_by_date[pid] = []
+        player_shots_by_date[pid].append((row["date"], row["shots"]))
+
+    def _get_player_avg_before(player_id, game_date):
+        """Get a player's average SOG from games strictly before game_date."""
+        history = player_shots_by_date.get(player_id, [])
+        prior = [s for d, s in history if d < game_date]
+        return np.mean(prior) if prior else 0.0
 
     linemate_quality_map: dict[tuple[int, int], float] = {}
     if not linemate_df.empty:
         for (pid, gid), grp in linemate_df.groupby(["player_id", "game_id"]):
+            game_date = game_dates.get(int(gid), "")
             top_mates = grp.nlargest(3, "shared_toi_seconds")
             mate_avgs = [
-                player_season_avg.get(int(mid), 0)
+                _get_player_avg_before(int(mid), game_date)
                 for mid in top_mates["linemate_id"]
             ]
             linemate_quality_map[(int(pid), int(gid))] = (
                 np.mean(mate_avgs) if mate_avgs else 0.0
             )
 
-    # Pre-compute player CV (predictability)
+    # Pre-compute expanding player CV (only using prior games, no leakage)
+    # Also compute final CV for prediction cache
     global _player_cv
     player_cv_data = df.groupby("player_id")["shots"].agg(["mean", "std", "count"])
     player_cv_data["cv"] = np.where(
         (player_cv_data["mean"] > 0) & (player_cv_data["count"] >= 10),
         player_cv_data["std"] / player_cv_data["mean"],
-        1.0,  # default high CV for players with insufficient data
+        1.0,
     )
     _player_cv = player_cv_data["cv"].to_dict()
+
+    def _get_expanding_cv(player_id, game_date):
+        """Compute CV using only games before game_date."""
+        history = player_shots_by_date.get(player_id, [])
+        prior = [s for d, s in history if d < game_date]
+        if len(prior) < 10:
+            return 1.0  # default high CV for insufficient data
+        mean = np.mean(prior)
+        if mean <= 0:
+            return 1.0
+        return float(np.std(prior) / mean)
 
     # Ensure numeric types for new columns
     for col in ["pp_goals", "shifts", "takeaways", "rest_days"]:
@@ -143,8 +275,6 @@ def _build_feature_dataframe() -> pd.DataFrame:
         for col in fill_cols:
             grp[col] = grp[col].fillna(0)
 
-        cv = _player_cv.get(pid, 1.0)
-
         for idx, row in grp.iterrows():
             if row["is_home"]:
                 opponent = row["away_team"]
@@ -152,7 +282,10 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 opponent = row["home_team"]
 
             pos = row["position"]
-            opp_def = defense_map.get(opponent)
+            game_date = row["date"]
+
+            # Use rolling defense profile (only prior games)
+            opp_def = _get_defense_at_date(opponent, game_date)
             if opp_def is not None:
                 opp_sa = opp_def.get("shots_allowed_per_game", 30.0)
                 pos_key = f"shots_allowed_to_{pos}"
@@ -164,6 +297,9 @@ def _build_feature_dataframe() -> pd.DataFrame:
             lm_quality = linemate_quality_map.get(
                 (int(row["player_id"]), int(row["game_id"])), 0.0
             )
+
+            # Expanding CV using only prior games
+            cv = _get_expanding_cv(pid, game_date)
 
             # Avg shift length (minutes per shift)
             avg_shift_len = (
