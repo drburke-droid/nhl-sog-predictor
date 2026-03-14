@@ -521,17 +521,40 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     # Player CV
     cv = _player_cv.get(player_id, 1.0)
 
-    # Opponent defense
-    opp_row = conn.execute(
-        "SELECT * FROM team_defense WHERE team = ?", (opponent_team,)
+    # Opponent defense — compute per-player averages to match training scale
+    # Training computes per-player shots against a defending team, not team totals.
+    opp_stats = conn.execute(
+        """SELECT AVG(pgs.shots) as avg_shots_per_player,
+                  COUNT(DISTINCT pgs.game_id) as games
+           FROM player_game_stats pgs
+           JOIN games g ON pgs.game_id = g.game_id
+           WHERE ((g.home_team = ? AND pgs.is_home = 0)
+              OR  (g.away_team = ? AND pgs.is_home = 1))
+             AND pgs.position IN ('L','C','R','D')""",
+        (opponent_team, opponent_team),
     ).fetchone()
 
-    opp_sa = opp_row["shots_allowed_per_game"] if opp_row else 30.0
-    if opp_row:
-        pos_key = f"shots_allowed_to_{position}"
-        opp_sa_pos = opp_row[pos_key] if pos_key in opp_row.keys() else opp_sa / 4
+    opp_stats_pos = conn.execute(
+        """SELECT AVG(pgs.shots) as avg_shots_per_player
+           FROM player_game_stats pgs
+           JOIN games g ON pgs.game_id = g.game_id
+           WHERE ((g.home_team = ? AND pgs.is_home = 0)
+              OR  (g.away_team = ? AND pgs.is_home = 1))
+             AND pgs.position = ?""",
+        (opponent_team, opponent_team, position),
+    ).fetchone()
+
+    if opp_stats and opp_stats["games"]:
+        # Overall shots allowed per game (team-level, matches training scale)
+        opp_row = conn.execute(
+            "SELECT shots_allowed_per_game FROM team_defense WHERE team = ?",
+            (opponent_team,),
+        ).fetchone()
+        opp_sa = opp_row["shots_allowed_per_game"] if opp_row else 30.0
+        opp_sa_pos = opp_stats_pos["avg_shots_per_player"] if opp_stats_pos and opp_stats_pos["avg_shots_per_player"] else 1.5
     else:
-        opp_sa_pos = 7.5
+        opp_sa = 30.0
+        opp_sa_pos = 1.5
 
     # Linemate quality
     lm_rows = conn.execute(
