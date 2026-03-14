@@ -295,7 +295,7 @@
                 </div>
             </div>
             <div class="card mb-4 p-3">
-                <h5 class="mb-3">Team Defensive Profiles</h5>
+                <h5 class="mb-3">Defensive Profiles (Today's Teams)</h5>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" id="teamsTable">
                         <thead>
@@ -921,6 +921,9 @@ async function showPlayer(playerId) {
 // =====================================================================
 // Teams
 // =====================================================================
+// Track today's teams from team predictions so we can filter defensive profiles
+let todaysTeams = new Set();
+
 async function loadTeamPredictions() {
     const preds = await fetchJSON('/api/team-predictions');
     document.getElementById('teamPredLoading').classList.add('d-none');
@@ -929,6 +932,10 @@ async function loadTeamPredictions() {
         document.getElementById('teamPredLoading').classList.remove('d-none');
         return;
     }
+
+    // Collect today's teams
+    todaysTeams = new Set();
+    preds.forEach(g => { todaysTeams.add(g.home_team); todaysTeams.add(g.away_team); });
 
     const tbody = document.querySelector('#teamPredTable tbody');
     tbody.innerHTML = preds.map(g => `
@@ -944,6 +951,9 @@ async function loadTeamPredictions() {
             <td class="text-center text-secondary">${g.away_sa_hist}</td>
         </tr>
     `).join('');
+
+    // Reload defensive profiles filtered to today's teams
+    loadTeams();
 }
 
 async function loadTeams() {
@@ -951,10 +961,21 @@ async function loadTeams() {
     document.getElementById('teamsLoading').classList.add('d-none');
     if (!teams) return;
 
-    const tbody = document.querySelector('#teamsTable tbody');
-    teams.sort((a, b) => (b.shots_allowed_per_game || 0) - (a.shots_allowed_per_game || 0));
+    // Filter to only today's teams if we have game data
+    const filtered = todaysTeams.size > 0
+        ? teams.filter(t => todaysTeams.has(t.team))
+        : teams;
 
-    tbody.innerHTML = teams.map(t => `
+    if (filtered.length === 0) {
+        document.getElementById('teamsLoading').textContent = 'No games today';
+        document.getElementById('teamsLoading').classList.remove('d-none');
+        return;
+    }
+
+    const tbody = document.querySelector('#teamsTable tbody');
+    filtered.sort((a, b) => (b.shots_allowed_per_game || 0) - (a.shots_allowed_per_game || 0));
+
+    tbody.innerHTML = filtered.map(t => `
         <tr>
             <td class="fw-bold">${t.team}</td>
             <td>${t.games_played || 0}</td>
