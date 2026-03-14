@@ -170,6 +170,7 @@
                         data-bs-target="#teams" type="button" role="tab">Teams</button>
             </li>
         </ul>
+        <span id="statusBar" class="ms-auto small" style="color:var(--text-secondary)"></span>
     </div>
 </nav>
 
@@ -1045,6 +1046,7 @@ function pollRefreshStatus() {
             loadPredictions();
             loadPlayers();
             loadTeams();
+            loadStatusBar();
         }
     }, 2000);
 }
@@ -1065,7 +1067,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         el.textContent = 'Data refresh in progress — predictions will update automatically...';
         pollRefreshStatus();
     }
+
+    // Load status bar timestamps
+    loadStatusBar();
 });
+
+async function loadStatusBar() {
+    const data = await fetchJSON('/api/status');
+    if (!data) return;
+    const el = document.getElementById('statusBar');
+    const parts = [];
+    if (data.db_updated) parts.push(`Data thru: ${data.db_updated}`);
+    if (data.model_trained) {
+        const d = new Date(data.model_trained);
+        parts.push(`Model trained: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'})}`);
+    }
+    el.textContent = parts.join('  |  ');
+}
 </script>
 </body>
 </html>

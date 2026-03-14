@@ -8,7 +8,7 @@ team defensive profiles, and machine-learning predictions for upcoming games.
 import sys
 import logging
 import threading
-from datetime import date
+from datetime import date, datetime
 
 from flask import Flask, jsonify, render_template, request
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -35,6 +35,7 @@ app = Flask(__name__)
 
 # Track background refresh state
 _refresh_status = {"running": False, "message": "idle"}
+_timestamps = {"db_updated": None, "model_trained": None}
 
 
 def _sync_db_to_github():
@@ -74,8 +75,10 @@ def _do_refresh():
             logger.info(msg)
 
         data_collector.collect_season_data(progress_callback=progress)
+        _timestamps["db_updated"] = datetime.now().isoformat(timespec="minutes")
         _refresh_status["message"] = "Training model..."
         model.train_model()
+        _timestamps["model_trained"] = datetime.now().isoformat(timespec="minutes")
         _refresh_status["message"] = "Syncing database to GitHub..."
         _sync_db_to_github()
         _refresh_status = {"running": False, "message": "Refresh complete."}
@@ -233,6 +236,12 @@ def api_refresh_status():
     return jsonify(_refresh_status)
 
 
+@app.route("/api/status")
+def api_status():
+    """Return DB and model timestamps."""
+    return jsonify(_timestamps)
+
+
 # ---------------------------------------------------------------------------
 # Startup logic (works for both gunicorn and direct run)
 # ---------------------------------------------------------------------------
@@ -272,6 +281,16 @@ def _startup():
     try:
         if os.path.exists(str(data_collector.DB_PATH)):
             metrics = model.train_model()
+            _timestamps["model_trained"] = datetime.now().isoformat(timespec="minutes")
+            # Get last game date from DB
+            try:
+                conn = data_collector.get_db()
+                row = conn.execute("SELECT MAX(date) as last_date FROM games").fetchone()
+                conn.close()
+                if row and row["last_date"]:
+                    _timestamps["db_updated"] = row["last_date"]
+            except Exception:
+                pass
             logger.info("Model metrics: %s", metrics)
         else:
             logger.info("No database found. Use /api/refresh to collect data.")
