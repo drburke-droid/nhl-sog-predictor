@@ -226,9 +226,7 @@
                                 <th>P(Over)</th>
                                 <th class="sort-btn" onclick="sortPredictions('ev_over')">EV Over</th>
                                 <th class="sort-btn" onclick="sortPredictions('ev_under')">EV Under</th>
-                                <th class="sort-btn" onclick="sortPredictions('kelly_best')">Kelly $</th>
-                                <th class="sort-btn" onclick="sortPredictions('edge_score')">Edge</th>
-                                <th class="sort-btn" onclick="sortPredictions('signal')">Signal</th>
+                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')">Bet $</th>
                                 <th class="sort-btn" onclick="sortPredictions('player_cv')">CV</th>
                                 <th>Rest</th>
                                 <th>H/A</th>
@@ -610,45 +608,29 @@ function updateOdds(playerId) {
         pred.ev_under = 0;
     }
 
-    // Kelly sizing — pick the better side
-    const kellyEl = document.getElementById(`kelly-${playerId}`);
+    // Suggested bet = Kelly × confidence (signal capped at 1.5 for normalization)
+    // Kelly gives optimal edge-based sizing, signal scales by model confidence
     const bestKelly = Math.max(kellyOver, kellyUnder);
     const bestSide = kellyOver >= kellyUnder ? 'O' : 'U';
     pred.kelly_best = bestKelly;
+    const confidence = Math.min((pred.signal || 0) / 1.5, 1.0);
+    const adjKelly = bestKelly * confidence;
+    pred.suggested_bet = adjKelly;
 
-    if (bestKelly > 0 && bankroll > 0) {
-        const wager = Math.round(bankroll * bestKelly);
-        kellyEl.textContent = `$${wager} ${bestSide}`;
-        kellyEl.className = wager >= bankroll * 0.03 ? 'ev-positive' : 'ev-neutral';
-        kellyEl.title = `Kelly fraction: ${(bestKelly*100).toFixed(2)}% of bankroll\nQuarter Kelly (25%)\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}`;
-    } else if (bestKelly > 0) {
-        kellyEl.textContent = `${(bestKelly*100).toFixed(1)}% ${bestSide}`;
-        kellyEl.className = 'ev-neutral';
-        kellyEl.title = 'Set bankroll to see dollar amounts';
+    const betEl = document.getElementById(`bet-${playerId}`);
+    if (adjKelly > 0 && bankroll > 0) {
+        const wager = Math.round(bankroll * adjKelly);
+        betEl.textContent = `$${wager} ${bestSide}`;
+        betEl.className = wager >= bankroll * 0.02 ? 'ev-positive fw-bold' : 'ev-neutral';
+        betEl.title = `Kelly: ${(bestKelly*100).toFixed(1)}% × Confidence: ${(confidence*100).toFixed(0)}% = ${(adjKelly*100).toFixed(2)}%\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}\nSignal: ${pred.signal}`;
+    } else if (adjKelly > 0) {
+        betEl.textContent = `${(adjKelly*100).toFixed(1)}% ${bestSide}`;
+        betEl.className = 'ev-neutral';
+        betEl.title = 'Set bankroll to see dollar amounts';
     } else {
-        kellyEl.textContent = 'No edge';
-        kellyEl.className = 'ev-negative';
-        pred.kelly_best = 0;
-    }
-
-    // Edge Score = Kelly% × Signal — combines betting edge with prediction quality
-    const edgeEl = document.getElementById(`edge-${playerId}`);
-    const edgeScore = +(bestKelly * (pred.signal || 0) * 100).toFixed(1);
-    pred.edge_score = edgeScore;
-    if (edgeScore >= 3) {
-        edgeEl.textContent = edgeScore.toFixed(1);
-        edgeEl.className = 'signal-fire';
-        edgeEl.title = `Edge Score = Kelly% × Signal\n= ${(bestKelly*100).toFixed(1)}% × ${pred.signal}\nBest bet: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}`;
-    } else if (edgeScore >= 1) {
-        edgeEl.textContent = edgeScore.toFixed(1);
-        edgeEl.className = 'signal-strong';
-        edgeEl.title = `Edge Score = Kelly% × Signal\n= ${(bestKelly*100).toFixed(1)}% × ${pred.signal}`;
-    } else if (edgeScore > 0) {
-        edgeEl.textContent = edgeScore.toFixed(1);
-        edgeEl.className = 'signal-mild';
-    } else {
-        edgeEl.textContent = '—';
-        edgeEl.className = 'ev-neutral';
+        betEl.textContent = '—';
+        betEl.className = 'ev-neutral';
+        pred.suggested_bet = 0;
     }
 }
 
@@ -680,11 +662,11 @@ async function loadPredictions() {
         // Signal = |variance| / CV — high when big deviation + low CV (predictable player)
         const cv = p.player_cv || 1;
         const signal = cv > 0 ? +(Math.abs(variance) / cv).toFixed(2) : 0;
-        return { ...p, variance, variance_pct, signal, edge_score: 0, kelly_best: 0 };
+        return { ...p, variance, variance_pct, signal, kelly_best: 0, suggested_bet: 0 };
     });
 
-    // Default sort by signal descending
-    sortPredictions('signal');
+    // Default sort by predicted SOG descending
+    sortPredictions('predicted_sog');
 }
 
 function sortPredictions(field) {
@@ -707,9 +689,9 @@ function sortPredictions(field) {
         }
         if (!predSortAsc) cmp = -cmp;
 
-        // Secondary sort: edge_score descending when primary values are equal
+        // Secondary sort: suggested_bet descending when primary values are equal
         if (cmp === 0) {
-            cmp = (Math.abs(b.edge_score || 0)) - (Math.abs(a.edge_score || 0));
+            cmp = (b.suggested_bet || 0) - (a.suggested_bet || 0);
         }
         return cmp;
     });
@@ -740,13 +722,13 @@ function renderBestBets() {
     const threshold = parseFloat(document.getElementById('kellyThreshold').value) || 1;
     const minKelly = threshold / 100;
 
-    // Filter to players with Kelly edge above threshold
-    const qualified = allPredictions.filter(p => (p.kelly_best || 0) >= minKelly);
+    // Filter to players with suggested bet above threshold
+    const qualified = allPredictions.filter(p => (p.suggested_bet || 0) >= minKelly);
 
     if (qualified.length === 0) {
         const tbody = document.querySelector('#predictionsTable tbody');
-        tbody.innerHTML = `<tr><td colspan="24" class="text-center text-secondary py-4">
-            No bets above ${threshold}% Kelly threshold. Paste odds first, then toggle Best Bets.
+        tbody.innerHTML = `<tr><td colspan="22" class="text-center text-secondary py-4">
+            No bets above ${threshold}% threshold. Paste odds first, then toggle Best Bets.
         </td></tr>`;
         return;
     }
@@ -761,9 +743,9 @@ function renderBestBets() {
         gameMap[gameKey].push(p);
     });
 
-    // Sort players within each game by kelly descending
+    // Sort players within each game by suggested bet descending
     Object.values(gameMap).forEach(players => {
-        players.sort((a, b) => (b.kelly_best || 0) - (a.kelly_best || 0));
+        players.sort((a, b) => (b.suggested_bet || 0) - (a.suggested_bet || 0));
     });
 
     // Build rows with game headers
@@ -777,10 +759,9 @@ function renderBestBets() {
         players.forEach(p => {
             const saved = oddsInputs[p.player_id] || {};
             const pid = p.player_id;
-            const side = (p._kellySide || 'O');
             const lineVal = saved.line || '';
-            const kellyPct = ((p.kelly_best || 0) * 100).toFixed(1);
-            const wager = bankroll > 0 ? `$${Math.round(bankroll * p.kelly_best)}` : `${kellyPct}%`;
+            const betPct = ((p.suggested_bet || 0) * 100).toFixed(1);
+            const wager = bankroll > 0 ? `$${Math.round(bankroll * (p.suggested_bet || 0))}` : `${betPct}%`;
 
             // Determine best side
             let bestSide = 'O', bestEv = p.ev_over || 0;
@@ -819,9 +800,7 @@ function renderBestBets() {
                 <td class="prob-cell" id="prob-over-${pid}">—</td>
                 <td class="ev-neutral" id="ev-over-${pid}">—</td>
                 <td class="ev-neutral" id="ev-under-${pid}">—</td>
-                <td class="ev-positive fw-bold" id="kelly-${pid}">${wager} ${bestSide}</td>
-                <td class="ev-neutral" id="edge-${pid}">—</td>
-                <td class="${p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none'}">${p.signal > 0 ? (p.variance > 0 ? '+' : '-') + p.signal : '—'}</td>
+                <td class="ev-neutral" id="bet-${pid}">${wager} ${bestSide}</td>
                 <td>${p.player_cv || '—'}</td>
                 <td>${p.rest_days >= 0 ? (p.rest_days === 0 ? 'B2B' : p.rest_days + 'd') : '—'}</td>
                 <td>${p.is_home ? 'H' : 'A'}</td>
@@ -889,10 +868,7 @@ function renderPredictions(list) {
             <td class="prob-cell" id="prob-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-under-${pid}">—</td>
-            <td class="ev-neutral" id="kelly-${pid}">—</td>
-            <td class="ev-neutral" id="edge-${pid}">—</td>
-            <td class="${p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none'}"
-                title="Signal = |vs Avg| / CV&#10;High = big edge + predictable player&#10;Direction: ${p.variance > 0 ? 'OVER' : 'UNDER'}">${p.signal > 0 ? (p.variance > 0 ? '+' : '-') + p.signal : '—'}</td>
+            <td class="ev-neutral" id="bet-${pid}">—</td>
             <td class="${(p.player_cv||1) <= 0.6 ? 'ev-positive' : (p.player_cv||1) >= 0.9 ? 'ev-negative' : 'ev-neutral'}"
                 title="Lower = more predictable">${p.player_cv || '—'}</td>
             <td class="${p.rest_days === 0 ? 'ev-negative' : ''}"
@@ -1137,8 +1113,7 @@ function clearAllOdds() {
     // Keep bankroll persistent — don't clear it
     allPredictions.forEach(p => {
         p.ev_over = 0; p.ev_under = 0;
-        p.kelly_best = 0; p.kelly_over = 0; p.kelly_under = 0;
-        p.edge_score = 0;
+        p.kelly_best = 0; p.suggested_bet = 0;
     });
     if (bestBetsMode) {
         renderBestBets();
