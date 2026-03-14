@@ -60,15 +60,18 @@ def _get(url: str, cache_ttl: Optional[int] = None) -> Optional[dict]:
             return data
 
     _rate_limit()
-    try:
-        resp = requests.get(url, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        _cache[url] = (time.time(), data)
-        return data
-    except requests.RequestException as exc:
-        logger.warning("Request failed for %s: %s", url, exc)
-        return None
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, timeout=(5, 15))  # 5s connect, 15s read
+            resp.raise_for_status()
+            data = resp.json()
+            _cache[url] = (time.time(), data)
+            return data
+        except requests.RequestException as exc:
+            logger.warning("Request failed (attempt %d/3) for %s: %s", attempt + 1, url, exc)
+            if attempt < 2:
+                time.sleep(2)
+    return None
 
 
 def clear_cache():
