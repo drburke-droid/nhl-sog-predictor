@@ -151,6 +151,97 @@
             z-index: 1050;
             max-width: 320px;
         }
+
+        /* Mobile card view */
+        #mobileCards { display: none; }
+        @media (max-width: 768px) {
+            .table-responsive { display: none !important; }
+            #mobileCards { display: block !important; }
+            .navbar { padding: 8px 12px; }
+            .nav-pills .nav-link { padding: 6px 12px; font-size: 0.85rem; margin: 0 2px; }
+            #statusBar { display: none; }
+            .container-fluid { padding-left: 8px !important; padding-right: 8px !important; }
+            .card { padding: 12px !important; }
+            h5 { font-size: 1rem; }
+        }
+        .m-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+        }
+        .m-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .m-card-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .m-card-pred {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+        .m-card-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+        .m-card-probs {
+            display: flex;
+            gap: 6px;
+            font-size: 0.78rem;
+            margin-top: 4px;
+        }
+        .m-card-probs span {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+        }
+        .m-card-bet {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent2);
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border);
+        }
+        .m-game-header {
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 14px 0 8px;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+        .m-filter-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .m-filter-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .m-filter-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -241,6 +332,22 @@
                 </div>
                 <div id="predEmpty" class="text-center py-4 text-secondary d-none">
                     No predictions available. Try refreshing data first.
+                </div>
+                <!-- Mobile card view -->
+                <div id="mobileCards">
+                    <div class="m-filter-bar">
+                        <button class="m-filter-btn active" onclick="mobileFilter('all')">All</button>
+                        <button class="m-filter-btn" onclick="mobileFilter('best')">Best Bets</button>
+                        <select class="m-filter-btn" id="mobileGameFilter" onchange="mobileFilter(this.value)">
+                            <option value="all">All Games</option>
+                        </select>
+                        <select class="m-filter-btn" id="mobileSortSelect" onchange="mobileSort(this.value)">
+                            <option value="signal">Confidence</option>
+                            <option value="predicted_sog">Pred SOG</option>
+                            <option value="suggested_bet">Bet $</option>
+                        </select>
+                    </div>
+                    <div id="mobileCardList"></div>
                 </div>
             </div>
         </div>
@@ -636,6 +743,128 @@ function updateOdds(playerId) {
 }
 
 // =====================================================================
+// Mobile card view
+// =====================================================================
+let mobileCurrentFilter = 'all';
+
+function mobileFilter(filter) {
+    mobileCurrentFilter = filter;
+    // Update button active states
+    document.querySelectorAll('.m-filter-btn').forEach(b => b.classList.remove('active'));
+    if (filter === 'all') {
+        document.querySelector('.m-filter-btn').classList.add('active');
+    } else if (filter === 'best') {
+        document.querySelectorAll('.m-filter-btn')[1].classList.add('active');
+    }
+    renderMobileCards();
+}
+
+function mobileSort(field) {
+    renderMobileCards();
+}
+
+function renderMobileCards() {
+    const container = document.getElementById('mobileCardList');
+    if (!container || !allPredictions.length) return;
+
+    const sortField = document.getElementById('mobileSortSelect')?.value || 'signal';
+    let list = [...allPredictions];
+
+    // Filter
+    if (mobileCurrentFilter === 'best') {
+        list = list.filter(p => (p.suggested_bet || 0) > 0);
+    } else if (mobileCurrentFilter !== 'all') {
+        // Game filter
+        list = list.filter(p => {
+            const game = p.is_home ? `${p.opponent} @ ${p.team}` : `${p.team} @ ${p.opponent}`;
+            return game === mobileCurrentFilter;
+        });
+    }
+
+    // Sort
+    list.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0));
+
+    // Group by game
+    const gameMap = {};
+    list.forEach(p => {
+        const gameKey = p.is_home ? `${p.opponent} @ ${p.team}` : `${p.team} @ ${p.opponent}`;
+        if (!gameMap[gameKey]) gameMap[gameKey] = [];
+        gameMap[gameKey].push(p);
+    });
+
+    // Populate game filter dropdown
+    const gameSelect = document.getElementById('mobileGameFilter');
+    if (gameSelect && gameSelect.options.length <= 1) {
+        const games = new Set();
+        allPredictions.forEach(p => {
+            games.add(p.is_home ? `${p.opponent} @ ${p.team}` : `${p.team} @ ${p.opponent}`);
+        });
+        games.forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g; opt.textContent = g;
+            gameSelect.appendChild(opt);
+        });
+    }
+
+    let html = '';
+    for (const [game, players] of Object.entries(gameMap)) {
+        html += `<div class="m-game-header">${game}</div>`;
+        players.forEach(p => {
+            const vr = p.var_ratio || 1.0;
+            const cls = p.predicted_sog >= 4 ? 'prediction-high' :
+                        p.predicted_sog >= 2.5 ? 'prediction-med' : 'prediction-low';
+
+            const o15 = (calcProbOver(p.predicted_sog, 1.5, vr) * 100).toFixed(0);
+            const o25 = (calcProbOver(p.predicted_sog, 2.5, vr) * 100).toFixed(0);
+            const o35 = (calcProbOver(p.predicted_sog, 3.5, vr) * 100).toFixed(0);
+            const o45 = (calcProbOver(p.predicted_sog, 4.5, vr) * 100).toFixed(0);
+
+            const vSign = p.variance > 0 ? '+' : '';
+            const confCls = p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none';
+
+            let betLine = '';
+            if ((p.suggested_bet || 0) > 0) {
+                const bestSide = (p.ev_over || 0) >= (p.ev_under || 0) ? 'OVER' : 'UNDER';
+                const saved = oddsInputs[p.player_id] || {};
+                const lineVal = saved.line || '';
+                if (bankroll > 0) {
+                    betLine = `<div class="m-card-bet">${bestSide} ${lineVal} &mdash; $${Math.round(bankroll * p.suggested_bet)}</div>`;
+                } else {
+                    betLine = `<div class="m-card-bet">${bestSide} ${lineVal} &mdash; ${(p.suggested_bet * 100).toFixed(1)}%</div>`;
+                }
+            }
+
+            html += `<div class="m-card" onclick="showPlayer(${p.player_id})">
+                <div class="m-card-header">
+                    <div>
+                        <span class="m-card-name">${p.player_name}</span>
+                        <span class="badge badge-position badge-${p.position}" style="margin-left:4px">${p.position}</span>
+                    </div>
+                    <span class="m-card-pred ${cls}">${p.predicted_sog}</span>
+                </div>
+                <div class="m-card-row">
+                    <span>${p.team} vs ${p.opponent} ${p.is_home ? '(H)' : '(A)'}</span>
+                    <span>Avg: ${p.season_avg} | 5G: ${p.rolling_5}</span>
+                </div>
+                <div class="m-card-row">
+                    <span>vs Avg: <span class="${p.variance >= 0.3 ? 'variance-warm' : p.variance <= -0.3 ? 'variance-cold' : ''}">${vSign}${p.variance}</span></span>
+                    <span class="${confCls}">Conf: ${p.signal}</span>
+                </div>
+                <div class="m-card-probs">
+                    <span class="${probBucketClass(+o15)}">O1.5: ${o15}%</span>
+                    <span class="${probBucketClass(+o25)}">O2.5: ${o25}%</span>
+                    <span class="${probBucketClass(+o35)}">O3.5: ${o35}%</span>
+                    <span class="${probBucketClass(+o45)}">O4.5: ${o45}%</span>
+                </div>
+                ${betLine}
+            </div>`;
+        });
+    }
+
+    container.innerHTML = html || '<div class="text-center text-secondary py-4">No results</div>';
+}
+
+// =====================================================================
 // Predictions
 // =====================================================================
 async function loadPredictions() {
@@ -669,6 +898,7 @@ async function loadPredictions() {
     // Default sort by signal — best proxy for likely Bet $ before odds are pasted
     // Signal = |variance from avg| / CV: big deviation + predictable = likely edge
     sortPredictions('signal');
+    renderMobileCards();
 }
 
 function sortPredictions(field) {
@@ -1129,6 +1359,7 @@ function clearAllOdds() {
     } else {
         renderPredictions(allPredictions);
     }
+    renderMobileCards();
 }
 
 // =====================================================================
@@ -1286,6 +1517,7 @@ function applyPastedOdds() {
         } else {
             sortPredictions('suggested_bet');
         }
+        renderMobileCards();
     }, 200);
 
     // Close modal after short delay
