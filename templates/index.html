@@ -297,6 +297,7 @@
                     <table class="table table-hover mb-0" id="predictionsTable">
                         <thead>
                             <tr>
+                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')">Bet $</th>
                                 <th>Player</th>
                                 <th class="sort-btn" onclick="sortPredictions('team')">Team</th>
                                 <th class="sort-btn" onclick="sortPredictions('opponent')">Opp</th>
@@ -317,7 +318,6 @@
                                 <th>P(Over)</th>
                                 <th class="sort-btn" onclick="sortPredictions('ev_over')">EV Over</th>
                                 <th class="sort-btn" onclick="sortPredictions('ev_under')">EV Under</th>
-                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')">Bet $</th>
                                 <th class="sort-btn" onclick="sortPredictions('signal')">Conf</th>
                                 <th class="sort-btn" onclick="sortPredictions('player_cv')">CV</th>
                                 <th>Rest</th>
@@ -1009,6 +1009,7 @@ function renderBestBets() {
                         p.predicted_sog >= 2.5 ? 'prediction-med' : 'prediction-low';
 
             html += `<tr>
+                <td class="ev-neutral" id="bet-${pid}">${wager} ${bestSide}</td>
                 <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
                 <td>${p.team}</td>
                 <td>${p.opponent}</td>
@@ -1032,7 +1033,6 @@ function renderBestBets() {
                 <td class="prob-cell" id="prob-over-${pid}">—</td>
                 <td class="ev-neutral" id="ev-over-${pid}">—</td>
                 <td class="ev-neutral" id="ev-under-${pid}">—</td>
-                <td class="ev-neutral" id="bet-${pid}">${wager} ${bestSide}</td>
                 <td>${p.player_cv || '—'}</td>
                 <td>${p.rest_days >= 0 ? (p.rest_days === 0 ? 'B2B' : p.rest_days + 'd') : '—'}</td>
                 <td>${p.is_home ? 'H' : 'A'}</td>
@@ -1078,6 +1078,7 @@ function renderPredictions(list) {
         }).join('');
 
         return `<tr>
+            <td class="ev-neutral" id="bet-${pid}">—</td>
             <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
             <td>${p.team}</td>
             <td>${p.opponent}</td>
@@ -1100,7 +1101,6 @@ function renderPredictions(list) {
             <td class="prob-cell" id="prob-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-under-${pid}">—</td>
-            <td class="ev-neutral" id="bet-${pid}">—</td>
             <td class="${p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none'}"
                 title="Confidence = |vs Avg| / CV&#10;Higher = bigger edge on predictable player&#10;Direction: ${p.variance > 0 ? 'OVER' : 'UNDER'}">${p.signal > 0 ? (p.variance > 0 ? '+' : '-') + p.signal : '—'}</td>
             <td class="${(p.player_cv||1) <= 0.6 ? 'ev-positive' : (p.player_cv||1) >= 0.9 ? 'ev-negative' : 'ev-neutral'}"
