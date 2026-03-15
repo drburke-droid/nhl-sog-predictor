@@ -13,6 +13,7 @@ Key design choices (per nhl_sog_model_guide.md):
   - Time-based validation (last 2 weeks holdout)
 """
 
+import json
 import logging
 import sqlite3
 from pathlib import Path
@@ -26,6 +27,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 import nhl_api
 import data_collector
 
+MODEL_DIR = Path(__file__).parent / "saved_model"
+
 logger = logging.getLogger(__name__)
 
 # Global model state — separate models for forwards and defensemen
@@ -35,6 +38,54 @@ _model_metrics: dict = {}
 # Player predictability cache: player_id -> CV and variance/mean ratio
 _player_cv: dict[int, float] = {}
 _player_var_ratio: dict[int, float] = {}
+
+
+def save_model():
+    """Save trained models and metadata to disk for fast cold starts."""
+    MODEL_DIR.mkdir(exist_ok=True)
+    if _model_fwd is not None:
+        _model_fwd.save_model(str(MODEL_DIR / "model_fwd.json"))
+    if _model_def is not None:
+        _model_def.save_model(str(MODEL_DIR / "model_def.json"))
+    meta = {
+        "metrics": _model_metrics,
+        "player_cv": {str(k): v for k, v in _player_cv.items()},
+        "player_var_ratio": {str(k): v for k, v in _player_var_ratio.items()},
+    }
+    with open(MODEL_DIR / "meta.json", "w") as f:
+        json.dump(meta, f)
+    logger.info("Model saved to %s", MODEL_DIR)
+
+
+def load_model() -> bool:
+    """Load saved models from disk. Returns True if successful."""
+    global _model_fwd, _model_def, _model_metrics, _player_cv, _player_var_ratio
+    fwd_path = MODEL_DIR / "model_fwd.json"
+    def_path = MODEL_DIR / "model_def.json"
+    meta_path = MODEL_DIR / "meta.json"
+
+    if not fwd_path.exists() or not meta_path.exists():
+        return False
+
+    try:
+        _model_fwd = XGBRegressor()
+        _model_fwd.load_model(str(fwd_path))
+        if def_path.exists():
+            _model_def = XGBRegressor()
+            _model_def.load_model(str(def_path))
+
+        with open(meta_path) as f:
+            meta = json.load(f)
+        _model_metrics = meta.get("metrics", {})
+        _player_cv = {int(k): v for k, v in meta.get("player_cv", {}).items()}
+        _player_var_ratio = {int(k): v for k, v in meta.get("player_var_ratio", {}).items()}
+        logger.info("Loaded saved model (MAE: %s)", _model_metrics.get("mae"))
+        return True
+    except Exception as exc:
+        logger.warning("Failed to load saved model: %s", exc)
+        _model_fwd = None
+        _model_def = None
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -664,6 +715,7 @@ def train_model() -> dict:
         "defense_model": def_metrics,
     }
 
+    save_model()
     return _model_metrics
 
 

@@ -282,29 +282,52 @@ def _is_render() -> bool:
 
 
 def _startup():
-    """Run on app startup: train model if data exists, start scheduler."""
+    """Run on app startup: load saved model or train, start scheduler."""
     import os
     on_render = _is_render()
 
-    # Train model on startup if data exists
-    try:
-        if os.path.exists(str(data_collector.DB_PATH)):
-            metrics = model.train_model()
-            _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
-            # Get last game date from DB
-            try:
-                conn = data_collector.get_db()
-                row = conn.execute("SELECT MAX(date) as last_date FROM games").fetchone()
-                conn.close()
-                if row and row["last_date"]:
-                    _timestamps["db_updated"] = row["last_date"]
-            except Exception:
-                pass
-            logger.info("Model metrics: %s", metrics)
-        else:
-            logger.info("No database found. Use /api/refresh to collect data.")
-    except Exception:
-        logger.warning("Could not train model on startup (probably no data yet)")
+    # Try loading saved model first (fast cold start)
+    loaded = model.load_model()
+    if loaded:
+        _timestamps["model_trained"] = "loaded from cache"
+        try:
+            conn = data_collector.get_db()
+            row = conn.execute("SELECT MAX(date) as last_date FROM games").fetchone()
+            conn.close()
+            if row and row["last_date"]:
+                _timestamps["db_updated"] = row["last_date"]
+        except Exception:
+            pass
+        logger.info("Model loaded from saved cache — fast startup")
+        if not on_render:
+            # Retrain in background to pick up any new data
+            def _bg_retrain():
+                try:
+                    model.train_model()
+                    _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+                    logger.info("Background retrain complete")
+                except Exception:
+                    pass
+            threading.Thread(target=_bg_retrain, daemon=True).start()
+    else:
+        # No saved model — must train (slower startup)
+        try:
+            if os.path.exists(str(data_collector.DB_PATH)):
+                metrics = model.train_model()
+                _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+                try:
+                    conn = data_collector.get_db()
+                    row = conn.execute("SELECT MAX(date) as last_date FROM games").fetchone()
+                    conn.close()
+                    if row and row["last_date"]:
+                        _timestamps["db_updated"] = row["last_date"]
+                except Exception:
+                    pass
+                logger.info("Model metrics: %s", metrics)
+            else:
+                logger.info("No database found. Use /api/refresh to collect data.")
+        except Exception:
+            logger.warning("Could not train model on startup (probably no data yet)")
 
     if on_render:
         # On Render: NHL API blocks shared IPs, so skip data collection.
