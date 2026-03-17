@@ -469,20 +469,20 @@ def _startup():
         except Exception:
             pass
         logger.info("Model loaded from saved cache — fast startup")
-        if not on_render:
-            # Retrain in background to pick up any new data
-            def _bg_retrain():
-                try:
-                    model.train_model()
-                    _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
-                    logger.info("Background retrain complete")
-                except Exception:
-                    pass
-            threading.Thread(target=_bg_retrain, daemon=True).start()
+        # Retrain in background to pick up any new data (both local and Render)
+        def _bg_retrain():
+            try:
+                model.train_model()
+                _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+                logger.info("Background retrain complete")
+            except Exception as exc:
+                logger.warning("Background retrain failed: %s", exc)
+        threading.Thread(target=_bg_retrain, daemon=True).start()
     else:
         # No saved model — must train (slower startup)
         try:
             if os.path.exists(str(data_collector.DB_PATH)):
+                logger.info("No cached model — training from DB...")
                 metrics = model.train_model()
                 _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
                 try:
@@ -493,11 +493,11 @@ def _startup():
                         _timestamps["db_updated"] = row["last_date"]
                 except Exception:
                     pass
-                logger.info("Model metrics: %s", metrics)
+                logger.info("Model trained. Metrics: %s", metrics)
             else:
                 logger.info("No database found. Use /api/refresh to collect data.")
-        except Exception:
-            logger.warning("Could not train model on startup (probably no data yet)")
+        except Exception as exc:
+            logger.warning("Could not train model on startup: %s", exc)
 
     if on_render:
         # On Render: NHL API blocks shared IPs, so skip data collection.
