@@ -18,6 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import nhl_api
 import data_collector
 import model
+import nhl_odds_collector
 import mlb_api
 import mlb_data_collector
 import mlb_model
@@ -85,6 +86,14 @@ def _do_refresh():
 
         data_collector.collect_season_data(progress_callback=progress)
         _timestamps["db_updated"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+
+        # Collect today's odds (non-fatal if it fails)
+        _refresh_status["message"] = "Collecting NHL odds..."
+        try:
+            nhl_odds_collector.collect_todays_odds(progress_callback=progress)
+        except Exception as exc:
+            logger.warning("NHL odds collection failed (non-fatal): %s", exc)
+
         _refresh_status["message"] = "Training model..."
         model.train_model()
         _timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
@@ -250,6 +259,36 @@ def api_team_predictions():
     """Team-level SOG predictions for today's games."""
     preds = model.predict_team_sog()
     return jsonify(preds)
+
+
+@app.route("/api/nhl/odds")
+def api_nhl_odds():
+    """Today's NHL game odds and player SOG props."""
+    try:
+        nhl_odds_collector.ensure_todays_odds()
+    except Exception:
+        pass
+    game_odds = nhl_odds_collector.get_game_odds_for_date()
+    player_props = nhl_odds_collector.get_all_player_props_for_date()
+    return jsonify({
+        "game_odds": game_odds,
+        "player_props": player_props,
+    })
+
+
+@app.route("/api/nhl/betmgm-odds")
+def api_nhl_betmgm_odds():
+    """BetMGM player SOG props with PlayAlberta vig estimates.
+
+    Auto-fetches today's odds if needed, then returns BetMGM-specific
+    lines with estimated PlayAlberta adjustments.
+    """
+    try:
+        nhl_odds_collector.ensure_todays_odds()
+    except Exception:
+        pass
+    props = nhl_odds_collector.get_betmgm_player_props()
+    return jsonify(props)
 
 
 @app.route("/api/status")

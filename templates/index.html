@@ -553,7 +553,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h5 class="modal-title">Paste Market Odds</h5>
+                <h5 class="modal-title">Paste Market Odds <small class="text-secondary">(overrides auto-loaded)</small></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -587,7 +587,9 @@ Edmonton Oilers
 </div>
 
 <!-- Floating buttons -->
-<div style="position:fixed;bottom:24px;right:24px;z-index:1050;display:flex;gap:10px">
+<div style="position:fixed;bottom:24px;right:24px;z-index:1050;display:flex;gap:10px;align-items:center">
+    <span id="oddsSourceBadge" class="d-none small rounded-pill px-3 py-1 shadow"
+          style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary)"></span>
     <button class="btn btn-outline-secondary rounded-pill px-3 shadow" onclick="new bootstrap.Modal(document.getElementById('pasteModal')).show()">
         Paste Odds
     </button>
@@ -735,9 +737,9 @@ function updateOdds(playerId) {
     const overOdds = parseInt(overEl.value);
     const underOdds = parseInt(underEl.value);
 
-    // Save for persistence across re-renders
+    // Save for persistence across re-renders (clear source = manual edit)
     oddsInputs[playerId] = {
-        line: lineEl.value, overOdds: overEl.value, underOdds: underEl.value
+        line: lineEl.value, overOdds: overEl.value, underOdds: underEl.value,
     };
 
     const pred = allPredictions.find(p => p.player_id === playerId);
@@ -982,6 +984,49 @@ async function loadPredictions() {
     // Signal = |variance from avg| / CV: big deviation + predictable = likely edge
     sortPredictions('signal');
     renderMobileCards();
+
+    // Auto-load BetMGM odds with PlayAlberta vig estimates
+    await loadBetMGMOdds();
+}
+
+async function loadBetMGMOdds() {
+    const props = await fetchJSON('/api/nhl/betmgm-odds');
+    if (!props || Object.keys(props).length === 0) return;
+
+    let matched = 0;
+    for (const [playerName, info] of Object.entries(props)) {
+        // Match odds API full name to prediction abbreviated name
+        const pred = allPredictions.find(p => matchPlayerName(playerName, p.player_name));
+        if (!pred) continue;
+
+        const pid = pred.player_id;
+        // Only auto-fill if user hasn't manually entered odds
+        if (oddsInputs[pid] && oddsInputs[pid].line) continue;
+
+        oddsInputs[pid] = {
+            line: String(info.line),
+            overOdds: info.pa_over_est != null ? String(info.pa_over_est) : '',
+            underOdds: info.pa_under_est != null ? String(info.pa_under_est) : '',
+            source: 'betmgm',  // track source for display
+            betmgm_over: info.betmgm_over,
+            betmgm_under: info.betmgm_under,
+        };
+        matched++;
+    }
+
+    if (matched > 0) {
+        // Re-render to show auto-loaded odds
+        renderPredictions(allPredictions);
+        renderMobileCards();
+        // Sort by suggested bet to surface actionable picks
+        setTimeout(() => sortPredictions('suggested_bet'), 200);
+
+        // Show source badge
+        const badge = document.getElementById('oddsSourceBadge');
+        badge.textContent = `BetMGM → PA est. (${matched} players)`;
+        badge.classList.remove('d-none');
+        console.log(`Auto-loaded ${matched} BetMGM odds (PlayAlberta adjusted)`);
+    }
 }
 
 function sortPredictions(field) {
@@ -1160,6 +1205,17 @@ function renderPredictions(list) {
             return `<td class="prob-bucket ${probBucketClass(pct)}">${pct}%</td>`;
         }).join('');
 
+        // Show BetMGM source indicator + tooltip
+        const isBetMGM = saved.source === 'betmgm';
+        const lineTitle = isBetMGM ? 'title="Auto-loaded from BetMGM"' : '';
+        const overTitle = isBetMGM && saved.betmgm_over != null
+            ? `title="BetMGM: ${saved.betmgm_over} → PA est: ${saved.overOdds}"`
+            : '';
+        const underTitle = isBetMGM && saved.betmgm_under != null
+            ? `title="BetMGM: ${saved.betmgm_under} → PA est: ${saved.underOdds}"`
+            : '';
+        const srcBadge = isBetMGM ? '<span style="font-size:0.6rem;color:var(--text-secondary);display:block;margin-top:1px">PA est.</span>' : '';
+
         return `<tr>
             <td class="ev-neutral" id="bet-${pid}">—</td>
             <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
@@ -1173,14 +1229,14 @@ function renderPredictions(list) {
             <td>${p.rolling_5}</td>
             <td>${p.season_avg}</td>
             <td><input class="odds-input" id="line-${pid}" type="text" placeholder="3.5"
-                       value="${saved.line || ''}"
+                       value="${saved.line || ''}" ${lineTitle}
                        oninput="updateOdds(${pid})" onclick="event.stopPropagation()"></td>
-            <td><input class="odds-input" id="over-${pid}" type="text" placeholder="+132"
+            <td ${overTitle}><input class="odds-input" id="over-${pid}" type="text" placeholder="+132"
                        value="${saved.overOdds || ''}"
-                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()"></td>
-            <td><input class="odds-input" id="under-${pid}" type="text" placeholder="-182"
+                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()">${srcBadge}</td>
+            <td ${underTitle}><input class="odds-input" id="under-${pid}" type="text" placeholder="-182"
                        value="${saved.underOdds || ''}"
-                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()"></td>
+                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()">${srcBadge}</td>
             <td class="prob-cell" id="prob-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-over-${pid}">—</td>
             <td class="ev-neutral" id="ev-under-${pid}">—</td>
@@ -1437,6 +1493,9 @@ function clearAllOdds() {
     if (textarea) textarea.value = '';
     const result = document.getElementById('pasteResult');
     if (result) result.textContent = '';
+    // Hide source badge
+    const badge = document.getElementById('oddsSourceBadge');
+    if (badge) badge.classList.add('d-none');
     if (bestBetsMode) {
         renderBestBets();
     } else {

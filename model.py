@@ -27,7 +27,14 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 import nhl_api
 import data_collector
 
+try:
+    import nhl_odds_collector
+    HAS_ODDS = True
+except ImportError:
+    HAS_ODDS = False
+
 MODEL_DIR = Path(__file__).parent / "saved_model"
+MODEL_VERSION = 2  # v2: added odds-derived features
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +55,7 @@ def save_model():
     if _model_def is not None:
         _model_def.save_model(str(MODEL_DIR / "model_def.json"))
     meta = {
+        "model_version": MODEL_VERSION,
         "metrics": _model_metrics,
         "player_cv": {str(k): v for k, v in _player_cv.items()},
         "player_var_ratio": {str(k): v for k, v in _player_var_ratio.items()},
@@ -68,14 +76,24 @@ def load_model() -> bool:
         return False
 
     try:
+        with open(meta_path) as f:
+            meta = json.load(f)
+
+        # Check model version compatibility
+        saved_version = meta.get("model_version", 1)
+        if saved_version != MODEL_VERSION:
+            logger.info(
+                "Model version mismatch (saved=%d, current=%d) — retrain needed",
+                saved_version, MODEL_VERSION,
+            )
+            return False
+
         _model_fwd = XGBRegressor()
         _model_fwd.load_model(str(fwd_path))
         if def_path.exists():
             _model_def = XGBRegressor()
             _model_def.load_model(str(def_path))
 
-        with open(meta_path) as f:
-            meta = json.load(f)
         _model_metrics = meta.get("metrics", {})
         _player_cv = {int(k): v for k, v in meta.get("player_cv", {}).items()}
         _player_var_ratio = {int(k): v for k, v in meta.get("player_var_ratio", {}).items()}
@@ -120,6 +138,10 @@ FEATURE_COLS = [
     "linemate_quality",
     # Venue bias (scorekeeper generosity)
     "arena_bias",
+    # Odds-derived (NaN when not available — XGBoost handles natively)
+    "game_total",           # over/under on total goals (pace proxy)
+    "implied_team_total",   # team's expected goals from ML + total
+    "sog_prop_line",        # market consensus player SOG line
 ]
 
 
@@ -303,6 +325,21 @@ def _build_feature_dataframe() -> pd.DataFrame:
 
     arena_bias_map = _build_arena_bias(arena_game_df)
 
+    # --- Odds data (optional — NaN when not available) ---
+    odds_game_map = {}   # (game_date, home_team_abbrev) -> {game_total, implied_*}
+    odds_prop_map = {}   # (game_date, player_name) -> consensus SOG line
+
+    if HAS_ODDS:
+        try:
+            odds_game_map = nhl_odds_collector.load_game_odds_bulk()
+            odds_prop_map = nhl_odds_collector.load_player_props_bulk()
+            logger.info(
+                "Loaded odds data: %d games, %d player props",
+                len(odds_game_map), len(odds_prop_map),
+            )
+        except Exception as exc:
+            logger.warning("Could not load odds data: %s", exc)
+
     def _get_arena_bias(arena, game_date):
         if (arena, game_date) in arena_bias_map:
             return arena_bias_map[(arena, game_date)]
@@ -465,6 +502,29 @@ def _build_feature_dataframe() -> pd.DataFrame:
 
             is_home_val = int(row["is_home"])
 
+            # Odds features (NaN when not available)
+            game_total = float("nan")
+            implied_team_total = float("nan")
+            sog_prop_line = float("nan")
+
+            odds_key = (str(game_date)[:10], arena)  # arena = home_team
+            odds_ctx = odds_game_map.get(odds_key)
+            if odds_ctx:
+                gt = odds_ctx.get("game_total")
+                if gt is not None:
+                    game_total = gt
+                if is_home_val:
+                    itt = odds_ctx.get("implied_home_total")
+                else:
+                    itt = odds_ctx.get("implied_away_total")
+                if itt is not None:
+                    implied_team_total = itt
+
+            prop_key = (str(game_date)[:10], row["player_name"])
+            prop_val = odds_prop_map.get(prop_key)
+            if prop_val is not None:
+                sog_prop_line = prop_val
+
             records.append({
                 "player_id": row["player_id"],
                 "game_id": row["game_id"],
@@ -504,6 +564,10 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 "linemate_quality": lm_quality,
                 # Venue
                 "arena_bias": arena_bias,
+                # Odds
+                "game_total": game_total,
+                "implied_team_total": implied_team_total,
+                "sog_prop_line": sog_prop_line,
             })
 
     return pd.DataFrame(records)
@@ -877,6 +941,39 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     arena_avg_map = {r["home_team"]: r["avg_player_sog"] for r in arena_row}
     arena_bias = arena_avg_map.get(arena_team, league_avg) - league_avg
 
+    # --- Odds features ---
+    game_total = float("nan")
+    implied_team_total = float("nan")
+    sog_prop_line = float("nan")
+    market_line = None  # For post-prediction blending
+
+    if HAS_ODDS:
+        try:
+            nhl_odds_collector.ensure_todays_odds()
+
+            home_team = team if is_home else opponent_team
+            away_team = opponent_team if is_home else team
+            odds_ctx = nhl_odds_collector.get_game_context(
+                home_team, away_team
+            )
+            if odds_ctx:
+                gt = odds_ctx.get("game_total")
+                if gt is not None:
+                    game_total = gt
+                if is_home:
+                    itt = odds_ctx.get("implied_home_total")
+                else:
+                    itt = odds_ctx.get("implied_away_total")
+                if itt is not None:
+                    implied_team_total = itt
+
+            consensus = nhl_odds_collector.get_consensus_sog_line(player_name)
+            if consensus:
+                sog_prop_line = consensus["line"]
+                market_line = consensus["line"]
+        except Exception as exc:
+            logger.debug("Could not fetch odds features: %s", exc)
+
     features = np.array([[
         baseline,
         is_home_val,
@@ -889,6 +986,9 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         rest, is_b2b,
         lm_quality,
         arena_bias,
+        game_total,
+        implied_team_total,
+        sog_prop_line,
     ]])
 
     # Predict residual, reconstruct final SOG
@@ -898,6 +998,16 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     pred_residual = np.clip(pred_residual, -max_adj, max_adj)
     pred_sog = baseline + pred_residual
     pred_sog = max(0.0, round(pred_sog, 2))
+
+    # Blend with market line when available (30% market weight)
+    MARKET_BLEND_WEIGHT = 0.3
+    if market_line is not None:
+        pred_sog = round(
+            (1 - MARKET_BLEND_WEIGHT) * pred_sog
+            + MARKET_BLEND_WEIGHT * market_line,
+            2,
+        )
+        pred_sog = max(0.0, pred_sog)
 
     return {
         "player_id": player_id,
@@ -919,6 +1029,13 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         "player_cv": round(cv, 3),
         "var_ratio": round(_player_var_ratio.get(player_id, 1.0), 3),
         "rest_days": rest,
+        # Odds data
+        "market_sog_line": market_line,
+        "game_total": game_total if not np.isnan(game_total) else None,
+        "implied_team_total": (
+            round(implied_team_total, 2)
+            if not np.isnan(implied_team_total) else None
+        ),
     }
 
 
