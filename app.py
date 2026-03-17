@@ -87,6 +87,13 @@ def _do_refresh():
         data_collector.collect_season_data(progress_callback=progress)
         _timestamps["db_updated"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
 
+        # Score yesterday's predictions against actual results
+        _refresh_status["message"] = "Scoring past predictions..."
+        try:
+            model.score_past_predictions()
+        except Exception as exc:
+            logger.warning("Prediction scoring failed (non-fatal): %s", exc)
+
         # Collect today's odds (non-fatal if it fails)
         _refresh_status["message"] = "Collecting NHL odds..."
         try:
@@ -216,13 +223,57 @@ def api_team_defense(team_abbrev: str):
 
 @app.route("/api/predictions")
 def api_predictions():
-    """Predictions for upcoming games."""
+    """Predictions for upcoming games, enriched with historical confidence."""
     predictions = model.predict_upcoming_games()
     metrics = model.get_model_metrics()
+
+    # Merge historical confidence into predictions
+    hist_conf = model.get_player_historical_confidence()
+    for p in predictions:
+        pid = p["player_id"]
+        if pid in hist_conf:
+            p["hist_confidence"] = hist_conf[pid]
+        else:
+            p["hist_confidence"] = None
+
     return jsonify({
         "predictions": predictions,
         "model_metrics": metrics,
     })
+
+
+@app.route("/api/save-predictions", methods=["POST"])
+def api_save_predictions():
+    """Save today's predictions + odds to history for tracking."""
+    data = request.get_json(silent=True) or {}
+    bankroll_val = data.get("bankroll", 0)
+    pred_list = data.get("predictions", [])
+
+    if not pred_list:
+        return jsonify({"saved": 0, "message": "No predictions to save."})
+
+    # Build odds map from the submitted data
+    odds_map = {}
+    for p in pred_list:
+        pid = p.get("player_id")
+        if pid:
+            odds_map[pid] = {
+                "line": p.get("sog_line"),
+                "over_odds": p.get("over_odds"),
+                "under_odds": p.get("under_odds"),
+            }
+
+    # Get current model predictions
+    predictions = model.predict_upcoming_games()
+
+    saved = model.save_predictions_to_history(predictions, odds_map, bankroll_val)
+    return jsonify({"saved": saved, "message": f"Saved {saved} predictions."})
+
+
+@app.route("/api/prediction-history")
+def api_prediction_history():
+    """Historical prediction confidence per player."""
+    return jsonify(model.get_player_historical_confidence())
 
 
 @app.route("/api/predictability")

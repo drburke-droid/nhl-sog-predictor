@@ -282,51 +282,39 @@
         <!-- ============================================================= -->
         <div class="tab-pane fade show active" id="predictions" role="tabpanel">
             <div class="card mb-4 p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Upcoming Game Predictions</h5>
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-info rounded-pill px-3" id="bestBetsBtn"
-                                    onclick="toggleBestBets()">Best Bets</button>
-                            <label class="text-secondary small mb-0" title="Minimum Kelly % to show in Best Bets view">
-                                Min Kelly %
-                                <input type="number" class="odds-input" id="kellyThreshold"
-                                       style="width:55px; margin-left:4px" value="1" step="0.5" min="0"
-                                       onchange="if(bestBetsMode) renderBestBets();">
-                            </label>
-                        </div>
+                <!-- Bankroll — prominent at top -->
+                <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                    <div class="d-flex align-items-center gap-2"
+                         style="background:var(--bg-secondary);border:2px solid var(--accent);border-radius:10px;padding:8px 16px;">
+                        <label class="fw-bold mb-0" style="color:var(--accent);font-size:0.95rem">BANKROLL</label>
+                        <span style="color:var(--accent);font-size:1.2rem;font-weight:700">$</span>
+                        <input type="number" id="bankrollInput" class="odds-input"
+                               style="width:120px;font-size:1.2rem;font-weight:700;border-color:var(--accent)"
+                               placeholder="500" value=""
+                               onchange="bankroll = parseFloat(this.value) || 0;
+                                         localStorage.setItem('sogBankroll', bankroll);
+                                         recalcAllBets();">
+                    </div>
+                    <h5 class="mb-0 ms-2">Today's Bets</h5>
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="showAllBtn"
+                                onclick="toggleShowAll()">Show All Players</button>
                         <div id="modelMetrics" class="text-secondary small"></div>
                     </div>
                 </div>
+
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" id="predictionsTable">
                         <thead>
                             <tr>
-                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')">Bet $</th>
+                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')" style="min-width:140px">Recommended Bet</th>
                                 <th>Player</th>
-                                <th class="sort-btn" onclick="sortPredictions('team')">Team</th>
-                                <th class="sort-btn" onclick="sortPredictions('opponent')">Opp</th>
-                                <th>Pos</th>
+                                <th>Matchup</th>
                                 <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred SOG</th>
-                                <th>O 0.5</th>
-                                <th>O 1.5</th>
-                                <th>O 2.5</th>
-                                <th>O 3.5</th>
-                                <th>O 4.5</th>
-                                <th class="sort-btn" onclick="sortPredictions('variance')">vs Avg</th>
-                                <th class="sort-btn" onclick="sortPredictions('variance_pct')">vs Avg %</th>
-                                <th>5G Avg</th>
-                                <th>Szn Avg</th>
                                 <th>Line</th>
-                                <th>Over</th>
-                                <th>Under</th>
+                                <th class="sort-btn" onclick="sortPredictions('edge')">Edge</th>
+                                <th class="sort-btn" onclick="sortPredictions('confidence_display')">Confidence</th>
                                 <th>P(Over)</th>
-                                <th class="sort-btn" onclick="sortPredictions('ev_over')">EV Over</th>
-                                <th class="sort-btn" onclick="sortPredictions('ev_under')">EV Under</th>
-                                <th class="sort-btn" onclick="sortPredictions('signal')">Conf</th>
-                                <th class="sort-btn" onclick="sortPredictions('player_cv')">CV</th>
-                                <th>Rest</th>
-                                <th>H/A</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -347,7 +335,7 @@
                             <option value="all">All Games</option>
                         </select>
                         <select class="m-filter-btn" id="mobileSortSelect" onchange="mobileSort(this.value)">
-                            <option value="signal">Confidence</option>
+                            <option value="confidence_display">Confidence</option>
                             <option value="predicted_sog">Pred SOG</option>
                             <option value="suggested_bet">Bet $</option>
                         </select>
@@ -557,12 +545,6 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label text-secondary small">BANKROLL ($)</label>
-                    <input type="number" class="odds-input" id="bankrollInput" placeholder="1000"
-                           style="width:140px" value=""
-                           onchange="bankroll = parseFloat(this.value) || 0; localStorage.setItem('sogBankroll', bankroll);">
-                </div>
                 <div class="mb-2">
                     <label class="form-label text-secondary small">PASTE ODDS DATA BELOW</label>
                     <textarea class="form-control" id="oddsTextarea" rows="14"
@@ -609,9 +591,10 @@ Edmonton Oilers
 // =====================================================================
 let allPlayers = [];
 let allPredictions = [];
-let predSortField = 'variance';
+let predSortField = 'suggested_bet';
 let predSortAsc = false;
 let playerChart = null;
+let showAllPlayers = false;
 // Store user-entered odds per player_id: { line, overOdds, underOdds }
 let oddsInputs = {};
 
@@ -726,105 +709,10 @@ function calcEV(probWin, americanOdds) {
     return probWin * profit - (1 - probWin) * 1;
 }
 
-// Read odds from the input fields for a player and recalculate
+// Legacy updateOdds — now handled by computeBet() + renderPredictions()
 function updateOdds(playerId) {
-    const lineEl = document.getElementById(`line-${playerId}`);
-    const overEl = document.getElementById(`over-${playerId}`);
-    const underEl = document.getElementById(`under-${playerId}`);
-    if (!lineEl || !overEl || !underEl) return;
-
-    const line = parseFloat(lineEl.value);
-    const overOdds = parseInt(overEl.value);
-    const underOdds = parseInt(underEl.value);
-
-    // Save for persistence across re-renders (clear source = manual edit)
-    oddsInputs[playerId] = {
-        line: lineEl.value, overOdds: overEl.value, underOdds: underEl.value,
-    };
-
     const pred = allPredictions.find(p => p.player_id === playerId);
-    if (!pred) return;
-
-    const probOverEl = document.getElementById(`prob-over-${playerId}`);
-    const evOverEl = document.getElementById(`ev-over-${playerId}`);
-    const evUnderEl = document.getElementById(`ev-under-${playerId}`);
-
-    if (isNaN(line)) {
-        probOverEl.textContent = '—';
-        evOverEl.textContent = '—';
-        evUnderEl.textContent = '—';
-        evOverEl.className = 'ev-neutral';
-        evUnderEl.className = 'ev-neutral';
-        // Clear stored values so sort ignores this row
-        pred.ev_over = 0;
-        pred.ev_under = 0;
-        pred.kelly_best = 0;
-        const kellyEl = document.getElementById(`kelly-${playerId}`);
-        if (kellyEl) { kellyEl.textContent = '—'; kellyEl.className = 'ev-neutral'; }
-        return;
-    }
-
-    const pOver = calcProbOver(pred.predicted_sog, line, pred.var_ratio);
-    const pUnder = 1 - pOver;
-
-    probOverEl.textContent = (pOver * 100).toFixed(1) + '%';
-
-    let kellyOver = 0, kellyUnder = 0;
-
-    if (!isNaN(overOdds) && overOdds !== 0) {
-        const evO = calcEV(pOver, overOdds);
-        pred.ev_over = +evO.toFixed(3);
-        const impliedO = americanToImpliedProb(overOdds);
-        const edge = pOver - impliedO;
-        evOverEl.textContent = (evO >= 0 ? '+' : '') + (evO * 100).toFixed(1) + '¢';
-        evOverEl.className = evO > 0.02 ? 'ev-positive' : evO < -0.02 ? 'ev-negative' : 'ev-neutral';
-        evOverEl.title = `Model: ${(pOver*100).toFixed(1)}% | Implied: ${(impliedO*100).toFixed(1)}% | Edge: ${(edge*100).toFixed(1)}%`;
-        kellyOver = kellyFraction(pOver, overOdds);
-    } else {
-        evOverEl.textContent = '—';
-        evOverEl.className = 'ev-neutral';
-        pred.ev_over = 0;
-    }
-
-    if (!isNaN(underOdds) && underOdds !== 0) {
-        const evU = calcEV(pUnder, underOdds);
-        pred.ev_under = +evU.toFixed(3);
-        const impliedU = americanToImpliedProb(underOdds);
-        const edgeU = pUnder - impliedU;
-        evUnderEl.textContent = (evU >= 0 ? '+' : '') + (evU * 100).toFixed(1) + '¢';
-        evUnderEl.className = evU > 0.02 ? 'ev-positive' : evU < -0.02 ? 'ev-negative' : 'ev-neutral';
-        evUnderEl.title = `Model: ${(pUnder*100).toFixed(1)}% | Implied: ${(impliedU*100).toFixed(1)}% | Edge: ${(edgeU*100).toFixed(1)}%`;
-        kellyUnder = kellyFraction(pUnder, underOdds);
-    } else {
-        evUnderEl.textContent = '—';
-        evUnderEl.className = 'ev-neutral';
-        pred.ev_under = 0;
-    }
-
-    // Suggested bet = Kelly × confidence (signal capped at 1.5 for normalization)
-    // Kelly gives optimal edge-based sizing, signal scales by model confidence
-    const bestKelly = Math.max(kellyOver, kellyUnder);
-    const bestSide = kellyOver >= kellyUnder ? 'O' : 'U';
-    pred.kelly_best = bestKelly;
-    const confidence = Math.min((pred.signal || 0) / 1.5, 1.0);
-    const adjKelly = bestKelly * confidence;
-    pred.suggested_bet = adjKelly;
-
-    const betEl = document.getElementById(`bet-${playerId}`);
-    if (adjKelly > 0 && bankroll > 0) {
-        const wager = Math.round(bankroll * adjKelly);
-        betEl.textContent = `$${wager} ${bestSide}`;
-        betEl.className = wager >= bankroll * 0.02 ? 'ev-positive fw-bold' : 'ev-neutral';
-        betEl.title = `Kelly: ${(bestKelly*100).toFixed(1)}% × Confidence: ${(confidence*100).toFixed(0)}% = ${(adjKelly*100).toFixed(2)}%\nSide: ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${line}\nSignal: ${pred.signal}`;
-    } else if (adjKelly > 0) {
-        betEl.textContent = `${(adjKelly*100).toFixed(1)}% ${bestSide}`;
-        betEl.className = 'ev-neutral';
-        betEl.title = 'Set bankroll to see dollar amounts';
-    } else {
-        betEl.textContent = '—';
-        betEl.className = 'ev-neutral';
-        pred.suggested_bet = 0;
-    }
+    if (pred) { computeBet(pred); sortPredictions(predSortField); }
 }
 
 // =====================================================================
@@ -852,24 +740,22 @@ function renderMobileCards() {
     const container = document.getElementById('mobileCardList');
     if (!container || !allPredictions.length) return;
 
-    const sortField = document.getElementById('mobileSortSelect')?.value || 'signal';
+    const sortField = document.getElementById('mobileSortSelect')?.value || 'confidence_display';
     let list = [...allPredictions];
 
-    // Filter
-    if (mobileCurrentFilter === 'best') {
+    // Filter — default to bets only
+    const hasOdds = list.some(p => (p.suggested_bet || 0) > 0);
+    if (mobileCurrentFilter === 'best' || (hasOdds && mobileCurrentFilter === 'all' && !showAllPlayers)) {
         list = list.filter(p => (p.suggested_bet || 0) > 0);
     } else if (mobileCurrentFilter !== 'all') {
-        // Game filter
         list = list.filter(p => {
             const game = p.is_home ? `${p.opponent} @ ${p.team}` : `${p.team} @ ${p.opponent}`;
             return game === mobileCurrentFilter;
         });
     }
 
-    // Sort
     list.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0));
 
-    // Group by game
     const gameMap = {};
     list.forEach(p => {
         const gameKey = p.is_home ? `${p.opponent} @ ${p.team}` : `${p.team} @ ${p.opponent}`;
@@ -877,7 +763,6 @@ function renderMobileCards() {
         gameMap[gameKey].push(p);
     });
 
-    // Populate game filter dropdown
     const gameSelect = document.getElementById('mobileGameFilter');
     if (gameSelect && gameSelect.options.length <= 1) {
         const games = new Set();
@@ -895,29 +780,23 @@ function renderMobileCards() {
     for (const [game, players] of Object.entries(gameMap)) {
         html += `<div class="m-game-header">${game}</div>`;
         players.forEach(p => {
-            const vr = p.var_ratio || 1.0;
             const cls = p.predicted_sog >= 4 ? 'prediction-high' :
                         p.predicted_sog >= 2.5 ? 'prediction-med' : 'prediction-low';
 
-            const o15 = (calcProbOver(p.predicted_sog, 1.5, vr) * 100).toFixed(0);
-            const o25 = (calcProbOver(p.predicted_sog, 2.5, vr) * 100).toFixed(0);
-            const o35 = (calcProbOver(p.predicted_sog, 3.5, vr) * 100).toFixed(0);
-            const o45 = (calcProbOver(p.predicted_sog, 4.5, vr) * 100).toFixed(0);
-
-            const vSign = p.variance > 0 ? '+' : '';
-            const confCls = p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none';
-
             let betLine = '';
             if ((p.suggested_bet || 0) > 0) {
-                const bestSide = (p.ev_over || 0) >= (p.ev_under || 0) ? 'OVER' : 'UNDER';
+                const side = p.bet_side || 'OVER';
                 const saved = oddsInputs[p.player_id] || {};
                 const lineVal = saved.line || '';
                 if (bankroll > 0) {
-                    betLine = `<div class="m-card-bet">${bestSide} ${lineVal} &mdash; $${Math.round(bankroll * p.suggested_bet)}</div>`;
+                    betLine = `<div class="m-card-bet">$${Math.round(bankroll * p.suggested_bet)} ${side} ${lineVal}</div>`;
                 } else {
-                    betLine = `<div class="m-card-bet">${bestSide} ${lineVal} &mdash; ${(p.suggested_bet * 100).toFixed(1)}%</div>`;
+                    betLine = `<div class="m-card-bet">${(p.suggested_bet * 100).toFixed(1)}% ${side} ${lineVal}</div>`;
                 }
             }
+
+            const edge = p.edge || 0;
+            const edgeText = edge !== 0 ? `Edge: ${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '';
 
             html += `<div class="m-card" onclick="showPlayer(${p.player_id})">
                 <div class="m-card-header">
@@ -929,24 +808,14 @@ function renderMobileCards() {
                 </div>
                 <div class="m-card-row">
                     <span>${p.team} vs ${p.opponent} ${p.is_home ? '(H)' : '(A)'}</span>
-                    <span>Avg: ${p.season_avg} | 5G: ${p.rolling_5}</span>
-                </div>
-                <div class="m-card-row">
-                    <span>vs Avg: <span class="${p.variance >= 0.3 ? 'variance-warm' : p.variance <= -0.3 ? 'variance-cold' : ''}">${vSign}${p.variance}</span></span>
-                    <span class="${confCls}">Conf: ${p.signal}</span>
-                </div>
-                <div class="m-card-probs">
-                    <span class="${probBucketClass(+o15)}">O1.5: ${o15}%</span>
-                    <span class="${probBucketClass(+o25)}">O2.5: ${o25}%</span>
-                    <span class="${probBucketClass(+o35)}">O3.5: ${o35}%</span>
-                    <span class="${probBucketClass(+o45)}">O4.5: ${o45}%</span>
+                    <span>${edgeText}</span>
                 </div>
                 ${betLine}
             </div>`;
         });
     }
 
-    container.innerHTML = html || '<div class="text-center text-secondary py-4">No results</div>';
+    container.innerHTML = html || '<div class="text-center text-secondary py-4">No bets available</div>';
 }
 
 // =====================================================================
@@ -954,7 +823,6 @@ function renderMobileCards() {
 // =====================================================================
 async function loadPredictions() {
     const data = await fetchJSON('/api/predictions');
-    const tbody = document.querySelector('#predictionsTable tbody');
     const loading = document.getElementById('predLoading');
     const empty = document.getElementById('predEmpty');
     loading.classList.add('d-none');
@@ -967,25 +835,23 @@ async function loadPredictions() {
     if (data.model_metrics) {
         const m = data.model_metrics;
         document.getElementById('modelMetrics').textContent =
-            `Model MAE: ${m.mae || '—'}  |  RMSE: ${m.rmse || '—'}  |  Samples: ${m.train_samples || 0}`;
+            `MAE: ${m.mae || '—'} | RMSE: ${m.rmse || '—'}`;
     }
 
     // Compute variance and signal fields
     allPredictions = data.predictions.map(p => {
         const variance = +(p.predicted_sog - p.season_avg).toFixed(2);
-        const variance_pct = p.season_avg > 0 ? +((variance / p.season_avg) * 100).toFixed(1) : 0;
-        // Signal = |variance| / CV — high when big deviation + low CV (predictable player)
         const cv = p.player_cv || 1;
         const signal = cv > 0 ? +(Math.abs(variance) / cv).toFixed(2) : 0;
-        return { ...p, variance, variance_pct, signal, kelly_best: 0, suggested_bet: 0 };
+        return { ...p, variance, signal, kelly_best: 0, suggested_bet: 0,
+                 edge: 0, prob_over_calc: 0, bet_side: null, confidence_display: signal };
     });
 
-    // Default sort by signal — best proxy for likely Bet $ before odds are pasted
-    // Signal = |variance from avg| / CV: big deviation + predictable = likely edge
+    // Default sort by signal until odds load
     sortPredictions('signal');
     renderMobileCards();
 
-    // Auto-load BetMGM odds with PlayAlberta vig estimates
+    // Auto-load BetMGM odds
     await loadBetMGMOdds();
 }
 
@@ -995,37 +861,66 @@ async function loadBetMGMOdds() {
 
     let matched = 0;
     for (const [playerName, info] of Object.entries(props)) {
-        // Match odds API full name to prediction abbreviated name
         const pred = allPredictions.find(p => matchPlayerName(playerName, p.player_name));
         if (!pred) continue;
 
         const pid = pred.player_id;
-        // Only auto-fill if user hasn't manually entered odds
         if (oddsInputs[pid] && oddsInputs[pid].line) continue;
 
         oddsInputs[pid] = {
             line: String(info.line),
             overOdds: info.pa_over_est != null ? String(info.pa_over_est) : '',
             underOdds: info.pa_under_est != null ? String(info.pa_under_est) : '',
-            source: 'betmgm',  // track source for display
-            betmgm_over: info.betmgm_over,
-            betmgm_under: info.betmgm_under,
+            source: 'betmgm',
         };
         matched++;
     }
 
     if (matched > 0) {
-        // Re-render to show auto-loaded odds
-        renderPredictions(allPredictions);
-        renderMobileCards();
-        // Sort by suggested bet to surface actionable picks
-        setTimeout(() => sortPredictions('suggested_bet'), 200);
+        // Compute bets for all players with odds
+        allPredictions.forEach(p => {
+            if (oddsInputs[p.player_id]) computeBet(p);
+        });
 
-        // Show source badge
+        // Sort by bet amount
+        sortPredictions('suggested_bet');
+        renderMobileCards();
+
         const badge = document.getElementById('oddsSourceBadge');
-        badge.textContent = `BetMGM → PA est. (${matched} players)`;
+        badge.textContent = `BetMGM (${matched} players)`;
         badge.classList.remove('d-none');
-        console.log(`Auto-loaded ${matched} BetMGM odds (PlayAlberta adjusted)`);
+
+        // Save predictions to history for future confidence scoring
+        savePredictionsToHistory();
+    }
+}
+
+async function savePredictionsToHistory() {
+    if (!bankroll || bankroll <= 0) return;
+    const bettable = allPredictions.filter(p => (p.suggested_bet || 0) > 0);
+    if (bettable.length === 0) return;
+
+    const payload = {
+        bankroll: bankroll,
+        predictions: bettable.map(p => {
+            const saved = oddsInputs[p.player_id] || {};
+            return {
+                player_id: p.player_id,
+                sog_line: parseFloat(saved.line) || null,
+                over_odds: parseInt(saved.overOdds) || null,
+                under_odds: parseInt(saved.underOdds) || null,
+            };
+        }),
+    };
+
+    try {
+        await fetch('/api/save-predictions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+    } catch (e) {
+        console.warn('Failed to save predictions to history:', e);
     }
 }
 
@@ -1063,117 +958,7 @@ function sortPredictions(field) {
 // Best Bets mode — filter to top Kelly picks grouped by game
 // =====================================================================
 let bestBetsMode = false;
-
-function toggleBestBets() {
-    bestBetsMode = !bestBetsMode;
-    const btn = document.getElementById('bestBetsBtn');
-    if (bestBetsMode) {
-        btn.classList.remove('btn-outline-info');
-        btn.classList.add('btn-info');
-        renderBestBets();
-    } else {
-        btn.classList.remove('btn-info');
-        btn.classList.add('btn-outline-info');
-        renderPredictions(allPredictions);
-    }
-}
-
-function renderBestBets() {
-    const threshold = parseFloat(document.getElementById('kellyThreshold').value) || 1;
-    const minKelly = threshold / 100;
-
-    // Filter to players with suggested bet above threshold
-    const qualified = allPredictions.filter(p => (p.suggested_bet || 0) >= minKelly);
-
-    if (qualified.length === 0) {
-        const tbody = document.querySelector('#predictionsTable tbody');
-        tbody.innerHTML = `<tr><td colspan="22" class="text-center text-secondary py-4">
-            No bets above ${threshold}% threshold. Paste odds first, then toggle Best Bets.
-        </td></tr>`;
-        return;
-    }
-
-    // Group by game (away @ home)
-    const gameMap = {};
-    qualified.forEach(p => {
-        const gameKey = p.is_home
-            ? `${p.opponent} @ ${p.team}`
-            : `${p.team} @ ${p.opponent}`;
-        if (!gameMap[gameKey]) gameMap[gameKey] = [];
-        gameMap[gameKey].push(p);
-    });
-
-    // Sort players within each game by suggested bet descending
-    Object.values(gameMap).forEach(players => {
-        players.sort((a, b) => (b.suggested_bet || 0) - (a.suggested_bet || 0));
-    });
-
-    // Build rows with game headers
-    const tbody = document.querySelector('#predictionsTable tbody');
-    let html = '';
-    for (const [game, players] of Object.entries(gameMap)) {
-        html += `<tr style="background:var(--bg-secondary)">
-            <td colspan="26" class="fw-bold py-2" style="color:var(--accent); font-size:0.95rem; border-bottom:2px solid var(--accent)">
-                ${game} &nbsp;&mdash;&nbsp; ${players.length} bet${players.length > 1 ? 's' : ''}
-            </td></tr>`;
-        players.forEach(p => {
-            const saved = oddsInputs[p.player_id] || {};
-            const pid = p.player_id;
-            const lineVal = saved.line || '';
-            const betPct = ((p.suggested_bet || 0) * 100).toFixed(1);
-            const wager = bankroll > 0 ? `$${Math.round(bankroll * (p.suggested_bet || 0))}` : `${betPct}%`;
-
-            // Determine best side
-            let bestSide = 'O', bestEv = p.ev_over || 0;
-            if ((p.ev_under || 0) > bestEv) { bestSide = 'U'; bestEv = p.ev_under; }
-
-            const vr = p.var_ratio || 1.0;
-            const buckets = [0.5, 1.5, 2.5, 3.5, 4.5].map(line => {
-                const pct = +(calcProbOver(p.predicted_sog, line, vr) * 100).toFixed(0);
-                return `<td class="prob-bucket ${probBucketClass(pct)}">${pct}%</td>`;
-            }).join('');
-
-            const cls = p.predicted_sog >= 4 ? 'prediction-high' :
-                        p.predicted_sog >= 2.5 ? 'prediction-med' : 'prediction-low';
-
-            html += `<tr>
-                <td class="ev-neutral" id="bet-${pid}">${wager} ${bestSide}</td>
-                <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
-                <td>${p.team}</td>
-                <td>${p.opponent}</td>
-                <td><span class="badge badge-position badge-${p.position}">${p.position}</span></td>
-                <td class="${cls}">${p.predicted_sog}</td>
-                ${buckets}
-                <td colspan="2" class="text-center fw-bold" style="color:var(--accent2); font-size:1rem">
-                    ${bestSide === 'O' ? 'OVER' : 'UNDER'} ${lineVal}
-                </td>
-                <td>${p.rolling_5}</td>
-                <td>${p.season_avg}</td>
-                <td><input class="odds-input" id="line-${pid}" type="text" placeholder="3.5"
-                           value="${saved.line || ''}"
-                           oninput="updateOdds(${pid}); if(bestBetsMode) setTimeout(renderBestBets, 100);" onclick="event.stopPropagation()"></td>
-                <td><input class="odds-input" id="over-${pid}" type="text" placeholder="+132"
-                           value="${saved.overOdds || ''}"
-                           oninput="updateOdds(${pid}); if(bestBetsMode) setTimeout(renderBestBets, 100);" onclick="event.stopPropagation()"></td>
-                <td><input class="odds-input" id="under-${pid}" type="text" placeholder="-182"
-                           value="${saved.underOdds || ''}"
-                           oninput="updateOdds(${pid}); if(bestBetsMode) setTimeout(renderBestBets, 100);" onclick="event.stopPropagation()"></td>
-                <td class="prob-cell" id="prob-over-${pid}">—</td>
-                <td class="ev-neutral" id="ev-over-${pid}">—</td>
-                <td class="ev-neutral" id="ev-under-${pid}">—</td>
-                <td>${p.player_cv || '—'}</td>
-                <td>${p.rest_days >= 0 ? (p.rest_days === 0 ? 'B2B' : p.rest_days + 'd') : '—'}</td>
-                <td>${p.is_home ? 'H' : 'A'}</td>
-            </tr>`;
-        });
-    }
-    tbody.innerHTML = html;
-
-    // Re-trigger odds calc for rendered rows
-    qualified.forEach(p => {
-        if (oddsInputs[p.player_id]) updateOdds(p.player_id);
-    });
-}
+// Best bets mode removed — the default view now only shows bettable players
 
 function probBucketClass(pct) {
     if (pct >= 60) return 'prob-high';
@@ -1181,79 +966,151 @@ function probBucketClass(pct) {
     return 'prob-low';
 }
 
+function toggleShowAll() {
+    showAllPlayers = !showAllPlayers;
+    const btn = document.getElementById('showAllBtn');
+    btn.textContent = showAllPlayers ? 'Bets Only' : 'Show All Players';
+    btn.className = showAllPlayers
+        ? 'btn btn-sm btn-info rounded-pill px-3'
+        : 'btn btn-sm btn-outline-secondary rounded-pill px-3';
+    sortPredictions(predSortField);
+}
+
+function recalcAllBets() {
+    allPredictions.forEach(p => {
+        if (oddsInputs[p.player_id]) computeBet(p);
+    });
+    sortPredictions(predSortField);
+}
+
+function computeBet(p) {
+    const saved = oddsInputs[p.player_id];
+    if (!saved) return;
+    const line = parseFloat(saved.line);
+    const overOdds = parseInt(saved.overOdds);
+    const underOdds = parseInt(saved.underOdds);
+    if (isNaN(line)) { p.suggested_bet = 0; p.edge = 0; p.prob_over_calc = 0; return; }
+
+    const pOver = calcProbOver(p.predicted_sog, line, p.var_ratio || 1.0);
+    const pUnder = 1 - pOver;
+    p.prob_over_calc = pOver;
+
+    let kellyOver = 0, kellyUnder = 0;
+    let edgeOver = 0, edgeUnder = 0;
+    if (!isNaN(overOdds) && overOdds !== 0) {
+        const impliedO = americanToImpliedProb(overOdds);
+        edgeOver = pOver - impliedO;
+        kellyOver = kellyFraction(pOver, overOdds);
+        p.ev_over = +calcEV(pOver, overOdds).toFixed(3);
+    }
+    if (!isNaN(underOdds) && underOdds !== 0) {
+        const impliedU = americanToImpliedProb(underOdds);
+        edgeUnder = pUnder - impliedU;
+        kellyUnder = kellyFraction(pUnder, underOdds);
+        p.ev_under = +calcEV(pUnder, underOdds).toFixed(3);
+    }
+
+    const bestKelly = Math.max(kellyOver, kellyUnder);
+    const bestSide = kellyOver >= kellyUnder ? 'OVER' : 'UNDER';
+    const confidence = Math.min((p.signal || 0) / 1.5, 1.0);
+    const adjKelly = bestKelly * confidence;
+    p.kelly_best = bestKelly;
+    p.suggested_bet = adjKelly;
+    p.bet_side = bestSide;
+    p.edge = bestSide === 'OVER' ? edgeOver : edgeUnder;
+}
+
 function renderPredictions(list) {
     const tbody = document.querySelector('#predictionsTable tbody');
-    tbody.innerHTML = list.map(p => {
+
+    // If odds loaded, default to hiding $0 bets unless user toggled "Show All"
+    const hasOdds = list.some(p => (p.suggested_bet || 0) > 0);
+    const displayList = (hasOdds && !showAllPlayers)
+        ? list.filter(p => (p.suggested_bet || 0) > 0)
+        : list;
+
+    tbody.innerHTML = displayList.map(p => {
         const cls = p.predicted_sog >= 4 ? 'prediction-high' :
                     p.predicted_sog >= 2.5 ? 'prediction-med' : 'prediction-low';
-
-        let vCls = '';
-        if (p.variance >= 0.75) vCls = 'variance-hot';
-        else if (p.variance >= 0.3) vCls = 'variance-warm';
-        else if (p.variance <= -0.75) vCls = 'variance-ice';
-        else if (p.variance <= -0.3) vCls = 'variance-cold';
-
-        const vSign = p.variance > 0 ? '+' : '';
-        const vpSign = p.variance_pct > 0 ? '+' : '';
         const saved = oddsInputs[p.player_id] || {};
         const pid = p.player_id;
+        const lineVal = saved.line || '';
+        const matchup = `${p.team} vs ${p.opponent} (${p.is_home ? 'H' : 'A'})`;
 
-        // Bucket probabilities
-        const vr = p.var_ratio || 1.0;
-        const buckets = [0.5, 1.5, 2.5, 3.5, 4.5].map(line => {
-            const pct = +(calcProbOver(p.predicted_sog, line, vr) * 100).toFixed(0);
-            return `<td class="prob-bucket ${probBucketClass(pct)}">${pct}%</td>`;
-        }).join('');
+        // Bet cell
+        let betText = '—', betClass = 'ev-neutral';
+        if ((p.suggested_bet || 0) > 0) {
+            const side = p.bet_side || 'OVER';
+            if (bankroll > 0) {
+                const wager = Math.round(bankroll * p.suggested_bet);
+                betText = `$${wager} ${side} ${lineVal}`;
+                betClass = wager >= bankroll * 0.02 ? 'ev-positive fw-bold' : 'ev-neutral fw-bold';
+            } else {
+                betText = `${(p.suggested_bet * 100).toFixed(1)}% ${side} ${lineVal}`;
+                betClass = 'ev-neutral fw-bold';
+            }
+        }
 
-        // Show BetMGM source indicator + tooltip
-        const isBetMGM = saved.source === 'betmgm';
-        const lineTitle = isBetMGM ? 'title="Auto-loaded from BetMGM"' : '';
-        const overTitle = isBetMGM && saved.betmgm_over != null
-            ? `title="BetMGM: ${saved.betmgm_over} → PA est: ${saved.overOdds}"`
-            : '';
-        const underTitle = isBetMGM && saved.betmgm_under != null
-            ? `title="BetMGM: ${saved.betmgm_under} → PA est: ${saved.underOdds}"`
-            : '';
-        const srcBadge = isBetMGM ? '<span style="font-size:0.6rem;color:var(--text-secondary);display:block;margin-top:1px">PA est.</span>' : '';
+        // Edge cell
+        const edge = p.edge || 0;
+        const edgeText = edge !== 0 ? `${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '—';
+        const edgeClass = edge > 0.05 ? 'ev-positive' : edge > 0 ? 'signal-mild' : edge < 0 ? 'ev-negative' : 'ev-neutral';
 
-        return `<tr>
-            <td class="ev-neutral" id="bet-${pid}">—</td>
-            <td style="cursor:pointer" onclick="showPlayer(${pid})">${p.player_name}</td>
-            <td>${p.team}</td>
-            <td>${p.opponent}</td>
-            <td><span class="badge badge-position badge-${p.position}">${p.position}</span></td>
-            <td class="${cls}">${p.predicted_sog}</td>
-            ${buckets}
-            <td class="${vCls}">${vSign}${p.variance}</td>
-            <td class="${vCls}">${vpSign}${p.variance_pct}%</td>
-            <td>${p.rolling_5}</td>
-            <td>${p.season_avg}</td>
+        // Confidence cell — use historical if available, fall back to signal
+        const hist = p.hist_confidence;
+        let confText, confClass, confTitle;
+        if (hist && hist.total_preds >= 3) {
+            const pct = (hist.confidence_score * 100).toFixed(0);
+            const wr = (hist.win_rate * 100).toFixed(0);
+            confText = `${pct}%`;
+            confClass = hist.confidence_score >= 0.65 ? 'signal-fire' :
+                        hist.confidence_score >= 0.45 ? 'signal-strong' :
+                        hist.confidence_score >= 0.25 ? 'signal-mild' : 'signal-none';
+            confTitle = `Win rate: ${wr}% (${hist.bets_won}/${hist.total_bets}) | Avg error: ${hist.avg_error} SOG | ${hist.total_preds} predictions`;
+        } else {
+            const sig = p.signal || 0;
+            confText = sig > 0 ? sig.toFixed(2) : '—';
+            confClass = sig >= 1.0 ? 'signal-fire' : sig >= 0.5 ? 'signal-strong' : sig >= 0.25 ? 'signal-mild' : 'signal-none';
+            confTitle = 'Signal = |vs Avg| / CV (building history...)';
+        }
+        p.confidence_display = hist ? (hist.confidence_score || 0) : (p.signal || 0);
+
+        // P(Over)
+        const pOverPct = p.prob_over_calc != null && !isNaN(p.prob_over_calc)
+            ? (p.prob_over_calc * 100).toFixed(1) + '%' : '—';
+
+        return `<tr onclick="showPlayer(${pid})" style="cursor:pointer">
+            <td class="${betClass}" style="font-size:0.95rem;white-space:nowrap">${betText}</td>
+            <td class="fw-bold">${p.player_name} <span class="badge badge-position badge-${p.position}" style="font-size:0.65rem">${p.position}</span></td>
+            <td class="text-secondary" style="white-space:nowrap">${matchup}</td>
+            <td class="${cls}" style="font-weight:700">${p.predicted_sog}</td>
             <td><input class="odds-input" id="line-${pid}" type="text" placeholder="3.5"
-                       value="${saved.line || ''}" ${lineTitle}
-                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()"></td>
-            <td ${overTitle}><input class="odds-input" id="over-${pid}" type="text" placeholder="+132"
-                       value="${saved.overOdds || ''}"
-                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()">${srcBadge}</td>
-            <td ${underTitle}><input class="odds-input" id="under-${pid}" type="text" placeholder="-182"
-                       value="${saved.underOdds || ''}"
-                       oninput="updateOdds(${pid})" onclick="event.stopPropagation()">${srcBadge}</td>
-            <td class="prob-cell" id="prob-over-${pid}">—</td>
-            <td class="ev-neutral" id="ev-over-${pid}">—</td>
-            <td class="ev-neutral" id="ev-under-${pid}">—</td>
-            <td class="${p.signal >= 1.0 ? 'signal-fire' : p.signal >= 0.5 ? 'signal-strong' : p.signal >= 0.25 ? 'signal-mild' : 'signal-none'}"
-                title="Confidence = |vs Avg| / CV&#10;Higher = bigger edge on predictable player&#10;Direction: ${p.variance > 0 ? 'OVER' : 'UNDER'}">${p.signal > 0 ? (p.variance > 0 ? '+' : '-') + p.signal : '—'}</td>
-            <td class="${(p.player_cv||1) <= 0.6 ? 'ev-positive' : (p.player_cv||1) >= 0.9 ? 'ev-negative' : 'ev-neutral'}"
-                title="Lower = more predictable">${p.player_cv || '—'}</td>
-            <td class="${p.rest_days === 0 ? 'ev-negative' : ''}"
-                title="Days rest">${p.rest_days >= 0 ? (p.rest_days === 0 ? 'B2B' : p.rest_days + 'd') : '—'}</td>
-            <td>${p.is_home ? 'H' : 'A'}</td>
+                       value="${lineVal}"
+                       oninput="updateOddsSimple(${pid})" onclick="event.stopPropagation()" style="width:55px"></td>
+            <td class="${edgeClass}" style="font-weight:600">${edgeText}</td>
+            <td class="${confClass}" title="${confTitle}">${confText}</td>
+            <td class="prob-cell">${pOverPct}</td>
         </tr>`;
     }).join('');
 
-    // Re-calculate EV for rows that have saved odds
-    list.forEach(p => {
-        if (oddsInputs[p.player_id]) updateOdds(p.player_id);
+    // Hidden inputs for over/under odds (needed for recalculation)
+    displayList.forEach(p => {
+        const saved = oddsInputs[p.player_id];
+        if (saved) computeBet(p);
     });
+}
+
+function updateOddsSimple(playerId) {
+    const lineEl = document.getElementById(`line-${playerId}`);
+    if (!lineEl) return;
+    const saved = oddsInputs[playerId] || {};
+    saved.line = lineEl.value;
+    oddsInputs[playerId] = saved;
+    const pred = allPredictions.find(p => p.player_id === playerId);
+    if (pred) {
+        computeBet(pred);
+        sortPredictions(predSortField);
+    }
 }
 
 // =====================================================================
@@ -1483,24 +1340,18 @@ let refreshPollTimer = null;
 
 function clearAllOdds() {
     oddsInputs = {};
-    // Keep bankroll persistent — don't clear it
     allPredictions.forEach(p => {
         p.ev_over = 0; p.ev_under = 0;
         p.kelly_best = 0; p.suggested_bet = 0;
+        p.edge = 0; p.prob_over_calc = 0; p.bet_side = null;
     });
-    // Clear paste bin
     const textarea = document.getElementById('oddsTextarea');
     if (textarea) textarea.value = '';
     const result = document.getElementById('pasteResult');
     if (result) result.textContent = '';
-    // Hide source badge
     const badge = document.getElementById('oddsSourceBadge');
     if (badge) badge.classList.add('d-none');
-    if (bestBetsMode) {
-        renderBestBets();
-    } else {
-        renderPredictions(allPredictions);
-    }
+    renderPredictions(allPredictions);
     renderMobileCards();
 }
 
@@ -1614,18 +1465,12 @@ function matchPlayerName(parsedName, predictionName) {
 
 function applyPastedOdds() {
     const text = document.getElementById('oddsTextarea').value;
-    const br = document.getElementById('bankrollInput').value;
-    if (br) {
-        bankroll = parseFloat(br) || 0;
-        localStorage.setItem('sogBankroll', bankroll);
-    }
 
     const entries = parseOddsText(text);
     let matched = 0;
     let unmatched = [];
 
     for (const entry of entries) {
-        // Find matching player in predictions
         const pred = allPredictions.find(p => matchPlayerName(entry.name, p.player_name));
         if (pred) {
             const pid = pred.player_id;
@@ -1634,6 +1479,7 @@ function applyPastedOdds() {
                 overOdds: entry.overOdds !== null ? String(entry.overOdds) : '',
                 underOdds: entry.underOdds !== null ? String(entry.underOdds) : '',
             };
+            computeBet(pred);
             matched++;
         } else {
             unmatched.push(entry.name);
@@ -1642,27 +1488,14 @@ function applyPastedOdds() {
 
     const resultEl = document.getElementById('pasteResult');
     let msg = `Parsed ${entries.length} players. Matched ${matched}.`;
-    if (unmatched.length > 0) {
-        msg += ` Unmatched: ${unmatched.join(', ')}`;
-    }
-    if (bankroll > 0) {
-        msg += ` | Bankroll: $${bankroll.toLocaleString()}`;
-    }
+    if (unmatched.length > 0) msg += ` Unmatched: ${unmatched.join(', ')}`;
     resultEl.textContent = msg;
     resultEl.className = unmatched.length > 0 ? 'small text-warning mb-2' : 'small text-success mb-2';
 
-    // Re-render with applied odds, then sort by Bet $
-    renderPredictions(allPredictions);
-    setTimeout(() => {
-        if (bestBetsMode) {
-            renderBestBets();
-        } else {
-            sortPredictions('suggested_bet');
-        }
-        renderMobileCards();
-    }, 200);
+    sortPredictions('suggested_bet');
+    renderMobileCards();
+    savePredictionsToHistory();
 
-    // Close modal after short delay
     if (matched > 0) {
         setTimeout(() => {
             bootstrap.Modal.getInstance(document.getElementById('pasteModal'))?.hide();
@@ -1705,13 +1538,14 @@ function pollRefreshStatus() {
 // =====================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     // Restore bankroll from localStorage
-    if (bankroll > 0) {
-        document.getElementById('bankrollInput').value = bankroll;
+    const brInput = document.getElementById('bankrollInput');
+    if (bankroll > 0 && brInput) {
+        brInput.value = bankroll;
     }
 
     loadPredictions();
     loadPlayers();
-    loadTeams();
+    loadTeamPredictions();
 
     // Auto-detect if a background refresh is running (e.g. Render cold start)
     const status = await fetchJSON('/api/refresh/status');

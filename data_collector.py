@@ -84,6 +84,34 @@ def _create_tables(conn: sqlite3.Connection):
             PRIMARY KEY (game_id, player_id, linemate_id)
         );
 
+        CREATE TABLE IF NOT EXISTS prediction_history (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            prediction_date   TEXT NOT NULL,
+            player_id         INTEGER NOT NULL,
+            player_name       TEXT NOT NULL,
+            team              TEXT,
+            opponent          TEXT,
+            position          TEXT,
+            is_home           INTEGER,
+            predicted_sog     REAL NOT NULL,
+            baseline_sog      REAL,
+            signal            REAL,
+            sog_line          REAL,
+            over_odds         INTEGER,
+            under_odds        INTEGER,
+            bet_side          TEXT,
+            bet_kelly_pct     REAL,
+            bet_amount        REAL,
+            bankroll_at_time  REAL,
+            actual_sog        INTEGER,
+            bet_won           INTEGER,
+            created_at        TEXT DEFAULT (datetime('now')),
+            scored_at         TEXT,
+            UNIQUE(prediction_date, player_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_pred_hist_date ON prediction_history(prediction_date);
+        CREATE INDEX IF NOT EXISTS idx_pred_hist_player ON prediction_history(player_id);
         CREATE INDEX IF NOT EXISTS idx_pgs_player ON player_game_stats(player_id);
         CREATE INDEX IF NOT EXISTS idx_pgs_team   ON player_game_stats(team);
         CREATE INDEX IF NOT EXISTS idx_games_date ON games(date);

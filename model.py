@@ -1039,6 +1039,235 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     }
 
 
+# ---------------------------------------------------------------------------
+# Prediction history — save, score, and compute confidence
+# ---------------------------------------------------------------------------
+
+def _poisson_cdf_py(lam: float, k: int) -> float:
+    """P(X <= k) for Poisson(lam)."""
+    if lam <= 0:
+        return 1.0
+    s = 0.0
+    log_p = -lam
+    s += np.exp(log_p)
+    for i in range(1, k + 1):
+        log_p += np.log(lam) - np.log(i)
+        s += np.exp(log_p)
+    return min(s, 1.0)
+
+
+def _negbin_cdf_py(r: float, p: float, k: int) -> float:
+    """P(X <= k) for NegBin(r, p)."""
+    from math import lgamma
+    s = 0.0
+    for i in range(k + 1):
+        log_pmf = (lgamma(r + i) - lgamma(r) - lgamma(i + 1)
+                   + r * np.log(p) + i * np.log(1 - p))
+        s += np.exp(log_pmf)
+    return min(s, 1.0)
+
+
+def calc_prob_over(pred_sog: float, line: float, var_ratio: float = 1.0) -> float:
+    """P(X > line) using NegBin (or Poisson when var_ratio ≈ 1)."""
+    if pred_sog <= 0:
+        return 0.0
+    k = int(line)
+    if var_ratio <= 1.05:
+        return 1 - _poisson_cdf_py(pred_sog, k)
+    r = pred_sog / (var_ratio - 1)
+    p = 1 / var_ratio
+    if r <= 0 or p <= 0 or p >= 1:
+        return 1 - _poisson_cdf_py(pred_sog, k)
+    return 1 - _negbin_cdf_py(r, p, k)
+
+
+def _american_to_decimal_profit(odds: int) -> float:
+    if not odds:
+        return 0.0
+    if odds > 0:
+        return odds / 100
+    return 100 / abs(odds)
+
+
+def _american_to_implied_prob(odds: int) -> float:
+    if not odds:
+        return 0.0
+    if odds > 0:
+        return 100 / (odds + 100)
+    return abs(odds) / (abs(odds) + 100)
+
+
+def _kelly_fraction(prob_win: float, american_odds: int, fraction: float = 0.25) -> float:
+    b = _american_to_decimal_profit(american_odds)
+    if b <= 0:
+        return 0.0
+    q = 1 - prob_win
+    f = (b * prob_win - q) / b
+    if f <= 0:
+        return 0.0
+    return f * fraction
+
+
+def save_predictions_to_history(predictions: list[dict], odds_map: dict,
+                                bankroll: float) -> int:
+    """Save today's predictions + odds to prediction_history. Returns count saved."""
+    from datetime import date
+    today = date.today().isoformat()
+    conn = data_collector.get_db()
+
+    saved = 0
+    for p in predictions:
+        pid = p["player_id"]
+        odds = odds_map.get(pid, {})
+        sog_line = odds.get("line")
+        over_odds = odds.get("over_odds")
+        under_odds = odds.get("under_odds")
+
+        # Compute bet side + Kelly server-side
+        bet_side = None
+        bet_kelly = 0.0
+        var_ratio = p.get("var_ratio", 1.0)
+        cv = p.get("player_cv", 1.0)
+        variance = p.get("predicted_sog", 0) - p.get("season_avg", 0)
+        signal = abs(variance) / cv if cv > 0 else 0
+        confidence = min(signal / 1.5, 1.0)
+
+        if sog_line is not None:
+            prob_over = calc_prob_over(p["predicted_sog"], sog_line, var_ratio)
+            prob_under = 1 - prob_over
+
+            kelly_over = _kelly_fraction(prob_over, over_odds) if over_odds else 0
+            kelly_under = _kelly_fraction(prob_under, under_odds) if under_odds else 0
+
+            best_kelly = max(kelly_over, kelly_under)
+            adj_kelly = best_kelly * confidence
+
+            if adj_kelly > 0:
+                bet_side = "OVER" if kelly_over >= kelly_under else "UNDER"
+                bet_kelly = adj_kelly
+
+        bet_amount = round(bankroll * bet_kelly) if bankroll > 0 else 0
+
+        try:
+            conn.execute("""
+                INSERT OR REPLACE INTO prediction_history
+                (prediction_date, player_id, player_name, team, opponent, position,
+                 is_home, predicted_sog, baseline_sog, signal, sog_line, over_odds,
+                 under_odds, bet_side, bet_kelly_pct, bet_amount, bankroll_at_time)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (today, pid, p.get("player_name"), p.get("team"),
+                  p.get("opponent"), p.get("position"),
+                  1 if p.get("is_home") else 0,
+                  p["predicted_sog"], p.get("baseline_sog"),
+                  round(signal, 3), sog_line, over_odds, under_odds,
+                  bet_side, round(bet_kelly, 5), bet_amount, bankroll))
+            saved += 1
+        except Exception as exc:
+            logger.debug("Failed to save prediction for %s: %s", pid, exc)
+
+    conn.commit()
+    conn.close()
+    logger.info("Saved %d predictions to history for %s", saved, today)
+    return saved
+
+
+def score_past_predictions():
+    """Score unscored predictions by comparing to actual game results."""
+    from datetime import date
+    today = date.today().isoformat()
+    conn = data_collector.get_db()
+
+    unscored = conn.execute("""
+        SELECT ph.id, ph.prediction_date, ph.player_id, ph.sog_line, ph.bet_side
+        FROM prediction_history ph
+        WHERE ph.actual_sog IS NULL
+          AND ph.prediction_date < ?
+    """, (today,)).fetchall()
+
+    scored = 0
+    for row in unscored:
+        # Find actual shots from that game day
+        actual = conn.execute("""
+            SELECT pgs.shots
+            FROM player_game_stats pgs
+            JOIN games g ON pgs.game_id = g.game_id
+            WHERE pgs.player_id = ? AND g.date = ?
+        """, (row["player_id"], row["prediction_date"])).fetchone()
+
+        if not actual:
+            continue
+
+        actual_sog = actual["shots"]
+        bet_won = None
+        if row["bet_side"] and row["sog_line"] is not None:
+            if row["bet_side"] == "OVER":
+                bet_won = 1 if actual_sog > row["sog_line"] else 0
+            elif row["bet_side"] == "UNDER":
+                bet_won = 1 if actual_sog < row["sog_line"] else 0
+            # Exact push = loss (conservative)
+
+        conn.execute("""
+            UPDATE prediction_history
+            SET actual_sog = ?, bet_won = ?, scored_at = datetime('now')
+            WHERE id = ?
+        """, (actual_sog, bet_won, row["id"]))
+        scored += 1
+
+    conn.commit()
+    conn.close()
+    if scored > 0:
+        logger.info("Scored %d past predictions", scored)
+    return scored
+
+
+def get_player_historical_confidence() -> dict:
+    """Per-player confidence based on prediction history accuracy.
+
+    Returns dict of player_id -> {
+        total_preds, total_bets, bets_won, win_rate,
+        avg_error, confidence_score (0-1)
+    }
+    """
+    conn = data_collector.get_db()
+    rows = conn.execute("""
+        SELECT player_id,
+               COUNT(*) as total_preds,
+               AVG(ABS(predicted_sog - actual_sog)) as avg_error,
+               SUM(CASE WHEN bet_won IS NOT NULL THEN 1 ELSE 0 END) as total_bets,
+               SUM(CASE WHEN bet_won = 1 THEN 1 ELSE 0 END) as bets_won
+        FROM prediction_history
+        WHERE actual_sog IS NOT NULL
+        GROUP BY player_id
+        HAVING total_preds >= 3
+    """).fetchall()
+    conn.close()
+
+    result = {}
+    for r in rows:
+        total_bets = r["total_bets"] or 0
+        bets_won = r["bets_won"] or 0
+        win_rate = bets_won / total_bets if total_bets > 0 else 0
+        avg_error = r["avg_error"] or 2.0
+
+        # Composite confidence score
+        accuracy = min(max((win_rate - 0.40) / 0.30, 0), 1.0) if total_bets > 0 else 0.5
+        error_score = 1.0 - min(avg_error / 2.0, 1.0)
+        sample_score = min(r["total_preds"] / 20, 1.0)
+
+        confidence_score = 0.4 * accuracy + 0.3 * error_score + 0.3 * sample_score
+
+        result[r["player_id"]] = {
+            "total_preds": r["total_preds"],
+            "total_bets": total_bets,
+            "bets_won": bets_won,
+            "win_rate": round(win_rate, 3),
+            "avg_error": round(avg_error, 2),
+            "confidence_score": round(confidence_score, 3),
+        }
+
+    return result
+
+
 def predict_team_sog() -> list[dict]:
     """
     Predict team-level SOG for and against for today's games.
