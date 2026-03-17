@@ -451,10 +451,44 @@ def _is_render() -> bool:
     return bool(os.environ.get("RENDER"))
 
 
+def _sync_from_github():
+    """Pull latest DB/models from GitHub so this PC has the freshest data."""
+    import subprocess
+    try:
+        # Stash any local uncommitted changes to avoid merge conflicts
+        subprocess.run(
+            ["git", "stash", "--include-untracked"],
+            cwd=str(data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+        result = subprocess.run(
+            ["git", "pull", "--rebase"],
+            cwd=str(data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode == 0:
+            logger.info("Git pull successful: %s", result.stdout.strip())
+        else:
+            logger.warning("Git pull failed: %s", result.stderr)
+        # Pop stash if anything was stashed
+        subprocess.run(
+            ["git", "stash", "pop"],
+            cwd=str(data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+    except Exception as exc:
+        logger.warning("Git sync failed (non-fatal): %s", exc)
+
+
 def _startup():
     """Run on app startup: load saved model or train, start scheduler."""
     import os
     on_render = _is_render()
+
+    # Sync from GitHub first so we have the latest DB from the other PC
+    if not on_render:
+        logger.info("Syncing from GitHub...")
+        _sync_from_github()
 
     # Try loading saved model first (fast cold start)
     loaded = model.load_model()
