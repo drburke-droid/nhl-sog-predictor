@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHL SOG Predictor</title>
+    <title>Sports Predictor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
@@ -249,7 +249,7 @@
 <nav class="navbar navbar-expand-lg mb-4">
     <div class="container-fluid d-flex align-items-center">
         <span class="navbar-brand fw-bold" style="color:var(--accent)">
-            NHL SOG Predictor
+            Sports Predictor
         </span>
         <ul class="nav nav-pills me-auto" id="mainTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -263,6 +263,11 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="teams-tab" data-bs-toggle="pill"
                         data-bs-target="#teams" type="button" role="tab">Teams</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mlb-tab" data-bs-toggle="pill"
+                        data-bs-target="#mlb" type="button" role="tab"
+                        onclick="loadMLBPredictions()">MLB Strikeouts</button>
             </li>
         </ul>
         <span id="statusBar" class="small text-nowrap" style="color:var(--text-secondary)"></span>
@@ -433,6 +438,84 @@
                 </div>
                 <div id="teamsLoading" class="text-center py-4 text-secondary">
                     Loading teams...
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- MLB STRIKEOUTS TAB -->
+        <!-- ============================================================= -->
+        <div class="tab-pane fade" id="mlb" role="tabpanel">
+            <div class="card mb-4 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Pitcher Strikeout Predictions</h5>
+                    <div class="d-flex gap-2 align-items-center">
+                        <label class="small text-secondary mb-0">Bankroll $</label>
+                        <input type="number" id="mlbBankroll" class="odds-input" style="width:80px"
+                               value="100" onchange="localStorage.setItem('mlbBankroll',this.value); updateMLBOdds()">
+                        <button class="btn btn-sm btn-outline-info" onclick="toggleMLBBestBets()">Best Bets</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="clearMLBOdds()">Clear Odds</button>
+                    </div>
+                </div>
+
+                <!-- Odds paste area -->
+                <div class="mb-3">
+                    <textarea id="mlbPasteBin" class="form-control" rows="2"
+                              placeholder="Paste MLB K odds here (e.g. Player O/U 5.5 -120 +100)..."
+                              style="background:var(--bg-secondary);border-color:var(--border);color:var(--text-primary);font-size:0.82rem"></textarea>
+                    <button class="btn btn-sm btn-primary mt-1" onclick="applyMLBOdds()">Apply Odds</button>
+                </div>
+
+                <!-- Desktop table -->
+                <div class="table-responsive" id="mlbDesktopView">
+                    <table class="table table-hover mb-0" id="mlbPredTable">
+                        <thead>
+                            <tr>
+                                <th class="sort-btn" onclick="sortMLBPreds('suggested_bet')">Bet $<span class="arrow"></span></th>
+                                <th class="sort-btn" onclick="sortMLBPreds('pitcher_name')">Pitcher<span class="arrow"></span></th>
+                                <th>Team</th>
+                                <th>Opp</th>
+                                <th>Hand</th>
+                                <th class="text-center sort-btn" onclick="sortMLBPreds('predicted_k')">Pred K<span class="arrow"></span></th>
+                                <th class="text-center">Baseline</th>
+                                <th class="text-center">Szn Avg</th>
+                                <th class="text-center">Last 3</th>
+                                <th class="text-center">Last 5</th>
+                                <th class="text-center">K/9</th>
+                                <th class="text-center">Avg IP</th>
+                                <th class="text-center">Opp K%</th>
+                                <th class="text-center">Park</th>
+                                <th class="text-center">Rest</th>
+                                <th class="text-center" title="Arsenal-weighted matchup whiff rate">Mup Whiff</th>
+                                <th class="text-center" title="Arsenal-weighted matchup K rate">Mup K%</th>
+                                <th class="text-center" title="Pitch types with >10% usage">Arsenal</th>
+                                <th class="text-center">Line</th>
+                                <th class="text-center">Over</th>
+                                <th class="text-center">Under</th>
+                                <th class="text-center sort-btn" onclick="sortMLBPreds('prob_over')">P(Over)<span class="arrow"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Best Bets view -->
+                <div id="mlbBestBetsView" class="d-none"></div>
+
+                <div id="mlbPredLoading" class="text-center py-4 text-secondary">
+                    Loading MLB predictions...
+                </div>
+
+                <!-- Model metrics -->
+                <div id="mlbMetrics" class="mt-3 small text-secondary"></div>
+            </div>
+
+            <!-- MLB Refresh -->
+            <div class="card p-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-primary" onclick="triggerMLBRefresh()">Refresh MLB Data</button>
+                    <span id="mlbRefreshStatus" class="small text-secondary">idle</span>
+                    <span id="mlbStatusBar" class="small text-secondary ms-auto"></span>
                 </div>
             </div>
         </div>
@@ -1595,6 +1678,376 @@ async function loadStatusBar() {
         parts.push(`Model trained: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'})}`);
     }
     el.textContent = parts.join('  |  ');
+}
+
+// =====================================================================
+// MLB STRIKEOUT PREDICTIONS
+// =====================================================================
+let mlbPredictions = [];
+let mlbSortField = 'predicted_k';
+let mlbSortAsc = false;
+let mlbBestBetsMode = false;
+let mlbLoaded = false;
+let mlbRefreshTimer = null;
+
+const mlbBankroll = () => parseFloat(document.getElementById('mlbBankroll')?.value) || 100;
+
+async function loadMLBPredictions() {
+    if (mlbLoaded && mlbPredictions.length > 0) return;
+
+    const data = await fetchJSON('/api/mlb/predictions');
+    if (!data) {
+        document.getElementById('mlbPredLoading').textContent = 'Failed to load MLB predictions.';
+        return;
+    }
+
+    mlbPredictions = data.predictions || [];
+    document.getElementById('mlbPredLoading').classList.add('d-none');
+
+    renderMLBPredictions(mlbPredictions);
+
+    // Metrics
+    const m = data.model_metrics || {};
+    const metricsEl = document.getElementById('mlbMetrics');
+    if (m.mae) {
+        metricsEl.innerHTML = `Model: ${m.model_type || 'XGBoost'} | MAE: ${m.mae} | RMSE: ${m.rmse || '—'} | Train: ${m.train_samples || '?'} | Test: ${m.test_samples || '?'}`;
+    }
+
+    // Status bar
+    const status = await fetchJSON('/api/mlb/status');
+    if (status) {
+        const el = document.getElementById('mlbStatusBar');
+        const parts = [];
+        if (status.db_updated) parts.push(`Data: ${status.db_updated}`);
+        if (status.model_trained) parts.push(`Model: ${status.model_trained}`);
+        el.textContent = parts.join(' | ');
+    }
+
+    // Restore bankroll
+    const savedBR = localStorage.getItem('mlbBankroll');
+    if (savedBR) document.getElementById('mlbBankroll').value = savedBR;
+
+    mlbLoaded = true;
+}
+
+function renderMLBPredictions(preds) {
+    const tbody = document.querySelector('#mlbPredTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!preds.length) {
+        tbody.innerHTML = '<tr><td colspan="22" class="text-center text-secondary py-4">No MLB games scheduled today or no model available.</td></tr>';
+        return;
+    }
+
+    for (const p of preds) {
+        const predClass = p.predicted_k >= 7 ? 'prediction-high' : p.predicted_k >= 5 ? 'prediction-med' : 'prediction-low';
+        const betDisplay = p.suggested_bet ? `$${p.suggested_bet.toFixed(0)}` : '';
+        const betClass = p.suggested_bet > 0 ? 'text-success fw-bold' : '';
+        const probDisplay = p.prob_over != null ? `${(p.prob_over * 100).toFixed(1)}%` : '';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="${betClass}">${betDisplay}</td>
+            <td class="fw-bold">${p.pitcher_name}</td>
+            <td>${p.team}</td>
+            <td>${p.opponent}</td>
+            <td><span class="badge ${p.pitch_hand === 'L' ? 'bg-success' : 'bg-info'}">${p.pitch_hand}</span></td>
+            <td class="text-center ${predClass}">${p.predicted_k.toFixed(1)}</td>
+            <td class="text-center">${p.baseline_k.toFixed(1)}</td>
+            <td class="text-center">${p.season_avg_k}</td>
+            <td class="text-center">${p.rolling_3_k}</td>
+            <td class="text-center">${p.rolling_5_k}</td>
+            <td class="text-center">${p.k_per_9}</td>
+            <td class="text-center">${p.avg_ip}</td>
+            <td class="text-center">${(p.opp_k_rate * 100).toFixed(1)}%</td>
+            <td class="text-center">${p.park_k_factor.toFixed(2)}</td>
+            <td class="text-center">${p.days_rest >= 0 ? p.days_rest + 'd' : '—'}</td>
+            <td class="text-center">${p.matchup_whiff ? (p.matchup_whiff * 100).toFixed(1) + '%' : '—'}</td>
+            <td class="text-center">${p.matchup_k ? (p.matchup_k * 100).toFixed(1) + '%' : '—'}</td>
+            <td class="text-center">${p.arsenal_diversity || '—'}</td>
+            <td class="text-center"><input type="number" class="odds-input mlb-line" data-pid="${p.pitcher_id}" placeholder="5.5" step="0.5" onchange="updateMLBOdds()"></td>
+            <td class="text-center"><input type="number" class="odds-input mlb-over" data-pid="${p.pitcher_id}" placeholder="-110" onchange="updateMLBOdds()"></td>
+            <td class="text-center"><input type="number" class="odds-input mlb-under" data-pid="${p.pitcher_id}" placeholder="+100" onchange="updateMLBOdds()"></td>
+            <td class="text-center">${probDisplay}</td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+function updateMLBOdds() {
+    const br = mlbBankroll();
+    const kellyFrac = 0.25;
+
+    for (const p of mlbPredictions) {
+        const lineEl = document.querySelector(`.mlb-line[data-pid="${p.pitcher_id}"]`);
+        const overEl = document.querySelector(`.mlb-over[data-pid="${p.pitcher_id}"]`);
+        const underEl = document.querySelector(`.mlb-under[data-pid="${p.pitcher_id}"]`);
+
+        if (!lineEl) continue;
+        const line = parseFloat(lineEl.value);
+        const overOdds = parseInt(overEl?.value);
+        const underOdds = parseInt(underEl?.value);
+
+        // Reset
+        p.prob_over = null;
+        p.suggested_bet = 0;
+        p.kelly_best = 0;
+
+        if (isNaN(line)) continue;
+
+        // Calculate P(over) using NegBin (same approach as NHL)
+        const predK = p.predicted_k;
+        const varRatio = p.var_ratio || 1.0;
+        p.prob_over = calcProbOverK(predK, line, varRatio);
+
+        // If odds provided, compute EV and Kelly
+        if (!isNaN(overOdds)) {
+            const impliedOver = americanToProb(overOdds);
+            const edgeOver = p.prob_over - impliedOver;
+            if (edgeOver > 0) {
+                const decimalOdds = americanToDecimal(overOdds);
+                const kelly = (edgeOver * decimalOdds - (1 - edgeOver)) / (decimalOdds - 1);
+                const confidence = Math.min((p.signal || 0) / 1.5, 1.0);
+                const adjKelly = Math.max(0, kelly * kellyFrac * confidence);
+                if (adjKelly > p.kelly_best) {
+                    p.kelly_best = adjKelly;
+                    p.suggested_bet = adjKelly * br;
+                    p.bet_side = 'OVER';
+                }
+            }
+        }
+
+        if (!isNaN(underOdds)) {
+            const probUnder = 1 - p.prob_over;
+            const impliedUnder = americanToProb(underOdds);
+            const edgeUnder = probUnder - impliedUnder;
+            if (edgeUnder > 0) {
+                const decimalOdds = americanToDecimal(underOdds);
+                const kelly = (edgeUnder * decimalOdds - (1 - edgeUnder)) / (decimalOdds - 1);
+                const confidence = Math.min((p.signal || 0) / 1.5, 1.0);
+                const adjKelly = Math.max(0, kelly * kellyFrac * confidence);
+                if (adjKelly > p.kelly_best) {
+                    p.kelly_best = adjKelly;
+                    p.suggested_bet = adjKelly * br;
+                    p.bet_side = 'UNDER';
+                }
+            }
+        }
+    }
+
+    renderMLBPredictions(mlbPredictions);
+}
+
+function calcProbOverK(predK, line, varRatio) {
+    // NegBin P(X > line) with Poisson fallback
+    if (varRatio <= 1.05) {
+        // Poisson
+        let cdf = 0;
+        const threshold = Math.floor(line);
+        for (let k = 0; k <= threshold; k++) {
+            cdf += Math.exp(-predK + k * Math.log(predK) - logFactorial(k));
+        }
+        return 1 - cdf;
+    }
+    // Negative Binomial
+    const r = predK / (varRatio - 1);
+    const prob = 1 / varRatio;
+    let cdf = 0;
+    const threshold = Math.floor(line);
+    for (let k = 0; k <= threshold; k++) {
+        const logP = logGamma(r + k) - logGamma(r) - logFactorial(k)
+                   + r * Math.log(prob) + k * Math.log(1 - prob);
+        cdf += Math.exp(logP);
+    }
+    return Math.max(0, Math.min(1, 1 - cdf));
+}
+
+function logFactorial(n) {
+    let s = 0;
+    for (let i = 2; i <= n; i++) s += Math.log(i);
+    return s;
+}
+
+function americanToProb(odds) {
+    if (odds < 0) return (-odds) / (-odds + 100);
+    return 100 / (odds + 100);
+}
+
+function americanToDecimal(odds) {
+    if (odds < 0) return 1 + 100 / (-odds);
+    return 1 + odds / 100;
+}
+
+function sortMLBPreds(field) {
+    if (mlbSortField === field) {
+        mlbSortAsc = !mlbSortAsc;
+    } else {
+        mlbSortField = field;
+        mlbSortAsc = false;
+    }
+
+    mlbPredictions.sort((a, b) => {
+        let va = a[field] ?? 0, vb = b[field] ?? 0;
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        return mlbSortAsc ? (va > vb ? 1 : -1) : (vb > va ? 1 : -1);
+    });
+
+    renderMLBPredictions(mlbPredictions);
+}
+
+function clearMLBOdds() {
+    document.querySelectorAll('.mlb-line, .mlb-over, .mlb-under').forEach(el => el.value = '');
+    document.getElementById('mlbPasteBin').value = '';
+    for (const p of mlbPredictions) {
+        p.prob_over = null;
+        p.suggested_bet = 0;
+        p.kelly_best = 0;
+        p.bet_side = null;
+    }
+    renderMLBPredictions(mlbPredictions);
+}
+
+function toggleMLBBestBets() {
+    mlbBestBetsMode = !mlbBestBetsMode;
+    const table = document.getElementById('mlbDesktopView');
+    const bestDiv = document.getElementById('mlbBestBetsView');
+    if (mlbBestBetsMode) {
+        table.classList.add('d-none');
+        bestDiv.classList.remove('d-none');
+        renderMLBBestBets();
+    } else {
+        table.classList.remove('d-none');
+        bestDiv.classList.add('d-none');
+    }
+}
+
+function renderMLBBestBets() {
+    const div = document.getElementById('mlbBestBetsView');
+    const bets = mlbPredictions.filter(p => p.suggested_bet > 0.5);
+    bets.sort((a, b) => (b.suggested_bet || 0) - (a.suggested_bet || 0));
+
+    if (!bets.length) {
+        div.innerHTML = '<div class="text-center text-secondary py-4">No bets meet the threshold. Apply odds first.</div>';
+        return;
+    }
+
+    // Group by game
+    const groups = {};
+    for (const b of bets) {
+        const game = b.game_display || `${b.team} vs ${b.opponent}`;
+        if (!groups[game]) groups[game] = [];
+        groups[game].push(b);
+    }
+
+    let html = '';
+    for (const [game, picks] of Object.entries(groups)) {
+        html += `<div class="mb-3"><h6 class="text-secondary">${game}</h6>`;
+        for (const p of picks) {
+            html += `<div class="d-flex justify-content-between align-items-center border-bottom py-2" style="border-color:var(--border)!important">
+                <div>
+                    <span class="fw-bold">${p.pitcher_name}</span>
+                    <span class="badge bg-secondary ms-1">${p.team}</span>
+                    <span class="badge ${p.pitch_hand === 'L' ? 'bg-success' : 'bg-info'} ms-1">${p.pitch_hand}HP</span>
+                </div>
+                <div class="text-end">
+                    <span class="text-success fw-bold">$${p.suggested_bet.toFixed(0)} ${p.bet_side || ''}</span>
+                    <span class="text-secondary ms-2">Pred: ${p.predicted_k.toFixed(1)}K</span>
+                </div>
+            </div>`;
+        }
+        html += '</div>';
+    }
+    div.innerHTML = html;
+}
+
+function applyMLBOdds() {
+    const text = document.getElementById('mlbPasteBin').value.trim();
+    if (!text) return;
+
+    // Parse lines like: "Player Name O/U 5.5 -120 +100"
+    // Or tab-separated formats
+    const lines = text.split('\n').filter(l => l.trim());
+    let matched = 0;
+
+    for (const line of lines) {
+        // Try to match pitcher name and extract line/odds
+        const parts = line.split(/\t/);
+        let name = '', lineVal = NaN, overOdds = NaN, underOdds = NaN;
+
+        if (parts.length >= 3) {
+            name = parts[0].trim();
+            // Look for numeric values
+            for (const part of parts.slice(1)) {
+                const num = parseFloat(part.trim());
+                if (isNaN(num)) continue;
+                if (num > 0 && num < 20 && isNaN(lineVal)) {
+                    lineVal = num;
+                } else if (num < 0 && isNaN(overOdds)) {
+                    overOdds = num;
+                } else if (!isNaN(num) && isNaN(underOdds)) {
+                    underOdds = num;
+                }
+            }
+        } else {
+            // Space-separated: "Name Name 5.5 -120 +100"
+            const match = line.match(/^(.+?)\s+([\d.]+)\s+([+-]?\d+)\s+([+-]?\d+)/);
+            if (match) {
+                name = match[1].trim();
+                lineVal = parseFloat(match[2]);
+                overOdds = parseInt(match[3]);
+                underOdds = parseInt(match[4]);
+            }
+        }
+
+        if (!name) continue;
+
+        // Find matching pitcher
+        const nameLower = name.toLowerCase().replace(/[^a-z\s]/g, '');
+        const pred = mlbPredictions.find(p => {
+            const pName = p.pitcher_name.toLowerCase();
+            return pName.includes(nameLower) || nameLower.includes(pName.split(' ').pop());
+        });
+
+        if (pred) {
+            const lineEl = document.querySelector(`.mlb-line[data-pid="${pred.pitcher_id}"]`);
+            const overEl = document.querySelector(`.mlb-over[data-pid="${pred.pitcher_id}"]`);
+            const underEl = document.querySelector(`.mlb-under[data-pid="${pred.pitcher_id}"]`);
+
+            if (lineEl && !isNaN(lineVal)) lineEl.value = lineVal;
+            if (overEl && !isNaN(overOdds)) overEl.value = overOdds;
+            if (underEl && !isNaN(underOdds)) underEl.value = underOdds;
+            matched++;
+        }
+    }
+
+    updateMLBOdds();
+    if (matched > 0) {
+        sortMLBPreds('suggested_bet');
+    }
+}
+
+async function triggerMLBRefresh() {
+    const data = await fetchJSON('/api/mlb/refresh');
+    if (!data) return;
+    document.getElementById('mlbRefreshStatus').textContent = data.message;
+    pollMLBRefreshStatus();
+}
+
+function pollMLBRefreshStatus() {
+    if (mlbRefreshTimer) clearInterval(mlbRefreshTimer);
+    mlbRefreshTimer = setInterval(async () => {
+        const data = await fetchJSON('/api/mlb/refresh/status');
+        if (!data) return;
+        document.getElementById('mlbRefreshStatus').textContent = data.message;
+        if (!data.running) {
+            clearInterval(mlbRefreshTimer);
+            mlbRefreshTimer = null;
+            mlbLoaded = false;
+            loadMLBPredictions();
+        }
+    }, 3000);
 }
 </script>
 </body>

@@ -18,6 +18,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import nhl_api
 import data_collector
 import model
+import mlb_api
+import mlb_data_collector
+import mlb_model
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -39,18 +42,22 @@ app = Flask(__name__)
 _refresh_status = {"running": False, "message": "idle"}
 _timestamps = {"db_updated": None, "model_trained": None}
 
+# MLB state
+_mlb_refresh_status = {"running": False, "message": "idle"}
+_mlb_timestamps = {"db_updated": None, "model_trained": None}
+
 
 def _sync_db_to_github():
     """Push updated database to GitHub so Render gets fresh data."""
     import subprocess
     try:
         result = subprocess.run(
-            ["git", "add", "nhl_data.db"],
+            ["git", "add", "nhl_data.db", "mlb_data.db", "saved_model_mlb/"],
             cwd=str(data_collector.DB_PATH.parent),
             capture_output=True, text=True, timeout=30,
         )
         result = subprocess.run(
-            ["git", "commit", "-m", "Auto-update database"],
+            ["git", "commit", "-m", "Auto-update databases"],
             cwd=str(data_collector.DB_PATH.parent),
             capture_output=True, text=True, timeout=30,
         )
@@ -252,6 +259,130 @@ def api_status():
 
 
 # ---------------------------------------------------------------------------
+# Routes — MLB API
+# ---------------------------------------------------------------------------
+
+def _do_mlb_refresh():
+    """Run MLB data collection and model training in background."""
+    global _mlb_refresh_status
+    _mlb_refresh_status = {"running": True, "message": "Starting MLB data collection..."}
+    try:
+        def progress(msg):
+            _mlb_refresh_status["message"] = msg
+            logger.info("MLB: %s", msg)
+
+        mlb_data_collector.collect_season_data(progress_callback=progress)
+        _mlb_timestamps["db_updated"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+        _mlb_refresh_status["message"] = "Training MLB model..."
+        mlb_model.train_model()
+        _mlb_timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+        _mlb_refresh_status["message"] = "Syncing databases to GitHub..."
+        _sync_mlb_db_to_github()
+        _mlb_refresh_status = {"running": False, "message": "MLB refresh complete."}
+    except Exception as exc:
+        logger.exception("MLB refresh failed")
+        _mlb_refresh_status = {"running": False, "message": f"Error: {exc}"}
+
+
+def _sync_mlb_db_to_github():
+    """Push MLB database to GitHub."""
+    import subprocess
+    try:
+        subprocess.run(
+            ["git", "add", "mlb_data.db"],
+            cwd=str(mlb_data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+        subprocess.run(
+            ["git", "add", "saved_model_mlb/"],
+            cwd=str(mlb_data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+        subprocess.run(
+            ["git", "commit", "-m", "Auto-update MLB database"],
+            cwd=str(mlb_data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=30,
+        )
+        result = subprocess.run(
+            ["git", "push"],
+            cwd=str(mlb_data_collector.DB_PATH.parent),
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode == 0:
+            logger.info("MLB database synced to GitHub.")
+        else:
+            logger.warning("MLB git push failed: %s", result.stderr)
+    except Exception as exc:
+        logger.warning("MLB database sync failed: %s", exc)
+
+
+@app.route("/api/mlb/predictions")
+def api_mlb_predictions():
+    """Pitcher strikeout predictions for today's games."""
+    predictions = mlb_model.predict_todays_games()
+    metrics = mlb_model.get_model_metrics()
+    return jsonify({
+        "predictions": predictions,
+        "model_metrics": metrics,
+    })
+
+
+@app.route("/api/mlb/pitcher/<int:pitcher_id>")
+def api_mlb_pitcher_detail(pitcher_id: int):
+    """Pitcher detail with game log and rolling stats."""
+    df = mlb_data_collector.build_pitcher_game_log(pitcher_id)
+    if df.empty:
+        return jsonify({"error": "Pitcher not found"}), 404
+
+    game_log = df.to_dict(orient="records")
+    stats = mlb_data_collector.get_pitcher_rolling_stats(pitcher_id)
+    statcast = mlb_data_collector.get_statcast_for_pitcher(pitcher_id)
+    arsenal = mlb_data_collector.get_pitcher_arsenal(pitcher_id)
+    tto = mlb_data_collector.get_pitcher_tto_profile(pitcher_id)
+
+    latest = game_log[-1] if game_log else {}
+    return jsonify({
+        "pitcher_id": pitcher_id,
+        "pitcher_name": latest.get("pitcher_name", "Unknown"),
+        "team": latest.get("team_abbrev", ""),
+        "game_log": game_log,
+        "rolling_stats": stats,
+        "statcast": statcast,
+        "arsenal": arsenal,
+        "tto_profile": tto,
+    })
+
+
+@app.route("/api/mlb/teams")
+def api_mlb_teams():
+    """MLB team batting stats."""
+    conn = mlb_data_collector.get_db()
+    rows = conn.execute("SELECT * FROM mlb_team_batting ORDER BY k_rate DESC").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route("/api/mlb/refresh")
+def api_mlb_refresh():
+    """Trigger MLB data refresh."""
+    if _mlb_refresh_status["running"]:
+        return jsonify({"status": "already_running", "message": _mlb_refresh_status["message"]})
+    thread = threading.Thread(target=_do_mlb_refresh, daemon=True)
+    thread.start()
+    return jsonify({"status": "started", "message": "MLB data refresh started."})
+
+
+@app.route("/api/mlb/refresh/status")
+def api_mlb_refresh_status():
+    return jsonify(_mlb_refresh_status)
+
+
+@app.route("/api/mlb/status")
+def api_mlb_status():
+    return jsonify(_mlb_timestamps)
+
+
+# ---------------------------------------------------------------------------
 # Startup logic (works for both gunicorn and direct run)
 # ---------------------------------------------------------------------------
 
@@ -355,8 +486,33 @@ def _startup():
         thread.start()
 
 
+def _mlb_startup():
+    """Load MLB model on startup."""
+    import os
+    loaded = mlb_model.load_model()
+    if loaded:
+        _mlb_timestamps["model_trained"] = "loaded from cache"
+        try:
+            conn = mlb_data_collector.get_db()
+            row = conn.execute("SELECT MAX(date) as last_date FROM mlb_games").fetchone()
+            conn.close()
+            if row and row["last_date"]:
+                _mlb_timestamps["db_updated"] = row["last_date"]
+        except Exception:
+            pass
+        logger.info("MLB model loaded from cache")
+    elif os.path.exists(str(mlb_data_collector.DB_PATH)):
+        try:
+            mlb_model.train_model()
+            _mlb_timestamps["model_trained"] = datetime.now(MST).strftime("%Y-%m-%d %I:%M %p MST")
+            logger.info("MLB model trained on startup")
+        except Exception:
+            logger.warning("Could not train MLB model on startup")
+
+
 # Run startup for both gunicorn and direct execution
 _startup()
+_mlb_startup()
 
 
 # ---------------------------------------------------------------------------

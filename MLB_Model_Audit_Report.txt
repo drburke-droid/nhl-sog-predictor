@@ -1,0 +1,354 @@
+================================================================================
+  MLB PITCHER STRIKEOUT PREDICTION MODEL
+  FULL AUDIT REPORT & FEATURE ANALYSIS
+  Generated: 2026-03-16
+================================================================================
+
+
+MODEL OVERVIEW
+================================================================================
+
+  Architecture:     3-Layer Dual XGBoost + Monte Carlo Simulation
+  Layer 1 (BF):     Opportunity model - predicts batters faced (20 features)
+  Layer 2 (K/BF):   Skill/matchup model - predicts K rate per batter (37 features)
+  Layer 3:          Monte Carlo simulation (10K sims) for prop probabilities
+  Final Prediction: pred_BF x pred_K_per_BF + full K distribution
+  Starter Filter:   Pitchers with sportsbook K prop lines only
+  Training Data:    4,062 starts (2024-03-29 to 2024-09-16)
+  Holdout Data:     327 starts (2024-09-16 to 2024-09-30)
+  Random Seed:      42
+
+
+CORE METRICS
+================================================================================
+
+  Model MAE:          1.681
+  Model RMSE:         2.158
+  Mean Bias:         -0.047 (very slightly under-predicts)
+
+  Baseline Comparisons:
+  --------------------------------------------------
+  Model               1.681  <--- OUR MODEL
+  Season Average      1.790  (model beats by 6.1%)
+  Weighted Baseline   1.800  (model beats by 6.6%)
+  Rolling 5-Start     1.930  (model beats by 12.9%)
+  Opponent K Only     1.954  (model beats by 14.0%)
+  Rolling 3-Start     2.068  (model beats by 18.7%)
+
+  Improvement vs season average: 6.1% -- STRONG SIGNAL
+
+
+MODEL vs MARKET BACKTEST (Holdout: 327 starts)
+================================================================================
+
+  Metric              Model       Market Line
+  --------------------------------------------------
+  MAE                 1.681       1.698
+  RMSE                2.158       2.157
+  Mean Bias          -0.047      -0.010
+
+  Head-to-Head:
+    Model closer to actual:     173 starts (52.9%)
+    Market closer to actual:    154 starts (47.1%)
+    Model win rate:             52.9%
+
+  Over/Under Accuracy vs Market Line: 55.0%
+  MAE Edge vs Market:                 0.017
+
+  Per-Line Accuracy (model predicting over/under at market line):
+    Line 3.5:   66.7% correct  (n=21)
+    Line 4.5:   63.0% correct  (n=27)
+    Line 5.5:   42.1% correct  (n=19)
+    Line 6.5:   33.3% correct  (n=6)
+
+  NOTE: 55% O/U accuracy is in profitable territory after vig.
+  Small samples at individual lines -- aggregate accuracy matters most.
+
+
+PROP PROBABILITY PERFORMANCE (Simulation-Based)
+================================================================================
+
+  Line       Brier    Cal Error  Accuracy   Grade
+  --------------------------------------------------
+  Over 3.5   0.1789   6.8%       74.0%      Needs recalibration
+  Over 4.5   0.2138   4.0%       68.8%      Acceptable
+  Over 5.5   0.2056   0.7%       66.1%      Excellent
+  Over 6.5   0.1619   2.6%       77.1%      Excellent
+  Over 7.5   0.1095   4.0%       86.2%      Acceptable
+
+  Lower Brier score = better probabilistic prediction.
+  Calibration error <= 3% is excellent, <= 5% acceptable, > 5% needs work.
+
+  Threshold Accuracy (binary over/under correct):
+    Over 3.5:  74.9%
+    Over 4.5:  67.0%
+    Over 5.5:  66.1%
+    Over 6.5:  76.5%
+    Over 7.5:  86.5%
+
+
+================================================================================
+  FEATURE ANALYSIS
+================================================================================
+
+
+LAYER 1: BF (BATTERS FACED) MODEL -- 20 FEATURES
+================================================================================
+
+  Rank  Feature                    Importance  Category
+  --------------------------------------------------------------------------
+   1    baseline_bf                0.1139      Opportunity / baseline
+   2    days_rest                  0.0852      Opportunity / workload
+   3    avg_pitch_count            0.0633      Opportunity / workload
+   4    market_k_line              0.0518      Market / odds-derived
+   5    pitches_last               0.0507      Opportunity / recent workload
+   6    is_home                    0.0478      Context
+   7    rolling_3_pc               0.0465      Opportunity / recent workload
+   8    innings_last               0.0457      Opportunity / recent workload
+   9    rolling_whip               0.0455      Efficiency / control
+  10    pitches_per_bf             0.0449      Efficiency
+  11    season_bb_rate             0.0437      Efficiency / control
+  12    rolling_velocity           0.0432      Stuff / fatigue signal
+  13    implied_team_win_prob      0.0429      Market / odds-derived
+  14    team_moneyline             0.0418      Market / odds-derived
+  15    rolling_walk_rate          0.0406      Efficiency / control
+  16    pitches_per_ip             0.0400      Efficiency
+  17    bf_trend                   0.0399      Opportunity / trend
+  18    opp_contact_rate           0.0388      Opponent matchup
+  19    game_total_line            0.0377      Market / odds-derived
+  20    park_k_factor              0.0359      Context / park
+
+  Feature Category Breakdown:
+    Opportunity/workload:   6 features (baseline_bf, days_rest, avg_pitch_count,
+                            pitches_last, rolling_3_pc, innings_last)
+    Efficiency/control:     5 features (rolling_whip, pitches_per_bf, season_bb_rate,
+                            rolling_walk_rate, pitches_per_ip)
+    Market/odds-derived:    4 features (market_k_line, implied_team_win_prob,
+                            team_moneyline, game_total_line)
+    Stuff/fatigue:          1 feature  (rolling_velocity)
+    Trend:                  1 feature  (bf_trend)
+    Opponent:               1 feature  (opp_contact_rate)
+    Context:                2 features (is_home, park_k_factor)
+
+  KEY INSIGHT: market_k_line is the #4 feature in the BF model. The market's
+  K line encodes information about expected pitcher longevity -- higher K lines
+  correlate with aces who go deeper into games (more BF).
+
+  All 4 odds features contribute meaningfully -- combined they represent 17.2%
+  of total importance in this model.
+
+
+LAYER 2: K/BF (STRIKEOUT RATE PER BATTER) MODEL -- 37 FEATURES
+================================================================================
+
+  Rank  Feature                    Importance  Category
+  --------------------------------------------------------------------------
+   1    baseline_k_rate            0.0858      Pitcher skill / baseline
+   2    market_k_line              0.0601      Market / odds-derived
+   3    k_minus_bb_rate            0.0589      Pitcher skill / command
+   4    two_strike_putaway_rate    0.0561      Pitcher skill / count leverage
+   5    opp_k_rate                 0.0518      Opponent K tendency
+   6    opp_contact_rate           0.0361      Opponent matchup
+   7    pitcher_cv                 0.0327      Pitcher consistency
+   8    is_home                    0.0310      Context
+   9    ff_usage                   0.0245      Arsenal composition
+  10    csw_rate                   0.0237      Statcast / pitch quality
+  11    days_rest                  0.0231      Opportunity / freshness
+  12    matchup_k_rate             0.0225      Arsenal x lineup matchup
+  13    sl_usage                   0.0224      Arsenal composition
+  14    cu_x_lineup_whiff          0.0224      Pitch x lineup interaction
+  15    ff_x_lineup_whiff          0.0220      Pitch x lineup interaction
+  16    velo_gap                   0.0219      Deception / pitch mix
+  17    sl_whiff                   0.0217      Pitch effectiveness
+  18    tto_k_decay                0.0214      Time through order decay
+  19    matchup_contact_rate       0.0213      Arsenal x lineup matchup
+  20    matchup_whiff_rate         0.0213      Arsenal x lineup matchup
+  21    sl_x_lineup_whiff          0.0212      Pitch x lineup interaction
+  22    ff_whiff                   0.0210      Pitch effectiveness
+  23    whiff_rate                 0.0203      Statcast / stuff quality
+  24    breaking_usage             0.0202      Arsenal composition
+  25    rolling_velocity           0.0200      Stuff / fatigue
+  26    zone_rate                  0.0194      Pitch location / approach
+  27    park_k_factor              0.0194      Context / park
+  28    zone_contact_rate          0.0188      Pitch quality / hittability
+  29    chase_rate                 0.0187      Pitch deception
+  30    cu_usage                   0.0185      Arsenal composition
+  31    opp_chase_rate             0.0180      Opponent discipline
+  32    cu_whiff                   0.0178      Pitch effectiveness
+  33    first_pitch_strike_rate    0.0178      Count management
+  34    pitch_entropy              0.0175      Arsenal diversity
+  35    ch_x_lineup_whiff          0.0175      Pitch x lineup interaction
+  36    ch_usage                   0.0167      Arsenal composition
+  37    ch_whiff                   0.0167      Pitch effectiveness
+
+  Feature Category Breakdown:
+    Pitcher skill/baseline:     4 features (baseline_k_rate, k_minus_bb_rate,
+                                two_strike_putaway_rate, pitcher_cv)
+    Market/odds:                1 feature  (market_k_line) -- #2 OVERALL
+    Opponent metrics:           4 features (opp_k_rate, opp_contact_rate,
+                                opp_chase_rate, tto_k_decay)
+    Statcast pitch quality:     5 features (csw_rate, whiff_rate, zone_rate,
+                                chase_rate, zone_contact_rate)
+    Arsenal composition:        5 features (ff/sl/ch/cu_usage, breaking_usage)
+    Pitch effectiveness:        4 features (ff/sl/ch/cu_whiff)
+    Arsenal x lineup matchup:   3 features (matchup_whiff/k/contact_rate)
+    Pitch x lineup interaction: 4 features (ff/sl/ch/cu_x_lineup_whiff)
+    Deception:                  3 features (velo_gap, pitch_entropy, rolling_velocity)
+    Count management:           1 feature  (first_pitch_strike_rate)
+    Context:                    3 features (is_home, park_k_factor, days_rest)
+
+  KEY INSIGHT: market_k_line is the #2 feature -- only baseline_k_rate ranks
+  higher. The sportsbook line encodes lineup information, weather, umpire
+  tendencies, and other signals we don't have direct access to. It acts as
+  a "wisdom of the crowd" anchor that the model adjusts from.
+
+
+SEGMENTED PERFORMANCE
+================================================================================
+
+  By Pitcher Talent Tier (baseline expected K):
+  --------------------------------------------------
+  Tier        N    MAE     Bias     Interpretation
+  Low K       64   1.473   +0.119   Slightly over-predicts low-K pitchers
+  Mid K      209   1.699   -0.185   Slightly under-predicts mid-tier
+  High K      54   1.858   +0.290   Over-predicts high-K aces  *** FLAGGED ***
+
+  By Predicted K Range (tail diagnostics):
+  --------------------------------------------------
+  Range    N     Avg Pred  Avg Actual  MAE    Bias
+  <3       16    2.70      2.81        0.742  -0.113
+  3-5     167    4.20      4.28        1.656  -0.081
+  5-7     128    5.81      5.91        1.815  -0.093
+  7-9      16    7.37      6.62        1.807  +0.741  *** HIGH BIAS ***
+
+  Calibration by Baseline Bucket:
+  --------------------------------------------------
+  Bucket    N    Avg Pred  Avg Actual  Gap
+  <4        64   3.79      3.67        +0.12
+  4-6      209   4.92      5.10        -0.18
+  6-8       54   6.23      5.94        +0.29
+
+
+MIDDLE PROBABILITY BIAS (35-55% range)
+================================================================================
+
+  Line       N     Pred Rate  Actual Rate  Bias     Status
+  --------------------------------------------------
+  Over 4.5   129   0.450      0.465        +0.015   BALANCED
+  Over 5.5   125   0.448      0.488        +0.040   BALANCED
+  Over 6.5    73   0.426      0.370        -0.056   AGGRESSIVE
+
+  The model is slightly aggressive on over 6.5 in the middle probability zone
+  (predicting overs too often when probability is 35-55%).
+
+
+================================================================================
+  AUDIT SECTIONS -- DEPLOYMENT READINESS
+================================================================================
+
+  Section 1  - Prediction Signal:        STRONG  (6.1% improvement)
+  Section 2  - Feature Sanity:           VALID   (100% recognized)
+  Section 3  - Baseline Dominance:       PASS    (5/5 baselines beaten)
+  Section 4  - Calibration:              ACCEPTABLE (1 line needs recalibration)
+  Section 5  - Middle Bias:              NO SYSTEMATIC BIAS
+  Section 6  - High-K Bias:              FLAGGED (+0.290 bias for K>=6 pitchers)
+  Section 7  - Extreme Outcomes:         ACCEPTABLE (95th pctl error = 4.37)
+  Section 8  - Extreme Lines:            GOOD (6.5 and 7.5 Brier scores good)
+  Section 9  - Sample Size:              LIMITED (327 starts)
+  Section 10 - Architecture:             CORRECT (all 3 layers present)
+  Section 11 - Market Validation:        READY (edge computation implemented)
+  Section 12 - Deployment Decision:      ALL 5 CONDITIONS MET
+  Section 13 - Testing Protocol:         Defined (paper trade -> small stakes)
+
+
+  >>> FINAL VERDICT: READY FOR TESTING <<<
+
+
+DEPLOYMENT CONDITIONS (all must pass):
+  [PASS] Prediction signal is strong (>= 3% improvement)
+  [PASS] Feature logic is valid (>= 70% recognized categories)
+  [PASS] All baselines beaten
+  [PASS] Calibration is acceptable overall
+  [PASS] Architecture is correct (opportunity + skill + distribution)
+
+
+KNOWN ISSUES & CORRECTIVE ACTIONS
+================================================================================
+
+  1. HIGH-K PITCHER BIAS (+0.290)
+     The model over-predicts strikeouts for aces (baseline K >= 6).
+     This likely stems from the BF model overestimating innings for
+     pitchers who get pulled despite dominance (pitch count limits,
+     blowouts, etc.).
+     ACTION: Investigate BF model ceiling, add pitch count limit feature.
+
+  2. OVER 3.5 CALIBRATION (6.8% error)
+     The model's probability of going over 3.5 K is under-calibrated
+     (predicts 63.9% but actual rate is 70.6%).
+     ACTION: Apply isotonic regression or logistic calibration to
+     the 3.5 line probabilities.
+
+  3. LIMITED SAMPLE SIZE (327 holdout starts)
+     Tail probability estimates (7.5+ line) should not be fully trusted
+     with this sample size. Need >= 1,000 for robust evaluation.
+     ACTION: Collect 2025 season data to expand holdout.
+
+  4. HIGH PREDICTION RANGE BIAS (7-9 predicted K)
+     When the model predicts 7-9 K, actual averages 6.62 (bias +0.741).
+     Related to issue #1 -- the model is too optimistic on high-K outcomes.
+     ACTION: Same as #1, plus variance modeling refinement.
+
+
+TESTING PROTOCOL
+================================================================================
+
+  Phase 1: Paper Trading (2-4 weeks)
+    - Track: model probability, market odds, closing odds, actual outcome
+    - Evaluate: closing line value, ROI, calibration drift
+    - No real money
+
+  Phase 2: Small Stakes
+    - Bet only if model edge >= 6% over implied market probability
+    - Track all bets with full audit trail
+
+  Phase 3: Refinement Priorities
+    - High-K pitcher bias correction
+    - Recalibrate over 3.5 line
+    - Collect more holdout data
+    - Variance modeling refinement
+    - Lineup matchup features (when projected lineups available)
+    - Closing line value tracking
+
+
+VARIANCE & SIMULATION INFO
+================================================================================
+
+  Global BF residual std:       2.734
+  Global K/BF residual std:     0.0817
+  Pitchers with custom variance: 298
+  Simulation method:             Monte Carlo (10,000 sims per prediction)
+  BF sampling:                   Normal(pred_BF, pitcher_bf_std)
+  K/BF sampling:                 Normal(pred_K/BF, pitcher_kbf_std)
+  K sampling:                    Binomial(BF_sim, K/BF_sim) per simulation
+  Variance shrinkage:            Full weight at 15+ games, shrink toward global
+
+
+ODDS DATA COLLECTED
+================================================================================
+
+  Source:           the-odds-api.com (historical endpoints)
+  Season:           2024 MLB regular season
+  Games collected:  2,457
+  Game odds rows:   114,050 (h2h moneyline + totals)
+  Pitcher props:    77,776 (K over/under lines)
+  Bookmakers:       11 (DraftKings, FanDuel, BetMGM, Bovada, BetRivers,
+                    BetOnline, MyBookie, PointsBet, SuperBook, Unibet,
+                    William Hill)
+  Unique pitchers:  323
+  Credits used:     ~73,800 / 100,000
+  Backup file:      mlb_odds_2024_backup.db (53 MB)
+
+
+================================================================================
+  END OF REPORT
+================================================================================
