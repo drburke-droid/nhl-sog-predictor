@@ -1141,7 +1141,14 @@ def predict_pitcher(pitcher_id: int, opponent_abbrev: str, is_home: bool,
     live_total = game_total if game_total is not None else 8.5
     live_ml = team_moneyline if team_moneyline is not None else 0
 
-    # BF features (20 — includes odds-derived + market K line)
+    # Sharp consensus probability (from live odds)
+    sharp_prob_val = float("nan")
+    consensus_data = None
+    if market_line is not None:
+        # consensus_data will be set by predict_todays_games if available
+        pass
+
+    # BF features (21 — includes odds-derived + market K line + sharp consensus)
     bf_feats = np.array([[
         baseline_bf, 1 if is_home else 0, stats["season_avg_pc"],
         stats.get("pitches_last", stats["season_avg_pc"]),
@@ -1156,6 +1163,7 @@ def predict_pitcher(pitcher_id: int, opponent_abbrev: str, is_home: bool,
         live_total,
         live_ml,
         market_line if market_line is not None else stats.get("season_avg_k", 5.0),
+        sharp_prob_val,
     ]])
 
     # Pitch × lineup interaction
@@ -1176,6 +1184,7 @@ def predict_pitcher(pitcher_id: int, opponent_abbrev: str, is_home: bool,
         opp_chase, opp_contact_val,
         matchup.get("tto_k_decay", 0),
         rv,
+        sharp_prob_val,
     ]])
 
     # Predict point estimates
@@ -1265,6 +1274,13 @@ def predict_pitcher(pitcher_id: int, opponent_abbrev: str, is_home: bool,
     result["pred_bf"] = result["projected_BF"]
     result["pred_k_rate"] = result["projected_K_per_BF"]
 
+    # Sharp consensus + soft book data (set by predict_todays_games)
+    result["sharp_prob_over"] = None
+    result["sharp_prob_under"] = None
+    result["n_sharp_books"] = 0
+    result["betmgm_over"] = None
+    result["betmgm_under"] = None
+
     return result
 
 
@@ -1286,10 +1302,45 @@ def predict_todays_games() -> list[dict]:
             pp = game.get(f"{side}_probable_pitcher")
             if not pp or not pp.get("id"):
                 continue
-            pred = predict_pitcher(pp["id"], opp, ih)
+
+            # Get consensus line with sharp data
+            pitcher_name_full = pp.get("name", "")
+            consensus = None
+            market_line_val = None
+            market_over = None
+            market_under = None
+            if pitcher_name_full:
+                try:
+                    consensus = mlb_odds_collector.get_consensus_line(
+                        pitcher_name_full,
+                        date.today().isoformat(),
+                    )
+                    if consensus:
+                        market_line_val = consensus["line"]
+                        market_over = consensus.get("over_odds")
+                        market_under = consensus.get("under_odds")
+                except Exception:
+                    pass
+
+            pred = predict_pitcher(
+                pp["id"], opp, ih,
+                market_line=market_line_val,
+                market_over_odds=market_over,
+                market_under_odds=market_under,
+            )
             if pred:
                 pred["game_pk"] = game["game_pk"]
                 pred["game_display"] = f"{away} @ {home}"
+
+                # Attach sharp consensus + BetMGM data
+                if consensus:
+                    pred["sharp_prob_over"] = consensus.get("sharp_prob_over")
+                    pred["sharp_prob_under"] = consensus.get("sharp_prob_under")
+                    pred["n_sharp_books"] = consensus.get("n_sharp_books", 0)
+                    pred["betmgm_over"] = consensus.get("betmgm_over")
+                    pred["betmgm_under"] = consensus.get("betmgm_under")
+                    pred["market_line"] = consensus["line"]
+
                 predictions.append(pred)
 
     predictions.sort(key=lambda x: x["predicted_k"], reverse=True)

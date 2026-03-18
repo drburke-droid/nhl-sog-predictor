@@ -436,23 +436,21 @@
         <!-- ============================================================= -->
         <div class="tab-pane fade" id="mlb" role="tabpanel">
             <div class="card mb-4 p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Pitcher Strikeout Predictions</h5>
-                    <div class="d-flex gap-2 align-items-center">
-                        <label class="small text-secondary mb-0">Bankroll $</label>
-                        <input type="number" id="mlbBankroll" class="odds-input" style="width:80px"
-                               value="100" onchange="localStorage.setItem('mlbBankroll',this.value); updateMLBOdds()">
-                        <button class="btn btn-sm btn-outline-info" onclick="toggleMLBBestBets()">Best Bets</button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="clearMLBOdds()">Clear Odds</button>
+                <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                    <div class="d-flex align-items-center gap-2"
+                         style="background:var(--bg-secondary);border:2px solid var(--accent);border-radius:10px;padding:8px 16px;">
+                        <label class="fw-bold mb-0" style="color:var(--accent);font-size:0.95rem">BANKROLL</label>
+                        <span style="color:var(--accent);font-size:1.2rem;font-weight:700">$</span>
+                        <input type="number" id="mlbBankroll" class="odds-input"
+                               style="width:100px;font-size:1.1rem;font-weight:700;border-color:var(--accent)"
+                               value="100" onchange="localStorage.setItem('mlbBankroll',this.value); computeMLBBets()">
                     </div>
-                </div>
-
-                <!-- Odds paste area -->
-                <div class="mb-3">
-                    <textarea id="mlbPasteBin" class="form-control" rows="2"
-                              placeholder="Paste MLB K odds here (e.g. Player O/U 5.5 -120 +100)..."
-                              style="background:var(--bg-secondary);border-color:var(--border);color:var(--text-primary);font-size:0.82rem"></textarea>
-                    <button class="btn btn-sm btn-primary mt-1" onclick="applyMLBOdds()">Apply Odds</button>
+                    <h5 class="mb-0 ms-2">MLB K Unders <small class="text-secondary">(Blended Model+Sharp, 3%+ Edge)</small></h5>
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="mlbShowAllBtn"
+                                onclick="mlbShowAll = !mlbShowAll; this.textContent = mlbShowAll ? 'Bets Only' : 'Show All'; computeMLBBets()">Show All</button>
+                        <div id="mlbMetrics" class="text-secondary small"></div>
+                    </div>
                 </div>
 
                 <!-- Desktop table -->
@@ -460,28 +458,16 @@
                     <table class="table table-hover mb-0" id="mlbPredTable">
                         <thead>
                             <tr>
-                                <th class="sort-btn" onclick="sortMLBPreds('suggested_bet')">Bet $<span class="arrow"></span></th>
-                                <th class="sort-btn" onclick="sortMLBPreds('pitcher_name')">Pitcher<span class="arrow"></span></th>
-                                <th>Team</th>
-                                <th>Opp</th>
-                                <th>Hand</th>
-                                <th class="text-center sort-btn" onclick="sortMLBPreds('predicted_k')">Pred K<span class="arrow"></span></th>
-                                <th class="text-center">Baseline</th>
-                                <th class="text-center">Szn Avg</th>
-                                <th class="text-center">Last 3</th>
-                                <th class="text-center">Last 5</th>
-                                <th class="text-center">K/9</th>
-                                <th class="text-center">Avg IP</th>
-                                <th class="text-center">Opp K%</th>
-                                <th class="text-center">Park</th>
-                                <th class="text-center">Rest</th>
-                                <th class="text-center" title="Arsenal-weighted matchup whiff rate">Mup Whiff</th>
-                                <th class="text-center" title="Arsenal-weighted matchup K rate">Mup K%</th>
-                                <th class="text-center" title="Pitch types with >10% usage">Arsenal</th>
+                                <th class="sort-btn" onclick="sortMLBPreds('suggested_bet')" style="min-width:130px">Bet</th>
+                                <th class="sort-btn" onclick="sortMLBPreds('pitcher_name')">Pitcher</th>
+                                <th>Matchup</th>
+                                <th class="text-center sort-btn" onclick="sortMLBPreds('predicted_k')">Pred K</th>
                                 <th class="text-center">Line</th>
-                                <th class="text-center">Over</th>
-                                <th class="text-center">Under</th>
-                                <th class="text-center sort-btn" onclick="sortMLBPreds('prob_over')">P(Over)<span class="arrow"></span></th>
+                                <th class="text-center sort-btn" onclick="sortMLBPreds('blended_edge')">Blend Edge</th>
+                                <th class="text-center">Model P(U)</th>
+                                <th class="text-center">Sharp P(U)</th>
+                                <th class="text-center">Blend P(U)</th>
+                                <th class="text-center">BMG U</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -1639,11 +1625,11 @@ async function loadStatusBar() {
 // MLB STRIKEOUT PREDICTIONS
 // =====================================================================
 let mlbPredictions = [];
-let mlbSortField = 'predicted_k';
+let mlbSortField = 'suggested_bet';
 let mlbSortAsc = false;
-let mlbBestBetsMode = false;
 let mlbLoaded = false;
 let mlbRefreshTimer = null;
+let mlbShowAll = false;
 
 const mlbBankroll = () => parseFloat(document.getElementById('mlbBankroll')?.value) || 100;
 
@@ -1659,139 +1645,154 @@ async function loadMLBPredictions() {
     mlbPredictions = data.predictions || [];
     document.getElementById('mlbPredLoading').classList.add('d-none');
 
-    renderMLBPredictions(mlbPredictions);
-
     // Metrics
     const m = data.model_metrics || {};
     const metricsEl = document.getElementById('mlbMetrics');
     if (m.mae) {
-        metricsEl.innerHTML = `Model: ${m.model_type || 'XGBoost'} | MAE: ${m.mae} | RMSE: ${m.rmse || '—'} | Train: ${m.train_samples || '?'} | Test: ${m.test_samples || '?'}`;
-    }
-
-    // Status bar
-    const status = await fetchJSON('/api/mlb/status');
-    if (status) {
-        const el = document.getElementById('mlbStatusBar');
-        const parts = [];
-        if (status.db_updated) parts.push(`Data: ${status.db_updated}`);
-        if (status.model_trained) parts.push(`Model: ${status.model_trained}`);
-        el.textContent = parts.join(' | ');
+        metricsEl.innerHTML = `MAE: ${m.mae} | Train: ${m.train_samples || '?'}`;
     }
 
     // Restore bankroll
     const savedBR = localStorage.getItem('mlbBankroll');
     if (savedBR) document.getElementById('mlbBankroll').value = savedBR;
 
+    computeMLBBets();
     mlbLoaded = true;
+}
+
+function computeMLBBets() {
+    for (const p of mlbPredictions) {
+        const line = p.market_line;
+        const bmgUnder = p.betmgm_under;
+        const predK = p.predicted_k;
+        const varRatio = p.var_ratio || 1.0;
+
+        // Reset
+        p.suggested_bet = 0;
+        p.blended_edge = -1;
+        p.model_prob_u = null;
+        p.sharp_prob_u = null;
+        p.blended_prob_u = null;
+        p.bet_tier = null;
+
+        if (line == null || isNaN(line)) continue;
+
+        // Model P(Under) via NegBin
+        const pOver = calcProbOverK(predK, line, varRatio);
+        const modelPU = 1 - pOver;
+        p.model_prob_u = modelPU;
+
+        // Sharp consensus P(Under)
+        const sharpPU = p.sharp_prob_under;
+        const hasSharp = sharpPU != null && (p.n_sharp_books || 0) >= 1;
+
+        // Blended prob: 50/50 model + sharp
+        let blendedPU;
+        if (hasSharp) {
+            blendedPU = 0.5 * modelPU + 0.5 * sharpPU;
+        } else {
+            blendedPU = modelPU;
+        }
+        p.sharp_prob_u = sharpPU;
+        p.blended_prob_u = blendedPU;
+
+        // Compute edge vs BetMGM under odds
+        if (bmgUnder != null) {
+            const bmgImplied = americanToProb(bmgUnder);
+            p.blended_edge = blendedPU - bmgImplied;
+
+            // Strategy: BMG_blend_unders — bet UNDER when blended edge >= 3%
+            const STRONG_EDGE = 0.05;
+            const MIN_EDGE = 0.03;
+
+            if (p.blended_edge >= MIN_EDGE && hasSharp) {
+                const decOdds = americanToDecimal(bmgUnder);
+                const ev = blendedPU * (decOdds - 1) - (1 - blendedPU);
+                if (ev > 0) {
+                    let kf = ev / (decOdds - 1);
+                    kf = Math.min(kf * 0.25, 0.10);  // Quarter Kelly, 10% cap
+                    p.suggested_bet = kf;
+                    p.bet_tier = p.blended_edge >= STRONG_EDGE ? 'strong' : 'moderate';
+                }
+            }
+        }
+    }
+
+    // Sort and render
+    const sorted = [...mlbPredictions].sort((a, b) =>
+        (b.suggested_bet || 0) - (a.suggested_bet || 0) ||
+        (b.blended_edge || -1) - (a.blended_edge || -1)
+    );
+    renderMLBPredictions(sorted);
 }
 
 function renderMLBPredictions(preds) {
     const tbody = document.querySelector('#mlbPredTable tbody');
     if (!tbody) return;
-    tbody.innerHTML = '';
 
     if (!preds.length) {
-        tbody.innerHTML = '<tr><td colspan="22" class="text-center text-secondary py-4">No MLB games scheduled today or no model available.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-secondary py-4">No MLB games scheduled today or no model available.</td></tr>';
         return;
     }
 
-    for (const p of preds) {
-        const predClass = p.predicted_k >= 7 ? 'prediction-high' : p.predicted_k >= 5 ? 'prediction-med' : 'prediction-low';
-        const betDisplay = p.suggested_bet ? `$${p.suggested_bet.toFixed(0)}` : '';
-        const betClass = p.suggested_bet > 0 ? 'text-success fw-bold' : '';
-        const probDisplay = p.prob_over != null ? `${(p.prob_over * 100).toFixed(1)}%` : '';
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="${betClass}">${betDisplay}</td>
-            <td class="fw-bold">${p.pitcher_name}</td>
-            <td>${p.team}</td>
-            <td>${p.opponent}</td>
-            <td><span class="badge ${p.pitch_hand === 'L' ? 'bg-success' : 'bg-info'}">${p.pitch_hand}</span></td>
-            <td class="text-center ${predClass}">${p.predicted_k.toFixed(1)}</td>
-            <td class="text-center">${p.baseline_k.toFixed(1)}</td>
-            <td class="text-center">${p.season_avg_k}</td>
-            <td class="text-center">${p.rolling_3_k}</td>
-            <td class="text-center">${p.rolling_5_k}</td>
-            <td class="text-center">${p.k_per_9}</td>
-            <td class="text-center">${p.avg_ip}</td>
-            <td class="text-center">${(p.opp_k_rate * 100).toFixed(1)}%</td>
-            <td class="text-center">${p.park_k_factor.toFixed(2)}</td>
-            <td class="text-center">${p.days_rest >= 0 ? p.days_rest + 'd' : '—'}</td>
-            <td class="text-center">${p.matchup_whiff ? (p.matchup_whiff * 100).toFixed(1) + '%' : '—'}</td>
-            <td class="text-center">${p.matchup_k ? (p.matchup_k * 100).toFixed(1) + '%' : '—'}</td>
-            <td class="text-center">${p.arsenal_diversity || '—'}</td>
-            <td class="text-center"><input type="number" class="odds-input mlb-line" data-pid="${p.pitcher_id}" placeholder="5.5" step="0.5" onchange="updateMLBOdds()"></td>
-            <td class="text-center"><input type="number" class="odds-input mlb-over" data-pid="${p.pitcher_id}" placeholder="-110" onchange="updateMLBOdds()"></td>
-            <td class="text-center"><input type="number" class="odds-input mlb-under" data-pid="${p.pitcher_id}" placeholder="+100" onchange="updateMLBOdds()"></td>
-            <td class="text-center">${probDisplay}</td>
-        `;
-        tbody.appendChild(tr);
-    }
-}
-
-function updateMLBOdds() {
     const br = mlbBankroll();
-    const kellyFrac = 0.25;
-
-    for (const p of mlbPredictions) {
-        const lineEl = document.querySelector(`.mlb-line[data-pid="${p.pitcher_id}"]`);
-        const overEl = document.querySelector(`.mlb-over[data-pid="${p.pitcher_id}"]`);
-        const underEl = document.querySelector(`.mlb-under[data-pid="${p.pitcher_id}"]`);
-
-        if (!lineEl) continue;
-        const line = parseFloat(lineEl.value);
-        const overOdds = parseInt(overEl?.value);
-        const underOdds = parseInt(underEl?.value);
-
-        // Reset
-        p.prob_over = null;
-        p.suggested_bet = 0;
-        p.kelly_best = 0;
-
-        if (isNaN(line)) continue;
-
-        // Calculate P(over) using NegBin (same approach as NHL)
-        const predK = p.predicted_k;
-        const varRatio = p.var_ratio || 1.0;
-        p.prob_over = calcProbOverK(predK, line, varRatio);
-
-        // If odds provided, compute EV and Kelly
-        if (!isNaN(overOdds)) {
-            const impliedOver = americanToProb(overOdds);
-            const edgeOver = p.prob_over - impliedOver;
-            if (edgeOver > 0) {
-                const decimalOdds = americanToDecimal(overOdds);
-                const kelly = (edgeOver * decimalOdds - (1 - edgeOver)) / (decimalOdds - 1);
-                const confidence = Math.min((p.signal || 0) / 1.5, 1.0);
-                const adjKelly = Math.max(0, kelly * kellyFrac * confidence);
-                if (adjKelly > p.kelly_best) {
-                    p.kelly_best = adjKelly;
-                    p.suggested_bet = adjKelly * br;
-                    p.bet_side = 'OVER';
-                }
-            }
-        }
-
-        if (!isNaN(underOdds)) {
-            const probUnder = 1 - p.prob_over;
-            const impliedUnder = americanToProb(underOdds);
-            const edgeUnder = probUnder - impliedUnder;
-            if (edgeUnder > 0) {
-                const decimalOdds = americanToDecimal(underOdds);
-                const kelly = (edgeUnder * decimalOdds - (1 - edgeUnder)) / (decimalOdds - 1);
-                const confidence = Math.min((p.signal || 0) / 1.5, 1.0);
-                const adjKelly = Math.max(0, kelly * kellyFrac * confidence);
-                if (adjKelly > p.kelly_best) {
-                    p.kelly_best = adjKelly;
-                    p.suggested_bet = adjKelly * br;
-                    p.bet_side = 'UNDER';
-                }
-            }
-        }
+    const hasBets = preds.some(p => (p.suggested_bet || 0) > 0);
+    let displayList;
+    if (mlbShowAll) {
+        displayList = preds;
+    } else if (hasBets) {
+        displayList = preds.filter(p => (p.suggested_bet || 0) > 0);
+    } else {
+        // No bets — show top 10 by blended edge
+        displayList = preds
+            .filter(p => p.blended_prob_u != null)
+            .sort((a, b) => (b.blended_edge || -1) - (a.blended_edge || -1))
+            .slice(0, 10);
     }
 
-    renderMLBPredictions(mlbPredictions);
+    tbody.innerHTML = displayList.map(p => {
+        const predClass = p.predicted_k >= 7 ? 'prediction-high' : p.predicted_k >= 5 ? 'prediction-med' : 'prediction-low';
+        const matchup = p.game_display || `${p.team} vs ${p.opponent}`;
+        const line = p.market_line;
+
+        // Bet cell
+        let betText = '—', betClass = 'ev-neutral';
+        if ((p.suggested_bet || 0) > 0) {
+            const tier = p.bet_tier === 'strong' ? '★ ' : '';
+            const wager = Math.round(br * p.suggested_bet);
+            betText = `${tier}$${wager} U${line}`;
+            betClass = p.bet_tier === 'strong' ? 'ev-positive fw-bold' : 'signal-strong fw-bold';
+        }
+
+        // Edge
+        const edge = p.blended_edge;
+        const edgeText = edge != null && edge > -0.5 ? `${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '—';
+        const edgeClass = edge >= 0.05 ? 'ev-positive fw-bold' : edge >= 0.03 ? 'ev-positive' : edge > 0 ? 'signal-mild' : 'ev-neutral';
+
+        // Probabilities
+        const muText = p.model_prob_u != null ? (p.model_prob_u * 100).toFixed(1) + '%' : '—';
+        const suText = p.sharp_prob_u != null
+            ? `${(p.sharp_prob_u * 100).toFixed(1)}% <small class="text-secondary">(${p.n_sharp_books || 0})</small>`
+            : '—';
+        const buText = p.blended_prob_u != null ? (p.blended_prob_u * 100).toFixed(1) + '%' : '—';
+        const buClass = p.blended_prob_u != null && p.blended_prob_u > 0.55 ? 'signal-fire' :
+                        p.blended_prob_u != null && p.blended_prob_u > 0.50 ? 'signal-strong' : 'ev-neutral';
+
+        const bmgText = p.betmgm_under != null ? `${p.betmgm_under > 0 ? '+' : ''}${p.betmgm_under}` : '—';
+
+        return `<tr>
+            <td class="${betClass}" style="font-size:0.95rem;white-space:nowrap">${betText}</td>
+            <td class="fw-bold">${p.pitcher_name} <span class="badge ${p.pitch_hand === 'L' ? 'bg-success' : 'bg-info'}" style="font-size:0.65rem">${p.pitch_hand}</span></td>
+            <td class="text-secondary" style="white-space:nowrap">${matchup}</td>
+            <td class="text-center ${predClass}" style="font-weight:700">${p.predicted_k.toFixed(1)}</td>
+            <td class="text-center">${line != null ? line : '—'}</td>
+            <td class="text-center ${edgeClass}" style="font-weight:600">${edgeText}</td>
+            <td class="text-center">${muText}</td>
+            <td class="text-center">${suText}</td>
+            <td class="text-center ${buClass}" style="font-weight:600">${buText}</td>
+            <td class="text-center">${bmgText}</td>
+        </tr>`;
+    }).join('');
 }
 
 function calcProbOverK(predK, line, varRatio) {

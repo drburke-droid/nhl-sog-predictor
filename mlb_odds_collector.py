@@ -315,13 +315,14 @@ def collect_season_odds(season: int = 2024, progress_callback=None):
 
 
 def get_consensus_line(pitcher_name: str, game_date: str) -> dict | None:
-    """Get consensus (average) strikeout line for a pitcher on a date.
+    """Get consensus strikeout line for a pitcher on a date.
 
-    Returns dict with line, over_odds, under_odds, num_books.
+    Returns dict with line, over_odds, under_odds, num_books,
+    sharp consensus data, and BetMGM/soft book prices.
     """
     conn = get_db()
     rows = conn.execute(
-        """SELECT over_under, price, line FROM mlb_pitcher_props
+        """SELECT bookmaker, over_under, price, line FROM mlb_pitcher_props
            WHERE pitcher_name = ? AND game_date = ?""",
         (pitcher_name, game_date),
     ).fetchall()
@@ -336,20 +337,54 @@ def get_consensus_line(pitcher_name: str, game_date: str) -> dict | None:
     if not overs:
         return None
 
-    # Most common line
-    from collections import Counter
+    from collections import Counter, defaultdict
     line_counts = Counter(r["line"] for r in rows)
     consensus_line = line_counts.most_common(1)[0][0]
 
-    # Average odds at consensus line
     over_at_line = [p for p, l in overs if l == consensus_line]
     under_at_line = [p for p, l in unders if l == consensus_line]
+
+    # Sharp consensus: vig-free implied prob from sharp books
+    by_book = defaultdict(dict)
+    for r in rows:
+        if r["line"] != consensus_line:
+            continue
+        by_book[r["bookmaker"]][r["over_under"]] = int(r["price"])
+
+    sharp_probs = []
+    for book in SHARP_BOOKS:
+        bp = by_book.get(book)
+        if not bp or "Over" not in bp or "Under" not in bp:
+            continue
+        imp_ov = _american_to_implied(bp["Over"])
+        imp_un = _american_to_implied(bp["Under"])
+        total = imp_ov + imp_un
+        if total > 0:
+            sharp_probs.append(imp_ov / total)
+
+    sharp_over = None
+    n_sharp = 0
+    if sharp_probs:
+        sharp_over = sum(sharp_probs) / len(sharp_probs)
+        n_sharp = len(sharp_probs)
+
+    # BetMGM prices (soft book)
+    bmg = by_book.get("betmgm")
+    bmg_over = bmg.get("Over") if bmg else None
+    bmg_under = bmg.get("Under") if bmg else None
 
     return {
         "line": consensus_line,
         "over_odds": round(sum(over_at_line) / len(over_at_line)) if over_at_line else None,
         "under_odds": round(sum(under_at_line) / len(under_at_line)) if under_at_line else None,
         "num_books": len(over_at_line),
+        # Sharp consensus
+        "sharp_prob_over": round(sharp_over, 4) if sharp_over else None,
+        "sharp_prob_under": round(1.0 - sharp_over, 4) if sharp_over else None,
+        "n_sharp_books": n_sharp,
+        # BetMGM (soft book target)
+        "betmgm_over": bmg_over,
+        "betmgm_under": bmg_under,
     }
 
 
