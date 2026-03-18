@@ -34,6 +34,7 @@ def _normalize_name(name: str) -> str:
 
 import mlb_api
 import mlb_data_collector
+import mlb_odds_collector
 
 # ---------------------------------------------------------------------------
 # Team name mapping (odds API full names ↔ MLB abbreviations)
@@ -104,6 +105,8 @@ BF_FEATURES = [
     "team_moneyline",
     # Market K prop line
     "market_k_line",
+    # Sharp book consensus
+    "sharp_consensus_prob",
 ]
 
 KBF_FEATURES = [
@@ -150,6 +153,8 @@ KBF_FEATURES = [
     "tto_k_decay",
     # Velocity
     "rolling_velocity",
+    # Sharp book consensus
+    "sharp_consensus_prob",
 ]
 
 
@@ -171,7 +176,7 @@ def save_model():
         "artifact_info": {
             "bf_feature_names": BF_FEATURES,
             "kbf_feature_names": KBF_FEATURES,
-            "bf_feature_count": len(BF_FEATURES),  # 19 with odds
+            "bf_feature_count": len(BF_FEATURES),  # 20 with odds + sharp
             "kbf_feature_count": len(KBF_FEATURES),
             "bf_target": "batters_faced residual (actual - baseline)",
             "kbf_target": "K/BF residual (actual - season_k_rate)",
@@ -358,6 +363,14 @@ def _build_feature_dataframe() -> pd.DataFrame:
         logger.info("Loaded odds for %d team-game entries", len(odds_map))
     except Exception as e:
         logger.warning("Could not load odds data: %s", e)
+
+    # --- Load sharp book consensus probabilities ---
+    sharp_map = {}
+    try:
+        sharp_map = mlb_odds_collector.load_sharp_consensus_bulk()
+        logger.info("Loaded sharp consensus for %d pitcher-dates", len(sharp_map))
+    except Exception as e:
+        logger.warning("Could not load sharp consensus data: %s", e)
 
     conn.close()
 
@@ -680,6 +693,10 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 if mk_line is None:
                     continue  # No prop line = not a confirmed starter, skip
 
+                # Sharp consensus probability (NaN when not available — XGBoost handles natively)
+                sharp_entry = sharp_map.get((gd, pitcher_name_norm))
+                sharp_val = sharp_entry["sharp_prob_over"] if sharp_entry else float("nan")
+
                 # Odds features
                 team_abbr = row["team_abbrev"]
                 odds_info = odds_map.get((gd, team_abbr), {})
@@ -706,6 +723,7 @@ def _build_feature_dataframe() -> pd.DataFrame:
                     "game_total_line": game_total,
                     "team_moneyline": team_ml,
                     "market_k_line": mk_line,
+                    "sharp_consensus_prob": sharp_val,
                     # KBF model
                     "baseline_k_rate": baseline_k_rate, "kbf_residual": kbf_residual,
                     "opp_k_rate": opp_k, "k_minus_bb_rate": row["k_minus_bb_rate"],

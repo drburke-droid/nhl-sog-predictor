@@ -382,6 +382,156 @@ def get_game_odds_for_date(game_date: str) -> list[dict]:
     return list(games.values())
 
 
+# ---------------------------------------------------------------------------
+# Sharp-vs-Soft sportsbook constants
+# ---------------------------------------------------------------------------
+SHARP_BOOKS = ("fanduel", "draftkings", "betonlineag")
+SOFT_BOOKS = ("betmgm", "williamhill_us")
+
+
+def _american_to_implied(odds: int) -> float:
+    """American odds -> implied probability."""
+    if odds < 0:
+        return abs(odds) / (abs(odds) + 100)
+    elif odds > 0:
+        return 100 / (odds + 100)
+    return 0.5
+
+
+def load_sharp_consensus_bulk() -> dict:
+    """Load sharp-book consensus vig-free over-probability for every pitcher-date.
+
+    Returns dict of (game_date, pitcher_name_normalized) ->
+        {line, sharp_prob_over, sharp_prob_under, n_sharp_books,
+         soft_over_price, soft_under_price}
+    """
+    import unicodedata
+
+    def _norm(name):
+        nfkd = unicodedata.normalize("NFKD", name)
+        return "".join(c for c in nfkd if not unicodedata.combining(c)).lower().strip()
+
+    conn = get_db()
+    create_odds_tables(conn)
+    rows = conn.execute(
+        "SELECT game_date, pitcher_name, bookmaker, line, over_under, price "
+        "FROM mlb_pitcher_props"
+    ).fetchall()
+    conn.close()
+
+    # Group by (game_date, pitcher_name_norm, line)
+    from collections import defaultdict
+    grouped = defaultdict(lambda: defaultdict(dict))
+    # grouped[(gd, pname_norm, line)][bookmaker] = {over_price, under_price}
+    for r in rows:
+        gd = r["game_date"]
+        pname = _norm(r["pitcher_name"])
+        line = float(r["line"])
+        bk = r["bookmaker"]
+        key = (gd, pname, line)
+        if r["over_under"] == "Over":
+            grouped[key][bk]["over_price"] = int(r["price"])
+        else:
+            grouped[key][bk]["under_price"] = int(r["price"])
+
+    # For each (game_date, pitcher), find the most common line,
+    # compute sharp consensus at that line, and capture soft prices
+    from collections import Counter
+    pitcher_lines = defaultdict(list)  # (gd, pname_norm) -> [line, ...]
+    for (gd, pname, line) in grouped:
+        pitcher_lines[(gd, pname)].append(line)
+
+    result = {}
+    for (gd, pname), lines in pitcher_lines.items():
+        # Use the most common line across all books
+        line_counts = Counter(lines)
+        consensus_line = line_counts.most_common(1)[0][0]
+
+        key = (gd, pname, consensus_line)
+        books = grouped[key]
+
+        # Sharp consensus
+        sharp_probs = []
+        for book in SHARP_BOOKS:
+            bp = books.get(book)
+            if bp is None:
+                continue
+            ov = bp.get("over_price")
+            un = bp.get("under_price")
+            if ov is None or un is None:
+                continue
+            imp_ov = _american_to_implied(ov)
+            imp_un = _american_to_implied(un)
+            total = imp_ov + imp_un
+            if total > 0:
+                sharp_probs.append(imp_ov / total)  # vig-free over prob
+
+        if not sharp_probs:
+            continue
+
+        avg_over = sum(sharp_probs) / len(sharp_probs)
+
+        # Soft book prices (try each soft book in order)
+        soft_over = None
+        soft_under = None
+        for book in SOFT_BOOKS:
+            bp = books.get(book)
+            if bp and bp.get("over_price") is not None:
+                soft_over = bp.get("over_price")
+                soft_under = bp.get("under_price")
+                break
+
+        result[(gd, pname)] = {
+            "line": consensus_line,
+            "sharp_prob_over": avg_over,
+            "sharp_prob_under": 1.0 - avg_over,
+            "n_sharp_books": len(sharp_probs),
+            "soft_over_price": soft_over,
+            "soft_under_price": soft_under,
+        }
+
+    logger.info("Sharp consensus loaded for %d pitcher-date entries", len(result))
+    return result
+
+
+def load_per_book_props_bulk() -> dict:
+    """Load per-bookmaker pitcher K props for walk-forward analysis.
+
+    Returns dict of (game_date, pitcher_name_normalized, line, bookmaker) ->
+        {over_price, under_price}
+    """
+    import unicodedata
+
+    def _norm(name):
+        nfkd = unicodedata.normalize("NFKD", name)
+        return "".join(c for c in nfkd if not unicodedata.combining(c)).lower().strip()
+
+    conn = get_db()
+    create_odds_tables(conn)
+    rows = conn.execute(
+        "SELECT game_date, pitcher_name, bookmaker, line, over_under, price "
+        "FROM mlb_pitcher_props"
+    ).fetchall()
+    conn.close()
+
+    result = {}
+    for r in rows:
+        gd = r["game_date"]
+        pname = _norm(r["pitcher_name"])
+        line = float(r["line"])
+        bk = r["bookmaker"]
+        key = (gd, pname, line, bk)
+        if key not in result:
+            result[key] = {}
+        if r["over_under"] == "Over":
+            result[key]["over_price"] = int(r["price"])
+        else:
+            result[key]["under_price"] = int(r["price"])
+
+    logger.info("Per-book props loaded: %d entries", len(result))
+    return result
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
     collect_season_odds(2024)
