@@ -525,20 +525,48 @@ def collect_historical_odds(start_date, end_date, progress_callback=None):
 # Query helpers (used by model.py and app.py)
 # ---------------------------------------------------------------------------
 
+def _match_key(name):
+    """Convert player name to (first_initial, last_name) for cross-source matching."""
+    import unicodedata
+    name = unicodedata.normalize("NFKD", name)
+    name = "".join(c for c in name if not unicodedata.combining(c))
+    name = name.strip().lower().replace(".", "")
+    parts = name.split()
+    if len(parts) >= 2:
+        return (parts[0][0], " ".join(parts[1:]))
+    return ("", name)
+
+
 def get_consensus_sog_line(player_name, game_date=None):
     """Get consensus SOG line for a player on a date.
 
-    Returns dict with line, over_odds, under_odds, num_books — or None.
+    Matches abbreviated names ('N. MacKinnon') to full names
+    ('Nathan MacKinnon') via first initial + last name.
+
+    Returns dict with line, over_odds, under_odds, num_books,
+    and sharp consensus data — or None.
     """
     conn = get_db()
     if game_date is None:
         game_date = date.today().isoformat()
 
+    # Try exact match first, then fall back to initial+last match
     rows = conn.execute(
-        """SELECT over_under, price, line FROM nhl_player_props
+        """SELECT bookmaker, over_under, price, line FROM nhl_player_props
            WHERE player_name = ? AND game_date = ?""",
         (player_name, game_date),
     ).fetchall()
+
+    if not rows:
+        # Fuzzy match: load all props for date, match on initial+last
+        target_key = _match_key(player_name)
+        all_rows = conn.execute(
+            """SELECT player_name, bookmaker, over_under, price, line
+               FROM nhl_player_props WHERE game_date = ?""",
+            (game_date,),
+        ).fetchall()
+        rows = [r for r in all_rows if _match_key(r["player_name"]) == target_key]
+
     conn.close()
 
     if not rows:
@@ -558,6 +586,39 @@ def get_consensus_sog_line(player_name, game_date=None):
     over_at = [p for p, l in overs if l == consensus_line]
     under_at = [p for p, l in unders if l == consensus_line]
 
+    # Compute sharp consensus: vig-free implied prob from sharp books
+    from collections import defaultdict
+    by_book = defaultdict(dict)
+    for r in rows:
+        if r["line"] != consensus_line:
+            continue
+        by_book[r["bookmaker"]][r["over_under"]] = int(r["price"])
+
+    sharp_probs = []
+    for book in SHARP_BOOKS:
+        bp = by_book.get(book)
+        if not bp or "Over" not in bp or "Under" not in bp:
+            continue
+        imp_ov = american_to_prob(bp["Over"])
+        imp_un = american_to_prob(bp["Under"])
+        total = imp_ov + imp_un
+        if total > 0:
+            sharp_probs.append(imp_ov / total)
+
+    sharp_over = None
+    n_sharp = 0
+    if sharp_probs:
+        sharp_over = sum(sharp_probs) / len(sharp_probs)
+        n_sharp = len(sharp_probs)
+
+    # BetMGM prices for PlayAlberta estimation
+    bmg = by_book.get("betmgm")
+    bmg_over = bmg.get("Over") if bmg else None
+    bmg_under = bmg.get("Under") if bmg else None
+    pa_over, pa_under = None, None
+    if bmg_over is not None and bmg_under is not None:
+        pa_over, pa_under = betmgm_to_playalberta(bmg_over, bmg_under)
+
     return {
         "line": consensus_line,
         "over_odds": (round(sum(over_at) / len(over_at))
@@ -565,6 +626,15 @@ def get_consensus_sog_line(player_name, game_date=None):
         "under_odds": (round(sum(under_at) / len(under_at))
                        if under_at else None),
         "num_books": len(over_at),
+        # Sharp consensus
+        "sharp_prob_over": round(sharp_over, 4) if sharp_over else None,
+        "sharp_prob_under": round(1.0 - sharp_over, 4) if sharp_over else None,
+        "n_sharp_books": n_sharp,
+        # BetMGM / PlayAlberta
+        "betmgm_over": bmg_over,
+        "betmgm_under": bmg_under,
+        "pa_over_est": pa_over,
+        "pa_under_est": pa_under,
     }
 
 
@@ -806,6 +876,159 @@ def load_player_props_bulk():
     for key, lines in grouped.items():
         consensus = Counter(lines).most_common(1)[0][0]
         result[key] = consensus
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Sharp book consensus — vig-free implied probabilities
+# ---------------------------------------------------------------------------
+
+# Sharpness ranking by calibration RMSE (lower = sharper):
+#   1. BetOnlineAg  (0.0077)  — offshore, low vig, best calibrated
+#   2. DraftKings   (0.0118)  — lowest raw vig (6.37%)
+#   3. FanDuel      (0.0163)  — lowest Brier score (0.24283)
+# Soft books (higher vig, worse calibration):
+#   - BetMGM / PlayAlberta (7.61% vig, 0.0098 cal RMSE)
+#   - BetRivers (6.70% vig, worst Brier)
+SHARP_BOOKS = ("betonlineag", "draftkings", "fanduel")
+SOFT_BOOKS = ("betmgm",)  # PlayAlberta mirrors BetMGM lines
+
+
+def load_sharp_consensus_bulk():
+    """Load vig-free implied probability from sharp books per player-game-line.
+
+    For each (game_date, player_name, line), averages the vig-removed
+    over-probability from the 3 sharpest books.
+
+    Returns dict of (game_date, player_name) -> {
+        line, sharp_prob_over, sharp_prob_under, n_sharp_books,
+        soft_over_price, soft_under_price  (BetMGM prices, if available)
+    }
+    """
+    conn = get_db()
+    create_odds_tables(conn)
+
+    rows = conn.execute("""
+        SELECT game_date, player_name, bookmaker, over_under, price, line
+        FROM nhl_player_props
+    """).fetchall()
+    conn.close()
+
+    if not rows:
+        return {}
+
+    from collections import defaultdict
+
+    # Group: (game_date, player_name, bookmaker, line) -> {over_price, under_price}
+    paired = defaultdict(dict)
+    for r in rows:
+        key = (r["game_date"], r["player_name"], r["bookmaker"], r["line"])
+        if r["over_under"] == "Over":
+            paired[key]["over"] = int(r["price"])
+        else:
+            paired[key]["under"] = int(r["price"])
+
+    # Per (game_date, player_name, line): collect sharp fair probs + soft prices
+    combo = defaultdict(lambda: {
+        "sharp_probs": [], "soft_over": None, "soft_under": None,
+    })
+
+    for (gd, pname, book, line), prices in paired.items():
+        ov = prices.get("over")
+        un = prices.get("under")
+        if ov is None or un is None:
+            continue
+
+        imp_ov = american_to_prob(ov)
+        imp_un = american_to_prob(un)
+        total_imp = imp_ov + imp_un
+        if total_imp <= 0:
+            continue
+        fair_over = imp_ov / total_imp  # vig-removed
+
+        ck = (gd, pname, line)
+        if book in SHARP_BOOKS:
+            combo[ck]["sharp_probs"].append(fair_over)
+        if book in SOFT_BOOKS:
+            combo[ck]["soft_over"] = ov
+            combo[ck]["soft_under"] = un
+
+    # Determine consensus line per (game_date, player_name) then output
+    # Group all lines for each player-date to pick the consensus line
+    by_player_date = defaultdict(list)
+    for (gd, pname, line), data in combo.items():
+        by_player_date[(gd, pname)].append((line, data))
+
+    result = {}
+    for (gd, pname), entries in by_player_date.items():
+        # Pick the line with the most sharp books providing data
+        best = max(entries, key=lambda e: len(e[1]["sharp_probs"]))
+        line, data = best
+
+        if not data["sharp_probs"]:
+            # Fall back to any line that has data
+            for l2, d2 in entries:
+                if d2["sharp_probs"]:
+                    line, data = l2, d2
+                    break
+            else:
+                continue
+
+        sharp_over = float(sum(data["sharp_probs"]) / len(data["sharp_probs"]))
+
+        result[(gd, pname)] = {
+            "line": line,
+            "sharp_prob_over": sharp_over,
+            "sharp_prob_under": 1.0 - sharp_over,
+            "n_sharp_books": len(data["sharp_probs"]),
+            "soft_over_price": data["soft_over"],
+            "soft_under_price": data["soft_under"],
+        }
+
+    return result
+
+
+def load_per_book_props_bulk():
+    """Load player props per bookmaker for walk-forward analysis.
+
+    Returns dict of (game_date, player_name_key, line, bookmaker) ->
+        {over_price, under_price}
+    where player_name_key is (first_initial, last_name_lower) for matching.
+    """
+    conn = get_db()
+    create_odds_tables(conn)
+
+    rows = conn.execute("""
+        SELECT game_date, player_name, bookmaker, over_under, price, line
+        FROM nhl_player_props
+    """).fetchall()
+    conn.close()
+
+    if not rows:
+        return {}
+
+    import unicodedata
+
+    def _match_key(name):
+        name = unicodedata.normalize("NFKD", name)
+        name = "".join(c for c in name if not unicodedata.combining(c))
+        name = name.strip().lower().replace(".", "")
+        parts = name.split()
+        if len(parts) >= 2:
+            return (parts[0][0], " ".join(parts[1:]))
+        return ("", name)
+
+    result = {}
+    for r in rows:
+        ini, last = _match_key(r["player_name"])
+        key = (r["game_date"], ini, last, r["line"], r["bookmaker"])
+        if key not in result:
+            result[key] = {}
+        if r["over_under"] == "Over":
+            result[key]["over_price"] = int(r["price"])
+        else:
+            result[key]["under_price"] = int(r["price"])
 
     return result
 

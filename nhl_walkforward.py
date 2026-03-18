@@ -132,6 +132,88 @@ def _load_prop_lookup():
     return prop_lines
 
 
+def _load_per_book_props():
+    """Load per-bookmaker props for sharp-vs-soft analysis.
+
+    Returns dict of (initial, last_name, game_date, line, bookmaker) ->
+        {over_price, under_price}
+    """
+    conn = nhl_odds_collector.get_db()
+    nhl_odds_collector.create_odds_tables(conn)
+    rows = conn.execute(
+        "SELECT player_name, game_date, bookmaker, line, over_under, price "
+        "FROM nhl_player_props"
+    ).fetchall()
+    conn.close()
+
+    result = {}
+    for r in rows:
+        ini, last = _name_match_key(r["player_name"])
+        key = (ini, last, r["game_date"], r["line"], r["bookmaker"])
+        if key not in result:
+            result[key] = {}
+        if r["over_under"] == "Over":
+            result[key]["over_price"] = int(r["price"])
+        else:
+            result[key]["under_price"] = int(r["price"])
+
+    return result
+
+
+def _compute_sharp_consensus(per_book_props, ini, last, gd, line):
+    """Compute vig-free implied probability from sharp books.
+
+    Returns dict with sharp_prob_over, sharp_prob_under, n_sharp_books,
+    or None if no sharp books have this line.
+    """
+    sharp_probs = []
+    for book in nhl_odds_collector.SHARP_BOOKS:
+        bk = (ini, last, gd, line, book)
+        bp = per_book_props.get(bk)
+        if bp is None:
+            continue
+        ov = bp.get("over_price")
+        un = bp.get("under_price")
+        if ov is None or un is None:
+            continue
+        imp_ov = nhl_simulation.american_to_implied_prob(ov)
+        imp_un = nhl_simulation.american_to_implied_prob(un)
+        total = imp_ov + imp_un
+        if total > 0:
+            sharp_probs.append(imp_ov / total)
+
+    if not sharp_probs:
+        return None
+
+    avg_over = sum(sharp_probs) / len(sharp_probs)
+    return {
+        "sharp_prob_over": avg_over,
+        "sharp_prob_under": 1.0 - avg_over,
+        "n_sharp_books": len(sharp_probs),
+    }
+
+
+def _get_soft_book_prices(per_book_props, ini, last, gd, line):
+    """Get BetMGM (soft book / PlayAlberta proxy) prices for a line.
+
+    Returns dict with soft_over_price, soft_under_price, or None.
+    """
+    for book in nhl_odds_collector.SOFT_BOOKS:
+        bk = (ini, last, gd, line, book)
+        bp = per_book_props.get(bk)
+        if bp and bp.get("over_price") is not None:
+            pa_over, pa_under = nhl_odds_collector.betmgm_to_playalberta(
+                bp.get("over_price"), bp.get("under_price")
+            )
+            return {
+                "soft_over_price": bp.get("over_price"),
+                "soft_under_price": bp.get("under_price"),
+                "pa_over_est": pa_over,
+                "pa_under_est": pa_under,
+            }
+    return None
+
+
 def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
                     max_kelly_pct=0.10, min_edge=0.0, min_wager=1.0,
                     min_train_days=60, test_window_days=14, step_days=14):
@@ -158,6 +240,10 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
     prop_lines = _load_prop_lookup()
     logger.info("Prop lines loaded: %d unique (name, date, line) combos",
                 len(prop_lines))
+
+    # Per-bookmaker props for sharp-vs-soft analysis
+    per_book_props = _load_per_book_props()
+    logger.info("Per-book props loaded: %d entries", len(per_book_props))
 
     # Player name map: (player_id, date_str) -> normalized name
     conn = data_collector.get_db()
@@ -267,14 +353,24 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
 
                 # Match with sportsbook lines using initial + last name
                 pname_key = _name_match_key(str(pname)) if pname else ("", "")
+                ini_k, last_k = pname_key
+
                 for line in nhl_simulation.PROP_LINES:
-                    lk = (pname_key[0], pname_key[1], gd, line)
+                    lk = (ini_k, last_k, gd, line)
                     if lk not in prop_lines:
                         continue
                     pl = prop_lines[lk]
 
                     model_p_over = sim.get(f"P_over_{line}", 0)
                     model_p_under = 1.0 - model_p_over
+
+                    # Sharp-vs-soft signals for this player-game-line
+                    sharp = _compute_sharp_consensus(
+                        per_book_props, ini_k, last_k, gd, line
+                    )
+                    soft = _get_soft_book_prices(
+                        per_book_props, ini_k, last_k, gd, line
+                    )
 
                     for side, price_key, model_p, won_fn in [
                         ("OVER", "over_price", model_p_over,
@@ -294,6 +390,45 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
                         # Global min edge filter
                         if edge < min_edge:
                             continue
+
+                        # Sharp book signal
+                        sharp_prob = None
+                        sharp_edge = None
+                        n_sharp = 0
+                        if sharp:
+                            sp = (sharp["sharp_prob_over"] if side == "OVER"
+                                  else sharp["sharp_prob_under"])
+                            sharp_prob = round(sp, 4)
+                            sharp_edge = round(sp - implied, 4)
+                            n_sharp = sharp["n_sharp_books"]
+
+                        # Soft book (BetMGM / PlayAlberta) signal
+                        soft_price = None
+                        soft_implied = None
+                        soft_edge = None
+                        pa_price = None
+                        pa_implied = None
+                        pa_edge = None
+                        sharp_vs_soft_edge = None
+                        has_soft = False
+                        if soft:
+                            has_soft = True
+                            sp_key = ("soft_over_price" if side == "OVER"
+                                      else "soft_under_price")
+                            pa_key = ("pa_over_est" if side == "OVER"
+                                      else "pa_under_est")
+                            soft_price = soft.get(sp_key)
+                            pa_price = soft.get(pa_key)
+                            if soft_price is not None:
+                                soft_implied = nhl_simulation.american_to_implied_prob(soft_price)
+                                soft_edge = round(model_p - soft_implied, 4)
+                            if pa_price is not None:
+                                pa_implied = nhl_simulation.american_to_implied_prob(pa_price)
+                                pa_edge = round(model_p - pa_implied, 4)
+                            if sharp_prob is not None and soft_implied is not None:
+                                sharp_vs_soft_edge = round(
+                                    sharp_prob - soft_implied, 4
+                                )
 
                         all_bets.append({
                             "window": window_num,
@@ -317,6 +452,36 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
                             "var_ratio": round(vr, 3),
                             "decimal_odds": round(decimal_odds, 4),
                             "train_size": len(train_df),
+                            # Sharp book consensus
+                            "sharp_prob": sharp_prob,
+                            "sharp_edge": sharp_edge,
+                            "n_sharp_books": n_sharp,
+                            # Sharp agrees with model on direction?
+                            "sharp_agrees": (
+                                sharp_prob is not None
+                                and (
+                                    (side == "OVER" and sharp_prob > 0.5)
+                                    or (side == "UNDER" and sharp_prob < 0.5)
+                                )
+                            ),
+                            # Blended prob: 50/50 model + sharp
+                            "blended_prob": (
+                                round(0.5 * model_p + 0.5 * sharp_prob, 4)
+                                if sharp_prob is not None else None
+                            ),
+                            # Soft book (BetMGM) prices
+                            "has_soft": has_soft,
+                            "soft_price": soft_price,
+                            "soft_implied": (round(soft_implied, 4)
+                                             if soft_implied else None),
+                            "soft_edge": soft_edge,
+                            # PlayAlberta estimated prices
+                            "pa_price": pa_price,
+                            "pa_implied": (round(pa_implied, 4)
+                                           if pa_implied else None),
+                            "pa_edge": pa_edge,
+                            # Sharp-vs-soft divergence
+                            "sharp_vs_soft_edge": sharp_vs_soft_edge,
                         })
 
         # Window summary
@@ -359,20 +524,49 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
 
 
 def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
-                        max_kelly_pct, min_wager, min_edge=0.0):
-    """Simulate P&L for a filtered set of bets using Kelly sizing."""
-    # Sort by date for chronological simulation
+                        max_kelly_pct, min_wager, min_edge=0.0,
+                        use_soft_odds=False, use_sharp_prob=False,
+                        use_blended_prob=False):
+    """Simulate P&L for a filtered set of bets using Kelly sizing.
+
+    If use_soft_odds=True, uses BetMGM/PlayAlberta odds for payouts
+    (simulating actually betting on the soft book).
+    If use_sharp_prob=True, uses sharp book consensus probability
+    instead of model probability for edge/EV calculation.
+    If use_blended_prob=True, uses 50/50 blend of model + sharp prob.
+    """
     bets_df = bets_df.sort_values("date").reset_index(drop=True)
 
     bankroll = starting_bankroll
     results = []
 
     for _, bet in bets_df.iterrows():
-        if bet["edge"] <= min_edge or bet["ev"] <= 0:
+        # Determine probability estimate
+        if use_blended_prob and bet.get("blended_prob") is not None:
+            prob = bet["blended_prob"]
+        elif use_sharp_prob and bet.get("sharp_prob") is not None:
+            prob = bet["sharp_prob"]
+        else:
+            prob = bet["model_prob"]
+
+        # Determine which odds to bet into
+        if use_soft_odds:
+            if bet.get("soft_price") is None:
+                continue
+            dec_odds = nhl_simulation.american_to_decimal(bet["soft_price"])
+            imp = nhl_simulation.american_to_implied_prob(bet["soft_price"])
+        else:
+            dec_odds = bet["decimal_odds"]
+            imp = bet["implied_prob"]
+
+        edge_val = prob - imp
+        ev_val = prob * (dec_odds - 1) - (1 - prob)
+
+        if edge_val <= min_edge or ev_val <= 0:
             continue
 
         # Kelly sizing
-        kf = bet["ev"] / (bet["decimal_odds"] - 1)
+        kf = ev_val / (dec_odds - 1) if dec_odds > 1 else 0
         kf = max(kf, 0) * kelly_fraction
         kf = min(kf, max_kelly_pct)
 
@@ -381,12 +575,12 @@ def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
             continue
 
         won = bet["won"]
-        profit = round(wager * (bet["decimal_odds"] - 1), 2) if won else -wager
+        profit = round(wager * (dec_odds - 1), 2) if won else -wager
         bankroll = round(bankroll + profit, 2)
 
         results.append({
             "wager": wager, "won": won, "profit": profit,
-            "bankroll": bankroll, "edge": bet["edge"],
+            "bankroll": bankroll, "edge": edge_val,
         })
 
     if not results:
@@ -428,13 +622,15 @@ def _evaluate_strategies(bets_df, starting_bankroll, kelly_fraction,
     """Evaluate many betting strategies to find profitable niches."""
     strategies = {}
 
-    def _run(name, mask, min_edge=0.0):
+    def _run(name, mask, min_edge=0.0, use_soft_odds=False,
+             use_sharp_prob=False, use_blended_prob=False):
         subset = bets_df[mask].copy()
         if len(subset) == 0:
             return
         result = _simulate_strategy(
             subset, starting_bankroll, kelly_fraction,
-            max_kelly_pct, min_wager, min_edge,
+            max_kelly_pct, min_wager, min_edge, use_soft_odds,
+            use_sharp_prob, use_blended_prob,
         )
         if result:
             strategies[name] = result
@@ -502,6 +698,158 @@ def _evaluate_strategies(bets_df, starting_bankroll, kelly_fraction,
     _run("under_2.5_fwd",
          ev_plus & (bets_df["side"] == "UNDER") & (bets_df["line"] == 2.5) & (bets_df["position_group"] == "F"))
 
+    # =================================================================
+    # SHARP-VS-SOFT META STRATEGIES
+    # =================================================================
+    # BetMGM vig is ~7.6% (3.8% per side), so pure sharp-vs-soft arb
+    # never works. Instead, we use sharp agreement as a CONFIDENCE
+    # FILTER for model-driven bets targeting the soft book.
+
+    has_sharp = bets_df["sharp_prob"].notna()
+    has_soft_col = bets_df["has_soft"] == True  # noqa: E712
+    has_both = has_sharp & has_soft_col
+    sharp_agrees = bets_df["sharp_agrees"] == True  # noqa: E712
+
+    # -- Soft book baseline: model +EV vs BetMGM odds --
+    soft_ev = has_soft_col & (bets_df["soft_edge"].fillna(0) > 0)
+    _run("BMG_all_ev_plus", soft_ev, use_soft_odds=True)
+    _run("BMG_overs", soft_ev & (bets_df["side"] == "OVER"), use_soft_odds=True)
+    _run("BMG_unders", soft_ev & (bets_df["side"] == "UNDER"), use_soft_odds=True)
+
+    # By line on soft book
+    for line in sorted(bets_df["line"].unique()):
+        _run(f"BMG_over_{line}",
+             soft_ev & (bets_df["side"] == "OVER") & (bets_df["line"] == line),
+             use_soft_odds=True)
+        _run(f"BMG_under_{line}",
+             soft_ev & (bets_df["side"] == "UNDER") & (bets_df["line"] == line),
+             use_soft_odds=True)
+
+    # Soft book edge thresholds
+    for edge_pct in [3, 5, 8]:
+        et = edge_pct / 100.0
+        _run(f"BMG_all_edge_{edge_pct}pct", soft_ev, min_edge=et,
+             use_soft_odds=True)
+        _run(f"BMG_unders_edge_{edge_pct}pct",
+             soft_ev & (bets_df["side"] == "UNDER"),
+             min_edge=et, use_soft_odds=True)
+        _run(f"BMG_overs_edge_{edge_pct}pct",
+             soft_ev & (bets_df["side"] == "OVER"),
+             min_edge=et, use_soft_odds=True)
+
+    # -- SHARP AGREES: model +EV AND sharp books confirm direction --
+    # This is the key filter: when both model AND sharp books agree,
+    # the bet has dual confirmation. Use model prob for sizing.
+    sharp_confirm = soft_ev & has_both & sharp_agrees
+    _run("BMG+sharp_all", sharp_confirm, use_soft_odds=True)
+    _run("BMG+sharp_overs",
+         sharp_confirm & (bets_df["side"] == "OVER"), use_soft_odds=True)
+    _run("BMG+sharp_unders",
+         sharp_confirm & (bets_df["side"] == "UNDER"), use_soft_odds=True)
+
+    for line in [1.5, 2.5, 3.5, 4.5]:
+        _run(f"BMG+sharp_over_{line}",
+             sharp_confirm & (bets_df["side"] == "OVER") & (bets_df["line"] == line),
+             use_soft_odds=True)
+        _run(f"BMG+sharp_under_{line}",
+             sharp_confirm & (bets_df["side"] == "UNDER") & (bets_df["line"] == line),
+             use_soft_odds=True)
+
+    for edge_pct in [3, 5, 8]:
+        et = edge_pct / 100.0
+        _run(f"BMG+sharp_all_{edge_pct}pct", sharp_confirm,
+             min_edge=et, use_soft_odds=True)
+        _run(f"BMG+sharp_unders_{edge_pct}pct",
+             sharp_confirm & (bets_df["side"] == "UNDER"),
+             min_edge=et, use_soft_odds=True)
+        _run(f"BMG+sharp_overs_{edge_pct}pct",
+             sharp_confirm & (bets_df["side"] == "OVER"),
+             min_edge=et, use_soft_odds=True)
+
+    # Position combos with sharp confirmation
+    _run("BMG+sharp_fwd_unders",
+         sharp_confirm & (bets_df["position_group"] == "F")
+         & (bets_df["side"] == "UNDER"), use_soft_odds=True)
+    _run("BMG+sharp_def_unders",
+         sharp_confirm & (bets_df["position_group"] == "D")
+         & (bets_df["side"] == "UNDER"), use_soft_odds=True)
+    _run("BMG+sharp_fwd_overs",
+         sharp_confirm & (bets_df["position_group"] == "F")
+         & (bets_df["side"] == "OVER"), use_soft_odds=True)
+
+    # N sharp books filter with confirmation
+    for n_min in [2, 3]:
+        n_mask = sharp_confirm & (bets_df["n_sharp_books"] >= n_min)
+        _run(f"BMG+sharp_{n_min}books",
+             n_mask, use_soft_odds=True)
+        _run(f"BMG+sharp_{n_min}books_unders",
+             n_mask & (bets_df["side"] == "UNDER"), use_soft_odds=True)
+        _run(f"BMG+sharp_{n_min}books_overs",
+             n_mask & (bets_df["side"] == "OVER"), use_soft_odds=True)
+
+    # -- SHARP DISAGREES: model says +EV but sharp books lean other way --
+    # When sharp books disagree, the bet is riskier. Track separately.
+    sharp_disagree = soft_ev & has_both & (~sharp_agrees)
+    _run("BMG_sharp_disagrees", sharp_disagree, use_soft_odds=True)
+    _run("BMG_sharp_disagrees_unders",
+         sharp_disagree & (bets_df["side"] == "UNDER"), use_soft_odds=True)
+    _run("BMG_sharp_disagrees_overs",
+         sharp_disagree & (bets_df["side"] == "OVER"), use_soft_odds=True)
+
+    # -- BLENDED PROB: 50/50 model + sharp for sizing --
+    # Uses the averaged probability for edge calculation and Kelly.
+    has_blended = bets_df["blended_prob"].notna()
+    blend_soft = has_soft_col & has_blended
+    _run("BMG_blend_all", blend_soft, use_soft_odds=True,
+         use_blended_prob=True)
+    _run("BMG_blend_overs",
+         blend_soft & (bets_df["side"] == "OVER"),
+         use_soft_odds=True, use_blended_prob=True)
+    _run("BMG_blend_unders",
+         blend_soft & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_blended_prob=True)
+
+    for line in [1.5, 2.5, 3.5]:
+        _run(f"BMG_blend_over_{line}",
+             blend_soft & (bets_df["side"] == "OVER") & (bets_df["line"] == line),
+             use_soft_odds=True, use_blended_prob=True)
+        _run(f"BMG_blend_under_{line}",
+             blend_soft & (bets_df["side"] == "UNDER") & (bets_df["line"] == line),
+             use_soft_odds=True, use_blended_prob=True)
+
+    # Blended + edge thresholds
+    for edge_pct in [3, 5, 8]:
+        et = edge_pct / 100.0
+        _run(f"BMG_blend_all_{edge_pct}pct", blend_soft,
+             min_edge=et, use_soft_odds=True, use_blended_prob=True)
+        _run(f"BMG_blend_unders_{edge_pct}pct",
+             blend_soft & (bets_df["side"] == "UNDER"),
+             min_edge=et, use_soft_odds=True, use_blended_prob=True)
+
+    # -- Best strategies on BMG specifically --
+    for lines in [(3.5,), (3.5, 4.5), (2.5, 3.5)]:
+        lbl = "+".join(str(l) for l in lines)
+        _run(f"BMG_under_{lbl}",
+             soft_ev & (bets_df["side"] == "UNDER") & bets_df["line"].isin(lines),
+             use_soft_odds=True)
+        _run(f"BMG+sharp_under_{lbl}",
+             sharp_confirm & (bets_df["side"] == "UNDER") & bets_df["line"].isin(lines),
+             use_soft_odds=True)
+        _run(f"BMG_over_{lbl}",
+             soft_ev & (bets_df["side"] == "OVER") & bets_df["line"].isin(lines),
+             use_soft_odds=True)
+        _run(f"BMG+sharp_over_{lbl}",
+             sharp_confirm & (bets_df["side"] == "OVER") & bets_df["line"].isin(lines),
+             use_soft_odds=True)
+
+    # -- High-volume shooters at soft book --
+    _run("BMG_highvol_unders",
+         soft_ev & (bets_df["side"] == "UNDER") & (bets_df["baseline_sog"] >= 2.5),
+         use_soft_odds=True)
+    _run("BMG+sharp_highvol_unders",
+         sharp_confirm & (bets_df["side"] == "UNDER") & (bets_df["baseline_sog"] >= 2.5),
+         use_soft_odds=True)
+
     return strategies
 
 
@@ -513,9 +861,9 @@ def print_walkforward(result):
             print(f"  Windows completed: {len(result['windows'])}")
         return
 
-    print("=" * 90)
-    print("  NHL SOG WALK-FORWARD BACKTEST: Quarter Kelly, Strategy Discovery")
-    print("=" * 90)
+    print("=" * 100)
+    print("  NHL SOG WALK-FORWARD BACKTEST: Sharp-vs-Soft Meta Analysis")
+    print("=" * 100)
     print(f"  Season:              {result['season']}")
     print(f"  Player-games:        {result['total_player_games']}")
     print(f"  Walk-forward windows: {len(result['windows'])}")
@@ -530,60 +878,131 @@ def print_walkforward(result):
         print(f"  {w['window']:4d}  {w['train_end']:>12s} {w['train_size']:6d}  "
               f"{w['test_start']} - {w['test_end']}  {w['test_size']:5d}")
 
-    # Strategy leaderboard
     strategies = result.get("strategies", {})
-    if strategies:
-        print()
-        print("  STRATEGY LEADERBOARD (sorted by yield):")
-        print(f"  {'Strategy':35s} {'Bets':>5s} {'Wins':>5s} {'W%':>6s} "
-              f"{'Profit':>9s} {'Yield':>7s} {'MaxDD':>7s} {'AvgEdge':>8s}")
-        print("  " + "-" * 92)
+    if not strategies:
+        print("\n  No strategies to display.")
+        print("=" * 100)
+        return
 
-        ranked = sorted(strategies.items(), key=lambda x: x[1]["yield_pct"], reverse=True)
-        for name, s in ranked:
-            if s["bets"] < 5:
-                continue
-            print(f"  {name:35s} {s['bets']:5d} {s['wins']:5d} "
+    def _print_section(title, prefix_filter=None, keys=None, min_bets=5):
+        """Print a section of strategies."""
+        if keys:
+            items = [(k, strategies[k]) for k in keys if k in strategies]
+        elif prefix_filter:
+            items = [(k, v) for k, v in strategies.items()
+                     if k.startswith(prefix_filter)]
+        else:
+            items = list(strategies.items())
+        items = [(k, v) for k, v in items if v["bets"] >= min_bets]
+        if not items:
+            return
+        items.sort(key=lambda x: x[1]["yield_pct"], reverse=True)
+        print()
+        print(f"  {title}:")
+        print(f"  {'Strategy':40s} {'Bets':>5s} {'Wins':>5s} {'W%':>6s} "
+              f"{'Profit':>9s} {'Yield':>7s} {'MaxDD':>7s} {'AvgEdge':>8s}")
+        print("  " + "-" * 97)
+        for name, s in items:
+            print(f"  {name:40s} {s['bets']:5d} {s['wins']:5d} "
                   f"{s['win_rate']:5.1f}% ${s['profit']:+8.2f} "
                   f"{s['yield_pct']:+6.1f}% {s['max_drawdown_pct']:6.1f}% "
                   f"{s['avg_edge']:7.1f}%")
 
-        # Highlight the best strategies
-        print()
-        print("  TOP STRATEGIES (min 10 bets, positive yield):")
-        profitable = [
-            (n, s) for n, s in ranked
-            if s["bets"] >= 10 and s["yield_pct"] > 0
-        ]
-        if profitable:
-            for name, s in profitable[:5]:
-                print(f"    >>> {name}: {s['bets']} bets, {s['win_rate']:.1f}% wins, "
-                      f"yield {s['yield_pct']:+.1f}%, "
-                      f"drawdown {s['max_drawdown_pct']:.1f}%")
-        else:
-            print("    No strategies with 10+ bets and positive yield found.")
+    # ---- BASELINE STRATEGIES (any book odds) ----
+    _print_section("BASELINE STRATEGIES (consensus odds)",
+                   keys=["all_ev_plus", "overs_only", "unders_only",
+                          "forwards_only", "defense_only",
+                          "fwd_unders", "def_unders",
+                          "home_players", "away_players"])
 
-        # Overs vs Unders comparison
-        print()
-        print("  OVERS vs UNDERS:")
-        for key in ["overs_only", "unders_only"]:
-            if key in strategies:
-                s = strategies[key]
-                print(f"    {key:20s}: {s['bets']} bets, {s['win_rate']:.1f}% W, "
-                      f"yield {s['yield_pct']:+.1f}%, profit ${s['profit']:+.2f}")
+    # By line
+    _print_section("BY LINE",
+                   keys=[f"line_{l}" for l in [0.5, 1.5, 2.5, 3.5, 4.5, 5.5]])
 
-        # By line breakdown
-        print()
-        print("  BY LINE (all +EV bets):")
-        for line in [0.5, 1.5, 2.5, 3.5, 4.5, 5.5]:
-            key = f"line_{line}"
-            if key in strategies:
-                s = strategies[key]
-                print(f"    {line}: {s['bets']} bets, {s['win_rate']:.1f}% W, "
-                      f"yield {s['yield_pct']:+.1f}%, profit ${s['profit']:+.2f}")
+    _print_section("BY SIDE + LINE",
+                   keys=[f"{s}_{l}" for l in [1.5, 2.5, 3.5, 4.5]
+                         for s in ["over", "under"]])
+
+    # ---- BETMGM/PLAYALBERTA STRATEGIES (model edge vs soft book) ----
+    _print_section("BETMGM: Model Edge vs Soft Book",
+                   keys=["BMG_all_ev_plus", "BMG_overs", "BMG_unders"]
+                   + [f"BMG_{s}_{l}" for l in [1.5, 2.5, 3.5, 4.5]
+                      for s in ["over", "under"]]
+                   + [f"BMG_all_edge_{e}pct" for e in [3, 5, 8]]
+                   + [f"BMG_unders_edge_{e}pct" for e in [3, 5, 8]]
+                   + [f"BMG_overs_edge_{e}pct" for e in [3, 5, 8]])
+
+    # ---- SHARP CONFIRMS MODEL (dual confirmation) ----
+    _print_section("BMG + SHARP CONFIRMS (model +EV AND sharp agrees on direction)",
+                   keys=["BMG+sharp_all", "BMG+sharp_overs", "BMG+sharp_unders"]
+                   + [f"BMG+sharp_{s}_{l}" for l in [1.5, 2.5, 3.5, 4.5]
+                      for s in ["over", "under"]]
+                   + [f"BMG+sharp_all_{e}pct" for e in [3, 5, 8]]
+                   + [f"BMG+sharp_unders_{e}pct" for e in [3, 5, 8]]
+                   + [f"BMG+sharp_overs_{e}pct" for e in [3, 5, 8]]
+                   + ["BMG+sharp_fwd_unders", "BMG+sharp_def_unders",
+                      "BMG+sharp_fwd_overs"]
+                   + [f"BMG+sharp_{n}books{s}"
+                      for n in [2, 3] for s in ["", "_unders", "_overs"]])
+
+    # ---- SHARP DISAGREES (model says bet but sharp says other way) ----
+    _print_section("SHARP DISAGREES (model +EV but sharp leans other direction)",
+                   keys=["BMG_sharp_disagrees", "BMG_sharp_disagrees_overs",
+                         "BMG_sharp_disagrees_unders"])
+
+    # ---- BLENDED PROB (50/50 model + sharp) ----
+    _print_section("BLENDED PROB (50/50 model+sharp, bet on BMG)",
+                   prefix_filter="BMG_blend_")
+
+    # ---- BMG LINE COMBOS ----
+    _print_section("BMG LINE COMBOS",
+                   keys=[f"BMG_{p}_{c}" for c in ["3.5", "3.5+4.5", "2.5+3.5"]
+                         for p in ["under", "over"]]
+                   + [f"BMG+sharp_{p}_{c}" for c in ["3.5", "3.5+4.5", "2.5+3.5"]
+                      for p in ["under", "over"]]
+                   + ["BMG_highvol_unders", "BMG+sharp_highvol_unders"])
+
+    # ---- FULL LEADERBOARD ----
+    ranked = sorted(strategies.items(),
+                    key=lambda x: x[1]["yield_pct"], reverse=True)
+    profitable = [
+        (n, s) for n, s in ranked
+        if s["bets"] >= 10 and s["yield_pct"] > 0
+    ]
 
     print()
-    print("=" * 90)
+    print("  TOP 10 STRATEGIES (min 10 bets, positive yield):")
+    print("  " + "-" * 97)
+    if profitable:
+        for name, s in profitable[:10]:
+            soft_tag = " [BMG]" if name.startswith(("BMG", "soft_")) else ""
+            print(f"    >>> {name}{soft_tag}: {s['bets']} bets, "
+                  f"{s['win_rate']:.1f}% wins, yield {s['yield_pct']:+.1f}%, "
+                  f"drawdown {s['max_drawdown_pct']:.1f}%")
+    else:
+        print("    No strategies with 10+ bets and positive yield found.")
+
+    # ---- SHARP CONFIRMATION VALUE ----
+    print()
+    print("  SHARP CONFIRMATION VALUE:")
+    print("  " + "-" * 97)
+    for label, key_model, key_confirm, key_disagree in [
+        ("All +EV", "BMG_all_ev_plus", "BMG+sharp_all", "BMG_sharp_disagrees"),
+        ("Overs", "BMG_overs", "BMG+sharp_overs", "BMG_sharp_disagrees_overs"),
+        ("Unders", "BMG_unders", "BMG+sharp_unders", "BMG_sharp_disagrees_unders"),
+    ]:
+        parts = [f"  {label:10s}"]
+        for lbl, key in [("Model@BMG", key_model),
+                          ("Sharp confirms", key_confirm),
+                          ("Sharp disagrees", key_disagree)]:
+            s = strategies.get(key)
+            if s:
+                parts.append(f"{lbl}: {s['bets']:4d} bets, yield {s['yield_pct']:+.1f}%")
+        if len(parts) > 1:
+            print("  |  ".join(parts))
+
+    print()
+    print("=" * 100)
 
 
 if __name__ == "__main__":

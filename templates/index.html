@@ -295,7 +295,7 @@
                                          localStorage.setItem('sogBankroll', bankroll);
                                          recalcAllBets();">
                     </div>
-                    <h5 class="mb-0 ms-2">Today's Bets</h5>
+                    <h5 class="mb-0 ms-2">PlayAlberta Bets <small class="text-secondary">(Blended Model+Sharp, Unders 5%+ Edge)</small></h5>
                     <div class="ms-auto d-flex align-items-center gap-3">
                         <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="showAllBtn"
                                 onclick="toggleShowAll()">Show All Players</button>
@@ -307,14 +307,15 @@
                     <table class="table table-hover mb-0" id="predictionsTable">
                         <thead>
                             <tr>
-                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')" style="min-width:140px">Recommended Bet</th>
+                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')" style="min-width:140px">Bet</th>
                                 <th>Player</th>
                                 <th>Matchup</th>
                                 <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred SOG</th>
                                 <th>Line</th>
-                                <th class="sort-btn" onclick="sortPredictions('edge')">Edge</th>
-                                <th class="sort-btn" onclick="sortPredictions('confidence_display')">Confidence</th>
-                                <th>P(Over)</th>
+                                <th class="sort-btn" onclick="sortPredictions('edge')">Blend Edge</th>
+                                <th>Model P(U)</th>
+                                <th>Sharp P(U)</th>
+                                <th>Blend P(U)</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -785,18 +786,18 @@ function renderMobileCards() {
 
             let betLine = '';
             if ((p.suggested_bet || 0) > 0) {
-                const side = p.bet_side || 'OVER';
                 const saved = oddsInputs[p.player_id] || {};
                 const lineVal = saved.line || '';
+                const tier = p.bet_tier === 'strong' ? '★ ' : '';
                 if (bankroll > 0) {
-                    betLine = `<div class="m-card-bet">$${Math.round(bankroll * p.suggested_bet)} ${side} ${lineVal}</div>`;
+                    betLine = `<div class="m-card-bet">${tier}$${Math.round(bankroll * p.suggested_bet)} UNDER ${lineVal}</div>`;
                 } else {
-                    betLine = `<div class="m-card-bet">${(p.suggested_bet * 100).toFixed(1)}% ${side} ${lineVal}</div>`;
+                    betLine = `<div class="m-card-bet">${tier}${(p.suggested_bet * 100).toFixed(1)}% UNDER ${lineVal}</div>`;
                 }
             }
 
             const edge = p.edge || 0;
-            const edgeText = edge !== 0 ? `Edge: ${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '';
+            const edgeText = edge !== 0 ? `Blend Edge: ${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '';
 
             html += `<div class="m-card" onclick="showPlayer(${p.player_id})">
                 <div class="m-card-header">
@@ -856,41 +857,56 @@ async function loadPredictions() {
 }
 
 async function loadBetMGMOdds() {
-    const props = await fetchJSON('/api/nhl/betmgm-odds');
-    if (!props || Object.keys(props).length === 0) return;
-
+    // Use PlayAlberta-estimated odds already embedded in predictions
+    // (derived from BetMGM via the predict_player() pipeline)
     let matched = 0;
-    for (const [playerName, info] of Object.entries(props)) {
-        const pred = allPredictions.find(p => matchPlayerName(playerName, p.player_name));
-        if (!pred) continue;
-
-        const pid = pred.player_id;
+    for (const p of allPredictions) {
+        const pid = p.player_id;
         if (oddsInputs[pid] && oddsInputs[pid].line) continue;
+        if (p.pa_over_est == null && p.pa_under_est == null) continue;
+        if (p.market_sog_line == null) continue;
 
         oddsInputs[pid] = {
-            line: String(info.line),
-            overOdds: info.pa_over_est != null ? String(info.pa_over_est) : '',
-            underOdds: info.pa_under_est != null ? String(info.pa_under_est) : '',
-            source: 'betmgm',
+            line: String(p.market_sog_line),
+            overOdds: p.pa_over_est != null ? String(p.pa_over_est) : '',
+            underOdds: p.pa_under_est != null ? String(p.pa_under_est) : '',
+            source: 'playalberta',
         };
         matched++;
     }
 
+    // Fall back to BetMGM API if predictions didn't include PA odds
+    if (matched === 0) {
+        const props = await fetchJSON('/api/nhl/betmgm-odds');
+        if (props && Object.keys(props).length > 0) {
+            for (const [playerName, info] of Object.entries(props)) {
+                const pred = allPredictions.find(p => matchPlayerName(playerName, p.player_name));
+                if (!pred) continue;
+                const pid = pred.player_id;
+                if (oddsInputs[pid] && oddsInputs[pid].line) continue;
+                oddsInputs[pid] = {
+                    line: String(info.line),
+                    overOdds: info.pa_over_est != null ? String(info.pa_over_est) : '',
+                    underOdds: info.pa_under_est != null ? String(info.pa_under_est) : '',
+                    source: 'betmgm',
+                };
+                matched++;
+            }
+        }
+    }
+
     if (matched > 0) {
-        // Compute bets for all players with odds
         allPredictions.forEach(p => {
             if (oddsInputs[p.player_id]) computeBet(p);
         });
 
-        // Sort by bet amount
         sortPredictions('suggested_bet');
         renderMobileCards();
 
         const badge = document.getElementById('oddsSourceBadge');
-        badge.textContent = `BetMGM (${matched} players)`;
+        badge.textContent = `PlayAlberta (${matched} players)`;
         badge.classList.remove('d-none');
 
-        // Save predictions to history for future confidence scoring
         savePredictionsToHistory();
     }
 }
@@ -991,43 +1007,93 @@ function computeBet(p) {
     const underOdds = parseInt(saved.underOdds);
     if (isNaN(line)) { p.suggested_bet = 0; p.edge = 0; p.prob_over_calc = 0; return; }
 
-    const pOver = calcProbOver(p.predicted_sog, line, p.var_ratio || 1.0);
-    const pUnder = 1 - pOver;
-    p.prob_over_calc = pOver;
+    // Model probability from NegBin simulation
+    const modelPOver = calcProbOver(p.predicted_sog, line, p.var_ratio || 1.0);
+    const modelPUnder = 1 - modelPOver;
+    p.prob_over_calc = modelPOver;
 
-    let kellyOver = 0, kellyUnder = 0;
-    let edgeOver = 0, edgeUnder = 0;
+    // Sharp consensus probability (vig-free from BetOnline/DK/FanDuel)
+    const sharpOver = p.sharp_prob_over;
+    const sharpUnder = p.sharp_prob_under;
+    const hasSharp = sharpOver != null && sharpUnder != null && (p.n_sharp_books || 0) >= 1;
+
+    // Blended probability: 50/50 model + sharp (the winning strategy)
+    // Require sharp data for blending — no sharp = no bet (per walk-forward)
+    let blendedOver, blendedUnder;
+    if (hasSharp) {
+        blendedOver = 0.5 * modelPOver + 0.5 * sharpOver;
+        blendedUnder = 0.5 * modelPUnder + 0.5 * sharpUnder;
+    } else {
+        blendedOver = modelPOver;
+        blendedUnder = modelPUnder;
+    }
+    p.blended_prob_over = blendedOver;
+    p.blended_prob_under = blendedUnder;
+    p.sharp_agrees = hasSharp && (
+        (modelPUnder > 0.5 && sharpUnder > 0.5) ||
+        (modelPOver > 0.5 && sharpOver > 0.5)
+    );
+
+    // Compute edge using BLENDED probability vs PlayAlberta odds
+    let blendedEdgeOver = 0, blendedEdgeUnder = 0;
+    let kellyUnder = 0;
+    p.ev_over = 0;
+    p.ev_under = 0;
+
     if (!isNaN(overOdds) && overOdds !== 0) {
         const impliedO = americanToImpliedProb(overOdds);
-        edgeOver = pOver - impliedO;
-        kellyOver = kellyFraction(pOver, overOdds);
-        p.ev_over = +calcEV(pOver, overOdds).toFixed(3);
+        blendedEdgeOver = blendedOver - impliedO;
+        p.ev_over = +calcEV(blendedOver, overOdds).toFixed(3);
     }
     if (!isNaN(underOdds) && underOdds !== 0) {
         const impliedU = americanToImpliedProb(underOdds);
-        edgeUnder = pUnder - impliedU;
-        kellyUnder = kellyFraction(pUnder, underOdds);
-        p.ev_under = +calcEV(pUnder, underOdds).toFixed(3);
+        blendedEdgeUnder = blendedUnder - impliedU;
+        kellyUnder = kellyFraction(blendedUnder, underOdds);
+        p.ev_under = +calcEV(blendedUnder, underOdds).toFixed(3);
     }
 
-    const bestKelly = Math.max(kellyOver, kellyUnder);
-    const bestSide = kellyOver >= kellyUnder ? 'OVER' : 'UNDER';
-    const confidence = Math.min((p.signal || 0) / 1.5, 1.0);
-    const adjKelly = bestKelly * confidence;
-    p.kelly_best = bestKelly;
-    p.suggested_bet = adjKelly;
-    p.bet_side = bestSide;
-    p.edge = bestSide === 'OVER' ? edgeOver : edgeUnder;
+    // Strategy: BMG_blend_unders
+    // Bet UNDER when blended edge > 3% (walk-forward +6.7% yield at 3%, +14.3% at 5%)
+    // Tier system: 5%+ = strong bet, 3-5% = moderate bet
+    const STRONG_EDGE = 0.05;
+    const MIN_EDGE = 0.03;
+
+    p.blended_edge_over = blendedEdgeOver;
+    p.blended_edge_under = blendedEdgeUnder;
+
+    if (blendedEdgeUnder >= MIN_EDGE && p.ev_under > 0 && hasSharp) {
+        const adjKelly = Math.min(kellyUnder * 0.25, 0.10);  // Quarter Kelly, 10% cap
+        p.kelly_best = kellyUnder;
+        p.suggested_bet = adjKelly;
+        p.bet_side = 'UNDER';
+        p.edge = blendedEdgeUnder;
+        p.bet_tier = blendedEdgeUnder >= STRONG_EDGE ? 'strong' : 'moderate';
+    } else {
+        p.kelly_best = 0;
+        p.suggested_bet = 0;
+        p.bet_side = null;
+        p.edge = blendedEdgeUnder;  // Always show under edge for reference
+        p.bet_tier = null;
+    }
 }
 
 function renderPredictions(list) {
     const tbody = document.querySelector('#predictionsTable tbody');
 
-    // If odds loaded, default to hiding $0 bets unless user toggled "Show All"
-    const hasOdds = list.some(p => (p.suggested_bet || 0) > 0);
-    const displayList = (hasOdds && !showAllPlayers)
-        ? list.filter(p => (p.suggested_bet || 0) > 0)
-        : list;
+    // Show qualifying bets, or top 10 by blended edge if none qualify
+    const hasBets = list.some(p => (p.suggested_bet || 0) > 0);
+    let displayList;
+    if (showAllPlayers) {
+        displayList = list;
+    } else if (hasBets) {
+        displayList = list.filter(p => (p.suggested_bet || 0) > 0);
+    } else {
+        // No bets today — show top 10 closest to qualifying (by blended under edge)
+        displayList = [...list]
+            .filter(p => p.blended_prob_under != null)
+            .sort((a, b) => (b.edge || -1) - (a.edge || -1))
+            .slice(0, 10);
+    }
 
     tbody.innerHTML = displayList.map(p => {
         const cls = p.predicted_sog >= 4 ? 'prediction-high' :
@@ -1040,44 +1106,39 @@ function renderPredictions(list) {
         // Bet cell
         let betText = '—', betClass = 'ev-neutral';
         if ((p.suggested_bet || 0) > 0) {
-            const side = p.bet_side || 'OVER';
+            const tier = p.bet_tier === 'strong' ? '★ ' : '';
             if (bankroll > 0) {
                 const wager = Math.round(bankroll * p.suggested_bet);
-                betText = `$${wager} ${side} ${lineVal}`;
-                betClass = wager >= bankroll * 0.02 ? 'ev-positive fw-bold' : 'ev-neutral fw-bold';
+                betText = `${tier}$${wager} U${lineVal}`;
             } else {
-                betText = `${(p.suggested_bet * 100).toFixed(1)}% ${side} ${lineVal}`;
-                betClass = 'ev-neutral fw-bold';
+                betText = `${tier}${(p.suggested_bet * 100).toFixed(1)}% U${lineVal}`;
             }
+            betClass = p.bet_tier === 'strong' ? 'ev-positive fw-bold' : 'signal-strong fw-bold';
         }
 
-        // Edge cell
+        // Blended edge cell
         const edge = p.edge || 0;
         const edgeText = edge !== 0 ? `${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '—';
-        const edgeClass = edge > 0.05 ? 'ev-positive' : edge > 0 ? 'signal-mild' : edge < 0 ? 'ev-negative' : 'ev-neutral';
+        const edgeClass = edge >= 0.08 ? 'ev-positive fw-bold' : edge >= 0.05 ? 'ev-positive' : edge > 0 ? 'signal-mild' : 'ev-neutral';
 
-        // Confidence cell — use historical if available, fall back to signal
-        const hist = p.hist_confidence;
-        let confText, confClass, confTitle;
-        if (hist && hist.total_preds >= 3) {
-            const pct = (hist.confidence_score * 100).toFixed(0);
-            const wr = (hist.win_rate * 100).toFixed(0);
-            confText = `${pct}%`;
-            confClass = hist.confidence_score >= 0.65 ? 'signal-fire' :
-                        hist.confidence_score >= 0.45 ? 'signal-strong' :
-                        hist.confidence_score >= 0.25 ? 'signal-mild' : 'signal-none';
-            confTitle = `Win rate: ${wr}% (${hist.bets_won}/${hist.total_bets}) | Avg error: ${hist.avg_error} SOG | ${hist.total_preds} predictions`;
-        } else {
-            const sig = p.signal || 0;
-            confText = sig > 0 ? sig.toFixed(2) : '—';
-            confClass = sig >= 1.0 ? 'signal-fire' : sig >= 0.5 ? 'signal-strong' : sig >= 0.25 ? 'signal-mild' : 'signal-none';
-            confTitle = 'Signal = |vs Avg| / CV (building history...)';
+        // Model P(Under)
+        const modelPU = p.prob_over_calc != null ? (1 - p.prob_over_calc) : null;
+        const modelPUText = modelPU != null ? (modelPU * 100).toFixed(1) + '%' : '—';
+
+        // Sharp P(Under)
+        const sharpPU = p.sharp_prob_under;
+        const nSharp = p.n_sharp_books || 0;
+        let sharpText = '—';
+        if (sharpPU != null) {
+            sharpText = `${(sharpPU * 100).toFixed(1)}%`;
+            if (nSharp > 0) sharpText += ` <small class="text-secondary">(${nSharp})</small>`;
         }
-        p.confidence_display = hist ? (hist.confidence_score || 0) : (p.signal || 0);
+        const sharpClass = p.sharp_agrees ? 'signal-strong' : (sharpPU != null ? 'signal-mild' : 'ev-neutral');
 
-        // P(Over)
-        const pOverPct = p.prob_over_calc != null && !isNaN(p.prob_over_calc)
-            ? (p.prob_over_calc * 100).toFixed(1) + '%' : '—';
+        // Blended P(Under)
+        const blendPU = p.blended_prob_under;
+        const blendPUText = blendPU != null ? (blendPU * 100).toFixed(1) + '%' : '—';
+        const blendClass = blendPU != null && blendPU > 0.55 ? 'signal-fire' : blendPU != null && blendPU > 0.50 ? 'signal-strong' : 'ev-neutral';
 
         return `<tr onclick="showPlayer(${pid})" style="cursor:pointer">
             <td class="${betClass}" style="font-size:0.95rem;white-space:nowrap">${betText}</td>
@@ -1088,12 +1149,13 @@ function renderPredictions(list) {
                        value="${lineVal}"
                        oninput="updateOddsSimple(${pid})" onclick="event.stopPropagation()" style="width:55px"></td>
             <td class="${edgeClass}" style="font-weight:600">${edgeText}</td>
-            <td class="${confClass}" title="${confTitle}">${confText}</td>
-            <td class="prob-cell">${pOverPct}</td>
+            <td>${modelPUText}</td>
+            <td class="${sharpClass}">${sharpText}</td>
+            <td class="${blendClass}" style="font-weight:600">${blendPUText}</td>
         </tr>`;
     }).join('');
 
-    // Hidden inputs for over/under odds (needed for recalculation)
+    // Recalculate for any that need it
     displayList.forEach(p => {
         const saved = oddsInputs[p.player_id];
         if (saved) computeBet(p);

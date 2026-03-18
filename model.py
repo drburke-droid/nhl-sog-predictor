@@ -34,7 +34,7 @@ except ImportError:
     HAS_ODDS = False
 
 MODEL_DIR = Path(__file__).parent / "saved_model"
-MODEL_VERSION = 2  # v2: added odds-derived features
+MODEL_VERSION = 3  # v3: added sharp_consensus_prob feature
 
 logger = logging.getLogger(__name__)
 
@@ -142,6 +142,7 @@ FEATURE_COLS = [
     "game_total",           # over/under on total goals (pace proxy)
     "implied_team_total",   # team's expected goals from ML + total
     "sog_prop_line",        # market consensus player SOG line
+    "sharp_consensus_prob", # vig-free over prob from sharp books (betonline/dk/fd)
 ]
 
 
@@ -328,14 +329,16 @@ def _build_feature_dataframe() -> pd.DataFrame:
     # --- Odds data (optional — NaN when not available) ---
     odds_game_map = {}   # (game_date, home_team_abbrev) -> {game_total, implied_*}
     odds_prop_map = {}   # (game_date, player_name) -> consensus SOG line
+    sharp_map = {}       # (game_date, player_name) -> {sharp_prob_over, ...}
 
     if HAS_ODDS:
         try:
             odds_game_map = nhl_odds_collector.load_game_odds_bulk()
             odds_prop_map = nhl_odds_collector.load_player_props_bulk()
+            sharp_map = nhl_odds_collector.load_sharp_consensus_bulk()
             logger.info(
-                "Loaded odds data: %d games, %d player props",
-                len(odds_game_map), len(odds_prop_map),
+                "Loaded odds data: %d games, %d player props, %d sharp consensus",
+                len(odds_game_map), len(odds_prop_map), len(sharp_map),
             )
         except Exception as exc:
             logger.warning("Could not load odds data: %s", exc)
@@ -525,6 +528,11 @@ def _build_feature_dataframe() -> pd.DataFrame:
             if prop_val is not None:
                 sog_prop_line = prop_val
 
+            sharp_consensus_prob = float("nan")
+            sharp_entry = sharp_map.get(prop_key)
+            if sharp_entry is not None:
+                sharp_consensus_prob = sharp_entry["sharp_prob_over"]
+
             records.append({
                 "player_id": row["player_id"],
                 "game_id": row["game_id"],
@@ -568,6 +576,7 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 "game_total": game_total,
                 "implied_team_total": implied_team_total,
                 "sog_prop_line": sog_prop_line,
+                "sharp_consensus_prob": sharp_consensus_prob,
             })
 
     return pd.DataFrame(records)
@@ -945,7 +954,9 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     game_total = float("nan")
     implied_team_total = float("nan")
     sog_prop_line = float("nan")
+    sharp_consensus_prob = float("nan")
     market_line = None  # For post-prediction blending
+    consensus = None  # Full consensus dict for return
 
     if HAS_ODDS:
         try:
@@ -971,6 +982,9 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
             if consensus:
                 sog_prop_line = consensus["line"]
                 market_line = consensus["line"]
+                sp = consensus.get("sharp_prob_over")
+                if sp is not None:
+                    sharp_consensus_prob = sp
         except Exception as exc:
             logger.debug("Could not fetch odds features: %s", exc)
 
@@ -989,6 +1003,7 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         game_total,
         implied_team_total,
         sog_prop_line,
+        sharp_consensus_prob,
     ]])
 
     # Predict residual, reconstruct final SOG
@@ -1036,6 +1051,19 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
             round(implied_team_total, 2)
             if not np.isnan(implied_team_total) else None
         ),
+        # Sharp consensus (vig-free from BetOnline/DK/FanDuel)
+        "sharp_prob_over": (
+            consensus.get("sharp_prob_over") if consensus else None
+        ),
+        "sharp_prob_under": (
+            consensus.get("sharp_prob_under") if consensus else None
+        ),
+        "n_sharp_books": (
+            consensus.get("n_sharp_books", 0) if consensus else 0
+        ),
+        # PlayAlberta estimated odds (derived from BetMGM)
+        "pa_over_est": consensus.get("pa_over_est") if consensus else None,
+        "pa_under_est": consensus.get("pa_under_est") if consensus else None,
     }
 
 
