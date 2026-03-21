@@ -6,5 +6,5 @@ echo.
 echo Dashboard will be at: http://localhost:5000
 echo Press Ctrl+C to stop.
 echo.
-py -3.12 app.py
+py -3.10 app.py
 pause
