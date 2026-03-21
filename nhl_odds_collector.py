@@ -537,11 +537,14 @@ def _match_key(name):
     return ("", name)
 
 
-def get_consensus_sog_line(player_name, game_date=None):
+def get_consensus_sog_line(player_name, game_date=None, team=None):
     """Get consensus SOG line for a player on a date.
 
     Matches abbreviated names ('N. MacKinnon') to full names
     ('Nathan MacKinnon') via first initial + last name.
+    When *team* (NHL abbreviation) is provided, only match props from
+    games that involve that team — prevents cross-team collisions
+    (e.g. Anders Lee NYI vs Andre Lee LAK).
 
     Returns dict with line, over_odds, under_odds, num_books,
     and sharp consensus data — or None.
@@ -550,20 +553,32 @@ def get_consensus_sog_line(player_name, game_date=None):
     if game_date is None:
         game_date = date.today().isoformat()
 
+    # Build optional team filter
+    team_clause = ""
+    params: list = [player_name, game_date]
+    if team:
+        team_clause = " AND (home_abbrev = ? OR away_abbrev = ?)"
+        params.extend([team, team])
+
     # Try exact match first, then fall back to initial+last match
     rows = conn.execute(
-        """SELECT bookmaker, over_under, price, line FROM nhl_player_props
-           WHERE player_name = ? AND game_date = ?""",
-        (player_name, game_date),
+        f"""SELECT bookmaker, over_under, price, line FROM nhl_player_props
+           WHERE player_name = ? AND game_date = ?{team_clause}""",
+        params,
     ).fetchall()
 
     if not rows:
         # Fuzzy match: load all props for date, match on initial+last
         target_key = _match_key(player_name)
+        fuzzy_params: list = [game_date]
+        fuzzy_team_clause = ""
+        if team:
+            fuzzy_team_clause = " AND (home_abbrev = ? OR away_abbrev = ?)"
+            fuzzy_params.extend([team, team])
         all_rows = conn.execute(
-            """SELECT player_name, bookmaker, over_under, price, line
-               FROM nhl_player_props WHERE game_date = ?""",
-            (game_date,),
+            f"""SELECT player_name, bookmaker, over_under, price, line
+               FROM nhl_player_props WHERE game_date = ?{fuzzy_team_clause}""",
+            fuzzy_params,
         ).fetchall()
         rows = [r for r in all_rows if _match_key(r["player_name"]) == target_key]
 

@@ -978,7 +978,7 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
                 if itt is not None:
                     implied_team_total = itt
 
-            consensus = nhl_odds_collector.get_consensus_sog_line(player_name)
+            consensus = nhl_odds_collector.get_consensus_sog_line(player_name, team=team)
             if consensus:
                 sog_prop_line = consensus["line"]
                 market_line = consensus["line"]
