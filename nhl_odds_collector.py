@@ -21,7 +21,13 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-API_KEY = "29d902f2352064232e3d4022f78610b3"
+# Rotate API keys — primary exhausted, use backup keys until April 23
+_API_KEYS = [
+    "ae39819ad9390ec56cdedb47c907195c",
+    "789463d60f7b764390177f8ac6e91154",
+    "29d902f2352064232e3d4022f78610b3",  # original (exhausted)
+]
+API_KEY = _API_KEYS[0]
 BASE_URL = "https://api.the-odds-api.com/v4"
 SPORT = "icehockey_nhl"
 
@@ -143,14 +149,26 @@ def create_odds_tables(conn=None):
 # ---------------------------------------------------------------------------
 
 def _api_get(url, params, max_retries=3):
-    """Make API request with retry logic."""
+    """Make API request with retry logic and automatic key rotation."""
+    global API_KEY
     for attempt in range(max_retries):
         try:
+            params["apiKey"] = API_KEY
             resp = requests.get(url, params=params, timeout=30)
             if resp.status_code == 200:
                 remaining = resp.headers.get("x-requests-remaining", "?")
                 logger.info("Odds API credits remaining: %s", remaining)
                 return resp.json(), remaining
+            elif resp.status_code == 401 and "OUT_OF_USAGE_CREDITS" in resp.text:
+                # Rotate to next API key
+                idx = _API_KEYS.index(API_KEY) if API_KEY in _API_KEYS else -1
+                if idx + 1 < len(_API_KEYS):
+                    API_KEY = _API_KEYS[idx + 1]
+                    logger.warning("API key exhausted, rotating to next key")
+                    continue
+                else:
+                    logger.warning("All API keys exhausted")
+                    return None, "N/A"
             elif resp.status_code == 429:
                 logger.warning("Rate limited, waiting 60s...")
                 time.sleep(60)
@@ -190,8 +208,8 @@ def fetch_upcoming_game_odds():
         f"{BASE_URL}/sports/{SPORT}/odds",
         {
             "apiKey": API_KEY,
-            "regions": "us",
-            "markets": "h2h,totals",
+            "regions": "us,eu",
+            "markets": "h2h,totals,spreads",
             "oddsFormat": "american",
         },
     )
@@ -204,7 +222,7 @@ def fetch_player_props(event_id):
         f"{BASE_URL}/sports/{SPORT}/events/{event_id}/odds",
         {
             "apiKey": API_KEY,
-            "regions": "us",
+            "regions": "us,eu",
             "markets": "player_shots_on_goal",
             "oddsFormat": "american",
         },
@@ -383,8 +401,8 @@ def get_historical_event_odds(event_id, query_time):
         f"{BASE_URL}/historical/sports/{SPORT}/events/{event_id}/odds",
         {
             "apiKey": API_KEY,
-            "regions": "us",
-            "markets": "h2h,totals,player_shots_on_goal",
+            "regions": "us,eu",
+            "markets": "h2h,totals,spreads,player_shots_on_goal",
             "date": query_time,
             "oddsFormat": "american",
         },
@@ -419,7 +437,7 @@ def _store_historical_odds(conn, event, odds_data, game_date):
         for mkt in bk.get("markets", []):
             mkt_key = mkt["key"]
 
-            if mkt_key in ("h2h", "totals"):
+            if mkt_key in ("h2h", "totals", "spreads"):
                 for outcome in mkt.get("outcomes", []):
                     try:
                         conn.execute(
@@ -699,6 +717,13 @@ def get_game_odds_for_date(game_date=None, bookmaker="draftkings"):
         elif r["market"] == "totals":
             g[f"total_{r['outcome_name'].lower()}"] = r["outcome_price"]
             g["total_line"] = r["outcome_point"]
+        elif r["market"] == "spreads":
+            if r["outcome_name"] == r["home_team"]:
+                g["home_spread_point"] = r["outcome_point"]
+                g["home_spread_price"] = r["outcome_price"]
+            else:
+                g["away_spread_point"] = r["outcome_point"]
+                g["away_spread_price"] = r["outcome_price"]
 
     return list(games.values())
 
@@ -836,6 +861,13 @@ def load_game_odds_bulk():
         elif r["market"] == "totals":
             if r["outcome_point"] is not None:
                 g["total_line"] = r["outcome_point"]
+        elif r["market"] == "spreads":
+            if r["outcome_name"] == r["home_team"]:
+                g["home_spread_point"] = r["outcome_point"]
+                g["home_spread_price"] = r["outcome_price"]
+            elif r["outcome_name"] == r["away_team"]:
+                g["away_spread_point"] = r["outcome_point"]
+                g["away_spread_price"] = r["outcome_price"]
 
     # Compute derived features
     result = {}
@@ -859,6 +891,19 @@ def load_game_odds_bulk():
                 if total is not None:
                     ctx["implied_home_total"] = total * hw
                     ctx["implied_away_total"] = total * aw
+
+        # Add spread data
+        sp = g.get("home_spread_point")
+        if sp is not None:
+            ctx["home_spread_point"] = sp
+            ctx["home_spread_price"] = g.get("home_spread_price")
+            ctx["away_spread_point"] = g.get("away_spread_point")
+            ctx["away_spread_price"] = g.get("away_spread_price")
+
+        # Add raw moneyline prices
+        if home_ml is not None:
+            ctx["home_ml"] = home_ml
+            ctx["away_ml"] = away_ml
 
         if ctx:
             result[key] = ctx
@@ -906,7 +951,7 @@ def load_player_props_bulk():
 # Soft books (higher vig, worse calibration):
 #   - BetMGM / PlayAlberta (7.61% vig, 0.0098 cal RMSE)
 #   - BetRivers (6.70% vig, worst Brier)
-SHARP_BOOKS = ("betonlineag", "draftkings", "fanduel")
+SHARP_BOOKS = ("pinnacle", "betonlineag", "draftkings", "fanduel")
 SOFT_BOOKS = ("betmgm",)  # PlayAlberta mirrors BetMGM lines
 
 

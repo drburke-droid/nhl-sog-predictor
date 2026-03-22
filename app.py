@@ -21,6 +21,7 @@ import model
 import model_v2
 import moneypuck_collector
 import nhl_odds_collector
+import nhl_game_model
 import mlb_api
 import mlb_data_collector
 import mlb_model
@@ -314,6 +315,14 @@ def api_team_predictions():
     return jsonify(preds)
 
 
+@app.route("/api/game-predictions")
+def api_game_predictions():
+    """Game-level predictions with +EV bet recommendations."""
+    preds = nhl_game_model.predict_todays_games()
+    metrics = nhl_game_model.get_model_metrics()
+    return jsonify({"games": preds, "metrics": metrics})
+
+
 @app.route("/api/nhl/odds")
 def api_nhl_odds():
     """Today's NHL game odds and player SOG props."""
@@ -598,9 +607,16 @@ def _startup():
                 logger.info("V2 background retrain complete")
             except Exception as exc:
                 logger.warning("V2 background retrain failed: %s", exc)
+            # Also train game model
+            try:
+                nhl_game_model.train_model()
+                logger.info("Game model background retrain complete")
+            except Exception as exc:
+                logger.warning("Game model background retrain failed: %s", exc)
         threading.Thread(target=_bg_retrain, daemon=True).start()
-        # Load V2 cached model for fast startup
+        # Load V2 and game model cached for fast startup
         model_v2.load_model()
+        nhl_game_model.load_model()
     else:
         # No saved model — must train (slower startup)
         try:
