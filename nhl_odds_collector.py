@@ -944,14 +944,17 @@ def load_player_props_bulk():
 # Sharp book consensus — vig-free implied probabilities
 # ---------------------------------------------------------------------------
 
-# Sharpness ranking by calibration RMSE (lower = sharper):
-#   1. BetOnlineAg  (0.0077)  — offshore, low vig, best calibrated
-#   2. DraftKings   (0.0118)  — lowest raw vig (6.37%)
-#   3. FanDuel      (0.0163)  — lowest Brier score (0.24283)
+# Sharpness ranking by Brier score on SOG props (2025-26 season):
+#   1. Coolbet       (0.2421 Brier, 7.00% vig) — sharpest overall
+#   2. FanDuel       (0.2440 Brier, 6.51% vig) — best US sharp
+#   3. Caesars/WH    (0.2445 Brier, 7.15% vig) — high volume, very sharp
+#   4. DraftKings    (0.2447 Brier, 6.37% vig) — lowest vig
+#   5. Pinnacle      (0.2447 Brier, 7.03% vig) — limited NHL props data
+#   6. BetOnline     (0.2448 Brier, 6.41% vig) — close to DK
 # Soft books (higher vig, worse calibration):
-#   - BetMGM / PlayAlberta (7.61% vig, 0.0098 cal RMSE)
-#   - BetRivers (6.70% vig, worst Brier)
-SHARP_BOOKS = ("pinnacle", "betonlineag", "draftkings", "fanduel")
+#   7. BetMGM        (0.2449 Brier, 7.61% vig) — highest vig, our target
+#   9. BetRivers     (0.2454 Brier, 6.70% vig) — least sharp major
+SHARP_BOOKS = ("coolbet", "fanduel", "williamhill_us", "draftkings", "pinnacle", "betonlineag")
 SOFT_BOOKS = ("betmgm",)  # PlayAlberta mirrors BetMGM lines
 
 

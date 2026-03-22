@@ -779,26 +779,24 @@ function renderMobileCards() {
 // =====================================================================
 // Predictions
 // =====================================================================
-// Walk-forward validated strategy yields (from backtest)
+// Walk-forward validated strategy yields (6-book sharp consensus: Coolbet, FanDuel,
+// Caesars/WH, DraftKings, Pinnacle, BetOnline — blended 50/50 with model vs BMG)
 const WF_STRATEGIES_V1 = [
-    // {side, minEdge, lineFilter, posFilter, yield} — ordered by yield desc
-    { side: 'UNDER', minEdge: 0.08, yield: 28.2 },
-    { side: 'OVER', minEdge: 0.05, lineMin: 3.5, yield: 21.1 },
-    { side: 'UNDER', minEdge: 0.05, yield: 11.0 },
-    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 9.8 },
-    { side: 'UNDER', minEdge: 0.05, posFilter: 'D', yield: 7.4 },
-    { side: null, minEdge: 0.05, yield: 6.4 },
-    { side: 'UNDER', minEdge: 0.03, yield: 5.6 },
+    // High-edge blended bets are the clear winners with 6-book consensus
+    { side: 'UNDER', minEdge: 0.08, yield: 20.6 },  // 81 bets, 61.7% WR
+    { side: null, minEdge: 0.08, yield: 20.4 },      // 92 bets, 63.0% WR
+    { side: 'OVER', minEdge: 0.05, lineMin: 3.5, yield: 19.9 },  // 47 bets
+    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 6.5 },  // 296 bets
+    { side: 'UNDER', minEdge: 0.05, yield: 5.6 },    // 221 bets
 ];
 const WF_STRATEGIES_V2 = [
-    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 22.2 },
-    { side: 'UNDER', minEdge: 0.08, yield: 14.3 },
-    { side: null, minEdge: 0.08, yield: 13.8 },
-    { side: 'UNDER', minEdge: 0.02, lineMin: 3.5, lineMax: 3.5, yield: 11.5 }, // U3.5: books misprice by ~8.6%
-    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 8.4 },
-    { side: null, minEdge: 0.05, yield: 8.1 },
-    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 8.0 },
-    { side: 'UNDER', minEdge: 0.05, yield: 6.9 },
+    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 22.5 },  // 57 bets, 57.9% WR
+    { side: null, minEdge: 0.08, yield: 13.2 },      // 140 bets, 56.4% WR
+    { side: 'UNDER', minEdge: 0.08, yield: 12.3 },   // 112 bets, 55.4% WR
+    { side: 'UNDER', minEdge: 0.02, lineMin: 3.5, lineMax: 3.5, yield: 11.5 },
+    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 8.4 },   // 92 bets
+    { side: null, minEdge: 0.05, yield: 8.1 },       // 453 bets, 54.5% WR
+    { side: 'UNDER', minEdge: 0.05, yield: 6.6 },    // 317 bets, 52.9% WR
 ];
 
 function yieldToStars(yld) {
@@ -810,18 +808,20 @@ function yieldToStars(yld) {
     return 0;
 }
 
-// Edge-dependent shrinkage from calibration analysis
-// Below 6% blended edge: edges are noise. 6-10%: ~40% real. 10%+: fully real.
+// Edge-dependent shrinkage from calibration analysis (6-book sharp consensus)
+// With 6 sharp books, the blended edge is more trustworthy at higher thresholds.
+// 8%+ blended edge = 20%+ yield in walk-forward = very real signal.
+// Below 5%: noise. 5-8%: partially real. 8%+: highly real.
 function shrinkEdge(rawEdge) {
     if (rawEdge < 0.05) return 0;          // below 5%: no bet
-    if (rawEdge < 0.06) return rawEdge * 0.3;
-    if (rawEdge < 0.08) return rawEdge * 0.4;
-    if (rawEdge < 0.10) return rawEdge * 0.6;
+    if (rawEdge < 0.06) return rawEdge * 0.25;
+    if (rawEdge < 0.08) return rawEdge * 0.40;
+    if (rawEdge < 0.10) return rawEdge * 0.70;  // 8-10%: 20%+ yield proven
     return rawEdge * 1.0;                   // 10%+: full edge
 }
 
 function calibratedKelly(blendedProb, odds, rawEdge) {
-    // Kelly using shrunk edge for sizing, capped at 10%
+    // Kelly using shrunk edge for sizing, capped at 8%
     const shrunk = shrinkEdge(rawEdge);
     if (shrunk <= 0) return 0;
     const dec = odds > 0 ? odds / 100 + 1 : -100 / odds + 1;
@@ -829,7 +829,7 @@ function calibratedKelly(blendedProb, odds, rawEdge) {
     const ev = shrunkProb * (dec - 1) - (1 - shrunkProb);
     if (ev <= 0) return 0;
     const kf = ev / (dec - 1);
-    return Math.min(Math.max(kf, 0) * 0.25, 0.10);  // 25% Kelly, 10% cap
+    return Math.min(Math.max(kf, 0) * 0.25, 0.08);  // 25% Kelly, 8% cap (tighter than before)
 }
 
 function starsHtml(n, yld) {
