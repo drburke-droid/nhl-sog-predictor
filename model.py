@@ -1459,12 +1459,19 @@ def predict_upcoming_games() -> list[dict]:
             (away_abbrev, home_abbrev, False),
         ]:
             player_rows = conn.execute(
-                """SELECT DISTINCT player_id, player_name, position
-                   FROM player_game_stats
-                   WHERE team = ? AND position IN ('L', 'C', 'R', 'D')
-                   GROUP BY player_id
-                   HAVING COUNT(*) >= 3
-                   ORDER BY AVG(shots) DESC""",
+                """SELECT DISTINCT p.player_id, p.player_name, p.position
+                   FROM player_game_stats p
+                   JOIN (
+                       SELECT player_id, team, MAX(game_id) as max_gid
+                       FROM player_game_stats
+                       GROUP BY player_id
+                   ) latest ON p.player_id = latest.player_id
+                              AND p.game_id = latest.max_gid
+                   WHERE latest.team = ? AND p.position IN ('L', 'C', 'R', 'D')
+                     AND (SELECT COUNT(*) FROM player_game_stats
+                          WHERE player_id = p.player_id) >= 3
+                   ORDER BY (SELECT AVG(shots) FROM player_game_stats
+                             WHERE player_id = p.player_id) DESC""",
                 (team,),
             ).fetchall()
 

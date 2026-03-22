@@ -1,0 +1,310 @@
+# V2 Model Feature Registry
+# Every feature used in model_v2 must be defined here with null policies.
+#
+# Tiers:
+#   required  — model cannot train if coverage < threshold (default 99%)
+#   important — alert if coverage < threshold (default 90%)
+#   optional  — warn if coverage < threshold (default 70%)
+#
+# Null policies:
+#   drop_row       — exclude row from training (never for prediction)
+#   fill_position  — fill with position-group mean
+#   fill_cluster   — fill with cluster mean
+#   fill_team      — fill with team mean
+#   fill_league    — fill with league mean
+#   fill_zero      — explicit zero (only for truly-zero-when-missing features)
+#   fill_default   — fill with a specific default value
+
+features:
+
+  # =========================================================================
+  # Group 1: Core Form (from NHL API / V1)
+  # =========================================================================
+  baseline_sog:
+    group: core_form
+    description: "Weighted baseline SOG (55% season + 30% L10 + 15% L5)"
+    tier: required
+    min_coverage: 0.99
+    null_policy: drop_row
+    leakage_safe: true
+
+  player_cv:
+    group: core_form
+    description: "Coefficient of variation of SOG across all games"
+    tier: required
+    min_coverage: 0.99
+    null_policy: fill_default
+    default_value: 1.0
+    leakage_safe: true
+
+  pct_games_3plus:
+    group: core_form
+    description: "Fraction of games with 3+ SOG"
+    tier: required
+    min_coverage: 0.99
+    null_policy: fill_position
+    leakage_safe: true
+
+  rolling_sog_ewm:
+    group: core_form
+    description: "Exponentially weighted rolling SOG (span=10)"
+    tier: important
+    min_coverage: 0.90
+    null_policy: fill_position
+    fallback: baseline_sog
+    leakage_safe: true
+
+  # =========================================================================
+  # Group 2: Opportunity / Role
+  # =========================================================================
+  avg_toi:
+    group: opportunity
+    description: "Average TOI in minutes over recent games"
+    tier: required
+    min_coverage: 0.99
+    null_policy: fill_position
+    leakage_safe: true
+
+  toi_last_5:
+    group: opportunity
+    description: "Average TOI over last 5 games"
+    tier: required
+    min_coverage: 0.95
+    null_policy: fill_position
+    fallback: avg_toi
+    leakage_safe: true
+
+  toi_trend:
+    group: opportunity
+    description: "TOI last 5 / TOI last 20 ratio (>1 = increasing role)"
+    tier: important
+    min_coverage: 0.85
+    null_policy: fill_default
+    default_value: 1.0
+    leakage_safe: true
+
+  avg_shift_length:
+    group: opportunity
+    description: "Average shift length in seconds"
+    tier: important
+    min_coverage: 0.90
+    null_policy: fill_position
+    leakage_safe: true
+
+  rolling_pp_rate:
+    group: opportunity
+    description: "PP goal rate as proxy for PP deployment"
+    tier: important
+    min_coverage: 0.90
+    null_policy: fill_zero
+    leakage_safe: true
+
+  pp_toi_pct:
+    group: opportunity
+    description: "Fraction of total TOI spent on power play (from MoneyPuck 5v4)"
+    tier: important
+    min_coverage: 0.80
+    null_policy: fill_zero
+    leakage_safe: true
+
+  ice_time_rank:
+    group: opportunity
+    description: "TOI rank within team (1=highest, from MoneyPuck)"
+    tier: optional
+    min_coverage: 0.70
+    null_policy: fill_default
+    default_value: 12
+    leakage_safe: true
+
+  # =========================================================================
+  # Group 3: Shot Style (from MoneyPuck)
+  # =========================================================================
+  shots_per_60:
+    group: shot_style
+    description: "Individual shots on goal per 60 min (rolling 10 games)"
+    tier: important
+    min_coverage: 0.80
+    null_policy: fill_position
+    leakage_safe: true
+
+  slot_pct:
+    group: shot_style
+    description: "Fraction of shot attempts from slot zone (rolling 10 games)"
+    tier: important
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  perimeter_pct:
+    group: shot_style
+    description: "Fraction of shot attempts from perimeter (1 - slot_pct)"
+    tier: optional
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  rebound_rate:
+    group: shot_style
+    description: "Fraction of shots that are rebounds (rolling 10 games)"
+    tier: optional
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  rush_rate:
+    group: shot_style
+    description: "Fraction of shots off the rush (rolling 10 games)"
+    tier: optional
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  avg_shot_distance:
+    group: shot_style
+    description: "Average shot distance in feet (rolling 10 games)"
+    tier: important
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  xg_per_shot:
+    group: shot_style
+    description: "Expected goals per shot attempt (rolling 10 games)"
+    tier: important
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  high_danger_rate:
+    group: shot_style
+    description: "Fraction of SOG that are high danger (rolling 10 games)"
+    tier: optional
+    min_coverage: 0.75
+    null_policy: fill_position
+    leakage_safe: true
+
+  # =========================================================================
+  # Group 4: Opponent (expanded from MoneyPuck)
+  # =========================================================================
+  opp_shots_allowed:
+    group: opponent
+    description: "Opponent avg SOG allowed per game"
+    tier: required
+    min_coverage: 0.99
+    null_policy: fill_league
+    leakage_safe: true
+
+  opp_shots_allowed_pos:
+    group: opponent
+    description: "Opponent avg SOG allowed to player's position"
+    tier: required
+    min_coverage: 0.95
+    null_policy: fill_league
+    leakage_safe: true
+
+  opp_hd_shots_allowed:
+    group: opponent
+    description: "Opponent avg high-danger shots allowed (from MoneyPuck)"
+    tier: important
+    min_coverage: 0.80
+    null_policy: fill_league
+    leakage_safe: true
+
+  opp_xg_allowed:
+    group: opponent
+    description: "Opponent avg expected goals allowed (from MoneyPuck)"
+    tier: important
+    min_coverage: 0.80
+    null_policy: fill_league
+    leakage_safe: true
+
+  opp_pace:
+    group: opponent
+    description: "Opponent shot attempts per game (pace proxy)"
+    tier: optional
+    min_coverage: 0.80
+    null_policy: fill_league
+    leakage_safe: true
+
+  # =========================================================================
+  # Group 5: Game Context
+  # =========================================================================
+  is_home:
+    group: game_context
+    description: "1 if player is on the home team"
+    tier: required
+    min_coverage: 1.0
+    null_policy: drop_row
+    leakage_safe: true
+
+  rest_days:
+    group: game_context
+    description: "Days since last game (capped at 4)"
+    tier: required
+    min_coverage: 0.99
+    null_policy: fill_default
+    default_value: 2
+    leakage_safe: true
+
+  is_back_to_back:
+    group: game_context
+    description: "1 if playing on consecutive days"
+    tier: required
+    min_coverage: 0.99
+    null_policy: fill_default
+    default_value: 0
+    leakage_safe: true
+
+  game_total:
+    group: game_context
+    description: "Vegas over/under total goals line"
+    tier: optional
+    min_coverage: 0.50
+    null_policy: fill_league
+    leakage_safe: true
+
+  implied_team_total:
+    group: game_context
+    description: "Implied team goals from moneyline + total"
+    tier: optional
+    min_coverage: 0.50
+    null_policy: fill_league
+    leakage_safe: true
+
+  # =========================================================================
+  # Group 6: Cluster Features
+  # =========================================================================
+  cluster_id:
+    group: cluster
+    description: "Player archetype cluster assignment"
+    tier: important
+    min_coverage: 0.80
+    null_policy: fill_default
+    default_value: -1
+    leakage_safe: true
+
+  cluster_distance:
+    group: cluster
+    description: "Distance to cluster centroid (typicality measure)"
+    tier: optional
+    min_coverage: 0.75
+    null_policy: fill_default
+    default_value: 1.0
+    leakage_safe: true
+
+  cluster_mean_sog:
+    group: cluster
+    description: "Average SOG for players in this cluster"
+    tier: important
+    min_coverage: 0.80
+    null_policy: fill_position
+    leakage_safe: true
+
+  cluster_x_opp_hd:
+    group: cluster
+    description: "Interaction: cluster_mean_sog * opp_hd_shots_allowed (normalized)"
+    tier: optional
+    min_coverage: 0.70
+    null_policy: fill_default
+    default_value: 0.0
+    leakage_safe: true

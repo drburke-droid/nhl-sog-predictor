@@ -18,6 +18,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import nhl_api
 import data_collector
 import model
+import model_v2
+import moneypuck_collector
 import nhl_odds_collector
 import mlb_api
 import mlb_data_collector
@@ -349,6 +351,34 @@ def api_status():
 
 
 # ---------------------------------------------------------------------------
+# Routes — V2 Model API
+# ---------------------------------------------------------------------------
+
+@app.route("/api/v2/predictions")
+def api_v2_predictions():
+    """V2 predictions with MoneyPuck features + clustering."""
+    predictions = model_v2.predict_upcoming_games()
+    metrics = model_v2.get_model_metrics()
+
+    # Merge historical confidence (reuse V1's history)
+    hist_conf = model.get_player_historical_confidence()
+    for p in predictions:
+        pid = p["player_id"]
+        p["hist_confidence"] = hist_conf.get(pid)
+
+    return jsonify({
+        "predictions": predictions,
+        "model_metrics": metrics,
+    })
+
+
+@app.route("/api/v2/metrics")
+def api_v2_metrics():
+    """V2 model metrics including cluster info."""
+    return jsonify(model_v2.get_model_metrics())
+
+
+# ---------------------------------------------------------------------------
 # Routes — MLB API
 # ---------------------------------------------------------------------------
 
@@ -562,7 +592,15 @@ def _startup():
                 logger.info("Background retrain complete")
             except Exception as exc:
                 logger.warning("Background retrain failed: %s", exc)
+            # Also train V2 model
+            try:
+                model_v2.train_model()
+                logger.info("V2 background retrain complete")
+            except Exception as exc:
+                logger.warning("V2 background retrain failed: %s", exc)
         threading.Thread(target=_bg_retrain, daemon=True).start()
+        # Load V2 cached model for fast startup
+        model_v2.load_model()
     else:
         # No saved model — must train (slower startup)
         try:

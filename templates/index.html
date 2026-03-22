@@ -297,6 +297,10 @@
                     </div>
                     <h5 class="mb-0 ms-2">PlayAlberta Bets <small class="text-secondary">(Blended Model+Sharp, Unders 5%+ Edge)</small></h5>
                     <div class="ms-auto d-flex align-items-center gap-3">
+                        <div class="btn-group btn-group-sm" role="group" id="modelToggle">
+                            <button type="button" class="btn btn-outline-info active" onclick="switchModel('v1')">V1</button>
+                            <button type="button" class="btn btn-outline-info" onclick="switchModel('v2')">V2</button>
+                        </div>
                         <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="showAllBtn"
                                 onclick="toggleShowAll()">Show All Players</button>
                         <div id="modelMetrics" class="text-secondary small"></div>
@@ -307,15 +311,14 @@
                     <table class="table table-hover mb-0" id="predictionsTable">
                         <thead>
                             <tr>
-                                <th class="sort-btn" onclick="sortPredictions('suggested_bet')" style="min-width:140px">Bet</th>
+                                <th class="sort-btn" onclick="sortPredictions('best_wager')" style="min-width:150px">Bet</th>
+                                <th class="sort-btn" onclick="sortPredictions('v1_stars')" style="min-width:70px">V1</th>
+                                <th class="sort-btn" onclick="sortPredictions('v2_stars')" style="min-width:70px">V2</th>
                                 <th>Player</th>
                                 <th>Matchup</th>
-                                <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred SOG</th>
+                                <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred</th>
                                 <th>Line</th>
-                                <th class="sort-btn" onclick="sortPredictions('edge')">Blend Edge</th>
-                                <th>Model P(U)</th>
-                                <th>Sharp P(U)</th>
-                                <th>Blend P(U)</th>
+                                <th class="sort-btn" onclick="sortPredictions('best_edge')">Edge</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -580,6 +583,17 @@ let allPlayers = [];
 let allPredictions = [];
 let predSortField = 'suggested_bet';
 let predSortAsc = false;
+let currentModel = localStorage.getItem('nhlModelVersion') || 'v1';
+
+function switchModel(version) {
+    currentModel = version;
+    localStorage.setItem('nhlModelVersion', version);
+    document.querySelectorAll('#modelToggle button').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    // Reset odds inputs and reload
+    oddsInputs = {};
+    loadPredictions();
+}
 let playerChart = null;
 let showAllPlayers = false;
 // Store user-entered odds per player_id: { line, overOdds, underOdds }
@@ -808,30 +822,144 @@ function renderMobileCards() {
 // =====================================================================
 // Predictions
 // =====================================================================
+// Walk-forward validated strategy yields (from backtest)
+const WF_STRATEGIES_V1 = [
+    // {side, minEdge, lineFilter, posFilter, yield} — ordered by yield desc
+    { side: 'UNDER', minEdge: 0.08, yield: 28.2 },
+    { side: 'OVER', minEdge: 0.05, lineMin: 3.5, yield: 21.1 },
+    { side: 'UNDER', minEdge: 0.05, yield: 11.0 },
+    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 9.8 },
+    { side: 'UNDER', minEdge: 0.05, posFilter: 'D', yield: 7.4 },
+    { side: null, minEdge: 0.05, yield: 6.4 },
+    { side: 'UNDER', minEdge: 0.03, yield: 5.6 },
+];
+const WF_STRATEGIES_V2 = [
+    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 22.2 },
+    { side: 'UNDER', minEdge: 0.08, yield: 14.3 },
+    { side: null, minEdge: 0.08, yield: 13.8 },
+    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 8.4 },
+    { side: null, minEdge: 0.05, yield: 8.1 },
+    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 8.0 },
+    { side: 'UNDER', minEdge: 0.05, yield: 6.9 },
+];
+
+function yieldToStars(yld) {
+    if (yld >= 20) return 5;
+    if (yld >= 15) return 4;
+    if (yld >= 10) return 3;
+    if (yld >= 7) return 2;
+    if (yld >= 5) return 1;
+    return 0;
+}
+
+// Edge-dependent shrinkage from calibration analysis
+// Below 6% blended edge: edges are noise. 6-10%: ~40% real. 10%+: fully real.
+function shrinkEdge(rawEdge) {
+    if (rawEdge < 0.05) return 0;          // below 5%: no bet
+    if (rawEdge < 0.06) return rawEdge * 0.3;
+    if (rawEdge < 0.08) return rawEdge * 0.4;
+    if (rawEdge < 0.10) return rawEdge * 0.6;
+    return rawEdge * 1.0;                   // 10%+: full edge
+}
+
+function calibratedKelly(blendedProb, odds, rawEdge) {
+    // Kelly using shrunk edge for sizing, capped at 10%
+    const shrunk = shrinkEdge(rawEdge);
+    if (shrunk <= 0) return 0;
+    const dec = odds > 0 ? odds / 100 + 1 : -100 / odds + 1;
+    const shrunkProb = americanToImpliedProb(odds) + shrunk;
+    const ev = shrunkProb * (dec - 1) - (1 - shrunkProb);
+    if (ev <= 0) return 0;
+    const kf = ev / (dec - 1);
+    return Math.min(Math.max(kf, 0) * 0.25, 0.10);  // 25% Kelly, 10% cap
+}
+
+function starsHtml(n, yld) {
+    if (n <= 0) return '<span class="text-secondary">—</span>';
+    const stars = '★'.repeat(n);
+    const cls = n >= 4 ? 'ev-positive fw-bold' : n >= 2 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
+    return `<span class="${cls}" title="Yield: ${yld.toFixed(1)}%">${stars}</span>`;
+}
+
+function betCellHtml(wager, side, line, stars, yld) {
+    if (wager <= 0) return '<span class="text-secondary">—</span>';
+    const sideLabel = side === 'UNDER' ? 'U' : 'O';
+    const starStr = stars > 0 ? '★'.repeat(stars) + ' ' : '';
+    const cls = stars >= 4 ? 'ev-positive fw-bold' : stars >= 2 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
+    return `<span class="${cls}" title="Calibrated wager | ${yld.toFixed(1)}% hist yield">${starStr}$${wager} ${sideLabel}${line}</span>`;
+}
+
+function matchStrategy(strategies, blendedEdgeOver, blendedEdgeUnder, line, pos, hasSharp) {
+    // Find the highest-yield strategy this bet qualifies for
+    // Requires sharp data for blended strategies (walk-forward used blended)
+    if (!hasSharp) return null;
+    for (const s of strategies) {
+        const edge = s.side === 'OVER' ? blendedEdgeOver : s.side === 'UNDER' ? blendedEdgeUnder : Math.max(blendedEdgeOver, blendedEdgeUnder);
+        const side = s.side || (blendedEdgeUnder >= blendedEdgeOver ? 'UNDER' : 'OVER');
+        const actualEdge = side === 'OVER' ? blendedEdgeOver : blendedEdgeUnder;
+        if (actualEdge < s.minEdge) continue;
+        if (s.lineMin && line < s.lineMin) continue;
+        if (s.lineMax && line > s.lineMax) continue;
+        if (s.posFilter && pos !== s.posFilter) continue;
+        // EV must be positive (same check as walk-forward)
+        if (actualEdge <= 0) continue;
+        return { yield: s.yield, side: s.side || side, edge: actualEdge };
+    }
+    return null;
+}
+
 async function loadPredictions() {
-    const data = await fetchJSON('/api/predictions');
+    // Always fetch BOTH V1 and V2
+    const [dataV1, dataV2] = await Promise.all([
+        fetchJSON('/api/predictions'),
+        fetchJSON('/api/v2/predictions'),
+    ]);
     const loading = document.getElementById('predLoading');
     const empty = document.getElementById('predEmpty');
     loading.classList.add('d-none');
+
+    // Use the selected model as the primary display
+    const data = currentModel === 'v2' ? dataV2 : dataV1;
+    const altData = currentModel === 'v2' ? dataV1 : dataV2;
 
     if (!data || !data.predictions || data.predictions.length === 0) {
         empty.classList.remove('d-none');
         return;
     }
 
-    if (data.model_metrics) {
-        const m = data.model_metrics;
-        document.getElementById('modelMetrics').textContent =
-            `MAE: ${m.mae || '—'} | RMSE: ${m.rmse || '—'}`;
+    // Build lookup for the alternate model
+    const altMap = {};
+    if (altData && altData.predictions) {
+        altData.predictions.forEach(p => { altMap[p.player_id] = p; });
     }
 
-    // Compute variance and signal fields
+    if (data.model_metrics) {
+        const m = data.model_metrics;
+        const mAlt = altData && altData.model_metrics ? altData.model_metrics : {};
+        document.getElementById('modelMetrics').textContent =
+            `V1 MAE: ${currentModel === 'v1' ? (m.mae || '—') : (mAlt.mae || '—')} | V2 MAE: ${currentModel === 'v2' ? (m.mae || '—') : (mAlt.mae || '—')}`;
+    }
+
+    // Merge: primary predictions + alternate model data
     allPredictions = data.predictions.map(p => {
         const variance = +(p.predicted_sog - p.season_avg).toFixed(2);
         const cv = p.player_cv || 1;
         const signal = cv > 0 ? +(Math.abs(variance) / cv).toFixed(2) : 0;
-        return { ...p, variance, signal, kelly_best: 0, suggested_bet: 0,
-                 edge: 0, prob_over_calc: 0, bet_side: null, confidence_display: signal };
+        const alt = altMap[p.player_id] || {};
+        return {
+            ...p, variance, signal,
+            kelly_best: 0, suggested_bet: 0, edge: 0,
+            prob_over_calc: 0, bet_side: null, confidence_display: signal,
+            // Alternate model prediction for dual-column display
+            alt_predicted_sog: alt.predicted_sog || null,
+            alt_var_ratio: alt.var_ratio || null,
+            alt_sharp_prob_over: alt.sharp_prob_over || null,
+            alt_sharp_prob_under: alt.sharp_prob_under || null,
+            alt_n_sharp_books: alt.n_sharp_books || 0,
+            // Star ratings (computed after odds load)
+            v1_stars: 0, v1_yield: 0, v1_side: null, v1_wager: 0, v1_edge: 0,
+            v2_stars: 0, v2_yield: 0, v2_side: null, v2_wager: 0, v2_edge: 0,
+        };
     });
 
     // Default sort by signal until odds load
@@ -946,9 +1074,9 @@ function sortPredictions(field) {
         }
         if (!predSortAsc) cmp = -cmp;
 
-        // Secondary sort: suggested_bet descending when primary values are equal
+        // Secondary sort: best_wager descending when primary values are equal
         if (cmp === 0) {
-            cmp = (b.suggested_bet || 0) - (a.suggested_bet || 0);
+            cmp = (b.best_wager || 0) - (a.best_wager || 0);
         }
         return cmp;
     });
@@ -1061,20 +1189,82 @@ function computeBet(p) {
         p.edge = blendedEdgeUnder;  // Always show under edge for reference
         p.bet_tier = null;
     }
+
+    // --- Compute V1 and V2 star ratings with calibrated Kelly ---
+    function _computeModelBet(pred, vr, sharpO, sharpU) {
+        const mPOver = calcProbOver(pred, line, vr);
+        const mPUnder = 1 - mPOver;
+        const mHasSharp = sharpO != null && sharpU != null;
+        let bOver = mPOver, bUnder = mPUnder;
+        if (mHasSharp) { bOver = 0.5 * mPOver + 0.5 * sharpO; bUnder = 0.5 * mPUnder + 0.5 * sharpU; }
+        const eOver = !isNaN(overOdds) && overOdds !== 0 ? bOver - americanToImpliedProb(overOdds) : 0;
+        const eUnder = !isNaN(underOdds) && underOdds !== 0 ? bUnder - americanToImpliedProb(underOdds) : 0;
+        return { bOver, bUnder, eOver, eUnder, hasSharp: mHasSharp };
+    }
+
+    const v1Pred = currentModel === 'v1' ? p.predicted_sog : (p.alt_predicted_sog || p.predicted_sog);
+    const v1Vr = currentModel === 'v1' ? (p.var_ratio || 1.0) : (p.alt_var_ratio || 1.0);
+    const v1SharpO = currentModel === 'v1' ? p.sharp_prob_over : p.alt_sharp_prob_over;
+    const v1SharpU = currentModel === 'v1' ? p.sharp_prob_under : p.alt_sharp_prob_under;
+    const v1 = _computeModelBet(v1Pred, v1Vr, v1SharpO, v1SharpU);
+
+    const v2Pred = currentModel === 'v2' ? p.predicted_sog : (p.alt_predicted_sog || p.predicted_sog);
+    const v2Vr = currentModel === 'v2' ? (p.var_ratio || 1.0) : (p.alt_var_ratio || 1.0);
+    const v2SharpO = currentModel === 'v2' ? p.sharp_prob_over : p.alt_sharp_prob_over;
+    const v2SharpU = currentModel === 'v2' ? p.sharp_prob_under : p.alt_sharp_prob_under;
+    const v2 = _computeModelBet(v2Pred, v2Vr, v2SharpO, v2SharpU);
+
+    // V1 strategy match + calibrated Kelly
+    const v1Match = matchStrategy(WF_STRATEGIES_V1, v1.eOver, v1.eUnder, line, p.position, v1.hasSharp);
+    if (v1Match && v1Match.yield >= 5) {
+        p.v1_yield = v1Match.yield; p.v1_stars = yieldToStars(v1Match.yield);
+        p.v1_side = v1Match.side; p.v1_edge = v1Match.edge;
+        const odds = v1Match.side === 'OVER' ? overOdds : underOdds;
+        const prob = v1Match.side === 'OVER' ? v1.bOver : v1.bUnder;
+        const kf = calibratedKelly(prob, odds, v1Match.edge);
+        p.v1_wager = bankroll > 0 ? Math.round(bankroll * kf) : 0;
+    } else { p.v1_stars = 0; p.v1_yield = 0; p.v1_side = null; p.v1_wager = 0; p.v1_edge = 0; }
+
+    // V2 strategy match + calibrated Kelly
+    const v2Match = matchStrategy(WF_STRATEGIES_V2, v2.eOver, v2.eUnder, line, p.position, v2.hasSharp);
+    if (v2Match && v2Match.yield >= 5) {
+        p.v2_yield = v2Match.yield; p.v2_stars = yieldToStars(v2Match.yield);
+        p.v2_side = v2Match.side; p.v2_edge = v2Match.edge;
+        const odds = v2Match.side === 'OVER' ? overOdds : underOdds;
+        const prob = v2Match.side === 'OVER' ? v2.bOver : v2.bUnder;
+        const kf = calibratedKelly(prob, odds, v2Match.edge);
+        p.v2_wager = bankroll > 0 ? Math.round(bankroll * kf) : 0;
+    } else { p.v2_stars = 0; p.v2_yield = 0; p.v2_side = null; p.v2_wager = 0; p.v2_edge = 0; }
+
+    // --- Best bet: pick higher-yield model, or higher wager if tied ---
+    if (p.v1_yield > 0 || p.v2_yield > 0) {
+        const pickV2 = p.v2_yield > p.v1_yield || (p.v2_yield === p.v1_yield && p.v2_wager > p.v1_wager);
+        p.best_wager = pickV2 ? p.v2_wager : p.v1_wager;
+        p.best_side = pickV2 ? p.v2_side : p.v1_side;
+        p.best_stars = pickV2 ? p.v2_stars : p.v1_stars;
+        p.best_yield = pickV2 ? p.v2_yield : p.v1_yield;
+        p.best_edge = pickV2 ? p.v2_edge : p.v1_edge;
+        p.best_model = pickV2 ? 'V2' : 'V1';
+    } else {
+        p.best_wager = 0; p.best_side = null; p.best_stars = 0;
+        p.best_yield = 0; p.best_edge = 0; p.best_model = null;
+    }
 }
 
 function renderPredictions(list) {
     const tbody = document.querySelector('#predictionsTable tbody');
 
-    // Show qualifying bets, or top 10 by blended edge if none qualify
+    // Show players with any stars, or top 10 by edge if none qualify
+    const hasStars = list.some(p => p.v1_stars > 0 || p.v2_stars > 0);
     const hasBets = list.some(p => (p.suggested_bet || 0) > 0);
     let displayList;
     if (showAllPlayers) {
         displayList = list;
+    } else if (hasStars) {
+        displayList = list.filter(p => p.v1_stars > 0 || p.v2_stars > 0);
     } else if (hasBets) {
         displayList = list.filter(p => (p.suggested_bet || 0) > 0);
     } else {
-        // No bets today — show top 10 closest to qualifying (by blended under edge)
         displayList = [...list]
             .filter(p => p.blended_prob_under != null)
             .sort((a, b) => (b.edge || -1) - (a.edge || -1))
@@ -1089,55 +1279,30 @@ function renderPredictions(list) {
         const lineVal = saved.line || '';
         const matchup = `${p.team} vs ${p.opponent} (${p.is_home ? 'H' : 'A'})`;
 
-        // Bet cell
-        let betText = '—', betClass = 'ev-neutral';
-        if ((p.suggested_bet || 0) > 0) {
-            const tier = p.bet_tier === 'strong' ? '★ ' : '';
-            if (bankroll > 0) {
-                const wager = Math.round(bankroll * p.suggested_bet);
-                betText = `${tier}$${wager} U${lineVal}`;
-            } else {
-                betText = `${tier}${(p.suggested_bet * 100).toFixed(1)}% U${lineVal}`;
-            }
-            betClass = p.bet_tier === 'strong' ? 'ev-positive fw-bold' : 'signal-strong fw-bold';
-        }
+        // Main bet cell — the simple "what to bet" number
+        const betHtml = betCellHtml(p.best_wager, p.best_side, lineVal, p.best_stars, p.best_yield);
 
-        // Blended edge cell
-        const edge = p.edge || 0;
-        const edgeText = edge !== 0 ? `${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '—';
-        const edgeClass = edge >= 0.08 ? 'ev-positive fw-bold' : edge >= 0.05 ? 'ev-positive' : edge > 0 ? 'signal-mild' : 'ev-neutral';
+        // V1/V2 mini stars
+        const v1Html = starsHtml(p.v1_stars, p.v1_yield);
+        const v2Html = starsHtml(p.v2_stars, p.v2_yield);
 
-        // Model P(Under)
-        const modelPU = p.prob_over_calc != null ? (1 - p.prob_over_calc) : null;
-        const modelPUText = modelPU != null ? (modelPU * 100).toFixed(1) + '%' : '—';
-
-        // Sharp P(Under)
-        const sharpPU = p.sharp_prob_under;
-        const nSharp = p.n_sharp_books || 0;
-        let sharpText = '—';
-        if (sharpPU != null) {
-            sharpText = `${(sharpPU * 100).toFixed(1)}%`;
-            if (nSharp > 0) sharpText += ` <small class="text-secondary">(${nSharp})</small>`;
-        }
-        const sharpClass = p.sharp_agrees ? 'signal-strong' : (sharpPU != null ? 'signal-mild' : 'ev-neutral');
-
-        // Blended P(Under)
-        const blendPU = p.blended_prob_under;
-        const blendPUText = blendPU != null ? (blendPU * 100).toFixed(1) + '%' : '—';
-        const blendClass = blendPU != null && blendPU > 0.55 ? 'signal-fire' : blendPU != null && blendPU > 0.50 ? 'signal-strong' : 'ev-neutral';
+        // Calibrated edge
+        const edge = p.best_edge || 0;
+        const edgeText = edge > 0 ? `+${(edge * 100).toFixed(1)}%` : '—';
+        const edgeClass = edge >= 0.10 ? 'ev-positive fw-bold' : edge >= 0.06 ? 'ev-positive' : edge > 0 ? 'signal-mild' : 'ev-neutral';
+        const modelTag = p.best_model ? ` <small class="text-secondary">${p.best_model}</small>` : '';
 
         return `<tr onclick="showPlayer(${pid})" style="cursor:pointer">
-            <td class="${betClass}" style="font-size:0.95rem;white-space:nowrap">${betText}</td>
+            <td style="white-space:nowrap;font-size:0.95rem">${betHtml}</td>
+            <td style="white-space:nowrap">${v1Html}</td>
+            <td style="white-space:nowrap">${v2Html}</td>
             <td class="fw-bold">${p.player_name} <span class="badge badge-position badge-${p.position}" style="font-size:0.65rem">${p.position}</span></td>
             <td class="text-secondary" style="white-space:nowrap">${matchup}</td>
             <td class="${cls}" style="font-weight:700">${p.predicted_sog}</td>
             <td><input class="odds-input" id="line-${pid}" type="text" placeholder="3.5"
                        value="${lineVal}"
                        oninput="updateOddsSimple(${pid})" onclick="event.stopPropagation()" style="width:55px"></td>
-            <td class="${edgeClass}" style="font-weight:600">${edgeText}</td>
-            <td>${modelPUText}</td>
-            <td class="${sharpClass}">${sharpText}</td>
-            <td class="${blendClass}" style="font-weight:600">${blendPUText}</td>
+            <td class="${edgeClass}" style="font-weight:600">${edgeText}${modelTag}</td>
         </tr>`;
     }).join('');
 
@@ -1589,6 +1754,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const brInput = document.getElementById('bankrollInput');
     if (bankroll > 0 && brInput) {
         brInput.value = bankroll;
+    }
+
+    // Restore model toggle state
+    if (currentModel === 'v2') {
+        const btns = document.querySelectorAll('#modelToggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        btns[1].classList.add('active');
     }
 
     loadPredictions();
