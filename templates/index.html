@@ -788,22 +788,26 @@ function renderMobileCards() {
 // =====================================================================
 // Walk-forward validated strategy yields (6-book sharp consensus: Coolbet, FanDuel,
 // Caesars/WH, DraftKings, Pinnacle, BetOnline — blended 50/50 with model vs BMG)
+// V1 strategies (walk-forward validated 2026-03-23)
 const WF_STRATEGIES_V1 = [
-    // High-edge blended bets are the clear winners with 6-book consensus
-    { side: 'UNDER', minEdge: 0.08, yield: 20.6 },  // 81 bets, 61.7% WR
-    { side: null, minEdge: 0.08, yield: 20.4 },      // 92 bets, 63.0% WR
-    { side: 'OVER', minEdge: 0.05, lineMin: 3.5, yield: 19.9 },  // 47 bets
-    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 6.5 },  // 296 bets
-    { side: 'UNDER', minEdge: 0.05, yield: 5.6 },    // 221 bets
+    { side: 'UNDER', minEdge: 0.08, yield: 22.1 },   // 85 bets, 60.0% WR
+    { side: null, minEdge: 0.08, yield: 20.2 },       // 103 bets, 60.2% WR
+    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 15.4 },  // 352 bets, 50.3% WR
+    { side: 'UNDER', minEdge: 0.02, lineMin: 3.5, lineMax: 3.5, yield: 11.3 }, // 101 bets, 59.4% WR
+    { side: 'OVER', minEdge: 0.05, lineMin: 3.5, yield: 10.4 },  // 50 bets
+    { side: 'UNDER', minEdge: 0.05, yield: 10.1 },   // 238 bets, 55.0% WR
+    { side: 'UNDER', minEdge: 0.03, yield: 6.8 },    // 464 bets, 51.5% WR
 ];
+// V2 strategies with team cluster features (walk-forward validated 2026-03-23)
 const WF_STRATEGIES_V2 = [
-    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 22.5 },  // 57 bets, 57.9% WR
-    { side: null, minEdge: 0.08, yield: 13.2 },      // 140 bets, 56.4% WR
-    { side: 'UNDER', minEdge: 0.08, yield: 12.3 },   // 112 bets, 55.4% WR
-    { side: 'UNDER', minEdge: 0.02, lineMin: 3.5, lineMax: 3.5, yield: 11.5 },
-    { side: 'OVER', minEdge: 0.03, lineMin: 3.5, yield: 8.4 },   // 92 bets
-    { side: null, minEdge: 0.05, yield: 8.1 },       // 453 bets, 54.5% WR
-    { side: 'UNDER', minEdge: 0.05, yield: 6.6 },    // 317 bets, 52.9% WR
+    { side: 'UNDER', minEdge: 0.02, lineMin: 4.5, lineMax: 4.5, yield: 51.9 },  // 15 bets, 86.7% WR
+    { side: 'UNDER', minEdge: 0.02, lineMin: 3.5, lineMax: 4.5, yield: 10.9 },  // 148 bets, 65.5% WR (U3.5/4.5)
+    { side: 'UNDER', minEdge: 0.08, yield: 10.9 },   // 113 bets, 55.8% WR
+    { side: 'UNDER', minEdge: 0.03, lineMax: 1.5, yield: 9.8 },  // 531 bets, 47.8% WR (blend U1.5)
+    { side: 'UNDER', minEdge: 0.05, yield: 9.2 },    // 324 bets, 55.6% WR
+    { side: 'UNDER', minEdge: 0.02, lineMin: 3.5, yield: 8.9 },  // 183 bets, 66.1% WR
+    { side: null, minEdge: 0.05, yield: 8.1 },        // broad coverage
+    { side: 'UNDER', minEdge: 0.03, posFilter: 'F', yield: 5.3 }, // fwd unders, newly profitable with team clusters
 ];
 
 function yieldToStars(yld) {
