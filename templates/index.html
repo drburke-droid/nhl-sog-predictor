@@ -1218,20 +1218,22 @@ function renderPredictions(list) {
     const tbody = document.querySelector('#predictionsTable tbody');
 
     // Show players with any stars, or top 10 by edge if none qualify
-    const hasStars = list.some(p => p.v1_stars > 0 || p.v2_stars > 0);
+    const hasStars = list.some(p => (p.v1_stars > 0 || p.v2_stars > 0) && p.best_wager > 0);
     const hasBets = list.some(p => (p.suggested_bet || 0) > 0);
     let displayList;
     if (showAllPlayers) {
         displayList = list;
     } else if (hasStars) {
-        displayList = list.filter(p => p.v1_stars > 0 || p.v2_stars > 0);
+        displayList = list.filter(p => (p.v1_stars > 0 || p.v2_stars > 0) && p.best_wager > 0);
     } else if (hasBets) {
         displayList = list.filter(p => (p.suggested_bet || 0) > 0);
     } else {
-        displayList = [...list]
-            .filter(p => p.blended_prob_under != null)
-            .sort((a, b) => (b.edge || -1) - (a.edge || -1))
-            .slice(0, 10);
+        // No qualifying bets — show message
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-secondary" style="font-size:1.1rem">
+            No qualifying bets today — no players meet the 5%+ blended edge threshold.
+            <br><small>Click "Show All Players" to see all predictions.</small>
+        </td></tr>`;
+        return;
     }
 
     tbody.innerHTML = displayList.map(p => {
