@@ -109,6 +109,47 @@ def apply_calibration(iso, probs):
     return iso.predict(np.asarray(probs, dtype=float))
 
 
+def calibrate_walk_forward(bets_df, prob_col="model_prob", outcome_col="won"):
+    """Apply isotonic calibration within walk-forward — train on prior windows only.
+
+    For each window, fits calibrator on all prior windows' bets, then
+    calibrates current window. No future data leakage.
+
+    Returns DataFrame with added 'calibrated_prob' column.
+    """
+    bets_df = bets_df.copy()
+    bets_df["calibrated_prob"] = bets_df[prob_col].copy()
+
+    if "window" not in bets_df.columns:
+        return bets_df
+
+    windows = sorted(bets_df["window"].unique())
+
+    for i, w in enumerate(windows):
+        if i == 0:
+            # No prior data — use raw probs
+            continue
+
+        # Train on all prior windows
+        prior = bets_df[bets_df["window"] < w]
+        current = bets_df["window"] == w
+
+        if len(prior) < 50:
+            continue
+
+        try:
+            iso = fit_isotonic_calibration(
+                prior[prob_col].values,
+                prior[outcome_col].astype(float).values,
+            )
+            calibrated = apply_calibration(iso, bets_df.loc[current, prob_col].values)
+            bets_df.loc[current, "calibrated_prob"] = calibrated
+        except Exception:
+            pass
+
+    return bets_df
+
+
 # ---------------------------------------------------------------------------
 # Bootstrap ROI
 # ---------------------------------------------------------------------------
