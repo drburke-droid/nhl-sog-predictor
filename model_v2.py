@@ -48,8 +48,12 @@ FEATURE_COLS = [
     # Game context
     "is_home", "rest_days", "is_back_to_back",
     "game_total", "implied_team_total",
-    # Cluster
+    # Player cluster
     "cluster_id", "cluster_distance", "cluster_mean_sog", "cluster_x_opp_hd",
+    # Team cluster matchup (how player's team archetype performs vs opponent archetype)
+    "opp_team_cluster_ga",    # how many goals opponent's cluster typically allows
+    "opp_team_cluster_save",  # opponent cluster's save %
+    "player_cluster_x_opp_team_cluster",  # player archetype SOG vs opponent team archetype
 ]
 
 # Global model state
@@ -232,6 +236,38 @@ def _build_feature_dataframe() -> pd.DataFrame:
     # --- Merge MoneyPuck PP data ---
     if not mp_pp.empty:
         mp_pp = mp_pp.drop_duplicates(["game_id", "player_id"])
+
+    # --- Team clustering for opponent matchup features ---
+    import team_clustering
+    _tc_cache = {}  # month -> (profiles, matrix)
+
+    def _get_team_cluster_data(opp_team, game_date):
+        bucket = game_date[:7]
+        if bucket not in _tc_cache:
+            try:
+                tp = team_clustering.build_team_profiles(before_date=game_date, window=60)
+                if not tp.empty and len(tp) >= 10:
+                    _, _, _, tp = team_clustering.fit_team_clusters(tp)
+                    mx = team_clustering.build_cluster_matchup_matrix(tp, game_date)
+                    _tc_cache[bucket] = (tp, mx)
+                else:
+                    _tc_cache[bucket] = None
+            except Exception:
+                _tc_cache[bucket] = None
+
+        cached = _tc_cache.get(bucket)
+        if cached:
+            tp, mx = cached
+            tc_map = dict(zip(tp["team"], tp["cluster"]))
+            opp_cluster = tc_map.get(opp_team)
+            if opp_cluster is not None:
+                opp_members = tp[tp["cluster"] == opp_cluster]
+                return {
+                    "opp_cluster": int(opp_cluster),
+                    "opp_cluster_ga": float(opp_members["ga_per_game"].mean()),
+                    "opp_cluster_save": float(opp_members["save_pct"].mean()),
+                }
+        return {"opp_cluster": -1, "opp_cluster_ga": 3.0, "opp_cluster_save": 0.89}
 
     # --- Build rolling features per player ---
     logger.info("V2: Building player features...")
@@ -508,14 +544,31 @@ def _build_feature_dataframe() -> pd.DataFrame:
                 "is_back_to_back": is_b2b,
                 "game_total": game_total_val,
                 "implied_team_total": implied_tt_val,
+                # Team cluster (opponent archetype)
+                **{f"opp_team_cluster_{k}": v
+                   for k, v in [("ga", _get_team_cluster_data(opp_team, game_date).get("opp_cluster_ga", 3.0)),
+                                ("save", _get_team_cluster_data(opp_team, game_date).get("opp_cluster_save", 0.89))]},
             })
 
     result = pd.DataFrame(records)
     if result.empty:
         return result
 
-    # --- Clustering ---
+    # --- Player clustering ---
     result = _add_cluster_features(result)
+
+    # --- Player cluster × opponent team cluster interaction ---
+    # How does this player archetype's avg SOG relate to the opponent's defensive archetype?
+    if "cluster_mean_sog" in result.columns and "opp_team_cluster_ga" in result.columns:
+        opp_ga_mean = result["opp_team_cluster_ga"].mean()
+        if opp_ga_mean and opp_ga_mean > 0:
+            result["player_cluster_x_opp_team_cluster"] = (
+                result["cluster_mean_sog"] * result["opp_team_cluster_ga"] / opp_ga_mean
+            )
+        else:
+            result["player_cluster_x_opp_team_cluster"] = 0.0
+    else:
+        result["player_cluster_x_opp_team_cluster"] = 0.0
 
     # --- Feature registry validation ---
     available_features = [f for f in FEATURE_COLS if f in result.columns]
@@ -1019,7 +1072,31 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         "cluster_distance": cluster_dist,
         "cluster_mean_sog": cluster_mean,
         "cluster_x_opp_hd": cluster_x_opp_hd,
+        # Team cluster features
+        "opp_team_cluster_ga": None,
+        "opp_team_cluster_save": None,
+        "player_cluster_x_opp_team_cluster": 0.0,
     }
+
+    # Add team cluster data for opponent
+    try:
+        import team_clustering
+        tp = team_clustering.build_team_profiles(before_date=today, window=60)
+        if not tp.empty and len(tp) >= 10:
+            _, _, _, tp = team_clustering.fit_team_clusters(tp)
+            tc_map = dict(zip(tp["team"], tp["cluster"]))
+            opp_cluster = tc_map.get(opponent_team)
+            if opp_cluster is not None:
+                opp_members = tp[tp["cluster"] == opp_cluster]
+                feature_map["opp_team_cluster_ga"] = float(opp_members["ga_per_game"].mean())
+                feature_map["opp_team_cluster_save"] = float(opp_members["save_pct"].mean())
+                opp_ga_mean = tp["ga_per_game"].mean()
+                if opp_ga_mean > 0:
+                    feature_map["player_cluster_x_opp_team_cluster"] = (
+                        cluster_mean * feature_map["opp_team_cluster_ga"] / opp_ga_mean
+                    )
+    except Exception:
+        pass
 
     # Use the same feature order as training
     available = [f for f in FEATURE_COLS if f in feature_map]
