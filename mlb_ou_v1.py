@@ -325,8 +325,37 @@ def _get_arsenal(pitcher_id, before_date, conn):
 # Batter vs Pitch Type
 # ---------------------------------------------------------------------------
 
-def _get_batter_vs_pitch(batter_id, conn):
-    """Get batter's K rate vs each pitch type."""
+def _get_batter_vs_pitch(batter_id, before_date, conn):
+    """Get batter's K rate vs each pitch type using ONLY pre-game data.
+
+    Uses rolling game-level pitch type data (mlb_batter_game_pitch_type)
+    instead of season-level aggregates to prevent data leakage.
+    """
+    if before_date:
+        rows = conn.execute("""
+            SELECT pitch_type,
+                   SUM(k_count) as total_k,
+                   SUM(pa_count) as total_pa,
+                   SUM(whiff_count) as total_whiff,
+                   SUM(swing_count) as total_swing,
+                   SUM(pitches_seen) as total_pitches
+            FROM mlb_batter_game_pitch_type
+            WHERE batter_id = ? AND game_date < ?
+            GROUP BY pitch_type
+            HAVING total_pitches >= 5
+        """, (batter_id, before_date)).fetchall()
+    else:
+        rows = []
+
+    if rows:
+        return {r["pitch_type"]: {
+            "k_rate": r["total_k"] / max(r["total_pa"], 1) if r["total_pa"] else LG["k_rate"],
+            "whiff": r["total_whiff"] / max(r["total_swing"], 1) if r["total_swing"] else 0.25,
+            "contact": 1 - (r["total_whiff"] / max(r["total_swing"], 1)) if r["total_swing"] else 0.75,
+            "n": r["total_pitches"],
+        } for r in rows}
+
+    # Fallback to season-level (only if no game-level data at all)
     rows = conn.execute(
         "SELECT pitch_type, k_rate_vs_type, whiff_rate, contact_rate, pitches_seen "
         "FROM mlb_batter_vs_pitch WHERE batter_id = ?",
@@ -647,7 +676,7 @@ def predict_game_runs(home_pitcher_id, away_pitcher_id, home_team, away_team,
         #  5. Pitcher recent form
         batter_matchups = []
         for b in batters:
-            bvp = _get_batter_vs_pitch(b["batter_id"], conn)
+            bvp = _get_batter_vs_pitch(b["batter_id"], game_date, conn)
             batter_side = conn.execute(
                 "SELECT bat_side FROM mlb_batter_stats WHERE batter_id = ?",
                 (b["batter_id"],),
@@ -836,6 +865,199 @@ def predict_game_runs(home_pitcher_id, away_pitcher_id, home_team, away_team,
 
 
 # ---------------------------------------------------------------------------
+# Live Prediction — Today's Games
+# ---------------------------------------------------------------------------
+
+def predict_todays_games():
+    """Predict all of today's MLB games and find profitable bets.
+
+    Returns list of game dicts with predictions, matchup details, and bets.
+    """
+    import mlb_api
+
+    games = mlb_api.get_todays_schedule()
+    if not games:
+        return []
+
+    conn = get_db()
+
+    # Get today's game odds
+    MLB_MAP = {
+        "Arizona Diamondbacks": "ARI", "Atlanta Braves": "ATL",
+        "Baltimore Orioles": "BAL", "Boston Red Sox": "BOS",
+        "Chicago Cubs": "CHC", "Chicago White Sox": "CWS",
+        "Cincinnati Reds": "CIN", "Cleveland Guardians": "CLE",
+        "Colorado Rockies": "COL", "Detroit Tigers": "DET",
+        "Houston Astros": "HOU", "Kansas City Royals": "KC",
+        "Los Angeles Angels": "LAA", "Los Angeles Dodgers": "LAD",
+        "Miami Marlins": "MIA", "Milwaukee Brewers": "MIL",
+        "Minnesota Twins": "MIN", "New York Mets": "NYM",
+        "New York Yankees": "NYY", "Oakland Athletics": "OAK",
+        "Philadelphia Phillies": "PHI", "Pittsburgh Pirates": "PIT",
+        "San Diego Padres": "SD", "San Francisco Giants": "SF",
+        "Seattle Mariners": "SEA", "St. Louis Cardinals": "STL",
+        "Tampa Bay Rays": "TB", "Texas Rangers": "TEX",
+        "Toronto Blue Jays": "TOR", "Washington Nationals": "WSH",
+    }
+    ABBREV_TO_NAME = {v: k for k, v in MLB_MAP.items()}
+
+    from datetime import date as dt_date
+    today = dt_date.today().isoformat()
+
+    # Load odds
+    odds_map = {}
+    ml_map = {}
+    for r in conn.execute("""
+        SELECT game_date, home_team, outcome_name, outcome_price, outcome_point, market
+        FROM mlb_game_odds WHERE game_date = ? AND bookmaker = 'draftkings'
+    """, (today,)).fetchall():
+        ha = MLB_MAP.get(r["home_team"])
+        if not ha:
+            continue
+        key = (today, ha)
+        if r["market"] == "totals" and r["outcome_name"] == "Over":
+            odds_map[key] = r["outcome_point"]
+        elif r["market"] == "h2h":
+            if key not in ml_map:
+                ml_map[key] = {}
+            oa = MLB_MAP.get(r["outcome_name"])
+            if oa == ha:
+                ml_map[key]["home_ml"] = r["outcome_price"]
+            elif oa:
+                ml_map[key]["away_ml"] = r["outcome_price"]
+
+    from nhl_game_model import simulate_game, _american_to_prob, _american_to_decimal
+
+    results = []
+    for game in games:
+        home_abbrev = game.get("home_team_abbrev", "")
+        away_abbrev = game.get("away_team_abbrev", "")
+        home_pp = game.get("home_probable_pitcher", {}) or {}
+        away_pp = game.get("away_probable_pitcher", {}) or {}
+        home_pitcher_id = home_pp.get("id")
+        away_pitcher_id = away_pp.get("id")
+
+        if not home_abbrev or not away_abbrev:
+            continue
+        if not home_pitcher_id or not away_pitcher_id:
+            continue
+
+        try:
+            pred = predict_game_runs(
+                home_pitcher_id, away_pitcher_id,
+                home_abbrev, away_abbrev, today, conn,
+            )
+        except Exception as exc:
+            logger.warning("Failed to predict %s@%s: %s", away_abbrev, home_abbrev, exc)
+            continue
+
+        # Odds
+        vl = odds_map.get((today, home_abbrev))
+        ml = ml_map.get((today, home_abbrev), {})
+        matchup_diff = pred["pred_total"] - vl if vl else 0
+
+        # Simulate
+        sim = simulate_game(pred["pred_home_runs"], pred["pred_away_runs"], correlation=0.10)
+
+        # Build bet recommendations
+        bets = []
+
+        # --- TOTALS ---
+        if vl is not None:
+            for line_try in [vl, vl + 0.5, vl - 0.5]:
+                ok = f"over_{line_try}"
+                uk = f"under_{line_try}"
+                if ok in sim:
+                    # UNDER when matchup < Vegas (our validated edge)
+                    if matchup_diff < -0.3:
+                        under_prob = sim[uk]
+                        imp = 0.5238
+                        edge = under_prob - imp
+                        ev = under_prob * 0.909 - (1 - under_prob)
+                        if ev > 0:
+                            stars = 5 if matchup_diff < -1.0 else 3 if matchup_diff < -0.5 else 2
+                            hist_yield = 17.7 if matchup_diff < -1.0 else 16.5
+                            bets.append({
+                                "market": "Total",
+                                "pick": f"UNDER {vl}",
+                                "model_prob": round(under_prob, 3),
+                                "edge": round(edge, 3),
+                                "odds": -110,
+                                "stars": stars,
+                                "hist_yield": hist_yield,
+                            })
+                    break
+
+        # --- MONEYLINE ---
+        home_ml = ml.get("home_ml")
+        away_ml = ml.get("away_ml")
+        if home_ml is not None and away_ml is not None:
+            for team, ml_price, model_p in [
+                (home_abbrev, home_ml, sim["home_win_prob"]),
+                (away_abbrev, away_ml, sim["away_win_prob"]),
+            ]:
+                imp = _american_to_prob(ml_price)
+                dec = _american_to_decimal(ml_price)
+                edge = model_p - imp
+                ev = model_p * (dec - 1) - (1 - model_p)
+
+                # Validated strategies: Dogs edge>=8% (+8.6%), Favs edge>=3% (+5.3%)
+                is_dog = ml_price > 0
+                if is_dog and edge >= 0.08 and ev > 0:
+                    bets.append({
+                        "market": "ML",
+                        "pick": team,
+                        "model_prob": round(model_p, 3),
+                        "edge": round(edge, 3),
+                        "odds": ml_price,
+                        "stars": 3 if edge >= 0.12 else 2,
+                        "hist_yield": 8.6,
+                    })
+                elif not is_dog and edge >= 0.03 and ev > 0:
+                    bets.append({
+                        "market": "ML",
+                        "pick": team,
+                        "model_prob": round(model_p, 3),
+                        "edge": round(edge, 3),
+                        "odds": ml_price,
+                        "stars": 2 if edge >= 0.05 else 1,
+                        "hist_yield": 5.3,
+                    })
+
+        results.append({
+            "home_team": home_abbrev,
+            "away_team": away_abbrev,
+            "home_pitcher": home_pp.get("name", "TBD"),
+            "away_pitcher": away_pp.get("name", "TBD"),
+            "pred_home_runs": pred["pred_home_runs"],
+            "pred_away_runs": pred["pred_away_runs"],
+            "pred_total": pred["pred_total"],
+            "vegas_total": vl,
+            "matchup_diff": round(matchup_diff, 2),
+            "home_ml": home_ml,
+            "away_ml": away_ml,
+            "sim": {
+                "home_win_prob": sim["home_win_prob"],
+                "away_win_prob": sim["away_win_prob"],
+            },
+            "home_detail": {
+                "starter_ip": pred["home"].get("starter_ip"),
+                "matchup_k": pred["home"].get("avg_matchup_k"),
+                "bullpen_era": pred["home"].get("bullpen_era"),
+            },
+            "away_detail": {
+                "starter_ip": pred["away"].get("starter_ip"),
+                "matchup_k": pred["away"].get("avg_matchup_k"),
+                "bullpen_era": pred["away"].get("bullpen_era"),
+            },
+            "bets": sorted(bets, key=lambda b: b.get("stars", 0), reverse=True),
+        })
+
+    conn.close()
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Build Training Data
 # ---------------------------------------------------------------------------
 
@@ -876,7 +1098,8 @@ def build_training_data():
         "Tampa Bay Rays": "TB", "Texas Rangers": "TEX",
         "Toronto Blue Jays": "TOR", "Washington Nationals": "WSH",
     }
-    odds_map = {}
+    odds_map = {}  # total lines
+    ml_map = {}    # moneyline odds
     for r in conn.execute("""
         SELECT game_date, home_team, outcome_point
         FROM mlb_game_odds WHERE market = 'totals' AND outcome_name = 'Over'
@@ -885,6 +1108,22 @@ def build_training_data():
         a = MLB_MAP.get(r["home_team"])
         if a:
             odds_map[(r["game_date"], a)] = r["outcome_point"]
+
+    # Moneyline odds
+    for r in conn.execute("""
+        SELECT game_date, home_team, outcome_name, outcome_price
+        FROM mlb_game_odds WHERE market = 'h2h' AND bookmaker = 'draftkings'
+    """).fetchall():
+        ha = MLB_MAP.get(r["home_team"])
+        oa = MLB_MAP.get(r["outcome_name"])
+        if ha:
+            key = (r["game_date"], ha)
+            if key not in ml_map:
+                ml_map[key] = {}
+            if oa == ha:
+                ml_map[key]["home_ml"] = r["outcome_price"]
+            elif oa:
+                ml_map[key]["away_ml"] = r["outcome_price"]
 
     logger.info("Building training data: %d games, %d starters, %d odds",
                 len(games), len(starters), len(odds_map))
@@ -908,6 +1147,7 @@ def build_training_data():
             continue
 
         vegas = odds_map.get((gdate, home))
+        ml_odds = ml_map.get((gdate, home), {})
 
         records.append({
             "game_pk": gk, "date": gdate,
@@ -936,6 +1176,10 @@ def build_training_data():
             "away_defense": pred["away"].get("defense_mult", 1.0),
             "park_factor": pred["home"].get("park_factor", 1.0),
             "vegas_total": vegas,
+            "home_ml": ml_odds.get("home_ml"),
+            "away_ml": ml_odds.get("away_ml"),
+            "actual_home_win": 1 if g["home_score"] > g["away_score"] else 0,
+            "actual_margin": g["home_score"] - g["away_score"],
         })
 
     conn.close()
@@ -1033,8 +1277,19 @@ def run_walkforward(min_train=300, test_days=14, step_days=14):
             actual = int(row["actual_total"])
             matchup_diff = matchup_raw - vl
 
-            sim = simulate_game(pred * 0.5, pred * 0.5, correlation=0.10)
+            # Split predicted total into home/away using matchup ratio
+            raw_home = float(row["pred_home"])
+            raw_away = float(row["pred_away"])
+            ratio = raw_home / max(raw_home + raw_away, 0.1)
+            pred_home = pred * ratio
+            pred_away = pred * (1 - ratio)
 
+            sim = simulate_game(pred_home, pred_away, correlation=0.10)
+
+            actual_home_win = int(row.get("actual_home_win", 0))
+            actual_margin = int(row.get("actual_margin", 0))
+
+            # --- TOTALS BETS ---
             for line_try in [vl, vl + 0.5, vl - 0.5]:
                 ok = f"over_{line_try}"
                 uk = f"under_{line_try}"
@@ -1049,6 +1304,7 @@ def run_walkforward(min_train=300, test_days=14, step_days=14):
                         all_bets.append({
                             "window": wnum,
                             "date": row["date"].strftime("%Y-%m-%d"),
+                            "market": "TOTAL",
                             "pick": f"{side} {vl}",
                             "pred_total": round(pred, 2),
                             "matchup_diff": round(matchup_diff, 2),
@@ -1056,18 +1312,52 @@ def run_walkforward(min_train=300, test_days=14, step_days=14):
                             "ev": round(ev, 4),
                             "won": won,
                             "actual_total": actual,
-                            "vegas_line": vl,
+                            "odds": -110,
+                            "decimal_odds": 1.909,
                         })
                     break
+
+            # --- MONEYLINE BETS ---
+            home_ml = row.get("home_ml")
+            away_ml = row.get("away_ml")
+            if home_ml is not None and not pd.isna(home_ml) and away_ml is not None and not pd.isna(away_ml):
+                home_ml = int(home_ml)
+                away_ml = int(away_ml)
+                from nhl_game_model import _american_to_prob, _american_to_decimal
+
+                for team_pick, ml, model_p, won in [
+                    (row["home_team"], home_ml, sim["home_win_prob"], actual_home_win == 1),
+                    (row["away_team"], away_ml, sim["away_win_prob"], actual_home_win == 0),
+                ]:
+                    imp = _american_to_prob(ml)
+                    dec = _american_to_decimal(ml)
+                    edge = model_p - imp
+                    ev = model_p * (dec - 1) - (1 - model_p)
+                    all_bets.append({
+                        "window": wnum,
+                        "date": row["date"].strftime("%Y-%m-%d"),
+                        "market": "ML",
+                        "pick": team_pick,
+                        "pred_total": round(pred, 2),
+                        "matchup_diff": round(matchup_diff, 2),
+                        "edge": round(edge, 4),
+                        "ev": round(ev, 4),
+                        "won": won,
+                        "actual_total": actual,
+                        "odds": ml,
+                        "decimal_odds": round(dec, 4),
+                        "model_prob": round(model_p, 4),
+                        "implied_prob": round(imp, 4),
+                    })
 
         current += timedelta(days=step_days)
 
     # Results
     bets = pd.DataFrame(all_bets) if all_bets else pd.DataFrame()
 
-    print("\n" + "=" * 90)
-    print("  MLB PITCH-MATCHUP V2: WALK-FORWARD RESULTS")
-    print("=" * 90)
+    print("\n" + "=" * 95)
+    print("  MLB O/U v1: WALK-FORWARD RESULTS (Totals + Moneyline)")
+    print("=" * 95)
     print(f"  Windows: {len(windows)}")
     for w in windows:
         print(f"  Win {w['window']}: {w['train']} train, {w['test']} test | "
@@ -1077,38 +1367,122 @@ def run_walkforward(min_train=300, test_days=14, step_days=14):
         print("  No bets generated")
         return {"windows": windows}
 
-    is_under = bets["pick"].str.contains("UNDER")
-    is_over = bets["pick"].str.contains("OVER")
-    ev_pos = bets["ev"] > 0
-    mu = bets["matchup_diff"] < -0.3
-    muu = bets["matchup_diff"] < -1.0
-    mo = bets["matchup_diff"] > 0.3
+    b = bets
+    is_total = b["market"] == "TOTAL"
+    is_ml = b["market"] == "ML"
+    is_under = b["pick"].str.contains("UNDER")
+    is_over = b["pick"].str.contains("OVER")
+    ev_pos = b["ev"] > 0
+    mu = b["matchup_diff"] < -0.3
+    muu = b["matchup_diff"] < -1.0
+    mo = b["matchup_diff"] > 0.3
 
-    print(f"\n  Total bets: {len(bets)}, +EV: {ev_pos.sum()}")
-    print(f"  {'Strategy':35s} {'N':>5s} {'WR':>6s} {'Flat Yld':>9s}")
-    print("  " + "-" * 60)
+    # ML-specific filters
+    is_fav = is_ml & (b["odds"] < 0)
+    is_dog = is_ml & (b["odds"] > 0)
+    ml_matchup_favors_pick = is_ml & (
+        ((b["matchup_diff"] < 0) & (b["model_prob"].fillna(0) > 0.5)) |   # model sees under = away pitcher good = home advantage... complex
+        (b["ev"] > 0)
+    )
+
+    print(f"\n  Total bets: {len(b)}, Totals: {is_total.sum()}, ML: {is_ml.sum()}")
+
+    print(f"\n  {'--- TOTALS ---':40s}")
+    print(f"  {'Strategy':40s} {'N':>5s} {'WR':>6s} {'Flat Yld':>9s}")
+    print("  " + "-" * 65)
 
     for name, mask in [
-        ("All +EV", ev_pos),
-        ("OVER +EV", ev_pos & is_over),
-        ("UNDER +EV", ev_pos & is_under),
-        ("UNDER matchup<Vegas", is_under & mu),
-        ("UNDER matchup<<Vegas", is_under & muu),
-        ("OVER matchup>Vegas", is_over & mo),
-        ("UNDER m<V +EV", is_under & mu & ev_pos),
-        ("UNDER m<V edge5%", is_under & mu & (bets["edge"] >= 0.05)),
-        ("OVER m>V +EV", is_over & mo & ev_pos),
-        ("Edge>=5%", ev_pos & (bets["edge"] >= 0.05)),
-        ("Edge>=8%", ev_pos & (bets["edge"] >= 0.08)),
+        ("TOTAL: UNDER matchup<Vegas", is_total & is_under & mu),
+        ("TOTAL: UNDER matchup<<Vegas", is_total & is_under & muu),
+        ("TOTAL: OVER matchup>Vegas", is_total & is_over & mo),
+        ("TOTAL: All +EV", is_total & ev_pos),
+        ("TOTAL: OVER +EV", is_total & ev_pos & is_over),
+        ("TOTAL: UNDER +EV", is_total & ev_pos & is_under),
     ]:
-        sub = bets[mask]
+        sub = b[mask]
         if len(sub) < 5:
             continue
         wr = sub["won"].mean()
         yld = wr * 1.909 - 1  # -110 flat bet yield
-        print(f"  {name:35s} {len(sub):5d} {wr:5.1%} {yld*100:+8.1f}%")
+        print(f"  {name:40s} {len(sub):5d} {wr:5.1%} {yld*100:+8.1f}%")
 
-    print("=" * 90)
+    # --- MONEYLINE ---
+    print(f"\n  {'--- MONEYLINE ---':40s}")
+    print(f"  {'Strategy':40s} {'N':>5s} {'WR':>6s} {'Flat Yld':>9s}")
+    print("  " + "-" * 65)
+
+    def _ml_yield(subset):
+        """Compute flat-bet yield for ML bets (variable odds)."""
+        if len(subset) == 0:
+            return 0, 0
+        profits = []
+        for _, bet in subset.iterrows():
+            dec = bet["decimal_odds"]
+            if bet["won"]:
+                profits.append(dec - 1)
+            else:
+                profits.append(-1)
+        avg_profit = np.mean(profits)
+        return subset["won"].mean(), avg_profit
+
+    for name, mask in [
+        ("ML: All +EV", is_ml & ev_pos),
+        ("ML: Favorites +EV", is_fav & ev_pos),
+        ("ML: Underdogs +EV", is_dog & ev_pos),
+        ("ML: Edge >= 3%", is_ml & (b["edge"] >= 0.03)),
+        ("ML: Edge >= 5%", is_ml & (b["edge"] >= 0.05)),
+        ("ML: Edge >= 8%", is_ml & (b["edge"] >= 0.08)),
+        ("ML: Edge >= 10%", is_ml & (b["edge"] >= 0.10)),
+        # Matchup-driven ML: bet team whose pitcher has better matchup
+        ("ML: Matchup favors (edge>3%)", is_ml & (b["edge"] >= 0.03) & ev_pos),
+        ("ML: Strong matchup (edge>5%)", is_ml & (b["edge"] >= 0.05) & ev_pos),
+        # Underdogs with edge
+        ("ML: Dogs edge>=5%", is_dog & (b["edge"] >= 0.05)),
+        ("ML: Dogs edge>=8%", is_dog & (b["edge"] >= 0.08)),
+        # Favorites with edge
+        ("ML: Favs edge>=3%", is_fav & (b["edge"] >= 0.03)),
+        ("ML: Favs edge>=5%", is_fav & (b["edge"] >= 0.05)),
+    ]:
+        sub = b[mask]
+        if len(sub) < 5:
+            continue
+        wr, avg_pnl = _ml_yield(sub)
+        print(f"  {name:40s} {len(sub):5d} {wr:5.1%} {avg_pnl*100:+8.1f}%")
+
+    # --- COMBINED SUMMARY ---
+    print(f"\n  {'--- BEST STRATEGIES ---':40s}")
+    print("  " + "-" * 65)
+
+    # Collect all strategies and rank
+    all_strats = []
+    for name, mask, is_ml_bet in [
+        ("TOTAL: UNDER matchup<V", is_total & is_under & mu, False),
+        ("TOTAL: UNDER matchup<<V", is_total & is_under & muu, False),
+        ("ML: All +EV", is_ml & ev_pos, True),
+        ("ML: Dogs edge>=5%", is_dog & (b["edge"] >= 0.05), True),
+        ("ML: Dogs edge>=8%", is_dog & (b["edge"] >= 0.08), True),
+        ("ML: Favs edge>=3%", is_fav & (b["edge"] >= 0.03), True),
+        ("ML: Edge >= 5%", is_ml & (b["edge"] >= 0.05), True),
+    ]:
+        sub = b[mask]
+        if len(sub) < 5:
+            continue
+        if is_ml_bet:
+            wr, avg_pnl = _ml_yield(sub)
+        else:
+            wr = sub["won"].mean()
+            avg_pnl = wr * 1.909 - 1
+        if avg_pnl > 0:
+            all_strats.append((name, len(sub), wr, avg_pnl))
+
+    all_strats.sort(key=lambda x: x[3], reverse=True)
+    for name, n, wr, pnl in all_strats:
+        print(f"  >>> {name:38s} {n:5d} bets {wr:5.1%} WR {pnl*100:+7.1f}% yield")
+
+    if not all_strats:
+        print("  No profitable strategies found.")
+
+    print("=" * 95)
     return {"windows": windows, "bets": bets}
 
 

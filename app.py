@@ -23,6 +23,7 @@ import moneypuck_collector
 import nhl_odds_collector
 import nhl_game_model
 import mlb_api
+import mlb_ou_v1
 import mlb_data_collector
 import mlb_model
 
@@ -454,6 +455,17 @@ def api_mlb_predictions():
         "predictions": predictions,
         "model_metrics": metrics,
     })
+
+
+@app.route("/api/mlb/game-predictions")
+def api_mlb_game_predictions():
+    """MLB O/U v1: game-level predictions with totals + ML bets."""
+    try:
+        games = mlb_ou_v1.predict_todays_games()
+        return jsonify({"games": games})
+    except Exception as exc:
+        logger.warning("MLB game predictions failed: %s", exc)
+        return jsonify({"games": [], "error": str(exc)})
 
 
 @app.route("/api/mlb/pitcher/<int:pitcher_id>")

@@ -267,7 +267,7 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="mlb-tab" data-bs-toggle="pill"
                         data-bs-target="#mlb" type="button" role="tab"
-                        onclick="loadMLBPredictions()">MLB Strikeouts</button>
+                        onclick="loadMLBPredictions(); loadMLBGamePredictions()">MLB</button>
             </li>
         </ul>
         <span id="statusBar" class="small text-nowrap" style="color:var(--text-secondary)"></span>
@@ -395,6 +395,11 @@
         <!-- MLB STRIKEOUTS TAB -->
         <!-- ============================================================= -->
         <div class="tab-pane fade" id="mlb" role="tabpanel">
+            <!-- MLB O/U v1: Game-Level Bets -->
+            <div id="mlbGameCardsContainer" class="mb-4"></div>
+            <div id="mlbGameCardsLoading" class="text-center py-3 text-secondary">
+                Loading MLB game predictions...
+            </div>
             <div class="card mb-4 p-3">
                 <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
                     <div class="d-flex align-items-center gap-2"
@@ -1771,6 +1776,72 @@ let mlbRefreshTimer = null;
 let mlbShowAll = false;
 
 const mlbBankroll = () => parseFloat(document.getElementById('mlbBankroll')?.value) || 100;
+
+let mlbGamesLoaded = false;
+async function loadMLBGamePredictions() {
+    if (mlbGamesLoaded) return;
+
+    const data = await fetchJSON('/api/mlb/game-predictions');
+    const loading = document.getElementById('mlbGameCardsLoading');
+    loading.classList.add('d-none');
+
+    const games = data && data.games ? data.games : [];
+    if (games.length === 0) {
+        loading.textContent = data && data.error ? data.error : 'No MLB games today';
+        loading.classList.remove('d-none');
+        return;
+    }
+    mlbGamesLoaded = true;
+
+    const br = mlbBankroll();
+    const container = document.getElementById('mlbGameCardsContainer');
+    container.innerHTML = games.map(g => {
+        const vl = g.vegas_total || '—';
+        const hwp = g.sim ? (g.sim.home_win_prob * 100).toFixed(1) : '—';
+        const md = g.matchup_diff;
+        const mdClass = md < -1 ? 'ev-positive' : md < -0.3 ? 'signal-strong' : md > 0.3 ? 'ev-negative' : '';
+        const mdText = md !== 0 ? `${md > 0 ? '+' : ''}${md.toFixed(1)}` : '—';
+
+        let betsHtml = '';
+        if (g.bets && g.bets.length > 0) {
+            betsHtml = g.bets.map(b => {
+                const stars = '★'.repeat(b.stars || 1);
+                const cls = b.stars >= 4 ? 'ev-positive fw-bold' : b.stars >= 2 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
+                const oddsStr = b.odds > 0 ? '+' + b.odds : b.odds;
+                // Kelly sizing
+                const dec = b.odds > 0 ? b.odds / 100 + 1 : -100 / b.odds + 1;
+                const shrunk = b.edge >= 0.10 ? b.edge : b.edge >= 0.08 ? b.edge * 0.7 : b.edge * 0.4;
+                const ev = (americanToImpliedProb(b.odds) + shrunk) * (dec - 1) - (1 - americanToImpliedProb(b.odds) - shrunk);
+                const kf = Math.min(Math.max(ev / (dec - 1), 0) * 0.25, 0.08);
+                const wager = br > 0 ? Math.round(br * kf) : 0;
+                const wagerStr = wager > 0 ? ' $' + wager : '';
+                return '<span class="' + cls + '" title="Edge: ' + (b.edge*100).toFixed(1) + '% | Hist yield: ' + b.hist_yield + '%">' +
+                       stars + wagerStr + ' ' + b.pick + ' @ ' + oddsStr + ' (' + b.market + ')</span>';
+            }).join(' &nbsp;&nbsp; ');
+        } else {
+            betsHtml = '<span class="text-secondary">No qualifying bets</span>';
+        }
+
+        return '<div class="card mb-3 p-3">' +
+            '<div class="d-flex justify-content-between align-items-center mb-2">' +
+                '<div><span class="fw-bold" style="font-size:1.15rem">' +
+                    g.away_pitcher + ' (' + g.away_team + ') @ ' +
+                    g.home_pitcher + ' (' + g.home_team + ')</span></div>' +
+                '<div class="text-end">' +
+                    '<span class="badge bg-secondary">Line: ' + vl + '</span> ' +
+                    '<span class="badge" style="background:var(--accent)">Pred: ' + g.pred_total.toFixed(1) + '</span> ' +
+                    '<span class="badge ' + mdClass + '">Matchup: ' + mdText + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="mb-2" style="font-size:0.95rem">' + betsHtml + '</div>' +
+            '<div class="d-flex gap-4 flex-wrap" style="font-size:0.8rem;color:var(--text-secondary)">' +
+                '<span>Pred: ' + g.away_team + ' ' + g.pred_away_runs.toFixed(1) + ' | ' + g.home_team + ' ' + g.pred_home_runs.toFixed(1) + '</span>' +
+                '<span>Home win: ' + hwp + '%</span>' +
+                '<span>ML: ' + g.away_team + ' ' + (g.away_ml || '—') + ' | ' + g.home_team + ' ' + (g.home_ml || '—') + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
 
 async function loadMLBPredictions() {
     if (mlbLoaded && mlbPredictions.length > 0) return;
