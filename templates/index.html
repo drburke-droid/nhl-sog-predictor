@@ -311,14 +311,16 @@
                     <table class="table table-hover mb-0" id="predictionsTable">
                         <thead>
                             <tr>
-                                <th class="sort-btn" onclick="sortPredictions('best_wager')" style="min-width:150px">Bet</th>
-                                <th class="sort-btn" onclick="sortPredictions('v1_stars')" style="min-width:70px">V1</th>
-                                <th class="sort-btn" onclick="sortPredictions('v2_stars')" style="min-width:70px">V2</th>
+                                <th class="sort-btn" onclick="sortPredictions('best_wager')" style="min-width:130px">Bet</th>
+                                <th class="sort-btn" onclick="sortPredictions('v1_stars')" style="min-width:50px">V1</th>
+                                <th class="sort-btn" onclick="sortPredictions('v2_stars')" style="min-width:50px">V2</th>
                                 <th>Player</th>
                                 <th>Matchup</th>
                                 <th class="sort-btn" onclick="sortPredictions('predicted_sog')">Pred</th>
                                 <th>Line</th>
-                                <th class="sort-btn" onclick="sortPredictions('best_edge')">Edge</th>
+                                <th style="min-width:200px; font-size:0.75rem; text-align:center"
+                                    title="Bet sizing at different PlayAlberta odds: best case | estimated | worst still +EV">
+                                    Best Odds | Est Odds | Min +EV Odds</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -852,6 +854,56 @@ function betCellHtml(wager, side, line, stars, yld) {
     return `<span class="${cls}" title="Calibrated wager | ${yld.toFixed(1)}% hist yield">${starStr}$${wager} ${sideLabel}${line}</span>`;
 }
 
+function oddsRangeHtml(blendedProb, estOdds, side) {
+    // Compute wagers at 3 odds levels:
+    // 1. Best case: odds 20% better than estimate (more plus money / less minus money)
+    // 2. Estimated: our PA estimate from BetMGM conversion
+    // 3. Worst still +EV: the breakeven odds where edge = 5% (minimum threshold)
+    if (!blendedProb || blendedProb <= 0.01 || !estOdds) return '<span class="text-secondary">—</span>';
+
+    const br = bankroll || 100;
+
+    function probToAmerican(p) {
+        if (p <= 0 || p >= 1) return 0;
+        return p > 0.5 ? Math.round(-100 * p / (1 - p)) : Math.round(100 * (1 - p) / p);
+    }
+
+    function wagerAtOdds(odds) {
+        const imp = americanToImpliedProb(odds);
+        const edge = blendedProb - imp;
+        const shrunk = shrinkEdge(edge);
+        if (shrunk <= 0) return { wager: 0, odds: odds, edge: edge };
+        const dec = odds > 0 ? odds / 100 + 1 : -100 / odds + 1;
+        const sp = imp + shrunk;
+        const ev = sp * (dec - 1) - (1 - sp);
+        if (ev <= 0) return { wager: 0, odds: odds, edge: edge };
+        const kf = Math.min(Math.max(ev / (dec - 1), 0) * 0.25, 0.08);
+        return { wager: Math.round(br * kf), odds: odds, edge: edge };
+    }
+
+    // Best case: shift odds 20% in our favor
+    const bestOdds = estOdds > 0 ? Math.round(estOdds * 1.2) : Math.round(estOdds * 0.8);
+    // Worst still +EV: find odds where edge = 5% (blendedProb - implied = 0.05)
+    const worstProb = blendedProb - 0.05;
+    const worstOdds = probToAmerican(worstProb);
+
+    const best = wagerAtOdds(bestOdds);
+    const est = wagerAtOdds(estOdds);
+    const worst = wagerAtOdds(worstOdds);
+
+    function fmtCell(w, odds, cls) {
+        const oddsStr = odds > 0 ? '+' + odds : odds;
+        if (w.wager <= 0) return `<span class="text-secondary" style="font-size:0.7rem">${oddsStr} skip</span>`;
+        return `<span class="${cls}" style="font-size:0.75rem">$${w.wager} @ ${oddsStr}</span>`;
+    }
+
+    return `<div style="display:flex;gap:4px;justify-content:center;font-size:0.75rem">` +
+        fmtCell(best, bestOdds, 'ev-positive') + `<span class="text-secondary">|</span>` +
+        fmtCell(est, estOdds, 'signal-strong fw-bold') + `<span class="text-secondary">|</span>` +
+        fmtCell(worst, worstOdds, 'signal-mild') +
+        `</div>`;
+}
+
 function matchStrategy(strategies, blendedEdgeOver, blendedEdgeUnder, line, pos, hasSharp) {
     // Find the highest-yield strategy this bet qualifies for
     // Requires sharp data for blended strategies (walk-forward used blended)
@@ -1251,11 +1303,22 @@ function renderPredictions(list) {
         const v1Html = starsHtml(p.v1_stars, p.v1_yield);
         const v2Html = starsHtml(p.v2_stars, p.v2_yield);
 
-        // Calibrated edge
-        const edge = p.best_edge || 0;
-        const edgeText = edge > 0 ? `+${(edge * 100).toFixed(1)}%` : '—';
-        const edgeClass = edge >= 0.10 ? 'ev-positive fw-bold' : edge >= 0.06 ? 'ev-positive' : edge > 0 ? 'signal-mild' : 'ev-neutral';
-        const modelTag = p.best_model ? ` <small class="text-secondary">${p.best_model}</small>` : '';
+        // Odds range: compute wager at best/estimated/worst odds
+        // Use the blended prob from whichever model won (v1 or v2)
+        const bestSide = p.best_side;
+        let blendProb = 0, estOdds = 0;
+        if (bestSide && saved) {
+            estOdds = parseInt(bestSide === 'UNDER' ? saved.underOdds : saved.overOdds) || 0;
+            // Use the blended probability that generated the bet
+            if (p.best_model === 'V1') {
+                blendProb = bestSide === 'UNDER' ? p.blended_prob_under : p.blended_prob_over;
+            } else {
+                blendProb = bestSide === 'UNDER' ? p.blended_prob_under : p.blended_prob_over;
+            }
+        }
+        const oddsRange = (p.best_wager > 0 && blendProb > 0 && estOdds !== 0)
+            ? oddsRangeHtml(blendProb, estOdds, bestSide)
+            : '<span class="text-secondary">—</span>';
 
         return `<tr onclick="showPlayer(${pid})" style="cursor:pointer">
             <td style="white-space:nowrap;font-size:0.95rem">${betHtml}</td>
@@ -1267,7 +1330,7 @@ function renderPredictions(list) {
             <td><input class="odds-input" id="line-${pid}" type="text" placeholder="3.5"
                        value="${lineVal}"
                        oninput="updateOddsSimple(${pid})" onclick="event.stopPropagation()" style="width:55px"></td>
-            <td class="${edgeClass}" style="font-weight:600">${edgeText}${modelTag}</td>
+            <td style="white-space:nowrap">${oddsRange}</td>
         </tr>`;
     }).join('');
 
