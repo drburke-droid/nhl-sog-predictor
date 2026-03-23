@@ -318,10 +318,63 @@ def api_team_predictions():
 
 @app.route("/api/game-predictions")
 def api_game_predictions():
-    """Game-level predictions with +EV bet recommendations."""
-    preds = nhl_game_model.predict_todays_games()
-    metrics = nhl_game_model.get_model_metrics()
-    return jsonify({"games": preds, "metrics": metrics})
+    """Unified game view: game-level bets + player SOG bets per game, sorted by start time."""
+    from datetime import date as dt_date
+
+    # Get today's schedule with start times
+    today = dt_date.today().isoformat()
+    sched = nhl_api.get_schedule(today)
+    game_order = []
+    if sched:
+        for week in sched.get("gameWeek", []):
+            if week.get("date") == today:
+                for g in week.get("games", []):
+                    game_order.append({
+                        "home": g.get("homeTeam", {}).get("abbrev", ""),
+                        "away": g.get("awayTeam", {}).get("abbrev", ""),
+                        "start_time": g.get("startTimeUTC", ""),
+                    })
+
+    # Game-level predictions (totals model)
+    game_preds = {}
+    try:
+        for gp in nhl_game_model.predict_todays_games():
+            game_preds[(gp["away_team"], gp["home_team"])] = gp
+    except Exception:
+        pass
+
+    # Player SOG predictions from both models
+    v1_preds = model.predict_upcoming_games()
+    v2_preds = model_v2.predict_upcoming_games()
+    v2_map = {p["player_id"]: p for p in v2_preds}
+
+    # Group players by game (away @ home)
+    player_by_game = {}
+    for p in v1_preds:
+        key = (p["team"], p["opponent"]) if not p["is_home"] else (p["opponent"], p["team"])
+        if key not in player_by_game:
+            player_by_game[key] = []
+        p["v2"] = v2_map.get(p["player_id"], {})
+        player_by_game[key].append(p)
+
+    # Build unified game list sorted by start time
+    results = []
+    for go in sorted(game_order, key=lambda x: x["start_time"]):
+        away, home = go["away"], go["home"]
+        gp = game_preds.get((away, home), {})
+        players = player_by_game.get((away, home), [])
+
+        results.append({
+            "away_team": away,
+            "home_team": home,
+            "start_time": go["start_time"],
+            # Game-level data
+            "game": gp,
+            # Players for this game (for SOG bets)
+            "players": players,
+        })
+
+    return jsonify({"games": results})
 
 
 @app.route("/api/nhl/odds")

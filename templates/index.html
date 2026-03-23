@@ -1534,62 +1534,149 @@ async function loadTeamPredictions() {
     games.forEach(g => { todaysTeams.add(g.home_team); todaysTeams.add(g.away_team); });
 
     const container = document.getElementById('gameCardsContainer');
-    container.innerHTML = games.map(g => {
-        const sim = g.sim || {};
-        const hwp = (g.pred_home_win_prob * 100).toFixed(1);
-        const awp = ((1 - g.pred_home_win_prob) * 100).toFixed(1);
-        const impHwp = g.home_wp_implied ? (g.home_wp_implied * 100).toFixed(1) : '—';
-        const totalLine = g.total_line || '—';
+    const br = bankroll || 100;
 
-        // Bet recommendations (only totals — ML not profitable per walk-forward)
-        let betsHtml = '';
-        const totalsBets = (g.bets || []).filter(b =>
-            b.market.startsWith('Over') || b.market.startsWith('Under'));
-        if (totalsBets.length > 0) {
-            betsHtml = totalsBets.map(b => {
-                const stars = b.edge >= 0.10 ? '★★★' : b.edge >= 0.06 ? '★★' : '★';
-                const cls = b.edge >= 0.10 ? 'ev-positive fw-bold' : b.edge >= 0.06 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
-                const wager = bankroll > 0 ? `$${Math.round(bankroll * Math.min(Math.max(b.ev / (americanToDecimalProfit(b.odds) + 1 - 1), 0) * 0.15, 0.08))}` : '';
-                return `<span class="${cls}" title="Edge: ${(b.edge*100).toFixed(1)}%">${stars} ${wager} ${b.pick} @ ${b.odds > 0 ? '+' : ''}${b.odds}</span>`;
-            }).join(' &nbsp; ');
-        } else {
-            betsHtml = '<span class="text-secondary">No +EV totals</span>';
+    container.innerHTML = games.map(g => {
+        const gd = g.game || {};
+        const away = g.away_team;
+        const home = g.home_team;
+
+        // Format start time
+        let timeStr = '';
+        if (g.start_time) {
+            try {
+                const d = new Date(g.start_time);
+                timeStr = d.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
+            } catch(e) {}
         }
 
-        // Context rows
-        const homeGF = g.home_gf_10 || '—';
-        const homeGA = g.home_ga_10 || '—';
-        const awayGF = g.away_gf_10 || '—';
-        const awayGA = g.away_ga_10 || '—';
-        const homeXG = g.home_xgf_10 || '—';
-        const awayXG = g.away_xgf_10 || '—';
+        // Game-level info
+        const totalLine = gd.total_line || '—';
+        const predTotal = gd.pred_total ? gd.pred_total.toFixed(1) : '—';
+        const hwp = gd.pred_home_win_prob ? (gd.pred_home_win_prob * 100).toFixed(0) + '%' : '—';
+        const homeML = gd.home_ml || '—';
+        const awayML = gd.away_ml || '—';
+
+        // Collect ALL profitable bets for this game (game-level + player SOG)
+        let allBets = [];
+
+        // Game-level totals bets
+        const gameBets = (gd.bets || []).filter(b =>
+            b.market && (b.market.startsWith('Over') || b.market.startsWith('Under')));
+        gameBets.forEach(b => {
+            const stars = b.edge >= 0.10 ? 3 : b.edge >= 0.06 ? 2 : 1;
+            const cls = stars >= 3 ? 'ev-positive fw-bold' : stars >= 2 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
+            allBets.push({
+                type: 'GAME', stars, cls, edge: b.edge,
+                html: `<span class="${cls}" title="Edge: ${(b.edge*100).toFixed(1)}%">${'★'.repeat(stars)} ${b.pick} (game total)</span>`,
+            });
+        });
+
+        // Player SOG bets — compute from predictions data
+        const players = g.players || [];
+        players.forEach(p => {
+            // Check if player has odds
+            if (!p.market_sog_line || !p.pa_under_est) return;
+            const line = p.market_sog_line;
+            const pred = p.predicted_sog;
+            const vr = p.var_ratio || 1.0;
+            const sharpO = p.sharp_prob_over;
+            const sharpU = p.sharp_prob_under;
+            const nSharp = p.n_sharp_books || 0;
+            const underOdds = p.pa_under_est;
+            const overOdds = p.pa_over_est;
+
+            if (!sharpO || !sharpU || nSharp < 1) return;
+
+            // Compute blended prob (same as Predictions tab)
+            const modelPO = calcProbOver(pred, line, vr);
+            const modelPU = 1 - modelPO;
+            const blendO = 0.5 * modelPO + 0.5 * sharpO;
+            const blendU = 0.5 * modelPU + 0.5 * sharpU;
+
+            // Check V1 and V2 strategies
+            const v2pred = p.v2 ? p.v2.predicted_sog : null;
+            const v2vr = p.v2 ? p.v2.var_ratio : null;
+
+            // Check under edge
+            if (underOdds) {
+                const impU = americanToImpliedProb(underOdds);
+                const edgeU = blendU - impU;
+                const shrunk = shrinkEdge(edgeU);
+                if (shrunk > 0) {
+                    const dec = underOdds > 0 ? underOdds / 100 + 1 : -100 / underOdds + 1;
+                    const sp = impU + shrunk;
+                    const ev = sp * (dec - 1) - (1 - sp);
+                    if (ev > 0) {
+                        const kf = Math.min(Math.max(ev / (dec - 1), 0) * 0.25, 0.08);
+                        const wager = Math.round(br * kf);
+                        if (wager >= 1) {
+                            const stars = edgeU >= 0.10 ? 3 : edgeU >= 0.07 ? 2 : 1;
+                            const cls = stars >= 3 ? 'ev-positive fw-bold' : stars >= 2 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
+                            allBets.push({
+                                type: 'SOG', stars, cls, edge: edgeU,
+                                html: `<span class="${cls}">${'★'.repeat(stars)} $${wager} ${p.player_name} U${line} @ ${underOdds > 0 ? '+' : ''}${underOdds}</span>`,
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Check over edge (for high lines like O3.5)
+            if (overOdds && line >= 3.5) {
+                const impO = americanToImpliedProb(overOdds);
+                const edgeO = blendO - impO;
+                const shrunk = shrinkEdge(edgeO);
+                if (shrunk > 0) {
+                    const dec = overOdds > 0 ? overOdds / 100 + 1 : -100 / overOdds + 1;
+                    const sp = impO + shrunk;
+                    const ev = sp * (dec - 1) - (1 - sp);
+                    if (ev > 0) {
+                        const kf = Math.min(Math.max(ev / (dec - 1), 0) * 0.25, 0.08);
+                        const wager = Math.round(br * kf);
+                        if (wager >= 1) {
+                            const stars = edgeO >= 0.10 ? 3 : edgeO >= 0.07 ? 2 : 1;
+                            const cls = stars >= 3 ? 'ev-positive fw-bold' : stars >= 2 ? 'signal-strong fw-bold' : 'signal-mild fw-bold';
+                            allBets.push({
+                                type: 'SOG', stars, cls, edge: edgeO,
+                                html: `<span class="${cls}">${'★'.repeat(stars)} $${wager} ${p.player_name} O${line} @ ${overOdds > 0 ? '+' : ''}${overOdds}</span>`,
+                            });
+                        }
+                    }
+                }
+            }
+        });
+
+        // Sort bets by stars desc, then edge desc
+        allBets.sort((a, b) => b.stars - a.stars || b.edge - a.edge);
+
+        // Build bets HTML
+        let betsSection;
+        if (allBets.length > 0) {
+            betsSection = allBets.map(b => `<div style="margin:2px 0">${b.html}</div>`).join('');
+        } else if (!gd.total_line && players.every(p => !p.market_sog_line)) {
+            betsSection = '<span class="text-secondary">Odds not listed yet</span>';
+        } else {
+            betsSection = '<span class="text-secondary">No profitable bets</span>';
+        }
 
         return `<div class="card mb-3 p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <div>
-                    <span class="fw-bold" style="font-size:1.2rem">${g.away_team} @ ${g.home_team}</span>
+                <span class="fw-bold" style="font-size:1.15rem">${away} @ ${home}</span>
+                <div class="text-end" style="font-size:0.85rem">
+                    ${timeStr ? `<span class="text-secondary">${timeStr}</span> ` : ''}
+                    <span class="badge bg-secondary">O/U ${totalLine}</span>
+                    ${predTotal !== '—' ? `<span class="badge" style="background:var(--accent)">Pred ${predTotal}</span>` : ''}
+                    <span class="text-secondary">ML: ${away} ${awayML} | ${home} ${homeML}</span>
                 </div>
-                <div class="text-end">
-                    <span class="badge bg-secondary">Line: ${totalLine}</span>
-                    <span class="badge" style="background:var(--accent)">Pred: ${g.pred_total}</span>
-                </div>
             </div>
-            <div class="d-flex gap-4 mb-2 flex-wrap" style="font-size:0.9rem">
-                <div>Home win: <strong>${hwp}%</strong> <small class="text-secondary">(implied ${impHwp}%)</small></div>
-                <div>Pred goals: ${g.away_team} ${g.pred_away_goals} | ${g.home_team} ${g.pred_home_goals}</div>
-            </div>
-            <div class="mb-2" style="font-size:0.95rem">${betsHtml}</div>
-            <div class="d-flex gap-4 flex-wrap" style="font-size:0.8rem; color:var(--text-secondary)">
-                <span>GF/GA L10: ${g.away_team} ${awayGF}/${awayGA} | ${g.home_team} ${homeGF}/${homeGA}</span>
-                <span>xGF L10: ${g.away_team} ${awayXG} | ${g.home_team} ${homeXG}</span>
-                <span>ML: ${g.away_team} ${g.away_ml || '—'} | ${g.home_team} ${g.home_ml || '—'}</span>
-            </div>
+            <div>${betsSection}</div>
         </div>`;
     }).join('');
 }
 
 function loadTeams() {
-    // No longer used — game cards replace the old defensive profiles table
+    // No longer used
 }
 
 // =====================================================================
