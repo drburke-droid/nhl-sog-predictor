@@ -45,6 +45,8 @@ GAME_FEATURES = [
     # Odds-derived
     "game_total_line", "implied_home_total", "implied_away_total",
     "home_win_prob_implied",
+    # Team cluster matchup features
+    "cluster_home_gf", "cluster_away_gf", "cluster_total",
 ]
 
 # Models
@@ -204,6 +206,31 @@ def build_game_training_df():
 
     conn.close()
 
+    # Team clustering — rebuild periodically (every 60 days of data)
+    import team_clustering
+    _cluster_cache = {}  # date_bucket -> (profiles, matrix)
+
+    def _get_cluster_features(home, away, gdate):
+        # Rebuild clusters every ~60 days
+        bucket = gdate[:7]  # monthly bucket
+        if bucket not in _cluster_cache:
+            try:
+                profiles = team_clustering.build_team_profiles(before_date=gdate, window=60)
+                if not profiles.empty and len(profiles) >= 10:
+                    _, _, _, profiles = team_clustering.fit_team_clusters(profiles)
+                    matrix = team_clustering.build_cluster_matchup_matrix(profiles, gdate)
+                    _cluster_cache[bucket] = (profiles, matrix)
+                else:
+                    _cluster_cache[bucket] = None
+            except Exception:
+                _cluster_cache[bucket] = None
+
+        cached = _cluster_cache.get(bucket)
+        if cached:
+            profiles, matrix = cached
+            return team_clustering.get_matchup_feature(home, away, profiles, matrix)
+        return {"cluster_home_gf": 3.0, "cluster_away_gf": 3.0, "cluster_total": 6.0}
+
     records = []
     for _, g in games.iterrows():
         gdate = g["date"]
@@ -263,6 +290,9 @@ def build_game_training_df():
             "implied_home_total": imp_home,
             "implied_away_total": imp_away,
             "home_win_prob_implied": home_wp,
+            # Cluster matchup features
+            **{k: v for k, v in _get_cluster_features(home, away, gdate).items()
+               if k in ("cluster_home_gf", "cluster_away_gf", "cluster_total")},
             # Raw odds for walk-forward
             "home_ml": odds.get("home_ml"),
             "away_ml": odds.get("away_ml"),
