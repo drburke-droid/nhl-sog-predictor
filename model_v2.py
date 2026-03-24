@@ -62,6 +62,7 @@ _model_def = None
 _model_metrics = {}
 _clusterer = PlayerClusterer()
 _player_cv = {}
+_trained_features: list[str] = []  # features used during training (for prediction alignment)
 
 HAS_MONEYPUCK = True  # Set False if MoneyPuck tables are empty
 
@@ -82,12 +83,13 @@ def save_model():
             "model_version": 2,
             "metrics": _model_metrics,
             "player_cv": {str(k): v for k, v in _player_cv.items()},
+            "trained_features": _trained_features,
         }, f)
     logger.info("V2 model saved to %s", SAVE_DIR)
 
 
 def load_model() -> bool:
-    global _model_fwd, _model_def, _model_metrics, _player_cv
+    global _model_fwd, _model_def, _model_metrics, _player_cv, _trained_features
 
     meta_path = SAVE_DIR / "meta.json"
     if not meta_path.exists():
@@ -98,6 +100,7 @@ def load_model() -> bool:
 
     _model_metrics = meta.get("metrics", {})
     _player_cv = {int(k): v for k, v in meta.get("player_cv", {}).items()}
+    _trained_features = meta.get("trained_features", [])
 
     fwd_path = SAVE_DIR / "model_fwd.json"
     def_path = SAVE_DIR / "model_def.json"
@@ -825,7 +828,7 @@ def _train_single_model(train_df, test_df, label):
 
 def train_model() -> dict:
     """Train V2 model with expanded features + clustering."""
-    global _model_fwd, _model_def, _model_metrics
+    global _model_fwd, _model_def, _model_metrics, _trained_features
 
     logger.info("V2: Building feature matrix...")
     df = _build_feature_dataframe()
@@ -837,6 +840,9 @@ def train_model() -> dict:
 
     # Coverage report
     report = feature_registry.validate_coverage(df, FEATURE_COLS, strict=False)
+
+    # Record which features are actually available for training → prediction alignment
+    _trained_features = [f for f in FEATURE_COLS if f in df.columns]
 
     df["date"] = pd.to_datetime(df["date"])
     cutoff = df["date"].max() - timedelta(days=14)
@@ -1098,8 +1104,9 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
     except Exception:
         pass
 
-    # Use the same feature order as training
-    available = [f for f in FEATURE_COLS if f in feature_map]
+    # Use the exact feature set from training to avoid shape mismatch
+    feat_list = _trained_features if _trained_features else FEATURE_COLS
+    available = [f for f in feat_list if f in feature_map]
     features = np.array([[feature_map.get(f, np.nan) for f in available]])
 
     pred_residual = model.predict(features)[0]
