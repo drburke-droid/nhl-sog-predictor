@@ -1,7 +1,7 @@
 """
 Generate all Sprint 3 report artifacts.
 
-Produces CSV and Markdown reports in reports/ directory from
+Produces CSV and Markdown reports in docs/reports/ directory from
 the latest walk-forward and locked-forward results.
 """
 
@@ -42,11 +42,11 @@ def generate_multi_locked_forward_reports():
         })
 
     df = pd.DataFrame(rows)
-    df.to_csv("reports/multi_locked_forward_summary.csv", index=False)
+    df.to_csv("docs/reports/multi_locked_forward_summary.csv", index=False)
 
     # Markdown
     c = result.get("consensus", {})
-    with open("reports/multi_locked_forward_summary.md", "w") as f:
+    with open("docs/reports/multi_locked_forward_summary.md", "w") as f:
         f.write("# Multi-Cutoff Locked-Forward Summary\n\n")
         f.write(f"**Cutoffs tested**: {len(rows)}\n\n")
         f.write("| Cutoff | Bets | Yield | WR% | Brier | P(>0) |\n")
@@ -94,10 +94,10 @@ def generate_permutation_reports(bets_df=None):
     result = permutation.run_permutation_test(prod, n_perms=500)
 
     # CSV
-    pd.DataFrame([result]).to_csv("reports/permutation_significance_summary.csv", index=False)
+    pd.DataFrame([result]).to_csv("docs/reports/permutation_significance_summary.csv", index=False)
 
     # Markdown
-    with open("reports/permutation_significance_summary.md", "w") as f:
+    with open("docs/reports/permutation_significance_summary.md", "w") as f:
         f.write("# Permutation Significance Test\n\n")
         f.write(f"- **Bets**: {result.get('n_bets', 0)}\n")
         f.write(f"- **Permutations**: {result.get('n_perms', 0)}\n")
@@ -126,10 +126,10 @@ def generate_edge_monotonicity_reports(bets_df):
     report = ev.edge_monotonicity_report(edges, outcomes, odds)
 
     # CSV
-    pd.DataFrame(report["buckets"]).to_csv("reports/edge_bucket_stats.csv", index=False)
+    pd.DataFrame(report["buckets"]).to_csv("docs/reports/edge_bucket_stats.csv", index=False)
 
     # Markdown
-    with open("reports/edge_monotonicity.md", "w") as f:
+    with open("docs/reports/edge_monotonicity.md", "w") as f:
         f.write("# Edge Bucket Monotonicity Report\n\n")
         f.write(f"**Monotonicity score**: {report.get('monotonicity_score', 'N/A')}\n")
         f.write(f"**Is monotonic**: {report.get('is_monotonic', 'N/A')}\n\n")
@@ -167,10 +167,10 @@ def generate_stress_test_reports(bets_df):
     tests = stress_tests.stress_test_summary(prod)
 
     # CSV
-    pd.DataFrame(tests).to_csv("reports/stress_test_summary.csv", index=False)
+    pd.DataFrame(tests).to_csv("docs/reports/stress_test_summary.csv", index=False)
 
     # Markdown
-    with open("reports/stress_test_summary.md", "w") as f:
+    with open("docs/reports/stress_test_summary.md", "w") as f:
         f.write("# Stress Test Summary\n\n")
         f.write("| Test | Bets | Yield | Delta | MaxDD | Survives |\n")
         f.write("|------|------|-------|-------|-------|----------|\n")
@@ -202,7 +202,7 @@ def generate_promotion_gate_report():
 
     result = model_registry.check_preproduction_eligibility("NHL_SOG_V1", metrics)
 
-    with open("reports/promotion_gate_report.md", "w") as f:
+    with open("docs/reports/promotion_gate_report.md", "w") as f:
         f.write("# Promotion Gate Report: NHL SOG V1\n\n")
         for gate, passed in result["gates"].items():
             status = "PASS" if passed else "FAIL"
@@ -237,4 +237,4 @@ if __name__ == "__main__":
 
     generate_promotion_gate_report()
 
-    logger.info("All reports generated in reports/")
+    logger.info("All reports generated in docs/reports/")
