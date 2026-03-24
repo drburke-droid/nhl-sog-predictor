@@ -35,6 +35,7 @@ def _normalize_name(name: str) -> str:
 import mlb_api
 import mlb_data_collector
 import mlb_odds_collector
+import staking
 
 # ---------------------------------------------------------------------------
 # Team name mapping (odds API full names ↔ MLB abbreviations)
@@ -1280,6 +1281,11 @@ def predict_pitcher(pitcher_id: int, opponent_abbrev: str, is_home: bool,
     result["n_sharp_books"] = 0
     result["betmgm_over"] = None
     result["betmgm_under"] = None
+    # Blended prob + edge (populated by predict_todays_games when sharp data available)
+    result["blended_prob_over"] = None
+    result["blended_prob_under"] = None
+    result["best_edge"] = None
+    result["edge_bucket_confidence"] = None
 
     return result
 
@@ -1332,14 +1338,32 @@ def predict_todays_games() -> list[dict]:
                 pred["game_pk"] = game["game_pk"]
                 pred["game_display"] = f"{away} @ {home}"
 
-                # Attach sharp consensus + BetMGM data
+                # Attach sharp consensus + BetMGM data + blended prob
                 if consensus:
-                    pred["sharp_prob_over"] = consensus.get("sharp_prob_over")
+                    sharp_o = consensus.get("sharp_prob_over")
+                    pred["sharp_prob_over"] = sharp_o
                     pred["sharp_prob_under"] = consensus.get("sharp_prob_under")
                     pred["n_sharp_books"] = consensus.get("n_sharp_books", 0)
                     pred["betmgm_over"] = consensus.get("betmgm_over")
                     pred["betmgm_under"] = consensus.get("betmgm_under")
                     pred["market_line"] = consensus["line"]
+
+                    # Blended probability (50/50 model + sharp)
+                    model_po = pred.get("model_prob_over")
+                    if sharp_o is not None and model_po:
+                        bp_over = round(0.5 * model_po + 0.5 * sharp_o, 4)
+                        pred["blended_prob_over"] = bp_over
+                        pred["blended_prob_under"] = round(1 - bp_over, 4)
+
+                        # Edge vs BetMGM
+                        bmg_over = consensus.get("betmgm_over")
+                        bmg_under = consensus.get("betmgm_under")
+                        if bmg_over is not None:
+                            imp_o = 100 / (bmg_over + 100) if bmg_over > 0 else abs(bmg_over) / (abs(bmg_over) + 100)
+                            imp_u = 100 / (bmg_under + 100) if bmg_under and bmg_under > 0 else (abs(bmg_under) / (abs(bmg_under) + 100) if bmg_under else 0.5)
+                            edge = max(bp_over - imp_o, (1 - bp_over) - imp_u)
+                            pred["best_edge"] = round(edge, 4)
+                            pred["edge_bucket_confidence"] = staking.get_edge_confidence(edge)
 
                 predictions.append(pred)
 

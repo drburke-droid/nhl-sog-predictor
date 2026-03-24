@@ -27,6 +27,8 @@ import nhl_api
 import nhl_odds_collector
 from clustering import PlayerClusterer, CLUSTER_FEATURES
 import feature_registry
+import distribution_model as dist_model
+import staking
 
 logger = logging.getLogger(__name__)
 
@@ -1122,13 +1124,50 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
 
     conn.close()
 
+    pred_sog = round(predicted, 2)
+
+    # NegBin probability with calibrated shrinkage (same as V1)
+    model_prob_over = None
+    model_prob_under = None
+    blended_prob_over = None
+    blended_prob_under = None
+    best_edge = None
+    edge_confidence = None
+    sharp_over = consensus.get("sharp_prob_over") if consensus else None
+    n_sharp = consensus.get("n_sharp_books", 0) if consensus else 0
+
+    # Default shrinkage of 0.7 (same as V1 calibrated value)
+    _shrinkage = 0.7
+
+    if market_line is not None and pred_sog > 0:
+        raw_var = pred_sog * var_ratio
+        shrunk_var = (1 - _shrinkage) * raw_var + _shrinkage * pred_sog
+        shrunk_var = max(shrunk_var, pred_sog * 1.01)
+        model_prob_over = round(dist_model.negbin_prob_over(pred_sog, shrunk_var, market_line), 4)
+        model_prob_under = round(1 - model_prob_over, 4)
+
+        # 50/50 sharp blend
+        if sharp_over is not None:
+            blended_prob_over = round(0.5 * model_prob_over + 0.5 * sharp_over, 4)
+            blended_prob_under = round(1 - blended_prob_over, 4)
+
+        # Edge vs PA/BetMGM
+        pa_over = consensus.get("pa_over_est") if consensus else None
+        pa_under = consensus.get("pa_under_est") if consensus else None
+        bet_prob = blended_prob_over if blended_prob_over is not None else model_prob_over
+        if pa_over is not None and bet_prob is not None:
+            imp_o = 100 / (pa_over + 100) if pa_over > 0 else abs(pa_over) / (abs(pa_over) + 100)
+            imp_u = 100 / (pa_under + 100) if pa_under and pa_under > 0 else (abs(pa_under) / (abs(pa_under) + 100) if pa_under else 0.5)
+            best_edge = round(max(bet_prob - imp_o, (1 - bet_prob) - imp_u), 4)
+            edge_confidence = staking.get_edge_confidence(max(bet_prob - imp_o, (1 - bet_prob) - imp_u))
+
     return {
         "player_id": player_id,
         "player_name": player_name,
         "team": team,
         "opponent": opponent_team,
         "position": position,
-        "predicted_sog": round(predicted, 2),
+        "predicted_sog": pred_sog,
         "baseline_sog": round(baseline, 2),
         "is_home": is_home_val,
         # Form
@@ -1152,13 +1191,23 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         "opp_shots_allowed": round(opp_sa, 1),
         "opp_shots_allowed_pos": round(opp_sa_pos, 2),
         "opp_hd_shots_allowed": round(opp_hd, 1) if opp_hd else None,
-        # Odds (shared with V1)
+        # Odds
         "market_sog_line": market_line,
         "game_total": game_total_val if not np.isnan(game_total_val) else None,
         "implied_team_total": implied_tt_val if not np.isnan(implied_tt_val) else None,
-        "sharp_prob_over": consensus.get("sharp_prob_over") if consensus else None,
+        # Model probabilities (NegBin with calibrated shrinkage)
+        "model_prob_over": model_prob_over,
+        "model_prob_under": model_prob_under,
+        # Sharp consensus
+        "sharp_prob_over": sharp_over,
         "sharp_prob_under": consensus.get("sharp_prob_under") if consensus else None,
-        "n_sharp_books": consensus.get("n_sharp_books", 0) if consensus else 0,
+        "n_sharp_books": n_sharp,
+        # Blended probability (50/50 model + sharp)
+        "blended_prob_over": blended_prob_over,
+        "blended_prob_under": blended_prob_under,
+        # Edge vs soft book
+        "best_edge": best_edge,
+        "edge_bucket_confidence": edge_confidence,
         "pa_over_est": consensus.get("pa_over_est") if consensus else None,
         "pa_under_est": consensus.get("pa_under_est") if consensus else None,
         "var_ratio": round(var_ratio, 3),

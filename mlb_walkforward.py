@@ -25,6 +25,7 @@ from sklearn.metrics import mean_absolute_error
 import mlb_model
 import mlb_simulation
 import mlb_odds_collector
+import staking
 
 logger = logging.getLogger(__name__)
 
@@ -377,12 +378,13 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25, max_kelly_pct=
 def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
                         max_kelly_pct, min_wager, min_edge=0.0,
                         use_soft_odds=False, use_sharp_prob=False,
-                        use_blended_prob=False):
+                        use_blended_prob=False, use_uncertainty_kelly=False):
     """Simulate P&L for a filtered set of bets using Kelly sizing.
 
     If use_soft_odds=True, uses soft book (BetMGM) odds for payouts.
     If use_sharp_prob=True, uses sharp book consensus probability for edge calc.
     If use_blended_prob=True, uses 50/50 blend of model + sharp prob.
+    If use_uncertainty_kelly=True, uses confidence-weighted Kelly sizing.
     """
     bets_df = bets_df.sort_values("date").reset_index(drop=True)
 
@@ -415,11 +417,20 @@ def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
             continue
 
         # Kelly sizing
-        kf = ev_val / (dec_odds - 1) if dec_odds > 1 else 0
-        kf = max(kf, 0) * kelly_fraction
-        kf = min(kf, max_kelly_pct)
+        if use_uncertainty_kelly:
+            wager = staking.uncertainty_kelly(
+                bankroll, prob, bet["odds"], edge_val,
+                fraction=kelly_fraction, max_pct=max_kelly_pct,
+                calibration_quality=0.5,
+                side=bet.get("side", "UNDER"),
+                n_sharp=bet.get("n_sharp_books", 0),
+            )
+        else:
+            kf = ev_val / (dec_odds - 1) if dec_odds > 1 else 0
+            kf = max(kf, 0) * kelly_fraction
+            kf = min(kf, max_kelly_pct)
+            wager = round(bankroll * kf, 2)
 
-        wager = round(bankroll * kf, 2)
         if wager < min_wager:
             continue
 
@@ -472,14 +483,15 @@ def _evaluate_strategies(bets_df, starting_bankroll, kelly_fraction,
     strategies = {}
 
     def _run(name, mask, min_edge=0.0, use_soft_odds=False,
-             use_sharp_prob=False, use_blended_prob=False):
+             use_sharp_prob=False, use_blended_prob=False,
+             use_uncertainty_kelly=False):
         subset = bets_df[mask].copy()
         if len(subset) == 0:
             return
         result = _simulate_strategy(
             subset, starting_bankroll, kelly_fraction,
             max_kelly_pct, min_wager, min_edge, use_soft_odds,
-            use_sharp_prob, use_blended_prob,
+            use_sharp_prob, use_blended_prob, use_uncertainty_kelly,
         )
         if result:
             strategies[name] = result
@@ -680,6 +692,35 @@ def _evaluate_strategies(bets_df, starting_bankroll, kelly_fraction,
          use_soft_odds=True)
     _run("BMG+sharp_highK_all",
          sharp_confirm & high_k, use_soft_odds=True)
+
+    # =================================================================
+    # UNCERTAINTY KELLY STAKING STRATEGIES
+    # =================================================================
+    _run("UK_all_ev_plus", ev_plus, use_uncertainty_kelly=True)
+    _run("UK_unders", ev_plus & (bets_df["side"] == "UNDER"),
+         use_uncertainty_kelly=True)
+    _run("UK_overs", ev_plus & (bets_df["side"] == "OVER"),
+         use_uncertainty_kelly=True)
+
+    # UK on soft book
+    _run("UK_BMG_all", soft_ev, use_soft_odds=True,
+         use_uncertainty_kelly=True)
+    _run("UK_BMG_unders", soft_ev & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_uncertainty_kelly=True)
+
+    # UK + sharp confirmation
+    _run("UK_BMG+sharp_all", sharp_confirm, use_soft_odds=True,
+         use_uncertainty_kelly=True)
+    _run("UK_BMG+sharp_unders",
+         sharp_confirm & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_uncertainty_kelly=True)
+
+    # UK + blended prob
+    _run("UK_BMG_blend_all", blend_soft, use_soft_odds=True,
+         use_blended_prob=True, use_uncertainty_kelly=True)
+    _run("UK_BMG_blend_unders",
+         blend_soft & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_blended_prob=True, use_uncertainty_kelly=True)
 
     return strategies
 
