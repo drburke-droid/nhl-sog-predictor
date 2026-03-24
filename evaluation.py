@@ -245,22 +245,64 @@ def edge_monotonicity_report(edges, outcomes, odds, buckets=None):
         avg_yield = np.mean(profits)
         wr = sub_outcomes.mean()
 
+        profits_arr = np.array(profits)
+        se = float(np.std(profits_arr) / max(np.sqrt(mask.sum()), 1))
+
+        # Bootstrap CI per bucket
+        boot_ci = {"ci_low": 0, "ci_high": 0, "p_positive": 0}
+        if mask.sum() >= 10:
+            rng = np.random.default_rng(42)
+            boot_yields = []
+            for _ in range(1000):
+                sample = rng.choice(profits_arr, size=len(profits_arr), replace=True)
+                boot_yields.append(float(np.mean(sample)))
+            boot_yields = np.array(boot_yields)
+            boot_ci = {
+                "ci_low": round(float(np.percentile(boot_yields, 2.5)) * 100, 2),
+                "ci_high": round(float(np.percentile(boot_yields, 97.5)) * 100, 2),
+                "p_positive": round(float(np.mean(boot_yields > 0)), 3),
+            }
+
         results.append({
             "edge_range": f"{lo:.0%}-{hi:.0%}",
             "n": int(mask.sum()),
             "avg_edge": round(float(edges[mask].mean()) * 100, 2),
+            "avg_odds": round(float(sub_odds.mean()), 1),
             "win_rate": round(float(wr) * 100, 1),
             "yield": round(float(avg_yield) * 100, 2),
-            "se": round(float(np.std(profits) / max(np.sqrt(mask.sum()), 1)) * 100, 2),
+            "se": round(se * 100, 2),
+            "ci_low": boot_ci["ci_low"],
+            "ci_high": boot_ci["ci_high"],
+            "p_positive": boot_ci["p_positive"],
         })
 
     # Check monotonicity: are yields generally increasing with edge?
-    yields = [r["yield"] for r in results if r["n"] >= 10]
+    valid = [r for r in results if r["n"] >= 10]
+    yields = [r["yield"] for r in valid]
     monotonic = all(yields[i] <= yields[i + 1] for i in range(len(yields) - 1)) if len(yields) >= 3 else None
+
+    # Adjacent bucket overlap: flag if higher bucket CI overlaps lower bucket CI
+    overlap_flags = []
+    for i in range(len(valid) - 1):
+        a, b = valid[i], valid[i + 1]
+        overlaps = a.get("ci_high", 0) >= b.get("ci_low", 0)
+        overlap_flags.append({
+            "pair": f"{a['edge_range']} vs {b['edge_range']}",
+            "ci_overlap": overlaps,
+            "higher_credibly_better": b.get("ci_low", 0) > a.get("yield", 0),
+        })
+
+    # Monotonicity score: fraction of adjacent pairs where higher > lower
+    mono_score = None
+    if len(yields) >= 2:
+        mono_pairs = sum(1 for i in range(len(yields) - 1) if yields[i + 1] > yields[i])
+        mono_score = round(mono_pairs / (len(yields) - 1), 2)
 
     return {
         "buckets": results,
         "is_monotonic": monotonic,
+        "monotonicity_score": mono_score,
+        "overlap_flags": overlap_flags,
         "n_buckets_with_data": len(results),
     }
 
