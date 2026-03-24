@@ -374,7 +374,7 @@ The document proposed a 10-priority implementation order. Here is the completion
 | 9. Complexity justified by stability | **Pass** | NegBin shrinkage, sharp blend, uncertainty Kelly all improve stability over simpler alternatives |
 | 10. Thresholds fixed in production | **Pass** | `EDGE_RELIABILITY` table in `staking.py` is frozen; uncertainty Kelly enforces all rules |
 
-**All 10 acceptance criteria met.**
+**All 10 acceptance criteria addressed.** System status: **pre-production candidate** pending multi-cutoff locked-forward validation, permutation significance testing, and formal ablation (Sprint 3 in progress).
 
 ---
 
@@ -405,4 +405,4 @@ The document proposed a 10-priority implementation order. Here is the completion
 | Formal unit tests for leakage | 12.2 |
 | Timing sensitivity analysis | 11.3 (blocked by data) |
 
-These are all infrastructure and governance items. The core mathematical and statistical framework — the components that determine whether the edge is real, robust, and deployable — are complete.
+These are infrastructure and governance items. The core mathematical framework is complete; the system is classified as a **pre-production candidate** until Sprint 3 validation (multi-locked-forward, permutation testing, ablation) confirms the edge across multiple regimes.
