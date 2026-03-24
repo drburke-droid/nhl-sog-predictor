@@ -33,8 +33,11 @@ try:
 except ImportError:
     HAS_ODDS = False
 
+import distribution_model as dist_model
+import staking
+
 MODEL_DIR = Path(__file__).parent / "saved_model"
-MODEL_VERSION = 3  # v3: added sharp_consensus_prob feature
+MODEL_VERSION = 4  # v4: NegBin shrinkage + uncertainty Kelly + sharp blend
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +48,10 @@ _model_metrics: dict = {}
 # Player predictability cache: player_id -> CV and variance/mean ratio
 _player_cv: dict[int, float] = {}
 _player_var_ratio: dict[int, float] = {}
+# Dispersion model for NegBin calibrated variance
+_disp_model = None
+_disp_features: list[str] = []
+_disp_shrinkage: float = 0.7  # default; calibrated during training
 
 
 def save_model():
@@ -59,15 +66,21 @@ def save_model():
         "metrics": _model_metrics,
         "player_cv": {str(k): v for k, v in _player_cv.items()},
         "player_var_ratio": {str(k): v for k, v in _player_var_ratio.items()},
+        "disp_features": _disp_features,
+        "disp_shrinkage": _disp_shrinkage,
     }
     with open(MODEL_DIR / "meta.json", "w") as f:
         json.dump(meta, f)
+    # Save dispersion model separately (XGBoost)
+    if _disp_model is not None:
+        _disp_model.save_model(str(MODEL_DIR / "model_disp.json"))
     logger.info("Model saved to %s", MODEL_DIR)
 
 
 def load_model() -> bool:
     """Load saved models from disk. Returns True if successful."""
     global _model_fwd, _model_def, _model_metrics, _player_cv, _player_var_ratio
+    global _disp_model, _disp_features, _disp_shrinkage
     fwd_path = MODEL_DIR / "model_fwd.json"
     def_path = MODEL_DIR / "model_def.json"
     meta_path = MODEL_DIR / "meta.json"
@@ -97,6 +110,14 @@ def load_model() -> bool:
         _model_metrics = meta.get("metrics", {})
         _player_cv = {int(k): v for k, v in meta.get("player_cv", {}).items()}
         _player_var_ratio = {int(k): v for k, v in meta.get("player_var_ratio", {}).items()}
+        _disp_features = meta.get("disp_features", [])
+        _disp_shrinkage = meta.get("disp_shrinkage", 0.7)
+        # Load dispersion model
+        disp_path = MODEL_DIR / "model_disp.json"
+        if disp_path.exists():
+            from xgboost import XGBRegressor as _XGB
+            _disp_model = _XGB()
+            _disp_model.load_model(str(disp_path))
         logger.info("Loaded saved model (MAE: %s)", _model_metrics.get("mae"))
         return True
     except Exception as exc:
@@ -718,6 +739,7 @@ def train_model() -> dict:
     Returns evaluation metrics dict.
     """
     global _model_fwd, _model_def, _model_metrics
+    global _disp_model, _disp_features, _disp_shrinkage
 
     logger.info("Building feature matrix...")
     df = _build_feature_dataframe()
@@ -771,6 +793,32 @@ def train_model() -> dict:
             3,
         )
 
+    # Train dispersion model for NegBin calibrated variance
+    _disp_model, _disp_features, _disp_shrinkage = None, [], 0.7
+    train_all = df[df["date"] <= cutoff_date]
+    if len(train_all) >= 200 and (_model_fwd is not None or _model_def is not None):
+        avail_feats = [c for c in FEATURE_COLS if c in train_all.columns]
+        # Get mean predictions on training data
+        train_mean_preds = np.zeros(len(train_all))
+        for pos_grp, mdl in [("F", _model_fwd), ("D", _model_def)]:
+            mask = train_all["position_group"] == pos_grp
+            if mdl is not None and mask.sum() > 0:
+                sub = train_all[mask]
+                preds = mdl.predict(sub[avail_feats].values)
+                train_mean_preds[mask.values] = np.maximum(
+                    sub["baseline_sog"].values + preds, 0.0)
+            elif mask.sum() > 0:
+                train_mean_preds[mask.values] = train_all.loc[mask, "baseline_sog"].values
+
+        result = dist_model.train_dispersion_model(train_all, train_mean_preds)
+        if result is not None:
+            _disp_model, _disp_features = result
+            _disp_shrinkage, alpha_results = dist_model.calibrate_shrinkage(
+                train_all, train_mean_preds, _disp_model, _disp_features,
+                alphas=[0.0, 0.3, 0.5, 0.7, 0.8, 0.9, 1.0],
+            )
+            logger.info("Dispersion model trained: shrinkage=%.2f", _disp_shrinkage)
+
     _model_metrics = {
         "mae": combined_mae or fwd_metrics.get("mae") or def_metrics.get("mae"),
         "rmse": None,
@@ -783,9 +831,10 @@ def train_model() -> dict:
             + def_metrics.get("test_samples", 0)
         ),
         "holdout_period": f"{cutoff_date.strftime('%Y-%m-%d')} to {df['date'].max().strftime('%Y-%m-%d')}",
-        "model_type": "XGBoost (F/D split, residual target)",
+        "model_type": "XGBoost (F/D split, residual target, NegBin shrinkage)",
         "forward_model": fwd_metrics,
         "defense_model": def_metrics,
+        "disp_shrinkage": _disp_shrinkage,
     }
 
     save_model()
@@ -1024,6 +1073,38 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         )
         pred_sog = max(0.0, pred_sog)
 
+    # Compute model probabilities at market line (for betting output)
+    vr = _player_var_ratio.get(player_id, 1.0)
+    model_prob_over = None
+    model_prob_under = None
+    blended_prob_over = None
+    blended_prob_under = None
+    best_edge = None
+    edge_confidence = None
+    sharp_over = consensus.get("sharp_prob_over") if consensus else None
+    n_sharp = consensus.get("n_sharp_books", 0) if consensus else 0
+
+    if market_line is not None:
+        model_prob_over = round(calc_prob_over(pred_sog, market_line, vr), 4)
+        model_prob_under = round(1 - model_prob_over, 4)
+
+        # Blend with sharp consensus (50/50) — the top walk-forward strategy
+        if sharp_over is not None:
+            blended_prob_over = round(0.5 * model_prob_over + 0.5 * sharp_over, 4)
+            blended_prob_under = round(1 - blended_prob_over, 4)
+
+        # Compute edge vs PA/BetMGM implied odds (the book we bet against)
+        pa_over = consensus.get("pa_over_est") if consensus else None
+        pa_under = consensus.get("pa_under_est") if consensus else None
+        bet_prob = blended_prob_over if blended_prob_over is not None else model_prob_over
+        if pa_over is not None and bet_prob is not None:
+            imp_over = _american_to_implied_prob(pa_over)
+            imp_under = _american_to_implied_prob(pa_under) if pa_under else 0.5
+            edge_o = bet_prob - imp_over
+            edge_u = (1 - bet_prob) - imp_under
+            best_edge = round(max(edge_o, edge_u), 4)
+            edge_confidence = staking.get_edge_confidence(max(edge_o, edge_u))
+
     return {
         "player_id": player_id,
         "player_name": player_name,
@@ -1042,7 +1123,7 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
         "opp_shots_allowed": opp_sa,
         "opp_shots_allowed_pos": round(opp_sa_pos, 2),
         "player_cv": round(cv, 3),
-        "var_ratio": round(_player_var_ratio.get(player_id, 1.0), 3),
+        "var_ratio": round(vr, 3),
         "rest_days": rest,
         # Odds data
         "market_sog_line": market_line,
@@ -1051,16 +1132,21 @@ def predict_player(player_id: int, opponent_team: str, is_home: bool) -> dict | 
             round(implied_team_total, 2)
             if not np.isnan(implied_team_total) else None
         ),
+        # Model probabilities at market line (NegBin with calibrated shrinkage)
+        "model_prob_over": model_prob_over,
+        "model_prob_under": model_prob_under,
         # Sharp consensus (vig-free from BetOnline/DK/FanDuel)
-        "sharp_prob_over": (
-            consensus.get("sharp_prob_over") if consensus else None
-        ),
+        "sharp_prob_over": sharp_over,
         "sharp_prob_under": (
             consensus.get("sharp_prob_under") if consensus else None
         ),
-        "n_sharp_books": (
-            consensus.get("n_sharp_books", 0) if consensus else 0
-        ),
+        "n_sharp_books": n_sharp,
+        # Blended probability (50/50 model + sharp — top walk-forward strategy)
+        "blended_prob_over": blended_prob_over,
+        "blended_prob_under": blended_prob_under,
+        # Edge vs PlayAlberta/BetMGM (the book we target)
+        "best_edge": best_edge,
+        "edge_bucket_confidence": edge_confidence,
         # PlayAlberta estimated odds (derived from BetMGM)
         "pa_over_est": consensus.get("pa_over_est") if consensus else None,
         "pa_under_est": consensus.get("pa_under_est") if consensus else None,
@@ -1096,17 +1182,22 @@ def _negbin_cdf_py(r: float, p: float, k: int) -> float:
 
 
 def calc_prob_over(pred_sog: float, line: float, var_ratio: float = 1.0) -> float:
-    """P(X > line) using NegBin (or Poisson when var_ratio ≈ 1)."""
+    """P(X > line) using NegBin with calibrated shrinkage.
+
+    Shrinks raw variance toward Poisson (variance=mean) to prevent
+    overdispersion. Shrinkage alpha calibrated during training.
+    """
     if pred_sog <= 0:
         return 0.0
-    k = int(line)
-    if var_ratio <= 1.05:
-        return 1 - _poisson_cdf_py(pred_sog, k)
-    r = pred_sog / (var_ratio - 1)
-    p = 1 / var_ratio
-    if r <= 0 or p <= 0 or p >= 1:
-        return 1 - _poisson_cdf_py(pred_sog, k)
-    return 1 - _negbin_cdf_py(r, p, k)
+
+    # Raw variance from player's historical var/mean ratio
+    raw_var = pred_sog * var_ratio
+
+    # Apply shrinkage: blend toward Poisson (variance = mean)
+    shrunk_var = (1 - _disp_shrinkage) * raw_var + _disp_shrinkage * pred_sog
+    shrunk_var = max(shrunk_var, pred_sog * 1.01)  # stay slightly overdispersed
+
+    return dist_model.negbin_prob_over(pred_sog, shrunk_var, line)
 
 
 def _american_to_decimal_profit(odds: int) -> float:
@@ -1151,28 +1242,54 @@ def save_predictions_to_history(predictions: list[dict], odds_map: dict,
         over_odds = odds.get("over_odds")
         under_odds = odds.get("under_odds")
 
-        # Compute bet side + Kelly server-side
+        # Compute bet side + uncertainty Kelly server-side
         bet_side = None
         bet_kelly = 0.0
         var_ratio = p.get("var_ratio", 1.0)
-        cv = p.get("player_cv", 1.0)
-        variance = p.get("predicted_sog", 0) - p.get("season_avg", 0)
-        signal = abs(variance) / cv if cv > 0 else 0
-        confidence = min(signal / 1.5, 1.0)
+        n_sharp = p.get("n_sharp_books", 0)
+        sharp_over = p.get("sharp_prob_over")
 
         if sog_line is not None:
             prob_over = calc_prob_over(p["predicted_sog"], sog_line, var_ratio)
             prob_under = 1 - prob_over
 
-            kelly_over = _kelly_fraction(prob_over, over_odds) if over_odds else 0
-            kelly_under = _kelly_fraction(prob_under, under_odds) if under_odds else 0
+            # Blend with sharp consensus (50/50) when available
+            if sharp_over is not None:
+                blended_over = 0.5 * prob_over + 0.5 * sharp_over
+                blended_under = 1 - blended_over
+            else:
+                blended_over = prob_over
+                blended_under = prob_under
 
-            best_kelly = max(kelly_over, kelly_under)
-            adj_kelly = best_kelly * confidence
+            # Compute edges against implied odds
+            imp_over = _american_to_implied_prob(over_odds) if over_odds else 0.5
+            imp_under = _american_to_implied_prob(under_odds) if under_odds else 0.5
+            edge_over = blended_over - imp_over
+            edge_under = blended_under - imp_under
 
-            if adj_kelly > 0:
-                bet_side = "OVER" if kelly_over >= kelly_under else "UNDER"
-                bet_kelly = adj_kelly
+            # Uncertainty Kelly for each side
+            wager_over = 0.0
+            wager_under = 0.0
+            if over_odds and edge_over > 0:
+                wager_over = staking.uncertainty_kelly(
+                    bankroll, blended_over, over_odds, edge_over,
+                    fraction=0.25, max_pct=0.08,
+                    calibration_quality=0.5, side="OVER", n_sharp=n_sharp,
+                )
+            if under_odds and edge_under > 0:
+                wager_under = staking.uncertainty_kelly(
+                    bankroll, blended_under, under_odds, edge_under,
+                    fraction=0.25, max_pct=0.08,
+                    calibration_quality=0.5, side="UNDER", n_sharp=n_sharp,
+                )
+
+            if wager_over > 0 or wager_under > 0:
+                if wager_over >= wager_under:
+                    bet_side = "OVER"
+                    bet_kelly = wager_over / bankroll if bankroll > 0 else 0
+                else:
+                    bet_side = "UNDER"
+                    bet_kelly = wager_under / bankroll if bankroll > 0 else 0
 
         bet_amount = round(bankroll * bet_kelly) if bankroll > 0 else 0
 
