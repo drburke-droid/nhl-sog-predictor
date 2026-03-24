@@ -1,0 +1,2 @@
+n_bets,n_perms,window_days,real_roi,perm_mean,perm_std,perm_median,perm_5th,perm_95th,percentile_rank,empirical_p_value,verdict
+238,500,14,9.71,10.5,0.81,10.5,9.17,11.78,16.6,0.834,NOT SIGNIFICANT

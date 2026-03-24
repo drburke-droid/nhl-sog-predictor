@@ -1,0 +1,8 @@
+name,remaining,yield,max_dd,yield_delta,survives,removed
+BASELINE,1158,-1.38,41.5,0.0,True,
+Remove top 10% edges,1043,-2.81,45.9,-1.43,False,115.0
+Remove top 20% edges,927,-4.11,49.9,-2.73,False,231.0
+Add noise (std=0.02),1157,-1.49,41.5,-0.11,False,
+Add noise (std=0.05),1093,-0.96,41.2,0.42,False,
+Vig increase +2%,1158,-2.39,44.9,-1.01,False,
+Vig increase +5%,1158,-3.9,55.5,-2.52,False,

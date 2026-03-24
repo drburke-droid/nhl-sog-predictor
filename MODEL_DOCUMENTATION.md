@@ -1,5 +1,26 @@
 # Complete Model Documentation
 
+## Current Status
+
+**Classification**: Pre-production candidate / limited-capital deployment candidate
+
+This framework has been validated through three implementation sprints covering evaluation infrastructure, distribution modeling, uncertainty-aware staking, and production hardening. It is NOT classified as fully production-ready.
+
+### What Has Been Proven
+- Walk-forward edge exists across multiple strategies (median yield +3.6% across 4 locked-forward cutoffs)
+- Uncertainty Kelly halves max drawdown while preserving yield
+- 3 of 4 locked-forward cutoffs are profitable
+- Edge bucket monotonicity holds (higher predicted edge → higher realized yield)
+- NegBin distribution with calibrated shrinkage produces valid discrete prop probabilities
+
+### What Still Must Be Proven
+- **Permutation significance**: Current test shows p=0.834 — edge appears to come from bet selection (which bets qualify) rather than per-bet prediction accuracy. This must be understood and accepted before deploying capital.
+- **Uniform robustness**: Jan 1 locked-forward cutoff produces -1.5% yield. The edge is not guaranteed from every starting point.
+- **Ablation justification**: The ablation framework is built but not yet fully executed. Feature families have not been formally proven to justify their complexity.
+- **Live tracking**: No live paper-trading results yet. All evidence is from historical walk-forward and locked-forward testing.
+
+---
+
 ## Overview
 
 This system contains four prediction models across two sports, each validated via walk-forward backtesting with real sportsbook odds. All models use XGBoost with time-based train/test splits (no random CV, no future data leakage). Profitable strategies are identified by blending model probabilities 50/50 with sharp book consensus, then comparing against soft book (BetMGM/PlayAlberta) odds.
