@@ -1,0 +1,9 @@
+label,n,yield,wr,avg_odds,avg_edge,p_pos,max_dd
+All unders,1864,-3.6,50.3,-26.2,8.5,0.065,84.9
+All overs,1207,-4.34,50.8,-39.5,7.6,0.053,57.5
+Model-selected unders,1324,-0.05,51.7,-24.3,10.4,0.492,47.7
+Model-selected overs,805,-6.23,49.7,-36.1,9.5,0.034,51.9
+Sharp-confirmed unders,975,-3.38,44.7,75.9,9.1,0.172,47.1
+Sharp-confirmed overs,561,-7.26,56.0,-154.6,7.3,0.021,45.5
+Soft-book unders (no model),1636,-5.18,49.0,-19.9,8.5,0.014,94.3
+Soft-book overs (no model),1039,-2.76,52.0,-49.0,7.6,0.167,38.3

@@ -1,0 +1,6 @@
+label,n,yield,wr,avg_odds,avg_edge,p_pos,max_dd
+FULL: Production system,1158,-1.38,50.4,-17.8,10.4,0.313,41.5
+SIMPLE: Sharp > soft by 3%,1232,-4.7,50.0,-38.1,8.3,0.047,69.6
+SIMPLE: Sharp > soft by 5%,104,-3.39,53.8,-89.5,10.0,0.365,10.3
+SIMPLE: Soft unders + 4+ sharp books,1179,-8.74,47.4,-21.6,8.4,0.002,109.5
+SIMPLE: Top-5 daily sharp-soft spread,293,-5.9,52.2,-79.3,8.7,0.145,29.5

@@ -1,0 +1,8 @@
+test,yield,n,p_pos
+BASELINE (production),-1.38,1158,0.313
+1: Permuted model scores,-8.23,1158,0.0
+2: Sharp-soft spread only,-3.39,104,0.365
+3: Random noise model,-5.27,1102,0.036
+4: Inverted model,0.0,0,0.0
+5: Structural filters only (no model),-5.18,1636,0.014
+6: Model only (no side/book filter),-2.39,2129,0.134

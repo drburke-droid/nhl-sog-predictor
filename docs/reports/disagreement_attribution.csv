@@ -1,0 +1,7 @@
+label,n,yield,wr,avg_odds,avg_edge,p_pos,max_dd
+"1: High sharp-soft spread, no model filter",1229,-4.73,50.0,-37.8,8.3,0.039,69.3
+2: High spread + model agrees,862,-1.71,51.0,-34.5,10.1,0.301,34.7
+3: High spread + model disagrees,367,-11.83,47.4,-45.5,3.9,0.016,45.8
+"4: Model-only edge, low spread",292,-0.99,48.3,32.5,11.2,0.434,16.0
+"5: Low spread, low model edge",110,-22.19,39.1,41.8,4.0,0.009,23.6
+6: High spread + 4+ sharp books,873,-6.39,49.5,-43.8,8.1,0.026,67.4

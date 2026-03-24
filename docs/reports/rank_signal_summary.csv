@@ -1,0 +1,43 @@
+label,n,yield,wr,avg_odds,avg_edge,p_pos,max_dd
+Top-1 daily by Raw model prob,62,13.29,66.1,-133.1,20.6,0.87,8.2
+Top-3 daily by Raw model prob,186,7.84,63.4,-132.9,16.8,0.898,6.5
+Top-5 daily by Raw model prob,305,1.89,60.7,-136.8,14.4,0.646,16.7
+Top-10 daily by Raw model prob,589,1.25,60.6,-136.8,11.9,0.644,19.4
+Decile 0 by Raw model prob,308,-12.29,36.0,142.5,4.8,0.032,40.1
+Decile 1 by Raw model prob,307,5.21,46.6,127.1,6.3,0.785,15.5
+Decile 2 by Raw model prob,307,-4.15,44.3,101.0,7.0,0.248,19.9
+Decile 3 by Raw model prob,308,5.35,51.9,12.7,7.3,0.805,10.5
+Decile 4 by Raw model prob,306,-5.75,48.4,-54.0,7.8,0.154,21.0
+Decile 5 by Raw model prob,307,-12.47,47.9,-91.6,7.9,0.009,41.5
+Decile 6 by Raw model prob,307,-18.34,46.6,-111.3,8.0,0.0,56.9
+Decile 7 by Raw model prob,307,-2.33,58.0,-137.3,8.3,0.302,14.1
+Decile 8 by Raw model prob,307,-2.33,60.6,-161.5,8.4,0.326,24.6
+Decile 9 by Raw model prob,307,8.22,64.5,-142.5,16.0,0.973,5.3
+Top-1 daily by Blended prob,62,-17.35,53.2,-181.8,13.7,0.037,14.7
+Top-3 daily by Blended prob,186,-8.97,58.1,-171.4,11.3,0.057,23.9
+Top-5 daily by Blended prob,303,-2.35,61.1,-166.4,10.7,0.331,16.5
+Top-10 daily by Blended prob,586,-3.98,58.9,-149.7,9.7,0.116,37.0
+Decile 0 by Blended prob,291,-16.23,34.4,143.7,5.5,0.011,48.0
+Decile 1 by Blended prob,291,6.81,46.7,129.7,7.4,0.851,12.9
+Decile 2 by Blended prob,291,-3.68,44.7,114.9,7.2,0.281,28.4
+Decile 3 by Blended prob,290,1.76,49.3,48.3,8.1,0.602,17.4
+Decile 4 by Blended prob,292,-10.47,46.2,-52.8,8.7,0.039,31.7
+Decile 5 by Blended prob,289,-11.14,47.8,-94.5,8.4,0.02,35.6
+Decile 6 by Blended prob,291,-10.25,50.2,-122.3,8.4,0.017,35.5
+Decile 7 by Blended prob,290,-1.83,57.2,-135.5,8.6,0.334,14.8
+Decile 8 by Blended prob,291,1.79,61.5,-152.3,9.6,0.642,17.8
+Decile 9 by Blended prob,291,-2.91,62.5,-183.2,10.5,0.246,12.9
+Top-1 daily by Model edge,62,23.18,58.1,38.9,25.7,0.965,5.7
+Top-3 daily by Model edge,186,6.66,54.3,2.8,20.6,0.81,8.7
+Top-5 daily by Model edge,305,1.18,51.5,-4.8,18.3,0.569,8.9
+Top-10 daily by Model edge,589,0.07,51.3,-13.1,15.3,0.459,18.6
+Decile 0 by Model edge,311,-5.16,50.8,-41.5,3.3,0.18,25.3
+Decile 1 by Model edge,304,-8.2,48.7,-36.9,3.9,0.073,29.3
+Decile 2 by Model edge,309,-9.79,47.9,-29.5,4.6,0.034,34.8
+Decile 3 by Model edge,310,-9.03,49.7,-45.2,5.4,0.042,31.6
+Decile 4 by Model edge,304,-8.25,48.0,-32.5,6.2,0.072,32.8
+Decile 5 by Model edge,305,-2.83,50.8,-33.6,7.1,0.297,30.1
+Decile 6 by Model edge,307,-3.55,49.5,-23.1,8.4,0.265,31.4
+Decile 7 by Model edge,307,-1.38,51.8,-43.4,10.1,0.419,20.6
+Decile 8 by Model edge,308,1.82,52.9,-21.5,12.6,0.609,22.5
+Decile 9 by Model edge,306,7.53,54.6,-6.5,20.2,0.912,6.7
