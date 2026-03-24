@@ -26,6 +26,8 @@ import model as nhl_model
 import data_collector
 import nhl_odds_collector
 import nhl_simulation
+import distribution_model as dist_model
+import staking
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +65,7 @@ def _name_match_key(name: str) -> tuple:
 def _train_window_model(train_df):
     """Train forward + defense XGBoost models on a training window.
 
-    Returns (model_fwd, model_def, var_ratio_map).
+    Returns (model_fwd, model_def, var_ratio_map, disp_model, disp_feats, shrinkage).
     """
     weights = nhl_model._compute_sample_weights(train_df)
     fwd = train_df[train_df["position_group"] == "F"]
@@ -100,7 +102,30 @@ def _train_window_model(train_df):
             if mean_s > 0:
                 var_ratio_map[int(pid)] = float(shots.var() / mean_s)
 
-    return model_fwd, model_def, var_ratio_map
+    # Train dispersion model for NegBin distribution
+    disp_model, disp_feats, shrinkage = None, [], 0.7
+    avail = [f for f in WF_FEATURE_COLS if f in train_df.columns]
+    if model_fwd is not None and len(train_df) >= 200:
+        # Get mean predictions on training data for dispersion model
+        train_mean_preds = np.maximum(
+            train_df["baseline_sog"].values +
+            np.where(
+                train_df["position_group"] == "F",
+                model_fwd.predict(train_df[avail].values) if model_fwd else 0,
+                model_def.predict(train_df[avail].values) if model_def else 0,
+            ),
+            0.0,
+        )
+        result = dist_model.train_dispersion_model(train_df, train_mean_preds)
+        if result is not None:
+            disp_model, disp_feats = result
+            # Calibrate shrinkage on training data
+            shrinkage, _ = dist_model.calibrate_shrinkage(
+                train_df, train_mean_preds, disp_model, disp_feats,
+                alphas=[0.0, 0.3, 0.5, 0.7, 0.8, 0.9, 1.0],
+            )
+
+    return model_fwd, model_def, var_ratio_map, disp_model, disp_feats, shrinkage
 
 
 def _load_prop_lookup():
@@ -305,7 +330,8 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
         )
 
         # Train models for this window
-        model_fwd, model_def, var_ratio_map = _train_window_model(train_df)
+        model_fwd, model_def, var_ratio_map, disp_model, disp_feats, shrinkage = \
+            _train_window_model(train_df)
 
         # Predict on test set
         test_fwd = test_df[test_df["position_group"] == "F"].copy()
@@ -351,6 +377,13 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
                     seed=42 + window_num * 10000 + i,
                 )
 
+                # NegBin distribution probability (analytical)
+                row_df = subset.iloc[[i]]
+                nb_var = dist_model.predict_variance(
+                    disp_model, disp_feats, row_df,
+                    mean_preds=np.array([ps]), shrinkage=shrinkage,
+                )[0]
+
                 # Match with sportsbook lines using initial + last name
                 pname_key = _name_match_key(str(pname)) if pname else ("", "")
                 ini_k, last_k = pname_key
@@ -363,6 +396,10 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
 
                     model_p_over = sim.get(f"P_over_{line}", 0)
                     model_p_under = 1.0 - model_p_over
+
+                    # NegBin analytical probability
+                    nb_p_over = dist_model.negbin_prob_over(ps, nb_var, line)
+                    nb_p_under = 1.0 - nb_p_over
 
                     # Sharp-vs-soft signals for this player-game-line
                     sharp = _compute_sharp_consensus(
@@ -482,6 +519,12 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
                             "pa_edge": pa_edge,
                             # Sharp-vs-soft divergence
                             "sharp_vs_soft_edge": sharp_vs_soft_edge,
+                            # NegBin distribution model
+                            "nb_prob": round(
+                                nb_p_over if side == "OVER" else nb_p_under, 4),
+                            "nb_edge": round(
+                                (nb_p_over if side == "OVER" else nb_p_under) - implied, 4),
+                            "nb_variance": round(nb_var, 3),
                         })
 
         # Window summary
@@ -526,7 +569,8 @@ def run_walkforward(starting_bankroll=100.0, kelly_fraction=0.25,
 def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
                         max_kelly_pct, min_wager, min_edge=0.0,
                         use_soft_odds=False, use_sharp_prob=False,
-                        use_blended_prob=False):
+                        use_blended_prob=False, use_nb_prob=False,
+                        use_uncertainty_kelly=False):
     """Simulate P&L for a filtered set of bets using Kelly sizing.
 
     If use_soft_odds=True, uses BetMGM/PlayAlberta odds for payouts
@@ -534,6 +578,8 @@ def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
     If use_sharp_prob=True, uses sharp book consensus probability
     instead of model probability for edge/EV calculation.
     If use_blended_prob=True, uses 50/50 blend of model + sharp prob.
+    If use_nb_prob=True, uses NegBin distribution probability.
+    If use_uncertainty_kelly=True, uses confidence-weighted Kelly sizing.
     """
     bets_df = bets_df.sort_values("date").reset_index(drop=True)
 
@@ -542,7 +588,9 @@ def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
 
     for _, bet in bets_df.iterrows():
         # Determine probability estimate
-        if use_blended_prob and bet.get("blended_prob") is not None:
+        if use_nb_prob and bet.get("nb_prob") is not None:
+            prob = bet["nb_prob"]
+        elif use_blended_prob and bet.get("blended_prob") is not None:
             prob = bet["blended_prob"]
         elif use_sharp_prob and bet.get("sharp_prob") is not None:
             prob = bet["sharp_prob"]
@@ -566,11 +614,20 @@ def _simulate_strategy(bets_df, starting_bankroll, kelly_fraction,
             continue
 
         # Kelly sizing
-        kf = ev_val / (dec_odds - 1) if dec_odds > 1 else 0
-        kf = max(kf, 0) * kelly_fraction
-        kf = min(kf, max_kelly_pct)
+        if use_uncertainty_kelly:
+            wager = staking.uncertainty_kelly(
+                bankroll, prob, bet["odds"], edge_val,
+                fraction=kelly_fraction, max_pct=max_kelly_pct,
+                calibration_quality=0.5,
+                side=bet.get("side", "UNDER"),
+                n_sharp=bet.get("n_sharp_books", 0),
+            )
+        else:
+            kf = ev_val / (dec_odds - 1) if dec_odds > 1 else 0
+            kf = max(kf, 0) * kelly_fraction
+            kf = min(kf, max_kelly_pct)
+            wager = round(bankroll * kf, 2)
 
-        wager = round(bankroll * kf, 2)
         if wager < min_wager:
             continue
 
@@ -623,14 +680,16 @@ def _evaluate_strategies(bets_df, starting_bankroll, kelly_fraction,
     strategies = {}
 
     def _run(name, mask, min_edge=0.0, use_soft_odds=False,
-             use_sharp_prob=False, use_blended_prob=False):
+             use_sharp_prob=False, use_blended_prob=False,
+             use_nb_prob=False, use_uncertainty_kelly=False):
         subset = bets_df[mask].copy()
         if len(subset) == 0:
             return
         result = _simulate_strategy(
             subset, starting_bankroll, kelly_fraction,
             max_kelly_pct, min_wager, min_edge, use_soft_odds,
-            use_sharp_prob, use_blended_prob,
+            use_sharp_prob, use_blended_prob, use_nb_prob,
+            use_uncertainty_kelly,
         )
         if result:
             strategies[name] = result
@@ -850,6 +909,76 @@ def _evaluate_strategies(bets_df, starting_bankroll, kelly_fraction,
          sharp_confirm & (bets_df["side"] == "UNDER") & (bets_df["baseline_sog"] >= 2.5),
          use_soft_odds=True)
 
+    # =================================================================
+    # NEGBIN DISTRIBUTION MODEL STRATEGIES
+    # =================================================================
+    # Use NegBin analytical probabilities instead of MC simulation
+    has_nb = bets_df["nb_prob"].notna()
+    nb_ev_plus = has_nb & (bets_df["nb_edge"] > 0)
+
+    _run("NB_all_ev_plus", nb_ev_plus, use_nb_prob=True)
+    _run("NB_overs", nb_ev_plus & (bets_df["side"] == "OVER"), use_nb_prob=True)
+    _run("NB_unders", nb_ev_plus & (bets_df["side"] == "UNDER"), use_nb_prob=True)
+
+    for edge_pct in [3, 5, 8]:
+        et = edge_pct / 100.0
+        _run(f"NB_all_edge_{edge_pct}pct", nb_ev_plus, min_edge=et, use_nb_prob=True)
+        _run(f"NB_unders_edge_{edge_pct}pct",
+             nb_ev_plus & (bets_df["side"] == "UNDER"), min_edge=et, use_nb_prob=True)
+
+    # NegBin on soft book
+    nb_soft_ev = has_nb & has_soft_col & (bets_df["nb_edge"] > 0)
+    _run("NB_BMG_all", nb_soft_ev, use_soft_odds=True, use_nb_prob=True)
+    _run("NB_BMG_unders", nb_soft_ev & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_nb_prob=True)
+    _run("NB_BMG_overs", nb_soft_ev & (bets_df["side"] == "OVER"),
+         use_soft_odds=True, use_nb_prob=True)
+
+    # NegBin + sharp confirmation on soft book
+    nb_sharp_confirm = nb_soft_ev & has_both & sharp_agrees
+    _run("NB_BMG+sharp_all", nb_sharp_confirm,
+         use_soft_odds=True, use_nb_prob=True)
+    _run("NB_BMG+sharp_unders",
+         nb_sharp_confirm & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_nb_prob=True)
+
+    # =================================================================
+    # UNCERTAINTY KELLY STAKING STRATEGIES
+    # =================================================================
+    # Re-run top strategies with confidence-weighted Kelly sizing
+    _run("UK_all_ev_plus", ev_plus, use_uncertainty_kelly=True)
+    _run("UK_unders", ev_plus & (bets_df["side"] == "UNDER"),
+         use_uncertainty_kelly=True)
+    _run("UK_overs", ev_plus & (bets_df["side"] == "OVER"),
+         use_uncertainty_kelly=True)
+
+    # Uncertainty Kelly on soft book
+    _run("UK_BMG_all", soft_ev, use_soft_odds=True,
+         use_uncertainty_kelly=True)
+    _run("UK_BMG_unders", soft_ev & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_uncertainty_kelly=True)
+
+    # Uncertainty Kelly + sharp confirmation
+    _run("UK_BMG+sharp_all", sharp_confirm, use_soft_odds=True,
+         use_uncertainty_kelly=True)
+    _run("UK_BMG+sharp_unders",
+         sharp_confirm & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_uncertainty_kelly=True)
+
+    # Uncertainty Kelly + blended prob
+    _run("UK_BMG_blend_all", blend_soft, use_soft_odds=True,
+         use_blended_prob=True, use_uncertainty_kelly=True)
+    _run("UK_BMG_blend_unders",
+         blend_soft & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_blended_prob=True, use_uncertainty_kelly=True)
+
+    # NegBin + uncertainty Kelly
+    _run("NB_UK_BMG_all", nb_soft_ev, use_soft_odds=True,
+         use_nb_prob=True, use_uncertainty_kelly=True)
+    _run("NB_UK_BMG+sharp_unders",
+         nb_sharp_confirm & (bets_df["side"] == "UNDER"),
+         use_soft_odds=True, use_nb_prob=True, use_uncertainty_kelly=True)
+
     return strategies
 
 
@@ -961,6 +1090,22 @@ def print_walkforward(result):
                    + [f"BMG+sharp_{p}_{c}" for c in ["3.5", "3.5+4.5", "2.5+3.5"]
                       for p in ["under", "over"]]
                    + ["BMG_highvol_unders", "BMG+sharp_highvol_unders"])
+
+    # ---- NEGBIN DISTRIBUTION MODEL ----
+    _print_section("NEGBIN DISTRIBUTION MODEL (analytical probs, calibrated shrinkage)",
+                   keys=["NB_all_ev_plus", "NB_overs", "NB_unders"]
+                   + [f"NB_all_edge_{e}pct" for e in [3, 5, 8]]
+                   + [f"NB_unders_edge_{e}pct" for e in [3, 5, 8]]
+                   + ["NB_BMG_all", "NB_BMG_unders", "NB_BMG_overs",
+                      "NB_BMG+sharp_all", "NB_BMG+sharp_unders"])
+
+    # ---- UNCERTAINTY KELLY STAKING ----
+    _print_section("UNCERTAINTY KELLY (confidence-weighted sizing)",
+                   keys=["UK_all_ev_plus", "UK_unders", "UK_overs",
+                         "UK_BMG_all", "UK_BMG_unders",
+                         "UK_BMG+sharp_all", "UK_BMG+sharp_unders",
+                         "UK_BMG_blend_all", "UK_BMG_blend_unders",
+                         "NB_UK_BMG_all", "NB_UK_BMG+sharp_unders"])
 
     # ---- FULL LEADERBOARD ----
     ranked = sorted(strategies.items(),
