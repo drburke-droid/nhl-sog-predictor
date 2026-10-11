@@ -1,0 +1,36 @@
+{
+ "overture_release": "2026-09-23.1",
+ "length_km_by_class": {
+  "motorway": 1312971.1802743655,
+  "trunk": 2049105.8960701576,
+  "primary": 2531395.379663144,
+  "secondary": 3800081.3187310193,
+  "tertiary": 8010795.154568087,
+  "unclassified": 17225420.7665103,
+  "residential": 18399039.424367018,
+  "living_street": 341816.42429219635,
+  "service": 8625401.573362954,
+  "track": 20410438.617411472,
+  "pedestrian": 45979.92715363798,
+  "footway": 2716584.528372021,
+  "steps": 34118.231101378944,
+  "path": 5455328.642120454,
+  "cycleway": 461538.8001738015,
+  "bridleway": 72316.96304278103,
+  "unknown": 1878153.4135669274,
+  "other": 0.0
+ },
+ "graph_classes": [
+  "motorway",
+  "primary",
+  "secondary",
+  "tertiary",
+  "trunk"
+ ],
+ "graph_nodes": 1990121,
+ "graph_edges": 2564265,
+ "graph_length_km": 12005394.05834611,
+ "gap_bridges": 2596,
+ "gap_bridge_km": 18408.257000685146,
+ "components": 1100
+}

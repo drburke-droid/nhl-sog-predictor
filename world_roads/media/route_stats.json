@@ -1,0 +1,14 @@
+{
+ "band_km": 1500.0,
+ "match_km": 300.0,
+ "alpha": 150.0,
+ "pieces": 2134,
+ "route_steps": 3560769,
+ "jumps": 1415,
+ "jumps_over_20px": 431,
+ "network_km": 12005394.05834611,
+ "walk_km": 16648263.914104873,
+ "repeat_overhead": 0.3867319834063303,
+ "edges_covered": 1.0,
+ "seconds": 21.155883073806763
+}
