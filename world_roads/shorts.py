@@ -119,6 +119,93 @@ def make(name):
     print("wrote", path, f"{(n_main + n_end) / FPS:.1f}s")
 
 
+def make_world_v2():
+    """Retention-first cut: the whole trip flashes past in the first 1.6 s with the answer on screen,
+    then the trip replays at ~6.7x. A large halo keeps the dot readable at phone size."""
+    os.makedirs(OUT, exist_ok=True)
+    R = render.Renderer()
+    R.static = []
+    R._dynamic_text = lambda t, labels: (None, None)
+    x0, y0, x1, y1 = SHORTS["world"]["crop"]
+    mw = VW - 40
+    mh = int(round(mw * (y1 - y0) / (x1 - x0)))
+    my = 830 - mh // 2
+    s = mw / (x1 - x0)
+    k = np.arange(161, dtype=np.float32) - 80
+    r2 = k[None] ** 2 + k[:, None] ** 2
+    halo = (np.exp(-r2 / (2 * 7 ** 2))[..., None] * np.array([1.0, 0.85, 0.55]) * 0.9 +
+            np.exp(-r2 / (2 * 26 ** 2))[..., None] * np.array([1.0, 0.55, 0.15]) * 0.35).astype(np.float32)
+
+    COLD, GAP, MAIN, END = 1.6, 0.7, 42.0, 3.0
+    n_cold, n_gap, n_main, n_end = (int(round(x * FPS)) for x in (COLD, GAP, MAIN, END))
+    cold_hook = text_layer(["Every road on Earth", "at the speed of light", "= 4 min 40 s"], 150,
+                           [72, 72, 92], [(240, 244, 250), (240, 244, 250), (255, 186, 80)])
+    gap_hook = text_layer(["Now watch it happen", "road by road"], 190, [74, 58], [(240, 244, 250), (255, 186, 80)])
+    main_hook = text_layer(["Every road on Earth", "at the speed of light", "takes 4 min 40 s"], 170,
+                           [70, 70, 58], [(240, 244, 250), (240, 244, 250), (255, 186, 80)])
+    end_card = ["4 minutes 40 seconds.", "Full real-time version", "on my channel"]
+    f_clock = font("InterDisplay-Bold.otf", 150)
+    f_small = font("Inter-Medium.otf", 36)
+    f_sub = font("Inter-Regular.otf", 30)
+    path = os.path.join(OUT, "short_world_v2.mp4")
+    p = render.ffmpeg_proc_size(path, VW, VH)
+
+    def compose(img, t, sub, hook, dot=True, alpha_end=None, flash=0.0):
+        canvas = np.empty((VH, VW, 3), np.float32); canvas[:] = np.array(BG, np.float32) / 255
+        crop = cv2.resize(img[y0:y1, x0:x1], (mw, mh), interpolation=cv2.INTER_CUBIC).astype(np.float32) / 255
+        canvas[my:my + mh, 20:20 + mw] = crop
+        if dot and t < DURATION:
+            dx, dy, _ = R.dot_pos(t)
+            cx, cy = int(round(20 + (dx - x0) * s)), int(round(my + (dy - y0) * s))
+            a0, a1, b0, b1 = max(cy - 80, 0), min(cy + 81, VH), max(cx - 80, 0), min(cx + 81, VW)
+            canvas[a0:a1, b0:b1] += halo[a0 - (cy - 80):a1 - (cy - 80), b0 - (cx - 80):b1 - (cx - 80)]
+        if flash > 0:
+            canvas[my:my + mh, 20:20 + mw] += flash * crop
+        canvas = (np.clip(canvas, 0, 1) * 255 + 0.5).astype(np.uint8)
+        im = Image.new("RGBA", (VW, VH), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+        mm, ss = int(t // 60), int(t % 60)
+        d.text((VW // 2, 1215), f"{mm}:{ss:02d}", font=f_clock, fill=(250, 238, 212, 255), anchor="ma")
+        d.text((VW // 2, 1390), f"≈ {t / DURATION * EST_TOTAL_KM / 1e6:.1f} million km at light speed",
+               font=f_small, fill=(170, 186, 206, 255), anchor="ma")
+        bx = (VW - 640) // 2
+        d.rectangle([bx, 1455, bx + 640, 1461], fill=(40, 55, 75, 255))
+        d.rectangle([bx, 1455, bx + int(640 * t / DURATION), 1461], fill=(255, 176, 66, 255))
+        d.text((VW // 2, 1481), sub, font=f_sub, fill=(120, 140, 165, 255), anchor="ma")
+        canvas = composite(canvas, im)
+        if alpha_end is not None:
+            canvas = (canvas.astype(np.float32) * (1 - 0.55 * alpha_end)).astype(np.uint8)
+            canvas = composite(canvas, text_layer(end_card, 220, [76, 56, 56],
+                                                  [(255, 186, 80), (240, 244, 250), (240, 244, 250)], alpha=alpha_end))
+        elif hook is not None:
+            canvas = composite(canvas, hook)
+        return canvas
+
+    # 1) cold open: the entire trip in 1.6 s (ease-in so the first frames already move)
+    for f in range(n_cold):
+        u = f / (n_cold - 1)
+        t = DURATION * (u ** 1.3)
+        img = R.frame(t, time_scale=60)
+        p.stdin.write(compose(img, t, "the whole trip, ultra fast", cold_hook).tobytes())
+    gold_img = img
+    # 2) beat: golden world pulses, then cut back to the start
+    for f in range(n_gap):
+        fl = 0.6 * np.sin(np.pi * f / n_gap)
+        p.stdin.write(compose(gold_img, DURATION, "", gap_hook, dot=False, flash=fl).tobytes())
+    # 3) the trip at ~6.7x
+    R.reset_to(-1e-9)
+    speed = DURATION / MAIN
+    for f in range(n_main):
+        t = DURATION * f / (n_main - 1)
+        img = R.frame(t, time_scale=speed / 3)
+        p.stdin.write(compose(img, t, f"sped up {speed:.0f}× · real trip: 4 min 40 s", main_hook).tobytes())
+    # 4) end card
+    for f in range(n_end):
+        p.stdin.write(compose(img, DURATION, "", None, dot=False, alpha_end=min(1.0, f / (0.4 * FPS))).tobytes())
+    p.stdin.close(); p.wait()
+    print("wrote", path, f"{(n_cold + n_gap + n_main + n_end) / FPS:.1f}s")
+
+
 if __name__ == "__main__":
-    for nm in (sys.argv[1:] or SHORTS):
-        make(nm)
+    args = sys.argv[1:] or list(SHORTS)
+    for nm in args:
+        make_world_v2() if nm == "world_v2" else make(nm)
