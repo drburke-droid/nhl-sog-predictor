@@ -389,6 +389,13 @@ def ffmpeg_proc(path, crf=18, preset="slow"):
     return subprocess.Popen(cmd, stdin=subprocess.PIPE)
 
 
+def ffmpeg_proc_size(path, w, h, crf=18):
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{w}x{h}",
+           "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", str(crf),
+           "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart", path]
+    return subprocess.Popen(cmd, stdin=subprocess.PIPE)
+
+
 def frame_time(f):
     # frame 0 shows 0:00 and the last frame shows exactly 4:40 (route complete)
     return DURATION * f / (NFRAMES - 1)
