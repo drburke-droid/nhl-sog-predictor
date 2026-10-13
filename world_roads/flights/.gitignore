@@ -1,0 +1,4 @@
+data/
+out/
+render.log
+__pycache__/
