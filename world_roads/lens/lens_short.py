@@ -5,8 +5,8 @@
 
 Scenes: hook · speed race through lens materials · car-and-puddle refraction (differential-wheel
 simulation) and the same for a light beam · ray-traced plus and minus lenses · a career of lenses
-stacked next to the Calgary Tower · end card. All speeds are c/n; the stack assumes 100,000 lenses
-at ~2 mm average centre thickness and n ~ 1.6.
+thickness vs speed · light at the bottom of the Mariana Trench · how slow light can go · end card.
+All speeds are c/n. Deep-ocean index from Lorentz-Lorenz with ~4.5% compression at ~1,100 bar.
 """
 import os, sys, subprocess
 import numpy as np
@@ -32,7 +32,8 @@ ACC = (255, 186, 80)
 MATERIALS = [("Air", 1.000293), ("CR-39 plastic", 1.498), ("Trivex", 1.532), ("Polycarbonate", 1.586),
              ("High-index 1.67", 1.67), ("High-index 1.74", 1.74)]
 
-SCENES = [("hook", 3.5), ("race", 11.0), ("car", 14.0), ("lens", 13.0), ("stack", 13.5), ("end", 3.5)]
+SCENES = [("hook", 3.5), ("race", 11.0), ("car", 14.0), ("lens", 13.0), ("thick", 6.5), ("ocean", 7.0),
+          ("slowest", 9.5), ("end", 3.5)]
 
 _fonts = {}
 
@@ -387,60 +388,92 @@ def scene_lens(F, t):
         F.text("so it focuses further back, on your retina.", (W // 2, 296), 38, SUB, fade(u, 1.6, 99))
 
 
-def tower(F, cx, base, ppm, alpha):
-    """Calgary Tower silhouette, 191 m."""
-    col = np.array([0.30, 0.38, 0.50], np.float32)
-    y = lambda m: base - m * ppm
-    shaft = [(cx - 34, y(0)), (cx + 34, y(0)), (cx + 20, y(150)), (cx - 20, y(150))]
-    F.poly_fill(shaft, col, 0.9 * alpha)
-    pod = [(cx - 62, y(150)), (cx + 62, y(150)), (cx + 72, y(160)), (cx + 66, y(172)), (cx - 66, y(172)), (cx - 72, y(160))]
-    F.poly_fill(pod, col * 1.15, 0.95 * alpha)
-    F.poly_fill([(cx - 40, y(172)), (cx + 40, y(172)), (cx + 28, y(177)), (cx - 28, y(177))], col, 0.9 * alpha)
-    F.poly_fill([(cx - 4, y(177)), (cx + 4, y(177)), (cx + 2, y(191)), (cx - 2, y(191))], col, 0.9 * alpha)
+def scene_thick(F, t):
+    """Thickness does not change the speed, only how long light is slowed."""
+    n = 1.74
+    F.text("Does a thicker lens", (W // 2, 160), 54, TXT, 1, True)
+    F.text("slow light down more?", (W // 2, 232), 54, TXT, 1, True)
+    lanes = [(300.0, 900.0, 970.0, "Thin 1.74 lens"), (780.0, 740.0, 1180.0, "Thick 1.74 block")]
+    v_out, y_start, y_end = 560.0, 420.0, 1215.0
+    for x, s0, s1, label in lanes:
+        F.poly_fill([(x - 130, s0), (x + 130, s0), (x + 130, s1), (x - 130, s1)], GLASS, 0.55, CYAN, 0.7)
+        F.text(label, (x, s0 - 46), 30, SUB, 1)
+        tt = max(t - 0.5, 0)
+        # piecewise motion: above, inside (slow), below
+        t1 = (s0 - y_start) / v_out
+        t2 = t1 + (s1 - s0) / (v_out / n)
+        if tt <= t1:
+            y = y_start + v_out * tt; inside = False
+        elif tt <= t2:
+            y = s0 + (v_out / n) * (tt - t1); inside = True
+        else:
+            y = min(s1 + v_out * (tt - t2), y_end); inside = False
+        F.trail((x, max(y_start, y - 200)), (x, y), 1.0, 4)
+        F.photon(x, y, 1.0)
+        F.text(f"{C / (n if inside else 1.0):,.0f} km/s", (x - 46 if x < 540 else x + 46, y - 18), 28,
+               ACC if inside else TXT, 1, True, "ra" if x < 540 else "la")
+    F.text("No. Inside, both go 172,295 km/s.", (W // 2, 1300), 42, ACC, fade(t, 3.0, 99), True)
+    F.text("The material sets the speed.", (W // 2, 1365), 36, TXT, fade(t, 3.6, 99))
+    F.text("Thickness only sets how long it's slowed.", (W // 2, 1415), 36, SUB, fade(t, 4.0, 99))
 
 
-def scene_stack(F, t):
-    base, ppm = 1600.0, 4.8
-    sx, ax, tx = 300.0, 520.0, 800.0
-    grow = ease(t / 4.0)
-    n_l = int(100_000 * grow)
-    hgt = 200.0 * grow
-    tower(F, tx, base, ppm, fade(t, 0, 99, 0.4))
-    F.text("Calgary Tower", (tx, base + 24), 30, SUB, fade(t, 0.2, 99))
-    F.text("191 m", (tx, base + 62), 30, SUB, fade(t, 0.2, 99))
-    top = base - hgt * ppm
-    if hgt > 0.5:
-        F.poly_fill([(sx - 70, base), (sx + 70, base), (sx + 70, top), (sx - 70, top)], GLASS, 0.6, CYAN, 0.6)
-        m = F.mask()
-        for yy in np.arange(base, top, -9):
-            cv2.line(m, (int((sx - 66) * 16), int(yy * 16)), (int((sx + 66) * 16), int(yy * 16)), 255, 1, cv2.LINE_AA, shift=4)
-        F.add(m, CYAN, 0.12)
-    F.text(f"{n_l:,} lenses", (sx, base + 24), 30, ACC, 1, True)
-    F.text(f"{hgt:,.0f} m", (sx, base + 62), 30, SUB, 1)
-    r_done = 5.0 + 4.6
-    F.text("Every lens I've prescribed,", (W // 2, 160), 50, TXT, fade(t, 0.1, r_done), True)
-    F.text("stacked up", (W // 2, 230), 50, TXT, fade(t, 0.1, r_done), True)
-    F.text("~100,000 lenses × ~2 mm each", (W // 2, 300), 34, SUB, fade(t, 0.5, r_done))
-    # race from the bottom: 1 microsecond of light = 4 s of video
-    r0 = 5.0
-    if t > r0 - 0.6:
-        F.text("Now send light up both:", (W // 2, 380), 40, ACC, fade(t, r0 - 0.6, r0 + 4.6), True)
-    if t > r0:
-        tau = (t - r0) / 4.0 * 1000            # nanoseconds
-        Lm = 200.0
-        air_m = min(tau * 1e-9 * C * 1000, Lm)
-        st_m = min(tau * 1e-9 * C * 1000 / 1.6, Lm)
-        for x, mm, label, total in ((ax, air_m, "air", Lm / (C * 1000) * 1e9), (sx, st_m, "lenses", Lm * 1.6 / (C * 1000) * 1e9)):
-            y = base - mm * ppm
-            F.trail((x, base), (x, y), 1.0, 4)
-            F.photon(x, y, 1.0)
-            ns = min(tau, total)
-            F.text(f"{ns:,.0f} ns", (x, y - 70) if mm < Lm else (x, top - 70), 32, TXT, 1, True)
-        late = tau > Lm * 1.6 / (C * 1000) * 1e9
-        F.text("A whole career of lenses:", (W // 2, 160), 50, TXT, fade(t, r0 + 4.8, 99), True)
-        F.text("light arrives 0.4 millionths", (W // 2, 232), 50, ACC, fade(t, r0 + 5.1, 99), True)
-        F.text("of a second late.", (W // 2, 302), 50, ACC, fade(t, r0 + 5.1, 99), True)
-        F.text("(Light in air gets 120 m ahead.)", (W // 2, 380), 34, SUB, fade(t, r0 + 5.8, 99))
+def scene_ocean(F, t):
+    """Light at the bottom of the Mariana Trench."""
+    top, bot, km = 400.0, 1520.0, 11.0
+    ppk = (bot - top) / km
+    g = np.clip((np.arange(H, dtype=np.float32) - top) / (1.0 * ppk), 0, 1)[:, None, None]
+    sea = np.array([0.05, 0.22, 0.38], np.float32) * (1 - g) ** 1.6 + np.array([0.004, 0.008, 0.016], np.float32) * g
+    a = fade(t, 0, 99, 0.4)
+    F.img[int(top):int(bot)] = F.img[int(top):int(bot)] * (1 - a) + sea[int(top):int(bot)] * a
+    F.line([(0, top), (W, top)], CYAN, 0.6 * a, 2)
+    for d_km, label in ((0, "surface"), (1, "1 km: sunlight ends"), (11, "11 km: Mariana Trench")):
+        y = top + d_km * ppk
+        F.dashed((W - 330, y), (W - 60, y), WHITE, 0.25 * a)
+        F.text(label, (W - 60, y + 10), 26, SUB, a, False, "ra")
+    # sunlight: photons fade out by 1 km
+    for i, x in enumerate((180, 300, 420)):
+        y = top + ((t * 300 + i * 120) % (1.3 * ppk))
+        g_ = max(0.0, 1 - (y - top) / (1.0 * ppk))
+        if g_ > 0:
+            F.photon(x, y, 0.8 * g_ * a, 0.8)
+    F.text("What about the bottom", (W // 2, 160), 54, TXT, 1, True)
+    F.text("of the deepest ocean?", (W // 2, 232), 54, TXT, 1, True)
+    F.text("11 km down, the pressure squeezes", (W // 2, 1130), 38, TXT, fade(t, 1.0, 99))
+    F.text("the water, so light slows to", (W // 2, 1180), 38, TXT, fade(t, 1.0, 99))
+    F.text("~221,000 km/s", (W // 2, 1240), 60, ACC, fade(t, 1.6, 99), True)
+    F.text("about 1% slower than at the surface.", (W // 2, 1320), 34, SUB, fade(t, 2.2, 99))
+    F.text("But no sunlight ever gets there.", (W // 2, 1400), 38, TXT, fade(t, 3.6, 99), True)
+    F.text("Below ~1 km, it's pitch black.", (W // 2, 1450), 34, SUB, fade(t, 4.2, 99))
+
+
+def scene_slowest(F, t):
+    """No lens can stop light; ultracold atoms can."""
+    F.text("To slow light to everyday", (W // 2, 160), 50, TXT, 1, True)
+    F.text("speeds, a lens would need", (W // 2, 228), 50, TXT, 1, True)
+    F.text("a refractive index of:", (W // 2, 296), 50, TXT, 1, True)
+    rows = [("Speed of sound", "343 m/s", "874,000"), ("Highway speed", "100 km/h", "10.8 million"),
+            ("Walking speed", "5 km/h", "216 million")]
+    for i, (what, spd, idx) in enumerate(rows):
+        y = 430 + i * 120
+        a = fade(t, 0.5 + i * 0.5, 99)
+        F.text(what, (90, y), 36, TXT, a, False, "la")
+        F.text(spd, (90, y + 48), 26, SUB, a, False, "la")
+        F.text(idx, (W - 90, y + 6), 50, ACC, a, True, "ra")
+    F.text("The highest-index glasses lens: 1.74", (W // 2, 820), 36, SUB, fade(t, 2.3, 99))
+    F.text("Physicists did it anyway.", (W // 2, 960), 48, TXT, fade(t, 3.6, 99), True)
+    F.text("1999: light slowed to 17 m/s,", (W // 2, 1040), 40, TXT, fade(t, 4.3, 99))
+    F.text("bicycle speed", (W // 2, 1094), 40, ACC, fade(t, 4.3, 99), True)
+    F.text("in a cloud of sodium atoms near absolute zero.", (W // 2, 1150), 30, SUB, fade(t, 4.8, 99))
+    F.text("2001: light stopped completely,", (W // 2, 1250), 40, TXT, fade(t, 6.0, 99))
+    F.text("then released.", (W // 2, 1304), 40, ACC, fade(t, 6.0, 99), True)
+    # a photon crawling at bicycle pace
+    if t > 4.3:
+        x = 160 + 60 * (t - 4.3) if t < 6.0 else 160 + 60 * 1.7
+        F.photon(x, 1420, 0.9 * fade(t, 4.3, 99))
+        F.trail((max(120, x - 60), 1420), (x, 1420), 0.6, 3)
+        if t >= 6.0:
+            F.text("stopped", (x, 1460), 26, SUB, fade(t, 6.2, 99))
+
 
 
 def scene_end(F, t):
@@ -452,7 +485,8 @@ def scene_end(F, t):
     F.photon(W // 2, 1300, 0.8 * fade(t, 1.2, 99))
 
 
-FUNCS = {"hook": scene_hook, "race": scene_race, "car": scene_car, "lens": scene_lens, "stack": scene_stack, "end": scene_end}
+FUNCS = {"hook": scene_hook, "race": scene_race, "car": scene_car, "lens": scene_lens, "thick": scene_thick, "ocean": scene_ocean,
+         "slowest": scene_slowest, "end": scene_end}
 
 
 def frame_at(T):
