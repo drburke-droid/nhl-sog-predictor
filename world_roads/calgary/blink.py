@@ -3,6 +3,8 @@
     python blink.py            -> out/blink_vs_calgary.mp4 and out/blink_vs_calgary.gif
     python blink.py still 5    -> PNG at 5 s
 
+The face is the 3D model from the neurogaze gaze simulator (drburke-droid/neurogaze), captured
+headless at 41 lid closures with neurogaze_capture.mjs into data/eye_frames/.
 Timing: a blink ~300 ms (lid closes in ~100 ms, stays shut ~50 ms, reopens over ~150 ms).
 Light covers every Calgary street (with backtracking) in stats["seconds_at_c"] (~37 ms),
 so it laps the city ~8 times per blink. Shown once at real speed, then 30x slower.
@@ -166,18 +168,42 @@ def eye_panel(c, w=520, h=560):
     return cv2.resize(E, (w, h), interpolation=cv2.INTER_AREA)
 
 
+# ------------------------------------------------------------------ 3D face frames (neurogaze model)
+EYE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "eye_frames")
+_EYE = {}
+
+
+def face_frame(c):
+    """Blend the two captured lid positions around closure c (0 open .. 1 closed)."""
+    if not _EYE:
+        files = sorted(f for f in os.listdir(EYE_DIR) if f.endswith(".png"))
+        _EYE["f"] = [cv2.imread(os.path.join(EYE_DIR, f))[..., ::-1].astype(np.float32) / 255 for f in files]
+        h, w = _EYE["f"][0].shape[:2]
+        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+        edge = np.minimum(np.minimum(xx, w - 1 - xx), np.minimum(yy, h - 1 - yy))
+        _EYE["mask"] = (np.clip(edge / 36.0, 0, 1) ** 1.5)[..., None]           # soft rectangular feather
+    fr = _EYE["f"]
+    x = float(np.clip(c, 0, 1)) * (len(fr) - 1)
+    i0 = int(np.floor(x)); i1 = min(i0 + 1, len(fr) - 1); u = x - i0
+    return fr[i0] * (1 - u) + fr[i1] * u, _EYE["mask"]
+
+
 # ------------------------------------------------------------------ compose
 def compose(C, tau, mode, card=None):
     img = np.zeros((CH, CW, 3), np.float32) + BG
-    eye = eye_panel(lid(tau))
     ex = 40
-    img[PANEL_Y0:PANEL_Y0 + eye.shape[0], ex:ex + eye.shape[1]] += eye
     E, laps = calgary_panel(C, tau)
     mx = 620 + (540 - C["MW"]) // 2
     img[PANEL_Y0:PANEL_Y0 + C["MH"], mx:mx + C["MW"]] += E
     small = cv2.resize(img, (CW // 2, CH // 2), interpolation=cv2.INTER_AREA)
     bloom = cv2.resize(cv2.GaussianBlur(small, (0, 0), 3) * 0.5 + cv2.GaussianBlur(small, (0, 0), 10) * 0.4, (CW, CH))
     img = 1 - np.exp(-(img + bloom) * 1.1)
+    face, m = face_frame(lid(tau))
+    fh, fw = face.shape[:2]
+    fy = PANEL_Y0 + ((PANEL_Y1 - PANEL_Y0) - fh) // 2
+    fx = 30
+    reg = img[fy:fy + fh, fx:fx + fw]
+    img[fy:fy + fh, fx:fx + fw] = reg * (1 - m) + face * m
     im = Image.fromarray((np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8))
     d = ImageDraw.Draw(im, "RGBA")
     d.text((CW // 2, 28), "One blink vs. light driving every street in Calgary", font=font("Inter-SemiBold.otf", 38), fill=(236, 242, 250), anchor="ma")
