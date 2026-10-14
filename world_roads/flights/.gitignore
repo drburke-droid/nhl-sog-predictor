@@ -2,3 +2,4 @@ data/
 out/
 render.log
 __pycache__/
+*.log
