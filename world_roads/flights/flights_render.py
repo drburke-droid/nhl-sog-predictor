@@ -21,9 +21,10 @@ from proj import to_px, W, H  # noqa: E402
 DATA = os.path.join(HERE, "data")
 OUT = os.path.join(HERE, "out")
 FPS = 30
-DAY_S = 45.0                 # part 1 length
-CARD_S = 3.5                 # transition card
-END_S = 3.0
+DAY_S = 12.0                 # part 1 length
+CARD_S = 2.5                 # transition card
+END_S = 5.0                  # end card (room for the music to resolve)
+HOOK_S = 2.6                 # opening hook line over the day map
 C_KMS = 299_792.458
 NPTS = 48
 FD = "/usr/share/fonts/opentype/inter"
@@ -390,7 +391,14 @@ def render_range(args):
         kind, v = fr[i]
         if kind == "day":
             E, txt = R.frame_day(v)
-            img = R.finish(E, txt)
+            tv = v / 24.0 * DAY_S
+            if tv < HOOK_S:
+                a = 1.0 if tv < HOOK_S - 0.6 else (HOOK_S - tv) / 0.6
+                hook = [((W // 2, 450), "Every flight on Earth in one day", dict(font=R.f_card, fill=(236, 242, 250, int(255 * a)), anchor="ma")),
+                        ((W // 2, 528), "then one plane flies them all at the speed of light", dict(font=R.f_card2, fill=(255, 186, 80, int(255 * a)), anchor="ma"))]
+                img = R.finish(E, txt + hook, dim=0.4 * a)
+            else:
+                img = R.finish(E, txt)
             last_day = (E, txt)
         elif kind == "card":
             if last_day is None:
@@ -430,7 +438,7 @@ def video(workers):
         parts = pool.map(render_range, jobs)
     lst = os.path.join(OUT, "_parts.txt")
     open(lst, "w").write("".join(f"file '{os.path.basename(p)}'\n" for p in parts))
-    final = os.path.join(OUT, "every_flight_light_speed.mp4")
+    final = os.path.join(OUT, "every_flight_light_speed_v2.mp4")
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy",
                     "-movflags", "+faststart", final], check=True)
     for q in parts:

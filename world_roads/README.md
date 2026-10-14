@@ -136,3 +136,32 @@ python race.py              # -> out/city_race.mp4 (63 s) and out/city_race_boar
 
 * Laps run from 11.5 ms (Hong Kong) to 71.7 ms (Delhi).
 * All 48 together take 1.69 s.
+
+## Every flight on Earth (`flights/`)
+
+One modeled day of air traffic (108,996 flights, 24 hours in 12 s). Then one plane at the speed of
+light flies every one of those flights back to back, in real time: 190.8 million km in 10 min 36 s.
+
+```bash
+cd flights
+python schedule.py && python itinerary.py      # modeled schedule (OpenFlights routes) + light-speed itinerary
+python flights_render.py prepare
+python flights_render.py video --workers 4    # -> out/every_flight_light_speed_v2.mp4 (1920x1080, 10:56)
+python flights_short.py                       # -> out/every_flight_short.mp4 (1080x1920, 36.6 s)
+python score.py full && python score.py short # original music, timed to each cut
+python thumbnail.py                           # -> out/every_flight_thumbnail.png
+```
+
+**Music.** `score.py` synthesizes an original track from scratch, so there are no samples and no
+licences or copyright claims to worry about.
+
+* **Instruments:** D minor at 100 BPM, with detuned-saw pads, a pulsing bass, a plucked arpeggio
+  through a ping-pong delay, and light drums.
+* **Timing:** risers and impacts land on the picture's key moments (takeoff, halfway, "farther than
+  the Sun", landing).
+* **Lift and resolution:** after "farther than the Sun" the music rises a whole step, and it ends on
+  a major chord at landing.
+* **Loudness:** normalized to −14 LUFS for YouTube.
+
+The YouTube master in `media/flights/` has the music muxed in and is two-pass encoded to stay under
+GitHub's 100 MB file limit.

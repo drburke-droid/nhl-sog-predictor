@@ -1,4 +1,4 @@
-"""Vertical Short (1080x1920) of "Every flight on Earth": the day in 15 s, then the light-speed plane
+"""Vertical Short (1080x1920) of "Every flight on Earth": the day in 7 s, then the light-speed plane
 sped up so its 10 min 36 s fits in 24 s. Frames come from flights_render.FlightRenderer without its
 on-screen text; captions are re-set at Shorts size.
 
@@ -17,7 +17,7 @@ import flights_render as FR  # noqa: E402
 OUT = FR.OUT
 FPS = 30
 VW, VH = 1080, 1920
-DAY_S, CARD_S, LIGHT_S, END_S = 15.0, 2.4, 24.0, 3.6
+DAY_S, CARD_S, LIGHT_S, END_S = 7.0, 2.0, 24.0, 3.6
 CROP = (40, 40, 1840, 960)                       # x, y, w, h on the 1920x1080 map
 MW = VW
 MH = int(round(CROP[3] * VW / CROP[2]))
@@ -98,7 +98,7 @@ def render_range(args):
             def draw(d, hh=hh, mm=mm, in_air=in_air, today=today):
                 ctext(d, 150, "Every flight on Earth", F["title"], INK)
                 ctext(d, 236, "in one day", F["title"], INK)
-                ctext(d, 340, f"~{R.n_flights:,} flights · 24 hours in 15 seconds", F["sub"], INK2)
+                ctext(d, 340, f"~{R.n_flights:,} flights · 24 hours in {DAY_S:.0f} seconds", F["sub"], INK2)
                 ctext(d, MAP_Y + MH + 40, "TIME (UTC)", F["label"], MUTED)
                 ctext(d, MAP_Y + MH + 76, f"{hh:02d}:{mm:02d}", F["clock"], (250, 238, 212))
                 ctext(d, MAP_Y + MH + 260, f"{in_air:,} flights in the air right now", F["stat"], INK2)
