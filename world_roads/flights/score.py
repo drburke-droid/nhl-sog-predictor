@@ -330,11 +330,15 @@ def write(out, path):
 
 
 def full():
-    DAY, CARD, T2 = 12.0, 2.5, 636.585
+    L = np.load(os.path.join(os.path.dirname(OUT), "data", "flight_layers.npz"))
+    t1, flown = L["leg_t1"], np.cumsum(L["legs"][:, 0] >= 0)
+    DAY, CARD, T2 = 12.0, 2.5, float(t1[-1])
     TO = DAY + CARD                     # takeoff
     FIN = TO + T2                       # landing
     TOTAL = (int(DAY * 30) + int(CARD * 30) + int(np.ceil(T2 * 30)) + 1 + int(5.0 * 30)) / 30
-    HALF, SUN = TO + 364.93, TO + 499.01
+    HALF = TO + float(t1[np.searchsorted(flown, flown[-1] / 2)])     # half the flights flown
+    SUN = TO + 149.6e6 / 299_792.458                                  # distance flown = Earth-Sun
+    print(f"takeoff {TO:.2f}  half {HALF:.2f}  sun {SUN:.2f}  landing {FIN:.2f}  total {TOTAL:.2f}")
     energy = [(0, 0.78), (DAY - 0.3, 0.78), (DAY, 0.3), (TO, 0.7), (TO + 40, 0.7), (TO + 41, 0.78),
               (TO + 150, 0.78), (TO + 151, 0.4), (TO + 240, 0.4), (TO + 250, 0.86),
               (TO + 440, 0.86), (TO + 441, 0.45), (SUN - 0.2, 0.45), (SUN, 0.9), (TO + 600, 0.9), (FIN, 1.0),

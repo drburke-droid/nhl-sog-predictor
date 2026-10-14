@@ -113,8 +113,8 @@ def render_range(args):
             def draw(d, a=a):
                 ctext(d, 190, "Now: one plane", F["card"], GOLD, 255 * a)
                 ctext(d, 276, "at the speed of light", F["card"], GOLD, 255 * a)
-                ctext(d, MAP_Y + MH + 60, f"flying all {R.n_flights:,} flights,", F["card2"], INK, 255 * a)
-                ctext(d, MAP_Y + MH + 112, "one after another.", F["card2"], INK, 255 * a)
+                ctext(d, MAP_Y + MH + 60, "flying every route as many times", F["card2"], INK, 255 * a)
+                ctext(d, MAP_Y + MH + 112, "as it was flown today, then erasing it.", F["card2"], INK, 255 * a)
                 ctext(d, MAP_Y + MH + 210, "How long does it take?", F["card2"], INK2, 255 * a)
             out = compose(img, draw)
         else:
@@ -122,15 +122,16 @@ def render_range(args):
             E, _ = R.frame_light(t, decay)
             k = int(np.searchsorted(L["leg_t1"], t, "right"))
             flown = int(np.sum(L["legs"][:k, 0] >= 0))
+            left = R.n_routes - int(np.searchsorted(R.r_end_sorted, t, "right"))
             km = float(L["leg_t1"][k - 1] * FR.C_KMS) if k else 0.0
             a = min(1.0, v / 0.3) if kind == "end" else 0.0
             img = R.finish(E, [], dim=0.5 * a)
             mm, ss = int(min(t, R.T2) // 60), int(min(t, R.T2) % 60)
 
-            def draw(d, mm=mm, ss=ss, flown=flown, km=km, a=a, kind=kind):
+            def draw(d, mm=mm, ss=ss, flown=flown, km=km, a=a, kind=kind, left=left):
                 ctext(d, 150, "One plane at", F["title"], INK)
                 ctext(d, 236, "the speed of light", F["title"], INK)
-                ctext(d, 340, f"flying every one of today's {R.n_flights:,} flights", F["sub"], INK2)
+                ctext(d, 340, "flies every route, then erases it", F["sub"], INK2)
                 if kind == "light":
                     w = 300
                     d.rounded_rectangle([VW // 2 - w // 2, MAP_Y + MH + 26, VW // 2 + w // 2, MAP_Y + MH + 76], 25,
@@ -140,10 +141,10 @@ def render_range(args):
                     ctext(d, MAP_Y + MH + 40, "REAL TIME", F["label"], MUTED)
                 ctext(d, MAP_Y + MH + 86, f"{mm}:{ss:02d}", F["clock"], (250, 238, 212))
                 ctext(d, MAP_Y + MH + 270, f"{flown:,} of {R.n_flights:,} flights flown", F["stat"], INK2)
-                ctext(d, MAP_Y + MH + 318, f"{km / 1e6:,.1f} million km", F["stat"], INK2)
+                ctext(d, MAP_Y + MH + 318, f"{left:,} of {R.n_routes:,} routes left", F["stat"], INK2)
                 if kind == "end":
                     d.rounded_rectangle([70, MAP_Y + 120, VW - 70, MAP_Y + MH - 120], 26, fill=(6, 10, 18, int(215 * a)))
-                    ctext(d, MAP_Y + 170, "10 minutes 36 seconds.", font("Inter-Bold.otf", 70), GOLD, 255 * a)
+                    ctext(d, MAP_Y + 170, f"{int(R.T2 // 60)} minutes {int(R.T2 % 60)} seconds.", font("Inter-Bold.otf", 70), GOLD, 255 * a)
                     ctext(d, MAP_Y + 268, "Every flight of the day,", F["card2"], INK, 255 * a)
                     ctext(d, MAP_Y + 318, f"{R.total_km / 1e6:.0f} million km, at light speed.", F["card2"], INK, 255 * a)
             out = compose(img, draw)

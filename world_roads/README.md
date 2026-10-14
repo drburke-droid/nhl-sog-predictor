@@ -139,14 +139,21 @@ python race.py              # -> out/city_race.mp4 (63 s) and out/city_race_boar
 
 ## Every flight on Earth (`flights/`)
 
-One modeled day of air traffic (108,996 flights, 24 hours in 12 s). Then one plane at the speed of
-light flies every one of those flights back to back, in real time: 190.8 million km in 10 min 36 s.
+The video has two parts.
+
+* **One modeled day of air traffic** (108,996 flights, 24 hours in 12 s). The map starts empty, and
+  each route is drawn when a flight on it lands, so the world's route network inks itself in.
+* **One plane at the speed of light flies every flight, in real time.** It goes **route by route**:
+  it shuttles each of the 17,343 routes as many times as the route was flown that day, then the
+  route is erased from the map. The map empties region by region, with a "routes left" countdown
+  and a "Now flying" caption for the bigger routes. That's 192.5 million km in 10 min 42 s,
+  including 4,959 empty repositioning legs, which add about 2% to the distance.
 
 ```bash
 cd flights
-python schedule.py && python itinerary.py      # modeled schedule (OpenFlights routes) + light-speed itinerary
+python schedule.py && python itinerary.py      # modeled schedule (OpenFlights routes) + route-by-route itinerary
 python flights_render.py prepare
-python flights_render.py video --workers 4    # -> out/every_flight_light_speed_v2.mp4 (1920x1080, 10:56)
+python flights_render.py video --workers 4    # -> out/every_flight_light_speed_v2.mp4 (1920x1080, 11:02)
 python flights_short.py                       # -> out/every_flight_short.mp4 (1080x1920, 36.6 s)
 python score.py full && python score.py short # original music, timed to each cut
 python thumbnail.py                           # -> out/every_flight_thumbnail.png

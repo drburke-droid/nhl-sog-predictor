@@ -23,6 +23,7 @@ OUT = os.path.join(HERE, "out")
 FPS = 30
 DAY_S = 12.0                 # part 1 length
 CARD_S = 2.5                 # transition card
+LABEL_MIN_S = 0.1            # routes on screen at least this long get a "now flying" caption
 END_S = 5.0                  # end card (room for the music to resolve)
 HOOK_S = 2.6                 # opening hook line over the day map
 C_KMS = 299_792.458
@@ -100,8 +101,20 @@ def prepare():
     leg_path = np.where(legs[:, 0] >= 0, leg_pair, -1)
     dead_slot = np.full(len(legs), -1); dead_slot[dead] = np.arange(len(dead))
     leg_rev = (legs[:, 1] != pa[np.maximum(leg_pair, 0)]) & (legs[:, 0] >= 0)
+    # route timing (labels, routes-left counter): first and last moment the plane is on each route
+    leg_route = I["leg_route"]
+    r_t0 = np.full(len(pairs), np.inf); r_t1 = np.zeros(len(pairs))
+    on = leg_route >= 0
+    np.minimum.at(r_t0, leg_route[on], leg_t0[on]); np.maximum.at(r_t1, leg_route[on], leg_t1[on])
+    import csv
+    city = {}
+    for r in csv.reader(open(os.path.join(DATA, "airports.dat"), encoding="utf-8")):
+        if len(r) > 4 and r[4] not in ("\\N", ""):
+            city.setdefault(r[4], r[2])
+    acity = np.array([city.get(c, c) for c in S["iata"]])
     bg = np.load(os.path.join(os.path.dirname(HERE), "data", "layers.npz"))["bg"]
     np.savez(os.path.join(DATA, "flight_layers.npz"), P=P, brk=brk, pid=pid, pa=pa, pb=pb,
+             leg_route=leg_route, r_t0=r_t0, r_t1=r_t1, acity=acity, aiata=S["iata"],
              pix_idx=pix_idx, pix_w=pix_w, pstarts=starts, total=total, fpp=flights_per_pair,
              ax=ax.astype(np.float32), ay=ay.astype(np.float32), src=src, dst=dst, dep=S["dep"], dur=S["dur"], km=S["km"],
              legs=legs, leg_km=leg_km, leg_t0=leg_t0, leg_t1=leg_t1, leg_pair=leg_pair, leg_rev=leg_rev,
@@ -127,8 +140,19 @@ class FlightRenderer:
         # part-2 static network brightness
         tot = L["total"]
         self.Inet = (1 - np.exp(-tot / 9.0)).astype(np.float32)
-        self.acc = np.zeros(W * H, np.float32)
+        self.rem = L["total"].astype(np.float32).copy()          # part 2: route weight still to fly, per pixel
         self.flash = np.zeros(W * H, np.float32)
+        self.pair_of_px = np.repeat(np.arange(len(L["pstarts"]) - 1), np.diff(L["pstarts"])).astype(np.int32)
+        self.n_routes = len(L["pa"])
+        land = (L["dep"] + L["dur"]) % 24.0                       # every flight lands once in the (periodic) day
+        o = np.argsort(land)
+        self.l_sorted, self.l_pid = land[o], L["pid"][o]
+        self.r_end_sorted = np.sort(L["r_t1"])
+        rdur = L["r_t1"] - L["r_t0"]
+        big = np.nonzero(rdur >= LABEL_MIN_S)[0]
+        self.lab_routes = big[np.argsort(L["r_t0"][big])]
+        self.lab_t0 = L["r_t0"][self.lab_routes]
+        self.n_dead = int(st["reposition_legs"]); self.dead_pct = 100 * float(st["overhead"])
         self.k_done = 0
         self.dot = (sprite(1.6, 121)[..., None] * np.array([1, .97, .9]) * 2.6 + sprite(4.5, 121)[..., None] *
                     np.array([1, .72, .3]) * 1.25 + sprite(18, 121)[..., None] * np.array([1, .52, .12]) * 0.45).astype(np.float32)
@@ -140,6 +164,8 @@ class FlightRenderer:
         self.f_cap = font("Inter-Regular.otf", 14)
         self.f_card = font("Inter-SemiBold.otf", 54)
         self.f_card2 = font("Inter-Regular.otf", 28)
+        self.f_route = font("Inter-SemiBold.otf", 30)
+        self.f_route2 = font("Inter-Regular.otf", 21)
         self.ab = np.bincount(L["src"], minlength=len(L["ax"])).astype(np.float32)   # departures per airport per day
         dep2 = np.r_[L["dep"] - 24.0, L["dep"]]
         self.d_order = np.argsort(dep2)
@@ -163,6 +189,9 @@ class FlightRenderer:
     def text(self, img, items):
         im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
         for it in items:
+            if it[0] == "box":
+                d.rounded_rectangle(it[1], radius=it[2], fill=it[3])
+                continue
             d.text(*it[:2], **it[2])
         a = np.asarray(im).astype(np.float32) / 255
         ys, xs = np.nonzero(a[..., 3] > 0)
@@ -201,20 +230,18 @@ class FlightRenderer:
         u = (h - self.d_sorted[act]) / self.d_dur[act]
         pair = L["pid"][fid]
         rev = L["src"][fid] != L["pa"][pair]
-        # faint full arcs of everything in the air
-        arcs = np.zeros((H, W), np.uint8)
-        polys = []
-        brk = L["brk"]
-        P = L["P"]
-        for pr in np.unique(pair):
-            pts = np.round(P[pr] * 4).astype(np.int32)
-            if brk[pr].any():
-                cuts = np.r_[0, np.nonzero(brk[pr])[0] + 1, NPTS]
-                polys += [pts[c0:c1] for c0, c1 in zip(cuts[:-1], cuts[1:]) if c1 - c0 > 1]
-            else:
-                polys.append(pts)
-        cv2.polylines(arcs, polys, False, 255, 1, cv2.LINE_AA, shift=2)
-        E += arcs.astype(np.float32)[..., None] / 255 * (CYAN * 0.10)
+        # the route network, drawn as flights land (brightness = flights landed so far on the route);
+        # routes that just got a landing glow
+        k = int(np.searchsorted(self.l_sorted, h, "right"))
+        cnt = np.bincount(self.l_pid[:k], minlength=self.n_routes).astype(np.float32)
+        net = np.bincount(L["pix_idx"], weights=L["pix_w"] * cnt[self.pair_of_px], minlength=W * H)
+        k0 = int(np.searchsorted(self.l_sorted, h - 0.5))
+        age = (h - self.l_sorted[k0:k]) / 0.5
+        rc = np.bincount(self.l_pid[k0:k], weights=(1 - age) ** 2, minlength=self.n_routes).astype(np.float32)
+        fl = np.bincount(L["pix_idx"], weights=L["pix_w"] * rc[self.pair_of_px], minlength=W * H)
+        Inet = (1 - np.exp(-net / 9.0)).astype(np.float32).reshape(H, W)
+        E += Inet[..., None] * (CYAN * 0.45) + np.minimum(fl, 2.0).astype(np.float32).reshape(H, W)[..., None] * (HOT * 0.35)
+        self.routes_drawn = int((cnt > 0).sum())
         # comets: last ~35 min of each flight's path, brightening to the head
         tail = np.clip(0.6 / self.d_dur[act], 0, 1)
         k = 7
@@ -257,15 +284,15 @@ class FlightRenderer:
                ((W - 60, 912), f"{hh:02d}:{mm:02d}", dict(font=self.f_clock, fill=(246, 236, 214, 255), anchor="ra")),
                ((W - 60, 996), f"{in_air:,} flights in the air · {int(today.sum()):,} departed today", dict(font=self.f_dist, fill=(160, 178, 200, 255), anchor="ra")),
                ((W - 60, 1022), f"{flown_km / 1e6:.1f} million km flown today", dict(font=self.f_dist, fill=(160, 178, 200, 255), anchor="ra"))]
-        txt += self.captions(["Modeled schedule: real airports and airline routes (OpenFlights), frequencies and times estimated to total ~109,000 flights/day.",
-                              "Flight paths drawn as great circles. All figures are estimates."])
+        txt += self.captions(["Each route is drawn when a flight on it lands; brighter = more flights. Modeled schedule: real airports and airline routes",
+                              "(OpenFlights), frequencies and times estimated to total ~109,000 flights/day. Great-circle paths. All figures are estimates."])
         return E, txt
 
     # ------------------------------------------------------------- part 2: light-speed plane
     def reset_to(self, t):
         L = self.L
         k = int(np.searchsorted(L["leg_t1"], t, "right"))
-        self.acc[:] = 0
+        self.rem[:] = L["total"]
         self.flash[:] = 0
         self._add_legs(0, k, flash=False)
         self.k_done = k
@@ -279,12 +306,11 @@ class FlightRenderer:
         st = L["pstarts"]
         if len(pairs) > 2000:      # bulk path (chunk start)
             cnt = np.bincount(pairs, minlength=len(st) - 1).astype(np.float32)
-            reps = np.repeat(cnt, np.diff(st))
-            self.acc += np.bincount(L["pix_idx"], weights=L["pix_w"] * reps, minlength=W * H).astype(np.float32)
+            self.rem -= np.bincount(L["pix_idx"], weights=L["pix_w"] * cnt[self.pair_of_px], minlength=W * H).astype(np.float32)
             return
         idx = np.concatenate([L["pix_idx"][st[p]:st[p + 1]] for p in pairs])
         w = np.concatenate([L["pix_w"][st[p]:st[p + 1]] for p in pairs])
-        np.add.at(self.acc, idx, w)
+        np.subtract.at(self.rem, idx, w)
         if flash:
             np.add.at(self.flash, idx, w)
 
@@ -295,11 +321,9 @@ class FlightRenderer:
         if k > self.k_done:
             self._add_legs(self.k_done, k)
             self.k_done = k
-        frac = np.minimum(self.acc / np.maximum(L["total"], 1e-6), 1.0)
-        I = self.Inet
-        Ig = (I * frac).reshape(H, W); Ic = (I * (1 - frac)).reshape(H, W)
+        Ir = (1 - np.exp(-np.maximum(self.rem, 0) / 9.0)).astype(np.float32).reshape(H, W)
         Fl = np.minimum(self.flash, 2.5).reshape(H, W) * 0.9
-        E = cv2.merge([cv2.scaleAdd(Fl, float(HOT[c]), cv2.addWeighted(Ic, float(CYAN[c] * 0.45), Ig, float(GOLD[c] * 0.85), 0)) for c in range(3)])
+        E = cv2.merge([cv2.scaleAdd(Fl, float(HOT[c] * 0.55 + GOLD[c] * 0.7), Ir * float(CYAN[c] * 0.45)) for c in range(3)])
         # plane position and trail (the last ~0.06 s of legs)
         i = min(int(np.searchsorted(L["leg_t1"], t, "left")), len(L["leg_t1"]) - 1)
         x, y, _ = self._leg_point(i, np.clip((t - L["leg_t0"][i]) / max(L["leg_t1"][i] - L["leg_t0"][i], 1e-9), 0, 1))
@@ -329,15 +353,41 @@ class FlightRenderer:
         km = float(L["leg_t1"][k - 1] * C_KMS) if k else 0.0
         tt = min(t, self.T2)
         mm, ss = int(tt // 60), int(tt % 60)
+        left = self.n_routes - int(np.searchsorted(self.r_end_sorted, t, "right"))
         txt = [((58, 40), "One plane at the speed of light", dict(font=self.f_title, fill=(236, 242, 250, 255))),
-               ((60, 100), f"flying every one of today's {self.n_flights:,} flights, back to back", dict(font=self.f_sub, fill=(150, 176, 205, 255))),
+               ((60, 100), "flies every route as many times as it was flown today, then erases it", dict(font=self.f_sub, fill=(150, 176, 205, 255))),
                ((W - 60, 896), "ELAPSED (REAL TIME)", dict(font=self.f_small, fill=(130, 150, 175, 255), anchor="ra")),
                ((W - 60, 912), f"{mm}:{ss:02d}", dict(font=self.f_clock, fill=(246, 236, 214, 255), anchor="ra")),
-               ((W - 60, 996), f"{flown:,} of {self.n_flights:,} flights flown", dict(font=self.f_dist, fill=(160, 178, 200, 255), anchor="ra")),
-               ((W - 60, 1022), f"{km / 1e6:.1f} million km at 299,792 km/s", dict(font=self.f_dist, fill=(160, 178, 200, 255), anchor="ra"))]
-        txt += self.captions(["Each flight departs from the airport where the last one landed. 3,150 empty repositioning legs add ~1% distance.",
+               ((W - 60, 996), f"{left:,} of {self.n_routes:,} routes left", dict(font=self.f_dist, fill=(160, 178, 200, 255), anchor="ra")),
+               ((W - 60, 1022), f"{flown:,} of {self.n_flights:,} flights flown \u00b7 {km / 1e6:.1f} million km", dict(font=self.f_dist, fill=(160, 178, 200, 255), anchor="ra"))]
+        txt += self.route_label(t)
+        txt += self.captions([f"Each flight departs from the airport where the last one landed. {self.n_dead:,} empty repositioning legs add ~{self.dead_pct:.0f}% distance.",
                               "Modeled schedule from OpenFlights routes. Thought experiment: all figures are estimates."])
         return E, txt
+
+    def route_label(self, t):
+        """'Now flying' caption for the bigger routes (on screen long enough to read)."""
+        L = self.L
+        j = int(np.searchsorted(self.lab_t0, t, "right")) - 1
+        if j < 0:
+            return []
+        p = self.lab_routes[j]
+        t0, t1 = float(L["r_t0"][p]), float(L["r_t1"][p])
+        hold = 2.5                                             # stays up until the next captioned route starts
+        if t > t1 + hold:
+            return []
+        a = 1.0 if t <= t1 + hold - 0.5 else (t1 + hold - t) / 0.5
+        n = int(L["fpp"][p])
+        k = min(n, max(1, int(np.ceil(n * (t - t0) / max(t1 - t0, 1e-9)))))
+        A, B = int(L["pa"][p]), int(L["pb"][p])
+        name = f"{L['acity'][A]} {L['aiata'][A]}  \u2194  {L['acity'][B]} {L['aiata'][B]}"
+        sub = f"flight {k} of {n} on this route today" if t <= t1 else f"all {n} flights done \u00b7 route erased"
+        w = max(self.f_route.getlength(name), self.f_route2.getlength(sub)) + 56
+        x0, y0 = W // 2 - w / 2, 868
+        return [("box", (x0, y0, x0 + w, y0 + 88), 14, (4, 8, 16, int(170 * a))),
+                ((W // 2, y0 + 12), "NOW FLYING", dict(font=self.f_small, fill=(255, 186, 80, int(230 * a)), anchor="ma")),
+                ((W // 2, y0 + 30), name, dict(font=self.f_route, fill=(236, 242, 250, int(255 * a)), anchor="ma")),
+                ((W // 2, y0 + 64), sub, dict(font=self.f_route2, fill=(150, 176, 205, int(255 * a)), anchor="ma"))]
 
     def _leg_point(self, j, u):
         L = self.L
@@ -406,7 +456,7 @@ def render_range(args):
             E, txt = last_day
             a = min(1.0, v / 0.25)
             card = [((W // 2, 470), "Now: one plane at the speed of light", dict(font=R.f_card, fill=(255, 186, 80, int(255 * a)), anchor="ma")),
-                    ((W // 2, 548), f"flying every one of those {R.n_flights:,} flights, back to back", dict(font=R.f_card2, fill=(236, 242, 250, int(255 * a)), anchor="ma")),
+                    ((W // 2, 548), "flying every route as many times as it was flown today, then erasing it", dict(font=R.f_card2, fill=(236, 242, 250, int(255 * a)), anchor="ma")),
                     ((W // 2, 596), "How long does it take?", dict(font=R.f_card2, fill=(150, 176, 205, int(255 * a)), anchor="ma"))]
             img = R.finish(E, txt[:0] + card, dim=0.6 * a)
         elif kind == "light":
@@ -417,7 +467,7 @@ def render_range(args):
             a = min(1.0, v / 0.3)
             mm, ss = int(R.T2 // 60), int(R.T2 % 60)
             txt = txt + [((W // 2, 470), f"{mm} minutes {ss} seconds.", dict(font=R.f_card, fill=(255, 186, 80, int(255 * a)), anchor="ma")),
-                         ((W // 2, 548), f"Every flight of the day, {R.total_km / 1e6:.0f} million km, at light speed.", dict(font=R.f_card2, fill=(236, 242, 250, int(255 * a)), anchor="ma"))]
+                         ((W // 2, 548), f"Every flight of the day, {R.total_km / 1e6:.0f} million km. Every route erased.", dict(font=R.f_card2, fill=(236, 242, 250, int(255 * a)), anchor="ma"))]
             img = R.finish(E, txt, dim=0.45 * a)
         p.stdin.write(img.tobytes())
         if (i - f0) % 600 == 0:

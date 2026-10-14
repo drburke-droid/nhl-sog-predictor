@@ -1,9 +1,10 @@
 {
  "flights": 108996,
+ "routes": 17343,
  "flight_km": 189026374.22677022,
- "reposition_legs": 3150,
- "reposition_km": 1817031.2480277978,
- "total_km": 190843405.47479802,
- "overhead": 0.009612580548405117,
- "seconds_at_c": 636.5850787173506
+ "reposition_legs": 4959,
+ "reposition_km": 3452322.93459004,
+ "total_km": 192478697.16136026,
+ "overhead": 0.018263710282293063,
+ "seconds_at_c": 642.0398246354825
 }
