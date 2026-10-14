@@ -112,3 +112,85 @@ segments) are routed like any other road. Ferry routes themselves are not roads 
 The map uses the Natural Earth projection (Šavrič et al.) with central meridian 10°E, so the cut at
 170°W falls in the Bering Strait and mid-Pacific. Land polygons come from Natural Earth 1:10m. There
 are no country borders, and the camera is static.
+
+## 8. "The lost photon" (`turns/lost_photon.py`, `turns/lost_photon_render.py`)
+
+**Network.** The walk uses the world film's major-road graph: motorway to tertiary, generalized to a
+~4 km vertex grid. It takes only the connected piece that contains Los Angeles, which runs from
+Alaska and Canada to Panama; the Darién Gap ends it. That piece is 2.18 M km of road, with 349,197
+nodes and 467,769 road pieces. "Intersection" means a node of this graph where 3+ pieces meet.
+Residential streets are not included.
+
+**Rule.** At each intersection the photon picks uniformly among the exits other than the one it
+arrived on. It never U-turns, except at a dead end. Bends are followed, and one-way rules are ignored.
+
+**Arrival.** The walk ends once the photon is within 15 km of New York City Hall.
+
+**Simulation.** 2,000 walks were run with seeds 0–1999, and all 2,000 arrived.
+
+| | Light time |
+|---|---:|
+| Median | 14.68 s |
+| Mean | 19.8 s |
+| 10th–90th percentile | 4.2–42.4 s |
+| Fastest | 0.88 s |
+| Slowest | 117.4 s |
+
+**The walk shown.** The video shows seed 974, the walk closest to the median. It covers 4,401,992 km
+over 940,972 road pieces, which takes light 14.683 s.
+
+| Comparison | Distance | Light time |
+|---|---:|---:|
+| Shortest road route on the same graph (Dijkstra) | 4,929 km | 16.4 ms |
+| Straight line | 3,936 km | 13.1 ms |
+
+**Derived numbers.**
+
+* 893× longer = 14.683 s ÷ 16.4 ms.
+* Around the Earth uses the equator, 40,075 km.
+* At 100 km/h nonstop, a car would take 5.0 years.
+
+**"Drove through X".** This counts each entry into a 25 km circle around the city centre.
+
+**Time on screen.**
+
+* The walk plays in real time: 1 s of video is 1 s at c.
+* The opening animation of the shortest route is *not* real time; it is drawn over 0.9 s.
+
+**Caveat.** This is a simulation on a simplified network of highways and main roads. Every extra
+side street gives a random walker more places to wander, so on the full street network the trip
+would very likely take longer. That case was not computed.
+
+## 9. "Every street in 48 cities" (`cities/`)
+
+**Area.** Each city is every public street within 15 km of a conventional downtown landmark. The
+coordinates are in `cities/cities.py`. A fixed circle makes cities comparable at the same scale,
+where city limits vary enormously (Paris is 105 km², Calgary 825 km²). Water inside the circle
+simply has no streets.
+
+**Which streets.** The same as the Calgary film: motorway through living street, plus `unknown`.
+Service roads, alleys, parking aisles, driveways, tracks and paths are excluded.
+
+**The lap.** A lap is a coverage walk, built with the same method as the Calgary film: a greedy
+T-join plus an Euler path in rings spreading out from downtown. It drives every street at least
+once, and repeats are counted; backtracking adds 22–82%, with a median around 45%. Jumps between
+disconnected pieces are instant and add no distance. These are streets cut by the circle, islands,
+and mapping gaps.
+
+**Lap times.** They run from 11.5 ms (Hong Kong) to 71.7 ms (Delhi), and total 1.692 s for all 48.
+`cities/data/race_stats.json` has every city, and `media/cities/race_stats.json` is a copy.
+
+**On screen.** Every lap is slowed by the same factor, 30×, so on-screen durations compare
+honestly. The 0.1 s pause between cities is not counted in any clock.
+
+**Data completeness.** OpenStreetMap coverage varies by city. A few cities have unusually low
+residential shares: Hong Kong 14%, Moscow 18%, Shanghai 25%, Beijing 26%, against 50–70% in most
+cities. There, local streets are often tagged as service roads or not mapped at all. Their lap times
+are likely **underestimates**.
+
+**Calgary here vs. the Calgary film.** Here Calgary takes 30.8 ms; in the Calgary film it takes 37.1
+ms. The area differs: a 15 km circle here, the city limits there.
+
+**Bug fixed during this work.** The vertex key used for snapping did not handle southern latitudes.
+It was fixed before rendering. It never affected the Calgary or Los Angeles work, which are both in
+the northern hemisphere.

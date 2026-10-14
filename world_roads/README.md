@@ -105,3 +105,34 @@ is in eastern North America at 0:40, Tierra del Fuego at 1:20, European Russia a
 | Routed graph after generalization | 12.0 M km, 2.56 M edges, 1,100 components |
 | Coverage walk (incl. repeats) | 16.65 M km (+38.7%), 1,415 hypothetical jumps |
 | On-screen distance scale | t × c, reaching 83.94 M km at 4:40 (estimate from the brief) |
+
+## Spin-off Shorts: the lost photon, and 48 cities
+
+Both are vertical 1080×1920 / 30 fps Shorts. They're committed in `media/lost_photon/` and
+`media/cities/`. Their accuracy notes are sections 8 and 9 of [ACCURACY.md](ACCURACY.md).
+
+**The lost photon** (`turns/`). Light leaves Los Angeles and flips a coin at every intersection. How
+long until it reaches New York?
+
+```bash
+cd turns
+python lost_photon.py sim 2000     # 2,000 random walks -> data/lost_photon_sim.json (~2 min)
+python lost_photon_render.py       # the median walk, in real time -> out/lost_photon.mp4
+```
+
+* The shortest drive takes light 16 ms.
+* The median coin-flip photon takes **14.7 s** (893× longer) and drives 4.4 million km.
+* Across 2,000 photons, the luckiest took 0.9 s and the unluckiest 1 min 57 s.
+
+**48 cities** (`cities/`). Every street within 15 km of downtown in 48 cities, run one after
+another at the speed of light.
+
+```bash
+cd cities
+python fetch_cities.py      # Overture segments around each centre (~10 s per city)
+python build_cities.py      # street graph + coverage walk per city (same method as Calgary)
+python race.py              # -> out/city_race.mp4 (63 s) and out/city_race_board.png
+```
+
+* Laps run from 11.5 ms (Hong Kong) to 71.7 ms (Delhi).
+* All 48 together take 1.69 s.

@@ -1,0 +1,40 @@
+{
+ "seed": 974,
+ "walk_s": 14.683466399069617,
+ "walk_km": 4401992.483737489,
+ "steps": 940972,
+ "shortest_km": 4928.514107931241,
+ "shortest_ms": 16.439753490834118,
+ "times_slower": 893.1682830436778,
+ "around_earth": 109.8438548655643,
+ "car_years": 5.021666077729282,
+ "passes": {
+  "Calgary": 155,
+  "Chicago": 0,
+  "Miami": 0,
+  "Mexico City": 9,
+  "Seattle": 456,
+  "Toronto": 39,
+  "Las Vegas": 19,
+  "Denver": 58,
+  "Dallas": 32,
+  "Anchorage": 0,
+  "Los Angeles": 138,
+  "Boston": 0,
+  "Washington": 45,
+  "Montreal": 20,
+  "Vancouver": 128
+ },
+ "sim": {
+  "n": 2000,
+  "arrived": 2000,
+  "mean_s": 19.75832537206876,
+  "median_s": 14.684091221187167,
+  "p10_s": 4.181510163818301,
+  "p90_s": 42.36987738017615,
+  "min_s": 0.88199022693212,
+  "max_s": 117.43854282325637,
+  "network_km": 2183983.2226309944,
+  "direct_light_ms": 13.1277469530785
+ }
+}
