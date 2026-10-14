@@ -1,0 +1,104 @@
+{
+ "tag": "socal",
+ "classes": [
+  "motorway",
+  "trunk",
+  "primary",
+  "secondary",
+  "tertiary",
+  "unclassified",
+  "residential",
+  "living_street",
+  "service"
+ ],
+ "intersections": 2925607,
+ "roads": 3885361,
+ "la_component_size": 2910030,
+ "reachable_intersections": 142607,
+ "reachable_share": 0.04874441440699315,
+ "escaped_box": false,
+ "box": [
+  -122.0,
+  30.8,
+  -113.0,
+  36.8
+ ],
+ "reach_bbox": [
+  -118.88176,
+  33.70553,
+  -118.23956,
+  34.19694
+ ],
+ "closest_to_nyc": [
+  -118.256625,
+  34.0882,
+  3935.2068612064936
+ ],
+ "farthest_from_la_km": 58.89439809821268,
+ "gps_km_la_to_nyc": 4781.774291762889,
+ "walks": [
+  {
+   "seed": 0,
+   "escaped": false,
+   "km": 10024482.740612105,
+   "end": [
+    -118.270075,
+    34.04192
+   ],
+   "most_visited": [
+    [
+     -118.27,
+     34.042
+    ],
+    [
+     -118.27,
+     34.042
+    ],
+    [
+     -118.27,
+     34.042
+    ],
+    [
+     -118.27,
+     34.042
+    ],
+    [
+     -118.242,
+     34.052
+    ]
+   ]
+  },
+  {
+   "seed": 1,
+   "escaped": false,
+   "km": 10292396.224270672,
+   "end": [
+    -118.24259,
+    34.04615
+   ],
+   "most_visited": [
+    [
+     -118.242,
+     34.046
+    ],
+    [
+     -118.242,
+     34.046
+    ],
+    [
+     -118.243,
+     34.046
+    ],
+    [
+     -118.24,
+     34.048
+    ],
+    [
+     -118.242,
+     34.049
+    ]
+   ]
+  }
+ ],
+ "uturn_allowed": false
+}
