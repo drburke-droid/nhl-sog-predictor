@@ -172,3 +172,34 @@ licences or copyright claims to worry about.
 
 The YouTube master in `media/flights/` has the music muxed in and is two-pass encoded to stay under
 GitHub's 100 MB file limit.
+
+## Signal fires around the world (`signal/`)
+
+How many mountaintop signal fires would it take to send a message around the Earth? The chain starts
+in Plymouth, where beacon fires spread the news of the Spanish Armada in 1588, and goes east. It
+crosses Europe and Asia, the Bering Strait, Alaska, arctic Canada and Greenland. There it stops: no
+summit on either side of the North Atlantic can see the other. Fire ships close the loop through
+Iceland and the Faroes and back to Plymouth.
+
+```bash
+cd signal
+python fetch_dem2.py      # Terrarium z10 north of 56N, z9 south: despiked, max-filtered sightline grid + summits
+python globe_texture.py   # night-globe texture for the animation
+./iterate.sh              # fewest-fires search -> fire-ship crossing -> zoom-10 verification, repeated until clean
+python render_fires.py    # -> out/signal_fires.mp4 (vertical Short, with music)
+```
+
+| | |
+|---|---:|
+| Mountain fires, Plymouth to East Greenland | **135** |
+| Fire ships to close the loop | **14** (2 + 7 + 5) |
+| Fires on Iceland, the Faroes and back down Britain | 14 more |
+| Relays around the world | **163** (149 fires + 14 ships), 26,075 km |
+| At 5 minutes per relay | ≈ 13.6 hours |
+| Longest sightline in the chain | 433 km, Mount Foraker → Mount Blackburn (Alaska) |
+| Highest fire | Muztagh Ata, China, about 7,480 m in the data |
+| Bering Strait | Russia → Alaska in one 189 km jump |
+| Greenland → Iceland | 350 km apart; their two horizons only reach 317 km |
+
+Physics follows the VSL Sightline tool (`drburke-droid/VSL`, `sightline/`): Terrarium elevation, Earth
+radius 6,371 km, normal refraction (k = 0.13). Details and limitations are in ACCURACY.md section 10.

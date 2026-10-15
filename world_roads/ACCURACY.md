@@ -194,3 +194,46 @@ ms. The area differs: a 15 km circle here, the city limits there.
 **Bug fixed during this work.** The vertex key used for snapping did not handle southern latitudes.
 It was fixed before rendering. It never affected the Calgary or Los Angeles work, which are both in
 the northern hemisphere.
+
+## 10. "How many signal fires to circle the Earth?" (`signal/`)
+
+**Elevation data.** The terrain comes from Terrarium tiles on AWS, the same source as the VSL Sightline
+tool. North of 56°N the search uses zoom 10, because at lower zooms Greenland, arctic Canada and
+Siberia come from a coarse source that flattens whole ranges; south of 56°N it uses zoom 9.
+
+**Despiking.** Faults are cleaned before use, extending the Sightline tool's rule:
+* spikes, plus row and column streaks;
+* spike-and-pit pairs (pits are repaired too, because these faults come in pairs);
+* anything more than 1,500 m off its 5×5 median;
+* no-data pixels (32,767 m).
+
+**Physics.** Earth radius 6,371 km and refraction k = 0.13 (an effective radius of R/0.87), as in the
+Sightline tool. Each fire burns on a 10 m pyre on a summit. Two fires can see each other when the
+straight sight line clears the terrain everywhere between them; the sea counts as sea level.
+
+**Candidate sites.** The candidates are the highest summit in every ~12 km cell, 1.04 million in all.
+The chain therefore gives an upper bound: a finer search could save a few fires.
+
+**The search.** A breadth-first search from Plymouth finds the fewest fires to reach every summit. It
+is deliberately conservative:
+* terrain is max-filtered at ~500 m;
+* sightlines need 25 m of clearance, ramping in from 1 km of each fire.
+
+**Verification.** Every summit and every sightline of the final loop, ships included, is re-checked
+against zoom-10 terrain sampled every 150 m with no margin. The fire goes on the true zoom-10 summit
+within 600 m. The search and verification were repeated until everything passed: 0 bad summits and
+0 blocked sightlines out of 163.
+
+**Fire ships.** A ship carries its fire 30 m up the mast, so it can be seen 21 km away. A search over
+island stepping stones (Iceland, the Faroes, Jan Mayen, Svalbard and Bear Island) minimizes the total
+number of fires plus ships. Ships only sit on open water, and each one must be visible from its
+shore fire.
+
+**The North Atlantic gap.** The last land fire is on a 3,368 m summit in East Greenland. The nearest
+Icelandic summit that could answer it is 350 km away, but the two horizons together reach only
+317 km. Iceland to the Faroes and the Faroes to Britain are far wider.
+
+**Assumptions.**
+* The air is perfectly clear. Real beacon chains, such as England's in 1588, spaced fires roughly
+  10–30 km apart.
+* Five minutes per relay is an assumption, for the time to spot a fire and light the next.
