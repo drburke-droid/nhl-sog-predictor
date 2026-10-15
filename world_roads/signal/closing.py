@@ -76,14 +76,54 @@ def main():
         return los_cache[k]
 
     sea_cache = {}
+    bp = os.path.join(DATA, "banned_ships.json")
+    banned_ships = set()
+    if os.path.exists(bp):                                          # ship crossings rejected by verify.py
+        from scipy.spatial import cKDTree
+        tn = cKDTree(np.c_[lat[nodes], lon[nodes]])
+        for a_, b_ in json.load(open(bp)):
+            da, ia = tn.query(a_); db, ib = tn.query(b_)
+            if da < 2e-4 and db < 2e-4:
+                banned_ships.add((int(ia), int(ib)))
+        print(f"banned ship crossings: {len(banned_ships)}", flush=True)
 
-    def sea_ok(i, j):
-        """ships need open sea between the two shores: no island in the middle of the crossing"""
-        k = (min(i, j), max(i, j))
+    vis_cache = {}
+
+    def vis(i, j, dij):
+        """Farthest distance along i -> j at which a ship's mast fire can be seen from fire i (terrain-aware,
+        with the search's clearance margin)."""
+        k = (i, j)
+        if k not in vis_cache:
+            pa, pb = P[nodes[i]], P[nodes[j]]
+            th = dij / CH.R
+            lo_, hi_ = 0.0, min(rn[i] + RS, dij)
+            for _ in range(18):
+                mid = (lo_ + hi_) / 2
+                f = mid / dij
+                ps = (np.sin((1 - f) * th) * pa + np.sin(f * th) * pb) / np.sin(th)
+                ok = CH.los(mos, row0, W, pa, H[nodes[i]], ps, CH.SHIP_MAST_KM, CH.REFF, 0.3, 0.5, CH.CLEAR_KM)
+                lo_, hi_ = (mid, hi_) if ok else (lo_, mid)
+            vis_cache[k] = lo_
+        return vis_cache[k]
+
+    def ships_for(i, j, dij):
+        """Fire ships needed from shore fire i to shore fire j, or None. Ships sit on open water only (no
+        island in between), the first within sight of i, the last within sight of j."""
+        if (i, j) in banned_ships:
+            return None
+        k = (i, j)
         if k not in sea_cache:
-            fs, ls, land = CH.sea_span(mos, row0, W, P[nodes[i]], P[nodes[j]], 0.5)
-            sea_cache[k] = (fs >= 0) and not land
-        return sea_cache[k]
+            sea_cache[k] = CH.sea_span(mos, row0, W, P[nodes[i]], P[nodes[j]], 0.5)
+        fs, ls, land = sea_cache[k]
+        if fs < 0 or land:
+            return None
+        if fs > 0.97 * (rn[i] + RS) or dij - ls > 0.97 * (rn[j] + RS):
+            return None
+        va, vb = vis(i, j, dij), vis(j, i, dij)
+        if fs > va or dij - ls > vb:
+            return None
+        s1, sk = min(va, ls), max(dij - vb, fs)
+        return 1 if sk <= s1 else int(math.ceil((sk - s1) / (2 * RS * 0.97))) + 1
 
     final = (np.inf, -1)
     done = np.zeros(N, bool)
@@ -110,8 +150,10 @@ def main():
                 if same[j]:
                     continue
                 s_ = 1
-            if s_ > 0 and not sea_ok(i, j):
-                continue
+            if s_ > 0:
+                s_ = ships_for(i, j, float(d[j]))
+                if s_ is None:
+                    continue
             if c + s_ + 1 < dist[j]:
                 dist[j] = c + s_ + 1; prev[j] = i; prev_ships[j] = s_
                 heapq.heappush(pq, (dist[j], j))
@@ -156,7 +198,7 @@ def main():
             a_lim = max(min(a_lim, ls), fs)
             b_lim = max(min(b_lim, d - fs), d - ls)
             span = d - b_lim - a_lim
-            sh = 1 if span <= 0 else int(math.ceil(span / (2 * RS * 0.995))) + 1
+            sh = 1 if span <= 0 else int(math.ceil(span / (2 * RS * 0.97))) + 1
             x0, x1 = (a_lim, d - b_lim) if span > 0 else ((a_lim + d - b_lim) / 2,) * 2
             xs = np.linspace(x0, x1, sh) if sh > 1 else np.array([x0])
             for s in xs:

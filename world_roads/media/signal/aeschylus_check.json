@@ -1,0 +1,82 @@
+{
+ "aeschylus": [
+  {
+   "name": "Mount Ida",
+   "lat": 39.702302158273376,
+   "lon": 26.863,
+   "h_m": 1754
+  },
+  {
+   "name": "Lemnos (Hermes' crag)",
+   "lat": 39.978561151079134,
+   "lon": 25.221854574328624,
+   "h_m": 115,
+   "hop_km": 143.4,
+   "visible": true,
+   "horizons_km": 203.6
+  },
+  {
+   "name": "Mount Athos",
+   "lat": 40.157,
+   "lon": 24.326,
+   "h_m": 1893,
+   "hop_km": 78.8,
+   "visible": true,
+   "horizons_km": 209.8
+  },
+  {
+   "name": "Makistos (Euboea)",
+   "lat": 38.625395683453235,
+   "lon": 23.84309399058742,
+   "h_m": 1706,
+   "hop_km": 175.3,
+   "visible": true,
+   "horizons_km": 325.5
+  },
+  {
+   "name": "Messapion",
+   "lat": 38.465071942446045,
+   "lon": 23.486224398641333,
+   "h_m": 953,
+   "hop_km": 35.8,
+   "visible": true,
+   "horizons_km": 277.3
+  },
+  {
+   "name": "Kithairon",
+   "lat": 38.18269784172662,
+   "lon": 23.25,
+   "h_m": 1330,
+   "hop_km": 37.6,
+   "visible": true,
+   "horizons_km": 258.9
+  },
+  {
+   "name": "Aigiplanktos",
+   "lat": 38.02,
+   "lon": 23.13369817777316,
+   "h_m": 1310,
+   "hop_km": 20.8,
+   "visible": true,
+   "horizons_km": 279.1
+  },
+  {
+   "name": "Arachnaion",
+   "lat": 37.641582733812946,
+   "lon": 22.96703018166477,
+   "h_m": 1129,
+   "hop_km": 44.6,
+   "visible": true,
+   "horizons_km": 268.2
+  },
+  {
+   "name": "Argos (the palace)",
+   "lat": 37.6385,
+   "lon": 22.7163,
+   "h_m": 199,
+   "hop_km": 22.1,
+   "visible": true,
+   "horizons_km": 184.5
+  }
+ ]
+}

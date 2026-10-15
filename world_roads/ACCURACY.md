@@ -221,19 +221,130 @@ is deliberately conservative:
 
 **Verification.** Every summit and every sightline of the final loop, ships included, is re-checked
 against zoom-10 terrain sampled every 150 m with no margin. The fire goes on the true zoom-10 summit
-within 600 m. The search and verification were repeated until everything passed: 0 bad summits and
-0 blocked sightlines out of 163.
+within 600 m. The search and verification were repeated until everything passed: 0 bad summits,
+0 blocked sightlines and 0 blocked ship hops out of 159 (see the corrections below).
 
 **Fire ships.** A ship carries its fire 30 m up the mast, so it can be seen 21 km away. A search over
 island stepping stones (Iceland, the Faroes, Jan Mayen, Svalbard and Bear Island) minimizes the total
 number of fires plus ships. Ships only sit on open water, and each one must be visible from its
 shore fire.
 
-**The North Atlantic gap.** The last land fire is on a 3,368 m summit in East Greenland. The nearest
-Icelandic summit that could answer it is 350 km away, but the two horizons together reach only
-317 km. Iceland to the Faroes and the Faroes to Britain are far wider.
+**The North Atlantic gap.** The last land fire is on a 2,971 m summit in East Greenland. The nearest
+Icelandic summit that could answer it is 356 km away, but the two horizons together reach only
+304 km. Iceland to the Faroes and the Faroes to Britain are far wider.
 
 **Assumptions.**
 * The air is perfectly clear. Real beacon chains, such as England's in 1588, spaced fires roughly
   10–30 km apart.
 * Five minutes per relay is an assumption, for the time to spot a fire and light the next.
+
+**Corrections (October 2026).** The first published version, 163 relays with a 350 km gap, was wrong in
+Greenland. Five data problems were found and fixed.
+
+1. **Bedrock instead of ice.** Terrarium's zoom 5–9 tiles, and many zoom-10 tiles, carry the bedrock
+   under Greenland's ice sheet, often below sea level. At Summit Camp, zoom 9 says 259 m against the
+   true 3,255 m. Two sightlines across the ice sheet at ~76°N looked clear only because of that.
+   Greenland now comes from zoom 11, which has the ice surface (`fix_greenland.py`). Bedrock patches
+   that remain deep inside the ice sheet are filled with the surrounding ice surface, which is
+   conservative. The verification uses the same surface.
+2. **A corrupt block at Gunnbjørn Fjeld.** One zoom-11 block near Greenland's highest mountain reads up
+   to 6,328 m. Greenland is now capped at its real maximum of 3,694 m.
+3. **Stricter summit checks.** Every summit below 600 m is now also checked at zoom 12 (~30 m), and its
+   fire burns at the zoom-12 height. This catches fake low hills in flat country. Higher summits keep
+   the zoom-10 check, because zoom 12 also shows bedrock under ice caps.
+4. **Ship placement.** Fire ships must sit on open water within sight of both shore fires, terrain
+   included. Every ship hop is now verified like the fire-to-fire sightlines.
+5. **Lost summits.** The Greenland rebuild had deleted Iceland's candidate summits, because they sat
+   inside the same rectangle. They were restored.
+
+**Corrected loop.** 131 mountain fires from Plymouth to East Greenland (2,971 m). Then 2 ships → Iceland
+(4 fires) → 7 ships → the Faroes (2 fires) → 5 ships → Scotland → 8 fires back to Plymouth. In total
+145 fires + 14 ships = 159 relays and 26,512 km. Every summit, sightline and ship hop passes. The
+North Atlantic gap is 356 km against 304 km of horizon: 52 km short.
+
+The European part of the route also changed: many routes are equally short, and Mont Blanc is no
+longer on the one found. The first-person sequence still shows Mont Blanc → the Apennines → the
+Dolomites. Those are verified sightlines from the first search, used as an illustration of how a chain
+works.
+
+## 11. "One chain through as many countries as possible" (`signal/`, long video)
+
+**Countries.** 195: the 193 UN members plus Vatican City and Palestine. Borders come from Natural Earth's
+1:10 m admin-0 polygons. Taiwan, Kosovo, Western Sahara, Northern Cyprus and Somaliland can relay a
+signal but are not counted. Overseas parts count for their country: Saba for the Netherlands,
+Guadeloupe for France.
+
+**When a fire counts.** It must stand at least 1 km from every other country, because Natural Earth's
+borders are not exact. Vatican City and Monaco are too small for that rule:
+* Vatican's fire is on Vatican Hill (61 m at zoom 13).
+* Monaco's is on the Rock of Monaco (60 m).
+
+Its official high point, 161 m, sits on the French border.
+
+**Terrain.** The terrain is the same as the loop's, extended to 60°S–84°N (zoom 9 south of 56°N).
+* **Candidates:** the highest summit in every ~12 km cell, 944,589 in all, plus a 2,185 m summit safely
+  inside Liechtenstein.
+* **Sightlines:** every pair whose horizons overlap was tested. That is 440 million pairs, and 23.2
+  million can see each other. These tests use the loop search's conservative grid: max-filtered, with
+  25 m of clearance.
+* **Flat coasts:** that grid blocks almost every low sightline. Zero-margin sightlines were added
+  around the Gulf (Bahrain, Qatar), the Gambia, the Palk Strait, the Bahamas and Kuwait. Every hop
+  actually used is verified anyway.
+
+**Out of reach (19).** No chain of fires can reach 19 countries:
+* **Sri Lanka:** India and Sri Lanka are ~30 km apart at Adam's Bridge, but both shores are too flat
+  for two 10 m bonfires to see each other.
+* **18 island nations:** Iceland, Cabo Verde, Comoros, Madagascar, Mauritius, Seychelles, Maldives,
+  New Zealand, Fiji, Kiribati, Marshall Islands, Micronesia, Nauru, Palau, Samoa, Tonga, Tuvalu and
+  Vanuatu.
+
+The other 176 are all linked.
+
+**The route.** Countries are split into ~6° regions. Hop distances between regions come from
+breadth-first searches over the sightline graph. A tour of the regions, one per country, is improved
+with 2-opt, or-opt and region swaps. The fewest fires that visit the countries in that order are then
+found exactly, with a layered shortest path.
+
+The result is a good route, not a proven minimum: **787 fires through 176 countries**, from Uruguay to
+Nepal, with 122,771 km of sightlines.
+
+**Verification.** Same rules as the loop:
+* every sightline re-checked on zoom-10 terrain every 150 m;
+* every summit re-checked at zoom 12 within 300 m.
+
+Below 400 m, a summit must be within 25 m of its search height. This catches fake low hills: spikes
+under the despiker's 150 m threshold. One example was a "117 m" hill on Saibai Island, which is really
+swamp. Each fire burns at its zoom-12 summit height. Failures are banned and the route recomputed,
+until 0 bad summits and 0 blocked sightlines remain.
+
+**Highlights:**
+* the longest sightline is 475 km, from Mount Elbrus into Turkey;
+* the highest fire is on Kangchenjunga (8,369 m in the data);
+* the chain crosses the Bering Strait from Alaska to Chukotka;
+* Taiwan to the Philippines is 327 km; Turkey to Cyprus is 334 km.
+
+## 12. The first-person beacon sequence (`signal/fpv.py`)
+
+**Terrain.** The scene uses the real terrain around fires 18–20 of the loop: Mont Blanc, a summit in the
+northern Apennines 311 km away, and one in the Dolomites 244 km beyond that.
+* **Grids:** Terrarium zoom 11 (~55 m), and zoom 13 (~14 m) within 5 km of each summit.
+* **Rendering:** raymarched with Earth's curvature and the search's refraction (k = 0.13).
+* **The speck:** when a distant fire appears on the horizon, it is because that sightline really is
+  open in this terrain.
+
+**What is illustrative.** The lighting (blue hour, moonlight), the flames, sparks, the pyre and the
+keepers. The bonfire is drawn about 13 m tall, consistent with the 10 m fire height used everywhere.
+
+## 13. The history segment (`signal/history_check.py`)
+
+**Aeschylus's chain.** In the *Agamemnon* (458 BC) the beacons run Ida → Lemnos → Athos → Makistos →
+Messapion → Kithairon → Aigiplanktos → Arachnaion → Argos. Each station was placed at its usual
+identification and snapped to the highest summit within 6 km in our terrain.
+* **Result:** every hop passes the same sightline test (10 m fires, no margin). That is 8 hops and
+  558 km.
+* **The last hop:** Aeschylus puts Agamemnon's palace in Argos, and from the Larisa acropolis the
+  hop works. A palace at Mycenae could not see Arachnaion.
+* **Caveat:** the identifications of Makistos and the Lemnos station are uncertain.
+
+**The Byzantine beacon line** (Loulon to Constantinople, 9th century) is drawn from its two endpoints
+only. Its "within about an hour" speed is the traditional claim, and it is captioned as "reportedly".

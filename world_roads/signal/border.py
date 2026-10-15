@@ -3,9 +3,11 @@ Earth borders are not exact). Vatican City and Monaco are too small for that; th
 points (world.py) count. Countries left with no such summit get their highest point >= MARGIN_KM inside
 (Terrarium zoom 12/13), with its sightlines added to the graph.
 
-    python border.py    -> world_nodes.npz gains border_ok (+ any new summits), world_edges.npz extended
+    python border.py        -> world_nodes.npz gains border_ok (+ any new summits), world_edges.npz extended
+    python border.py gulf   -> zero-margin sightlines around Bahrain and Qatar (flat_region_edges)
+    python border.py flat   -> the same for the Gambia, the Palk Strait, the Bahamas and Kuwait
 """
-import os, json, math, time
+import os, sys, json, math, time
 import numpy as np
 import shapely
 from shapely.strtree import STRtree
@@ -99,5 +101,52 @@ def add_edges(nd, n0):
     print(f"added {ok.sum():,} sightlines for {len(new)} new summits", flush=True)
 
 
+@nb.njit(parallel=True, cache=True)
+def los_pairs0(mos, row0, W, P, H, pu, pv, reff, step):
+    out = np.zeros(len(pu), np.bool_)
+    for i in nb.prange(len(pu)):
+        out[i] = CH.los(mos, row0, W, P[pu[i]], H[pu[i]], P[pv[i]], H[pv[i]], reff, step, 0.5, 0.0)
+    return out
+
+
+def flat_region_edges(box):
+    """Low, flat coasts (the Gulf): the search grid's 25 m margin and ~600 m max-filter block nearly every
+    low sightline there. Add zero-margin sightlines for summits in `box` (lat0, lat1, lon0, lon1); the
+    zoom-10/12 verification still has the last word on each hop used."""
+    nd = np.load(os.path.join(DATA, "world_nodes.npz"))
+    lat, lon = nd["lat"], nd["lon"]
+    H = nd["h"] / 1000 + CH.PYRE_KM
+    P = CH.xyz(lat, lon)
+    rch = CH.reach(H)
+    a, b, c, d = box
+    inb = np.nonzero((lat >= a) & (lat <= b) & (lon >= c) & (lon <= d))[0]
+    pu, pv = [], []
+    for u in inb:
+        dd = np.arccos(np.clip(P[u] @ P.T, -1, 1)) * CH.R
+        v = np.nonzero((dd <= rch[u] + rch) & (np.arange(len(lat)) != u))[0]
+        pu.append(np.full(len(v), u)); pv.append(v)
+    pu = np.concatenate(pu).astype(np.int64); pv = np.concatenate(pv).astype(np.int64)
+    mos, row0, W = ED.load_global()
+    ok = los_pairs0(mos, row0, W, P, H, pu, pv, CH.REFF, 0.25)
+    e = np.load(os.path.join(DATA, "world_edges.npz"))
+    u0, v0 = np.minimum(pu[ok], pv[ok]), np.maximum(pu[ok], pv[ok])
+    old = set(zip(e["u"][np.isin(e["u"], inb) | np.isin(e["v"], inb)].tolist(), e["v"][np.isin(e["u"], inb) | np.isin(e["v"], inb)].tolist()))
+    new = [(x, y) for x, y in zip(u0.tolist(), v0.tolist()) if (x, y) not in old]
+    if new:
+        nn = np.array(sorted(set(new)), np.int32)
+        np.savez(os.path.join(DATA, "world_edges.npz"), u=np.r_[e["u"], nn[:, 0]], v=np.r_[e["v"], nn[:, 1]])
+    print(f"{len(inb)} summits in the box: {ok.sum():,} zero-margin sightlines, {len(new):,} new", flush=True)
+
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "gulf":
+        flat_region_edges((23.0, 28.5, 47.5, 53.0))
+    elif len(sys.argv) > 1 and sys.argv[1] == "flat":
+        # other low coasts where the countries' only links are low sightlines
+        for box in ((12.4, 14.6, -17.6, -13.0),        # the Gambia (and the Senegal around it)
+                    (7.5, 11.0, 78.0, 81.5),            # Palk Strait: India <-> Sri Lanka
+                    (20.0, 27.5, -80.5, -72.0),         # the Bahamas
+                    (28.0, 30.6, 46.5, 49.2)):          # Kuwait
+            flat_region_edges(box)
+    else:
+        main()

@@ -191,15 +191,52 @@ python render_fires.py    # -> out/signal_fires.mp4 (vertical Short, with music)
 
 | | |
 |---|---:|
-| Mountain fires, Plymouth to East Greenland | **135** |
+| Mountain fires, Plymouth to East Greenland | **131** |
 | Fire ships to close the loop | **14** (2 + 7 + 5) |
 | Fires on Iceland, the Faroes and back down Britain | 14 more |
-| Relays around the world | **163** (149 fires + 14 ships), 26,075 km |
-| At 5 minutes per relay | ≈ 13.6 hours |
+| Relays around the world | **159** (145 fires + 14 ships), 26,512 km |
+| At 5 minutes per relay | ≈ 13.2 hours |
 | Longest sightline in the chain | 433 km, Mount Foraker → Mount Blackburn (Alaska) |
 | Highest fire | Muztagh Ata, China, about 7,480 m in the data |
 | Bering Strait | Russia → Alaska in one 189 km jump |
-| Greenland → Iceland | 350 km apart; their two horizons only reach 317 km |
+| Greenland → Iceland | 356 km apart; their two horizons only reach 304 km |
+
+*Corrected in October 2026.* The first version said 163 relays (149 fires + 14 ships) and a 350 km gap.
+Terrarium shows bedrock instead of ice over much of Greenland, and that made two sightlines across the
+ice sheet look clear when they are not. The search now uses Greenland's ice surface; see ACCURACY.md
+section 10.
 
 Physics follows the VSL Sightline tool (`drburke-droid/VSL`, `sightline/`): Terrarium elevation, Earth
 radius 6,371 km, normal refraction (k = 0.13). Details and limitations are in ACCURACY.md section 10.
+
+### The long video (16:9): history, a first-person beacon chain, the loop, and 176 countries
+
+```bash
+cd signal
+python fetch_dem2.py south        # terrain 60S-18N (zoom 9)
+python fix_greenland.py           # Greenland's ice surface from zoom 11 (zoom 5-10 show bedrock under the ice)
+python fix_greenland.py holes     # fill bedrock patches inside the ice sheet (also: neighbours, holes2)
+python fill_holes.py              # other blank Arctic pixels from zoom 8
+python world.py                   # global grid, 944,589 candidate summits with their countries
+python edges.py                   # every fire-to-fire sightline in the world (23.2 million)
+python border.py && python border.py gulf && python border.py flat   # 1 km border rule, flat coasts
+./iterate_tour.sh                 # most-countries chain, zoom-10/12 verified -> data/tour.json
+python history_check.py           # Aeschylus's beacon chain through the same sightline test
+python fpv_terrain.py && python fpv.py           # first-person sequence (real terrain, raymarched)
+python globe_texture_world.py     # night-globe texture with relief and borders
+python longform.py physics        # the curvature explainer
+python long_globe.py hook|history|rules|journey|tour|outro
+python assemble.py                # cross-fades + score -> out/long/signal_fires_full.mp4
+python thumbnail_long.py
+```
+
+| One chain, as many countries as possible | |
+|---|---:|
+| Countries reached | **176** of 195 |
+| Fires | **787**, Uruguay to Nepal |
+| Sightlines | 122,771 km |
+| Longest sightline | 475 km, Mount Elbrus → Turkey |
+| Out of reach | Sri Lanka (Adam's Bridge is too flat) and 18 island nations |
+| Aeschylus's chain (458 BC) | all 8 hops pass, Troy → Argos, 558 km |
+
+Method and limits: ACCURACY.md sections 11–13.

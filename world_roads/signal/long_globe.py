@@ -472,22 +472,28 @@ class Rules(Section):
 class Tour(Section):
     name = "tour"
     INTRO, OUTRO = 16.0, 12.0
+    # countries whose first fire gets a callout: (title, line-2 template). {hop} km from {prev}, {h} m
     NOTES = {
         "Netherlands": ("Saba: the Netherlands' highest mountain", "is in the Caribbean"),
-        "France": ("Guadeloupe", "an overseas part of France"),
-        "Vatican": ("Vatican City", "a fire on Vatican Hill"),
-        "Monaco": ("Monaco", "a fire on its 161 m high point"),
-        "San Marino": ("San Marino", "Monte Titano"),
+        "France": ("{place}", "an overseas part of France"),
+        "Vatican": ("Vatican City", "a fire on Vatican Hill, {h} m"),
+        "Monaco": ("Monaco", "a fire on the Rock of Monaco"),
+        "San Marino": ("San Marino", "{hop} km from {prev}"),
         "Liechtenstein": ("Liechtenstein", "a summit safely inside its borders"),
-        "São Tomé & Príncipe": ("São Tomé & Príncipe", "island-hopping in the Gulf of Guinea"),
-        "Yemen": ("Across the Bab-el-Mandeb", "from Africa into Arabia"),
-        "Morocco": ("The Strait of Gibraltar", "from Europe into Africa"),
-        "Sri Lanka": ("Sri Lanka", "across the Palk Strait"),
-        "Singapore": ("Singapore", "its 163 m high point, Bukit Timah, would do"),
-        "Australia": ("Australia", "island by island across the Torres Strait"),
-        "Japan": ("Japan", "across the strait from Sakhalin"),
-        "Cyprus": ("Cyprus", "seen across the sea from Turkey"),
-        "Malta": ("Malta", "seen from Sicily"),
+        "Japan": ("Japan", "{hop} km across the sea from {prev}"),
+        "Australia": ("Australia", "{hop} km across the Torres Strait from {prev}"),
+        "Solomon Islands": ("Solomon Islands", "{hop} km across the sea from {prev}"),
+        "Sri Lanka": ("Sri Lanka", "{hop} km across the Palk Strait from {prev}"),
+        "Malta": ("Malta", "{hop} km across the sea from {prev}"),
+        "Cyprus": ("Cyprus", "{hop} km across the sea from {prev}"),
+        "São Tomé & Príncipe": ("São Tomé & Príncipe", "{hop} km across the Gulf of Guinea from {prev}"),
+        "Yemen": ("Yemen", "{hop} km from {prev}"),
+        "Morocco": ("Morocco", "{hop} km from {prev}"),
+        "Barbados": ("Barbados", "{hop} km across the sea from {prev}"),
+        "Bahrain": ("Bahrain", "{hop} km from {prev}"),
+        "Singapore": ("Singapore", "a {h} m hill, {hop} km from {prev}"),
+        "Philippines": ("The Philippines", "{hop} km across the sea from {prev}"),
+        "Russia": ("Across the Bering Strait", "{hop} km from {prev} to Russia"),
     }
 
     def __init__(self):
@@ -516,9 +522,37 @@ class Tour(Section):
                 if (i - 1) in self.notes:
                     cur += 2.0
             t[i] = cur
-            if i in self.new_at and self.names[self.new_at[i]] in self.NOTES:
-                self.notes[i] = self.NOTES[self.names[self.new_at[i]]]
+            if i in self.new_at and self.names[self.new_at[i]] in self.NOTES and i > 0:
+                nm = self.names[self.new_at[i]]
+                prev_c = [T["cid"][j] for j in range(i - 1, -1, -1) if T["cid"][j] >= 0 and T["cid"][j] != T["cid"][i]]
+                prev = self.names[prev_c[0]] if prev_c else "the sea"
+                place = "Martinique" if self.lat[i] < 15.0 else "Guadeloupe"
+                hz = T.get("verified_heights_m", T["h_m"])
+                hop = gc_km((self.lat[i - 1], self.lon[i - 1]), (self.lat[i], self.lon[i]))
+                fill = dict(hop=f"{hop:.0f}", prev=prev, h=f"{hz[i]:.0f}", place=place)
+                t1, t2 = self.NOTES[nm]
+                if nm == "Netherlands" and not (17.55 < self.lat[i] < 17.7 and -63.3 < self.lon[i] < -63.2):
+                    t1, t2 = "Netherlands", "{hop} km from {prev}"
+                self.notes[i] = (t1.format(**fill), t2.format(**fill))
         self.notes[0] = (f"Start: {self.names[self.new_at.get(0, cf[0])]}", "")
+        from render_fires import peak_name
+        hz_ = T.get("verified_heights_m", T["h_m"])
+        hops = [gc_km((self.lat[i - 1], self.lon[i - 1]), (self.lat[i], self.lon[i])) for i in range(1, n)]
+        lg = int(np.argmax(hops)) + 1
+        cn = lambda j: self.names[T["cid"][j]] if T["cid"][j] >= 0 else "the sea"
+        a_nm = peak_name(self.lat[lg - 1], self.lon[lg - 1], default=f"a summit in {cn(lg - 1)}")
+        self.notes[lg] = (f"Longest sightline: {hops[lg - 1]:.0f} km", f"{a_nm} to a summit in {cn(lg)}")
+        hi = int(np.argmax(hz_))
+        self.notes.setdefault(hi, (f"Highest fire: {hz_[hi]:,.0f} m", peak_name(self.lat[hi], self.lon[hi], default=cn(hi))))
+        # re-time with these notes included
+        t = np.zeros(n)
+        cur = self.INTRO
+        for i in range(n):
+            if i:
+                cur += 0.42 if i in self.new_at else 0.075
+                if (i - 1) in self.notes:
+                    cur += 2.0
+            t[i] = cur
         self.t_lit = t
         self.t_end = t[-1]
         self.dur = self.t_end + self.OUTRO
@@ -626,13 +660,13 @@ class Tour(Section):
         a_h = ST.fade(t, self.INTRO - 1.0, self.dur + 5, 0.6, 0.6)
         if a_h > 0:
             x0, y0 = 40, 850
-            d.rounded_rectangle([x0, y0, x0 + 600, y0 + 190], 22, fill=ST.PANEL + (int(200 * a_h),))
+            d.rounded_rectangle([x0, y0, x0 + 700, y0 + 190], 22, fill=ST.PANEL + (int(200 * a_h),))
             d.text((x0 + 30, y0 + 20), "COUNTRIES", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
             d.text((x0 + 24, y0 + 44), f"{n_c}", font=ST.font(92, "Bold"), fill=ST.GOLD + (int(255 * a_h),), anchor="la", features=["tnum"])
-            d.text((x0 + 24 + d.textlength(f"{n_c}", font=ST.font(92, "Bold")) + 10, y0 + 92), f"/ {self.n_countries}",
-                   font=ST.font(40, "SemiBold"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
-            d.text((x0 + 330, y0 + 20), "FIRES", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
-            d.text((x0 + 324, y0 + 44), f"{max(k + 1, 0)}", font=ST.font(92, "Bold"), fill=(255, 214, 150, int(255 * a_h)), anchor="la", features=["tnum"])
+            d.text((x0 + 24 + d.textlength(f"{n_c}", font=ST.font(92, "Bold"), features=["tnum"]) + 18, y0 + 96), f"/ {self.n_countries}",
+                   font=ST.font(38, "SemiBold"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
+            d.text((x0 + 420, y0 + 20), "FIRES", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
+            d.text((x0 + 414, y0 + 44), f"{max(k + 1, 0)}", font=ST.font(92, "Bold"), fill=(255, 214, 150, int(255 * a_h)), anchor="la", features=["tnum"])
             km = float(self.hop_km[:k + 1].sum()) if k >= 0 else 0
             d.text((x0 + 30, y0 + 150), f"{km:,.0f} km of sightlines", font=ST.font(26, "Regular"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
             # the last few countries reached
@@ -647,7 +681,8 @@ class Tour(Section):
         caps = [(0.5, 8.8, [("Part 2: one chain of fires", 50, ST.INK, "Bold"),
                             ("through as many of the world's 195 countries as possible", 34, ST.INK2, "Regular")], {"anchor": "top"}),
                 (9.2, self.INTRO - 0.3, [(f"{195 - self.n_countries} countries are out of reach of any fire", 44, ST.RED, "Bold"),
-                                         ("Iceland, New Zealand, Madagascar, Cabo Verde, Mauritius and the Pacific islands", 30, ST.INK2, "Regular")],
+                                         (("Iceland, Sri Lanka, " if "Sri Lanka" not in [self.names[c] for c in self.reach_set] else "Iceland, ") +
+                                          "New Zealand, Madagascar, Cabo Verde and the Pacific islands", 30, ST.INK2, "Regular")],
                  {"anchor": "top"})]
         for i, (a, b) in self.notes.items():
             lines = [(a, 42, ST.GOLD, "Bold")] + ([(b, 30, ST.INK2, "Regular")] if b else [])
@@ -697,7 +732,7 @@ class Outro(Section):
         fr = Ly.compose(img)
         caps = [(1.0, self.dur, [(f"Around the world: {self.n_fire} fires + {self.n_ship} fire ships", 40, (255, 160, 70), "Bold"),
                                  (f"Through {self.n_c} countries: {len(self.la2)} fires", 40, ST.GOLD, "Bold"),
-                                 ("The Earth's curve keeps 18 countries out of reach", 30, ST.INK2, "Regular")], {"anchor": "top"})]
+                                 (f"The Earth's curve keeps {195 - self.n_c} countries out of reach", 30, ST.INK2, "Regular")], {"anchor": "top"})]
         fr = ST.draw_captions(fr, t, caps)
         f = smooth(t / 0.8) * (1 - smooth((t - self.dur + 2.0) / 2.0))
         return (fr * f).astype(np.uint8) if f < 1 else fr

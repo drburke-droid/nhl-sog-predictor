@@ -6,6 +6,7 @@ Greenland's ice sheet (often below sea level); zoom 11 has the ice surface (e.g.
   * verify.py uses zoom 11 inside the same box (GREENLAND)
 
     python fix_greenland.py          (zoom-11 rebuild)
+    python fix_greenland.py clamp    (zoom 11 also has corrupt blocks above Greenland's 3,694 m maximum)
     python fix_greenland.py holes    (zoom 11 still has bedrock patches inside the ice sheet: fill them
                                       with the highest surrounding ice; verify.py does the same)
 """
@@ -212,7 +213,50 @@ def restore_neighbours():
     print("restored", flush=True)
 
 
+GREENLAND_MAX = 3700.0              # Gunnbjørn Fjeld, Greenland's highest point, is 3,694 m
+
+
+def clamp_tile(h):
+    """Corrupt blocks in Greenland's zoom-11 data (up to 6,328 m next to Gunnbjørn Fjeld): anything above
+    Greenland's highest point becomes the mean of its valid neighbours."""
+    bad = h > GREENLAND_MAX
+    if not bad.any():
+        return h
+    v = np.where(bad, 0, h).astype(np.float32)
+    w = cv2.blur((~bad).astype(np.float32), (15, 15))
+    m = cv2.blur(v, (15, 15)) / np.maximum(w, 1e-3)
+    out = h.copy()
+    out[bad] = np.minimum(m[bad], GREENLAND_MAX)
+    return out
+
+
+def clamp():
+    import shapely
+    meta = json.load(open(os.path.join(DATA, "mosaic_z8max_meta.json")))
+    r0, r1, c0, c1 = box_rows(meta)
+    for fn in ("mosaic_z8max.npy", "mosaic_global.npy"):
+        mos = np.load(os.path.join(DATA, fn), mmap_mode="r+")
+        sub = np.asarray(mos[r0:r1, c0:c1]).astype(np.float32)
+        n = int((sub > GREENLAND_MAX).sum())
+        mos[r0:r1, c0:c1] = np.round(clamp_tile(sub)).astype(np.int16)
+        mos.flush()
+        print(f"{fn}: {n} pixels above {GREENLAND_MAX:.0f} m replaced", flush=True)
+    gj = json.load(open(os.path.join(os.path.dirname(HERE), "data", "ne", "ne_10m_admin_0_countries.geojson")))
+    grl = next(shapely.geometry.shape(f["geometry"]) for f in gj["features"] if f["properties"]["ADMIN"] == "Greenland")
+    pk = np.load(os.path.join(DATA, "peaks_hr.npy"))
+    over = (pk[:, 2] > GREENLAND_MAX) & shapely.contains_xy(grl.buffer(0.2), pk[:, 1], pk[:, 0])
+    # within 3 km of Gunnbjorn Fjeld (68.919 N, 29.898 W) the summit is real: it gets its true 3,694 m
+    near = np.hypot((pk[:, 0] - 68.919) * 111.2, (pk[:, 1] + 29.898) * 111.2 * np.cos(np.radians(68.9))) < 3.0
+    pk[over & near, 2] = 3694.0
+    bad = over & ~near
+    np.save(os.path.join(DATA, "peaks_hr.npy"), pk[~bad])
+    print(f"capped {int((over & near).sum())} Gunnbjorn Fjeld summits at 3,694 m, dropped {int(bad.sum())} impossible ones", flush=True)
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "clamp":
+        clamp()
+        sys.exit()
     if len(sys.argv) > 1 and sys.argv[1] == "holes":
         fill_holes()
     elif len(sys.argv) > 1 and sys.argv[1] == "holes2":

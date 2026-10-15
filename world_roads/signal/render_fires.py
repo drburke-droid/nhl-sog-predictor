@@ -33,7 +33,9 @@ PEAKS = {"Muztagh Ata, in China's Pamir mountains": (38.276, 75.116), "Ismoil So
          "Mount Saint Elias": (60.292, -140.931), "Mount Bona": (61.385, -141.749), "Kongur Tagh, China": (38.594, 75.313),
          "Lenin Peak": (39.343, 72.877), "Khan Tengri": (42.211, 80.175), "Belukha": (49.807, 86.590),
          "Klyuchevskaya Sopka": (56.056, 160.642), "Gunnbjørn Fjeld": (68.919, -29.898), "Damavand": (35.952, 52.110),
-         "Mount Elbrus": (43.355, 42.439), "Alam-Kuh": (36.379, 50.960), "Sabalan": (38.266, 47.835)}
+         "Mount Elbrus": (43.355, 42.439), "Alam-Kuh": (36.379, 50.960), "Sabalan": (38.266, 47.835),
+         "Kangchenjunga": (27.703, 88.148), "Mount Everest": (27.988, 86.925), "La Soufrière, Guadeloupe": (16.044, -61.663),
+         "Mount Scenery, Saba": (17.635, -63.237), "Pico do Príncipe": (1.578, 7.381), "Mount Damavand": (35.952, 52.110)}
 
 
 def peak_name(lat, lon, km=4.0, default=None):

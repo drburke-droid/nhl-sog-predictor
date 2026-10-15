@@ -38,6 +38,14 @@ def tile_xy(lat, lon, z=Z):
 
 
 def fetch(t):
+    t, h = _fetch(t)
+    if t[0] == 11:                                    # zoom 11 is only used on Greenland: cap corrupt blocks
+        import fix_greenland as FG
+        h = FG.clamp_tile(h)
+    return t, h
+
+
+def _fetch(t):
     z, x, y = t
     d = os.path.join(DATA, f"z{z}")
     os.makedirs(d, exist_ok=True)
@@ -130,6 +138,20 @@ def summit_tol(h):
     return 25.0 if h < 400 else 100.0
 
 
+LOW_KM = 0.600                       # summits below this are re-checked at zoom 12
+
+
+def summit_check(lat, lon, h):
+    """(ok, fire height). Low summits (fake hills are always low: the despiker removes spikes > 150 m)
+    are re-checked at zoom 12, and the fire burns at the zoom-12 summit within 600 m. Higher summits use
+    zoom 10 (11 on Greenland), because zoom 12 shows the bedrock under ice caps."""
+    m10 = summit_max(lat, lon)
+    if h < LOW_KM * 1000:
+        m12 = summit_hr(lat, lon, r_km=0.6)
+        return (m10 >= h - 100) and (m12 >= h - (25.0 if h < 400 else 60.0)), m12
+    return m10 >= h - 100, max(h, m10)
+
+
 def summit_max(lat, lon, r_km=0.6):
     a = np.linspace(0, 2 * np.pi, 16, endpoint=False)
     pts = [(lat, lon)] + [(lat + r * np.sin(t) / 111.2, lon + r * np.cos(t) / (111.2 * np.cos(np.radians(lat))))
@@ -162,37 +184,43 @@ def main():
     st = L["stations"]
     inv = json.load(open(os.path.join(DATA, "invalid_nodes.json"))) if os.path.exists(os.path.join(DATA, "invalid_nodes.json")) else []
     ban = json.load(open(os.path.join(DATA, "banned_edges.json"))) if os.path.exists(os.path.join(DATA, "banned_edges.json")) else []
-    bad_nodes, bad_edges = [], []
+    bad_nodes, bad_edges, bad_ships = [], [], []
+    shp = os.path.join(DATA, "banned_ships.json")
+    bans = json.load(open(shp)) if os.path.exists(shp) else []
     t0 = time.time()
     hz = []
     for i, s in enumerate(st):
         if s["kind"] != "fire" or i == 0 or i == len(st) - 1:
             hz.append(s["h_m"])
             continue
-        m = summit_max(s["lat"], s["lon"])
-        m12 = summit_hr(s["lat"], s["lon"])
-        hz.append(m12)                           # the fire goes on the true (zoom-12) summit within 300 m
-        if m < s["h_m"] - 100 or m12 < s["h_m"] - summit_tol(s["h_m"]):
+        ok, h_ = summit_check(s["lat"], s["lon"], s["h_m"])
+        hz.append(h_)                            # the fire goes on the true summit within 600 m
+        if not ok:
             bad_nodes.append([round(s["lat"], 5), round(s["lon"], 5)])
-            print(f"  fire {i}: search height {s['h_m']:.0f} m, zoom-10 max {m:.0f} m, zoom-12 {m12:.0f} m -> invalid", flush=True)
+            print(f"  fire {i}: search height {s['h_m']:.0f} m, checked summit {h_:.0f} m -> invalid", flush=True)
     for i in range(1, len(st)):
         a, b = st[i - 1], st[i]
         ha, hb = hz[i - 1] / 1000 + CH.PYRE_KM, hz[i] / 1000 + CH.PYRE_KM
         ok, m_m, at = hop_clear((a["lat"], a["lon"]), (b["lat"], b["lon"]), ha, hb)
         if a["kind"] != "fire" or b["kind"] != "fire":
-            if m_m < -1:
+            if not ok:
+                # the whole ship crossing between these two shore fires is rejected
+                fa = max(k for k in range(i) if st[k]["kind"] == "fire")
+                fb = min(k for k in range(i, len(st)) if st[k]["kind"] == "fire")
+                bad_ships.append([[round(st[fa]["lat"], 5), round(st[fa]["lon"], 5)], [round(st[fb]["lat"], 5), round(st[fb]["lon"], 5)]])
                 print(f"  ship hop {i}: blocked by {-m_m:.0f} m at {at:.0f} km", flush=True)
             continue
         if not ok:
             bad_edges.append([[round(a["lat"], 5), round(a["lon"], 5)], [round(b["lat"], 5), round(b["lon"], 5)]])
             print(f"  hop {i}: blocked by {-m_m:.0f} m at {at:.0f} km", flush=True)
-    print(f"checked {len(st)} stations: {len(bad_nodes)} bad summits, {len(bad_edges)} blocked sightlines, "
+    json.dump(bans + bad_ships, open(shp, "w"))
+    print(f"checked {len(st)} stations: {len(bad_nodes)} bad summits, {len(bad_edges)} blocked sightlines, {len(bad_ships)} blocked ship hops, "
           f"{len(CACHE)} tiles, {time.time() - t0:.0f}s", flush=True)
     json.dump(inv + bad_nodes, open(os.path.join(DATA, "invalid_nodes.json"), "w"))
     json.dump(ban + bad_edges, open(os.path.join(DATA, "banned_edges.json"), "w"))
     L["verified_heights_m"] = hz
     json.dump(L, open(os.path.join(DATA, "loop.json"), "w"), indent=1)
-    sys.exit(1 if bad_nodes or bad_edges else 0)
+    sys.exit(1 if bad_nodes or bad_edges or bad_ships else 0)
 
 
 if __name__ == "__main__":

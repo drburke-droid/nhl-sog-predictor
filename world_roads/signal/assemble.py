@@ -68,7 +68,8 @@ def main():
     SC.write(sc.mix(), wav)
     final = os.path.join(OUT, "signal_fires_full.mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-                    "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", final], check=True)
+                    "-af", "volume=-1.2dB", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", final],
+                   check=True)                                      # headroom: AAC overshoots the -1.5 dB true peak
     json.dump({"sections": dict(zip(SECS, zip(off, ds))), "total": total}, open(os.path.join(OUT, "timeline.json"), "w"), indent=1)
     print("wrote", final)
 
