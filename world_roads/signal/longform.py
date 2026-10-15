@@ -74,7 +74,7 @@ class Physics(Section):
         self.pt[0] = self.ha - CH.PYRE_KM; self.pt[-1] = self.hb - CH.PYRE_KM
         line = self.ha + (self.hb - self.ha) * f
         bulge = self.ps * (self.D - self.ps) / (2 * CH.REFF)
-        clear = line - (self.pt - bulge)
+        clear = line - (self.pt + bulge)                       # the sea-level surface rises by `bulge` above the chord
         inner = (self.ps > 2) & (self.ps < self.D - 2)
         k = np.argmin(np.where(inner, clear, 1e9))
         self.min_clear_m, self.min_at = float(clear[k] * 1000), float(self.ps[k])
@@ -225,6 +225,8 @@ class Physics(Section):
         return self.finish(im)
 
     def beat_real(self, t):
+        """The longest hop, drawn so straight lines stay straight: the chord between the two sea-level points is
+        level, and the curved sea level (and the terrain on it) rises above it by up to the bulge mid-way."""
         T = self.T
         im, d = self.canvas()
         S = self.SS
@@ -232,11 +234,11 @@ class Physics(Section):
         kx = (x1 - x0) / self.D
         ex = 22.0
         ky = kx * ex
-        y0 = 700
+        y0 = 905
         bulge = self.ps * (self.D - self.ps) / (2 * CH.REFF)
         X = (x0 + self.ps * kx) * S
-        Y = (y0 - (self.pt - bulge) * ky) * S
-        sea = (y0 - (0 - bulge) * ky) * S
+        Y = (y0 - (self.pt + bulge) * ky) * S
+        sea = (y0 - bulge * ky) * S
         u = smooth((t - T["real"] - 0.3) / 4.0)
         n = max(2, int(len(X) * u))
         pts = list(zip(X[:n], Y[:n]))
@@ -246,6 +248,21 @@ class Physics(Section):
             d.polygon(pts + [(X[n - 1], H * S + 50), (X[0], H * S + 50)], fill=(36, 50, 72, 255))
             d.line(pts, fill=(110, 140, 180, 255), width=2 * S)
         A = (X[0], (y0 - self.ha * ky) * S); B = (X[-1], (y0 - self.hb * ky) * S)
+        # the bulge: the level chord between the two sea-level points vs the sea level arching over it
+        a_b = smooth((t - T["real"] - 6.5) / 1.0)
+        if a_b > 0:
+            for k in range(60):
+                xa = X[0] + (X[-1] - X[0]) * k / 60; xb_ = X[0] + (X[-1] - X[0]) * (k + 0.5) / 60
+                d.line([(xa, y0 * S), (xb_, y0 * S)], fill=(160, 195, 235, int(150 * a_b)), width=2 * S)
+            seapts = list(zip(X, sea))
+            for k in range(0, len(seapts) - 8, 16):
+                d.line(seapts[k:k + 9], fill=(120, 170, 230, int(220 * a_b)), width=2 * S)
+            xm = (x0 + self.D / 2 * kx) * S
+            ys_ = (y0 - self.bulge_mid * ky) * S
+            d.line([(xm, y0 * S), (xm, ys_)], fill=(160, 195, 235, int(230 * a_b)), width=3 * S)
+            self.text(d, xm / S + 16, (y0 + ys_ / S) / 2, f"{self.bulge_mid:.1f} km", 30, (170, 205, 240), "SemiBold", "lm", a_b)
+            self.text(d, W / 2, 222, f"The Earth bulges {self.bulge_mid:.1f} km between them", 36, (170, 205, 240), "SemiBold", "ma", a_b)
+            self.text(d, W / 2, 268, "...and the sightline only just peeks over it", 32, ST.INK2, "Regular", "ma", a_b)
         a_line = smooth((t - T["real"] - 4.5) / 1.5)
         if a_line > 0:
             mid = (A[0] + (B[0] - A[0]) * a_line, A[1] + (B[1] - A[1]) * a_line)
@@ -256,23 +273,18 @@ class Physics(Section):
         a_in = ST.fade(t, T["real"], self.dur, 0.6, 0.6)
         self.text(d, A[0] / S, A[1] / S - 64, self.prof_names[0], 32, ST.INK, "SemiBold", "la", a_in)
         self.text(d, B[0] / S, B[1] / S - 64, self.prof_names[1], 32, ST.INK, "SemiBold", "ra", a_in)
-        # the bulge: straight chord between the two sea-level points vs the curved sea level
-        a_b = smooth((t - T["real"] - 6.5) / 1.0)
-        if a_b > 0:
-            for k in range(60):
-                xa = X[0] + (X[-1] - X[0]) * k / 60; xb_ = X[0] + (X[-1] - X[0]) * (k + 0.5) / 60
-                d.line([(xa, y0 * S), (xb_, y0 * S)], fill=(160, 195, 235, int(150 * a_b)), width=2 * S)
-            seapts = list(zip(X, sea))
-            for k in range(0, len(seapts) - 8, 16):
-                d.line(seapts[k:k + 9], fill=(120, 170, 230, int(220 * a_b)), width=2 * S)
-            xm = (x0 + self.D / 2 * kx) * S
-            ys_ = (y0 + self.bulge_mid * ky) * S
-            d.line([(xm, y0 * S), (xm, ys_)], fill=(160, 195, 235, int(230 * a_b)), width=3 * S)
-            self.text(d, xm / S, y0 - 330, f"The Earth bulges {self.bulge_mid:.1f} km between them", 36, (170, 205, 240), "SemiBold", "ma", a_b)
-            self.text(d, xm / S, y0 - 284, "...and the sightline still clears every ridge", 32, ST.INK2, "Regular", "ma", a_b)
+        # the pinch: where the sightline comes closest to the ground
+        a_p = smooth((t - T["real"] - 8.0) / 1.0)
+        if a_p > 0:
+            xp = (x0 + self.min_at * kx) * S
+            fp = self.min_at / self.D
+            yl = (y0 - (self.ha + (self.hb - self.ha) * fp) * ky) * S
+            r = 22 * S
+            d.ellipse([xp - r, yl - r, xp + r, yl + r], outline=(255, 186, 80, int(255 * a_p)), width=3 * S)
+            self.text(d, xp / S + 30, yl / S - 30, f"only {self.min_clear_m:,.0f} m to spare", 30, ST.GOLD, "SemiBold", "ld", a_p)
         a_c = smooth((t - T["real"] - 10.0) / 1.0)
         if a_c > 0:
-            self.text(d, W / 2, y0 - 220, "Every sightline in this video was checked like this", 34, ST.GOLD, "SemiBold", "ma", a_c)
+            self.text(d, W / 2, 322, "Every sightline in this video was checked like this", 34, ST.GOLD, "SemiBold", "ma", a_c)
         self.head(d, t, T["real"], self.dur, [f"The longest sightline on our route: {self.D:.0f} km",
                                                f"{self.prof_names[0]} to {self.prof_names[1]} · real elevation data"])
         self.text(d, W - 60, H - 46, "Vertical scale exaggerated 22× · includes normal atmospheric refraction", 22, ST.MUTED, "Regular", "ra", 1.0)
