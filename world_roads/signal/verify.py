@@ -173,6 +173,8 @@ def hop_clear(a, b, ha, hb, step=0.15):
     f = np.arange(1, n) / n
     s = f * D
     keep = (s > 0.5) & (D - s > 0.5)
+    if not keep.any():                                 # under ~1 km: nothing between the two fires to check
+        return True, float("inf"), D / 2
     f, s = f[keep], s[keep]
     p = (np.sin((1 - f) * th)[:, None] * pa + np.sin(f * th)[:, None] * pb) / math.sin(th)
     lat = np.degrees(np.arcsin(p[:, 2])); lon = np.degrees(np.arctan2(p[:, 1], p[:, 0]))
