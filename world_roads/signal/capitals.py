@@ -9,6 +9,8 @@ or building cannot fake a hill.
     python capitals.py         -> data/capitals.json; the beacons join world_nodes.npz, with their sightlines
                                   (zero margin, like the flat coasts: the zoom-10/12 verification decides)
     python capitals.py start   -> the first fire, at Bletchley Park (data/capitals_start.json)
+    python capitals.py plains  -> ground-fire corridors to capitals that stand on plains too flat for the
+                                  summit grid (one candidate per ~12 km is too sparse there)
 """
 import os, json, math, time
 import numpy as np
@@ -138,6 +140,118 @@ def main():
     print(f"{len(rec)} capitals, {len(new)} new beacons, {len(pairs):,} sightlines  {time.time() - t0:.0f}s")
 
 
+def add_plains(step_km=3.0, offsets_km=(-4.0, 0.0, 4.0), max_km=400.0):
+    """For each capital the fire cannot reach although it reaches land within max_km: candidate ground fires
+    every step_km along the great circle from the nearest lit fire to the capital's beacon, on three parallel
+    lines. A 10 m fire on flat ground sees another about 24 km away, but the summit grid holds only the
+    highest point of each ~12 km cell, and on a plain that is often too sparse. Heights are zoom-12 ground
+    (median of 9 samples); points off land (Natural Earth 10 m) are skipped. Every sightline to or between
+    them is checked on zoom-10 terrain here, so they join the graph verified."""
+    import capitals_tree as CT
+    import tour as TR
+    from shapely.geometry import shape
+    nd, indptr, indices, _, _ = CT.load(None)
+    caps = json.load(open(os.path.join(DATA, "capitals.json")))
+    root = json.load(open(os.path.join(DATA, "capitals_start.json")))["node"]
+    d0 = np.full(len(nd["lat"]), CT.INF, np.int64); d0[root] = 0
+    dist, _ = TR.bfs_multi(indptr, indices, d0)
+    land = shapely.union_all([shape(f["geometry"]) for f in json.load(open(os.path.join(NE, "ne_10m_land.geojson")))["features"]])
+    shapely.prepare(land)
+    names, geoms, _ = WD.countries()
+    tree = STRtree(geoms)
+    P = CH.xyz(nd["lat"], nd["lon"])
+    okd = json.load(open(CT.OK_PATH))
+    capn = {c["node"] for c in caps}
+    known = {int(k_) for k_ in okd["nodes"]} | capn | {root}
+    lit = np.array([v for v in np.nonzero(dist < CT.INF)[0] if int(v) in known])      # lit and verified
+    new_n, new_e = [], []
+    n0 = len(nd["lat"])
+    for c in caps:
+        if dist[c["node"]] < CT.INF:
+            continue
+        b = CH.xyz(np.array([c["b_lat"]]), np.array([c["b_lon"]]))[0]
+        dd = np.arccos(np.clip(P[lit] @ b, -1, 1)) * CH.R
+        k = int(np.argmin(dd))
+        if dd[k] > max_km:
+            continue
+        a = int(lit[k])
+        A, B = (float(nd["lat"][a]), float(nd["lon"][a])), (c["b_lat"], c["b_lon"])
+        D = float(dd[k])
+        pts = []
+        for f in np.arange(step_km, D - 1.0, step_km) / D:
+            q = slerp(A, B, f)
+            h_ = heading(q, B)
+            for off in offsets_km:
+                la = q[0] + off * math.cos(h_ + math.pi / 2) / 111.2                  # off km to the right
+                lo = q[1] + off * math.sin(h_ + math.pi / 2) / (111.2 * math.cos(math.radians(q[0])))
+                pts.append((la, lo))
+        pts = [p_ for p_ in pts if land.contains(shapely.Point(p_[1], p_[0]))]
+        off9 = np.array([(x, y) for x in (-0.06, 0, 0.06) for y in (-0.06, 0, 0.06)])
+        for la, lo in pts:
+            q = np.c_[la + off9[:, 0] / 111.2, lo + off9[:, 1] / (111.2 * math.cos(math.radians(la)))]
+            h = float(np.median(V.elev(q[:, 0], q[:, 1], 12)))
+            if h < 1.0:
+                continue
+            hit = [j for j in tree.query(shapely.Point(lo, la)) if geoms[j].contains(shapely.Point(lo, la))]
+            new_n.append((la, lo, h, hit[0] if hit else -1))
+        print(f"  {c['country']}: {D:.0f} km from the nearest lit fire, {len(pts)} corridor points", flush=True)
+    if not new_n:
+        print("no corridors needed")
+        return
+    e = np.array(new_n)
+    for k_, arr in (("lat", e[:, 0]), ("lon", e[:, 1]), ("h", e[:, 2])):
+        nd[k_] = np.r_[nd[k_], arr]
+    nd["cid"] = np.r_[nd["cid"], e[:, 3].astype(np.int32)]
+    nd["border_ok"] = np.r_[nd["border_ok"], np.ones(len(e), bool)]
+    nd = dict(nd)
+    # sightlines from every new point to every point (old or new) whose horizon overlaps, checked on zoom 10
+    H = nd["h"] / 1000 + CH.PYRE_KM
+    P = CH.xyz(nd["lat"], nd["lon"])
+    rch = CH.reach(H)
+    hz = {int(k_): v for k_, v in okd["nodes"].items()}
+    hz.update({v: float(nd["h"][v]) for v in capn | {root}})          # capital beacons and Bletchley: zoom-12 ground
+    t0 = time.time()
+    for i in range(n0, len(nd["lat"])):
+        d = np.arccos(np.clip(P[i] @ P.T, -1, 1)) * CH.R
+        cand = np.nonzero((d <= rch[i] + rch) & (np.arange(len(d)) < i) & (d < 60.0))[0]
+        for j in cand:
+            j = int(j)
+            hj = hz.get(j, nd["h"][j] if j >= n0 else None)
+            if hj is None:                                 # an unchecked summit: let the tree search check it later
+                continue
+            ok, m, at = V.hop_clear((nd["lat"][i], nd["lon"][i]), (nd["lat"][j], nd["lon"][j]),
+                                    nd["h"][i] / 1000 + CH.PYRE_KM, hj / 1000 + CH.PYRE_KM)
+            if ok:
+                new_e.append((j, i))
+    print(f"{len(new_n)} ground fires, {len(new_e)} verified sightlines  {time.time() - t0:.0f}s")
+    base = dict(np.load(os.path.join(DATA, "world_nodes.npz")))
+    np.savez(os.path.join(DATA, "world_nodes.npz"), **{k_: nd[k_] for k_ in base})
+    ed = np.load(os.path.join(DATA, "world_edges.npz"))
+    ne = np.array(new_e, np.int64)
+    np.savez(os.path.join(DATA, "world_edges.npz"), u=np.r_[ed["u"], ne[:, 0].astype(np.int32)], v=np.r_[ed["v"], ne[:, 1].astype(np.int32)])
+    for i in range(n0, len(nd["lat"])):
+        okd["nodes"][str(i)] = float(nd["h"][i])
+    okd["edges"] = sorted(set(tuple(x) for x in okd["edges"]) | {tuple(sorted(x)) for x in new_e})
+    okd["demoted"] = sorted(set(okd.get("demoted", [])) | set(range(n0, len(nd["lat"]))))
+    okd["pruned"] = sorted(set(okd.get("pruned", [])) | set(range(n0, len(nd["lat"]))))
+    json.dump(okd, open(CT.OK_PATH, "w"))
+    json.dump(dict(first=n0, n=len(new_n)), open(os.path.join(DATA, "capitals_plains.json"), "w"))
+
+
+def slerp(a, b, f):
+    pa, pb = CH.xyz(np.array([a[0]]), np.array([a[1]]))[0], CH.xyz(np.array([b[0]]), np.array([b[1]]))[0]
+    th = math.acos(min(1.0, float(pa @ pb)))
+    p = (math.sin((1 - f) * th) * pa + math.sin(f * th) * pb) / math.sin(th)
+    return math.degrees(math.asin(p[2])), math.degrees(math.atan2(p[1], p[0]))
+
+
+def heading(a, b):
+    la1, lo1, la2, lo2 = map(math.radians, (a[0], a[1], b[0], b[1]))
+    y = math.sin(lo2 - lo1) * math.cos(la2)
+    x = math.cos(la1) * math.sin(la2) - math.sin(la1) * math.cos(la2) * math.cos(lo2 - lo1)
+    return math.atan2(y, x)                                 # radians clockwise from north
+
+
 START = ("Bletchley Park", 51.9977, -0.7407)      # the WWII codebreakers' home; the 2023 AI Safety Summit
 
 
@@ -172,5 +286,7 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "start":
         add_start()
+    elif len(sys.argv) > 1 and sys.argv[1] == "plains":
+        add_plains()
     else:
         main()
