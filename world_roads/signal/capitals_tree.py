@@ -145,16 +145,31 @@ def solve():
     nodes = sorted(parent, key=lambda v: (dist[v], v))
     print(f"bans: {nb_} summits, {ne_} sightlines | {len(reach)} capitals reachable, {len(unreach)} not | "
           f"last at {max(dist[c] for c in cap_nodes)} relays | tree {len(nodes)} fires  {time.time() - t0:.0f}s", flush=True)
-    return nd, nodes, parent, dist, reach, unreach, names
+    return nd, nodes, parent, dist, reach, unreach, names, indptr, indices
 
 
-def verify_tree(nd, nodes, parent, caps_nodes):
+def prune_lowered(nd, v, hv, indptr, indices, ok_n, caps_nodes):
+    """All sightlines of a lowered fire v that are blocked even with the other end at its search height plus
+    50 m (never lower than its fire): these are certainly blocked, so they are banned in one go."""
+    out = []
+    for w in np.unique(indices[indptr[v]:indptr[v + 1]]):
+        w = int(w)
+        hw = ok_n[w] if w in ok_n else float(nd["h"][w]) + (0.0 if w in caps_nodes else 50.0)
+        ok, m, at = V.hop_clear((float(nd["lat"][v]), float(nd["lon"][v])), (float(nd["lat"][w]), float(nd["lon"][w])),
+                                hv / 1000 + CH.PYRE_KM, hw / 1000 + CH.PYRE_KM)
+        if not ok:
+            out.append(sorted([int(v), w]))
+    return out
+
+
+def verify_tree(nd, nodes, parent, caps_nodes, indptr, indices):
     """Zoom-10/12 check of every fire and sightline in the tree; returns (bad nodes, bad edges, heights).
     Fires and sightlines that already passed are remembered (cap_verified.json), so a round only checks new ones."""
     okd = json.load(open(OK_PATH)) if os.path.exists(OK_PATH) else {"nodes": {}, "edges": [], "demoted": []}
     ok_n = {int(k): v for k, v in okd["nodes"].items()}
     ok_e = set(tuple(e) for e in okd["edges"])
     demoted = set(okd.get("demoted", []))
+    pruned = set(okd.get("pruned", []))
     hz, bad_n, bad_e = {}, [], []
     n_new = 0
     for v in nodes:
@@ -176,12 +191,21 @@ def verify_tree(nd, nodes, parent, caps_nodes):
             ok_e -= {e for e in ok_e if int(v) in e}          # (none should exist; never trust a taller past)
         hz[v] = h_
         ok_n[int(v)] = float(h_)
+    n_pr = 0
+    for v in sorted(demoted - pruned):                       # every sightline of a newly lowered fire, at once
+        pr = prune_lowered(nd, v, ok_n[v], indptr, indices, ok_n, caps_nodes)
+        bad_e += pr
+        n_pr += len(pr)
+        pruned.add(v)
+    if n_pr:
+        print(f"  lowered fires: {n_pr} sightlines blocked at their real height", flush=True)
+    bad_set = set(tuple(e) for e in bad_e)
     for v in nodes:
         u = parent[v]
         if u < 0 or u not in hz or v not in hz:              # a dropped (sea) point: its sightlines go with it
             continue
         key = tuple(sorted([int(u), int(v)]))
-        if key in ok_e:
+        if key in ok_e or key in bad_set:
             continue
         n_new += 1
         ok, m, at = V.hop_clear((float(nd["lat"][u]), float(nd["lon"][u])), (float(nd["lat"][v]), float(nd["lon"][v])),
@@ -190,8 +214,8 @@ def verify_tree(nd, nodes, parent, caps_nodes):
             ok_e.add(key)
         else:
             bad_e.append(list(key))
-    json.dump({"nodes": {str(k): v for k, v in ok_n.items()}, "edges": sorted(ok_e), "demoted": sorted(demoted)},
-              open(OK_PATH, "w"))
+    json.dump({"nodes": {str(k): v for k, v in ok_n.items()}, "edges": sorted(ok_e), "demoted": sorted(demoted),
+               "pruned": sorted(pruned)}, open(OK_PATH, "w"))
     print(f"  {n_new} new summits and sightlines checked; {len(demoted)} fires on lowered ground", flush=True)
     return bad_n, bad_e, hz, demoted
 
@@ -199,10 +223,10 @@ def verify_tree(nd, nodes, parent, caps_nodes):
 def main():
     for rnd in range(1, 61):
         print(f"=== round {rnd}", flush=True)
-        nd, nodes, parent, dist, reach, unreach, names = solve()
+        nd, nodes, parent, dist, reach, unreach, names, indptr, indices = solve()
         capn = {c["node"] for c in reach}
         t0 = time.time()
-        bad_n, bad_e, hz, demoted = verify_tree(nd, nodes, parent, capn)
+        bad_n, bad_e, hz, demoted = verify_tree(nd, nodes, parent, capn, indptr, indices)
         print(f"checked {len(nodes)} fires: {len(bad_n)} bad summits, {len(bad_e)} blocked sightlines "
               f"{time.time() - t0:.0f}s", flush=True)
         if not bad_n and not bad_e:
