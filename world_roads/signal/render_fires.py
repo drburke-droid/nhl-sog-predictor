@@ -40,6 +40,19 @@ def gc_km(a, b):
     return 2 * R_EARTH * np.arcsin(np.clip(np.linalg.norm(unit(*a) - unit(*b)) / 2, 0, 1))
 
 
+def dest(lat, lon, brg, d_km):
+    """Point(s) d_km from (lat, lon) along bearing(s) brg (radians)."""
+    p1, l1, dl = math.radians(lat), math.radians(lon), np.asarray(d_km) / R_EARTH
+    p2 = np.arcsin(np.sin(p1) * np.cos(dl) + np.cos(p1) * np.sin(dl) * np.cos(brg))
+    l2 = l1 + np.arctan2(np.sin(brg) * np.sin(dl) * np.cos(p1), np.cos(dl) - np.sin(p1) * np.sin(p2))
+    return np.degrees(p2) * np.ones_like(dl * brg), (np.degrees(l2) + 540) % 360 - 180
+
+
+def bearing(a, b):
+    p1, p2, dl = math.radians(a[0]), math.radians(b[0]), math.radians(b[1] - a[1])
+    return math.atan2(math.sin(dl) * math.cos(p2), math.cos(p1) * math.sin(p2) - math.sin(p1) * math.cos(p2) * math.cos(dl))
+
+
 class Globe:
     def __init__(self):
         tex = cv2.imread(os.path.join(DATA, "globe_tex.png"))[..., ::-1].astype(np.float32) / 255
@@ -134,7 +147,9 @@ class Film:
         d = np.array([gc_km((last["lat"], last["lon"]), (a, b)) for a, b in pk[m][:, :2]])
         rs = CH.reach(self.hz[self.n_out - 1] / 1000 + CH.PYRE_KM) + CH.reach(pk[m][:, 2] / 1000 + CH.PYRE_KM)
         j = int(np.argmin(d - rs))
-        return dict(dist=float(d[j]), reach=float(rs[j]), short=float(d[j] - rs[j]), h=float(self.hz[self.n_out - 1]))
+        ra = float(CH.reach(self.hz[self.n_out - 1] / 1000 + CH.PYRE_KM))
+        return dict(dist=float(d[j]), reach=float(rs[j]), short=float(d[j] - rs[j]), h=float(self.hz[self.n_out - 1]),
+                    a=(last["lat"], last["lon"]), b=tuple(map(float, pk[m][j, :2])), ra=ra, rb=float(rs[j]) - ra)
 
     # ------------------------------------------------------------------ timing
     def timeline(self):
@@ -222,6 +237,9 @@ class Film:
             if age < 0.6:
                 cv2.line(hot, p0, p1, float(1.6 * (1 - age / 0.6)), 2, cv2.LINE_AA, shift=4)
         E += lines[..., None] * FIRE * 0.8 + hot[..., None] * CORE
+        self.gap_lbl = None
+        if dead:
+            self.draw_gap(E, t, lat0, lon0, rpx)
         # fires
         rng = np.random.default_rng(int(t * FPS))
         for i in range(len(self.st)):
@@ -248,6 +266,37 @@ class Film:
         frame = Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8))
         self.hud(ImageDraw.Draw(frame, "RGBA"), t, X, Y, Z)
         return np.asarray(frame)
+
+    def draw_gap(self, E, t, lat0, lon0, rpx):
+        """The two horizons that fail to touch: each summit's sight range, and the red gap between them."""
+        g = self.gap
+        u = min(1.0, (t - self.t_dead) / 0.8) * min(1.0, (self.t_ships + 0.2 - t) / 0.3)
+        layer = np.zeros((VH, VW), np.float32)
+        th = np.linspace(0, 2 * np.pi, 241)
+        for (la, lo), r in ((g["a"], g["ra"]), (g["b"], g["rb"])):
+            plat, plon = dest(la, lo, th, r)
+            X, Y, Z = self.globe.project(plat, plon, lat0, lon0, rpx)
+            pts = np.c_[X * 16, Y * 16].astype(np.int32)
+            for k in range(0, len(th) - 1, 2):                       # dashed
+                if Z[k] > 0.05 and Z[k + 1] > 0.05:
+                    cv2.line(layer, tuple(pts[k]), tuple(pts[k + 1]), 0.9, 2, cv2.LINE_AA, shift=4)
+        E += layer[..., None] * FIRE * 0.7 * u
+        # the gap itself, along the line between the summits
+        brg = bearing(g["a"], g["b"])
+        f = np.linspace(g["ra"], g["dist"] - g["rb"], 24)
+        plat, plon = dest(g["a"][0], g["a"][1], brg, f)
+        X, Y, Z = self.globe.project(plat, plon, lat0, lon0, rpx)
+        red = np.zeros((VH, VW), np.float32)
+        pulse = 0.8 + 0.35 * math.sin(t * 8)
+        pts = np.c_[X * 16, Y * 16].astype(np.int32)
+        cv2.polylines(red, [pts], False, 1.0, 5, cv2.LINE_AA, shift=4)
+        E += red[..., None] * np.array([1.0, 0.18, 0.12], np.float32) * 1.6 * pulse * u
+        # Iceland's summit: an unlit pyre
+        X, Y, Z = self.globe.project(np.array([g["b"][0]]), np.array([g["b"][1]]), lat0, lon0, rpx)
+        self.blit(E, X[0], Y[0], self.spr[1.2] * 0.6 * u, np.array([0.7, 0.75, 0.85], np.float32))
+        mid = len(f) // 2
+        Xm, Ym, _ = self.globe.project(plat[mid:mid + 1], plon[mid:mid + 1], lat0, lon0, rpx)
+        self.gap_lbl = (float(Xm[0]), float(Ym[0]), u)
 
     def blit(self, E, x, y, spr, col):
         h = spr.shape[0] // 2
@@ -304,6 +353,13 @@ class Film:
             box([("The fire dies in Greenland.", f["call"], RED),
                  (f"Iceland is {g['dist']:.0f} km away. Both horizons", f["call2"], INK),
                  (f"together reach {g['reach']:.0f} km: {g['short']:.0f} km short.", f["call2"], INK)], a=a)
+        if self.gap_lbl is not None:
+            x, y, u = self.gap_lbl
+            txt = f"{self.gap['short']:.0f} km gap"
+            w = d.textlength(txt, font=f["stat"])
+            x = min(max(x + 26, 50), VW - 50 - w)
+            d.rounded_rectangle([x - 12, y - 26, x + w + 12, y + 26], 14, fill=(6, 10, 18, int(200 * u)))
+            d.text((x, y), txt, font=f["stat"], fill=RED + (int(255 * u),), anchor="lm")
         if self.t_ships <= t < self.t_ships + 2.6:
             a = 255 * min(1, (t - self.t_ships) / 0.3)
             box([("Close the loop with fire ships", f["call"], GOLD_T), ("a fire 30 m up the mast, seen 21 km", f["call2"], INK)], a=a)
