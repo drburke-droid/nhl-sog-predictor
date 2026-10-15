@@ -27,6 +27,22 @@ SHIP = np.array([1.0, 0.80, 0.45], np.float32)
 R_EARTH = 6371.0088
 
 
+PEAKS = {"Muztagh Ata, in China's Pamir mountains": (38.276, 75.116), "Ismoil Somoni Peak, Tajikistan": (38.942, 72.019),
+         "Mont Blanc": (45.833, 6.865), "Mount Ararat": (39.702, 44.298), "Mount Foraker": (62.961, -151.399),
+         "Mount Blackburn": (61.731, -143.433), "Denali": (63.069, -151.007), "Mount Logan": (60.567, -140.405),
+         "Mount Saint Elias": (60.292, -140.931), "Mount Bona": (61.385, -141.749), "Kongur Tagh, China": (38.594, 75.313),
+         "Lenin Peak": (39.343, 72.877), "Khan Tengri": (42.211, 80.175), "Belukha": (49.807, 86.590),
+         "Klyuchevskaya Sopka": (56.056, 160.642), "Gunnbjørn Fjeld": (68.919, -29.898), "Damavand": (35.952, 52.110),
+         "Mount Elbrus": (43.355, 42.439), "Alam-Kuh": (36.379, 50.960), "Sabalan": (38.266, 47.835)}
+
+
+def peak_name(lat, lon, km=4.0, default=None):
+    for nm, (la, lo) in PEAKS.items():
+        if gc_km((lat, lon), (la, lo)) < km:
+            return nm
+    return default
+
+
 def font(n, s):
     return ImageFont.truetype(os.path.join(FD, n), s, layout_engine=ImageFont.Layout.RAQM)
 
@@ -55,7 +71,9 @@ def bearing(a, b):
 
 class Globe:
     def __init__(self):
-        tex = cv2.imread(os.path.join(DATA, "globe_tex.png"))[..., ::-1].astype(np.float32) / 255
+        # the world texture (globe_texture_world.py: corrected Greenland ice sheet), at half resolution
+        tex = cv2.imread(os.path.join(DATA, "globe_tex_world.png"))
+        tex = cv2.resize(tex, (tex.shape[1] // 2, tex.shape[0] // 2), interpolation=cv2.INTER_AREA)[..., ::-1].astype(np.float32) / 255
         self.tex = tex
         self.TH, self.TW = tex.shape[:2]
 
@@ -129,9 +147,10 @@ class Film:
         hi = int(np.argmax([self.hz[i] if self.kind[i] == "fire" else 0 for i in range(no)]))
         lg = int(np.argmax(self.hop_km[:no]))
         br = next(i for i in range(1, no) if self.country[i - 1] == "Russia" and self.country[i].startswith("USA"))
-        self.events = {hi: [(f"Highest fire: {self.hz[hi]:,.0f} m", "call", GOLD_T), ("Muztagh Ata, in China's Pamir mountains", "call2", INK)],
+        nm = lambda i: peak_name(self.lat[i], self.lon[i], default=f"a summit in {self.country[i]}")
+        self.events = {hi: [(f"Highest fire: {self.hz[hi]:,.0f} m", "call", GOLD_T), (nm(hi), "call2", INK)],
                        br: [("The Bering Strait", "call", GOLD_T), (f"Russia → Alaska in one {self.hop_km[br]:.0f} km jump", "call2", INK)],
-                       lg: [(f"Longest sightline: {self.hop_km[lg]:.0f} km", "call", GOLD_T), ("Mount Foraker → Mount Blackburn, Alaska", "call2", INK)]}
+                       lg: [(f"Longest sightline: {self.hop_km[lg]:.0f} km", "call", GOLD_T), (f"{nm(lg - 1)} → {nm(lg)}", "call2", INK)]}
         self.gap = self.gap_numbers()
         self.timeline()
         self.f = dict(title=font("Inter-Black.otf", 60), sub=font("Inter-Medium.otf", 30), big=font("InterDisplay-Bold.otf", 120),

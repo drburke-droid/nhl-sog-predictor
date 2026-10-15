@@ -46,6 +46,11 @@ def main():
     eu = np.nonzero(reached & (lat > 54) & (lat < 72) & (lon > -11) & (lon < 20))[0]       # N Atlantic coast of Europe
     isl = {nm: np.nonzero((~reached) & (lat > b[0]) & (lat < b[1]) & (lon > b[2]) & (lon < b[3]))[0] for nm, b in ISLANDS.items()}
     far = far[lon[far] > -45]                                       # Greenland's east side, facing Europe
+    for nm, b in ISLANDS.items():                                   # an island the land chain reaches is a start too
+        got = np.nonzero(reached & (lat > b[0]) & (lat < b[1]) & (lon > b[2]) & (lon < b[3]))[0]
+        if len(got):
+            print(f"  {nm}: {len(got)} summits reached by the land chain", flush=True)
+            far = np.r_[far, got]
     far, eu = thin(far, lat, lon, H, 25.0), thin(eu, lat, lon, H, 30.0)
     isl = {k: thin(v, lat, lon, H, 10.0) if len(v) else v for k, v in isl.items()}
     nodes = np.r_[far, eu, np.concatenate(list(isl.values()))].astype(np.int64)

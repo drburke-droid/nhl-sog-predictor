@@ -1,4 +1,5 @@
-"""Verify the loop at high resolution (Terrarium zoom 10, ~4x finer than the search):
+"""Verify the loop at high resolution (Terrarium zoom 10, ~4x finer than the search; zoom 11 on
+Greenland, where zoom 10 often shows the bedrock under the ice sheet):
   * each fire's summit must really be there: zoom-10 max within 600 m >= search height - 100 m
   * each fire-to-fire sightline must clear zoom-10 terrain sampled every 150 m
 Failures are appended to data/invalid_nodes.json / data/banned_edges.json for the next search.
@@ -17,10 +18,19 @@ Z = 10
 TILE_DIR = os.path.join(DATA, f"z{Z}")
 URL = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
 CACHE = {}
+# Terrarium's zoom 10 shows bedrock under much of Greenland's ice sheet; zoom 11 has the ice surface
+GREENLAND = (59.0, 84.0, -73.6, -10.0)
 
 
-def tile_xy(lat, lon):
-    n = 2 ** Z
+def zoom_for(lat, lon):
+    a, b, c, d = GREENLAND
+    g = (np.asarray(lat) >= a) & (np.asarray(lat) <= b) & (np.asarray(lon) >= c) & (np.asarray(lon) <= d)
+    g &= ~((np.asarray(lat) < 67.3) & (np.asarray(lon) > -31.5))           # Iceland
+    return np.where(g, 11, Z)
+
+
+def tile_xy(lat, lon, z=Z):
+    n = 2.0 ** np.asarray(z)
     s = np.sin(np.radians(lat))
     fx = (np.asarray(lon) + 180) / 360 * n
     fy = (0.5 - np.log((1 + s) / (1 - s)) / (4 * np.pi)) * n
@@ -28,17 +38,19 @@ def tile_xy(lat, lon):
 
 
 def fetch(t):
-    x, y = t
-    path = os.path.join(TILE_DIR, f"{x}_{y}.npy")
+    z, x, y = t
+    d = os.path.join(DATA, f"z{z}")
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, f"{x}_{y}.npy")
     if os.path.exists(path):
         return t, np.load(path)
     for a in range(6):
         try:
-            raw = urllib.request.urlopen(URL.format(z=Z, x=x % 2 ** Z, y=y), timeout=30).read()
+            raw = urllib.request.urlopen(URL.format(z=z, x=x % 2 ** z, y=y), timeout=30).read()
             im = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)[..., ::-1].astype(np.float32)
             h = im[..., 0] * 256 + im[..., 1] + im[..., 2] / 256 - 32768
             import fetch_dem as F1
-            F1.Z = Z
+            F1.Z = z
             h = np.maximum(F1.despike(h, y), 0).astype(np.float32)
             np.save(path, h)
             return t, h
@@ -54,18 +66,68 @@ def ensure(tiles):
             CACHE[t] = h
 
 
-def elev(lat, lon):
-    fx, fy = tile_xy(lat, lon)
+_GI = {}
+
+
+def greenland_floor(lat, lon):
+    """Inside Greenland's ice sheet zoom 11 still has bedrock patches: the hole-filled grid
+    (fix_greenland.py holes) gives the ice surface there (NaN elsewhere)."""
+    if not _GI:
+        meta = json.load(open(os.path.join(DATA, "mosaic_z8max_meta.json")))
+        gi = json.load(open(os.path.join(DATA, "greenland_interior.json")))
+        _GI.update(meta=meta, gi=gi, mask=np.load(os.path.join(DATA, "greenland_interior.npy")),
+                   mos=np.load(os.path.join(DATA, "mosaic_z8max.npy"), mmap_mode="r"))
+    meta, gi = _GI["meta"], _GI["gi"]
+    Wm = meta["width"]
+    s_ = np.sin(np.radians(lat))
+    r = ((0.5 - 0.5 * np.log((1 + s_) / (1 - s_)) / (2 * np.pi)) * Wm - meta["row0_px"]).astype(int)
+    c = ((np.asarray(lon) + 180) / 360 * Wm).astype(int)
+    out = np.full(len(r), np.nan, np.float32)
+    inb = (r >= gi["r0"]) & (r < gi["r1"]) & (c >= gi["c0"]) & (c < gi["c1"])
+    for i in np.nonzero(inb)[0]:
+        rr, cc = r[i] - gi["r0"], c[i] - gi["c0"]
+        if (_GI["mask"][rr, cc >> 3] >> (7 - (cc & 7))) & 1:
+            out[i] = _GI["mos"][r[i], c[i]]
+    return out
+
+
+def elev(lat, lon, z=None):
+    lat = np.asarray(lat, float); lon = np.asarray(lon, float)
+    out = _elev(lat, lon, z)
+    g = zoom_for(lat, lon) == 11
+    if g.any() and os.path.exists(os.path.join(DATA, "greenland_interior.json")):
+        fl = greenland_floor(lat[g], lon[g])
+        out[g] = np.where(np.isnan(fl), out[g], np.maximum(out[g], np.nan_to_num(fl)))
+    return out
+
+
+def _elev(lat, lon, zz=None):
+    z = zoom_for(lat, lon) if zz is None else np.full(len(lat), zz)
+    fx, fy = tile_xy(lat, lon, z)
     tx, ty = np.floor(fx).astype(int), np.floor(fy).astype(int)
-    ensure(list(zip(tx.tolist(), ty.tolist())))
+    ensure(list(zip(z.tolist(), tx.tolist(), ty.tolist())))
     out = np.empty(len(fx), np.float32)
     px, py = (fx - tx) * 256 - 0.5, (fy - ty) * 256 - 0.5
     for i in range(len(fx)):
-        h = CACHE[(tx[i], ty[i])]
+        h = CACHE[(int(z[i]), tx[i], ty[i])]
         x0 = min(max(int(px[i]), 0), 254); y0 = min(max(int(py[i]), 0), 254)
         ax = min(max(px[i] - x0, 0), 1); ay = min(max(py[i] - y0, 0), 1)
         out[i] = (h[y0, x0] * (1 - ax) + h[y0, x0 + 1] * ax) * (1 - ay) + (h[y0 + 1, x0] * (1 - ax) + h[y0 + 1, x0 + 1] * ax) * ay
     return out
+
+
+def summit_hr(lat, lon, r_km=0.3, z=12):
+    """The summit at zoom 12 (~30 m): highest point within r_km. Catches fake low hills (data spikes under
+    the despiker's 150 m threshold) that zoom 9/10 shows in flat country."""
+    a = np.linspace(0, 2 * np.pi, 24, endpoint=False)
+    pts = [(lat, lon)] + [(lat + r * np.sin(t) / 111.2, lon + r * np.cos(t) / (111.2 * np.cos(np.radians(lat))))
+                          for r in (0.05, 0.1, 0.15, 0.2, 0.25, r_km) for t in a]
+    p = np.array(pts)
+    return float(elev(p[:, 0], p[:, 1], z).max())
+
+
+def summit_tol(h):
+    return 25.0 if h < 400 else 100.0
 
 
 def summit_max(lat, lon, r_km=0.6):
@@ -108,10 +170,11 @@ def main():
             hz.append(s["h_m"])
             continue
         m = summit_max(s["lat"], s["lon"])
-        hz.append(max(s["h_m"], m))              # the fire goes on the true (zoom-10) summit within 600 m
-        if m < s["h_m"] - 100:
+        m12 = summit_hr(s["lat"], s["lon"])
+        hz.append(m12)                           # the fire goes on the true (zoom-12) summit within 300 m
+        if m < s["h_m"] - 100 or m12 < s["h_m"] - summit_tol(s["h_m"]):
             bad_nodes.append([round(s["lat"], 5), round(s["lon"], 5)])
-            print(f"  fire {i}: search height {s['h_m']:.0f} m, zoom-10 max {m:.0f} m -> invalid", flush=True)
+            print(f"  fire {i}: search height {s['h_m']:.0f} m, zoom-10 max {m:.0f} m, zoom-12 {m12:.0f} m -> invalid", flush=True)
     for i in range(1, len(st)):
         a, b = st[i - 1], st[i]
         ha, hb = hz[i - 1] / 1000 + CH.PYRE_KM, hz[i] / 1000 + CH.PYRE_KM

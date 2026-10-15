@@ -2,9 +2,10 @@
 Canada and Siberia come from good sources) and zoom 9 south of it, despiked, reduced to
   * a zoom-8-resolution grid holding each cell's MAXIMUM (so no narrow ridge is smoothed away)
   * the highest summit in every ~12 km cell (candidate fire sites)
-    python fetch_dem2.py
+    python fetch_dem2.py          (18-84N: zoom 10 north of 56N, zoom 9 below)
+    python fetch_dem2.py south    (60S-18N at zoom 9, for the most-countries chain)
 """
-import os, json, time, math
+import os, sys, json, time, math
 import numpy as np
 import cv2
 from concurrent.futures import ThreadPoolExecutor
@@ -63,13 +64,18 @@ def despike(h, z, y):
     return F1.despike(h, y)
 
 
-def main():
+def main(band="north"):
     t0 = time.time()
-    jobs = [(10, x, y) for x, y in land_tiles(10, SPLIT, LAT_MAX)] + [(9, x, y) for x, y in land_tiles(9, LAT_MIN, SPLIT)]
+    if band == "south":                  # the rest of the inhabited world, for the most-countries chain
+        lat_min, lat_max, sfx = -60.0, LAT_MIN, "_south"
+        jobs = [(9, x, y) for x, y in land_tiles(9, lat_min, lat_max)]
+    else:
+        lat_min, lat_max, sfx = LAT_MIN, LAT_MAX, ""
+        jobs = [(10, x, y) for x, y in land_tiles(10, SPLIT, LAT_MAX)] + [(9, x, y) for x, y in land_tiles(9, LAT_MIN, SPLIT)]
     print("tiles:", len(jobs), f"{time.time() - t0:.0f}s", flush=True)
     nM = 2 ** ZM * 256
-    row0 = int(merc_y(LAT_MAX) * nM)
-    rows = int(merc_y(LAT_MIN) * nM) - row0 + 1
+    row0 = int(merc_y(lat_max) * nM)
+    rows = int(merc_y(lat_min) * nM) - row0 + 1
     mosaic = np.zeros((rows, nM), np.int16)
     peaks = []
     kern = np.ones((9, 9), np.uint8)
@@ -112,12 +118,12 @@ def main():
             if i % 5000 == 0:
                 print(f"  {i}/{len(jobs)} {time.time() - t0:.0f}s", flush=True)
     peaks = np.concatenate(peaks)
-    np.save(os.path.join(DATA, "mosaic_z8max.npy"), mosaic)
-    np.save(os.path.join(DATA, "peaks_hr.npy"), peaks)
+    np.save(os.path.join(DATA, f"mosaic_z8max{sfx}.npy"), mosaic)
+    np.save(os.path.join(DATA, f"peaks_hr{sfx}.npy"), peaks)
     json.dump({"z": ZM, "row0_px": row0, "width": nM, "rows": rows, "kind": "max"},
-              open(os.path.join(DATA, "mosaic_z8max_meta.json"), "w"))
+              open(os.path.join(DATA, f"mosaic_z8max{sfx}_meta.json"), "w"))
     print("peaks:", len(peaks), f"{time.time() - t0:.0f}s")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1] if len(sys.argv) > 1 else "north")
