@@ -137,31 +137,53 @@ def solve():
     return nd, nodes, parent, dist, reach, unreach, names
 
 
+OK_PATH = os.path.join(DATA, "cap_verified.json")
+
+
 def verify_tree(nd, nodes, parent, caps_nodes):
-    """Zoom-10/12 check of every fire and sightline in the tree; returns (bad nodes, bad edges, heights)."""
+    """Zoom-10/12 check of every fire and sightline in the tree; returns (bad nodes, bad edges, heights).
+    Fires and sightlines that already passed are remembered (cap_verified.json), so a round only checks new ones."""
+    okd = json.load(open(OK_PATH)) if os.path.exists(OK_PATH) else {"nodes": {}, "edges": []}
+    ok_n = {int(k): v for k, v in okd["nodes"].items()}
+    ok_e = set(tuple(e) for e in okd["edges"])
     hz, bad_n, bad_e = {}, [], []
+    n_new = 0
     for v in nodes:
         la, lo, h = float(nd["lat"][v]), float(nd["lon"][v]), float(nd["h"][v])
         if v in caps_nodes:                                   # capital beacons: their height is zoom-12 ground
             hz[v] = h
             continue
+        if int(v) in ok_n:
+            hz[v] = ok_n[int(v)]
+            continue
+        n_new += 1
         ok, h_ = V.summit_check(la, lo, h)
         hz[v] = h_
-        if not ok:
+        if ok:
+            ok_n[int(v)] = float(h_)
+        else:
             bad_n.append(int(v))
     for v in nodes:
         u = parent[v]
         if u < 0:
             continue
+        key = tuple(sorted([int(u), int(v)]))
+        if key in ok_e:
+            continue
+        n_new += 1
         ok, m, at = V.hop_clear((float(nd["lat"][u]), float(nd["lon"][u])), (float(nd["lat"][v]), float(nd["lon"][v])),
                                 hz[u] / 1000 + CH.PYRE_KM, hz[v] / 1000 + CH.PYRE_KM)
-        if not ok:
-            bad_e.append(sorted([int(u), int(v)]))
+        if ok:
+            ok_e.add(key)
+        else:
+            bad_e.append(list(key))
+    json.dump({"nodes": {str(k): v for k, v in ok_n.items()}, "edges": sorted(ok_e)}, open(OK_PATH, "w"))
+    print(f"  {n_new} new summits and sightlines checked", flush=True)
     return bad_n, bad_e, hz
 
 
 def main():
-    for rnd in range(1, 13):
+    for rnd in range(1, 61):
         print(f"=== round {rnd}", flush=True)
         nd, nodes, parent, dist, reach, unreach, names = solve()
         capn = {c["node"] for c in reach}
