@@ -121,10 +121,19 @@ def los_batch(mos, row0, W, P, H, u, targets, reff, step):
     return out
 
 
-def load_terrain():
+def north_mosaic():
+    """The northern max-pooled grid (60S-84N rows start at row0). It is the top of mosaic_global.npy
+    (same row0, width and values), so that file stands in when mosaic_z8max.npy has been removed for space."""
     meta = json.load(open(os.path.join(DATA, "mosaic_z8max_meta.json")))
-    mos = np.ascontiguousarray(np.load(os.path.join(DATA, "mosaic_z8max.npy"), mmap_mode="r"))
-    return mos, float(meta["row0_px"]), int(meta["width"])
+    p = os.path.join(DATA, "mosaic_z8max.npy")
+    if os.path.exists(p):
+        return np.load(p, mmap_mode="r"), meta
+    return np.load(os.path.join(DATA, "mosaic_global.npy"), mmap_mode="r")[:meta["rows"]], meta
+
+
+def load_terrain():
+    mos, meta = north_mosaic()
+    return np.ascontiguousarray(mos), float(meta["row0_px"]), int(meta["width"])
 
 
 def candidates():

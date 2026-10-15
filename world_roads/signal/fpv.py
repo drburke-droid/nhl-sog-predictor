@@ -9,6 +9,8 @@ and the same refraction as the search (k = 0.13). Fires, keepers and sparks are 
 
     python fpv.py still 13.0     -> out/fpv_still.png
     python fpv.py                -> out/fpv.mp4 (silent)
+    python fpv.py alt            -> out/fpv_alt_tail.mp4: the rise (t >= ALT_FROM) with Video 2's last caption;
+                                    Video 2 joins it to the first ALT_FROM s of fpv.mp4
 """
 import os, sys, json, math, time, subprocess
 import numpy as np
@@ -190,18 +192,21 @@ def smoother(x):
     return x * x * x * (x * (6 * x - 15) + 10)
 
 
+ALT_FROM = 32.6                                   # Video 2's caption change starts at the rise
+
+
 class Scene:
-    def __init__(self):
+    def __init__(self, alt=False):
+        self.alt = alt
         d = np.load(os.path.join(DATA, "fpv_terrain.npz"))
         self.T = np.ascontiguousarray(d["coarse"]); self.cx0 = float(d["cx0"]); self.cy0 = float(d["cy0"]); self.cd = float(d["cd"])
         self.F = np.ascontiguousarray(d["fine"]); self.fpos = d["fpos"].astype(np.float64); self.fd = float(d["fd"])
         self.hmax = float(self.T.max()) + 0.05
-        L = json.load(open(os.path.join(DATA, "loop.json")))
-        st = L["stations"]
         self.fires = []
-        for k, i in enumerate(FT.STATIONS):
-            x, y = FT.fwd(st[i]["lat"], st[i]["lon"])
-            x, y = float(x), float(y)
+        for k in range(len(self.fpos)):
+            # each fine patch is centred on its station (fpv_terrain.py), which keeps the scene fixed
+            # even though loop.json has changed since (Mont Blanc, the Apennines and the Dolomites)
+            x, y = float(self.fpos[k, 0] + FT.FINE_HALF), float(self.fpos[k, 1] + FT.FINE_HALF)
             # the pyre goes on the highest fine-grid point within 250 m of the station
             f = self.F[k]
             gx, gy = (x - self.fpos[k, 0]) / self.fd, (y - self.fpos[k, 1]) / self.fd
@@ -292,6 +297,9 @@ class Scene:
             (29.9, 32.3, [("Fire to fire, peak to peak", 48, (255, 186, 80), "Bold")]),
             (33.2, 40.4, [("How far could the message go?", 50, (240, 244, 250), "Bold")]),
         ]
+        if self.alt:                                # Video 2: the network nothing can hack
+            self.caps[-1] = (33.2, 40.4, [("Nothing to hack. Nothing to switch off.", 50, (255, 186, 80), "Bold"),
+                                          ("But how fast could it reach every capital on Earth?", 36, (240, 244, 250), "SemiBold")])
         self.rings = [(13.2, 15.8, 0, "Mont Blanc · 311 km"), (26.9, 29.7, 1, "Apennines · 244 km")]
 
     def fire_state(self, k, t):
@@ -594,9 +602,9 @@ class Scene:
         E[y0:y1, x0:x1] += g[..., None] * np.array(col, np.float32)
 
 
-def render(still=None):
+def render(still=None, alt=False):
     os.makedirs(OUT, exist_ok=True)
-    S = Scene()
+    S = Scene(alt)
     print(f"fires at {[np.round(f_, 3).tolist() for f_ in S.fires]}, hops {np.round(S.dist, 1)} km", flush=True)
     print(f"camB {np.round(S.camB, 4)}, camC {np.round(S.camC, 4)}", flush=True)
     if still is not None:
@@ -605,13 +613,14 @@ def render(still=None):
             cv2.imwrite(os.path.join(OUT, f"fpv_still_{s:05.1f}.png"), S.frame(s)[..., ::-1])
             print(f"still {s}: {time.time() - t0:.1f}s", flush=True)
         return
-    vid = os.path.join(OUT, "fpv.mp4")
+    vid = os.path.join(OUT, "fpv_alt_tail.mp4" if alt else "fpv.mp4")
     p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
                           "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", vid],
                          stdin=subprocess.PIPE)
     n = int(round(S.total * FPS))
+    i0 = int(round(ALT_FROM * FPS)) if alt else 0
     t0 = time.time()
-    for i in range(n):
+    for i in range(i0, n):
         p.stdin.write(S.frame(i / FPS).tobytes())
         if i % 60 == 0:
             print(f"frame {i}/{n} {time.time() - t0:.0f}s", flush=True)
@@ -622,5 +631,7 @@ def render(still=None):
 if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[1] == "still":
         render([float(a) for a in sys.argv[2:]])
+    elif len(sys.argv) > 1 and sys.argv[1] == "alt":
+        render(alt=True)
     else:
         render()

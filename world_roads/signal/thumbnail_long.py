@@ -1,6 +1,7 @@
-"""Thumbnails for the long signal-fire video (1280x720).
+"""Thumbnails for the two long signal-fire videos (1280x720).
 
-    python thumbnail_long.py   -> out/long/thumb_A.png (the question), out/long/thumb_B.png (the countries)
+    python thumbnail_long.py   -> Video 1: out/long/thumb_A.png (the question), thumb_B.png (the number)
+                                  Video 2: out/long/thumb_ai_A.png (AI took the internet), thumb_ai_B.png (the hours)
 """
 import os, json, math
 import numpy as np
@@ -44,10 +45,6 @@ def main():
     st = L["stations"]
     la1 = np.array([s["lat"] for s in st]); lo1 = np.array([s["lon"] for s in st])
     n_relays = len(st) - 1
-    T = json.load(open(os.path.join(DATA, "tour.json")))
-    la2, lo2 = np.array(T["lat"]), np.array(T["lon"])
-    cj = json.load(open(os.path.join(DATA, "countries.json")))
-    n_c = len({c for c in T["counts_for"] if c >= 0 and cj["counts"][c]})
     # A: the beacon (left) + the ring around the world (right)
     fire = cv2.imread(os.path.join(OUT, "thumb_fire.png"))[..., ::-1]
     fire = cv2.resize(fire[110:110 + 760, 690:690 + 590], (560, 720), interpolation=cv2.INTER_AREA).astype(np.float32)
@@ -61,14 +58,83 @@ def main():
     text_block(im, [("HOW MANY", 86, (255, 255, 255)), ("FIRES TO", 86, (255, 255, 255))], 40, 40)
     text_block(im, [("CIRCLE", 86, (255, 186, 80)), ("EARTH?", 86, (255, 186, 80))], 40, 470)
     im.save(os.path.join(OUT, "thumb_A.png"))
-    # B: the countries
-    ring = globe_ring(22.0, 30.0, 700, 1920 * 0.62, 1080 / 2 + 40, [(la2, lo2, (1.0, 0.78, 0.35), 0.8)])
+    # B: the number
+    ring = globe_ring(48.0, 20.0, 640, 1920 * 0.64, 1080 / 2 + 20, [(la1, lo1, (1.0, 0.55, 0.15), 1.0)])
     ring = cv2.resize(ring, (TW, TH), interpolation=cv2.INTER_AREA)
     im = Image.fromarray(ring)
-    text_block(im, [(f"{n_c}", 190, (255, 186, 80)), ("COUNTRIES", 84, (255, 255, 255)), ("ONE CHAIN", 84, (255, 255, 255)),
-                    ("OF FIRE", 84, (255, 255, 255))], 60, 110)
+    text_block(im, [(f"{n_relays}", 200, (255, 186, 80)), ("FIRES", 92, (255, 255, 255)), ("AROUND THE", 64, (255, 255, 255)),
+                    ("WORLD", 92, (255, 255, 255))], 50, 70)
     im.save(os.path.join(OUT, "thumb_B.png"))
-    print("wrote thumbnails", n_relays, n_c)
+    ai_thumbs()
+    print("wrote thumbnails", n_relays)
+
+
+def globe_tree(lat0, lon0, rpx, cx, cy, la, lo, par, red=()):
+    g = G.Globe16()
+    img = g.render(lat0, lon0, rpx, cx=cx, cy=cy)
+    Ly = G.Layer()
+    X, Y, Z = g.project(la, lo, lat0, lon0, rpx, cx=cx, cy=cy)
+    for i, p in enumerate(par):
+        if p >= 0 and Z[i] > 0.02 and Z[p] > 0.02:
+            Ly.line((X[p], Y[p]), (X[i], Y[i]), 1.1, 2)
+    for i in range(len(la)):
+        if Z[i] > 0.02:
+            Ly.fire(X[i], Y[i], 0.9, 1.0, np.array((1.0, 0.7, 0.3), np.float32))
+    out = Ly.compose(img, exposure=1.35)
+    if red:
+        im = Image.fromarray(out)
+        d = ImageDraw.Draw(im)
+        rx, ry, rz = g.project(np.array([c[0] for c in red]), np.array([c[1] for c in red]), lat0, lon0, rpx, cx=cx, cy=cy)
+        for x, y, z in zip(rx, ry, rz):
+            if z > 0.05:
+                d.line([(x - 13, y - 13), (x + 13, y + 13)], fill=ST.RED, width=7)
+                d.line([(x - 13, y + 13), (x + 13, y - 13)], fill=ST.RED, width=7)
+        out = np.asarray(im)
+    return out
+
+
+def static_panel(w, h, seed=5):
+    """TV static with torn bands, for the NO SIGNAL look."""
+    rng = np.random.default_rng(seed)
+    st = cv2.resize((rng.random((h // 4, w // 4)) * 255).astype(np.uint8), (w, h), interpolation=cv2.INTER_NEAREST).astype(np.float32)
+    img = np.repeat(st[..., None] * 0.5, 3, -1)
+    for _ in range(9):
+        y0 = int(rng.integers(0, h - 30)); hh = int(rng.integers(5, 40))
+        img[y0:y0 + hh] = np.roll(img[y0:y0 + hh], int(rng.integers(-80, 80)), axis=1)
+    img[..., 0] = np.roll(img[..., 0], 5, axis=1); img[..., 2] = np.roll(img[..., 2], -5, axis=1)
+    img[::3] *= 0.7
+    return img
+
+
+def ai_thumbs():
+    T = json.load(open(os.path.join(DATA, "capitals_tree.json")))
+    F = T["fires"]
+    la, lo = np.array([f["lat"] for f in F]), np.array([f["lon"] for f in F])
+    par = np.array([f["parent"] for f in F])
+    red = [(c["lat"], c["lon"]) for c in T["unreachable"]]
+    hours = T["capitals"][-1]["hours"]
+    # A: AI took the internet. We used fire.
+    tree = globe_tree(30.0, 25.0, 760, 1920 * 0.66, 1080 / 2 + 60, la, lo, par)
+    tree = cv2.resize(tree, (TW, TH), interpolation=cv2.INTER_AREA).astype(np.float32)
+    w = np.clip((np.arange(TW) - 330) / 260.0, 0, 1)[None, :, None]
+    canvas = static_panel(TW, TH) * (1 - w) * 0.75 + tree * w + tree * (1 - w) * 0.25
+    im = Image.fromarray(np.clip(canvas, 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rectangle([36, 300, 446, 400], fill=(0, 0, 0, 225))
+    d.text((241, 350), "NO SIGNAL", font=ST.font(62, "Bold"), fill=(240, 240, 240), anchor="mm")
+    text_block(im, [("AI TOOK THE", 80, (255, 255, 255)), ("INTERNET", 80, (255, 255, 255))], 40, 40)
+    text_block(im, [("WE USED", 80, (255, 186, 80)), ("FIRE", 112, (255, 186, 80))], 40, 470)
+    im.save(os.path.join(OUT, "thumb_ai_A.png"))
+    # B: the hours
+    tree = globe_tree(25.0, 30.0, 700, 1920 * 0.64, 1080 / 2 + 30, la, lo, par, red)
+    im = Image.fromarray(cv2.resize(tree, (TW, TH), interpolation=cv2.INTER_AREA))
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rectangle([50, 52, 370, 112], fill=(200, 40, 30, 235))
+    d.text((210, 82), "NO INTERNET", font=ST.font(40, "Bold"), fill=(255, 255, 255), anchor="mm")
+    text_block(im, [(f"{int(round(hours))} HOURS", 132, (255, 186, 80)), ("TO WARN THE", 64, (255, 255, 255)),
+                    ("WORLD", 64, (255, 255, 255)), ("BY FIRE", 64, (255, 255, 255))], 50, 140)
+    im.save(os.path.join(OUT, "thumb_ai_B.png"))
+    print(f"wrote AI thumbnails ({int(round(hours))} h)")
 
 
 if __name__ == "__main__":

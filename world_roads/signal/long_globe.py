@@ -1,5 +1,6 @@
-"""Globe sections of the long video (16:9): hook, history, rules, the journey around the world,
-the most-countries tour, outro. Rendered through longform.Section.
+"""Globe sections of the two long videos (16:9), rendered through longform.Section.
+  Video 1 (around the world): hook, history, rules, journey, outro
+  Video 2 (if an AI took over every phone, how fast could fire warn every capital?): cold, plan, wave, outro2
 
     python long_globe.py journey            -> out/long/journey.mp4
     python long_globe.py journey 40 80.5    -> stills
@@ -7,7 +8,6 @@ the most-countries tour, outro. Rendered through longform.Section.
 import os, sys, json, math
 import numpy as np
 import cv2
-import shapely
 from PIL import Image, ImageDraw
 import style as ST
 import globe16 as G
@@ -430,29 +430,36 @@ class Journey(Section):
 # ====================================================================== rules
 class Rules(Section):
     name, dur = "rules", 17.0
+    title = "THE CHALLENGE"
+    rules = [("Start in Plymouth,", "where England's Armada beacons were lit"),
+             ("Fires only on real mountaintops", "a bonfire 10 m tall on the summit"),
+             ("Each fire must see the next one", "over the curve of the Earth and every ridge between"),
+             ("All the way around the world", "and back to Plymouth"),
+             ("As few fires as possible", "")]
+    focus, lit = PLYMOUTH, True
 
     def __init__(self):
         self.g = G.Globe16()
 
     def frame(self, t):
         u = smooth(t / self.dur)
-        lat0, lon0, rpx = 47.0, -4.142 + 18 * (1 - u), 1100 + 500 * u
+        lat0, lon0, rpx = 47.0, self.focus[1] + 18 * (1 - u), 1100 + 500 * u
         cx = W * 0.70
         img = self.g.render(lat0, lon0, rpx, cx=cx)
-        X, Y, Z = self.g.project(np.array([PLYMOUTH[0]]), np.array([PLYMOUTH[1]]), lat0, lon0, rpx, cx=cx)
+        X, Y, Z = self.g.project(np.array([self.focus[0]]), np.array([self.focus[1]]), lat0, lon0, rpx, cx=cx)
+        self.focus_xy = (float(X[0]), float(Y[0]))
         Ly = G.Layer()
-        Ly.fire(X[0], Y[0], 1.0 + 0.15 * math.sin(t * 9), 1.3)
+        if self.lit:
+            Ly.fire(X[0], Y[0], 1.0 + 0.15 * math.sin(t * 9), 1.3)
+        else:                                                         # the pyre, built and waiting
+            Ly.blit(X[0], Y[0], 1.3, 0.5, (0.6, 0.65, 0.8))
         fr = Ly.compose(img)
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
         d.rounded_rectangle([70, 120, 900, 960], 28, fill=ST.PANEL + (215,))
         a0 = ST.fade(t, 0.3, self.dur, 0.5, 0.6)
-        d.text((120, 170), "THE CHALLENGE", font=ST.font(30, "Bold"), fill=ST.GOLD + (int(255 * a0),), anchor="la")
-        rules = [("Start in Plymouth,", "where England's Armada beacons were lit"),
-                 ("Fires only on real mountaintops", "a bonfire 10 m tall on the summit"),
-                 ("Each fire must see the next one", "over the curve of the Earth and every ridge between"),
-                 ("All the way around the world", "and back to Plymouth"),
-                 ("As few fires as possible", "")]
+        d.text((120, 170), self.title, font=ST.font(30, "Bold"), fill=ST.GOLD + (int(255 * a0),), anchor="la")
+        rules = self.rules
         for k, (a, b) in enumerate(rules):
             al = ST.fade(t, 1.0 + k * 1.6, self.dur, 0.5, 0.6)
             y = 250 + k * 135
@@ -468,240 +475,346 @@ class Rules(Section):
         return (out * f).astype(np.uint8) if f < 1 else out
 
 
-# ====================================================================== the most-countries tour
-class Tour(Section):
-    name = "tour"
-    INTRO, OUTRO = 16.0, 12.0
-    # countries whose first fire gets a callout: (title, line-2 template). {hop} km from {prev}, {h} m
-    NOTES = {
-        "Netherlands": ("Saba: the Netherlands' highest mountain", "is in the Caribbean"),
-        "France": ("{place}", "an overseas part of France"),
-        "Vatican": ("Vatican City", "a fire on Vatican Hill, {h} m"),
-        "Monaco": ("Monaco", "a fire on the Rock of Monaco"),
-        "San Marino": ("San Marino", "{hop} km from {prev}"),
-        "Liechtenstein": ("Liechtenstein", "a summit safely inside its borders"),
-        "Japan": ("Japan", "{hop} km across the sea from {prev}"),
-        "Australia": ("Australia", "{hop} km across the Torres Strait from {prev}"),
-        "Solomon Islands": ("Solomon Islands", "{hop} km across the sea from {prev}"),
-        "Sri Lanka": ("Sri Lanka", "{hop} km across the Palk Strait from {prev}"),
-        "Malta": ("Malta", "{hop} km across the sea from {prev}"),
-        "Cyprus": ("Cyprus", "{hop} km across the sea from {prev}"),
-        "São Tomé & Príncipe": ("São Tomé & Príncipe", "{hop} km across the Gulf of Guinea from {prev}"),
-        "Yemen": ("Yemen", "{hop} km from {prev}"),
-        "Morocco": ("Morocco", "{hop} km from {prev}"),
-        "Barbados": ("Barbados", "{hop} km across the sea from {prev}"),
-        "Bahrain": ("Bahrain", "{hop} km from {prev}"),
-        "Singapore": ("Singapore", "a {h} m hill, {hop} km from {prev}"),
-        "Philippines": ("The Philippines", "{hop} km across the sea from {prev}"),
-        "Russia": ("Across the Bering Strait", "{hop} km from {prev} to Russia"),
-    }
+# ====================================================================== part 2: the analog backup
+FAMOUS = {"London", "Paris", "Berlin", "Madrid", "Rome", "Moscow", "Cairo", "Beijing", "Tokyo", "New Delhi", "Washington, D.C.",
+          "Ottawa", "Mexico City", "Brasília", "Buenos Aires", "Canberra", "Pretoria", "Nairobi", "Abuja", "Riyadh", "Tehran",
+          "Ankara", "Kyiv", "Seoul", "Jakarta", "Bangkok", "Lima", "Bogotá", "Santiago", "Kinshasa", "Addis Ababa", "Islamabad",
+          "Ulaanbaatar", "Hanoi", "Manila", "Havana", "Caracas", "Athens", "Stockholm", "Warsaw", "Vatican City", "Kabul"}
+CALLOUTS = ["London", "Paris", "Moscow", "Cairo", "New Delhi", "Beijing", "Tokyo", "Washington, D.C.", "Mexico City",
+            "Brasília", "Canberra"]
+
+
+def glitch(t, seed=0):
+    """'NO SIGNAL': TV static with torn, colour-split bands."""
+    rng = np.random.default_rng(int(t * 30) + seed)
+    small = (rng.random((H // 3, W // 3)) * 255).astype(np.uint8)
+    st = cv2.resize(small, (W, H), interpolation=cv2.INTER_NEAREST).astype(np.float32) * 0.55
+    img = np.repeat(st[..., None], 3, -1)
+    for _ in range(7):
+        y0 = int(rng.integers(0, H - 40)); hh = int(rng.integers(6, 60)); sh = int(rng.integers(-120, 120))
+        img[y0:y0 + hh] = np.roll(img[y0:y0 + hh], sh, axis=1)
+    img[..., 0] = np.roll(img[..., 0], 6, axis=1); img[..., 2] = np.roll(img[..., 2], -6, axis=1)
+    img[::3] *= 0.75
+    fr = np.clip(img, 0, 255).astype(np.uint8)
+    im = Image.fromarray(fr)
+    d = ImageDraw.Draw(im, "RGBA")
+    jx = int(rng.integers(-6, 7))
+    d.rectangle([W / 2 - 330, H / 2 - 80, W / 2 + 330, H / 2 + 80], fill=(0, 0, 0, 215))
+    d.text((W / 2 + jx, H / 2), "NO SIGNAL", font=ST.font(96, "Bold"), fill=(240, 240, 240, 255), anchor="mm")
+    return np.asarray(im)
+
+
+STRAITS = [("the Strait of Gibraltar", 35.95, -5.6), ("the Bosporus", 41.1, 29.05), ("the Dardanelles", 40.2, 26.4),
+           ("the Strait of Sicily", 37.2, 11.3), ("the Bab-el-Mandeb", 12.6, 43.4), ("the Strait of Hormuz", 26.6, 56.3),
+           ("the Bering Strait", 65.8, -169.0), ("the Darién", 8.0, -77.3), ("the Torres Strait", -10.2, 142.2),
+           ("the Suez Canal", 30.5, 32.4), ("the Caribbean islands", 11.5, -61.5)]
+
+
+def continent(cname, lat, lon, gj_cont):
+    """Continent of a fire: Natural Earth's, by country, with Russia split at the Urals, European Turkey and the Sinai."""
+    if cname == "Russia":
+        return "Asia" if lon > 60.0 else "Europe"
+    if cname == "Turkey" and lon < 29.2 and lat > 40.0:
+        return "Europe"
+    if cname == "Egypt" and lon > 32.4 and lat < 31.4:
+        return "Asia"
+    return gj_cont
+
+
+def crossings(F):
+    """[(relay, (continent, 'across the Strait of Gibraltar' / 'from Israel'))]: where the fire first reaches each continent."""
+    names = json.load(open(os.path.join(DATA, "countries.json")))["names"]
+    gj = json.load(open(os.path.join(ROOT, "data", "ne", "ne_10m_admin_0_countries.geojson")))
+    gc = [f["properties"]["CONTINENT"] for f in gj["features"]]
+    cont = [continent(names[f["cid"]], f["lat"], f["lon"], gc[f["cid"]]) if f["cid"] >= 0 else None for f in F]
+    seen, out = {cont[0]}, []
+    for i in sorted(range(len(F)), key=lambda i: F[i]["hop"]):
+        c, p = cont[i], F[i]["parent"]
+        if c in seen or c not in ("Africa", "Asia", "North America", "South America", "Oceania", "Europe") or p < 0:
+            continue
+        seen.add(c)
+        mid = slerp_ll((F[p]["lat"], F[p]["lon"]), (F[i]["lat"], F[i]["lon"]), 0.5)
+        near = [(gc_km(mid, (a, b)), nm) for nm, a, b in STRAITS]
+        dk, nm = min(near)
+        if names[F[p]["cid"]] == names[F[i]["cid"]] == "Russia":
+            how = "across the Urals"
+        else:
+            how = f"across {nm}" if dk < 300 else f"from {names[F[p]['cid']]}"
+        out.append((int(F[i]["hop"]), (c, how)))
+    return out
+
+
+class Alert(Section):
+    """If an AI took over every phone, cable, satellite and radio: how long to warn every capital by fire?"""
+    name = "alert"
+    GLITCH, SETUP_END, START_END = 2.6, 15.5, 25.0
+    END_HOLD = 17.0
 
     def __init__(self):
         self.g = G.Globe16()
-        T = json.load(open(os.path.join(DATA, "tour.json")))
-        self.T = T
-        self.lat = np.array(T["lat"]); self.lon = np.array(T["lon"])
-        cj = json.load(open(os.path.join(DATA, "countries.json")))
-        self.names, counts = cj["names"], cj["counts"]
-        cf = T.get("counts_for", T["cid"])
-        n = len(self.lat)
-        seen, self.new_at = set(), {}
-        for i in range(n):
-            c = cf[i]
-            if c >= 0 and counts[c] and c not in seen:
-                seen.add(c); self.new_at[i] = c
-        self.n_countries = len(seen)
-        self.reach_set = seen
-        # timeline
-        t = np.zeros(n)
-        cur = self.INTRO
-        self.notes = {}
-        for i in range(n):
-            if i:
-                cur += 0.42 if i in self.new_at else 0.075
-                if (i - 1) in self.notes:
-                    cur += 2.0
-            t[i] = cur
-            if i in self.new_at and self.names[self.new_at[i]] in self.NOTES and i > 0:
-                nm = self.names[self.new_at[i]]
-                prev_c = [T["cid"][j] for j in range(i - 1, -1, -1) if T["cid"][j] >= 0 and T["cid"][j] != T["cid"][i]]
-                prev = self.names[prev_c[0]] if prev_c else "the sea"
-                place = "Martinique" if self.lat[i] < 15.0 else "Guadeloupe"
-                hz = T.get("verified_heights_m", T["h_m"])
-                hop = gc_km((self.lat[i - 1], self.lon[i - 1]), (self.lat[i], self.lon[i]))
-                fill = dict(hop=f"{hop:.0f}", prev=prev, h=f"{hz[i]:.0f}", place=place)
-                t1, t2 = self.NOTES[nm]
-                if nm == "Netherlands" and not (17.55 < self.lat[i] < 17.7 and -63.3 < self.lon[i] < -63.2):
-                    t1, t2 = "Netherlands", "{hop} km from {prev}"
-                self.notes[i] = (t1.format(**fill), t2.format(**fill))
-        self.notes[0] = (f"Start: {self.names[self.new_at.get(0, cf[0])]}", "")
-        from render_fires import peak_name
-        hz_ = T.get("verified_heights_m", T["h_m"])
-        hops = [gc_km((self.lat[i - 1], self.lon[i - 1]), (self.lat[i], self.lon[i])) for i in range(1, n)]
-        lg = int(np.argmax(hops)) + 1
-        cn = lambda j: self.names[T["cid"][j]] if T["cid"][j] >= 0 else "the sea"
-        a_nm = peak_name(self.lat[lg - 1], self.lon[lg - 1], default=f"a summit in {cn(lg - 1)}")
-        self.notes[lg] = (f"Longest sightline: {hops[lg - 1]:.0f} km", f"{a_nm} to a summit in {cn(lg)}")
-        hi = int(np.argmax(hz_))
-        self.notes.setdefault(hi, (f"Highest fire: {hz_[hi]:,.0f} m", peak_name(self.lat[hi], self.lon[hi], default=cn(hi))))
-        # re-time with these notes included
-        t = np.zeros(n)
-        cur = self.INTRO
-        for i in range(n):
-            if i:
-                cur += 0.42 if i in self.new_at else 0.075
-                if (i - 1) in self.notes:
-                    cur += 2.0
-            t[i] = cur
-        self.t_lit = t
-        self.t_end = t[-1]
-        self.dur = self.t_end + self.OUTRO
-        self.hop_km = np.r_[0, [gc_km((self.lat[i - 1], self.lon[i - 1]), (self.lat[i], self.lon[i])) for i in range(1, n)]]
-        # smoothed camera path (unit vectors per frame)
-        fr_t = np.arange(int(self.dur * FPS) + 2) / FPS
-        k = np.clip(np.searchsorted(t, fr_t, side="right") - 1, 0, n - 1)
-        u = np.clip((fr_t - t[k]) / np.maximum(np.r_[np.diff(t), 1][k], 1e-3), 0, 1)
+        T = json.load(open(os.path.join(DATA, "capitals_tree.json")))
+        st = json.load(open(os.path.join(DATA, "capitals_start.json")))
+        self.start = (st["lat"], st["lon"])
+        F = T["fires"]
+        self.lat = np.array([f["lat"] for f in F]); self.lon = np.array([f["lon"] for f in F])
+        self.hop = np.array([f["hop"] for f in F]); self.par = np.array([f["parent"] for f in F])
+        self.caps = T["capitals"]; self.unreach = T["unreachable"]
+        self.mpr = T["min_per_relay"]
+        self.max_hop = int(self.hop.max())
+        # relay k is lit at time tk(k): slow while the camera is close on Britain, then steady
+        self.INTRO = self.START_END
+        k = np.arange(self.max_hop + 2)
+        self.tk = self.INTRO + np.where(k < 10, k * 0.9, 9.0 + (k - 10) * 0.5)
+        self.t_end = float(self.tk[self.max_hop])
+        self.t_out = self.t_end + self.END_HOLD                    # end, in this section's own time
+        self.dur = self.t_out
+        self.t_fire = self.tk[self.hop]
+        self.km = float(sum(gc_km((self.lat[i], self.lon[i]), (self.lat[p], self.lon[p])) for i, p in enumerate(self.par) if p >= 0))
+        last = self.caps[-1]
+        self.last = last
+        # captions during the wave: the fire reaching each new continent first, then headline capitals,
+        # never closer than 3.4 s to each other
+        self.crossings = crossings(F)
+        placed = [tc for tc, _ in self.crossings] + [self.t_end]
+        byname = {c["capital"]: c for c in self.caps}
+        self.callouts = []
+        for nm in CALLOUTS:
+            c = byname.get(nm)
+            if c is None:
+                continue
+            tc = self.tk[c["hop"]]
+            if all(abs(tc - q) >= 3.4 for q in placed) and tc < self.t_end - 4:
+                self.callouts.append((tc, c)); placed.append(tc)
+        self.callouts.sort(key=lambda x: x[0])
+        # camera: centre of the fires lit in the last ~20 relays, smoothed
+        fr_t = np.arange(int(self.t_out * FPS) + 2) / FPS
         P = unit(self.lat, self.lon)
-        k2 = np.minimum(k + 1, n - 1)
-        tgt = P[k] * (1 - u[:, None]) + P[k2] * u[:, None]
-        sig = int(1.1 * FPS)
+        tgt = np.zeros((len(fr_t), 3))
+        S0 = unit(*self.start)
+        for j, t in enumerate(fr_t):
+            kk = np.searchsorted(self.tk, t, side="right") - 1
+            if kk < 1:
+                tgt[j] = S0; continue
+            m = (self.hop <= kk) & (self.hop > kk - 20)
+            wts = np.exp(-(kk - self.hop[m]) / 8.0)
+            v = (P[m] * wts[:, None]).sum(0)
+            tgt[j] = v / max(np.linalg.norm(v), 1e-9)
+        sig = int(1.6 * FPS)
         ker = np.exp(-np.arange(-3 * sig, 3 * sig + 1) ** 2 / (2 * sig * sig)); ker /= ker.sum()
         pad = np.pad(tgt, ((3 * sig, 3 * sig), (0, 0)), mode="edge")
         sm = np.stack([np.convolve(pad[:, j], ker, mode="valid") for j in range(3)], 1)
         self.cam_v = sm / np.linalg.norm(sm, axis=1, keepdims=True)
-        # country outlines for tints
-        names10, geoms, _ = __import__("world").countries()
-        self.polys = {}
-        for g in set(self.new_at.values()) | set(self.unreachable_ids(geoms)):
-            gg = geoms[g].simplify(0.03)
-            parts = [gg] if gg.geom_type == "Polygon" else list(gg.geoms)
-            self.polys[g] = [np.asarray(pp.exterior.coords) for pp in parts if pp.area > 0.0005 or len(parts) < 4]
-        print(f"tour {n} fires, {self.n_countries} countries, {self.dur:.1f} s", flush=True)
+        print(f"alert: {len(F)} fires, {len(self.caps)} capitals, last {last['capital']} at {last['hop']} relays, "
+              f"{self.t_out:.1f} s", flush=True)
 
-    def unreachable_ids(self, geoms):
-        cj = json.load(open(os.path.join(DATA, "countries.json")))
-        return [g for g in range(len(cj["names"])) if cj["counts"][g] and g not in self.reach_set]
+    def clock(self, t):
+        if t < self.INTRO:
+            return 0.0
+        k = np.searchsorted(self.tk, t, side="right") - 1
+        k = min(k, self.max_hop)
+        if k < self.max_hop:
+            k = k + min(1.0, (t - self.tk[k]) / (self.tk[k + 1] - self.tk[k]))
+        return k * self.mpr
 
     def camera(self, t):
+        if t < self.SETUP_END:
+            return 25.0, -20 + 8 * t, 520
         if t < self.INTRO:
-            u = smooth((t - 9.0) / 6.0)
-            v0 = unit(15.0, 20.0 + 6 * t)
-            v1 = self.cam_v[0]
-            v = v0 * (1 - u) + v1 * u
-            v /= np.linalg.norm(v)
-            rpx = 520 * (1 - u) + 1250 * u
-        elif t > self.t_end + 0.5:
-            u = smooth((t - self.t_end - 0.5) / 7.0)
-            v = self.cam_v[min(int(t * FPS), len(self.cam_v) - 1)]
-            rpx = 1250 * (1 - u) + 500 * u
-            lat0, lon0 = math.degrees(math.asin(v[2])), math.degrees(math.atan2(v[1], v[0]))
-            return lat0 * (1 - u) + 12 * u, lon0 - 60 * u, rpx
-        else:
-            v = self.cam_v[min(int(t * FPS), len(self.cam_v) - 1)]
-            rpx = 1250
-        return math.degrees(math.asin(v[2])), math.degrees(math.atan2(v[1], v[0])), rpx
-
-    def tint(self, img, lat0, lon0, rpx, ids, col, alpha):
-        if not ids:
-            return img
-        c, e, nn = self.g.basis(lat0, lon0)
-        mask = np.zeros((H, W), np.float32)
-        for g in ids:
-            for ring in self.polys.get(g, []):
-                P = unit(ring[:, 1], ring[:, 0])
-                z = P @ c
-                if (z < 0).all():
-                    continue
-                x = P @ e; y = P @ nn
-                r = np.hypot(x, y)
-                back = z < 0
-                x = np.where(back, x / np.maximum(r, 1e-9), x); y = np.where(back, y / np.maximum(r, 1e-9), y)
-                pts = np.c_[W / 2 + x * rpx, H / 2 - y * rpx]
-                if (pts[:, 0] < -W).all() or (pts[:, 0] > 2 * W).all() or (pts[:, 1] < -H).all() or (pts[:, 1] > 2 * H).all():
-                    continue
-                pts = np.clip(pts, -4 * W, 5 * W)
-                cv2.fillPoly(mask, [(pts * 16).astype(np.int32)], float(alpha.get(g, 1.0)) if isinstance(alpha, dict) else float(alpha),
-                             cv2.LINE_AA, shift=4)
-        return img * (1 - mask[..., None] * 0.55) + mask[..., None] * np.array(col, np.float32) * 0.55
+            u = smooth((t - self.SETUP_END) / 4.0)
+            la, lo = slerp_ll((25.0, -20 + 8 * self.SETUP_END), self.start, u)
+            return la, lo, math.exp(math.log(520) + (math.log(2600) - math.log(520)) * u)
+        v = self.cam_v[min(int(t * FPS), len(self.cam_v) - 1)]
+        la, lo = math.degrees(math.asin(v[2])), math.degrees(math.atan2(v[1], v[0]))
+        k = (t - self.INTRO) / max(self.t_end - self.INTRO, 1)
+        rpx = 2600 * math.exp(-(t - self.INTRO) / 6.0) + 680 * (1 - math.exp(-(t - self.INTRO) / 6.0))
+        if t > self.t_end:
+            u = smooth((t - self.t_end - 1.0) / 6.0)
+            rpx = rpx * (1 - u) + 470 * u
+            la = la * (1 - u) + 15 * u
+            lo = lo - 70 * u
+        return la, lo, rpx
 
     def frame(self, t):
+        if t < self.GLITCH:
+            fr = glitch(t)
+            if t > self.GLITCH - 0.4:
+                fr = (fr * (1 - smooth((t - self.GLITCH + 0.4) / 0.4))).astype(np.uint8)
+            return fr
         lat0, lon0, rpx = self.camera(t)
         img = self.g.render(lat0, lon0, rpx)
-        # unreachable countries (red) during the intro and at the end
-        unreach = self.unreachable_ids(None)
-        a_red = max(ST.fade(t, 4.0, self.INTRO - 0.5, 1.0, 1.0), ST.fade(t, self.t_end + 1.0, self.dur + 5, 1.5, 1.0))
-        if a_red > 0:
-            img = self.tint(img, lat0, lon0, rpx, unreach, (0.75, 0.16, 0.12), a_red)
-        lit = self.t_lit <= t
-        visited = {c: self.t_lit[i] for i, c in self.new_at.items() if lit[i]}
-        if visited:
-            al = {c: min(1.0, 0.45 + 0.9 * math.exp(-(t - tv) / 0.5)) for c, tv in visited.items()}
-            img = self.tint(img, lat0, lon0, rpx, list(visited), (0.95, 0.68, 0.25), al)
         X, Y, Z = self.g.project(self.lat, self.lon, lat0, lon0, rpx)
         Ly = G.Layer()
-        idx = np.nonzero(lit)[0]
-        for i in idx[1:]:
-            if Z[i] > 0.03 and Z[i - 1] > 0.03:
-                Ly.line((X[i - 1], Y[i - 1]), (X[i], Y[i]), 0.5)
-        for i in idx:
+        lit = self.t_fire <= t
+        sc = float(np.clip(rpx / 1750, 0.45, 1.3))
+        for i in np.nonzero(lit)[0]:
+            p = self.par[i]
+            if p >= 0 and Z[i] > 0.02 and Z[p] > 0.02:
+                Ly.line((X[p], Y[p]), (X[i], Y[i]), 0.45)
+        for i in np.nonzero(lit)[0]:
             if Z[i] < 0.02 or not (-40 < X[i] < W + 40 and -40 < Y[i] < H + 40):
                 continue
-            age = t - self.t_lit[i]
-            amp = (0.8 + 0.15 * math.sin(t * 9 + i)) * (1 + 2.5 * math.exp(-age / 0.2))
-            Ly.fire(X[i], Y[i], amp * 0.7, 0.8)
+            age = t - self.t_fire[i]
+            amp = (0.75 + 0.15 * math.sin(t * 9 + i)) * (1 + 2.5 * math.exp(-age / 0.25))
+            Ly.fire(X[i], Y[i], amp * 0.7, sc)
+        if self.INTRO - 3.5 < t < self.INTRO:                       # Bletchley Park waits, pyre ready
+            Xs, Ys, _ = self.g.project(np.array([self.start[0]]), np.array([self.start[1]]), lat0, lon0, rpx)
+            Ly.blit(Xs[0], Ys[0], 1.3, 0.5, (0.6, 0.65, 0.8))
         fr = Ly.compose(img)
-        return self.hud(fr, t, lit)
+        return self.hud(fr, t, lat0, lon0, rpx)
 
-    def hud(self, fr, t, lit):
+    def hud(self, fr, t, lat0, lon0, rpx):
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
-        k = int(np.nonzero(lit)[0][-1]) if lit.any() else -1
-        n_c = sum(1 for i in self.new_at if lit[i])
-        a_h = ST.fade(t, self.INTRO - 1.0, self.dur + 5, 0.6, 0.6)
+        c_e, e_e, n_e = self.g.basis(lat0, lon0)
+        clock_min = self.clock(t)
+
+        def proj(la, lo):
+            p = unit(la, lo)
+            return W / 2 + (p @ e_e) * rpx, H / 2 - (p @ n_e) * rpx, p @ c_e
+        # capitals: rings (waiting), gold flash (warned), red (unreachable)
+        a_caps = ST.fade(t, self.START_END - 1.5, self.t_out + 5, 1.0, 0.5)
+        for c in self.caps:
+            x, y, z = proj(c["lat"], c["lon"])
+            if z < 0.05 or not (0 < x < W and 0 < y < H) or a_caps <= 0:
+                continue
+            tc = self.tk[c["hop"]]
+            if t < tc:
+                d.ellipse([x - 5, y - 5, x + 5, y + 5], outline=(220, 228, 240, int(150 * a_caps)), width=2)
+                continue
+            age = t - tc
+            r = 6 + 16 * math.exp(-age / 0.35)
+            d.ellipse([x - r, y - r, x + r, y + r], outline=ST.GOLD + (int(255 * a_caps * min(1, 0.45 + math.exp(-age / 0.6))),), width=3)
+            if c["capital"] in FAMOUS and age < 3.0:
+                a = a_caps * min(1, age / 0.2) * min(1, (3.0 - age) / 0.5)
+                txt = f"{c['capital']}  {int(c['hours'])} h {int(round(c['hours'] % 1 * 60)):02d}"
+                f = ST.font(24, "SemiBold")
+                tw = d.textlength(txt, font=f)
+                d.rounded_rectangle([x + 12, y - 16, x + 26 + tw, y + 16], 8, fill=ST.PANEL + (int(180 * a),))
+                d.text((x + 19, y), txt, font=f, fill=ST.INK + (int(255 * a),), anchor="lm")
+        a_red = ST.fade(t, self.t_end + 1.0, self.t_out + 5, 0.8, 0.5)
+        for c in self.unreach:
+            x, y, z = proj(c["lat"], c["lon"])
+            if a_red > 0 and z > 0.05 and 0 < x < W and 0 < y < H:
+                col = ST.RED + (int(255 * a_red),)
+                d.line([(x - 8, y - 8), (x + 8, y + 8)], fill=col, width=3); d.line([(x - 8, y + 8), (x + 8, y - 8)], fill=col, width=3)
+        # the HUD
+        a_h = ST.fade(t, self.START_END - 1.0, self.t_out + 5, 0.6, 0.5)
         if a_h > 0:
-            x0, y0 = 40, 850
-            d.rounded_rectangle([x0, y0, x0 + 700, y0 + 190], 22, fill=ST.PANEL + (int(200 * a_h),))
-            d.text((x0 + 30, y0 + 20), "COUNTRIES", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
-            d.text((x0 + 24, y0 + 44), f"{n_c}", font=ST.font(92, "Bold"), fill=ST.GOLD + (int(255 * a_h),), anchor="la", features=["tnum"])
-            d.text((x0 + 24 + d.textlength(f"{n_c}", font=ST.font(92, "Bold"), features=["tnum"]) + 18, y0 + 96), f"/ {self.n_countries}",
-                   font=ST.font(38, "SemiBold"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
-            d.text((x0 + 420, y0 + 20), "FIRES", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
-            d.text((x0 + 414, y0 + 44), f"{max(k + 1, 0)}", font=ST.font(92, "Bold"), fill=(255, 214, 150, int(255 * a_h)), anchor="la", features=["tnum"])
-            km = float(self.hop_km[:k + 1].sum()) if k >= 0 else 0
-            d.text((x0 + 30, y0 + 150), f"{km:,.0f} km of sightlines", font=ST.font(26, "Regular"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
-            # the last few countries reached
-            recent = [(i, c) for i, c in sorted(self.new_at.items()) if lit[i]][-6:]
-            for j, (i, c) in enumerate(reversed(recent)):
-                age = t - self.t_lit[i]
-                a = a_h * max(0.25, 1 - j * 0.15) * min(1, age / 0.25)
-                y = 900 - j * 46 + (0 if age > 0.25 else 20 * (1 - age / 0.25))
-                d.text((W - 60, y), self.names[c], font=ST.font(34 if j == 0 else 28, "SemiBold"),
-                       fill=(ST.GOLD if j == 0 else ST.INK) + (int(255 * a),), anchor="ra")
-            d.text((40, 36), "ONE CHAIN, AS MANY COUNTRIES AS POSSIBLE", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
-        caps = [(0.5, 8.8, [("Part 2: one chain of fires", 50, ST.INK, "Bold"),
-                            ("through as many of the world's 195 countries as possible", 34, ST.INK2, "Regular")], {"anchor": "top"}),
-                (9.2, self.INTRO - 0.3, [(f"{195 - self.n_countries} countries are out of reach of any fire", 44, ST.RED, "Bold"),
-                                         (("Iceland, Sri Lanka, " if "Sri Lanka" not in [self.names[c] for c in self.reach_set] else "Iceland, ") +
-                                          "New Zealand, Madagascar, Cabo Verde and the Pacific islands", 30, ST.INK2, "Regular")],
-                 {"anchor": "top"})]
-        for i, (a, b) in self.notes.items():
-            lines = [(a, 42, ST.GOLD, "Bold")] + ([(b, 30, ST.INK2, "Regular")] if b else [])
-            caps.append((self.t_lit[i], self.t_lit[i] + 2.3, lines, {"anchor": "top"}))
-        caps.append((self.t_end + 0.8, self.dur + 5, [(f"{self.n_countries} countries, {len(self.lat)} fires", 52, ST.GOLD, "Bold"),
-                                                       (f"{self.names[self.T['counts_for'][0]] if 'counts_for' in self.T else ''} to {self.names[self.new_at[max(self.new_at)]]}, "
-                                                        f"{float(self.hop_km.sum()):,.0f} km of sightlines", 32, ST.INK, "SemiBold")],
+            d.text((40, 30), "NO PHONES  ·  NO INTERNET  ·  NO RADIO", font=ST.font(22, "SemiBold"), fill=ST.RED + (int(230 * a_h),), anchor="la")
+            blink = 0.5 + 0.5 * math.sin(t * 5)
+            d.ellipse([42, 70, 56, 84], fill=(255, 150, 60, int(255 * a_h * blink)))
+            d.text((66, 77), "NETWORK: FIRE", font=ST.font(22, "SemiBold"), fill=ST.GOLD + (int(230 * a_h),), anchor="lm")
+            x0, y0 = 40, 830
+            d.rounded_rectangle([x0, y0, x0 + 760, y0 + 210], 22, fill=ST.PANEL + (int(205 * a_h),))
+            hh, mm = int(clock_min // 60), int(clock_min % 60)
+            d.text((x0 + 30, y0 + 20), "TIME SINCE THE FIRST FIRE", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
+            d.text((x0 + 24, y0 + 46), f"T+ {hh:02d}:{mm:02d}", font=ST.font(96, "Bold"), fill=ST.GOLD + (int(255 * a_h),), anchor="la", features=["tnum"])
+            n_c = sum(1 for c in self.caps if self.tk[c["hop"]] <= t)
+            d.text((x0 + 470, y0 + 20), "CAPITALS WARNED", font=ST.font(22, "SemiBold"), fill=ST.MUTED + (int(255 * a_h),), anchor="la")
+            d.text((x0 + 466, y0 + 46), f"{n_c}", font=ST.font(96, "Bold"), fill=ST.INK + (int(255 * a_h),), anchor="la", features=["tnum"])
+            d.text((x0 + 470, y0 + 160), f"of {len(self.caps)} reachable", font=ST.font(26, "Regular"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
+            n_f = int((self.t_fire <= t).sum())
+            d.text((x0 + 30, y0 + 160), f"{n_f:,} bonfires lit", font=ST.font(26, "Regular"), fill=ST.INK2 + (int(255 * a_h),), anchor="la")
+            # board: the latest capitals warned
+            recent = [c for c in self.caps if self.tk[c["hop"]] <= t][-7:]
+            for j, c in enumerate(reversed(recent)):
+                age = t - self.tk[c["hop"]]
+                a = a_h * max(0.25, 1 - j * 0.13) * min(1, age / 0.25)
+                y = 980 - j * 44
+                txt = f"{c['capital']}   {int(c['hours'])} h {int(round(c['hours'] % 1 * 60)):02d}"
+                d.text((W - 50, y), txt, font=ST.font(30 if j == 0 else 26, "SemiBold"), fill=(ST.GOLD if j == 0 else ST.INK) + (int(255 * a),), anchor="ra")
+        caps = [
+            (2.9, 8.9, [("Imagine an AI takes over every phone,", 44, ST.INK, "SemiBold"),
+                        ("every satellite, every cable and every radio on Earth", 44, ST.INK, "SemiBold")], {}),
+            (9.2, 15.2, [("How fast could we warn every country", 44, ST.INK, "SemiBold"),
+                         ("with the one network it can't hack?", 44, ST.GOLD, "Bold")], {}),
+            (15.6, 20.4, [("The first fire: Bletchley Park", 46, ST.GOLD, "Bold"),
+                          ("home of Colossus, the first programmable electronic computer,", 30, ST.INK2, "Regular"),
+                          ("and of the first AI Safety Summit. Fitting.", 30, ST.INK2, "Regular")], {}),
+            (20.6, self.INTRO + 2.5, [("Every keeper knows the plan:", 40, ST.INK, "SemiBold"),
+                                      ("see a fire, unplug everything, light your own", 40, ST.GOLD, "Bold"),
+                                      ("5 minutes per relay · the clock stops when the last capital sees a fire", 28, ST.INK2, "Regular")], {}),
+        ]
+        for tc, c in self.callouts:
+            h = c["hours"]
+            caps.append((tc, tc + 2.6, [(f"{c['capital']} is warned", 44, ST.GOLD, "Bold"),
+                                        (f"after {int(h)} h {int(round(h % 1 * 60)):02d} min", 30, ST.INK2, "Regular")], {"anchor": "top"}))
+        for k, (cont, how) in self.crossings:
+            tc, m = self.tk[k], k * self.mpr
+            caps.append((tc, tc + 2.8, [(f"The fire reaches {cont}", 44, ST.INK, "Bold"),
+                                        (f"{how} · T+ {int(m // 60)} h {int(m % 60):02d}", 30, ST.INK2, "Regular")], {"anchor": "top"}))
+        L = self.last
+        caps.append((self.t_end - 0.2, self.t_end + 4.6, [(f"The last capital: {L['capital']}, {L['country']}", 44, ST.GOLD, "Bold"),
+                                                          (f"after {int(L['hours'])} h {int(round(L['hours'] % 1 * 60)):02d} min", 30, ST.INK2, "Regular")],
                      {"anchor": "top"}))
+        nu = len(self.unreach)
+        names_u = [c["country"] for c in self.unreach]
+        pick = [n for n in ("Iceland", "New Zealand", "Sri Lanka", "Madagascar") if n in names_u]
+        caps.append((self.t_end + 5.0, self.t_end + 10.0, [(f"{nu} capitals never get the message", 44, ST.RED, "Bold"),
+                                                           (", ".join(pick) + " and the Pacific islands: you're on your own", 30, ST.INK2, "Regular"),
+                                                           ("no fire can see that far across the sea, over the curve of the Earth", 26, ST.MUTED, "Regular")],
+                     {"anchor": "top"}))
+        hh, mm = int(self.last["hours"]), int(round(self.last["hours"] % 1 * 60))
+        caps.append((self.t_end + 10.4, self.t_out + 5, [(f"Every reachable capital warned in {hh} h {mm:02d} min", 46, ST.GOLD, "Bold"),
+                                                       (f"{len(self.lat):,} bonfires · {self.km:,.0f} km of sightlines", 32, ST.INK, "SemiBold"),
+                                                       ("Total bandwidth: one bit", 30, ST.INK2, "Regular")], {"anchor": "top"}))
         for c in caps:
             a = ST.fade(t, c[0], c[1])
             if a > 0:
                 ST.caption(d, c[2], a, **c[3])
         out = np.asarray(im)
-        f = smooth(t / 0.6) * (1 - smooth((t - self.dur + 0.8) / 0.8))
+        f = smooth((t - self.GLITCH) / 0.5) * (1 - smooth((t - self.t_out + 0.8) / 0.8))
         return (out * f).astype(np.uint8) if f < 1 else out
+
+
+class Cold(Alert):
+    """Video 2's cold open: NO SIGNAL, then the premise over a spinning globe."""
+    name = "cold"
+
+    def __init__(self):
+        super().__init__()
+        self.t_out = self.dur = self.SETUP_END + 0.5
+
+
+class Plan(Rules):
+    name, dur = "plan", 16.0
+    title = "THE BACKUP PLAN"
+    rules = [("First fire: Bletchley Park", "where the first AI Safety Summit met in 2023"),
+             ("Fires on real hilltops", "10 m bonfires on summits, plus one in every capital"),
+             ("Each fire must see a burning one", "over the curve of the Earth and every ridge between"),
+             ("5 minutes to react", "from seeing a fire to lighting your own"),
+             ("No phones, no radio, no boats", "the clock stops when the last capital sees a fire")]
+    lit = False
+
+    def __init__(self):
+        super().__init__()
+        st = json.load(open(os.path.join(DATA, "capitals_start.json")))
+        self.focus = (st["lat"], st["lon"])
+
+    def frame(self, t):
+        fr = Rules.frame(self, t)
+        a = ST.fade(t, 1.0, self.dur - 0.7, 0.5, 0.5)
+        return ST.ring_label(fr, *self.focus_xy, "Bletchley Park", a) if a > 0 else fr
+
+
+class Wave(Alert):
+    """Video 2's main event: from the flight to Bletchley Park to the last capital."""
+    name = "wave"
+
+    def __init__(self):
+        super().__init__()
+        self.LEAD = self.SETUP_END
+        self.dur = self.t_out - self.LEAD
+
+    def frame(self, t):
+        fr = Alert.frame(self, t + self.LEAD)
+        f = smooth(t / 0.6)
+        return (fr * f).astype(np.uint8) if f < 1 else fr
 
 
 # ====================================================================== outro
 class Outro(Section):
+    """Video 1's ending: the loop turning on the globe, then a teaser for Video 2."""
     name, dur = "outro", 20.0
 
     def __init__(self):
@@ -710,35 +823,83 @@ class Outro(Section):
         st = L["stations"]
         self.la1 = np.array([x["lat"] for x in st]); self.lo1 = np.array([x["lon"] for x in st])
         self.kind = [x["kind"] for x in st]
-        T = json.load(open(os.path.join(DATA, "tour.json")))
-        self.la2 = np.array(T["lat"]); self.lo2 = np.array(T["lon"])
-        cj = json.load(open(os.path.join(DATA, "countries.json")))
-        cf = T.get("counts_for", T["cid"])
-        self.n_c = len({c for c in cf if c >= 0 and cj["counts"][c]})
         self.n_fire = sum(1 for k in self.kind[:-1] if k == "fire"); self.n_ship = self.kind.count("ship")
 
     def frame(self, t):
         lat0, lon0, rpx = 28.0, 10 + 9 * t, 470
         img = self.g.render(lat0, lon0, rpx, cy=630)
         Ly = G.Layer()
-        for la, lo, col, amp in ((self.la2, self.lo2, (1.0, 0.78, 0.35), 0.35), (self.la1, self.lo1, (1.0, 0.5, 0.12), 0.55)):
-            X, Y, Z = self.g.project(la, lo, lat0, lon0, rpx, cy=630)
-            for i in range(1, len(la)):
-                if Z[i] > 0.02 and Z[i - 1] > 0.02:
-                    Ly.line((X[i - 1], Y[i - 1]), (X[i], Y[i]), amp)
-            for i in range(len(la)):
-                if Z[i] > 0.02:
-                    Ly.blit(X[i], Y[i], 0.9, amp * 1.2, col)
+        X, Y, Z = self.g.project(self.la1, self.lo1, lat0, lon0, rpx, cy=630)
+        for i in range(1, len(X)):
+            if Z[i] > 0.02 and Z[i - 1] > 0.02:
+                Ly.line((X[i - 1], Y[i - 1]), (X[i], Y[i]), 0.55)
+        for i in range(len(X)):
+            if Z[i] > 0.02:
+                Ly.blit(X[i], Y[i], 0.9, 0.65, (1.0, 0.5, 0.12))
         fr = Ly.compose(img)
-        caps = [(1.0, self.dur, [(f"Around the world: {self.n_fire} fires + {self.n_ship} fire ships", 40, (255, 160, 70), "Bold"),
-                                 (f"Through {self.n_c} countries: {len(self.la2)} fires", 40, ST.GOLD, "Bold"),
-                                 (f"The Earth's curve keeps {195 - self.n_c} countries out of reach", 30, ST.INK2, "Regular")], {"anchor": "top"})]
+        caps = [(1.0, 7.8, [(f"Around the world: {self.n_fire} fires + {self.n_ship} fire ships", 46, (255, 160, 70), "Bold"),
+                            ("every sightline checked against real terrain", 30, ST.INK2, "Regular")], {"anchor": "top"}),
+                (8.3, self.dur, [("Next: an AI takes over every phone on Earth.", 44, ST.INK, "SemiBold"),
+                                 ("How fast could bonfires warn every country?", 44, ST.GOLD, "Bold")], {"anchor": "top"})]
         fr = ST.draw_captions(fr, t, caps)
         f = smooth(t / 0.8) * (1 - smooth((t - self.dur + 2.0) / 2.0))
         return (fr * f).astype(np.uint8) if f < 1 else fr
 
 
-SECTIONS = {"hook": Hook, "history": History, "journey": Journey, "rules": Rules, "tour": Tour, "outro": Outro}
+class Outro2(Section):
+    """Video 2's ending: the whole broadcast tree, the capitals it can't reach, and a link back to Video 1."""
+    name, dur = "outro2", 20.0
+
+    def __init__(self):
+        self.g = G.Globe16()
+        T = json.load(open(os.path.join(DATA, "capitals_tree.json")))
+        F = T["fires"]
+        self.la = np.array([f["lat"] for f in F]); self.lo = np.array([f["lon"] for f in F])
+        self.par = np.array([f["parent"] for f in F])
+        self.T = T
+        self.km = float(sum(gc_km((self.la[i], self.lo[i]), (self.la[p], self.lo[p])) for i, p in enumerate(self.par) if p >= 0))
+
+    def frame(self, t):
+        lat0, lon0, rpx = 22.0, 10 + 9 * t, 470
+        img = self.g.render(lat0, lon0, rpx, cy=630)
+        Ly = G.Layer()
+        X, Y, Z = self.g.project(self.la, self.lo, lat0, lon0, rpx, cy=630)
+        for i, p in enumerate(self.par):
+            if p >= 0 and Z[i] > 0.02 and Z[p] > 0.02:
+                Ly.line((X[p], Y[p]), (X[i], Y[i]), 0.4)
+        for i in range(len(X)):
+            if Z[i] > 0.02:
+                Ly.blit(X[i], Y[i], 0.9, 0.4, (1.0, 0.78, 0.35))
+        fr = Ly.compose(img)
+        im = Image.fromarray(fr)
+        d = ImageDraw.Draw(im, "RGBA")
+        c_e, e_e, n_e = self.g.basis(lat0, lon0)
+        for c in self.T["capitals"]:
+            p = unit(c["lat"], c["lon"])
+            x, y = W / 2 + (p @ e_e) * rpx, 630 - (p @ n_e) * rpx
+            if p @ c_e > 0.05:
+                d.ellipse([x - 4, y - 4, x + 4, y + 4], outline=ST.GOLD + (200,), width=2)
+        for c in self.T["unreachable"]:
+            p = unit(c["lat"], c["lon"])
+            x, y = W / 2 + (p @ e_e) * rpx, 630 - (p @ n_e) * rpx
+            if p @ c_e > 0.05:
+                d.line([(x - 7, y - 7), (x + 7, y + 7)], fill=ST.RED + (230,), width=3)
+                d.line([(x - 7, y + 7), (x + 7, y - 7)], fill=ST.RED + (230,), width=3)
+        fr = np.asarray(im)
+        last = self.T["capitals"][-1]
+        hh, mm = int(last["hours"]), int(round(last["hours"] % 1 * 60))
+        caps = [(1.0, 7.8, [(f"{len(self.T['capitals'])} capitals warned in {hh} h {mm:02d} min", 46, ST.GOLD, "Bold"),
+                            (f"{len(self.la):,} bonfires · {self.km:,.0f} km of sightlines · zero electricity", 30, ST.INK2, "Regular")],
+                 {"anchor": "top"}),
+                (8.3, self.dur, [("Good luck hacking a bonfire.", 50, ST.GOLD, "Bold"),
+                                 ("Next: one fire, all the way around the world", 32, ST.INK2, "Regular")], {"anchor": "top"})]
+        fr = ST.draw_captions(fr, t, caps)
+        f = smooth(t / 0.8) * (1 - smooth((t - self.dur + 2.0) / 2.0))
+        return (fr * f).astype(np.uint8) if f < 1 else fr
+
+
+SECTIONS = {"hook": Hook, "history": History, "journey": Journey, "rules": Rules, "alert": Alert, "outro": Outro,
+            "cold": Cold, "plan": Plan, "wave": Wave, "outro2": Outro2}
 
 if __name__ == "__main__":
     sec = SECTIONS[sys.argv[1]]()

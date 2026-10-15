@@ -6,7 +6,7 @@ Failures are appended to data/invalid_nodes.json / data/banned_edges.json for th
 
     python verify.py    -> prints failures, exit code 1 if any
 """
-import os, sys, json, math, time, urllib.request
+import os, sys, json, math, time, threading, urllib.request
 import numpy as np
 import cv2
 from concurrent.futures import ThreadPoolExecutor
@@ -51,7 +51,10 @@ def _fetch(t):
     os.makedirs(d, exist_ok=True)
     path = os.path.join(d, f"{x}_{y}.npy")
     if os.path.exists(path):
-        return t, np.load(path)
+        try:
+            return t, np.load(path)
+        except (ValueError, EOFError, OSError):         # cut short (disk full): fetch it again
+            os.remove(path)
     for a in range(6):
         try:
             raw = urllib.request.urlopen(URL.format(z=z, x=x % 2 ** z, y=y), timeout=30).read()
@@ -60,7 +63,10 @@ def _fetch(t):
             import fetch_dem as F1
             F1.Z = z
             h = np.maximum(F1.despike(h, y), 0).astype(np.float32)
-            np.save(path, h)
+            tmp = f"{path}.{os.getpid()}.{threading.get_ident()}.tmp"
+            with open(tmp, "wb") as fh:
+                np.save(fh, h)
+            os.replace(tmp, path)                           # atomic: never a half-written tile
             return t, h
         except Exception:
             time.sleep(1.5 ** a)
@@ -81,10 +87,9 @@ def greenland_floor(lat, lon):
     """Inside Greenland's ice sheet zoom 11 still has bedrock patches: the hole-filled grid
     (fix_greenland.py holes) gives the ice surface there (NaN elsewhere)."""
     if not _GI:
-        meta = json.load(open(os.path.join(DATA, "mosaic_z8max_meta.json")))
+        mos, meta = CH.north_mosaic()
         gi = json.load(open(os.path.join(DATA, "greenland_interior.json")))
-        _GI.update(meta=meta, gi=gi, mask=np.load(os.path.join(DATA, "greenland_interior.npy")),
-                   mos=np.load(os.path.join(DATA, "mosaic_z8max.npy"), mmap_mode="r"))
+        _GI.update(meta=meta, gi=gi, mask=np.load(os.path.join(DATA, "greenland_interior.npy")), mos=mos)
     meta, gi = _GI["meta"], _GI["gi"]
     Wm = meta["width"]
     s_ = np.sin(np.radians(lat))
