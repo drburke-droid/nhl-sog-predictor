@@ -13,6 +13,9 @@ OUT = os.path.join(HERE, "out", "long")
 VIDEOS = {"v1": (["hook", "history", "fpv", "physics", "rules", "journey", "outro"], "signal_fires_world"),
           "v2": (["cold", "fpv2", "plan", "wave", "outro2"], "signal_fires_ai")}
 XF = 0.6
+# final audio: trim, then a peak limiter at -3 dBFS; with AAC at 320k the encode stays under -1 dBTP
+# (ffmpeg's AAC adds ~2 dB of overshoot on this bright synth at 192k)
+AF = "volume=-1.2dB,alimiter=limit=0.708:attack=3:release=60:level=false"
 
 
 def path(name):
@@ -130,8 +133,8 @@ def main(which):
     SC.write(mix, wav)
     final = os.path.join(OUT, f"{stem}.mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-                    "-af", "volume=-1.2dB", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", final],
-                   check=True)                                      # headroom: AAC overshoots the -1.5 dB true peak
+                    "-af", AF, "-c:a", "aac", "-b:a", "320k", "-shortest", "-movflags", "+faststart", final],
+                   check=True)                                    
     os.remove(vid)
     json.dump({"sections": {s: [O[s], d] for s, d in zip(secs, ds)}, "total": total},
               open(os.path.join(OUT, f"timeline_{which}.json"), "w"), indent=1)

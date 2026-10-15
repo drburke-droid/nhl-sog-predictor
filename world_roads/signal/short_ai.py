@@ -228,7 +228,7 @@ def render(still=None):
             print(f"frame {i}/{n}", flush=True)
     p.stdin.close(); p.wait()
     import score as SC
-    from assemble import static
+    from assemble import static, AF
     te = S.t_end
     energy = [(0, 0.0), (GL, 0.0), (GL + 0.05, 0.6), (FIRE0 - 0.1, 0.6), (FIRE0, 0.85), (te - 10, 0.95), (te, 1.0),
               (te + 3.4, 0.6), (te + 7.6, 0.8), (S.total, 0.0)]
@@ -242,7 +242,7 @@ def render(still=None):
     SC.write(mix, wav)
     final = os.path.join(OUT, "signal_fires_ai_short.mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-                    "-af", "volume=-1.2dB", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", final], check=True)
+                    "-af", AF, "-c:a", "aac", "-b:a", "320k", "-shortest", "-movflags", "+faststart", final], check=True)
     os.remove(vid)
     print("wrote", final)
 

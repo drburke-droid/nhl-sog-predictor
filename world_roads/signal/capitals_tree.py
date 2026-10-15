@@ -7,7 +7,11 @@ its own, so the warning spreads as a wave and branches wherever it can.
   2. The fires actually needed: among all the fastest routes, a tree that shares trunks as much as possible
      (top-down greedy on the shortest-path DAG, using per-summit sets of the capitals below it).
   3. Every fire and sightline in the tree is verified (zoom 10 sightlines every 150 m; summits as in
-     verify.summit_check). Failures are banned and the tree recomputed until clean.
+     verify.summit_check). A "summit" that is lower than the search grid says (a fake hill: on plains
+     and swamps the grid's spikes are all there is) is not dropped: its fire burns on the real ground,
+     at the zoom-12 height (zoom 10 above 600 m), and its sightlines are checked from there. Only a
+     point with no ground at all (sea) is dropped. Blocked sightlines are banned and the tree
+     recomputed until clean.
 
     python capitals_tree.py    -> data/capitals_tree.json
 """
@@ -32,7 +36,7 @@ def load(extra_bans):
     u, v = e["u"].astype(np.int64), e["v"].astype(np.int64)
     n = len(nd["lat"])
     bad_nodes, bad_edges = set(), set()
-    for f in ("tour_invalid.json", "cap_invalid.json"):
+    for f in ("cap_sea.json",):                          # no ground at all; fake hills are lowered instead
         p = os.path.join(DATA, f)
         if os.path.exists(p):
             bad_nodes |= set(json.load(open(p)))
@@ -147,9 +151,10 @@ def solve():
 def verify_tree(nd, nodes, parent, caps_nodes):
     """Zoom-10/12 check of every fire and sightline in the tree; returns (bad nodes, bad edges, heights).
     Fires and sightlines that already passed are remembered (cap_verified.json), so a round only checks new ones."""
-    okd = json.load(open(OK_PATH)) if os.path.exists(OK_PATH) else {"nodes": {}, "edges": []}
+    okd = json.load(open(OK_PATH)) if os.path.exists(OK_PATH) else {"nodes": {}, "edges": [], "demoted": []}
     ok_n = {int(k): v for k, v in okd["nodes"].items()}
     ok_e = set(tuple(e) for e in okd["edges"])
+    demoted = set(okd.get("demoted", []))
     hz, bad_n, bad_e = {}, [], []
     n_new = 0
     for v in nodes:
@@ -162,14 +167,18 @@ def verify_tree(nd, nodes, parent, caps_nodes):
             continue
         n_new += 1
         ok, h_ = V.summit_check(la, lo, h)
+        if not ok:                                            # a fake hill: the fire burns on the real ground
+            h_ = h_ if h < V.LOW_KM * 1000 else V.summit_max(la, lo)
+            if h_ < 1.0:                                      # no ground here (sea): drop it
+                bad_n.append(int(v))
+                continue
+            demoted.add(int(v))
+            ok_e -= {e for e in ok_e if int(v) in e}          # (none should exist; never trust a taller past)
         hz[v] = h_
-        if ok:
-            ok_n[int(v)] = float(h_)
-        else:
-            bad_n.append(int(v))
+        ok_n[int(v)] = float(h_)
     for v in nodes:
         u = parent[v]
-        if u < 0:
+        if u < 0 or u not in hz or v not in hz:              # a dropped (sea) point: its sightlines go with it
             continue
         key = tuple(sorted([int(u), int(v)]))
         if key in ok_e:
@@ -181,9 +190,10 @@ def verify_tree(nd, nodes, parent, caps_nodes):
             ok_e.add(key)
         else:
             bad_e.append(list(key))
-    json.dump({"nodes": {str(k): v for k, v in ok_n.items()}, "edges": sorted(ok_e)}, open(OK_PATH, "w"))
-    print(f"  {n_new} new summits and sightlines checked", flush=True)
-    return bad_n, bad_e, hz
+    json.dump({"nodes": {str(k): v for k, v in ok_n.items()}, "edges": sorted(ok_e), "demoted": sorted(demoted)},
+              open(OK_PATH, "w"))
+    print(f"  {n_new} new summits and sightlines checked; {len(demoted)} fires on lowered ground", flush=True)
+    return bad_n, bad_e, hz, demoted
 
 
 def main():
@@ -192,12 +202,12 @@ def main():
         nd, nodes, parent, dist, reach, unreach, names = solve()
         capn = {c["node"] for c in reach}
         t0 = time.time()
-        bad_n, bad_e, hz = verify_tree(nd, nodes, parent, capn)
+        bad_n, bad_e, hz, demoted = verify_tree(nd, nodes, parent, capn)
         print(f"checked {len(nodes)} fires: {len(bad_n)} bad summits, {len(bad_e)} blocked sightlines "
               f"{time.time() - t0:.0f}s", flush=True)
         if not bad_n and not bad_e:
             break
-        for f, add in (("cap_invalid.json", bad_n), ("cap_banned.json", bad_e)):
+        for f, add in (("cap_sea.json", bad_n), ("cap_banned.json", bad_e)):
             p = os.path.join(DATA, f)
             old = json.load(open(p)) if os.path.exists(p) else []
             json.dump(old + add, open(p, "w"))
@@ -205,8 +215,8 @@ def main():
     st = json.load(open(os.path.join(DATA, "capitals_start.json")))
     out = dict(start=st["name"], min_per_relay=MIN_PER_RELAY,
                fires=[dict(lat=float(nd["lat"][v]), lon=float(nd["lon"][v]), h_m=float(hz[v]), hop=int(dist[v]),
-                           parent=idx[parent[v]] if parent[v] >= 0 else -1,
-                           cid=int(nd["cid"][v])) for v in nodes],
+                           parent=idx[parent[v]] if parent[v] >= 0 else -1, cid=int(nd["cid"][v]),
+                           ground=int(v) in demoted) for v in nodes],
                capitals=[dict(country=c["country"], capital=c["capital"], fire=idx[c["node"]], hop=int(dist[c["node"]]),
                               hours=round(int(dist[c["node"]]) * MIN_PER_RELAY / 60, 2), lat=c["lat"], lon=c["lon"])
                          for c in sorted(reach, key=lambda c: dist[c["node"]])],
