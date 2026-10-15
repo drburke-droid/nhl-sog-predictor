@@ -22,6 +22,7 @@ import chain as CH
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
 MIN_PER_RELAY = 5.0
+OK_PATH = os.path.join(DATA, "cap_verified.json")      # summits and sightlines that passed
 INF = TR.INF
 
 
@@ -73,8 +74,10 @@ def popc(x):
         sum(bin(int(a)).count("1") for a in x)
 
 
-def build_tree(indptr, indices, dist, cs, root, cap_nodes):
-    """Top-down: each active fire hands its capitals to as few children as possible."""
+def build_tree(indptr, indices, dist, cs, root, cap_nodes, ok_n=(), ok_e=()):
+    """Top-down: each active fire hands its capitals to as few children as possible. Between children that
+    cover equally many capitals, one whose summit and sightline already passed verification wins, so a
+    round of bans does not reshuffle the tree into fresh, unchecked ground."""
     w = cs.shape[1]
     parent = {root: -1}
     need = {root: cs[root].copy()}
@@ -93,12 +96,13 @@ def build_tree(indptr, indices, dist, cs, root, cap_nodes):
             ch = ch[dist[ch] == dist[u] + 1]
             ch = np.unique(ch)
             cand = cs[ch]
+            known = np.array([(int(c) in ok_n) + (tuple(sorted((int(u), int(c)))) in ok_e) for c in ch], np.int64)
             while rem.any():
                 inter = cand & rem[None, :]
                 score = popc(inter)
-                k = int(np.argmax(score))
-                if score[k] == 0:
+                if score.max() == 0:
                     break
+                k = int(np.argmax(score * 4 + known))
                 v = int(ch[k])
                 give = inter[k].copy()
                 if v in need:
@@ -130,14 +134,14 @@ def solve():
     order = np.argsort(dist, kind="stable")
     order = order[dist[order] < INF]
     cs = capital_sets(indptr, indices, dist, order, own)
-    parent = build_tree(indptr, indices, dist, cs, root, cap_nodes)
+    okd = json.load(open(OK_PATH)) if os.path.exists(OK_PATH) else {"nodes": {}, "edges": []}
+    ok_n = {int(k) for k in okd["nodes"]} | set(cap_nodes)
+    ok_e = set(tuple(e) for e in okd["edges"])
+    parent = build_tree(indptr, indices, dist, cs, root, cap_nodes, ok_n, ok_e)
     nodes = sorted(parent, key=lambda v: (dist[v], v))
     print(f"bans: {nb_} summits, {ne_} sightlines | {len(reach)} capitals reachable, {len(unreach)} not | "
           f"last at {max(dist[c] for c in cap_nodes)} relays | tree {len(nodes)} fires  {time.time() - t0:.0f}s", flush=True)
     return nd, nodes, parent, dist, reach, unreach, names
-
-
-OK_PATH = os.path.join(DATA, "cap_verified.json")
 
 
 def verify_tree(nd, nodes, parent, caps_nodes):
