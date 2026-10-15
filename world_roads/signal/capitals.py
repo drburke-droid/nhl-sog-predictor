@@ -162,8 +162,7 @@ def add_plains(step_km=3.0, offsets_km=(-4.0, 0.0, 4.0), max_km=400.0):
     P = CH.xyz(nd["lat"], nd["lon"])
     okd = json.load(open(CT.OK_PATH))
     capn = {c["node"] for c in caps}
-    known = {int(k_) for k_ in okd["nodes"]} | capn | {root}
-    lit = np.array([v for v in np.nonzero(dist < CT.INF)[0] if int(v) in known])      # lit and verified
+    lit = np.nonzero(dist < CT.INF)[0]
     new_n, new_e = [], []
     n0 = len(nd["lat"])
     for c in caps:
@@ -199,25 +198,40 @@ def add_plains(step_km=3.0, offsets_km=(-4.0, 0.0, 4.0), max_km=400.0):
         print("no corridors needed")
         return
     e = np.array(new_n)
+    nd = dict(nd)
     for k_, arr in (("lat", e[:, 0]), ("lon", e[:, 1]), ("h", e[:, 2])):
         nd[k_] = np.r_[nd[k_], arr]
     nd["cid"] = np.r_[nd["cid"], e[:, 3].astype(np.int32)]
     nd["border_ok"] = np.r_[nd["border_ok"], np.ones(len(e), bool)]
-    nd = dict(nd)
     # sightlines from every new point to every point (old or new) whose horizon overlaps, checked on zoom 10
     H = nd["h"] / 1000 + CH.PYRE_KM
     P = CH.xyz(nd["lat"], nd["lon"])
     rch = CH.reach(H)
     hz = {int(k_): v for k_, v in okd["nodes"].items()}
     hz.update({v: float(nd["h"][v]) for v in capn | {root}})          # capital beacons and Bletchley: zoom-12 ground
+    lowered = set()
+
+    def fire_h(j):
+        """The verified fire height of point j (summit check as in capitals_tree; fake hills are lowered)."""
+        if j not in hz:
+            if j >= n0:
+                hz[j] = float(nd["h"][j])
+            else:
+                la_, lo_, h0 = float(nd["lat"][j]), float(nd["lon"][j]), float(nd["h"][j])
+                ok_, h_ = V.summit_check(la_, lo_, h0)
+                if not ok_:
+                    h_ = h_ if h0 < V.LOW_KM * 1000 else V.summit_max(la_, lo_)
+                    lowered.add(j)
+                hz[j] = float(h_) if h_ >= 1.0 else None
+        return hz[j]
     t0 = time.time()
     for i in range(n0, len(nd["lat"])):
         d = np.arccos(np.clip(P[i] @ P.T, -1, 1)) * CH.R
         cand = np.nonzero((d <= rch[i] + rch) & (np.arange(len(d)) < i) & (d < 60.0))[0]
         for j in cand:
             j = int(j)
-            hj = hz.get(j, nd["h"][j] if j >= n0 else None)
-            if hj is None:                                 # an unchecked summit: let the tree search check it later
+            hj = fire_h(j)
+            if hj is None:                                 # sea
                 continue
             ok, m, at = V.hop_clear((nd["lat"][i], nd["lon"][i]), (nd["lat"][j], nd["lon"][j]),
                                     nd["h"][i] / 1000 + CH.PYRE_KM, hj / 1000 + CH.PYRE_KM)
@@ -229,10 +243,11 @@ def add_plains(step_km=3.0, offsets_km=(-4.0, 0.0, 4.0), max_km=400.0):
     ed = np.load(os.path.join(DATA, "world_edges.npz"))
     ne = np.array(new_e, np.int64)
     np.savez(os.path.join(DATA, "world_edges.npz"), u=np.r_[ed["u"], ne[:, 0].astype(np.int32)], v=np.r_[ed["v"], ne[:, 1].astype(np.int32)])
-    for i in range(n0, len(nd["lat"])):
-        okd["nodes"][str(i)] = float(nd["h"][i])
+    for j, h_ in hz.items():
+        if h_ is not None and j not in capn and j != root:
+            okd["nodes"][str(j)] = float(h_)
     okd["edges"] = sorted(set(tuple(x) for x in okd["edges"]) | {tuple(sorted(x)) for x in new_e})
-    okd["demoted"] = sorted(set(okd.get("demoted", [])) | set(range(n0, len(nd["lat"]))))
+    okd["demoted"] = sorted(set(okd.get("demoted", [])) | set(range(n0, len(nd["lat"]))) | lowered)
     okd["pruned"] = sorted(set(okd.get("pruned", [])) | set(range(n0, len(nd["lat"]))))
     json.dump(okd, open(CT.OK_PATH, "w"))
     json.dump(dict(first=n0, n=len(new_n)), open(os.path.join(DATA, "capitals_plains.json"), "w"))
