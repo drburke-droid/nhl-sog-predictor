@@ -267,66 +267,93 @@ longer on the one found. The first-person sequence still shows Mont Blanc → th
 Dolomites. Those are verified sightlines from the first search, used as an illustration of how a chain
 works.
 
-## 11. "One chain through as many countries as possible" (`signal/`, long video)
+## 11. "Warning every capital by fire" (`signal/`, Video 2)
+
+**The premise** is a thought experiment: every phone, cable, satellite and radio is gone, and the message
+("unplug everything") goes out by bonfire. Every fire that sees a lit fire lights its own 5 minutes later.
+The first fire is at Bletchley Park (51.998° N, 0.741° W), where Colossus, the first programmable
+electronic digital computer, ran during the war, and where the first AI Safety Summit met in November 2023.
 
 **Countries.** 195: the 193 UN members plus Vatican City and Palestine. Borders come from Natural Earth's
-1:10 m admin-0 polygons. Taiwan, Kosovo, Western Sahara, Northern Cyprus and Somaliland can relay a
-signal but are not counted. Overseas parts count for their country: Saba for the Netherlands,
-Guadeloupe for France.
+1:10 m admin-0 polygons. Any fire can relay wherever it stands, including in Taiwan, Kosovo, Western
+Sahara and other places that are not counted as countries.
 
-**When a fire counts.** It must stand at least 1 km from every other country, because Natural Earth's
-borders are not exact. Vatican City and Monaco are too small for that rule:
-* Vatican's fire is on Vatican Hill (61 m at zoom 13).
-* Monaco's is on the Rock of Monaco (60 m).
+**Capitals.** Natural Earth's populated places ("Admin-0 capital"). Where a country has more than one, or
+Natural Earth's choice differs from the seat of government, we used:
+* La Paz (Bolivia), Dodoma (Tanzania), Pretoria (South Africa), Yamoussoukro (Côte d'Ivoire), Porto-Novo
+  (Benin), Naypyidaw (Myanmar), Mbabane (Eswatini), Amsterdam (Netherlands), Abuja (Nigeria), Manila
+  (Philippines), Tokyo (Japan), Santiago (Chile), Kuala Lumpur (Malaysia), Rabat (Morocco),
+  Sri Jayawardenepura Kotte (Sri Lanka);
+* Jerusalem (Israel), as Israel designates it; its status is disputed internationally;
+* Ramallah (Palestine, the administrative seat), Juba (South Sudan) and Yaren (Nauru, which has no
+  official capital), placed by hand;
+* Vatican City and Monaco use their country fires from Video 1's grid (Vatican Hill, the Rock of Monaco).
 
-Its official high point, 161 m, sits on the French border.
+**A capital's beacon** stands on the highest ground within 10 km of the city centre, inside the country
+and at least 0.5 km from any other country. Its height is zoom-12 ground, the median of 9 samples within
+~85 m, so one bad pixel or a tall building cannot fake a hill. A capital counts as warned when its own
+beacon is lit.
 
-**Terrain.** The terrain is the same as the loop's, extended to 60°S–84°N (zoom 9 south of 56°N).
-* **Candidates:** the highest summit in every ~12 km cell, 944,589 in all, plus a 2,185 m summit safely
-  inside Liechtenstein.
-* **Sightlines:** every pair whose horizons overlap was tested. That is 440 million pairs, and 23.2
-  million can see each other. These tests use the loop search's conservative grid: max-filtered, with
-  25 m of clearance.
-* **Flat coasts:** that grid blocks almost every low sightline. Zero-margin sightlines were added
-  around the Gulf (Bahrain, Qatar), the Gambia, the Palk Strait, the Bahamas and Kuwait. Every hop
-  actually used is verified anyway.
+**Fires** are the candidate summits of the global grid (the highest point in each ~12 km cell), plus the
+capitals' beacons. Each is checked as in section 10:
+* a summit that is lower at zoom 12 (zoom 10 above 600 m) than the search grid said is not dropped: on
+  plains and swamps the grid's spikes are all there is. Its fire burns on the real ground at its true
+  height, and its sightlines are checked from there. 51 fires in the final tree are such ground fires.
+  Only points with no ground at all (sea) are dropped;
+* a fire's sightlines are all re-tested when it is lowered; any blocked even with the other end at its
+  search height + 50 m is banned at once.
 
-**Out of reach (19).** No chain of fires can reach 19 countries:
-* **Sri Lanka:** India and Sri Lanka are ~30 km apart at Adam's Bridge, but both shores are too flat
-  for two 10 m bonfires to see each other.
-* **18 island nations:** Iceland, Cabo Verde, Comoros, Madagascar, Mauritius, Seychelles, Maldives,
-  New Zealand, Fiji, Kiribati, Marshall Islands, Micronesia, Nauru, Palau, Samoa, Tonga, Tuvalu and
-  Vanuatu.
+**Plains.** On a plain, a 10 m fire sees another only about 24 km away, and one candidate per ~12 km
+cell can be too sparse. For capitals still out of reach within 400 km of a lit fire, we added candidate
+ground fires every 3 km on three parallel lines (4 km apart) from the nearest lit fire to the capital,
+on land only (Natural Earth 1:10 m), with zoom-12 heights. This reached N'Djamena (Chad) and Nouakchott
+(Mauritania); it did not bridge Adam's Bridge to Sri Lanka or the sea to the Comoros.
 
-The other 176 are all linked.
+**Sightlines** come from Video 1's global graph (23.2 million) plus zero-margin sightlines from every
+capital's beacon. Every sightline in the final tree is re-checked on zoom-10 terrain every 150 m, with
+both fires at their verified heights.
 
-**The route.** Countries are split into ~6° regions. Hop distances between regions come from
-breadth-first searches over the sightline graph. A tour of the regions, one per country, is improved
-with 2-opt, or-opt and region swaps. The fewest fires that visit the countries in that order are then
-found exactly, with a layered shortest path.
+**The tree.**
+1. Fewest relays from Bletchley Park to every capital: a breadth-first search over the sightline graph.
+   The time is relays × 5 minutes, and the last capital sets the clock.
+2. The fires actually needed: among all fastest routes, a tree that shares trunks where it can (top-down
+   greedy over the shortest-path graph, using per-fire sets of the capitals below it). The time is
+   optimal for this graph; the fire count is a good tree, not a proven minimum.
+3. Verification bans what fails, and the tree is recomputed until a round finds nothing (several dozen
+   rounds in all).
 
-The result is a good route, not a proven minimum: **787 fires through 176 countries**, from Uruguay to
-Nepal, with 122,771 km of sightlines.
+**Result.**
+* **176 capitals** warned; the last, Buenos Aires, after **171 relays = 14 h 15 min**. Half the capitals
+  are warned within 4 h 20 min.
+* **1,326 fires**, 181,778 km of sightlines. The longest is 497 km, from Muztagh Ata (7,483 m) to a
+  5,453 m summit in the Kunlun; the highest fire is on Kangchenjunga (8,330 m in the data).
+* The fire reaches Africa across the Strait of Sicily (1 h 35), Asia across the Dardanelles (1 h 50),
+  Oceania from Indonesia into New Guinea (6 h 40), North America across the Bering Strait in one 189 km
+  jump (6 h 50), and South America across the Darién (10 h 20). Continents are Natural Earth's, by
+  country, with Russia split at the Urals (60° E), European Turkey and the Sinai; a crossing is named
+  after a strait when its sightline's midpoint is within 300 km of it.
+* **19 capitals are never warned:** Sri Lanka (Adam's Bridge: open water and sandbanks, too flat to see
+  across) and 18 island nations: Iceland, Cabo Verde, Comoros, Madagascar, Mauritius, Seychelles,
+  Maldives, New Zealand, Fiji, Kiribati, Marshall Islands, Micronesia, Nauru, Palau, Samoa, Tonga,
+  Tuvalu and Vanuatu. No fire on land can see that far across the sea. Video 1 uses fire ships;
+  Video 2 does not.
 
-**Verification.** Same rules as the loop:
-* every sightline re-checked on zoom-10 terrain every 150 m;
-* every summit re-checked at zoom 12 within 300 m.
+**Limits.** Clear night air everywhere at once, a keeper on every summit, and 5 minutes from seeing a fire
+to lighting one are assumptions. A fire 10 m tall, refraction k = 0.13 and Terrarium terrain are as in
+section 10. Trees and buildings are not in the terrain.
 
-Below 400 m, a summit must be within 25 m of its search height. This catches fake low hills: spikes
-under the despiker's 150 m threshold. One example was a "117 m" hill on Saibai Island, which is really
-swamp. Each fire burns at its zoom-12 summit height. Failures are banned and the route recomputed,
-until 0 bad summits and 0 blocked sightlines remain.
-
-**Highlights:**
-* the longest sightline is 475 km, from Mount Elbrus into Turkey;
-* the highest fire is on Kangchenjunga (8,369 m in the data);
-* the chain crosses the Bering Strait from Alaska to Chukotka;
-* Taiwan to the Philippines is 327 km; Turkey to Cyprus is 334 km.
+**An earlier draft** used one chain through as many countries as possible: 176 countries, 787 fires,
+Uruguay to Nepal (`iterate_tour.sh`, `data/tour.json`). It backtracked a lot, so it was replaced by the
+broadcast above. Its summit check was later tightened: one of its fires in Papua New Guinea's Fly River
+swamps, a "122 m hill", is 57 m at zoom 12.
 
 ## 12. The first-person beacon sequence (`signal/fpv.py`)
 
-**Terrain.** The scene uses the real terrain around fires 18–20 of the loop: Mont Blanc, a summit in the
-northern Apennines 311 km away, and one in the Dolomites 244 km beyond that.
+**Terrain.** The scene uses the real terrain around three fires of the loop as it was first searched
+(before the Greenland correction in section 10): Mont Blanc, a summit in the northern Apennines 311 km
+away, and one in the Dolomites 244 km beyond that. Both sightlines passed the zoom-10 verification. The
+corrected loop crosses the Alps by other summits; the scene is there to show what a beacon chain looks
+like, and Video 2 reuses it.
 * **Grids:** Terrarium zoom 11 (~55 m), and zoom 13 (~14 m) within 5 km of each summit.
 * **Rendering:** raymarched with Earth's curvature and the search's refraction (k = 0.13).
 * **The speck:** when a distant fire appears on the horizon, it is because that sightline really is

@@ -574,17 +574,21 @@ class Alert(Section):
         self.last = last
         # captions during the wave: the fire reaching each new continent first, then headline capitals,
         # never closer than 3.4 s to each other
-        self.crossings = crossings(F)
-        placed = [tc for tc, _ in self.crossings] + [self.t_end]
+        self.crossings, t_prev = [], -10.0                   # [(caption time, relay, (continent, how))], queued
+        for k, info in crossings(F):
+            ts = max(float(self.tk[k]), t_prev + 3.0)
+            self.crossings.append((ts, k, info)); t_prev = ts
+        placed = [ts for ts, _, _ in self.crossings] + [self.t_end]
         byname = {c["capital"]: c for c in self.caps}
-        self.callouts = []
+        self.callouts = []                                    # [(time, [capitals warned on that relay])]
         for nm in CALLOUTS:
             c = byname.get(nm)
-            if c is None:
+            if c is None or any(c in g for _, g in self.callouts):
                 continue
             tc = self.tk[c["hop"]]
             if all(abs(tc - q) >= 3.4 for q in placed) and tc < self.t_end - 4:
-                self.callouts.append((tc, c)); placed.append(tc)
+                same = [byname[o] for o in CALLOUTS if o in byname and o != nm and byname[o]["hop"] == c["hop"]]
+                self.callouts.append((tc, [c] + same[:1])); placed.append(tc)
         self.callouts.sort(key=lambda x: x[0])
         # camera: centre of the fires lit in the last ~20 relays, smoothed
         fr_t = np.arange(int(self.t_out * FPS) + 2) / FPS
@@ -735,13 +739,14 @@ class Alert(Section):
                                       ("see a fire, unplug everything, light your own", 40, ST.GOLD, "Bold"),
                                       ("5 minutes per relay · the clock stops when the last capital sees a fire", 28, ST.INK2, "Regular")], {}),
         ]
-        for tc, c in self.callouts:
-            h = c["hours"]
-            caps.append((tc, tc + 2.6, [(f"{c['capital']} is warned", 44, ST.GOLD, "Bold"),
+        for tc, g in self.callouts:
+            h = g[0]["hours"]
+            who = " and ".join(c["capital"] for c in g) + (" are" if len(g) > 1 else " is")
+            caps.append((tc, tc + 2.6, [(f"{who} warned", 44, ST.GOLD, "Bold"),
                                         (f"after {int(h)} h {int(round(h % 1 * 60)):02d} min", 30, ST.INK2, "Regular")], {"anchor": "top"}))
-        for k, (cont, how) in self.crossings:
-            tc, m = self.tk[k], k * self.mpr
-            caps.append((tc, tc + 2.8, [(f"The fire reaches {cont}", 44, ST.INK, "Bold"),
+        for ts, k, (cont, how) in self.crossings:
+            m = k * self.mpr
+            caps.append((ts, ts + 2.8, [(f"The fire reaches {cont}", 44, ST.INK, "Bold"),
                                         (f"{how} · T+ {int(m // 60)} h {int(m % 60):02d}", 30, ST.INK2, "Regular")], {"anchor": "top"}))
         L = self.last
         caps.append((self.t_end - 0.2, self.t_end + 4.6, [(f"The last capital: {L['capital']}, {L['country']}", 44, ST.GOLD, "Bold"),
@@ -751,7 +756,7 @@ class Alert(Section):
         names_u = [c["country"] for c in self.unreach]
         pick = [n for n in ("Iceland", "New Zealand", "Sri Lanka", "Madagascar") if n in names_u]
         caps.append((self.t_end + 5.0, self.t_end + 10.0, [(f"{nu} capitals never get the message", 44, ST.RED, "Bold"),
-                                                           (", ".join(pick) + " and the Pacific islands: you're on your own", 30, ST.INK2, "Regular"),
+                                                           (", ".join(pick) + f" and {nu - len(pick)} more island nations: you're on your own", 30, ST.INK2, "Regular"),
                                                            ("no fire can see that far across the sea, over the curve of the Earth", 26, ST.MUTED, "Regular")],
                      {"anchor": "top"}))
         hh, mm = int(self.last["hours"]), int(round(self.last["hours"] % 1 * 60))

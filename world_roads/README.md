@@ -209,7 +209,14 @@ section 10.
 Physics follows the VSL Sightline tool (`drburke-droid/VSL`, `sightline/`): Terrarium elevation, Earth
 radius 6,371 km, normal refraction (k = 0.13). Details and limitations are in ACCURACY.md section 10.
 
-### The long video (16:9): history, a first-person beacon chain, the loop, and 176 countries
+### Two long videos (16:9)
+
+**Video 1, one fire around the world (5:56):** the history of beacons, a first-person beacon chain on real
+terrain, the curvature explainer, and the loop above. **Video 2, the analog backup (~3:30):** if an AI took
+over every phone, cable, satellite and radio on Earth, how fast could bonfires warn every capital? The
+first fire is lit at Bletchley Park; every fire that sees a lit fire lights its own, so the warning
+spreads as a wave and branches. Masters, previews, thumbnails, the Video 2 Short and the YouTube copy are
+in `media/signal/` (`YOUTUBE.md`).
 
 ```bash
 cd signal
@@ -220,23 +227,34 @@ python fill_holes.py              # other blank Arctic pixels from zoom 8
 python world.py                   # global grid, 944,589 candidate summits with their countries
 python edges.py                   # every fire-to-fire sightline in the world (23.2 million)
 python border.py && python border.py gulf && python border.py flat   # 1 km border rule, flat coasts
-./iterate_tour.sh                 # most-countries chain, zoom-10/12 verified -> data/tour.json
 python history_check.py           # Aeschylus's beacon chain through the same sightline test
-python fpv_terrain.py && python fpv.py           # first-person sequence (real terrain, raymarched)
+python fpv_terrain.py && python fpv.py && python fpv.py alt   # first-person sequence (real terrain, raymarched)
 python globe_texture_world.py     # night-globe texture with relief and borders
 python longform.py physics        # the curvature explainer
-python long_globe.py hook|history|rules|journey|tour|outro
-python assemble.py                # cross-fades + score -> out/long/signal_fires_full.mp4
+python long_globe.py hook|history|rules|journey|outro         # Video 1 sections
+python assemble.py v1             # cross-fades + score -> out/long/signal_fires_world.mp4
+# Video 2
+python capitals.py && python capitals.py start    # a beacon for every capital; the first fire at Bletchley Park
+python capitals_tree.py           # fastest warning to every capital, zoom-10/12 verified -> data/capitals_tree.json
+python capitals.py plains && python capitals_tree.py   # ground-fire corridors where a capital's plain is too flat
+python long_globe.py cold|plan|wave|outro2
+python assemble.py v2             # -> out/long/signal_fires_ai.mp4
+python short_ai.py                # vertical Short -> out/signal_fires_ai_short.mp4
 python thumbnail_long.py
 ```
 
-| One chain, as many countries as possible | |
+| Warning every capital by fire (Video 2) | |
 |---|---:|
-| Countries reached | **176** of 195 |
-| Fires | **787**, Uruguay to Nepal |
-| Sightlines | 122,771 km |
-| Longest sightline | 475 km, Mount Elbrus → Turkey |
-| Out of reach | Sri Lanka (Adam's Bridge is too flat) and 18 island nations |
+| Capitals warned | **176** of 195 |
+| Time to the last one | **14 h 15 min** (171 relays at 5 minutes), Buenos Aires |
+| Half the capitals warned by | 4 h 20 min |
+| Fires | **1,326** (51 on flat ground, where the "summit" was a data spike) |
+| Sightlines | 181,778 km; longest 497 km, Muztagh Ata → the Kunlun |
+| Highest fire | Kangchenjunga, 8,330 m in the data |
+| Never reached | Sri Lanka and 18 island nations, from Iceland to Tuvalu |
 | Aeschylus's chain (458 BC) | all 8 hops pass, Troy → Argos, 558 km |
+
+An earlier draft of the long video used a single chain through as many countries as possible (176, with
+787 fires; `iterate_tour.sh`, `data/tour.json`). It backtracked too much and was replaced by Video 2.
 
 Method and limits: ACCURACY.md sections 11–13.

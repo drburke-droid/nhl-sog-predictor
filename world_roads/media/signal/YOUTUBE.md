@@ -53,3 +53,60 @@ Next: if an AI took over every phone on Earth, how fast could bonfires warn ever
 
 **Tags:** signal fires, beacons, curvature of the earth, line of sight, geography, maps, Lord of the
 Rings beacons, Spanish Armada, Aeschylus, data visualization
+
+## Video 2: the analog backup (≈3:27)
+
+Upload: `upload_master/signal_fires_ai.mp4` (join the parts first). Thumbnails:
+`signal_fires_ai_thumb_A.png` (AI took the internet / we used fire) or `signal_fires_ai_thumb_B.png`
+(14 hours). Short: `signal_fires_ai_short.mp4`.
+
+**Title options**
+* If AI Took the Internet, How Fast Could Fire Warn the World?
+* AI Took the Internet. We Used Fire.
+* 14 Hours to Warn the World by Bonfire
+
+**Description**
+
+Imagine an AI takes over every phone, every satellite, every cable and every radio on Earth. How fast
+could we warn every country, using the one network it can't hack?
+
+Fire. A bonfire on a hilltop, seen from the next hilltop, which lights its own. We lit the first one at
+Bletchley Park, home of Colossus and of the first AI Safety Summit, and let the warning spread across
+real terrain: every fire that can see a burning one lights its own 5 minutes later, so the message
+branches out like a wave. No phones, no radio, no boats.
+
+* 176 of 195 capitals warned
+* The last one, Buenos Aires, after 14 hours 15 minutes (171 relays)
+* Half the world's capitals know within about 4 hours 20 minutes
+* 1,326 bonfires, 181,778 km of sightlines
+* Africa across the Strait of Sicily, North America across the Bering Strait in one 189 km jump
+* Sri Lanka and 18 island nations never get the message: no fire can see that far over the curve of
+  the Earth
+
+Total bandwidth: one bit.
+
+Terrain: Terrarium elevation tiles (Mapzen / AWS Open Data); every sightline re-checked against terrain
+every 150 m. Borders and capitals: Natural Earth. Physics: Earth radius 6,371 km with standard
+refraction (k = 0.13), 10 m bonfires.
+Method, sources and limits: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/ACCURACY.md
+
+One fire all the way around the world: [link Video 1]
+
+**Chapters** (times from `signal/out/long/timeline_v2.json`)
+
+```
+0:00 No signal
+CHAPTERS_V2
+```
+
+**Tags:** AI takeover, internet outage, signal fires, beacons, curvature of the earth, line of sight,
+geography, maps, thought experiment, data visualization
+
+## Video 2 Short (55 s)
+
+`signal_fires_ai_short.mp4`, 1080×1920.
+
+**Title:** AI took the internet. How fast could bonfires warn every country? 🔥
+
+**Description:** 176 capitals in 14 h 15 min, 1,326 bonfires from Bletchley Park. Full video on the
+channel. #shorts #geography #maps

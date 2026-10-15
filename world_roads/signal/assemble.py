@@ -95,7 +95,7 @@ def cues_v2(O, total):
               (fire0, 0.84), (last - 20, 0.92), (last, 1.0), (last + 5, 0.55), (last + 10.4, 0.8), (O["outro2"] + 8.3, 0.9),
               (total, 0.0)]
     impacts = [(T.GLITCH, 1.1), (fpv1, 0.9), (fpv2_, 0.9), (O["plan"], 0.6), (fire0, 1.1)] + \
-              [(ow + T.tk[c["hop"]], 0.55) for _, c in T.callouts] + [(last, 1.3), (O["outro2"] + 8.3, 0.9)]
+              [(ow + tc, 0.55) for tc, _ in T.callouts] + [(last, 1.3), (O["outro2"] + 8.3, 0.9)]
     risers = [(fpv1 - 2.5, fpv1), (fire0 - 3.0, fire0), (last - 3.0, last)]
     return dict(energy=energy, impacts=impacts, risers=risers, transpose_at=fire0, final_at=O["outro2"] + 0.5,
                 glitch=T.GLITCH)

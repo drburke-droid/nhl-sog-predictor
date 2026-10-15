@@ -9,6 +9,27 @@ GOLD, RED = (255, 186, 80), (255, 110, 90)
 PANEL = (6, 10, 18)
 _F = {}
 
+# Pillow 12 draws text at full opacity whatever the fill's alpha (shapes blend correctly), so every text fade
+# would pop on and off. Text with a translucent fill is drawn into a mask scaled by its alpha instead.
+_TEXT = ImageDraw.ImageDraw.text
+
+
+def _text(self, xy, text, fill=None, font=None, anchor=None, *args, **kw):
+    if args or not (isinstance(fill, tuple) and len(fill) == 4 and fill[3] < 255) or kw.get("stroke_width"):
+        return _TEXT(self, xy, text, fill, font, anchor, *args, **kw)
+    a = fill[3]
+    if a <= 0 or not text:
+        return
+    l, t, r, b = self.textbbox(xy, text, font=font, anchor=anchor, **kw)
+    l, t, r, b = int(l) - 2, int(t) - 2, int(r) + 3, int(b) + 3
+    mask = Image.new("L", (r - l, b - t), 0)
+    _TEXT(ImageDraw.Draw(mask), (xy[0] - l, xy[1] - t), text, 255, font, anchor, **kw)
+    mask = mask.point(lambda v: v * a // 255)
+    self._image.paste(tuple(fill[:3]), (l, t, r, b), mask)
+
+
+ImageDraw.ImageDraw.text = _text
+
 
 def font(size, weight="SemiBold"):
     k = (size, weight)

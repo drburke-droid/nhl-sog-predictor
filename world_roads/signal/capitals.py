@@ -53,7 +53,7 @@ def capital_list(names, counts):
         else:
             c = [p for p in c if p["featurecla"] == "Admin-0 capital"] or c
         p = c[0]
-        out[g] = (p["name"], float(p["latitude"]), float(p["longitude"]))
+        out[g] = (" ".join(p["name"].split()), float(p["latitude"]), float(p["longitude"]))   # "Washington,  D.C."
     return out
 
 

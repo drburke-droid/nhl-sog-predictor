@@ -182,9 +182,10 @@ class Short:
             d.text((VW / 2, 380), f"{n_c} of {len(self.caps)} capitals warned", font=ST.font(44, "SemiBold"), fill=ST.INK + (int(255 * a_h),),
                    anchor="ma", features=["tnum"])
             recent = [c for c in self.caps if self.tk[c["hop"]] <= t][-4:]
+            a_b = a_h * (1 - smooth((t - self.t_end) / 0.3))          # gone before "Last capital" takes its place
             for j, c in enumerate(reversed(recent)):
                 age = t - self.tk[c["hop"]]
-                a = a_h * max(0.3, 1 - j * 0.22) * min(1, age / 0.2)
+                a = a_b * max(0.3, 1 - j * 0.22) * min(1, age / 0.2)
                 d.text((VW / 2, 1600 + j * 56), f"{c['capital']}  ·  {hm(c['hours'])}", font=ST.font(40 if j == 0 else 34, "SemiBold"),
                        fill=(ST.GOLD if j == 0 else ST.INK) + (int(255 * a),), anchor="ma")
         L = self.last
