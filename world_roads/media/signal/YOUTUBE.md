@@ -54,7 +54,7 @@ Next: if an AI took over every phone on Earth, how fast could bonfires warn ever
 **Tags:** signal fires, beacons, curvature of the earth, line of sight, geography, maps, Lord of the
 Rings beacons, Spanish Armada, Aeschylus, data visualization
 
-## Video 2: the analog backup (≈3:27)
+## Video 2: the analog backup (3:27)
 
 Upload: `upload_master/signal_fires_ai.mp4` (join the parts first). Thumbnails:
 `signal_fires_ai_thumb_A.png` (AI took the internet / we used fire) or `signal_fires_ai_thumb_B.png`
@@ -96,7 +96,14 @@ One fire all the way around the world: [link Video 1]
 
 ```
 0:00 No signal
-CHAPTERS_V2
+0:15 The oldest network
+0:55 The backup plan
+1:11 First fire: Bletchley Park
+1:34 Into Africa and Asia
+2:04 Oceania and the Bering Strait
+2:26 Into South America
+2:50 The last capital
+3:06 Good luck hacking a bonfire
 ```
 
 **Tags:** AI takeover, internet outage, signal fires, beacons, curvature of the earth, line of sight,

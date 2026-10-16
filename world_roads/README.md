@@ -212,7 +212,7 @@ radius 6,371 km, normal refraction (k = 0.13). Details and limitations are in AC
 ### Two long videos (16:9)
 
 **Video 1, one fire around the world (5:56):** the history of beacons, a first-person beacon chain on real
-terrain, the curvature explainer, and the loop above. **Video 2, the analog backup (~3:30):** if an AI took
+terrain, the curvature explainer, and the loop above. **Video 2, the analog backup (3:27):** if an AI took
 over every phone, cable, satellite and radio on Earth, how fast could bonfires warn every capital? The
 first fire is lit at Bletchley Park; every fire that sees a lit fire lights its own, so the warning
 spreads as a wave and branches. Masters, previews, thumbnails, the Video 2 Short and the YouTube copy are

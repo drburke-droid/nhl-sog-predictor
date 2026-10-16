@@ -737,7 +737,8 @@ class Alert(Section):
                           ("and of the first AI Safety Summit. Fitting.", 30, ST.INK2, "Regular")], {}),
             (20.6, self.INTRO + 2.5, [("Every keeper knows the plan:", 40, ST.INK, "SemiBold"),
                                       ("see a fire, unplug everything, light your own", 40, ST.GOLD, "Bold"),
-                                      ("5 minutes per relay · the clock stops when the last capital sees a fire", 28, ST.INK2, "Regular")], {}),
+                                      ("5 minutes per relay · the clock stops when the last capital sees a fire", 28, ST.INK2, "Regular")],
+             {"anchor": "top"}),                              # the HUD panels come in below
         ]
         for tc, g in self.callouts:
             h = g[0]["hours"]
