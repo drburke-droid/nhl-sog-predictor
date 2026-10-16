@@ -224,6 +224,12 @@ against zoom-10 terrain sampled every 150 m with no margin. The fire goes on the
 within 600 m. The search and verification were repeated until everything passed: 0 bad summits,
 0 blocked sightlines and 0 blocked ship hops out of 159 (see the corrections below).
 
+**The longest sightline.** Mount Foraker to Mount Blackburn is 432.6 km. The Earth's surface bulges
+3.2 km above the straight line between the two sea-level points beneath them, and the sightline clears
+the Talkeetna Mountains, 182 km from Foraker, by only 178 m (zoom 10, every 150 m). Video 1's side view
+(2:36) draws the sea level arching up between them; an earlier render drew it sagging, which made the
+sightline look easy.
+
 **Fire ships.** A ship carries its fire 30 m up the mast, so it can be seen 21 km away. A search over
 island stepping stones (Iceland, the Faroes, Jan Mayen, Svalbard and Bear Island) minimizes the total
 number of fires plus ships. Ships only sit on open water, and each one must be visible from its

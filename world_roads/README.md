@@ -196,7 +196,7 @@ python render_fires.py    # -> out/signal_fires.mp4 (vertical Short, with music)
 | Fires on Iceland, the Faroes and back down Britain | 14 more |
 | Relays around the world | **159** (145 fires + 14 ships), 26,512 km |
 | At 5 minutes per relay | ≈ 13.2 hours |
-| Longest sightline in the chain | 433 km, Mount Foraker → Mount Blackburn (Alaska) |
+| Longest sightline in the chain | 433 km, Mount Foraker → Mount Blackburn (Alaska); clears the Talkeetna Mountains by 178 m |
 | Highest fire | Muztagh Ata, China, about 7,480 m in the data |
 | Bering Strait | Russia → Alaska in one 189 km jump |
 | Greenland → Iceland | 356 km apart; their two horizons only reach 304 km |

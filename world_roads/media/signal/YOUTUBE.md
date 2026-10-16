@@ -26,7 +26,7 @@ horizons only reach 304 km. Fire ships close the gap.
 
 * 145 mountain fires + 14 fire ships = 159 relays, 26,512 km
 * About 13 hours at 5 minutes per relay
-* Longest sightline: 433 km, Mount Foraker to Mount Blackburn (Alaska)
+* Longest sightline: 433 km, Mount Foraker to Mount Blackburn (Alaska), clearing the Talkeetna Mountains by 178 m
 * Every sightline re-checked against terrain every 150 m
 
 Terrain: Terrarium elevation tiles (Mapzen / AWS Open Data). Borders: Natural Earth. Physics: Earth
