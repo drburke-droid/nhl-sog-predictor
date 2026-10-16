@@ -1,7 +1,8 @@
 """Thumbnails for the two long signal-fire videos (1280x720).
 
     python thumbnail_long.py   -> Video 1: out/long/thumb_A.png (the question), thumb_B.png (the number)
-                                  Video 2: out/long/thumb_ai_A.png (AI took the internet), thumb_ai_B.png (the hours)
+                                  Video 2: out/long/thumb_ai_A.png (AI took the internet), thumb_ai_B.png (the hours),
+                                           thumb_ai_C.png (AI vs fire: static against the bonfire)
 """
 import os, json, math
 import numpy as np
@@ -134,7 +135,36 @@ def ai_thumbs():
     text_block(im, [(f"{int(round(hours))} HOURS", 132, (255, 186, 80)), ("TO WARN THE", 64, (255, 255, 255)),
                     ("WORLD", 64, (255, 255, 255)), ("BY FIRE", 64, (255, 255, 255))], 50, 140)
     im.save(os.path.join(OUT, "thumb_ai_B.png"))
+    ai_thumb_C()
     print(f"wrote AI thumbnails ({int(round(hours))} h)")
+
+
+def ai_thumb_C():
+    """AI vs FIRE: TV static on the left, the first-person bonfire and its keeper on the right, split on a slant."""
+    fire = cv2.imread(os.path.join(OUT, "thumb_fire.png"))[..., ::-1]
+    fire = cv2.resize(fire[0:1080, 430:1530], (733, TH), interpolation=cv2.INTER_AREA).astype(np.float32)
+    canvas = static_panel(TW, TH, seed=11) * 0.8
+    x0 = TW - fire.shape[1]
+    yy, xx = np.mgrid[0:TH, 0:TW].astype(np.float32)
+    seam = 560 + (yy - TH / 2) * -0.28                       # slanted split
+    w = np.clip((xx - seam) / 18.0 + 0.5, 0, 1)[..., None]
+    right = np.repeat(fire[:, :1], TW, axis=1)
+    right[:, x0:] = fire
+    canvas = canvas * (1 - w) + right * w
+    im = Image.fromarray(np.clip(canvas, 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(im, "RGBA")
+    big = ST.font(230, "Black") if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else ST.font(230, "Bold")
+    for dx, col in ((-16, (255, 40, 60)), (16, (40, 220, 255))):          # AI, with a torn colour split
+        d.text((60 + dx, 20), "AI", font=big, fill=col)
+    d.text((60, 20), "AI", font=big, fill=(255, 255, 255), stroke_width=10, stroke_fill=(0, 0, 0))
+    d.rectangle([50, 300, 410, 378], fill=(0, 0, 0, 230))
+    d.text((230, 339), "NO SIGNAL", font=ST.font(52, "Bold"), fill=(240, 240, 240), anchor="mm")
+    cx, cy = 612, 170                                          # VS on the seam
+    d.ellipse([cx - 62, cy - 62, cx + 62, cy + 62], fill=(10, 12, 18), outline=(255, 255, 255), width=6)
+    d.text((cx, cy + 2), "VS", font=ST.font(64, "Bold"), fill=(255, 255, 255), anchor="mm")
+    text_block(im, [("FIRE", 210, (255, 186, 80))], 740, 12)
+    im.save(os.path.join(OUT, "thumb_ai_C.png"))
+    print("wrote thumb_ai_C.png")
 
 
 if __name__ == "__main__":

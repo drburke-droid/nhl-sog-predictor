@@ -35,6 +35,8 @@ Method, sources and limits: https://github.com/drburke-droid/nhl-sog-predictor/b
 
 Next: if an AI took over every phone on Earth, how fast could bonfires warn every country? [link Video 2]
 
+(Video 1 is live at https://youtu.be/ylpOhu6PTQA; add Video 2's link here once it is up.)
+
 **Chapters**
 
 ```
@@ -56,45 +58,35 @@ Rings beacons, Spanish Armada, Aeschylus, data visualization
 
 ## Video 2: the analog backup (3:27)
 
-Upload: `upload_master/signal_fires_ai.mp4` (join the parts first). Thumbnails:
-`signal_fires_ai_thumb_A.png` (AI took the internet / we used fire) or `signal_fires_ai_thumb_B.png`
-(14 hours). Short: `signal_fires_ai_short.mp4`.
+Upload: `upload_master/signal_fires_ai.mp4` (join the parts first). Short: `signal_fires_ai_short.mp4`.
 
-**Title options**
-* If AI Took the Internet, How Fast Could Fire Warn the World?
-* AI Took the Internet. We Used Fire.
-* 14 Hours to Warn the World by Bonfire
+**A/B/C test: thumbnails and titles, paired so the title never repeats the thumbnail's words**
+
+| | Thumbnail | Title |
+|---|---|---|
+| A | `signal_fires_ai_thumb_A.png`: AI TOOK THE INTERNET / WE USED FIRE | How Fast Could Bonfires Warn Every Country on Earth? |
+| B | `signal_fires_ai_thumb_B.png`: 14 HOURS TO WARN THE WORLD BY FIRE | If AI Took Over the Internet, How Would We Warn the World? |
+| C | `signal_fires_ai_thumb_C.png`: AI vs FIRE | No Phones, No Internet: Warning 176 Countries by Bonfire |
 
 **Description**
 
-Imagine an AI takes over every phone, every satellite, every cable and every radio on Earth. How fast
-could we warn every country, using the one network it can't hack?
+```
+What if an AI took over every phone, every satellite, every cable and every radio on Earth? How fast could we warn every country, using the one network it can't hack?
 
-Fire. A bonfire on a hilltop, seen from the next hilltop, which lights its own. We lit the first one at
-Bletchley Park, home of Colossus and of the first AI Safety Summit, and let the warning spread across
-real terrain: every fire that can see a burning one lights its own 5 minutes later, so the message
-branches out like a wave. No phones, no radio, no boats.
+Fire. A bonfire on a hilltop, seen from the next hilltop, which lights its own. We lit the first one at Bletchley Park, home of Colossus and of the first AI Safety Summit, and let the warning spread across real terrain. Every fire that can see a burning one lights its own 5 minutes later, so the message branches out like a wave. No phones, no radio, no boats.
 
-* 176 of 195 capitals warned
-* The last one, Buenos Aires, after 14 hours 15 minutes (171 relays)
-* Half the world's capitals know within about 4 hours 20 minutes
-* 1,326 bonfires, 181,778 km of sightlines
-* Africa across the Strait of Sicily, North America across the Bering Strait in one 189 km jump
-* Sri Lanka and 18 island nations never get the message: no fire can see that far over the curve of
-  the Earth
+🔥 176 of 195 capitals warned
+🔥 The last one, Buenos Aires, after 14 hours 15 minutes (171 relays)
+🔥 Half the world's capitals know within about 4 hours 20 minutes
+🔥 1,326 bonfires and 181,778 km of sightlines
+🔥 Into Africa across the Strait of Sicily, into North America across the Bering Strait in one 189 km jump
+🔥 Sri Lanka and 18 island nations never get the message: no fire can see that far over the curve of the Earth
 
 Total bandwidth: one bit.
 
-Terrain: Terrarium elevation tiles (Mapzen / AWS Open Data); every sightline re-checked against terrain
-every 150 m. Borders and capitals: Natural Earth. Physics: Earth radius 6,371 km with standard
-refraction (k = 0.13), 10 m bonfires.
-Method, sources and limits: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/ACCURACY.md
+How many fires would it take to send a message all the way around the world? Watch: https://youtu.be/ylpOhu6PTQA
 
-One fire all the way around the world: [link Video 1]
-
-**Chapters** (times from `signal/out/long/timeline_v2.json`)
-
-```
+Chapters
 0:00 No signal
 0:15 The oldest network
 0:55 The backup plan
@@ -104,6 +96,10 @@ One fire all the way around the world: [link Video 1]
 2:26 Into South America
 2:50 The last capital
 3:06 Good luck hacking a bonfire
+
+How it was made: terrain from Terrarium elevation tiles (Mapzen / AWS Open Data), with every sightline re-checked against the terrain every 150 m. Borders and capitals from Natural Earth. Earth radius 6,371 km with standard refraction, 10 m bonfires, 5 minutes per relay. Method, sources and limits: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/ACCURACY.md
+
+#geography #maps #AI
 ```
 
 **Tags:** AI takeover, internet outage, signal fires, beacons, curvature of the earth, line of sight,
@@ -117,3 +113,5 @@ geography, maps, thought experiment, data visualization
 
 **Description:** 176 capitals in 14 h 15 min, 1,326 bonfires from Bletchley Park. Full video on the
 channel. #shorts #geography #maps
+
+(Link the Short to the full video with YouTube's "Related video" field once it is up.)
