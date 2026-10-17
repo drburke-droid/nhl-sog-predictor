@@ -64,17 +64,42 @@ class Section:
                 self.settle()
             Image.fromarray(self.frame(still)).save(os.path.join(OUT, f"{self.name}_{still:.1f}.png"))
             return
-        path = os.path.join(OUT, f"{self.name}.mp4")
-        p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
-                              "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "16",
-                              "-pix_fmt", "yuv420p", path], stdin=subprocess.PIPE)
+        # in chunks of CHUNK frames, so an interrupted render resumes; each resumed chunk first replays WARM frames
+        # unrecorded, so trails and glows carry over as in an unbroken render
+        CHUNK, WARM = 150, 30
+        cdir = os.path.join(OUT, "chunks")
+        os.makedirs(cdir, exist_ok=True)
         n = int(round(self.dur * FPS))
         t0 = time.time()
-        for i in range(n):
-            p.stdin.write(np.ascontiguousarray(self.frame(i / FPS)).tobytes())
-            if i % 150 == 0:
-                print(f"{self.name}: frame {i}/{n} {time.time() - t0:.0f}s", flush=True)
-        p.stdin.close(); p.wait()
+        parts = []
+        prev_done = True
+        for c0 in range(0, n, CHUNK):
+            c1 = min(n, c0 + CHUNK)
+            part = os.path.join(cdir, f"{self.name}_{c0:05d}.mp4")
+            parts.append(part)
+            if os.path.exists(part) and os.path.exists(part + ".ok"):
+                prev_done = False
+                continue
+            if not prev_done:
+                for i in range(max(0, c0 - WARM), c0):
+                    self.frame(i / FPS)
+            tmp = part + ".tmp.mp4"
+            p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                                  "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "16",
+                                  "-pix_fmt", "yuv420p", tmp], stdin=subprocess.PIPE)
+            for i in range(c0, c1):
+                p.stdin.write(np.ascontiguousarray(self.frame(i / FPS)).tobytes())
+            p.stdin.close(); p.wait()
+            os.replace(tmp, part)
+            open(part + ".ok", "w").close()
+            prev_done = True
+            print(f"{self.name}: frames {c0}-{c1}/{n} {time.time() - t0:.0f}s", flush=True)
+        lst = os.path.join(cdir, f"{self.name}.txt")
+        open(lst, "w").write("".join(f"file '{q}'\n" for q in parts))
+        path = os.path.join(OUT, f"{self.name}.mp4")
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", path], check=True)
+        for q in parts:
+            os.remove(q); os.remove(q + ".ok")
         print("wrote", path, flush=True)
 
 

@@ -1,15 +1,15 @@
 # YouTube copy: how long would a Roomba take to drive every road?
 
-Upload `roomba_photon.mp4` (TOTAL, 1920×1080, 30 fps, caption-only). Shorts: `roomba_short.mp4`
+Upload `roomba_photon.mp4` (3:28, 1920×1080, 30 fps, caption-only). Shorts: `roomba_short.mp4`
 (America) and `calgary_short.mp4` (Calgary), both 1080×1920.
 
 **A/B/C test: thumbnails and titles, paired so the title doesn't repeat the thumbnail's words**
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | `roomba_thumb_A.png`: Roomba on the half-driven US map, EVERY ROAD / IN AMERICA | How Long Would a Roomba Take to Drive Every Road in the USA? |
-| B | `roomba_thumb_B.png`: Roomba over New York, EVERY STREET / IN NEW YORK / 1.9 s | I Sent a Roomba Down Every Street in NYC at the Speed of Light |
-| C | `roomba_thumb_C.png`: Roomba on the last block, THE LAST ROAD / IN AMERICA | A Roomba With No Map vs Every Road in America |
+| A | `roomba_thumb_A.png`: Roomba on the half-driven US map, NO MAP. / LIGHT SPEED. | How Long Would a Roomba Take to Drive Every Road in the USA? |
+| B | `roomba_thumb_B.png`: Roomba over New York, EVERY STREET / IN NEW YORK / 1.9 s | What Happens When a Roomba Moves at the Speed of Light? |
+| C | `roomba_thumb_C.png`: Roomba next to the last block, THE LAST ROAD / IN AMERICA | A Light-Speed Roomba Took 2 Hours to Find This One Street |
 
 **Description**
 
@@ -26,7 +26,13 @@ In 13 of the 16 US runs, the last road was on a coast. Islands, peninsulas and b
 
 What should the Roomba try next? Tell me in the comments.
 
-CHAPTERS
+0:00 The first Roombas had no map
+0:15 The rule
+0:28 Every street in New York
+1:38 Every road in America
+2:37 The last 105 blocks
+2:56 16 runs: where it ends
+3:07 At a real Roomba's speed
 
 How it's made: road data from Overture Maps Foundation, which includes OpenStreetMap data (© OpenStreetMap contributors, ODbL). Motorways down to residential streets, no service roads or tracks; one-way rules ignored. A "block" is a stretch of road between intersections. The US run shown is 14.3 billion simulated junction choices, replayed exactly for the slow-motion ending. Roomba top speed: the 0.5 m/s drive limit of iRobot's Create 2 (Roomba 600 series).
 Method, sources and every run: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/roomba/ACCURACY.md
@@ -37,7 +43,13 @@ Music: original, synthesized for this video.
 **Chapters**
 
 ```
-CHAPTERS
+0:00 The first Roombas had no map
+0:15 The rule
+0:28 Every street in New York
+1:38 Every road in America
+2:37 The last 105 blocks
+2:56 16 runs: where it ends
+3:07 At a real Roomba's speed
 ```
 
 **Tags:** roomba, robot vacuum, speed of light, random walk, every road in America, New York City,

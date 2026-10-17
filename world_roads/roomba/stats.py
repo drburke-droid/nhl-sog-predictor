@@ -36,6 +36,13 @@ def main():
                  walks=[dict(seed=w["seed"], seconds=w["seconds"], km=w["km"], x_network=w["x_network"], last=w["last"]) for w in usa]),
         planets_light_s={nm: au * AU / CV.C_KMS for nm, au in (("Saturn", 9.537), ("Uranus", 19.19), ("Neptune", 30.07))},
         planets_km={nm: au * AU for nm, au in (("Saturn", 9.537), ("Uranus", 19.19))})
+    nyc = json.load(open(os.path.join(DATA, "nyc_cover_many.json")))
+    out["nyc"] = dict(network_km=nyc["network_km"], segments=nyc["segments"], n=len(nyc["seconds_nonback"]),
+                      nonback=nyc["pct_nonback"], featured_seed=30)
+    yr = 365.25 * 86400
+    out["roomba_years_at_0.5_m_s"] = {k: v * CV.C_KMS * 1000 / 0.5 / yr for k, v in
+                                       (("nyc", nyc["pct_nonback"]["median"]), ("usa", out["usa"]["median_s"]),
+                                        ("calgary", many["pct_nonback"]["median"]))}
     json.dump(out, open(os.path.join(DATA, "stats.json"), "w"), indent=1)
     c, u = out["calgary"], out["usa"]
     print(f"Calgary: {c['network_km']:,.0f} km, {c['segments']:,} segments")
@@ -43,6 +50,10 @@ def main():
           f"(10-90%: {c['nonback']['p10']:.2f}-{c['nonback']['p90']:.2f} s; {c['nonback']['min']:.2f}-{c['nonback']['max']:.2f} s)")
     print(f"  plain random walk, {c['n_plain']} runs: median {c['plain']['median']:.1f} s "
           f"(10-90%: {c['plain']['p10']:.1f}-{c['plain']['p90']:.1f} s; {c['plain']['min']:.1f}-{c['plain']['max']:.1f} s)")
+    n = out["nyc"]
+    print(f"NYC: {n['network_km']:,.0f} km; {n['n']} runs: median {n['nonback']['median']:.2f} s "
+          f"(10-90%: {n['nonback']['p10']:.2f}-{n['nonback']['p90']:.2f} s; {n['nonback']['min']:.2f}-{n['nonback']['max']:.2f} s)")
+    print("At 0.5 m/s:", {k: f"{v:,.1f} years" for k, v in out["roomba_years_at_0.5_m_s"].items()})
     print(f"USA: {u['km']:,.0f} km, {u['roads']:,} roads, {u['junctions']:,} junctions; once over = {u['once_s']:.1f} s of light")
     print(f"  {u['n']} runs: median {hm(u['median_s'])}, {hm(u['min_s'])} to {hm(u['max_s'])}; average {u['mean_x_network']:.0f}x the network")
     print("\n| Run | Light time | Distance | × network |\n|---:|---:|---:|---:|")

@@ -90,9 +90,20 @@ class CalgaryShort:
             if i % 150 == 0:
                 print(f"calgary short: frame {i}/{n} {time.time() - t0:.0f}s", flush=True)
         p.stdin.close(); p.wait()
-        import assemble as A
-        A.mux_short(path, os.path.join(V.OUT, "calgary_short.mp4"), go=RUN0, arrive=RUN1, end=RUN1 + 4.0)
+        mux()
+
+
+def mux():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("roomba_assemble", os.path.join(os.path.dirname(os.path.abspath(__file__)), "assemble.py"))
+    A = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(A)
+    path = os.path.join(V.OUT, "calgary_short_video.mp4")
+    A.mux_short(path, os.path.join(V.OUT, "calgary_short.mp4"), go=RUN0, arrive=RUN1, end=RUN1 + 4.0)
 
 
 if __name__ == "__main__":
-    CalgaryShort().render([float(x) for x in sys.argv[1:]])
+    if sys.argv[1:] == ["mux"]:
+        mux()
+    else:
+        CalgaryShort().render([float(x) for x in sys.argv[1:]])

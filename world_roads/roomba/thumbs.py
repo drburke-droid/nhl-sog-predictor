@@ -49,8 +49,8 @@ def thumb_A():
     im = Image.fromarray(fr).crop((150, 70, 1830, 1015)).resize((TW, TH), Image.LANCZOS)
     im = glow_roomba(im, 820, 330, math.radians(-25), 190)
     d = ImageDraw.Draw(im)
-    headline(d, (40, 470), "EVERY ROAD", 124, V.GOLD)
-    headline(d, (44, 600), "IN AMERICA", 84, (255, 255, 255))
+    headline(d, (40, 470), "NO MAP.", 124, (255, 255, 255))
+    headline(d, (44, 600), "LIGHT SPEED.", 92, V.GOLD)
     im.save(os.path.join(OUT, "thumb_A.png"))
 
 
@@ -74,7 +74,7 @@ def thumb_B():
 def thumb_C():
     """The Roomba about to drive the last block in America."""
     L = V.Last()
-    fr, f_, D, dark, head, s, lc = L.map_frame(14.6)
+    fr, f_, D, dark, head, s, lc = L.map_frame(14.2)       # six blocks to go, the Roomba heading for the last
     im = Image.fromarray(fr).crop((240, 60, 1680, 870)).resize((TW, TH), Image.LANCZOS)
     k = TW / 1440
     cx, cy = (lc[0] - 240) * k, (lc[1] - 60) * k
