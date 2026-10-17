@@ -258,3 +258,23 @@ An earlier draft of the long video used a single chain through as many countries
 787 fires; `iterate_tour.sh`, `data/tour.json`). It backtracked too much and was replaced by Video 2.
 
 Method and limits: ACCURACY.md sections 11–13.
+
+## Hyperacuity: your eyes see smaller than their own pixels (`hyperacuity/`)
+
+A caption-only explainer and test. You can see one pair of bars misaligned by a fraction of a pixel,
+finer than the spacing of the cones in your own retina. Six test rounds go from 4 pixels down to ⅛ pixel.
+Then come the scale of things (cones, a 20/20 letter, a phone pixel), how a screen draws between pixels,
+and a simulated retina that recovers a 5″ shift from its cones. After that: bends, squashed circles,
+tilts and the oblique effect, the vernier caliper, and the Amsler grid ("if straight lines ever look
+bent, see your optometrist").
+
+```bash
+cd hyperacuity
+python codec_check.py        # do 1/2, 1/4, 1/8 px offsets survive downscaling + VP9/H.264/AV1? (yes)
+python assemble.py render    # render all sections at 4K (4 at a time), then join + score -> out/hyperacuity.mp4
+python thumbs.py             # three thumbnails for A/B/C testing
+```
+
+* **Rendering:** at 4K, with every offset in pixels of a 1080p frame. Stimuli are drawn with exact area
+  coverage, in linear light.
+* **Sources and methods:** [hyperacuity/ACCURACY.md](hyperacuity/ACCURACY.md).
