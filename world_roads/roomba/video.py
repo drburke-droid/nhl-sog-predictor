@@ -1,6 +1,7 @@
-"""The Roomba photon video (1920x1080, 30 fps), caption-only.
+"""How long would a Roomba take to drive every road? The video (1920x1080, 30 fps), caption-only.
 
-    python video.py NAME [still times...]     NAME: cal_intro, rule, cal_run, compare, usa_intro, usa_run, last, outro
+    python video.py NAME [still times...]
+    NAME: room, rule, nyc_intro, nyc_run, usa_intro, usa_run, last, runs, payoff
 """
 import os, sys, json, math, time, subprocess, functools
 import numpy as np
@@ -91,118 +92,68 @@ def calgary_stats():
     return out
 
 
-# ================================================================== Calgary
-class CalRun(Section):
-    """Calgary from the first metre to the last street. Phase 'intro' is the slow start (captions set the
-    scene); phase 'run' is the rest, accelerating, with the HUD and milestones."""
+# ================================================================== the cold open: a Roomba in a room
+class RoomScene(Section):
+    name, dur = "room", 16.0
 
-    def __init__(self, phase):
-        self.phase = phase
-        self.C = maps.Calgary(seed=CAL_SEED, cy=-1.5, ox=CAL_X)
-        self.T_km = self.C.total_km
-        self.net_km = float(self.C.elen.sum())
-        log = np.load(os.path.join(DATA, f"calgary_log_{CAL_SEED}.npy"))
-        self.log = log
-        self.D0 = 90.0                                        # km driven during the intro (0.3 ms of light)
-        if phase == "intro":
-            self.name, self.dur = "cal_intro", 15.0
-        else:
-            self.name, self.dur = "cal_run", 56.0
-            self.C.map.advance(self.D0)
-            self.C.k = self.C.step_at(self.D0)
-        self.lastD = -1
-        # milestones (fraction of street length driven)
-        f = log[:, 3] / self.net_km
-        self.ms = []
-        for q, lab in ((0.5, "Half of Calgary's streets"), (0.9, "90% of streets"), (0.99, "99% of streets"), (0.999, "99.9% of streets")):
-            k = int(np.searchsorted(f, q))
-            self.ms.append((lab, float(log[min(k, len(log) - 1), 1])))
+    def __init__(self):
+        import room as RM
+        self.RM = RM
+        rw, rh = RM.RW * RM.PX_M, RM.RH * RM.PX_M
+        self.ox, self.oy = int(960 - rw / 2), int(468 - rh / 2)
+        self.R = RM.Room(self.ox, self.oy, W, H)
+        im = Image.new("RGB", (W, H), (5, 8, 15))
+        d = ImageDraw.Draw(im)
+        px = lambda x, y: (self.ox + x * RM.PX_M, self.oy + y * RM.PX_M)
+        d.rectangle([*px(0, 0), *px(RM.RW, RM.RH)], fill=(18, 22, 32))
+        for k in range(1, int(RM.RW / 0.3)):                                  # floorboards
+            x = self.ox + k * 0.3 * RM.PX_M
+            d.line([(x, self.oy), (x, self.oy + rh)], fill=(22, 27, 38), width=2)
+        for nm, (x0, y0, x1, y1) in RM.BOXES:
+            d.rounded_rectangle([*px(x0, y0), *px(x1, y1)], 10, fill=(40, 46, 62), outline=(86, 96, 118), width=3)
+            d.text(px((x0 + x1) / 2, (y0 + y1) / 2), nm, font=ST.font(24), fill=(130, 140, 160), anchor="mm")
+        x, y, r = RM.PLANT
+        d.ellipse([*px(x - r, y - r), *px(x + r, y + r)], fill=(34, 64, 48), outline=(70, 120, 90), width=3)
+        d.rectangle([*px(0, 0), *px(RM.RW, RM.RH)], outline=(150, 160, 180), width=8)
+        self.base = np.asarray(im).astype(np.float32)
 
-    def settle(self):
-        self.C.trail[:] = 0
-
-    def D(self, t):
-        if self.phase == "intro":
-            u = t / self.dur
-            return self.D0 * (math.exp(5.0 * u) - 1) / (math.exp(5.0) - 1)
-        u = min(t / (self.dur - 6.0), 1.0)
-        return self.D0 + (self.T_km - self.D0) * u ** 3.4
+    def sim_t(self, t):
+        if t < 4.0:
+            return 3.0 * t                                 # 3x real time: a couple of bumps
+        u = min((t - 4.0) / 10.5, 1.0)
+        return 12.0 + (1800.0 - 12.0) * u ** 2.4           # then a time-lapse to 30 minutes
 
     def frame(self, t):
-        D = self.D(t)
-        if D < self.lastD:                                     # stills out of order: rebuild state
-            self.__init__(self.phase)
-        self.lastD = D
-        fr = self.C.frame(D)
-        im = Image.fromarray(fr)
+        st = self.sim_t(t)
+        k = self.R.advance(st)
+        cov = (self.R.cov.astype(bool) & self.R.free).astype(np.float32)
+        img = self.base * (1 - 0.42 * cov[..., None]) + np.array(GOLD, np.float32) * 0.42 * cov[..., None]
+        # the last few seconds of path, brighter
+        j0 = max(0, k - int(25.0 / self.R.dt))
+        tr = np.zeros((H, W), np.float32)
+        if k > j0:
+            cv2.polylines(tr, [self.R.P[j0:k + 1].astype(np.int32)], False, 1.0, 3, cv2.LINE_AA)
+        img = img + tr[..., None] * np.array([255, 235, 190], np.float32) * 0.5
+        im = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8))
+        hd = self.R.heading(k)
+        self.last_heading = hd if hd is not None else getattr(self, "last_heading", 0.0)
+        maps.draw_roomba(im, self.R.P[k][0], self.R.P[k][1], self.last_heading, diam=int(2 * self.RM.R * self.RM.PX_M))
         d = ImageDraw.Draw(im, "RGBA")
-        sec = D / CV.C_KMS
-        driven = self.C.map.done.sum() / self.C.map.total.sum()
-        a_h = ST.fade(t, 0.8 if self.phase == "intro" else 0.0, self.dur + 9, 0.6, 0.6)
-        x0 = 60
-        text(d, (x0, 60), "CALGARY · EVERY STREET", 26, MUTED, a_h, "SemiBold")
-        text(d, (x0, 100), "LIGHT TIME", 22, MUTED, a_h)
-        text(d, (x0, 128), fmt_light(sec), 84, GOLD, a_h, "Bold")
-        text(d, (x0, 250), "STREETS DRIVEN", 22, MUTED, a_h)
-        text(d, (x0, 278), f"{driven * 100:.2f}%" if driven < 0.9999 else f"{driven * 100:.3f}%", 64, INK, a_h, "Bold")
-        text(d, (x0, 380), "DISTANCE DRIVEN", 22, MUTED, a_h)
-        text(d, (x0, 408), f"{D:,.0f} km", 48, INK, a_h, "Bold")
-        if D > self.net_km:
-            text(d, (x0, 470), f"{D / self.net_km:,.1f}× the city's {self.net_km:,.0f} km of streets", 24, INK2, a_h, "Regular")
-        if self.phase == "run":
-            self.chart(d, t, D, a_h)
-            # the last street: a ring when it is found
-            if t > self.dur - 6.0:
-                e = int(np.argmax(self.C.first))
-                hx, hy = self.C.mx[e], self.C.my[e]
-                g = smooth((t - self.dur + 6.0) / 0.5) * ST.fade(t, 0, self.dur, 0, 0.5)
-                r = 22 + 60 * (1 - smooth((t - self.dur + 6.0) / 0.5))
-                d.ellipse([hx - r, hy - r, hx + r, hy + r], outline=GOLD + (int(255 * g),), width=4)
-                lab = f"the last street ({self.C.elen[e] * 1000:.0f} m)"
-                tw = d.textlength(lab, font=ST.font(28))
-                d.rounded_rectangle([hx + 30, hy - 24, hx + 54 + tw, hy + 24], 12, fill=ST.PANEL + (int(215 * g),))
-                text(d, (hx + 42, hy), lab, 28, GOLD, g, "SemiBold", "lm")
-        fr = np.asarray(im).copy()
-        return ST.draw_captions(fr, t, self.caps(t))
-
-    def chart(self, d, t, D, a):
-        """streets driven vs light time, filling in as the walk goes"""
-        x0, y0, w, h = 60, 600, 520, 300
-        d.rectangle([x0, y0, x0 + w, y0 + h], outline=(60, 70, 90, int(200 * a)), width=2)
-        T = self.log[-1, 1]
-        k = int(np.searchsorted(self.log[:, 1], D))
-        xs = x0 + self.log[:k + 1, 1] / T * w
-        ys = y0 + h - self.log[:k + 1, 3] / self.net_km * h
-        if k > 1:
-            d.line(list(zip(xs, ys)), fill=GOLD + (int(255 * a),), width=3)
-        text(d, (x0, y0 + h + 12), "0", 20, MUTED, a)
-        text(d, (x0 + w, y0 + h + 12), f"{T / CV.C_KMS:.2f} s", 20, MUTED, a, anchor="ra")
-        text(d, (x0 + 8, y0 + 6), "100%", 20, MUTED, a)
-        text(d, (x0, y0 - 34), "streets driven, over time", 22, INK2, a)
-
-    def caps(self, t):
-        if self.phase == "intro":
-            return [(0.6, 5.2, [("A photon leaves downtown Calgary at the speed of light.", 40, INK, "SemiBold")], {"anchor": "top", "cx": CAL_X}),
-                    (5.6, 10.0, [("At every intersection, it picks a road at random.", 40, INK, "SemiBold")], {"anchor": "top", "cx": CAL_X}),
-                    (10.4, 14.8, [("How long until it has driven every street?", 44, GOLD, "Bold")], {"anchor": "top", "cx": CAL_X})]
-        caps = []
-        Ts = [(lab, self.t_of(D)) for lab, D in self.ms]
-        for (lab, tt), nxt in zip(Ts, Ts[1:] + [("", self.dur - 6.0)]):
-            secs = self.D_to_s(tt)
-            caps.append((tt, min(tt + 3.4, nxt[1] - 0.2), [(f"{lab}: {fmt_light(secs)}", 40, GOLD, "Bold")], {"anchor": "top", "cx": CAL_X}))
-        tail = 1 - self.ms[2][1] / self.T_km                      # share of the trip after 99% of the streets
-        caps.append((self.dur - 5.6, self.dur, [(f"Every street: {fmt_light(self.T_km / CV.C_KMS)}", 46, GOLD, "Bold"),
-                                                (f"{tail * 100:.0f}% of the trip went to finding the last 1% of streets", 30, INK2, "Regular")],
-                     {"anchor": "bottom", "cx": CAL_X}))
-        return caps
-
-    def t_of(self, Dq):
-        """video time at which D(t) reaches Dq"""
-        u = ((Dq - self.D0) / (self.T_km - self.D0)) ** (1 / 3.4)
-        return u * (self.dur - 6.0)
-
-    def D_to_s(self, tt):
-        return self.D(tt) / CV.C_KMS
+        a = ST.fade(t, 0.6, 1e9, 0.5, 0.5)
+        mm, ss = divmod(int(st), 60)
+        x0 = self.ox + self.RM.RW * self.RM.PX_M + 40
+        text(d, (x0, self.oy), "CLEANING TIME", 22, MUTED, a)
+        text(d, (x0, self.oy + 26), f"{mm}:{ss:02d}", 56, GOLD, a, "Bold")
+        text(d, (x0, self.oy + 110), "FLOOR COVERED", 22, MUTED, a)
+        text(d, (x0, self.oy + 136), f"{self.R.covered() * 100:.0f}%", 56, INK, a, "Bold")
+        sp = "real time × 3" if t < 4.0 else "time-lapse"
+        text(d, (x0, self.oy + 220), sp, 24, INK2, a, "Regular")
+        fr = np.asarray(im.convert("RGB")).copy()
+        caps = [(0.4, 4.6, [("The first Roombas had no map.", 44, INK, "SemiBold")]),
+                (4.9, 9.9, [("Drive straight. Bump into something. Turn a random way. Repeat.", 40, INK, "SemiBold")]),
+                (10.2, 15.8, [("Given time, it covers nearly the whole floor.", 40, INK, "SemiBold"),
+                              ("The last few percent take the longest.", 34, GOLD, "SemiBold")])]
+        return ST.draw_captions(fr, t, caps)
 
 
 # ================================================================== the rule
@@ -213,67 +164,196 @@ class Rule(Section):
         fr = np.zeros((H, W, 3), np.uint8); fr[:] = (5, 8, 15)
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
-        cx, cy, L = 960, 470, 300
+        cx, cy, L = 960, 520, 300
         a = ST.fade(t, 0.2, self.dur, 0.5, 0.5)
-        roads = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        for dx, dy in roads:
-            d.line([(cx, cy), (cx + dx * L, cy + dy * L)], fill=(70, 90, 120, int(255 * a)), width=14)
-        # arriving from the left
-        u = smooth((t - 0.6) / 2.0)
-        px = cx - L + L * u
-        d.ellipse([px - 14, cy - 14, px + 14, cy + 14], fill=(255, 245, 220, int(255 * a)))
-        if t > 2.8:
-            g = smooth((t - 2.8) / 0.6) * a
-            for dx, dy, lx, ly in ((1, 0, L * 0.5, -48), (0, -1, 48, -L * 0.5), (0, 1, 48, L * 0.5)):
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            d.line([(cx, cy), (cx + dx * L, cy + dy * L)], fill=(70, 90, 120, int(255 * a)), width=26)
+        # the road up ends in a dead end
+        d.line([(cx - 40, cy - L), (cx + 40, cy - L)], fill=(150, 160, 180, int(255 * a)), width=8)
+        text(d, (cx + 56, cy - L), "dead end", 28, INK2, a, "SemiBold", "lm")
+        if 2.8 < t < 6.8:
+            g = smooth((t - 2.8) / 0.6) * a * (1 - smooth((t - 6.2) / 0.6))
+            for dx, dy, lx, ly in ((1, 0, L * 0.55, -56), (0, -1, 56, -L * 0.45), (0, 1, 56, L * 0.55)):
                 ex, ey = cx + dx * L * 0.62, cy + dy * L * 0.62
-                d.line([(cx + dx * 40, cy + dy * 40), (ex, ey)], fill=GOLD + (int(230 * g),), width=6)
+                d.line([(cx + dx * 46, cy + dy * 46), (ex, ey)], fill=GOLD + (int(230 * g),), width=6)
                 text(d, (cx + lx, cy + ly), "⅓", 44, GOLD, g, "Bold", "mm")
-            d.line([(cx - 40, cy), (cx - L * 0.62, cy)], fill=RED + (int(200 * g),), width=6)
-            qx, qy, q = cx - L * 0.36, cy - 52, 16
+            d.line([(cx - 46, cy), (cx - L * 0.62, cy)], fill=RED + (int(200 * g),), width=6)
+            qx, qy, q = cx - L * 0.36, cy - 60, 16
             d.line([(qx - q, qy - q), (qx + q, qy + q)], fill=RED + (int(255 * g),), width=7)
             d.line([(qx - q, qy + q), (qx + q, qy - q)], fill=RED + (int(255 * g),), width=7)
-            text(d, (cx - L * 0.5, cy + 40), "the way it came in", 28, RED, g, "SemiBold", "ma")
-        fr = np.asarray(im).copy()
-        caps = [(0.4, 6.2, [("The rule: at every intersection, take any road", 40, INK, "SemiBold"),
-                            ("except the one you came in on. Every choice equally likely.", 36, INK2, "Regular")]),
-                (6.6, 12.6, [("At a dead end, turn around. Like a Roomba.", 40, INK, "SemiBold"),
-                             ("No map, no memory, no plan.", 36, GOLD, "SemiBold")])]
+            text(d, (cx - L * 0.5, cy + 48), "the way it came in", 28, RED, g, "SemiBold", "ma")
+        # the Roomba: in from the left, picks the road up, meets the dead end, turns round, comes back and goes right
+        keys = [(0.6, (cx - L, cy), 0.0), (2.6, (cx, cy), 0.0), (4.6, (cx, cy), 0.0), (5.0, (cx, cy), -math.pi / 2),
+                (7.4, (cx, cy - L + 30), -math.pi / 2), (8.0, (cx, cy - L + 30), math.pi / 2), (10.0, (cx, cy), math.pi / 2),
+                (10.4, (cx, cy), 0.0), (12.4, (cx + L, cy), 0.0)]
+        if t <= keys[0][0]:
+            pos, ang = keys[0][1], keys[0][2]
+        elif t >= keys[-1][0]:
+            pos, ang = keys[-1][1], keys[-1][2]
+        else:
+            for (t0, p0, a0), (t1, p1, a1) in zip(keys, keys[1:]):
+                if t0 <= t <= t1:
+                    u = smooth((t - t0) / (t1 - t0))
+                    pos = (p0[0] + (p1[0] - p0[0]) * u, p0[1] + (p1[1] - p0[1]) * u)
+                    da = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi
+                    ang = a0 + da * u
+                    break
+        maps.draw_roomba(im, pos[0], pos[1], ang, diam=56)
+        fr = np.asarray(im.convert("RGB")).copy()
+        caps = [(0.4, 6.4, [("On streets, the same idea: at every intersection, take any road", 40, INK, "SemiBold"),
+                            ("except the one you came in on. Every choice equally likely.", 34, INK2, "Regular")]),
+                (6.8, 12.8, [("Dead end? Turn around.", 40, INK, "SemiBold"),
+                             ("No map. No memory. No plan.", 34, GOLD, "SemiBold")])]
         return ST.draw_captions(fr, t, caps)
 
 
-# ================================================================== compare
-class Compare(Section):
-    name, dur = "compare", 14.0
+# ================================================================== a city, at the speed of light
+NYC = dict(prefix="nyc", seed=30, km_px=21.0, cx=0.5, cy=-6.7, ox=1180, oy=540, title="NEW YORK CITY · EVERY STREET",
+           start="Times Square", last_street="Beach 6th Street", last_place="Far Rockaway, Queens",
+           last_note="at the far end of the Rockaway peninsula", half="Half of New York's streets")
+
+
+def city_stats(prefix):
+    js = json.load(open(os.path.join(DATA, f"{prefix}_cover_many.json")))
+    s = js["seconds_nonback"]
+    return dict(median_s=float(np.median(s)), n=len(s), min_s=float(min(s)), max_s=float(max(s)))
+
+
+class CityRun(Section):
+    """A city from the first metre to the last street. Phase 'intro' is the slow start (the question);
+    phase 'run' is the rest, accelerating, with the HUD and milestones."""
+
+    def __init__(self, phase, cfg=NYC):
+        self.phase, self.cfg = phase, cfg
+        c = cfg
+        self.C = maps.City(c["prefix"], c["seed"], c["km_px"], c["cx"], c["cy"], c["ox"], c["oy"])
+        self.T_km = self.C.total_km
+        self.net_km = float(self.C.elen.sum())
+        self.log = np.load(os.path.join(DATA, f"{c['prefix']}_log_{c['seed']}.npy"))
+        self.D0 = 60.0                                        # km driven during the intro
+        self.name = f"{c['prefix']}_{phase}"
+        self.dur = 15.0 if phase == "intro" else 56.0
+        if phase == "run":
+            self.C.map.advance(self.D0)
+            self.C.k = self.C.step_at(self.D0)
+        self.lastD = -1
+        f = self.log[:, 3] / self.net_km
+        self.ms = []
+        for q, lab in ((0.5, c["half"]), (0.9, "90% of streets"), (0.99, "99% of streets"), (0.999, "99.9% of streets")):
+            k = int(np.searchsorted(f, q))
+            self.ms.append((lab, float(self.log[min(k, len(self.log) - 1), 1])))
+        bt = self.C.block_t
+        self.gap_D = float(bt[-3])                            # two blocks left from here
+        e = int(np.argmax(self.C.first))
+        self.last_seg = e
+        self.last_block_m = float(self.C.elen[self.C.blk == self.C.blk[e]].sum()) * 1000
+        self.T_end = self.dur - 6.0
+
+    def settle(self):
+        self.C.trail[:] = 0
+
+    def D(self, t):
+        if self.phase == "intro":
+            u = t / self.dur
+            return self.D0 * (math.exp(5.0 * u) - 1) / (math.exp(5.0) - 1)
+        u = min(t / self.T_end, 1.0)
+        return self.D0 + (self.T_km - self.D0) * u ** 3.4
+
+    def t_of(self, Dq):
+        u = ((Dq - self.D0) / (self.T_km - self.D0)) ** (1 / 3.4)
+        return u * self.T_end
 
     def frame(self, t):
-        js = calgary_stats()
-        roomba = js["median_s_nonback"]
-        plain = js["median_s_plain"]
-        rows = [("Planned route that drives every street", CAL_PLANNED_S, CYAN, "from my Calgary video"),
-                (f"Roomba photon (typical of {js['n_nonback']} runs)", roomba, GOLD, "never turns back except at dead ends"),
-                (f"Plain random walk (can turn back anywhere; typical of {js['n_plain']} runs)", plain, RED, "")]
-        fr = np.zeros((H, W, 3), np.uint8); fr[:] = (5, 8, 15)
+        D = self.D(t)
+        if D < self.lastD:                                     # stills out of order: rebuild state
+            self.__init__(self.phase, self.cfg)
+        self.lastD = D
+        fr = self.C.frame(D)
+        if self.phase == "intro":
+            fr = (maps.BG + (fr.astype(np.float32) - maps.BG) * smooth(t / 1.5)).astype(np.uint8)
         im = Image.fromarray(fr)
+        hx, hy, ang = self.C.head(D)
+        maps.draw_roomba(im, hx, hy, ang, diam=26)
         d = ImageDraw.Draw(im, "RGBA")
-        a0 = ST.fade(t, 0.2, self.dur, 0.5, 0.5)
-        text(d, (960, 120), "Every street in Calgary, at the speed of light", 50, INK, a0, "Bold", "ma")
-        x0, xmax = 260, 1660
-        lo, hi = math.log10(0.01), math.log10(100)
-        for k, (lab, s, col, sub) in enumerate(rows):
-            a = ST.fade(t, 1.0 + k * 1.6, self.dur, 0.5, 0.5)
-            y = 300 + k * 190
-            g = smooth((t - 1.0 - k * 1.6) / 1.0)
-            wbar = (math.log10(s) - lo) / (hi - lo) * (xmax - x0) * g
-            d.rounded_rectangle([x0, y, x0 + max(wbar, 4), y + 70], 10, fill=col + (int(220 * a),))
-            text(d, (x0, y - 44), lab, 32, INK, a, "SemiBold")
-            text(d, (x0 + wbar + 20, y + 35), fmt_light(s), 44, col, a, "Bold", "lm")
-            if sub:
-                text(d, (x0, y + 84), sub, 24, INK2, a, "Regular")
-        text(d, (960, 940), "(bar lengths on a log scale)", 22, MUTED, a0, "Regular", "ma")
-        fr = np.asarray(im).copy()
-        caps = [(6.4, self.dur, [(f"Random is about {roomba / CAL_PLANNED_S:,.0f}× slower than a plan.", 40, GOLD, "Bold"),
-                                 (f"Allow U-turns and it's {plain / roomba:,.0f}× slower again.", 34, INK2, "Regular")])]
-        return ST.draw_captions(fr, t, caps)
+        sec = D / CV.C_KMS
+        left = self.C.blocks_left(D)
+        a_h = ST.fade(t, 1.0 if self.phase == "intro" else 0.0, 1e9, 0.6, 0.6)
+        x0 = 60
+        text(d, (x0, 60), self.cfg["title"], 26, MUTED, a_h, "SemiBold")
+        text(d, (x0, 100), "LIGHT TIME", 22, MUTED, a_h)
+        text(d, (x0, 128), fmt_light(sec), 84, GOLD, a_h, "Bold")
+        text(d, (x0, 250), "BLOCKS NOT YET DRIVEN", 22, MUTED, a_h)
+        text(d, (x0, 278), f"{left:,}", 64, INK if left > 0 else GOLD, a_h, "Bold")
+        text(d, (x0, 380), "DISTANCE DRIVEN", 22, MUTED, a_h)
+        text(d, (x0, 408), f"{D:,.0f} km", 48, INK, a_h, "Bold")
+        if D > self.net_km:
+            text(d, (x0, 470), f"{D / self.net_km:,.1f}× the city's {self.net_km:,.0f} km of streets", 24, INK2, a_h, "Regular")
+        if self.phase == "intro":
+            sx, sy = self.C.X[self.C.start], self.C.Y[self.C.start]
+            g = ST.fade(t, 1.0, 6.0, 0.5, 0.6)
+            d.ellipse([sx - 30, sy - 30, sx + 30, sy + 30], outline=GOLD + (int(255 * g),), width=4)
+            lab = f"start: {self.cfg['start']}"
+            tw = d.textlength(lab, font=ST.font(28))
+            d.rounded_rectangle([sx + 40, sy - 24, sx + 64 + tw, sy + 24], 12, fill=ST.PANEL + (int(215 * g),))
+            text(d, (sx + 52, sy), lab, 28, GOLD, g, "SemiBold", "lm")
+        else:
+            self.chart(d, D, a_h)
+            if t > self.T_end:                                # the last block: a ring when it is found
+                e = self.last_seg
+                lx, ly = self.C.mx[e], self.C.my[e]
+                g = smooth((t - self.T_end) / 0.5) * ST.fade(t, 0, self.dur, 0, 0.5)
+                r = 22 + 60 * (1 - smooth((t - self.T_end) / 0.5))
+                d.ellipse([lx - r, ly - r, lx + r, ly + r], outline=GOLD + (int(255 * g),), width=4)
+                lab = f"the last block: {self.cfg['last_street']}"
+                tw = d.textlength(lab, font=ST.font(28))
+                bx = lx - 34 - tw - 24                                    # label to the left (the city edge is on the right)
+                d.rounded_rectangle([bx, ly - 24, lx - 30, ly + 24], 12, fill=ST.PANEL + (int(215 * g),))
+                text(d, (bx + 12, ly), lab, 28, GOLD, g, "SemiBold", "lm")
+        fr = np.asarray(im.convert("RGB")).copy()
+        return ST.draw_captions(fr, t, self.caps())
+
+    def chart(self, d, D, a):
+        """blocks not yet driven (log scale) vs light time"""
+        x0, y0, w, h = 60, 600, 520, 300
+        if not hasattr(self, "curve"):
+            Ds = np.linspace(0, self.T_km, 600)
+            self.curve = (Ds, np.maximum(self.C.nblk - np.searchsorted(self.C.block_t, Ds, side="right"), 1))
+        Ds, L = self.curve
+        d.rectangle([x0, y0, x0 + w, y0 + h], outline=(60, 70, 90, int(200 * a)), width=2)
+        k = int(np.searchsorted(Ds, D))
+        top = math.log10(self.C.nblk)
+        xs = x0 + Ds[:k + 1] / self.T_km * w
+        ys = y0 + h - np.log10(L[:k + 1]) / top * h
+        if k > 1:
+            d.line(list(zip(xs, ys)), fill=GOLD + (int(255 * a),), width=3)
+        text(d, (x0, y0 + h + 12), "0", 20, MUTED, a)
+        text(d, (x0 + w, y0 + h + 12), f"{self.T_km / CV.C_KMS:.2f} s", 20, MUTED, a, anchor="ra")
+        text(d, (x0 + w + 8, y0), f"{self.C.nblk:,}", 18, MUTED, a, "Regular", "lm")
+        text(d, (x0 + w + 8, y0 + h), "1", 18, MUTED, a, "Regular", "lm")
+        text(d, (x0, y0 - 34), "blocks not yet driven (log scale)", 22, INK2, a)
+
+    def caps(self):
+        cxk = {"cx": self.cfg["ox"]}
+        top = dict(anchor="top", **cxk)
+        if self.phase == "intro":
+            return [(0.5, 5.0, [("How long would a Roomba take to drive down", 40, INK, "SemiBold"),
+                                ("every street in New York City?", 40, INK, "SemiBold")], top),
+                    (5.4, 9.6, [("Not cleaning them. Just driving down each one.", 40, INK, "SemiBold")], top),
+                    (10.0, 14.8, [("And so we can watch it: at the speed of light.", 44, GOLD, "Bold")], top)]
+        caps = []
+        Ts = [(lab, self.t_of(D), D) for lab, D in self.ms]
+        tg = self.t_of(self.gap_D)
+        for (lab, tt, D), nxt in zip(Ts, Ts[1:] + [("", tg, 0)]):
+            caps.append((tt, min(tt + 3.4, nxt[1] - 0.2), [(f"{lab}: {fmt_light(D / CV.C_KMS)}", 40, GOLD, "Bold")], top))
+        gap = (self.T_km - self.gap_D)
+        caps.append((tg + 0.2, self.T_end - 0.3, [("Two blocks left.", 44, GOLD, "Bold"),
+                     (f"Finding them takes {gap / self.T_km:.0%} of the whole trip.", 32, INK2, "Regular")], top))
+        st = city_stats(self.cfg["prefix"])
+        caps.append((self.T_end + 0.4, self.dur, [(f"Every street in New York: {fmt_light(self.T_km / CV.C_KMS)}", 46, GOLD, "Bold"),
+                     (f"The last block: {self.cfg['last_street']}, {self.cfg['last_place']},", 30, INK2, "Regular"),
+                     (f"{self.cfg['last_note']}. (Typical of {st['n']} runs: {fmt_light(st['median_s'])}.)", 30, INK2, "Regular")],
+                     top))
+        return caps
 
 
 # ================================================================== USA
@@ -351,7 +431,7 @@ class USARun(Section):
             fr = (maps.BG + (fr.astype(np.float32) - maps.BG) * a).astype(np.uint8)
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
-        left = self.m - self.U.map.i
+        left = self.U.blocks_left(D)
         a_h = ST.fade(t, 3.0 if self.phase == "intro" else 0.0, 1e9, 0.6, 0.6)
         self.hud(d, D, left, a_h)
         if self.phase == "intro":
@@ -371,21 +451,24 @@ class USARun(Section):
         x0, y0 = 60, 772
         text(d, (x0, y0), "LIGHT TIME", 22, MUTED, a)
         text(d, (x0, y0 + 26), fmt_light(D / CV.C_KMS) if D > 0 else "0 s", 64, GOLD, a, "Bold")
-        text(d, (x0, y0 + 112), "ROADS NOT YET DRIVEN", 22, MUTED, a)
+        text(d, (x0, y0 + 112), "BLOCKS NOT YET DRIVEN", 22, MUTED, a)
         text(d, (x0, y0 + 138), f"{left:,}", 52, INK if left > 1 else GOLD, a, "Bold")
         text(d, (x0, y0 + 210), f"{D:,.0f} km driven" if D < 1e9 else f"{D / 1e9:,.2f} billion km driven", 28, INK2, a, "Regular")
 
     def chart(self, d, D, a):
-        """roads not yet driven (log scale) vs light time"""
+        """blocks not yet driven (log scale) vs light time"""
         x0, y0, w, h = 1570, 740, 250, 220
         d.rectangle([x0, y0, x0 + w, y0 + h], outline=(60, 70, 90, int(200 * a)), width=2)
-        k = int(np.searchsorted(self.log[:, 1], D))
-        L = np.maximum(self.m - self.log[:k + 1, 2], 1)
-        xs = x0 + self.log[:k + 1, 1] / self.T * w
-        ys = y0 + h - np.log10(L) / 8 * h
+        if not hasattr(self, "curve"):
+            Ds = np.linspace(0, self.T, 800)
+            self.curve = (Ds, np.maximum(self.U.nblk - np.searchsorted(self.U.block_t, Ds, side="right"), 1))
+        Ds, L = self.curve
+        k = int(np.searchsorted(Ds, D))
+        xs = x0 + Ds[:k + 1] / self.T * w
+        ys = y0 + h - np.log10(L[:k + 1]) / 8 * h
         if k > 1:
             d.line(list(zip(xs, ys)), fill=GOLD + (int(255 * a),), width=3)
-        text(d, (x0, y0 - 32), "roads not yet driven", 22, INK2, a)
+        text(d, (x0, y0 - 32), "blocks not yet driven", 22, INK2, a)
         for e in (0, 4, 8):
             text(d, (x0 + w + 8, y0 + h - e / 8 * h), ("1", "10,000", "100 M")[e // 4], 18, MUTED, a, "Regular", "lm")
         text(d, (x0, y0 + h + 10), "0", 18, MUTED, a, "Regular")
@@ -394,15 +477,16 @@ class USARun(Section):
     def caps(self):
         top = {"anchor": "top", "y": 18}
         if self.phase == "intro":
+            nb = self.U.nblk if self.U is not None else 0
             return [(0.4, 4.6, [("Now: every road in the contiguous United States.", 40, INK, "SemiBold"),
-                                (f"{self.meta['km'] / 1e6:.1f} million km of road, {self.m / 1e6:.1f} million segments", 32, INK2, "Regular")], top),
-                    (5.0, 10.0, [("Same photon. Same rule.", 42, GOLD, "Bold")], top)]
+                                (f"{self.meta['km'] / 1e6:.1f} million km of road, {nb / 1e6:.1f} million blocks", 32, INK2, "Regular")], top),
+                    (5.0, 10.0, [("Same Roomba. Same rule. Still at the speed of light.", 42, GOLD, "Bold")], top)]
         caps = []
         Ts = [(lab, self.t_of(D), D) for lab, D in self.ms]
         for (lab, tt, D), nxt in zip(Ts, Ts[1:] + [("", self.RUN + 1.0, 0)]):
             caps.append((tt, min(tt + 3.2, nxt[1] - 0.2), [(f"{lab}: {fmt_light(D / CV.C_KMS)}", 40, GOLD, "Bold")], top))
-        left = len(usa_tail(self.T)["late"])
-        caps.append((self.RUN + 0.3, self.dur, [(f"{left:,} roads left." if left > 1 else "One road left.", 46, GOLD, "Bold")], top))
+        left = self.U.blocks_left(self.Dend) if self.U is not None else 0
+        caps.append((self.RUN + 0.3, self.dur, [(f"{left:,} blocks left." if left > 1 else "One block left.", 46, GOLD, "Bold")], top))
         return caps
 
 
@@ -424,6 +508,13 @@ def usa_tail(T):
     Ds = float(km[k_s - 1]) if k_s > 0 else float(km[0]) - 1e-6
     sel = new & (km > Ds)
     return dict(Ds=Ds, Da=Da, n_burst=int(len(nk) - b0), late=road[sel], late_km=km[sel], steps=(road[k_s:], km[k_s:]))
+
+
+@functools.lru_cache(maxsize=2)
+def late_block_count(T):
+    """how many blocks were still undriven when the slow motion starts"""
+    late = usa_tail(T)["late"]
+    return len(np.unique(np.load(os.path.join(DATA, "usa_block.npy"), mmap_mode="r")[late]))
 
 
 TAIL_GAP_KM = 200.0
@@ -454,6 +545,12 @@ class Last(Section):
         self.late = tl["late"]
         self.late_km = tl["late_km"]
         self.LE = Z.ends(self.late)
+        blk = np.load(os.path.join(DATA, "usa_block.npy"), mmap_mode="r")[self.late]
+        ub, inv = np.unique(blk, return_inverse=True)
+        bf = np.full(len(ub), -np.inf)
+        np.maximum.at(bf, inv, self.late_km)
+        self.late_block_t, self.n_late_blocks = np.sort(bf), len(ub)
+        self.last_block_m = float(Z.road_km[self.late[blk == blk[-1]]].sum()) * 1000
         # the slow-motion path: node after every step (the walk's start node of the window is whichever end fits)
         r, k = tl["steps"]
         ea, eb = Z.ea[r].astype(np.int64), Z.eb[r].astype(np.int64)
@@ -532,7 +629,7 @@ class Last(Section):
             for i in range(n - 1):
                 cv2.line(tr, tuple(pts[i]), tuple(pts[i + 1]), float(0.25 + 0.75 * (i + 1) / n), th, cv2.LINE_AA)
             glow += tr * 0.7
-            head = (float(sx[-1]), float(sy[-1]))
+            head = (float(sx[-1]), float(sy[-1]), math.atan2(sy[-1] - sy[-2], sx[-1] - sx[-2]) if len(sx) > 1 else 0.0)
             hd = np.zeros((H, W), np.float32)
             cv2.circle(hd, (int(head[0]), int(head[1])), max(3, th), 1.0, -1, cv2.LINE_AA)
             glow += cv2.GaussianBlur(hd, (0, 0), 3) * 4 + cv2.GaussianBlur(hd, (0, 0), 12) * 6
@@ -550,13 +647,15 @@ class Last(Section):
             m[my[ok], mx[ok]] = 1.0
             gl = gl + maps.spark(m) * sa
         fr = maps.tonemap(img, gl)
-        dark = int((~lit).sum())
+        dark = self.n_late_blocks - int(np.searchsorted(self.late_block_t, D + 1e-9, side="right"))
         lc = ((x0[-1] + x1[-1]) / 2, (y0[-1] + y1[-1]) / 2)
         return fr, f, D, dark, head, s, lc
 
     def frame(self, t):
         fr, f, D, dark, head, s, lc = self.map_frame(t)
         im = Image.fromarray(fr)
+        if head is not None:
+            maps.draw_roomba(im, head[0], head[1], head[2], diam=30)
         d = ImageDraw.Draw(im, "RGBA")
         # ring: the dark pocket while zooming; the last road after
         ga = ST.fade(t, 0.4, self.Z1 + 0.6, 0.4, 0.5) * (0.65 + 0.35 * math.sin(t * 5))
@@ -570,7 +669,7 @@ class Last(Section):
         text(d, (74, 66), place, 30, GOLD, ap, "SemiBold", "lm")
         if t > self.ARRIVE:
             gl = ST.fade(t, self.ARRIVE, 1e9, 0.3, 0.3)
-            lab = f"the last road: {road}"
+            lab = f"the last block: {road}"
             tw = d.textlength(lab, font=ST.font(30))
             d.rounded_rectangle([lc[0] + 30, lc[1] - 26, lc[0] + 58 + tw, lc[1] + 26], 12, fill=ST.PANEL + (int(215 * gl),))
             text(d, (lc[0] + 44, lc[1]), lab, 30, GOLD, gl, "SemiBold", "lm")
@@ -587,9 +686,9 @@ class Last(Section):
         sec = D / CV.C_KMS
         h_, rem = divmod(sec, 3600); m_, s_ = divmod(rem, 60)
         text(d, (x0, y0 + 26), f"{int(h_)} h {int(m_):02d} min {s_:08.5f} s", 56, GOLD, 1.0, "Bold")
-        text(d, (x0, y0 + 112), "ROADS NOT YET DRIVEN", 22, MUTED, 1.0)
+        text(d, (x0, y0 + 112), "BLOCKS NOT YET DRIVEN", 22, MUTED, 1.0)
         text(d, (x0, y0 + 138), f"{dark:,}", 52, GOLD, 1.0, "Bold")
-        fr = np.asarray(im).copy()
+        fr = np.asarray(im.convert("RGB")).copy()
         return ST.draw_captions(fr, t, self.caps())
 
     def scalebar(self, d, s, a):
@@ -607,17 +706,18 @@ class Last(Section):
         bot = {"anchor": "bottom"}
         T = self.T / CV.C_KMS
         road, place = LAST_PLACE[USA_SEED]
-        n = len(self.tail["late"])
-        last_m = float(self.Z.road_km[self.last]) * 1000 if self.Z is not None else 0
-        first = (f"{n:,} roads still dark, {LAST_NOTE.get(USA_SEED, 'all in one corner of the map')}." if n > 1
-                 else "One road still dark.")
+        n = self.n_late_blocks if self.Z is not None else 0
+        last_m = self.last_block_m if self.Z is not None else 0
+        first = (f"{n:,} blocks still dark, {LAST_NOTE.get(USA_SEED, 'all in one corner of the map')}." if n > 1
+                 else "One block still dark.")
         top = {"anchor": "top", "y": 18}
         return [(0.3, self.Z0 + 2.4, [(first, 42, INK, "SemiBold")], top),
                 (self.Z0 + 2.8, self.S0 - 0.3, [("Islands and peninsulas have few ways in.", 40, INK, "SemiBold"),
-                                               ("A random walker can miss them for hours.", 34, INK2, "Regular")],
+                                               ("A Roomba with no map can miss them for hours.", 34, INK2, "Regular")],
                  {"anchor": "top", "y": 110}),
-                (self.ARRIVE, self.dur, [(f"The last road: {fmt_light(T)}", 46, GOLD, "Bold"),
-                 (f"{last_m:.0f} m of {road}, after {self.T / 1e9:.2f} billion km of driving.", 30, INK2, "Regular")],
+                (self.ARRIVE, self.dur, [(f"Every road in America: {fmt_light(T)}", 46, GOLD, "Bold"),
+                 (f"The last block: {last_m:.0f} m of {road}, after {self.T / 1e9:.2f} billion km.", 30, INK2, "Regular"),
+                 ("That's farther than Saturn is from the Sun.", 30, INK2, "Regular")],
                  {"anchor": "top", "y": 110})]
 
 
@@ -676,60 +776,60 @@ class Runs(Section):
         s = self.secs
         caps = [(0.4, 5.6, [(f"I ran it {len(s)} times. Typically {fmt_hm(float(np.median(s)))} of light,", 40, INK, "SemiBold"),
                             (f"from {fmt_hm(s[0])} to {fmt_hm(s[-1])}.", 34, INK2, "Regular")], {"anchor": "top", "y": 18}),
-                (6.0, self.dur, [("Each dot is where a run's last road was.", 40, INK, "SemiBold"),
+                (6.0, self.dur, [("Each dot is where a run's last block was.", 40, INK, "SemiBold"),
                                  ("Most are on the coast: islands, peninsulas, bayous.", 34, GOLD, "SemiBold")], {"anchor": "top", "y": 18})]
         return ST.draw_captions(fr, t, caps)
 
 
-class Outro(Section):
-    name, dur = "outro", 20.0
-    AU = 149_597_870.7
-    PLANETS = (("Mercury", 0.387), ("Venus", 0.723), ("Earth", 1.0), ("Mars", 1.524), ("Jupiter", 5.203),
-               ("Saturn", 9.537), ("Uranus", 19.19), ("Neptune", 30.07))
+class Payoff(Section):
+    """Light speed vs a real Roomba."""
+    name, dur = "payoff", 21.0
+    V = 0.5                       # m/s: a Roomba's top drive speed (the 600-series / Create 2 drive limit)
+    YEAR = 365.25 * 86400
 
     def __init__(self):
-        self.meta, self.w, self.log, self.secs = usa_data()
+        meta, w, log, self.secs = usa_data()
+        self.usa_s = float(np.median(self.secs))
+        self.nyc = city_stats("nyc")
+
+    def years(self, light_s):
+        return light_s * CV.C_KMS * 1000 / self.V / self.YEAR
 
     def frame(self, t):
         fr = np.zeros((H, W, 3), np.uint8); fr[:] = (5, 8, 15)
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
-        a = ST.fade(t, 0.2, 13.0, 0.6, 0.6)
-        x0, x1, y = 150, 1780, 600
-        kpx = (x1 - x0) / (31 * self.AU)
-        d.line([(x0, y), (x1, y)], fill=(60, 70, 90, int(255 * a)), width=2)
-        d.ellipse([x0 - 26, y - 26, x0 + 26, y + 26], fill=(255, 210, 120, int(255 * a)))
-        text(d, (x0, y + 44), "Sun", 26, INK2, a, "SemiBold", "ma")
-        for i, (nm, au) in enumerate(self.PLANETS):
-            x = x0 + au * self.AU * kpx
-            r = 9 if au > 4 else 5
-            d.ellipse([x - r, y - r, x + r, y + r], fill=(150, 170, 200, int(255 * a)))
-            if au > 4:
-                text(d, (x, y + 44), nm, 26, INK2, a, "SemiBold", "ma")
-                lt = au * self.AU / CV.C_KMS
-                text(d, (x, y + 78), "light: " + (f"{lt / 60:.0f} min" if lt < 3600 else f"{int(lt // 3600)} h {int(lt % 3600 // 60)} min"), 22, MUTED, a, "Regular", "ma")
-        D = self.w["km"]
-        g = smooth((t - 1.2) / 3.0)
-        xe = x0 + D * kpx * g
-        d.line([(x0 + 26, y), (xe, y)], fill=GOLD + (int(255 * a),), width=8)
-        if g > 0:
-            d.ellipse([xe - 12, y - 12, xe + 12, y + 12], fill=(255, 245, 220, int(255 * a)))
-        ga = a * smooth((t - 4.2) / 0.5)
-        text(d, (xe, y - 40), f"{D / 1e9:.2f} billion km: the photon's drive", 30, GOLD, ga, "Bold", "md")
-        fr = np.asarray(im).copy()
-        s = self.secs
-        med, lo, hi = float(np.median(s)), s[0], s[-1]
-        caps = [(0.6, 6.4, [("In a straight line, that drive would take you past Saturn.", 40, INK, "SemiBold")], {"anchor": "top", "y": 250}),
-                (6.8, 12.8, [(f"Driving each road exactly once would take light {self.meta['km'] / CV.C_KMS:.0f} seconds.", 40, INK, "SemiBold"),
-                             (f"At random, it drives every kilometre about {round(self.w['x_network'], -1):.0f} times over.", 32, INK2, "Regular")],
-                 {"anchor": "top", "y": 250}),
-                (13.4, 20.0, [("What should the photon try next?", 54, GOLD, "Bold"),
-                              ("Tell me in the comments.", 36, INK2, "Regular")], {"anchor": "top", "y": 420})]
+        cols = (1000, 1500)
+        a1 = ST.fade(t, 0.4, 1e9, 0.5, 0.5)
+        a2 = ST.fade(t, 6.6, 1e9, 0.5, 0.5)
+        for x, nm in zip(cols, ("NEW YORK", "AMERICA")):
+            text(d, (x, 210), nm, 34, MUTED, a1, "SemiBold", "ma")
+        text(d, (180, 330), "at the speed of light", 36, INK2, a1, "SemiBold", "lm")
+        text(d, (cols[0], 330), fmt_light(self.nyc["median_s"]), 64, GOLD, a1, "Bold", "mm")
+        text(d, (cols[1], 330), fmt_hm(self.usa_s), 64, GOLD, a1, "Bold", "mm")
+        text(d, (180, 520), "at a real Roomba's", 36, INK2, a2, "SemiBold", "lm")
+        text(d, (180, 566), "top speed (0.5 m/s)", 36, INK2, a2, "SemiBold", "lm")
+        g = smooth((t - 7.2) / 2.5)
+        ny, us = self.years(self.nyc["median_s"]) * g, self.years(self.usa_s) * g
+        text(d, (cols[0], 540), f"{ny:,.0f} years", 64, INK, a2, "Bold", "mm")
+        text(d, (cols[1], 540), f"{round(us, -3):,.0f} years" if g >= 1 else f"{us:,.0f} years", 64, INK, a2, "Bold", "mm")
+        d.line([(180, 430), (1760, 430)], fill=(50, 60, 80, int(255 * a1)), width=2)
+        # a Roomba setting off, at (scaled) Roomba pace
+        rx = 180 + 60 * max(t - 7.0, 0)
+        if t > 6.6:
+            maps.draw_roomba(im, rx, 700, 0.0, diam=48)
+        fr = np.asarray(im.convert("RGB")).copy()
+        caps = [(0.4, 6.2, [("Those are light-speed times: typical of all the runs.", 40, INK, "SemiBold")]),
+                (6.6, 12.4, [("A real Roomba is a little slower.", 40, INK, "SemiBold")]),
+                (12.8, 17.0, [("And that's just driving down each road.", 40, INK, "SemiBold"),
+                              ("To clean one? A two-lane road is about 20 Roombas wide.", 34, INK2, "Regular")]),
+                (17.3, 21.0, [("What should the Roomba try next?", 50, GOLD, "Bold"),
+                              ("Tell me in the comments.", 34, INK2, "Regular")])]
         return ST.draw_captions(fr, t, caps)
 
 
-SECTIONS = {"cal_intro": lambda: CalRun("intro"), "cal_run": lambda: CalRun("run"), "rule": Rule, "compare": Compare,
-            "usa_intro": lambda: USARun("intro"), "usa_run": lambda: USARun("run"), "last": Last, "runs": Runs, "outro": Outro}
+SECTIONS = {"room": RoomScene, "rule": Rule, "nyc_intro": lambda: CityRun("intro"), "nyc_run": lambda: CityRun("run"),
+            "usa_intro": lambda: USARun("intro"), "usa_run": lambda: USARun("run"), "last": Last, "runs": Runs, "payoff": Payoff}
 
 if __name__ == "__main__":
     sec = SECTIONS[sys.argv[1]]()

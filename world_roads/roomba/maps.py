@@ -76,36 +76,78 @@ def tonemap(img, glow=None):
     return np.clip(img, 0, 255).astype(np.uint8)
 
 
-# ------------------------------------------------------------------ Calgary
-class Calgary:
-    KM_PX = 25.5                                    # pixels per km
+# ------------------------------------------------------------------ the Roomba
+_SPRITES = {}
 
-    def __init__(self, seed=4, cx=0.0, cy=0.0, ox=W / 2, oy=H / 2):
-        g = np.load(os.path.join(DATA, "calgary_graph.npz"))
+
+def roomba_sprite(diam, angle):
+    """A top-down Roomba, bumper facing `angle` (radians, screen coordinates: 0 = right, y down). RGBA."""
+    key = (int(diam), int(round(math.degrees(angle) / 6)) % 60)
+    if key in _SPRITES:
+        return _SPRITES[key]
+    from PIL import Image, ImageDraw
+    S = 4 * int(diam) + 8
+    im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c, R = S / 2, 2 * int(diam)
+    d.ellipse([c - R, c - R, c + R, c + R], fill=(58, 62, 72, 255), outline=(196, 202, 214, 255), width=max(2, R // 10))
+    d.arc([c - R, c - R, c + R, c + R], 270 - 75, 270 + 75, fill=(120, 128, 142, 255), width=max(3, R // 5))   # bumper (front = up)
+    r2 = R * 0.62
+    d.ellipse([c - r2, c - r2, c + r2, c + r2], fill=(34, 37, 44, 255), outline=(90, 96, 108, 255), width=max(1, R // 16))
+    r3 = R * 0.17
+    d.ellipse([c - r3, c - r3, c + r3, c + r3], fill=(255, 205, 120, 255))                        # the button, lit
+    w = R * 0.22
+    d.rounded_rectangle([c - w, c - R * 0.9, c + w, c - R * 0.74], radius=max(1, R // 20), fill=(30, 32, 38, 255))   # sensor window
+    im = im.rotate(-math.degrees(angle) - 90, resample=Image.BICUBIC, expand=False)   # front from up to `angle`
+    im = im.resize((S // 4, S // 4), Image.LANCZOS)
+    _SPRITES[key] = im
+    return im
+
+
+def draw_roomba(im, x, y, angle, diam=26):
+    """paste a Roomba sprite centred at (x, y) on a PIL image"""
+    sp = roomba_sprite(diam, angle)
+    im.alpha_composite(sp, (int(round(x - sp.width / 2)), int(round(y - sp.height / 2)))) if im.mode == "RGBA" else \
+        im.paste(sp, (int(round(x - sp.width / 2)), int(round(y - sp.height / 2))), sp)
+
+
+# ------------------------------------------------------------------ a city
+class City:
+    """One city's streets and one walk on them: coverage, a fading trail of the last frames' driving, the
+    Roomba's position and heading, and how many blocks are still undriven."""
+    MAX_TRAIL = 25_000                              # steps drawn per frame (the most recent ones)
+
+    def __init__(self, prefix, seed, km_px, cx=0.0, cy=0.0, ox=W / 2, oy=H / 2, w=W, h=H):
+        import cover as CV
+        g = np.load(os.path.join(DATA, f"{prefix}_graph.npz"))
         self.nx, self.ny, self.ea, self.eb, self.elen = g["nx"], g["ny"], g["ea"], g["eb"], g["elen"]
         self.start = int(g["start"])
-        self.first = np.load(os.path.join(DATA, f"calgary_first_{seed}.npy")).astype(np.float64)
-        self.path = np.load(os.path.join(DATA, f"calgary_path_{seed}.npy"))
+        self.first = np.load(os.path.join(DATA, f"{prefix}_first_{seed}.npy")).astype(np.float64)
+        self.path = np.load(os.path.join(DATA, f"{prefix}_path_{seed}.npy"))
         self.cum = np.cumsum(self.elen[self.path])                    # km driven after each step
-        self.cx, self.cy, self.ox, self.oy = cx, cy, ox, oy
+        self.km_px, self.cx, self.cy, self.ox, self.oy, self.w, self.h = km_px, cx, cy, ox, oy, w, h
         X, Y = self.to_px(self.nx, self.ny)
         self.X, self.Y = X, Y
-        self.map = RoadMap(X[self.ea], Y[self.ea], X[self.eb], Y[self.eb], self.elen, self.first)
+        self.map = RoadMap(X[self.ea], Y[self.ea], X[self.eb], Y[self.eb], self.elen, self.first, w=w, h=h)
         self.mx, self.my = (X[self.ea] + X[self.eb]) / 2, (Y[self.ea] + Y[self.eb]) / 2
         self.total_km = float(self.cum[-1])
-        self.trail = np.zeros((H, W), np.float32)
+        self.blk, self.nblk = CV.blocks(len(self.nx), self.ea, self.eb, self.elen)
+        self.block_t = np.sort(CV.block_max(self.blk, self.first, self.nblk))
+        self.trail = np.zeros((h, w), np.float32)
         self.k = 0
 
     def to_px(self, x, y):
-        return self.ox + (np.asarray(x) - self.cx) * self.KM_PX, self.oy - (np.asarray(y) - self.cy) * self.KM_PX
+        return self.ox + (np.asarray(x) - self.cx) * self.km_px, self.oy - (np.asarray(y) - self.cy) * self.km_px
 
     def step_at(self, D):
         return int(np.searchsorted(self.cum, D, side="right"))
 
-    MAX_TRAIL = 25_000                              # steps drawn per frame (the most recent ones)
+    def blocks_left(self, D):
+        return self.nblk - int(np.searchsorted(self.block_t, D, side="right"))
 
     def frame(self, D, trail_decay=0.72, head=True):
         """The map after D km of driving; the trail keeps the last frames' roads glowing."""
+        W_, H_ = self.w, self.h
         k1 = min(self.step_at(D), len(self.path) - 1)
         self.map.advance(D)
         img = self.map.image()
@@ -113,23 +155,42 @@ class Calgary:
         if k1 > self.k:
             seg = self.path[max(self.k, k1 + 1 - self.MAX_TRAIL):k1 + 1]
             px, py, own = splat_segments(self.X[self.ea[seg]], self.Y[self.ea[seg]], self.X[self.eb[seg]], self.Y[self.eb[seg]], max_px=40)
-            ok = (px >= 0) & (px < W) & (py >= 0) & (py < H)
-            self.trail += np.bincount(py[ok] * W + px[ok], minlength=W * H).reshape(H, W).astype(np.float32) * 0.35
+            ok = (px >= 0) & (px < W_) & (py >= 0) & (py < H_)
+            self.trail += np.bincount(py[ok] * W_ + px[ok], minlength=W_ * H_).reshape(H_, W_).astype(np.float32) * 0.35
             self.k = k1
         glow = np.minimum(self.trail, 1.0)[..., None] * (HOT * 0.45)
-        if head:
-            e = self.path[k1]
-            hx, hy = int(self.mx[e]), int(self.my[e])
-            if 0 <= hx < W and 0 <= hy < H:
-                g = np.zeros((H, W), np.float32)
-                g[hy, hx] = 1.0
-                g = cv2.GaussianBlur(g, (0, 0), 2.0) * 60 + cv2.GaussianBlur(g, (0, 0), 7.0) * 250
-                glow = glow + np.minimum(g, 1.6)[..., None] * HOT
+        if head:                                       # a soft halo; the Roomba itself is drawn on top
+            hx, hy, _ = self.head(D)
+            if 0 <= hx < W_ and 0 <= hy < H_:
+                g = np.zeros((H_, W_), np.float32)
+                g[int(hy), int(hx)] = 1.0
+                g = cv2.GaussianBlur(g, (0, 0), 9.0) * 500
+                glow = glow + np.minimum(g, 1.0)[..., None] * HOT * 0.8
         return tonemap(img, glow)
 
-    def head_xy(self, D):
-        e = self.path[min(self.step_at(D), len(self.path) - 1)]
-        return float(self.mx[e]), float(self.my[e])
+    def head(self, D):
+        """screen position and heading of the Roomba after D km (along its current segment)"""
+        k = min(self.step_at(D), len(self.path) - 1)
+        e = self.path[k]
+        a, b = self.ea[e], self.eb[e]
+        if k > 0:                                      # it entered this segment from the end it shares with the last one
+            p = self.path[k - 1]
+            if a not in (self.ea[p], self.eb[p]):
+                a, b = b, a
+        f = 1.0 - (self.cum[k] - D) / max(self.elen[e], 1e-9)
+        f = min(max(f, 0.0), 1.0)
+        x = self.X[a] + (self.X[b] - self.X[a]) * f
+        y = self.Y[a] + (self.Y[b] - self.Y[a]) * f
+        # heading: over the last ~0.4 km, so it doesn't jitter on short segments
+        k0 = max(0, int(np.searchsorted(self.cum, D - 0.4)))
+        e0 = self.path[k0]
+        x0, y0 = self.mx[e0], self.my[e0]
+        ang = math.atan2(y - y0, x - x0) if (x - x0) ** 2 + (y - y0) ** 2 > 1 else math.atan2(self.Y[b] - self.Y[a], self.X[b] - self.X[a])
+        return float(x), float(y), ang
+
+
+def Calgary(seed=31, cx=0.0, cy=0.0, ox=W / 2, oy=H / 2, km_px=25.5, w=W, h=H):
+    return City("calgary", seed, km_px, cx, cy, ox, oy, w, h)
 
 
 # ------------------------------------------------------------------ USA
@@ -169,6 +230,11 @@ class USA:
         if os.path.exists(tp):                         # float32 can't order the last few hundred km: use the exact replay
             tl = np.load(tp)
             first[tl["road"][tl["new"]]] = tl["km"][tl["new"]]
+        import cover as CV
+        blk = np.load(os.path.join(DATA, "usa_block.npy"))              # junction-to-junction blocks
+        self.nblk = int(blk.max()) + 1
+        self.block_t = np.sort(CV.block_max(blk, first, self.nblk))
+        del blk
         mx, my = (X[ea] + X[eb]) / 2, (Y[ea] + Y[eb]) / 2
         self.map = RoadMap(mx, my, mx, my, km, first, max_px=1)       # roads are shorter than a pixel here
         self.first = first
@@ -192,6 +258,9 @@ class USA:
             rem = np.minimum(np.bincount(self.map.pix[self.map.i:], minlength=W * H), 1).reshape(H, W).astype(np.float32)
             glow = glow + spark(rem) * a
         return tonemap(img, glow)
+
+    def blocks_left(self, D):
+        return self.nblk - int(np.searchsorted(self.block_t, D, side="right"))
 
     def to_px(self, lon, lat):
         x, y = albers(np.asarray(lon), np.asarray(lat))

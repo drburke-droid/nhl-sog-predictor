@@ -1,95 +1,106 @@
-# Accuracy and sources: the Roomba photon
+# Accuracy and sources: how long would a Roomba take to drive every road?
 
-The question: a photon drives the road network at random, at the speed of light. How long until it has
-driven every road at least once? Answered for Calgary, then for every road in the contiguous United
-States. Every number in the video comes from `stats.py` (written to `data/stats.json`).
+The question: a Roomba with no map (a first-generation one) drives a road network at the speed of
+light, picking roads at random. How long until it has driven every road at least once? It is answered
+for New York City and then for every road in the contiguous United States, plus Calgary in a Short. It
+drives down the roads only; cleaning them is another matter (section 7). Every number in the videos
+comes from `stats.py` (`data/stats.json`) or the scripts named below.
 
-## 1. The rule
+## 1. The Roomba, and the rule
 
-At every junction the photon takes one of the roads it didn't arrive on, each with equal odds. It never
-turns back, except at a dead end, where it must. This is a *non-backtracking random walk*: like a
-Roomba, it has no map, no memory and no plan. Bends in a road are followed; one-way rules are ignored,
-since light doesn't obey traffic law (the same convention as the earlier light-speed films).
+**First-generation Roombas** (from 2002) had no map. They cleaned almost entirely at random: drive
+until the bumper hits something, turn a random way, carry on (with some spiral and wall-following
+moves). Mapping arrived in 2015 with the Roomba 980 and its camera-based vSLAM navigation.
+Sources: [Wikipedia: Roomba](https://en.wikipedia.org/wiki/Roomba);
+[Explain That Stuff](https://www.explainthatstuff.com/how-roomba-works.html);
+[MIT Technology Review, 2015](https://www.technologyreview.com/2015/09/16/247936/the-roomba-now-sees-and-maps-a-home/).
+The cold open (`room.py`) is a simulation of that bump-and-turn rule: a 34 cm robot at 0.3 m/s in a
+6 × 4.2 m room. It covers 69% of the floor in 5 minutes, 89% in 15 and 94% in 30.
 
-For comparison, the video also runs the *plain random walk*, which may turn back at any junction
-(`uturn=True` in `cover.py`).
+**On roads** the rule becomes: at every intersection, take one of the roads you didn't arrive on, each
+with equal odds; turn back only at a dead end. This is a *non-backtracking random walk*. Bends are
+followed; one-way rules are ignored, as in the earlier light-speed films.
 
-**Time.** Distance driven ÷ the speed of light in vacuum (299,792.458 km/s). The photon doesn't slow
-down at junctions.
+**Time.** Distance driven ÷ the speed of light in vacuum (299,792.458 km/s), with no slowing at
+junctions.
 
-**When is it done?** When every road segment (a piece of road between two junctions) has been driven at
-least once, in either direction. That is the *edge cover time* of the walk. The walk stops on the last
-new segment.
+**When is it done?** When every piece of road has been driven at least once, in either direction (the
+walk's *edge cover time*).
+
+**Blocks, not segments.** The map data splits roads at every bend as well as at intersections. On
+screen, roads are counted as **blocks**: a stretch of road from one intersection (or dead end) to the
+next, with the bends merged in (`cover.block_ids`). The walk can't turn at a bend, so it always drives a
+whole block at once. The counts:
+
+| Network | Segments in the data | Blocks |
+|---|---:|---:|
+| New York City | 224,519 | 91,022 |
+| Contiguous US | 44,581,882 | 22,995,011 |
+| Calgary | 256,824 | 56,375 |
 
 ## 2. The networks
 
-**Calgary.** Overture Maps streets inside city limits, motorway down to residential and living streets
-(the street set of the Calgary film, `calgary/city.py`). The walk uses the largest connected network,
-7,583 km of street in 256,824 segments (98.9% of the 7,664 km inside city limits; the rest is a handful
-of pieces not joined to the main network). It starts at the junction nearest downtown.
+All three come from Overture Maps (release 2026-09-23.1): motorway down to residential and living
+streets, with no service roads, tracks or paths. Each keeps its largest connected network.
 
-**The contiguous United States.** The full North American network of the lost-photon film
-(`turns/full_photon.py`; Overture release 2026-09-23.1, motorway through residential and living streets;
-no service roads, tracks or paths). It is cut to the lower 48 with the Natural Earth 1:10m border
-(rasterised at 0.005°), keeping the largest connected network:
-* **7,901,434 km of road** in **44,581,882 segments**, meeting at 38,602,911 junctions.
-* The photon starts at the junction nearest the geographic centre of the lower 48 (39.8283° N,
-  98.5795° W, near Lebanon, Kansas).
+**New York City** (`nyc.py`). The city's land from Overture divisions, plus New York State water within
+about 2.5 km of it, so the bridges between boroughs stay in. Roads into New Jersey, Nassau and
+Westchester stop at the city line, so Far Rockaway's roads through Nassau County don't count. The
+result is **10,979 km** of street, 99.9% of the 10,988 km inside. The Roomba starts in Times Square.
 
-Driving each segment exactly once would take light 26.4 s. No route can do better, so 26.4 s is the
-floor for any photon, planned or not.
+**The contiguous United States** (`usa.py`). The North American network of the lost-photon film, cut
+to the lower 48 with the Natural Earth 1:10m border. That gives **7,901,434 km** of road meeting at
+38,602,911 points. The Roomba starts at the junction nearest the geographic centre of the lower 48
+(39.8283° N, 98.5795° W, near Lebanon, Kansas). Driving every road exactly once would take light
+26.4 s, the floor for any route.
 
-The network is derived from OpenStreetMap, which maps each carriageway of a divided road as its own
-line and includes ramps and private residential streets. That is why its length (7.9 million km) is
-more than the roughly 6.7 million km of public road in FHWA's *Highway Statistics*.
+The network is derived from OpenStreetMap, which draws each carriageway of a divided road as its own
+line and includes ramps and private residential streets. That is why it is longer than the roughly
+6.7 million km of public road in FHWA's *Highway Statistics*.
 
-## 3. The walks
+**Calgary** (`city.py`, for the Short). Streets inside city limits (the Calgary film's street set):
+7,583 km in the main network.
 
-Walks are run in numba (`cover.py`); each seed gives a different walk. A walk is reproducible from its
-seed, and the video's walks were replayed step by step to check this (`walk_path`, `tail_walk`).
+## 3. The runs
 
-**Calgary, 200 walks of each kind** (`city.py many 200`):
+Walks run in numba (`cover.py`). Each seed gives a different walk, and a walk replays exactly from its
+seed (`walk_path`, `tail_walk` were checked against the recorded totals).
 
-| Rule | Median | 10th–90th percentile | Fastest – slowest |
-|---|---:|---:|---:|
-| Roomba photon (no U-turns) | 1.24 s | 1.00–1.70 s | 0.80–2.67 s |
-| Plain random walk | 19.2 s | 14.5–30.5 s | 10.6–82.7 s |
-| Planned route (Calgary film) | 37.1 ms | | |
+| Network | Runs | Median | 10th–90th percentile | Fastest – slowest |
+|---|---:|---:|---:|---:|
+| New York City | 200 | **1.88 s** | 1.30–3.02 s | 0.95–5.14 s |
+| Contiguous US | 16 | **2 h 23 min** | | 1 h 33 min – 3 h 48 min |
+| Calgary | 200 | **1.24 s** | 1.00–1.70 s | 0.80–2.67 s |
 
-The video shows seed 31, the walk nearest the median: 371,417 km = 1.24 s of light, 49× the network.
-Its last street is an 81 m segment on the north-east edge of the city. 68% of the trip went to finding
-the last 1% of street length.
+Each video shows a run near its median. NYC is run 30 (1.91 s). The US is run 0 (2 h 21 min 17 s).
+Calgary is run 31 (1.24 s).
 
-The planned route is the route of the Calgary film: a T-join plus Euler tour on all 7,664 km inside
-city limits, so it is a slightly larger network than the walks'. Random is therefore at least 33×
-slower than a plan.
+Run 30 was picked from the eight NYC runs nearest the median for its ending: a public street, reached
+after a long final search. Of the four nearest, one ends inside the gated Kingsborough Community College
+campus, two on Staten Island and one in Hamilton Beach.
 
-**USA, 16 walks** (`usa.py walk 4`, `usa.py more 4 3`): see the table in section 5.
+## 4. New York's last street
 
-## 4. The last road
+Run 30 drives 571,802 km (52× the network). Two blocks are left after 407,846 km. Finding them takes the
+remaining 163,956 km, 29% of the whole trip, and both fall in its last 2.5 km. The last block is
+128 m of **Beach 6th Street, Far Rockaway, Queens**, at the far end of the Rockaway peninsula.
 
-The walk shown in the video (seed 0) drives 2,541,485,088 km: **2 h 21 min 17.48 s** of light, 322× the
-network. Its last 152 new segments (11.4 km of road) are all on the south end of **Manasota Key**, a
-barrier island at Englewood Beach, Florida. The photon reaches them only in its final 125 km of driving
-(0.42 ms of light). The slow-motion sequence plays the last 129 km (the island, plus a few hundred
-metres of the way in) in 5.2 seconds, about 12,000 times slower than light.
+Across all 200 NYC runs, the last street was on the Rockaway peninsula 80 times, on Staten Island 60
+times and in Hamilton Beach 10 times. The other 50 were mostly in other waterside pockets: Gerritsen
+Beach, Throgs Neck, Manhattan Beach.
 
-The very last segment is 20 m of **Beach Road**. Both of its ends are within 0.3 m of Overture's Beach
-Road geometry (`where.py`, data/where_seed0_island.json).
+## 5. America's last road
 
-**Float precision.** Per-road first-visit distances are stored as float32 for memory. At 2.5 billion km
-float32 resolves only 256 km, which can't order the island's 152 roads. The end of the walk was
-therefore replayed in float64 (`usa.py tail 0 20000`; the replay reproduces the recorded total to the
-metre). The video uses those exact values.
+Run 0 drives 2,541,485,088 km: **2 h 21 min 17.48 s** of light, 322× the network. Its last **105
+blocks** (11.4 km of road) are all on the south end of **Manasota Key**, a barrier island at Englewood
+Beach, Florida. The Roomba reaches them only in its final 125 km of driving (0.42 ms of light). The slow
+motion plays the last 129 km in 5.2 s, about 12,000 times slower than light. The last block is 379 m of
+**Beach Road**. Both ends of its final piece lie within 0.3 m of Overture's Beach Road (`where.py`).
 
-**Where the other runs ended.** Each run's last segment was looked up the same way; see section 5.
-Islands, peninsulas and bayous have few connections to the rest of the network, so a walk that
-doesn't remember where it has been rarely finds its way in.
-
-## 5. All 16 USA runs
-
-Median **2 h 23 min** of light; fastest 1 h 33 min, slowest 3 h 48 min. On average the photon
-drives the network 329 times over. Run 0 is the one in the video.
+**Float precision.** Per-road first-visit distances are stored as float32. At 2.5 billion km, float32
+resolves only 256 km, too coarse to order the island's roads. So the walk's ending was replayed in
+float64 (`usa.py tail 0 20000`), reproducing the recorded total to the metre, and the video uses those
+exact values.
 
 | Run | Light time | Distance | × network | The last road |
 |---:|---:|---:|---:|---|
@@ -110,24 +121,45 @@ drives the network 329 times over. Run 0 is the one in the video.
 | 14 | 2 h 03 min | 2.22 billion km | 281× | Courtney Way, Scotland Beach, MD: Point Lookout peninsula |
 | 15 | 2 h 27 min | 2.64 billion km | 334× | 9th Street, Ocean City, MD: barrier island |
 
-13 of the 16 last roads are on a coast. Place names come from `where.py` (data/where_*.json): the
-nearest named Overture segment to the last road's midpoint, and the nearest Overture locality. The named
-segment is within 15 m except in runs 5 and 10 ("off": 64 m and 29 m, probably an unnamed spur) and
-run 12 (no named road within 25 m).
+13 of the 16 last roads are on a coast. Islands, peninsulas and bayous have few connections to the
+rest of the network, so a walker that doesn't remember where it has been rarely finds its way in.
 
-## 6. Comparisons
+Place names come from `where.py` (data/where_*.json): the nearest named Overture segment to the last
+piece's midpoint, and the nearest locality. The named segment is within 15 m except in runs 5 and 10
+("off": 64 m and 29 m, probably an unnamed spur) and run 12 (no named road within 25 m).
 
-* **Sun to Saturn:** 9.537 AU = 1.43 billion km (79 min of light). **Sun to Uranus:** 19.19 AU = 2.87
-  billion km (2 h 40 min). The 2.54-billion-km drive is longer than the first and shorter than the
-  second. Semi-major axes from NASA's planetary fact sheets; 1 AU = 149,597,870.7 km.
+## 6. A real Roomba's speed
 
-## 7. Rendering
+The payoff divides each median distance by **0.5 m/s**, the top drive speed a Roomba accepts. That is
+the iRobot Create 2's ±500 mm/s limit; the Create 2 is built on the Roomba 600 series. Sources: the
+[create2](https://www.npmjs.com/package/create2) and [pycreate2](https://pypi.org/project/pycreate2/0.7.2/)
+drive-command documentation. A cleaning run is usually slower, so these are best cases.
 
-* **Maps.** Each road's length is binned into pixels: along the segment for Calgary, and at the
-  segment's midpoint for the USA, where segments are much shorter than a pixel. A pixel's gold is the
-  share of its road length driven so far, raised to the 4th power on the US map. A pixel stays blue until nearly all
-  of its roads are done, so unvisited pockets stay visible. Below 80,000 roads left, each remaining
-  road is also drawn as a blue spark.
-* **Time.** The runs speed up as they go (video time ∝ distance^(1/3.3) for the USA, ^(1/3.4) for
-  Calgary), so you see both the first second and the long tail.
-* **The zoom** draws every road within the view at each scale, nearest-first from the final view.
+| | Median distance | At 0.5 m/s |
+|---|---:|---:|
+| New York City | 565,100 km | 36 years |
+| Contiguous US | 2.58 billion km | 163,000 years |
+| Calgary | 371,300 km | 24 years |
+
+## 7. Driving isn't cleaning
+
+A Roomba is about 34 cm across. A two-lane road (two 3.66 m lanes, 7.3 m) is about 21 Roombas wide,
+hence "about 20" on screen. Cleaning it in neat strips would take about 20 passes; at random, far more.
+
+## 8. Comparisons
+
+* **Sun to Saturn:** 9.537 AU = 1.43 billion km. The US run's 2.54 billion km is longer. Semi-major axes
+  from NASA's planetary fact sheets; 1 AU = 149,597,870.7 km.
+
+## 9. Rendering
+
+* **Maps.** Each road's length is binned into pixels: along the segment for the cities, and at the
+  segment's midpoint for the US, where segments are far shorter than a pixel. A pixel's gold is the
+  share of its road length driven so far, raised to the 4th power on the US map. A pixel therefore stays
+  blue until nearly all its roads are done. Below 80,000 segments left, each remaining one is also drawn
+  as a blue spark.
+* **The Roomba** is drawn at its true position on the walk for the cities and the slow-motion finale.
+  On the full US map it is far smaller than a pixel, so it isn't drawn there.
+* **Time.** Runs speed up as they go (video time ∝ distance^(1/3.4) for cities, ^(1/3.3) for the US), so
+  you see both the first moments and the long tail.
+* **The zoom** draws every road within the view at each scale.

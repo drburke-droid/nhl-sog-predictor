@@ -138,6 +138,47 @@ def tail_walk(indptr, adj, eid, alen, m, start, seed, uturn, from_km, cap):
     return road[:n], kms[:n], new[:n], km
 
 
+@nb.njit(cache=True)
+def _root(p, a):
+    while p[a] != a:
+        p[a] = p[p[a]]
+        a = p[a]
+    return a
+
+
+@nb.njit(cache=True)
+def block_ids(indptr, eid, m):
+    """Block of every segment: segments joined through points where only two meet (bends, not junctions)
+    belong to one block, a stretch of road from junction to junction (or to a dead end)."""
+    p = np.arange(m)
+    for v in range(len(indptr) - 1):
+        if indptr[v + 1] - indptr[v] == 2:
+            a = _root(p, eid[indptr[v]])
+            b = _root(p, eid[indptr[v] + 1])
+            if a != b:
+                p[a] = b
+    for i in range(m):
+        p[i] = _root(p, i)
+    return p
+
+
+@nb.njit(cache=True)
+def block_max(blk, first, nblk):
+    """per block: the distance at which its last segment was first driven (the block is done then)"""
+    out = np.full(nblk, -np.inf)
+    for i in range(len(blk)):
+        if first[i] > out[blk[i]]:
+            out[blk[i]] = first[i]
+    return out
+
+
+def blocks(n, ea, eb, elen):
+    """block id per segment (0..nblk-1) and the number of blocks"""
+    ip, ad, ei, al = csr(n, ea, eb, elen)
+    u, b = np.unique(block_ids(ip, ei, len(ea)), return_inverse=True)
+    return b.astype(np.int32), len(u)
+
+
 def csr(n, ea, eb, elen):
     """Half-edge CSR for an undirected graph given as edge lists (road id = position in the lists)."""
     m = len(ea)
