@@ -1,7 +1,7 @@
 # YouTube copy: the Roomba photon
 
-Upload `roomba_photon.mp4` (CHAPTER_TOTAL, 1920×1080, 30 fps, caption-only). Short: `roomba_short.mp4`
-(SHORT_TOTAL, 1080×1920).
+Upload `roomba_photon.mp4` (3:25, 1920×1080, 30 fps, caption-only). Short: `roomba_short.mp4`
+(0:55, 1080×1920).
 
 **A/B/C test: thumbnails and titles, paired so the title doesn't repeat the thumbnail's words**
 
@@ -24,7 +24,14 @@ The run in the video starts near Lebanon, Kansas, the centre of the lower 48. Ha
 
 What should the photon try next? Tell me in the comments.
 
-CHAPTERS
+0:00 A photon with no map
+0:14 The rule: like a Roomba
+0:27 Every street in Calgary
+1:22 Random vs. a plan
+1:36 Every road in America
+2:35 The last 152 roads
+2:54 16 runs: where it ends
+3:05 Past Saturn
 
 How it's made: road data from Overture Maps Foundation, which includes OpenStreetMap data (© OpenStreetMap contributors, ODbL). Contiguous US: motorways down to residential streets, no service roads or tracks; borders from Natural Earth. One-way rules are ignored, since light doesn't obey traffic law. The run shown is 14.3 billion simulated junction choices, replayed exactly for the slow-motion ending.
 Method, sources and every run: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/roomba/ACCURACY.md
@@ -35,7 +42,14 @@ Music: original, synthesized for this video.
 **Chapters**
 
 ```
-CHAPTERS
+0:00 A photon with no map
+0:14 The rule: like a Roomba
+0:27 Every street in Calgary
+1:22 Random vs. a plan
+1:36 Every road in America
+2:35 The last 152 roads
+2:54 16 runs: where it ends
+3:05 Past Saturn
 ```
 
 **Tags:** speed of light, random walk, roomba, maps, every road in America, road network, data

@@ -2,12 +2,13 @@
 
     python thumbs.py     -> out/thumb_A.png (America half lit), thumb_B.png (Calgary vs America),
                             thumb_C.png (the last road)
-Needs the stills: python video.py usa_run 14 ; python video.py cal_run 53 ; python video.py last 15.6
+Needs the stills: python video.py usa_run 14 46.5 (B and C draw their maps directly, without text)
 """
 import os
 import numpy as np
 from PIL import Image, ImageDraw
 import video as V
+import maps
 
 TW, TH = 1280, 720
 OUT = V.OUT
@@ -49,7 +50,9 @@ def thumb_A():
 
 def thumb_B():
     """Same rule, two maps: Calgary in a second, America in hours."""
-    cal = clean(still("cal_run_53.0"), [(0, 0, 640, 1080), (500, 940, 1920, 1080), (500, 0, 1920, 150)]).crop((730, 0, 1630, 1080))
+    C = maps.Calgary(seed=V.CAL_SEED, cy=-1.5, ox=V.CAL_X)
+    C.map.advance(np.inf)
+    cal = Image.fromarray(maps.tonemap(C.map.image())).crop((730, 0, 1630, 1080))
     usa = clean(still("usa_run_46.5"), [(0, 0, 1920, 90), (0, 760, 700, 1080), (1540, 700, 1920, 1000)]).crop((170, 120, 1790, 1060))
     im = Image.new("RGB", (TW, TH), (5, 8, 15))
     im.paste(cal.resize((400, 480), Image.LANCZOS), (10, 150))
@@ -66,9 +69,11 @@ def thumb_B():
 
 def thumb_C():
     """The last road, lit."""
-    im = clean(still("last_15.6"), [(0, 0, 1920, 100), (0, 100, 1920, 200), (0, 760, 760, 1080), (1500, 980, 1920, 1080)])
-    im = im.crop((240, 60, 1680, 870)).resize((TW, TH), Image.LANCZOS)
+    fr, *_, lc = V.Last().map_frame(15.6)                     # the map only: the last road just lit
+    im = Image.fromarray(fr).crop((240, 60, 1680, 870)).resize((TW, TH), Image.LANCZOS)
     d = ImageDraw.Draw(im)
+    cx, cy, r = (lc[0] - 240) * TW / 1440, (lc[1] - 60) * TH / 810, 58
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=V.GOLD, width=7)
     meta, w, log, secs = V.usa_data()
     headline(d, (40, 40), "THE LAST ROAD", 104, V.GOLD)
     headline(d, (44, 170), "IN AMERICA", 64, (255, 255, 255))
