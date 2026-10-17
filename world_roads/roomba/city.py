@@ -2,6 +2,8 @@
 the last one has been driven.
 
     python city.py [n_walks]     -> data/calgary_cover.json (+ data/calgary_first_<seed>.npy for the map)
+    python city.py many 100      -> 100 walks of each kind, summaries only -> data/calgary_cover_many.json
+    python city.py feature 31    -> first/log/path files for the walk shown in the video
 """
 import os, sys, json, time
 import numpy as np
@@ -65,5 +67,47 @@ def main(n_walks=8):
     print({k: v for k, v in out.items() if k.startswith("median")})
 
 
+def feature(seed):
+    """Everything the video needs for one walk: per-road first-driven distance, progress log and the full path."""
+    z = np.load(os.path.join(DATA, "calgary_graph.npz"))
+    m, n = len(z["ea"]), int(max(z["ea"].max(), z["eb"].max())) + 1
+    indptr, adj, eid, alen = CV.csr(n, z["ea"], z["eb"], z["elen"])
+    steps, km, first, log, last = CV.cover_walk(indptr, adj, eid, alen, m, int(z["start"]), seed, False, 100_000, 20_000_000_000)
+    path = CV.walk_path(indptr, adj, eid, alen, m, int(z["start"]), seed, False, int(steps) + 10)
+    assert len(path) == steps and abs(z["elen"][path].sum() - km) < 1e-3
+    np.save(os.path.join(DATA, f"calgary_first_{seed}.npy"), first.astype(np.float32))
+    np.save(os.path.join(DATA, f"calgary_log_{seed}.npy"), log)
+    np.save(os.path.join(DATA, f"calgary_path_{seed}.npy"), path)
+    print(f"seed {seed}: {km:,.0f} km = {CV.fmt_time(km / CV.C_KMS)}, {steps:,} steps; last road {last}")
+
+
+def many(n_walks):
+    """More walks on the saved graph, summaries only, for a steadier median and the spread."""
+    z = np.load(os.path.join(DATA, "calgary_graph.npz"))
+    m, n = len(z["ea"]), int(max(z["ea"].max(), z["eb"].max())) + 1
+    indptr, adj, eid, alen = CV.csr(n, z["ea"], z["eb"], z["elen"])
+    km_net = float(z["elen"].sum())
+    out = dict(network_km=km_net)
+    for uturn in (False, True):
+        s = []
+        t0 = time.time()
+        for seed in range(n_walks):
+            steps, km, first, log, last = CV.cover_walk(indptr, adj, eid, alen, m, int(z["start"]), seed, uturn,
+                                                       10_000_000, 20_000_000_000)
+            assert np.isfinite(first).all()
+            s.append(km / CV.C_KMS)
+        key = "plain" if uturn else "nonback"
+        out["seconds_" + key] = s
+        q = np.percentile(s, [0, 10, 50, 90, 100])
+        out["pct_" + key] = dict(zip(("min", "p10", "median", "p90", "max"), map(float, q)))
+        print(key, out["pct_" + key], f"{time.time() - t0:.0f}s", flush=True)
+        json.dump(out, open(os.path.join(DATA, "calgary_cover_many.json"), "w"), indent=1)
+
+
 if __name__ == "__main__":
-    main(int(sys.argv[1]) if len(sys.argv) > 1 else 8)
+    if len(sys.argv) > 1 and sys.argv[1] == "feature":
+        feature(int(sys.argv[2]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "many":
+        many(int(sys.argv[2]))
+    else:
+        main(int(sys.argv[1]) if len(sys.argv) > 1 else 8)

@@ -106,6 +106,38 @@ def walk_path(indptr, adj, eid, alen, m, start, seed, uturn, max_steps):
     return path[:step]
 
 
+@nb.njit(cache=True)
+def tail_walk(indptr, adj, eid, alen, m, start, seed, uturn, from_km, cap):
+    """The same walk as cover_walk, recording every step driven after from_km: (road, km after the step,
+    first time on that road?). For the slow-motion ending, in exact float64."""
+    np.random.seed(seed)
+    seen = np.zeros(m, np.bool_)
+    covered = 0
+    road = np.empty(cap, np.int32)
+    kms = np.empty(cap)
+    new = np.empty(cap, np.bool_)
+    n = 0
+    cur = start
+    came = -1
+    km = 0.0
+    while True:
+        j = choose(indptr, eid, cur, came, uturn)
+        e = eid[j]
+        km += alen[j]
+        fresh = not seen[e]
+        if fresh:
+            seen[e] = True
+            covered += 1
+        if km >= from_km and n < cap:
+            road[n] = e; kms[n] = km; new[n] = fresh
+            n += 1
+        if covered == m:
+            break
+        came = e
+        cur = adj[j]
+    return road[:n], kms[:n], new[:n], km
+
+
 def csr(n, ea, eb, elen):
     """Half-edge CSR for an undirected graph given as edge lists (road id = position in the lists)."""
     m = len(ea)

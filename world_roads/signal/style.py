@@ -45,8 +45,8 @@ def fade(t, t0, t1, fin=0.35, fout=0.35):
     return float(min(1.0, (t - t0) / fin if fin else 1.0, (t1 - t) / fout if fout else 1.0))
 
 
-def caption(d, lines, a, y=None, x=None, W=1920, H=1080, anchor="bottom", width=None):
-    """A rounded panel of text lines. lines: [(text, size, colour, weight)]; a: opacity 0..1."""
+def caption(d, lines, a, y=None, x=None, W=1920, H=1080, anchor="bottom", width=None, cx=None):
+    """A rounded panel of text lines. lines: [(text, size, colour, weight)]; a: opacity 0..1; cx: centre x."""
     if a <= 0:
         return
     pad, gap = 30, 14
@@ -56,7 +56,7 @@ def caption(d, lines, a, y=None, x=None, W=1920, H=1080, anchor="bottom", width=
     bw = int(max(ws) + 2 * pad) if width is None else width
     bh = int(sum(hs) + gap * (len(lines) - 1) + 2 * pad)
     if x is None:
-        x = (W - bw) // 2
+        x = (W - bw) // 2 if cx is None else int(cx - bw / 2)
     if y is None:
         y = H - bh - 70 if anchor == "bottom" else 70
     d.rounded_rectangle([x, y, x + bw, y + bh], 22, fill=PANEL + (int(205 * a),))

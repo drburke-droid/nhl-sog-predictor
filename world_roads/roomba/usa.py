@@ -7,6 +7,8 @@ the geographic centre of the contiguous US, near Lebanon, Kansas.
 
     python usa.py build            -> data/usa_*.npy (the graph, in junction order)
     python usa.py walk 4           -> 4 cover walks at once (one per core) -> data/usa_cover.json
+    python usa.py more 4 3         -> 3 more batches of 4 (seeds 4-15), summaries only -> data/usa_cover_more.json
+    python usa.py tail 0 20000     -> the last 20,000 km of walk 0, step by step -> data/usa_tail_0.npz
 """
 import os, sys, json, time
 import numpy as np
@@ -116,6 +118,42 @@ def walks(indptr, adj, eid, alen, m, start, seeds, log_every, max_steps):
     return steps, kms, firsts, logs, nlogs, lasts
 
 
+def more(first_seed, n_batches, k=4):
+    """More walks, keeping only their summaries and progress logs (no per-road maps)."""
+    meta = json.load(open(os.path.join(DATA, "usa_meta.json")))
+    L = {nm: np.load(os.path.join(DATA, f"usa_{nm}.npy")) for nm in ("indptr", "adj", "eid", "alen")}
+    alen = L["alen"].astype(np.float64)
+    path = os.path.join(DATA, "usa_cover_more.json")
+    rows = json.load(open(path))["walks"] if os.path.exists(path) else []
+    for b in range(n_batches):
+        seeds = np.arange(first_seed + b * k, first_seed + (b + 1) * k, dtype=np.int64)
+        t0 = time.time()
+        steps, kms, firsts, logs, nlogs, lasts = walks(L["indptr"], L["adj"], L["eid"], alen, meta["roads"], meta["start"],
+                                                       seeds, 20_000_000, 400_000_000_000)
+        for i in range(k):
+            rows.append(dict(seed=int(seeds[i]), done=bool(np.isfinite(firsts[i]).all()), steps=int(steps[i]), km=float(kms[i]),
+                             seconds=float(kms[i] / CV.C_KMS), x_network=float(kms[i] / meta["km"]), last=int(lasts[i])))
+            np.save(os.path.join(DATA, f"usa_log_{seeds[i]}.npy"), logs[i, :nlogs[i]])
+            print(f"seed {seeds[i]}: {kms[i]:,.0f} km = {CV.fmt_time(kms[i] / CV.C_KMS)} at c  ({time.time() - t0:.0f}s)", flush=True)
+        del firsts
+        json.dump(dict(meta=meta, walks=rows), open(path, "w"), indent=1)
+
+
+def tail(seed, last_km):
+    """Replay one walk, recording its last `last_km` of driving exactly -> data/usa_tail_<seed>.npz"""
+    meta = json.load(open(os.path.join(DATA, "usa_meta.json")))
+    rows = json.load(open(os.path.join(DATA, "usa_cover.json")))["walks"]
+    T = [r for r in rows if r["seed"] == seed][0]["km"]
+    L = {nm: np.load(os.path.join(DATA, f"usa_{nm}.npy")) for nm in ("indptr", "adj", "eid", "alen")}
+    t0 = time.time()
+    road, kms, new, km = CV.tail_walk(L["indptr"], L["adj"], L["eid"], L["alen"].astype(np.float64), meta["roads"], meta["start"],
+                                      seed, False, T - last_km, 20_000_000)
+    print(f"seed {seed}: replay {km:,.3f} km (recorded {T:,.3f}), {len(road):,} steps in the last {last_km:,} km, "
+          f"{new.sum():,} first visits, {time.time() - t0:.0f}s", flush=True)
+    assert abs(km - T) < 1e-3 * max(1.0, T / 1e9), "replay does not match the recorded walk"
+    np.savez(os.path.join(DATA, f"usa_tail_{seed}.npz"), road=road, km=kms, new=new, total=km)
+
+
 def walk(k):
     meta = json.load(open(os.path.join(DATA, "usa_meta.json")))
     L = {nm: np.load(os.path.join(DATA, f"usa_{nm}.npy")) for nm in ("indptr", "adj", "eid", "alen")}
@@ -140,5 +178,9 @@ def walk(k):
 if __name__ == "__main__":
     if sys.argv[1] == "build":
         build()
+    elif sys.argv[1] == "tail":
+        tail(int(sys.argv[2]), float(sys.argv[3]))
+    elif sys.argv[1] == "more":
+        more(int(sys.argv[2]), int(sys.argv[3]))
     else:
         walk(int(sys.argv[2]) if len(sys.argv) > 2 else 4)
