@@ -278,3 +278,30 @@ python thumbs.py             # three thumbnails for A/B/C testing
 * **Rendering:** at 4K, with every offset in pixels of a 1080p frame. Stimuli are drawn with exact area
   coverage, in linear light.
 * **Sources and methods:** [hyperacuity/ACCURACY.md](hyperacuity/ACCURACY.md). Master, thumbnails and YouTube copy: `media/hyperacuity/`.
+
+## The Roomba photon: every road, at random (`roomba/`)
+
+A photon drives at the speed of light with one rule: at every junction, take any road except the one you
+came in on (turn back only at a dead end). It has no map and no memory. How long until it has driven every
+road? Calgary: **1.24 s** typically (200 runs), against 37 ms for the planned route of the Calgary film.
+The contiguous United States: **2 h 23 min** typically (16 runs, 1 h 33 min to 3 h 48 min), about 330×
+the length of the network. The run in the video takes 2 h 21 min 17 s and 2.54 billion km, farther than
+Saturn is from the Sun. Its last 152 roads are all on Manasota Key, a barrier island in Florida, and
+13 of the 16 runs end on a coast.
+
+```bash
+cd roomba
+python city.py 8 && python city.py many 200 && python city.py feature 31   # Calgary walks
+python usa.py build && python usa.py walk 4 && python usa.py more 4 3        # USA graph + 16 walks (~1.5 h on 4 cores)
+python usa.py tail 0 20000                                                   # exact replay of the featured walk's ending
+python where.py LAT LON ...                                                  # name the last roads (Overture)
+python stats.py                                                              # every number quoted
+python assemble.py render                                                    # sections -> out/roomba_photon.mp4
+python short.py && python assemble.py short                                  # vertical Short
+python thumbs.py                                                             # thumbnails A/B/C
+```
+
+* **Walks:** numba, non-backtracking random walk on the half-edge graph, reproducible from the seed
+  (`cover.py`). The USA graph is 44.6 million segments and 7.9 million km.
+* **Sources and methods:** [roomba/ACCURACY.md](roomba/ACCURACY.md). Master, Short, thumbnails and
+  YouTube copy: `media/roomba/`.

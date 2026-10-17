@@ -88,7 +88,32 @@ doesn't remember where it has been rarely finds its way in.
 
 ## 5. All 16 USA runs
 
-STATS_TABLE
+Median **2 h 23 min** of light; fastest 1 h 33 min, slowest 3 h 48 min. On average the photon
+drives the network 329 times over. Run 0 is the one in the video.
+
+| Run | Light time | Distance | × network | The last road |
+|---:|---:|---:|---:|---|
+| 0 | 2 h 21 min | 2.54 billion km | 322× | Beach Road, Manasota Key (Englewood Beach), FL: barrier island |
+| 1 | 2 h 13 min | 2.39 billion km | 302× | Sheldrake Court, near Beaufort, NC: coast |
+| 2 | 1 h 45 min | 1.89 billion km | 239× | Cowshed Road, Queenstown, VA: Northern Neck peninsula |
+| 3 | 3 h 00 min | 3.23 billion km | 409× | Nellie Lane, near Port Angeles, WA: Strait of Juan de Fuca coast |
+| 4 | 2 h 34 min | 2.77 billion km | 351× | Caratoke Highway, Point Harbor, NC: tip of the Currituck peninsula |
+| 5 | 2 h 06 min | 2.27 billion km | 287× | off Eider Lane, St. George, ME: peninsula |
+| 6 | 3 h 15 min | 3.51 billion km | 444× | Foster Lane, Buras, LA: Mississippi River delta |
+| 7 | 3 h 48 min | 4.10 billion km | 519× | Factory Street, Lafitte, LA: bayou |
+| 8 | 2 h 40 min | 2.87 billion km | 363× | Tupelo Trail, Edisto Beach, SC: sea island |
+| 9 | 1 h 33 min | 1.67 billion km | 212× | Lone Oak, near Big Creek, TX: inland |
+| 10 | 2 h 25 min | 2.61 billion km | 331× | off Scenic View Drive, near Rockaway Beach, OR: coast |
+| 11 | 2 h 38 min | 2.84 billion km | 360× | Tarpon Street, Anna Maria Island, FL: barrier island |
+| 12 | 2 h 07 min | 2.28 billion km | 288× | unnamed road south of Hoquiam, WA: inland of Grays Harbor |
+| 13 | 1 h 35 min | 1.71 billion km | 216× | Maison, Aliso Viejo, CA: inland suburb |
+| 14 | 2 h 03 min | 2.22 billion km | 281× | Courtney Way, Scotland Beach, MD: Point Lookout peninsula |
+| 15 | 2 h 27 min | 2.64 billion km | 334× | 9th Street, Ocean City, MD: barrier island |
+
+13 of the 16 last roads are on a coast. Place names come from `where.py` (data/where_*.json): the
+nearest named Overture segment to the last road's midpoint, and the nearest Overture locality. The named
+segment is within 15 m except in runs 5 and 10 ("off": 64 m and 29 m, probably an unnamed spur) and
+run 12 (no named road within 25 m).
 
 ## 6. Comparisons
 

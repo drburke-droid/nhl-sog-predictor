@@ -677,7 +677,7 @@ class Runs(Section):
         caps = [(0.4, 5.6, [(f"I ran it {len(s)} times. Typically {fmt_hm(float(np.median(s)))} of light,", 40, INK, "SemiBold"),
                             (f"from {fmt_hm(s[0])} to {fmt_hm(s[-1])}.", 34, INK2, "Regular")], {"anchor": "top", "y": 18}),
                 (6.0, self.dur, [("Each dot is where a run's last road was.", 40, INK, "SemiBold"),
-                                 ("Nearly all on the coast: islands, peninsulas, bayous.", 34, GOLD, "SemiBold")], {"anchor": "top", "y": 18})]
+                                 ("Most are on the coast: islands, peninsulas, bayous.", 34, GOLD, "SemiBold")], {"anchor": "top", "y": 18})]
         return ST.draw_captions(fr, t, caps)
 
 
@@ -721,7 +721,7 @@ class Outro(Section):
         med, lo, hi = float(np.median(s)), s[0], s[-1]
         caps = [(0.6, 6.4, [("In a straight line, that drive would take you past Saturn.", 40, INK, "SemiBold")], {"anchor": "top", "y": 250}),
                 (6.8, 12.8, [(f"Driving each road exactly once would take light {self.meta['km'] / CV.C_KMS:.0f} seconds.", 40, INK, "SemiBold"),
-                             ("At random, it drives the average road hundreds of times.", 32, INK2, "Regular")],
+                             (f"At random, it drives every kilometre about {round(self.w['x_network'], -1):.0f} times over.", 32, INK2, "Regular")],
                  {"anchor": "top", "y": 250}),
                 (13.4, 20.0, [("What should the photon try next?", 54, GOLD, "Bold"),
                               ("Tell me in the comments.", 36, INK2, "Regular")], {"anchor": "top", "y": 420})]

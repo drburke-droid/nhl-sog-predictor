@@ -1,7 +1,8 @@
 """Join the Roomba-photon sections (cross-fades) and add the score.
 
     python assemble.py              -> out/roomba_photon.mp4
-    python assemble.py render       -> render every section first (2 at a time; the USA ones need ~3 GB each)
+    python assemble.py render       -> render every section first (2 at a time; the USA ones need ~3-5 GB each)
+    python assemble.py short        -> out/roomba_short.mp4 (after: python short.py)
 """
 import os, sys, json, subprocess
 import numpy as np
@@ -99,7 +100,34 @@ def main():
     print("wrote", final)
 
 
+def short():
+    """the vertical Short: its own score, same palette of cues"""
+    import score as SC
+    import short as S
+    import video as V
+    vid = os.path.join(OUT, "roomba_short_video.mp4")
+    total = dur(vid)
+    go, last0, arrive, end = S.HOOK, S.LAST0, S.LAST0 + V.Last.ARRIVE, S.END
+    energy = [(0, 0.45), (go - 0.05, 0.45), (go, 0.75), (last0 - 1, 0.85), (last0 + 1.0, 0.3), (arrive - 0.05, 0.3),
+              (arrive, 1.0), (end, 0.7), (total, 0.0)]
+    impacts = [(go, 0.8), (arrive, 1.3), (end, 0.6)]
+    risers = [(0.3, go), (arrive - 5.0, arrive)]
+    sc = SC.Score(total, energy, impacts, risers, transpose_at=arrive, final_at=end + 0.3, intro_hit=False)
+    sc.compose()
+    mix = sc.mix() * 0.8
+    mix = mix + bells(mix.shape[1], SC.SR, [arrive])
+    wav = os.path.join(OUT, "score_short.wav")
+    SC.write(mix, wav)
+    final = os.path.join(OUT, "roomba_short.mp4")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+                    "-af", AF, "-c:a", "aac", "-b:a", "320k", "-shortest", "-movflags", "+faststart", final], check=True)
+    print("wrote", final)
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "short":
+        short()
+        sys.exit()
     if len(sys.argv) > 1 and sys.argv[1] == "render":
         render_all(sys.argv[2:] or SECS)
     main()

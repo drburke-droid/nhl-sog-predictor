@@ -24,7 +24,7 @@ class Short:
     def __init__(self):
         self.run = V.USARun("run")
         self.run.RUN = RUN
-        self.last = V.Last(scale0=SCALE, ox=OX, oy=OY, cx=960, fit=(980, 900))
+        self.last = V.Last(scale0=SCALE, ox=OX, oy=OY, cx=960, fit=(980, 680))
         self.U = None
         self.lastD = -1
 
@@ -35,10 +35,15 @@ class Short:
             self.run.Dend = V.usa_tail(self.run.T)["Ds"]
         return self.U
 
+    # the map shows between the title and the HUD, feathered at both ends
+    _y = np.arange(MAP_Y, MAP_Y + 1080)
+    BAND = np.clip(np.minimum((_y - 500) / 80, (1380 - _y) / 80), 0, 1)[:, None, None].astype(np.float32)
+
     def canvas(self, fr=None):
         c = np.zeros((SH, SW, 3), np.uint8); c[:] = (5, 8, 15)
         if fr is not None:
-            c[MAP_Y:MAP_Y + 1080] = fr[:, CROP_X:CROP_X + SW]
+            bg = np.array([5, 8, 15], np.float32)
+            c[MAP_Y:MAP_Y + 1080] = (bg + (fr[:, CROP_X:CROP_X + SW].astype(np.float32) - bg) * self.BAND).astype(np.uint8)
         return c
 
     def frame(self, t):
@@ -71,7 +76,7 @@ class Short:
         return np.asarray(im)
 
     def hud(self, d, t, D, left):
-        y = 1530
+        y = 1400
         text(d, (SW / 2, y), "LIGHT TIME", 30, MUTED, 1.0, "SemiBold", "ma")
         sec = D / CV.C_KMS
         if t >= LAST0 + self.last.S0 - 0.5:
@@ -91,24 +96,26 @@ class Short:
                 y += int(size * 1.3)
         a = ST.fade(t, 0.0, LAST0 - 0.2, 0.01, 0.4)
         block([("A photon drives every road", 56, INK, "Bold"), ("in America. At random.", 56, INK, "Bold"),
-               ("How long does it take?", 44, GOLD, "SemiBold")], a, 90)
+               ("How long does it take?", 44, GOLD, "SemiBold")], a, 300)
         L = self.last
         tl = V.usa_tail(L.T)
         n = len(tl["late"])
         block([(f"{n:,} roads left," if n > 1 else "One road left,", 56, INK, "Bold"),
-               ("all in one corner of the map" if n > 1 else "", 44, INK2, "SemiBold")],
-              ST.fade(t, LAST0 + 0.2, LAST0 + L.S0, 0.4, 0.4), 120)
+               (V.LAST_NOTE.get(V.USA_SEED, "all in one corner of the map") if n > 1 else "", 44, INK2, "SemiBold")],
+              ST.fade(t, LAST0 + 0.2, LAST0 + L.S0, 0.4, 0.4), 300)
         sl = (L.T - tl["Ds"]) / CV.C_KMS / (L.S1 - L.S0)
         block([("Slow motion", 56, INK, "Bold"), (f"{1 / sl:,.0f}× slower than light", 44, INK2, "SemiBold")],
-              ST.fade(t, LAST0 + L.S0, LAST0 + L.ARRIVE, 0.4, 0.3), 120)
+              ST.fade(t, LAST0 + L.S0, LAST0 + L.ARRIVE, 0.4, 0.3), 300)
         road, place = V.LAST_PLACE[V.USA_SEED]
         block([("The last road", 60, GOLD, "Bold"), (road, 44, INK, "SemiBold"), (place, 36, INK2, "Regular")],
-              ST.fade(t, LAST0 + L.ARRIVE, END, 0.3, 0.4), 100)
+              ST.fade(t, LAST0 + L.ARRIVE, END, 0.3, 0.4), 280)
 
     def answer(self, d, u):
         L = self.last
+        meta, w, log, secs = V.usa_data()
         rows = [("Every road in America", 52, INK, "SemiBold"), (fmt_hm(L.T / CV.C_KMS), 120, GOLD, "Bold"),
-                ("at the speed of light", 44, INK2, "SemiBold"), ("", 30, INK, "Regular"),
+                ("at the speed of light", 44, INK2, "SemiBold"),
+                (f"typical of {len(secs)} runs: {fmt_hm(float(np.median(secs)))}", 36, INK2, "Regular"), ("", 30, INK, "Regular"),
                 (f"{L.T / 1e9:.2f} billion km of driving", 46, INK, "SemiBold"), ("farther than Saturn is from the Sun", 40, INK2, "Regular"),
                 ("", 30, INK, "Regular"), (f"Calgary took {V.calgary_stats()['median_s_nonback']:.2f} seconds.", 44, INK, "SemiBold"),
                 ("Full video on the channel", 40, GOLD, "SemiBold")]
@@ -121,6 +128,9 @@ class Short:
         os.makedirs(V.OUT, exist_ok=True)
         if stills:
             for s in stills:
+                self.frame(s - 1 / FPS)                         # as in the running video: drop the jump's glow
+                if self.U is not None and hasattr(self.U, "flash"):
+                    self.U.flash[:] = 0
                 Image.fromarray(self.frame(s)).save(os.path.join(V.OUT, f"short_{s:.1f}.png"))
             return
         path = os.path.join(V.OUT, "roomba_short_video.mp4")
