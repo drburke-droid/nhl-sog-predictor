@@ -3,13 +3,14 @@
 Upload `roomba_photon.mp4` (3:28, 1920×1080, 30 fps, caption-only). Shorts: `roomba_short.mp4`
 (America) and `calgary_short.mp4` (Calgary), both 1080×1920.
 
-**A/B/C test: thumbnails and titles, paired so the title doesn't repeat the thumbnail's words**
+**A/B/C test.** The thumbnails carry the hook; the titles say plainly what the video is (under 100
+characters; the first ~70 show in search).
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | `roomba_thumb_A.png`: Roomba on the half-driven US map, NO MAP. / LIGHT SPEED. | How Long Would a Roomba Take to Drive Every Road in the USA? |
-| B | `roomba_thumb_B.png`: Roomba over New York, EVERY STREET / IN NEW YORK / 1.9 s | What Happens When a Roomba Moves at the Speed of Light? |
-| C | `roomba_thumb_C.png`: Roomba next to the last block, THE LAST ROAD / IN AMERICA | A Light-Speed Roomba Took 2 Hours to Find This One Street |
+| A | `roomba_thumb_A.png`: 3/4-view Roomba streaking across the half-driven US map, NO MAP. / LIGHT SPEED. | How Long Would a Roomba Take to Drive Every Road in America at the Speed of Light? |
+| B | `roomba_thumb_B.png`: Roomba streaking over New York, EVERY STREET / IN NEW YORK / 1.9 s | A Light-Speed Roomba With No Map Drives Every Street in NYC, Then Every Road in the USA |
+| C | `roomba_thumb_C.png`: Roomba heading for the last block on Manasota Key, THE LAST ROAD / IN AMERICA | I Simulated a Roomba Driving Every Road in America at Light Speed (No Map, Random Turns) |
 
 **Description**
 
@@ -60,13 +61,13 @@ Island. Where do you think it would end in your city?"
 
 ## The Shorts
 
-**America** (`roomba_short.mp4`). Title: **How Long Would a Roomba Take to Drive Every Road in America?**
+**America** (`roomba_short.mp4`). Title: **How Long Would a Roomba Take to Drive Every Road in America at Light Speed?**
 
 ```
 At the speed of light, with no map: at every intersection it picks a road at random. This run: 2 h 21 min (2 h 23 min typical of 16 runs). The last block was on a barrier island in Florida. At a real Roomba's top speed: 163,000 years. Full video on the channel.
 ```
 
-**Calgary** (`calgary_short.mp4`). Title: **A Roomba With No Map Drives Every Street in Calgary**
+**Calgary** (`calgary_short.mp4`). Title: **A Roomba With No Map Drives Every Street in Calgary at the Speed of Light**
 
 ```
 At the speed of light, picking a road at random at every intersection: 1.24 seconds (the median of 200 runs). At a real Roomba's top speed it would take 24 years. Every road in America is in the full video.
