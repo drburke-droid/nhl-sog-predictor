@@ -1,6 +1,6 @@
 # YouTube copy: the hyperacuity video
 
-Upload the 4K master (`media/hyperacuity/upload_master/`, join the parts first). Uploading in 4K matters:
+Upload the 4K master `hyperacuity_4k.mp4` (5:36, 3840×2160). Uploading in 4K matters:
 YouTube gives 4K uploads its better encodes at every quality, which keeps the sub-pixel rounds intact.
 
 **A/B/C test: thumbnails and titles, paired so the title doesn't repeat the thumbnail's words**
@@ -20,7 +20,17 @@ Most people get further than they expect. You can see a misalignment of just 5 t
 
 Comment the last round you got right, and what you watched on.
 
-CHAPTERS
+0:00 Can you see a 1-pixel step?
+0:17 The test
+0:28 Six rounds: 4 pixels down to ⅛
+1:31 How far did you get?
+1:45 Your eye's own pixels
+2:25 Drawing between pixels
+2:41 How your retina does it
+3:17 Bends, circles and tilts
+4:07 The vernier caliper
+4:33 What your optometrist checks
+5:17 One last test
 
 Eye doctors use this sensitivity too. On an Amsler grid, straight lines that look wavy, bent or missing can be an early sign of a problem in the macula, such as macular degeneration. If straight lines ever look bent to you, see your optometrist. This video is for education and is not a diagnosis.
 

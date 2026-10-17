@@ -277,4 +277,4 @@ python thumbs.py             # three thumbnails for A/B/C testing
 
 * **Rendering:** at 4K, with every offset in pixels of a 1080p frame. Stimuli are drawn with exact area
   coverage, in linear light.
-* **Sources and methods:** [hyperacuity/ACCURACY.md](hyperacuity/ACCURACY.md).
+* **Sources and methods:** [hyperacuity/ACCURACY.md](hyperacuity/ACCURACY.md). Master, thumbnails and YouTube copy: `media/hyperacuity/`.
