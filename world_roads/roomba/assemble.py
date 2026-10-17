@@ -12,7 +12,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "flights"))
 sys.path.insert(0, os.path.join(ROOT, "signal"))
 OUT = os.path.join(HERE, "out")
-SECS = ["cal_intro", "rule", "cal_run", "compare", "usa_intro", "usa_run", "last", "outro"]
+SECS = ["cal_intro", "rule", "cal_run", "compare", "usa_intro", "usa_run", "last", "runs", "outro"]
 XF = 0.5
 # final audio: trim, then a peak limiter at -3 dBFS; AAC at 320k keeps the true peak under -1 dBTP
 AF = "volume=-1.2dB,alimiter=limit=0.708:attack=3:release=60:level=false"
@@ -81,7 +81,7 @@ def main():
     usa_go = O["usa_intro"] + 5.0
     energy = [(0, 0.3), (O["rule"], 0.35), (O["cal_run"], 0.55), (cal_end - 6, 0.7), (cal_end, 0.8), (O["compare"], 0.45),
               (O["usa_intro"], 0.35), (usa_go - 0.05, 0.35), (usa_go, 0.7), (O["usa_run"] + 30, 0.8), (O["last"], 0.85),
-              (O["last"] + 1.0, 0.3), (arrive - 0.05, 0.3), (arrive, 1.0), (O["outro"], 0.6), (O["outro"] + 13.0, 0.5),
+              (O["last"] + 1.0, 0.3), (arrive - 0.05, 0.3), (arrive, 1.0), (O["runs"], 0.6), (O["outro"], 0.6), (O["outro"] + 13.0, 0.5),
               (total, 0.0)]
     impacts = [(O["rule"], 0.5), (cal_end, 0.9), (usa_go, 0.8), (arrive, 1.3), (O["outro"] + 13.4, 0.6)]
     risers = [(cal_end - 4.0, cal_end), (O["usa_intro"] + 2.5, usa_go), (arrive - 6.0, arrive)]

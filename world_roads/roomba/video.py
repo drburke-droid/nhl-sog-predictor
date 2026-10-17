@@ -2,7 +2,7 @@
 
     python video.py NAME [still times...]     NAME: cal_intro, rule, cal_run, compare, usa_intro, usa_run, last, outro
 """
-import os, sys, json, math, time, subprocess
+import os, sys, json, math, time, subprocess, functools
 import numpy as np
 import cv2
 from PIL import Image, ImageDraw
@@ -279,8 +279,11 @@ class Compare(Section):
 # ================================================================== USA
 USA_SEED = int(os.environ.get("USA_SEED", "0"))
 USA_SCALE, USA_OX, USA_OY = 0.335, 996, 621
-LAST_PLACE = {0: ("Beach Road", "Englewood Beach, Florida"), 1: ("Sheldrake Court", "near Beaufort, North Carolina"),
+# the last road and where it is (Overture names at both of the road's ends; see where.py)
+LAST_PLACE = {0: ("Beach Road", "Manasota Key, Englewood Beach, Florida"), 1: ("Sheldrake Court", "near Beaufort, North Carolina"),
               2: ("Cowshed Road", "Queenstown, Virginia"), 3: ("Nellie Lane", "near Port Angeles, Washington")}
+
+LAST_NOTE = {0: "all on one barrier island"}
 
 
 def usa_data():
@@ -317,7 +320,7 @@ class USARun(Section):
     def load(self):
         if self.U is None:
             self.U = maps.USA(seed=USA_SEED, scale=USA_SCALE, ox=USA_OX, oy=USA_OY)
-            self.Dend = float(np.nextafter(self.U.map.t[-1], 0))      # just before the last road
+            self.Dend = usa_tail(self.T)["Ds"]                        # where 'last' takes over
             self.sx, self.sy = self.U.to_px(*self.meta["start_lonlat"])
 
     P = 3.3
@@ -331,10 +334,10 @@ class USARun(Section):
         if self.phase == "intro":
             return 0.0
         u = min(t / self.RUN, 1.0)
-        return min(self.T * u ** self.P, self.Dend)
+        return self.Dend * u ** self.P
 
     def t_of(self, Dq):
-        return (Dq / self.T) ** (1 / self.P) * self.RUN
+        return (Dq / self.Dend) ** (1 / self.P) * self.RUN
 
     def frame(self, t):
         self.load()
@@ -398,74 +401,194 @@ class USARun(Section):
         Ts = [(lab, self.t_of(D), D) for lab, D in self.ms]
         for (lab, tt, D), nxt in zip(Ts, Ts[1:] + [("", self.RUN + 1.0, 0)]):
             caps.append((tt, min(tt + 3.2, nxt[1] - 0.2), [(f"{lab}: {fmt_light(D / CV.C_KMS)}", 40, GOLD, "Bold")], top))
-        caps.append((self.RUN + 0.3, self.dur, [("One road left.", 46, GOLD, "Bold")], top))
+        left = len(usa_tail(self.T)["late"])
+        caps.append((self.RUN + 0.3, self.dur, [(f"{left:,} roads left." if left > 1 else "One road left.", 46, GOLD, "Bold")], top))
         return caps
 
 
-class Last(Section):
-    """Zoom from the whole country to the one road still dark; then the photon arrives."""
-    name, dur = "last", 16.0
-    Z0, Z1 = 2.5, 10.5                       # zoom window
-    ARRIVE = 11.2
+@functools.lru_cache(maxsize=4)
+def usa_tail(T):
+    """The walk's ending, step by step (exact): the final burst of new roads and the slow-motion window.
+    Returns dict(Ds: slow-motion start km, Da: first road of the final burst, late: roads first driven after Ds
+    with their km, steps: (road, km after) for every step after Ds)."""
+    tl = np.load(os.path.join(DATA, f"usa_tail_{USA_SEED}.npz"))
+    road, km, new = tl["road"], tl["km"], tl["new"]
+    assert abs(float(tl["total"]) - T) < 1e-3 * max(1.0, T / 1e9)
+    nk = km[new]
+    gaps = np.diff(nk)
+    big = np.nonzero(gaps > TAIL_GAP_KM)[0]                    # the final burst starts after the last long gap
+    b0 = int(big[-1]) + 1 if len(big) else 0
+    Da = float(nk[b0])
+    k_a = int(np.searchsorted(km, Da))                       # the step that first enters the burst
+    k_s = max(0, k_a - TAIL_PRE_STEPS)
+    Ds = float(km[k_s - 1]) if k_s > 0 else float(km[0]) - 1e-6
+    sel = new & (km > Ds)
+    return dict(Ds=Ds, Da=Da, n_burst=int(len(nk) - b0), late=road[sel], late_km=km[sel], steps=(road[k_s:], km[k_s:]))
 
-    def __init__(self):
+
+TAIL_GAP_KM = 200.0
+TAIL_PRE_STEPS = 60
+
+
+class Last(Section):
+    """Zoom from the whole country to the last dark roads, then watch the photon finish them in slow motion."""
+    name, dur = "last", 20.0
+    Z0, Z1 = 1.8, 8.8                        # zoom window
+    S0, S1 = 9.8, 15.0                       # slow motion: the photon drives from Ds to the end
+    ARRIVE = 15.0
+
+    def __init__(self, scale0=USA_SCALE, ox=USA_OX, oy=USA_OY, cx=W / 2 + 120, fit=(1500, 880)):
+        self.fit = fit
         self.meta, self.w, self.log, self.secs = usa_data()
         self.T = self.w["km"]
+        self.tail = usa_tail(self.T)
+        self.scale0, self.ox, self.oy, self.cx = scale0, ox, oy, cx
         self.Z = None
 
     def load(self):
-        if self.Z is None:
-            self.Z = maps.Zoom(self.w["last"])
-            tx, ty = self.Z.tx, self.Z.ty
-            self.p0 = (USA_OX + tx * USA_SCALE, USA_OY - ty * USA_SCALE)
-            self.s1 = 1600.0 / 0.6                                     # last view: 600 m across
+        if self.Z is not None:
+            return
+        tl = self.tail
+        self.Z = maps.Zoom(tl["late"])
+        Z = self.Z
+        self.late = tl["late"]
+        self.late_km = tl["late_km"]
+        self.LE = Z.ends(self.late)
+        # the slow-motion path: node after every step (the walk's start node of the window is whichever end fits)
+        r, k = tl["steps"]
+        ea, eb = Z.ea[r].astype(np.int64), Z.eb[r].astype(np.int64)
+        for n0 in (ea[0], eb[0]):
+            nodes = [n0]
+            ok = True
+            for i in range(len(r)):
+                c = nodes[-1]
+                if ea[i] == c:
+                    nodes.append(eb[i])
+                elif eb[i] == c:
+                    nodes.append(ea[i])
+                else:
+                    ok = False
+                    break
+            if ok:
+                break
+        assert ok, "path does not chain"
+        nodes = np.array(nodes)
+        self.px, self.py = Z.x[nodes].astype(np.float64), Z.y[nodes].astype(np.float64)
+        self.pk = np.r_[k[0] - Z.road_km[r[0]], k]                   # km at each node
+        # final view: the late roads and the window's path, with a margin
+        xs = np.r_[self.LE[0], self.LE[2], self.px]; ys = np.r_[self.LE[1], self.LE[3], self.py]
+        bx0, bx1, by0, by1 = xs.min(), xs.max(), ys.min(), ys.max()
+        Z.tx, Z.ty = (bx0 + bx1) / 2, (by0 + by1) / 2                # zoom about the box centre
+        self.s1 = min(self.fit[0] / max(bx1 - bx0, 0.3), self.fit[1] / max(by1 - by0, 0.3), 4000.0)
+        self.p0 = (self.ox + Z.tx * self.scale0, self.oy - Z.ty * self.scale0)
+        self.last = int(self.late[-1])
 
     def view(self, t):
         v = smooth((t - self.Z0) / (self.Z1 - self.Z0))
-        s = USA_SCALE * (self.s1 / USA_SCALE) ** v
+        s = self.scale0 * (self.s1 / self.scale0) ** v
         c = smooth((t - self.Z0) / ((self.Z1 - self.Z0) * 0.6))
-        px = self.p0[0] + (W / 2 + 120 - self.p0[0]) * c
-        py = self.p0[1] + (H / 2 - self.p0[1]) * c
+        px = self.p0[0] + (self.cx - self.p0[0]) * c
+        py = self.p0[1] + (H / 2 + 20 - self.p0[1]) * c
         return s, px, py
 
-    def frame(self, t):
+    def Dt(self, t):
+        """km driven at video time t: held at Ds, then the slow-motion window, linear in distance"""
+        u = min(max((t - self.S0) / (self.S1 - self.S0), 0.0), 1.0)
+        return self.tail["Ds"] + (self.T - self.tail["Ds"]) * u
+
+    def map_frame(self, t):
+        """the map (no text): returns (frame, world->screen, km driven, roads still dark, head xy)"""
         self.load()
         s, px, py = self.view(t)
-        dens, f = self.Z.density(s, px, py)
+        Z = self.Z
+        dens, f = Z.density(s, px, py)
         img = maps.BG + dens[..., None] * maps.GOLD
-        glow = np.zeros((H, W, 3), np.float32)
-        x0, y0 = f(self.Z.tgt[0], self.Z.tgt[1])
-        x1, y1 = f(self.Z.tgt[2], self.Z.tgt[3])
-        th = max(3, int(round(1 + 2 * min(3.0, math.log2(max(s, 40) / 40)))))
-        arr = smooth((t - self.ARRIVE) / 0.25)
-        col = maps.DIM * 1.6 * (1 - arr) + maps.GOLD * arr
-        cv2.line(img, (int(x0), int(y0)), (int(x1), int(y1)), tuple(float(c) for c in col), th + 2, cv2.LINE_AA)
-        if t > self.ARRIVE:
-            fl = math.exp(-(t - self.ARRIVE) / 0.8)
+        D = self.Dt(t)
+        th = max(2, int(round(1 + 2 * min(3.0, math.log2(max(s, 40) / 40)))))
+        x0, y0 = f(self.LE[0], self.LE[1]); x1, y1 = f(self.LE[2], self.LE[3])
+        lit = self.late_km <= D + 1e-9
+        glow = np.zeros((H, W), np.float32)
+        for i in range(len(self.late)):
+            p, q = (int(x0[i]), int(y0[i])), (int(x1[i]), int(y1[i]))
+            col = maps.GOLD if lit[i] else maps.DIM * 2.2
+            cv2.line(img, p, q, tuple(float(c) for c in col), th, cv2.LINE_AA)
+            if lit[i]:                                                    # fresh roads glow for ~0.4 s of video
+                age = (D - self.late_km[i]) / (self.T - self.tail["Ds"]) * (self.S1 - self.S0)
+                if i == len(self.late) - 1:
+                    age = max(t - self.ARRIVE, 0) * 0.35
+                cv2.line(glow, p, q, float(math.exp(-age / 0.4)), th + 2, cv2.LINE_AA)
+        # the photon: recent path and head
+        head = None
+        if self.S0 - 0.3 <= t <= self.S1 + 0.05:
+            j = int(np.searchsorted(self.pk, D))
+            j = min(max(j, 1), len(self.pk) - 1)
+            a = (D - self.pk[j - 1]) / max(self.pk[j] - self.pk[j - 1], 1e-12)
+            hx = self.px[j - 1] + (self.px[j] - self.px[j - 1]) * a
+            hy = self.py[j - 1] + (self.py[j] - self.py[j - 1]) * a
+            sx, sy = f(np.r_[self.px[max(0, j - 40):j], hx], np.r_[self.py[max(0, j - 40):j], hy])
+            pts = np.c_[sx, sy].astype(np.int32)
+            tr = np.zeros((H, W), np.float32)
+            n = len(pts)
+            for i in range(n - 1):
+                cv2.line(tr, tuple(pts[i]), tuple(pts[i + 1]), float(0.25 + 0.75 * (i + 1) / n), th, cv2.LINE_AA)
+            glow += tr * 0.7
+            head = (float(sx[-1]), float(sy[-1]))
+            hd = np.zeros((H, W), np.float32)
+            cv2.circle(hd, (int(head[0]), int(head[1])), max(3, th), 1.0, -1, cv2.LINE_AA)
+            glow += cv2.GaussianBlur(hd, (0, 0), 3) * 4 + cv2.GaussianBlur(hd, (0, 0), 12) * 6
+        if t > self.ARRIVE:                                              # the last road: a burst
+            fl = math.exp(-(t - self.ARRIVE) / 0.9)
             g = np.zeros((H, W), np.float32)
-            cv2.line(g, (int(x0), int(y0)), (int(x1), int(y1)), 1.0, th + 2, cv2.LINE_AA)
-            glow = (cv2.GaussianBlur(g, (0, 0), 6) * 3 + cv2.GaussianBlur(g, (0, 0), 25) * 8)[..., None] * maps.HOT * fl
-        fr = maps.tonemap(img, glow)
+            cv2.line(g, (int(x0[-1]), int(y0[-1])), (int(x1[-1]), int(y1[-1])), 1.0, th + 2, cv2.LINE_AA)
+            glow += (cv2.GaussianBlur(g, (0, 0), 8) * 4 + cv2.GaussianBlur(g, (0, 0), 40) * 30) * fl
+        gl = np.minimum(glow, 3.0)[..., None] * maps.HOT * 0.6
+        sa = 1 - smooth((t - self.Z0) / 2.5)                            # the pocket's blue spark, until the zoom resolves it
+        if sa > 0:                                                         # same pixels as the run's sparks
+            mx, my = np.round((x0 + x1) / 2).astype(int), np.round((y0 + y1) / 2).astype(int)
+            ok = (~lit) & (mx >= 0) & (mx < W) & (my >= 0) & (my < H)
+            m = np.zeros((H, W), np.float32)
+            m[my[ok], mx[ok]] = 1.0
+            gl = gl + maps.spark(m) * sa
+        fr = maps.tonemap(img, gl)
+        dark = int((~lit).sum())
+        lc = ((x0[-1] + x1[-1]) / 2, (y0[-1] + y1[-1]) / 2)
+        return fr, f, D, dark, head, s, lc
+
+    def frame(self, t):
+        fr, f, D, dark, head, s, lc = self.map_frame(t)
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
-        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-        rr = max(46, math.hypot(x1 - x0, y1 - y0) / 2 + 40)
-        ga = ST.fade(t, 0.6, self.ARRIVE + 0.3, 0.4, 0.3) * (0.65 + 0.35 * math.sin(t * 5))
-        d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], outline=GOLD + (int(255 * ga),), width=4)
+        # ring: the dark pocket while zooming; the last road after
+        ga = ST.fade(t, 0.4, self.Z1 + 0.6, 0.4, 0.5) * (0.65 + 0.35 * math.sin(t * 5))
+        bx = f(self.Z.tx, self.Z.ty)
+        rr = 46
+        d.ellipse([bx[0] - rr, bx[1] - rr, bx[0] + rr, bx[1] + rr], outline=GOLD + (int(255 * ga),), width=4)
         road, place = LAST_PLACE[USA_SEED]
-        ap = ST.fade(t, self.Z1 - 1.5, 1e9, 0.5, 0.5)
-        lab = f"{road}, {place}" if t > self.ARRIVE else place
-        tw = d.textlength(lab, font=ST.font(30))
-        lx, ly = cx + rr + 16, cy
-        d.rounded_rectangle([lx, ly - 26, lx + tw + 28, ly + 26], 12, fill=ST.PANEL + (int(215 * ap),))
-        text(d, (lx + 14, ly), lab, 30, GOLD, ap, "SemiBold", "lm")
+        ap = ST.fade(t, self.Z1 - 1.2, 1e9, 0.5, 0.5)
+        tw = d.textlength(place, font=ST.font(30))
+        d.rounded_rectangle([60, 40, 60 + tw + 28, 92], 12, fill=ST.PANEL + (int(215 * ap),))
+        text(d, (74, 66), place, 30, GOLD, ap, "SemiBold", "lm")
+        if t > self.ARRIVE:
+            gl = ST.fade(t, self.ARRIVE, 1e9, 0.3, 0.3)
+            lab = f"the last road: {road}"
+            tw = d.textlength(lab, font=ST.font(30))
+            d.rounded_rectangle([lc[0] + 30, lc[1] - 26, lc[0] + 58 + tw, lc[1] + 26], 12, fill=ST.PANEL + (int(215 * gl),))
+            text(d, (lc[0] + 44, lc[1]), lab, 30, GOLD, gl, "SemiBold", "lm")
         self.scalebar(d, s, ST.fade(t, 1.0, 1e9, 0.5, 0.5))
-        # clock
-        D = self.T if t > self.ARRIVE else float(np.nextafter(self.T, 0))
-        text(d, (60, 60), "LIGHT TIME", 22, MUTED, 1.0)
-        text(d, (60, 86), fmt_light(D / CV.C_KMS), 64, GOLD, 1.0, "Bold")
-        text(d, (60, 172), "ROADS NOT YET DRIVEN", 22, MUTED, 1.0)
-        text(d, (60, 198), "1" if t <= self.ARRIVE else "0", 52, GOLD, 1.0, "Bold")
+        sl = (self.T - self.tail["Ds"]) / CV.C_KMS / (self.S1 - self.S0)          # light-seconds per video second
+        if self.S0 - 0.5 < t < self.S1 + 0.5:
+            a = ST.fade(t, self.S0 - 0.5, self.S1 + 0.5, 0.4, 0.4)
+            lab = f"slow motion: {1 / sl:,.0f}× slower than light"
+            tw = d.textlength(lab, font=ST.font(28))
+            d.rounded_rectangle([W - 80 - tw - 28, 40, W - 80, 92], 12, fill=ST.PANEL + (int(215 * a),))
+            text(d, (W - 94, 66), lab, 28, INK, a, "SemiBold", "rm")
+        x0, y0 = 60, 772                                                    # where the run's HUD was
+        text(d, (x0, y0), "LIGHT TIME", 22, MUTED, 1.0)
+        sec = D / CV.C_KMS
+        h_, rem = divmod(sec, 3600); m_, s_ = divmod(rem, 60)
+        text(d, (x0, y0 + 26), f"{int(h_)} h {int(m_):02d} min {s_:08.5f} s", 56, GOLD, 1.0, "Bold")
+        text(d, (x0, y0 + 112), "ROADS NOT YET DRIVEN", 22, MUTED, 1.0)
+        text(d, (x0, y0 + 138), f"{dark:,}", 52, GOLD, 1.0, "Bold")
         fr = np.asarray(im).copy()
         return ST.draw_captions(fr, t, self.caps())
 
@@ -482,15 +605,82 @@ class Last(Section):
 
     def caps(self):
         bot = {"anchor": "bottom"}
-        m = self.meta["roads"]
         T = self.T / CV.C_KMS
         road, place = LAST_PLACE[USA_SEED]
-        return [(0.3, self.Z0 + 2.0, [(f"{m - 1:,} roads driven. One still dark.", 42, INK, "SemiBold")], bot),
-                (self.ARRIVE, self.ARRIVE + 4.6 - 0.1, [(f"The last road: {fmt_light(T)}", 46, GOLD, "Bold"),
-                 (f"{self.Z.target_km * 1000:.0f} m of {road}. The photon drove {self.T / 1e9:.2f} billion km to get here.", 30, INK2, "Regular")], bot)]
+        n = len(self.tail["late"])
+        last_m = float(self.Z.road_km[self.last]) * 1000 if self.Z is not None else 0
+        first = (f"{n:,} roads still dark, {LAST_NOTE.get(USA_SEED, 'all in one corner of the map')}." if n > 1
+                 else "One road still dark.")
+        top = {"anchor": "top", "y": 18}
+        return [(0.3, self.Z0 + 2.4, [(first, 42, INK, "SemiBold")], top),
+                (self.Z0 + 2.8, self.S0 - 0.3, [("Islands and peninsulas have few ways in.", 40, INK, "SemiBold"),
+                                               ("A random walker can miss them for hours.", 34, INK2, "Regular")],
+                 {"anchor": "top", "y": 110}),
+                (self.ARRIVE, self.dur, [(f"The last road: {fmt_light(T)}", 46, GOLD, "Bold"),
+                 (f"{last_m:.0f} m of {road}, after {self.T / 1e9:.2f} billion km of driving.", 30, INK2, "Regular")],
+                 {"anchor": "top", "y": 110})]
 
 
 # ================================================================== outro
+def usa_gold():
+    """the whole map, every road driven (cached): the backdrop for the runs map"""
+    p = os.path.join(OUT, f"usa_gold_{USA_SEED}.png")
+    if not os.path.exists(p):
+        U = maps.USA(seed=USA_SEED, scale=USA_SCALE, ox=USA_OX, oy=USA_OY)
+        U.map.advance(np.inf)
+        Image.fromarray(maps.tonemap(U.map.image(gamma=0.42, dim=1.5, fgamma=4.0))).save(p)
+    return np.asarray(Image.open(p).convert("RGB"))
+
+
+class Runs(Section):
+    """Where the last road was, in every run."""
+    name, dur = "runs", 11.0
+
+    def __init__(self):
+        self.meta, self.w, self.log, self.secs = usa_data()
+        js = json.load(open(os.path.join(DATA, "usa_cover.json")))["walks"]
+        mp = os.path.join(DATA, "usa_cover_more.json")
+        if os.path.exists(mp):
+            js += json.load(open(mp))["walks"]
+        self.walks = sorted(js, key=lambda w: w["seed"])
+        lon, lat = np.load(os.path.join(DATA, "usa_lon.npy"), mmap_mode="r"), np.load(os.path.join(DATA, "usa_lat.npy"), mmap_mode="r")
+        ea, eb = np.load(os.path.join(DATA, "usa_ea.npy"), mmap_mode="r"), np.load(os.path.join(DATA, "usa_eb.npy"), mmap_mode="r")
+        e = np.array([w["last"] for w in self.walks])
+        lo = (lon[ea[e]].astype(np.float64) + lon[eb[e]]) / 2
+        la = (lat[ea[e]].astype(np.float64) + lat[eb[e]]) / 2
+        x, y = maps.albers(lo, la)
+        self.px, self.py = USA_OX + x * USA_SCALE, USA_OY - y * USA_SCALE
+        self.bg = None
+
+    def frame(self, t):
+        if self.bg is None:
+            self.bg = (maps.BG + (usa_gold().astype(np.float32) - maps.BG) * 0.42).astype(np.uint8)
+        a0 = smooth(t / 0.6)
+        fr = (maps.BG + (self.bg.astype(np.float32) - maps.BG) * a0).astype(np.uint8)
+        im = Image.fromarray(fr)
+        d = ImageDraw.Draw(im, "RGBA")
+        for i, w in enumerate(self.walks):
+            g = smooth((t - 1.2 - 0.22 * i) / 0.3)
+            if g <= 0:
+                continue
+            x, y = self.px[i], self.py[i]
+            r = 9 + 22 * (1 - g)
+            d.ellipse([x - r, y - r, x + r, y + r], outline=GOLD + (int(255 * g),), width=3)
+            d.ellipse([x - 4, y - 4, x + 4, y + 4], fill=(255, 245, 220, int(255 * g)))
+            if w["seed"] == USA_SEED:
+                lab = "the run you just watched"
+                tw = d.textlength(lab, font=ST.font(24))
+                d.rounded_rectangle([x + 18, y - 20, x + 40 + tw, y + 20], 10, fill=ST.PANEL + (int(215 * g),))
+                text(d, (x + 29, y), lab, 24, GOLD, g, "SemiBold", "lm")
+        fr = np.asarray(im).copy()
+        s = self.secs
+        caps = [(0.4, 5.6, [(f"I ran it {len(s)} times. Typically {fmt_hm(float(np.median(s)))} of light,", 40, INK, "SemiBold"),
+                            (f"from {fmt_hm(s[0])} to {fmt_hm(s[-1])}.", 34, INK2, "Regular")], {"anchor": "top", "y": 18}),
+                (6.0, self.dur, [("Each dot is where a run's last road was.", 40, INK, "SemiBold"),
+                                 ("Nearly all on the coast: islands, peninsulas, bayous.", 34, GOLD, "SemiBold")], {"anchor": "top", "y": 18})]
+        return ST.draw_captions(fr, t, caps)
+
+
 class Outro(Section):
     name, dur = "outro", 20.0
     AU = 149_597_870.7
@@ -530,8 +720,8 @@ class Outro(Section):
         s = self.secs
         med, lo, hi = float(np.median(s)), s[0], s[-1]
         caps = [(0.6, 6.4, [("In a straight line, that drive would take you past Saturn.", 40, INK, "SemiBold")], {"anchor": "top", "y": 250}),
-                (6.8, 12.8, [(f"I ran it {len(s)} times: typically {fmt_hm(med)} of light,", 40, INK, "SemiBold"),
-                             (f"from {fmt_hm(lo)} to {fmt_hm(hi)}. Driving each road exactly once would take {self.meta['km'] / CV.C_KMS:.0f} s.", 32, INK2, "Regular")],
+                (6.8, 12.8, [(f"Driving each road exactly once would take light {self.meta['km'] / CV.C_KMS:.0f} seconds.", 40, INK, "SemiBold"),
+                             ("At random, it drives the average road hundreds of times.", 32, INK2, "Regular")],
                  {"anchor": "top", "y": 250}),
                 (13.4, 20.0, [("What should the photon try next?", 54, GOLD, "Bold"),
                               ("Tell me in the comments.", 36, INK2, "Regular")], {"anchor": "top", "y": 420})]
@@ -539,7 +729,7 @@ class Outro(Section):
 
 
 SECTIONS = {"cal_intro": lambda: CalRun("intro"), "cal_run": lambda: CalRun("run"), "rule": Rule, "compare": Compare,
-            "usa_intro": lambda: USARun("intro"), "usa_run": lambda: USARun("run"), "last": Last, "outro": Outro}
+            "usa_intro": lambda: USARun("intro"), "usa_run": lambda: USARun("run"), "last": Last, "runs": Runs, "outro": Outro}
 
 if __name__ == "__main__":
     sec = SECTIONS[sys.argv[1]]()

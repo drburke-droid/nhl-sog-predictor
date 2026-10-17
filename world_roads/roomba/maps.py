@@ -59,10 +59,11 @@ class RoadMap:
         self.done[:] = 0
         self.i = 0
 
-    def image(self, glow_pix=None, dim=1.0, gamma=0.5):
+    def image(self, glow_pix=None, dim=1.0, gamma=0.5, fgamma=1.0):
+        """fgamma > 1 keeps a pixel blue until nearly all its roads are driven (shows the last pockets)"""
         dens = np.clip(self.total / self.norm, 0, 1) ** gamma
         with np.errstate(invalid="ignore", divide="ignore"):
-            frac = np.where(self.total > 0, self.done.reshape(self.h, self.w) / self.total, 0.0)
+            frac = np.where(self.total > 0, self.done.reshape(self.h, self.w) / self.total, 0.0) ** fgamma
         img = BG + dens[..., None] * (DIM * dim * (1 - frac[..., None]) + GOLD * frac[..., None])
         return img
 
@@ -132,6 +133,17 @@ class Calgary:
 
 
 # ------------------------------------------------------------------ USA
+BLUE = np.array([110, 170, 255], np.float32)
+SPARK_FROM = 80_000
+
+
+def spark(mask):
+    """small blue glows on a 0/1 mask"""
+    g = cv2.GaussianBlur(mask, (0, 0), 1.5) * (2 * math.pi * 1.5 ** 2) \
+        + cv2.GaussianBlur(mask, (0, 0), 6.0) * (2 * math.pi * 6.0 ** 2) * 0.3        # a lone road: peak 1.3
+    return np.minimum(g, 1.5)[..., None] * BLUE
+
+
 def albers(lon, lat, lon0=-96.0, lat0=37.5, p1=29.5, p2=45.5, R=6371.0):
     lon, lat = np.radians(lon), np.radians(lat)
     l0, f0, f1, f2 = map(math.radians, (lon0, lat0, p1, p2))
@@ -165,7 +177,7 @@ class USA:
     def frame(self, D, flash_decay=0.8):
         i0 = self.map.i
         new = self.map.advance(D)
-        img = self.map.image(gamma=0.42)
+        img = self.map.image(gamma=0.42, dim=1.5, fgamma=4.0)
         if not hasattr(self, "flash"):
             self.flash = np.zeros(W * H, np.float32)
             self.tot = np.maximum(self.map.total.ravel(), 1e-9)
@@ -174,6 +186,11 @@ class USA:
             add = np.bincount(new, weights=self.map.wgt[i0:i0 + len(new)], minlength=W * H) / self.tot
             self.flash += np.minimum(add, 1.0).astype(np.float32) * 3.0
         glow = np.minimum(self.flash.reshape(H, W), 1.0)[..., None] * HOT * 0.55
+        left = len(self.map.pix) - self.map.i
+        if left < SPARK_FROM:                          # the last roads, too few to see: one blue spark each
+            a = min(1.0, (SPARK_FROM - left) / 30_000)
+            rem = np.minimum(np.bincount(self.map.pix[self.map.i:], minlength=W * H), 1).reshape(H, W).astype(np.float32)
+            glow = glow + spark(rem) * a
         return tonemap(img, glow)
 
     def to_px(self, lon, lat):
@@ -183,26 +200,38 @@ class USA:
 
 # ------------------------------------------------------------------ the zoom to one road
 class Zoom:
-    """Every USA road at any scale, zooming about one target road. Roads are kept nearest-first from the
-    target, so the roads that can be on screen are a prefix of the arrays."""
+    """Every USA road at any scale, zooming about one point. Roads are kept nearest-first from that point,
+    so the roads that can be on screen are a prefix of the arrays. `late` roads (not yet driven when the zoom
+    starts) are left out of the gold map, to be drawn one by one."""
 
-    def __init__(self, target):
+    def __init__(self, late, centre=None):
         lon, lat = np.load(os.path.join(DATA, "usa_lon.npy")), np.load(os.path.join(DATA, "usa_lat.npy"))
         x, y = albers(lon, lat)
         del lon, lat
-        x, y = x.astype(np.float32), y.astype(np.float32)
+        self.x, self.y = x.astype(np.float32), y.astype(np.float32)
+        del x, y
+        x, y = self.x, self.y
         ea, eb = np.load(os.path.join(DATA, "usa_ea.npy")), np.load(os.path.join(DATA, "usa_eb.npy"))
+        self.ea, self.eb = ea, eb
         km = np.load(os.path.join(DATA, "usa_elen.npy"))
-        self.tgt = (float(x[ea[target]]), float(y[ea[target]]), float(x[eb[target]]), float(y[eb[target]]))
-        self.tx, self.ty = (self.tgt[0] + self.tgt[2]) / 2, (self.tgt[1] + self.tgt[3]) / 2
-        self.target_km = float(km[target])
+        self.road_km = km
+        late = np.asarray(late)
+        if centre is None:
+            centre = ((x[ea[late[-1]]] + x[eb[late[-1]]]) / 2, (y[ea[late[-1]]] + y[eb[late[-1]]]) / 2)
+        self.tx, self.ty = float(centre[0]), float(centre[1])
         d = np.hypot((x[ea] + x[eb]) / 2 - self.tx, (y[ea] + y[eb]) / 2 - self.ty)
-        d[target] = np.inf                                      # drawn on its own
-        o = np.argsort(d)[:-1]
+        d[late] = np.inf                                        # drawn on their own
+        o = np.argsort(d)[:len(d) - len(np.unique(late))]
         self.d = d[o]
         self.ax, self.ay, self.bx, self.by = x[ea[o]], y[ea[o]], x[eb[o]], y[eb[o]]
         self.km = km[o].astype(np.float32)
+        del d, o
         self.norm = None
+
+    def ends(self, roads):
+        """world endpoints (x0, y0, x1, y1) of roads"""
+        r = np.asarray(roads)
+        return self.x[self.ea[r]], self.y[self.ea[r]], self.x[self.eb[r]], self.y[self.eb[r]]
 
     def screen(self, s, px, py):
         """target at screen (px, py), s px/km: world -> screen"""
