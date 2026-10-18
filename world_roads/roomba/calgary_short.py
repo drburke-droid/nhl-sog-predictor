@@ -99,7 +99,7 @@ def mux():
     A = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(A)
     path = os.path.join(V.OUT, "calgary_short_video.mp4")
-    A.mux_short(path, os.path.join(V.OUT, "calgary_short.mp4"), go=RUN0, arrive=RUN1, end=RUN1 + 4.0)
+    A.mux_short(path, os.path.join(V.OUT, "calgary_short.mp4"), go=RUN0, arrive=RUN1, end=RUN1 + 4.0, key=0)
 
 
 if __name__ == "__main__":

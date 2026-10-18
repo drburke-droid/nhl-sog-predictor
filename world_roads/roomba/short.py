@@ -16,7 +16,7 @@ OX, OY = 970, 568                    # the USA map centred on the 1920x1080 work
 CROP_X, MAP_Y = 420, 400             # working canvas x 420..1500 -> short at y 400..1480
 HOOK, RUN = 2.5, 27.5                # the run: HOOK .. HOOK+RUN
 LAST0 = HOOK + RUN                   # the zoom and the slow motion (Last's own clock)
-END = LAST0 + 19.0                   # the answer card
+END = LAST0 + V.Last.dur - 1.0       # the answer card
 DUR = END + 6.0
 
 

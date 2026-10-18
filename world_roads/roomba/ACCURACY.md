@@ -94,7 +94,7 @@ Beach, Throgs Neck, Manhattan Beach.
 Run 0 drives 2,541,485,088 km: **2 h 21 min 17.48 s** of light, 322× the network. Its last **105
 blocks** (11.4 km of road) are all on the south end of **Manasota Key**, a barrier island at Englewood
 Beach, Florida. The Roomba reaches them only in its final 125 km of driving (0.42 ms of light). The slow
-motion plays the last 129 km in 5.2 s, about 12,000 times slower than light. The last block is 379 m of
+motion plays the last 129 km in 4.8 s, about 11,000 times slower than light. The last block is 379 m of
 **Beach Road**. Both ends of its final piece lie within 0.3 m of Overture's Beach Road (`where.py`).
 
 **Float precision.** Per-road first-visit distances are stored as float32. At 2.5 billion km, float32

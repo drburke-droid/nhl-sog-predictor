@@ -1,6 +1,6 @@
 # YouTube copy: how long would a Roomba take to drive every road?
 
-Upload `roomba_photon.mp4` (3:28, 1920×1080, 30 fps, caption-only). Shorts: `roomba_short.mp4`
+Upload `roomba_photon.mp4` (3:23, 1920×1080, 30 fps, caption-only). Shorts: `roomba_short.mp4`
 (America) and `calgary_short.mp4` (Calgary), both 1080×1920.
 
 **A/B/C test.** The thumbnails carry the hook; the titles say plainly what the video is (under 100
@@ -32,13 +32,13 @@ What should the Roomba try next? Tell me in the comments.
 0:28 Every street in New York
 1:38 Every road in America
 2:37 The last 105 blocks
-2:56 16 runs: where it ends
-3:07 At a real Roomba's speed
+2:51 16 runs: where it ends
+3:01 At a real Roomba's speed
 
 How it's made: road data from Overture Maps Foundation, which includes OpenStreetMap data (© OpenStreetMap contributors, ODbL). Motorways down to residential streets, no service roads or tracks; one-way rules ignored. A "block" is a stretch of road between intersections. The US run shown is 14.3 billion simulated junction choices, replayed exactly for the slow-motion ending. Roomba top speed: the 0.5 m/s drive limit of iRobot's Create 2 (Roomba 600 series).
 Method, sources and every run: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/roomba/ACCURACY.md
 
-Music: original, synthesized for this video.
+Music: an original theme, synthesized for this video (no samples).
 ```
 
 **Chapters**
@@ -49,8 +49,8 @@ Music: original, synthesized for this video.
 0:28 Every street in New York
 1:38 Every road in America
 2:37 The last 105 blocks
-2:56 16 runs: where it ends
-3:07 At a real Roomba's speed
+2:51 16 runs: where it ends
+3:01 At a real Roomba's speed
 ```
 
 **Tags:** roomba, robot vacuum, speed of light, random walk, every road in America, New York City,

@@ -548,10 +548,10 @@ TAIL_PRE_STEPS = 60
 
 class Last(Section):
     """Zoom from the whole country to the last dark roads, then watch the photon finish them in slow motion."""
-    name, dur = "last", 20.0
-    Z0, Z1 = 1.8, 8.8                        # zoom window
-    S0, S1 = 9.8, 15.0                       # slow motion: the photon drives from Ds to the end
-    ARRIVE = 15.0
+    name, dur = "last", 14.8
+    Z0, Z1 = 1.0, 5.0                        # zoom window
+    S0, S1 = 5.5, 10.3                       # slow motion: the Roomba drives from Ds to the end
+    ARRIVE = 10.3
 
     def __init__(self, scale0=USA_SCALE, ox=USA_OX, oy=USA_OY, cx=W / 2 + 120, fit=(1500, 880)):
         self.fit = fit
@@ -736,10 +736,11 @@ class Last(Section):
         first = (f"{n:,} blocks still dark, {LAST_NOTE.get(USA_SEED, 'all in one corner of the map')}." if n > 1
                  else "One block still dark.")
         top = {"anchor": "top", "y": 18}
-        return [(0.3, self.Z0 + 2.4, [(first, 42, INK, "SemiBold")], top),
-                (self.Z0 + 2.8, self.S0 - 0.3, [("Islands and peninsulas have few ways in.", 40, INK, "SemiBold"),
-                                               ("A Roomba with no map can miss them for hours.", 34, INK2, "Regular")],
-                 {"anchor": "top", "y": 110}),
+        side = {"x": 60, "y": 330, "width": 560}                       # over the empty water left of the island
+        return [(0.2, self.Z1 - 0.4, [(first, 42, INK, "SemiBold")], top),
+                (2.6, self.ARRIVE - 0.2, [("Islands and peninsulas", 36, INK, "SemiBold"), ("have few ways in.", 36, INK, "SemiBold"),
+                                          ("A Roomba with no map", 30, INK2, "Regular"), ("can miss them for hours.", 30, INK2, "Regular")],
+                 side),
                 (self.ARRIVE, self.dur, [(f"Every road in America: {fmt_light(T)}", 46, GOLD, "Bold"),
                  (f"The last block: {last_m:.0f} m of {road}, after {self.T / 1e9:.2f} billion km.", 30, INK2, "Regular"),
                  ("That's farther than Saturn is from the Sun.", 30, INK2, "Regular")],

@@ -75,23 +75,10 @@ def main():
     args += ["-filter_complex", ";".join(fc), "-map", f"[{last}]", "-c:v", "libx264", "-preset", "medium", "-crf", "16",
              "-pix_fmt", "yuv420p", "-r", "30", vid]
     subprocess.run(args, check=True)
-    # ---- music: light for the room, building through each run, a hush for the zoom, the biggest hit on the last road
+    # ---- music: the Roomba theme (music.py), cut to the picture
     import score as SC
-    nyc_go = O["nyc_intro"] + 10.0                                  # "at the speed of light"
-    nyc_end = O["nyc_run"] + V.CityRun("run").T_end
-    arrive = O["last"] + V.Last.ARRIVE
-    usa_go = O["usa_intro"] + 5.0
-    energy = [(0, 0.32), (O["rule"], 0.38), (O["nyc_intro"], 0.42), (nyc_go - 0.05, 0.42), (nyc_go, 0.68),
-              (O["nyc_run"] + 30, 0.78), (nyc_end - 5, 0.5), (nyc_end, 0.85), (O["usa_intro"], 0.35), (usa_go - 0.05, 0.35),
-              (usa_go, 0.7), (O["usa_run"] + 30, 0.8), (O["last"], 0.85), (O["last"] + 1.0, 0.3), (arrive - 0.05, 0.3),
-              (arrive, 1.0), (O["runs"], 0.6), (O["payoff"], 0.5), (O["payoff"] + 17.0, 0.55), (total, 0.0)]
-    impacts = [(O["rule"], 0.5), (nyc_go, 0.8), (nyc_end, 0.9), (usa_go, 0.8), (arrive, 1.3), (O["payoff"] + 7.2, 0.6),
-               (O["payoff"] + 17.3, 0.6)]
-    risers = [(nyc_go - 4.0, nyc_go), (nyc_end - 4.0, nyc_end), (O["usa_intro"] + 2.5, usa_go), (arrive - 6.0, arrive)]
-    sc = SC.Score(total, energy, impacts, risers, transpose_at=arrive, final_at=O["payoff"] + 17.3, intro_hit=False)
-    sc.compose()
-    mix = sc.mix() * 0.8
-    mix = mix + bells(mix.shape[1], SC.SR, [nyc_end, arrive])
+    import music
+    mix = music.main_track(O, total)
     wav = os.path.join(OUT, "score.wav")
     SC.write(mix, wav)
     final = os.path.join(OUT, "roomba_photon.mp4")
@@ -102,18 +89,11 @@ def main():
     print("wrote", final)
 
 
-def mux_short(vid, final, go, arrive, end):
-    """a Short's own score: a lift at `go`, the hit and bell at `arrive`, the end card at `end`"""
+def mux_short(vid, final, go, arrive, end, hush=None, key=2):
+    """a Short's own cut of the Roomba theme: build to `go`, the run, an optional hush, the hit at `arrive`, the end card"""
     import score as SC
-    total = dur(vid)
-    energy = [(0, 0.45), (go - 0.05, 0.45), (go, 0.75), (arrive - 6, 0.85), (arrive - 1.0, 0.4), (arrive - 0.05, 0.4),
-              (arrive, 1.0), (end, 0.7), (total, 0.0)]
-    impacts = [(go, 0.8), (arrive, 1.3), (end, 0.6)]
-    risers = [(max(0.3, go - 2.0), go), (arrive - 4.0, arrive)]
-    sc = SC.Score(total, energy, impacts, risers, transpose_at=arrive, final_at=end + 0.3, intro_hit=False)
-    sc.compose()
-    mix = sc.mix() * 0.8
-    mix = mix + bells(mix.shape[1], SC.SR, [arrive])
+    import music
+    mix = music.short_track(dur(vid), go, arrive, end, key=key, hush=hush)
     wav = final.replace(".mp4", ".wav")
     SC.write(mix, wav)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
@@ -126,7 +106,7 @@ def short():
     import short as S
     import video as V
     mux_short(os.path.join(OUT, "roomba_short_video.mp4"), os.path.join(OUT, "roomba_short.mp4"),
-              go=S.HOOK, arrive=S.LAST0 + V.Last.ARRIVE, end=S.END)
+              go=S.HOOK, arrive=S.LAST0 + V.Last.ARRIVE, end=S.END, hush=S.LAST0 + V.Last.Z0)
 
 
 if __name__ == "__main__":
