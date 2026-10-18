@@ -3,7 +3,7 @@ Each point of the channel moves sideways at a rate set by the curvature just ups
 round a bend keeps eroding the outer bank downstream). When two loops touch, the neck is cut through and
 the loop is left behind as an oxbow lake.
 
-    python meander.py   -> data/meander.npz (centrelines over time, oxbows, sinuosity)
+    python meander.py   -> data/meander_video.npz (centrelines over time, oxbows, sinuosity)
 """
 import os, math
 import numpy as np
@@ -17,7 +17,8 @@ OMEGA, GAMMA = -1.0, 2.5   # Howard & Knutson weights: local term, upstream term
 ALPHA = 0.3                # upstream decay, per width (2 Cf / depth)
 KMIG = 0.1                 # migration rate per unit curvature
 CUT = 1.2 * W              # neck cutoff distance
-LOOP_MAX = 80 * W          # the longest loop a neck cutoff removes
+LOOP_MAX = 400 * W         # the longest loop a neck cutoff removes
+ENDS = 10                  # points at each end that take no part in cutoffs
 NOISE = 0.002 * W          # random bank disturbances per check
 
 
@@ -64,8 +65,8 @@ def find_cut(x, y, cut, skip, longest):
     """the first neck: two points closer than `cut` that are between `skip` and `longest` points apart
     along the channel (one loop, not the whole river folding back on itself)"""
     n = len(x)
-    for i in range(n):
-        for j in range(i + skip, min(n, i + longest)):
+    for i in range(10, n - 10):
+        for j in range(i + skip, min(n - 10, i + longest)):
             if (x[i] - x[j]) ** 2 + (y[i] - y[j]) ** 2 < cut * cut:
                 return i, j
     return -1, -1
@@ -98,12 +99,20 @@ def run(L=200.0, steps=60000, dt=0.05, seed=1, every=40):
     return frames, oxbows, np.array(sin_t)
 
 
+def save_video_run(L=160.0, steps=300000, dt=0.1, seed=3, every=200):
+    frames, oxbows, S = run(L=L, steps=steps, dt=dt, seed=seed, every=every)
+    off = np.r_[0, np.cumsum([len(f) for f in frames])]
+    ooff = np.r_[0, np.cumsum([len(o) for _, o in oxbows])]
+    np.savez(os.path.join(DATA, "meander_video.npz"), xy=np.concatenate(frames), off=off, S=S, every=every, L=L,
+             ox_it=np.array([it for it, _ in oxbows]), ox_xy=np.concatenate([o for _, o in oxbows]) if oxbows else np.zeros((0, 2)),
+             ox_off=ooff)
+    return S
+
+
 if __name__ == "__main__":
-    import time, sys
+    import time
     t0 = time.time()
-    frames, ox, S = run(steps=int(sys.argv[1]) if len(sys.argv) > 1 else 20000)
-    print(f"{len(frames)} frames, {len(ox)} cutoffs, {time.time() - t0:.0f}s")
+    S = save_video_run()
     k = len(S)
-    for q in range(0, k, max(1, k // 25)):
-        print(q, round(S[q], 3), len(frames[q]))
-    print("second half mean", S[k // 2:].mean().round(3), "sd", S[k // 2:].std().round(3))
+    print(f"{k} frames, {time.time() - t0:.0f}s; sinuosity over the last two thirds: mean {S[k // 3:].mean():.3f}, "
+          f"sd {S[k // 3:].std():.3f}")
