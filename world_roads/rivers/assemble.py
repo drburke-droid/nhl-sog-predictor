@@ -60,7 +60,7 @@ def main():
     import score as SC
     import music
     T = V.Test()
-    marks = {"rest": O["test"] + T.t_rest, "notpi": O["test"] + T.t_hold + 0.8, "final": O["end"] + 13.0}
+    marks = {"rest": O["test"] + T.t_rest, "notpi": O["test"] + T.t_hold + 0.8, "final": O["end"] + 20.0}
     mix = music.main_track(O, total, marks)
     wav = os.path.join(OUT, "score.wav")
     SC.write(mix, wav)

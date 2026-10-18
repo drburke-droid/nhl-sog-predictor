@@ -265,15 +265,16 @@ def river_card(d, m, a, x=80, y=150, n=None, prog=1.0):
 class Test(Section):
     """the longest rivers one by one, then the rest of the 1,000 with the globe turning"""
     name = "test"
-    FEATURED = [(0, 5.0), (1, 5.0), (2, 4.2), (3, 3.6), (4, 3.6), (5, 3.2), (6, 3.0), (7, 3.0), (9, 3.0), (16, 3.6)]
+    FEATURED = [(0, 6.5), (1, 6.0), (2, 5.0), (3, 4.5), (4, 4.5), (5, 4.0), (6, 4.0), (7, 4.0), (9, 4.0), (16, 6.5)]
+    DRAW = 2.6                     # seconds to draw a featured river and its straight line; the card then holds
     MOVE = 1.1                     # camera move into each featured river
     REST = 30.0                    # the other 990
-    HOLD = 7.0
+    HOLD = 9.5
 
     def __init__(self):
         meta, Z = rivers()
         self.meta = meta
-        t, self.slots = 1.5, []
+        t, self.slots = 3.0, []
         for k, d in self.FEATURED:
             self.slots.append((k, t, t + d))
             t += d
@@ -292,7 +293,7 @@ class Test(Section):
         """how many rivers are in (in self.order), and the fraction drawn of the one being added"""
         for j, (k, a, b) in enumerate(self.slots):
             if t < b:
-                return j, max(0.0, (t - a - self.MOVE * 0.6) / (b - a - self.MOVE * 0.6 - 0.6))
+                return j, max(0.0, (t - a - self.MOVE * 0.6) / min(self.DRAW, b - a - self.MOVE * 0.6 - 0.6))
         if t < self.t_hold:
             u = (t - self.t_rest) / self.REST
             n = len(self.slots) + int((len(self.order) - len(self.slots)) * u ** 1.6)
@@ -380,9 +381,9 @@ class Test(Section):
             text(d, (80, 262), km(self.cumL[cnt - 1]), 44, CYAN, a, "Bold")
             text(d, (80, 330), "IN STRAIGHT LINES", 22, MUTED, a)
             text(d, (80, 356), km(self.cumD[cnt - 1]), 44, CHORD, a, "Bold")
-        if t < 4.5:
+        if t < 5.8:
             ST.caption(d, [("We traced the 1,000 longest rivers on Earth,", 34, INK, "SemiBold"),
-                           ("source to mouth, in OpenStreetMap.", 34, INK, "SemiBold")], ST.fade(t, 0.2, 4.4, 0.5, 0.5), y=60)
+                           ("source to mouth, in OpenStreetMap.", 34, INK, "SemiBold")], ST.fade(t, 0.2, 5.6, 0.5, 0.5), y=60)
         if t > self.t_hold + 0.5:
             ST.caption(d, [(f"All 1,000 together: {self.cumL[-1] / self.cumD[-1]:.2f}.", 40, INK, "Bold"),
                            ("Not π.", 40, GOLD, "Bold")], ST.fade(t, self.t_hold + 0.8, 1e9, 0.6, 0.6), y=60)
@@ -397,7 +398,7 @@ def panel_bg():
 
 class Verdict(Section):
     """a histogram of the 1,000 ratios, building up, with pi marked"""
-    name, dur = "verdict", 13.0
+    name, dur = "verdict", 19.5
 
     def __init__(self):
         meta, _ = rivers()
@@ -419,25 +420,25 @@ class Verdict(Section):
             lo, hi = self.edges[i], self.edges[i + 1]
             h = c / cmax * ht * grow
             near = abs((lo + hi) / 2 - PI) < 0.2
-            col = GOLD if (near and t > 7.5) else CYAN
+            col = GOLD if (near and t > 12.0) else CYAN
             d.rectangle([X(lo) + 2, yb - h, X(hi) - 2, yb], fill=col + (int(235 * a0),))
         d.line([(x0, yb), (x1, yb)], fill=INK2 + (int(255 * a0),), width=2)
         for v in range(1, 6):
             text(d, (X(v), yb + 36), f"{v}", 26, INK2, a0, anchor="mm")
         text(d, (X(5.0) + 22, yb + 36), "+", 26, INK2, a0, anchor="mm")
-        ap = ST.fade(t, 2.5, 1e9, 0.5, 0.5)
+        ap = ST.fade(t, 3.0, 1e9, 0.5, 0.5)
         d.line([(X(PI), yb - ht - 40), (X(PI), yb)], fill=GOLD + (int(255 * ap),), width=4)
         text(d, (X(PI), yb - ht - 70), "π", 44, GOLD, ap, "Bold", anchor="mm")
-        am = ST.fade(t, 4.0, 1e9, 0.5, 0.5)
+        am = ST.fade(t, 5.0, 1e9, 0.5, 0.5)
         r = self.A["ratio_of_totals"]
         d.line([(X(r), yb - ht - 10), (X(r), yb)], fill=INK + (int(220 * am),), width=3)
         text(d, (X(r) + 16, yb - ht - 30), f"ALL TOGETHER {r:.2f}", 26, INK, am, "Bold", anchor="lm")
         text(d, (X(r) + 16, yb - ht + 4), f"median {self.A['median']:.2f}, average {self.A['mean']:.2f}", 22, INK2, am, anchor="lm")
         p25, p75 = self.A["percentiles"]["25"], self.A["percentiles"]["75"]
-        aq = ST.fade(t, 5.5, 1e9, 0.5, 0.5)
+        aq = ST.fade(t, 8.5, 1e9, 0.5, 0.5)
         d.line([(X(p25), yb + 70), (X(p75), yb + 70)], fill=CYAN + (int(255 * aq),), width=6)
         text(d, ((X(p25) + X(p75)) / 2, yb + 100), f"half of all rivers: {p25:.1f} to {p75:.1f}", 24, CYAN, aq, anchor="mm")
-        an = ST.fade(t, 7.5, 1e9, 0.5, 0.5)
+        an = ST.fade(t, 12.0, 1e9, 0.5, 0.5)
         text(d, (X(PI) + 30, yb - ht + 60), f"{self.A['n_near']} rivers", 34, GOLD, an, "Bold")
         text(d, (X(PI) + 30, yb - ht + 104), "within 0.2 of π", 26, GOLD, an)
         return np.asarray(im)
@@ -447,7 +448,7 @@ class Verdict(Section):
 class Common(Section):
     """four short charts: flatness, lowness, two routes to pi, where"""
     name = "common"
-    PARTS = [("flat", 9.0), ("low", 7.0), ("routes", 11.0), ("where", 10.0)]
+    PARTS = [("flat", 11.0), ("low", 10.0), ("routes", 14.0), ("where", 14.0)]
 
     def __init__(self):
         self.dur = sum(d for _, d in self.PARTS)
@@ -605,8 +606,8 @@ def land_mask(w, h):
 class Near(Section):
     """all 1,000 dim, the 36 nearest pi in gold; then five of them up close"""
     name = "near"
-    INTRO = 7.0
-    SPOT = 5.6
+    INTRO = 8.5
+    SPOT = 7.5
     PICKS = [("Brahmaputra", "The nearest to π of all 1,000. Mostly big bends:", "east behind the Himalayas, then south to the sea."),
              ("Lachlan", "Most of its extra length is in meanders,", "across the flat plains of New South Wales."),
              ("Messoyakha", "Meanders across the flat", "Siberian tundra to the Arctic Ocean."),
@@ -723,7 +724,8 @@ def loop_arrows(d, cx, cy, rx, ry, phase, col, a, n=6, cw=True):
 
 
 class Einstein(Section):
-    name, dur = "einstein", 21.0
+    name, dur = "einstein", 30.0
+    T2 = 14.0                                     # the river bend
 
     def __init__(self):
         rng = np.random.default_rng(5)
@@ -733,13 +735,13 @@ class Einstein(Section):
     def frame(self, t):
         im = panel_bg()
         d = ImageDraw.Draw(im, "RGBA")
-        a1 = ST.fade(t, 0.0, 9.6, 0.5, 0.5)
-        a2 = ST.fade(t, 9.6, self.dur, 0.5, 0.5)
+        a1 = ST.fade(t, 0.0, self.T2, 0.5, 0.5)
+        a2 = ST.fade(t, self.T2, self.dur, 0.5, 0.5)
         text(d, (W / 2, 100), "1926: Albert Einstein, on tea leaves and rivers", 44, INK, ST.fade(t, 0.2, self.dur, 0.5, 0.5), "Bold", anchor="mm")
         if a1 > 0:
             self.teacup(d, t, a1)
         if a2 > 0:
-            self.bend(d, t - 9.6, a2)
+            self.bend(d, t - self.T2, a2)
         return np.asarray(im)
 
     def teacup(self, d, t, a):
@@ -777,7 +779,7 @@ class Einstein(Section):
         text(d, ((x0 + x1) / 2, yb + 50), "from the side", 22, MUTED, a, anchor="mm")
         ST.caption(d, [("Stir a cup of tea: the leaves end up in the middle, not at the rim.", 32, INK, "SemiBold"),
                        ("Friction slows the swirl at the bottom, and the water there drifts inwards, carrying them.", 28, INK2, "SemiBold")],
-                   ST.fade(t, 0.8, 9.4, 0.5, 0.4))
+                   ST.fade(t, 0.8, 13.6, 0.5, 0.4))
 
     def bend(self, d, t, a):
         al = int(255 * a)
@@ -812,7 +814,7 @@ class Einstein(Section):
         text(d, (x1, yb + 50), "outer", 22, MUTED, a, anchor="ra")
         text(d, ((x0 + x1) / 2, yb + 90), "across the bend", 22, MUTED, a, anchor="mm")
         ST.caption(d, [("In a river bend the same swirl digs the outer bank and drops sand on the inner one.", 30, INK, "SemiBold"),
-                       ("So every bend grows. Rivers meander.", 30, GOLD, "SemiBold")], ST.fade(t, 0.5, 11.0, 0.5, 0.4))
+                       ("So every bend grows. Rivers meander.", 30, GOLD, "SemiBold")], ST.fade(t, 0.5, 15.5, 0.5, 0.4))
         text(d, (W - 60, H - 40), "A. Einstein, Die Naturwissenschaften 14, 223 (1926)", 20, MUTED, a, anchor="rm")
 
 
@@ -824,7 +826,7 @@ def meander_run():
 
 
 class Stolum(Section):
-    name, dur = "stolum", 26.0
+    name, dur = "stolum", 36.0
     T0 = 1.0                                      # the river starts moving
 
     def __init__(self):
@@ -888,10 +890,10 @@ class Stolum(Section):
             d.line(list(zip(xs, [Y(v) for v in np.clip(S, 1, 4.5)])), fill=CYAN + (al,), width=3)
         text(d, (x0, yt - 40), "LENGTH ÷ STRAIGHT LINE", 20, MUTED, a)
         text(d, (x0 + 300, yt - 50), f"{R['S'][f]:.2f}", 40, CYAN, a, "Bold")
-        caps = [(0.5, 8.0, "Every bend grows, faster where it is sharpest."),
-                (8.3, 16.0, "When two loops touch, the river cuts through, leaving an oxbow lake."),
-                (16.3, 21.2, "The ratio climbs, collapses at each cutoff, and climbs again."),
-                (21.4, self.dur, f"Stølum's model river hovered around π. This one averages {self.mean:.1f}.")]
+        caps = [(0.5, 7.5, "Every bend grows, faster where it is sharpest."),
+                (7.8, 15.8, "When two loops touch, the river cuts through, leaving an oxbow lake."),
+                (16.1, 23.6, "The ratio climbs, collapses at each cutoff, and climbs again."),
+                (23.9, self.dur, f"Stølum's model river hovered around π. This one averages {self.mean:.1f}.")]
         for c0, c1, s_ in caps:
             ca = ST.fade(t, c0, c1, 0.5, 0.4)
             if ca > 0:
@@ -903,7 +905,7 @@ class Stolum(Section):
 # ================================================================== the cold open: one river, measured
 class Open(Section):
     """a meandering river (from the model) drawn, measured along its bends and in a straight line, and divided"""
-    name, dur = "open", 15.0
+    name, dur = "open", 22.0
     DRAW0, DRAW1, LINE0, LINE1, DIV = 0.6, 5.6, 6.0, 7.6, 8.4
 
     def __init__(self):
@@ -948,8 +950,8 @@ class Open(Section):
             text(d, (1400, y + 66), "=", 60, INK2, b, "Bold", anchor="mm")
             text(d, (1460, y + 30), f"{self.S:.2f}", 72, GOLD, b, "Bold")
         ST.caption(d, [("Some say that for rivers, on average, this ratio is π.", 36, INK, "SemiBold")],
-                   ST.fade(t, 9.6, 12.8, 0.5, 0.4), y=60)
-        at = ST.fade(t, 12.6, 1e9, 0.6, 0.6)
+                   ST.fade(t, 10.8, 16.6, 0.5, 0.4), y=60)
+        at = ST.fade(t, 16.4, 1e9, 0.6, 0.6)
         if at > 0:
             d.rectangle([0, 0, W, H], fill=BG + (int(200 * at),))
             text(d, (W / 2, H / 2 - 30), "Do rivers wind by π?", 96, INK, at, "Bold", anchor="mm")
@@ -959,21 +961,21 @@ class Open(Section):
 
 # ================================================================== the end
 class End(Section):
-    name, dur = "end", 19.0
+    name, dur = "end", 28.0
 
     def frame(self, t):
         A = analysis()
         im = panel_bg()
         d = ImageDraw.Draw(im, "RGBA")
         lines = [(0.3, f"The 1,000 longest rivers: {A['ratio_of_totals']:.2f}, not π.", 46, INK, "Bold"),
-                 (2.8, "Stølum's π needs flat ground and endless time.", 34, INK2, "SemiBold"),
-                 (5.4, "Real rivers have mountains to get round, rock to cut and a sea to reach.", 34, INK2, "SemiBold"),
-                 (8.2, "The flatter the land, the closer they come: flat Arctic tundra rivers, about 2.7.", 34, INK2, "SemiBold"),
-                 (10.8, "The nearest of all 1,000: the Brahmaputra, 3.16, by going round the Himalayas.", 34, GOLD, "SemiBold")]
+                 (3.3, "Stølum's π needs flat ground and endless time.", 34, INK2, "SemiBold"),
+                 (6.8, "Real rivers have mountains to get round, rock to cut and a sea to reach.", 34, INK2, "SemiBold"),
+                 (10.3, "The flatter the land, the closer they come: flat Arctic tundra rivers, about 2.7.", 34, INK2, "SemiBold"),
+                 (14.3, "The nearest of all 1,000: the Brahmaputra, 3.16, by going round the Himalayas.", 34, GOLD, "SemiBold")]
         for k, (t0, s_, sz, col, wt) in enumerate(lines):
-            a = ST.fade(t, t0, 15.0, 0.6, 0.6)
+            a = ST.fade(t, t0, 20.5, 0.6, 0.6)
             text(d, (W / 2, 300 + k * 90 + (30 if k >= 1 else 0)), s_, sz, col, a, wt, anchor="mm")
-        ac = ST.fade(t, 15.3, 1e9, 0.6, 0.6)
+        ac = ST.fade(t, 20.8, 1e9, 0.6, 0.6)
         credits = ["Rivers: OpenStreetMap contributors (ODbL), via Overture Maps.  Elevation: Terrarium tiles (Mapzen, AWS).",
                    "Countries and coasts: Natural Earth.  Method, data and every river: see the description."]
         for k, c in enumerate(credits):

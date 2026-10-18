@@ -1,6 +1,6 @@
 # YouTube copy: do rivers wind by π?
 
-Upload `rivers_pi.mp4` (3:59, 1920×1080, 30 fps, caption-only, −14 LUFS). The data for every river is in
+Upload `rivers_pi.mp4` (5:20, 1920×1080, 30 fps, caption-only, −14 LUFS). The data for every river is in
 `rivers_1000.json`, and the statistics are in `rivers_pi_stats.json`.
 
 **A/B/C test.**
@@ -26,13 +26,13 @@ Divide a river's length by the straight-line distance from its source to its mou
 The music is built from π: its digits, 3-1-4-1-5-9-2-6…, are the melody, played as steps up a pentatonic scale.
 
 0:00 Is every river π?
-0:14 1926: Einstein's tea leaves
-0:35 1996: Stølum's meandering river
-1:00 The 1,000 longest rivers
-2:15 The verdict
-2:28 The rivers nearest π
-3:03 What they have in common
-3:40 So, π?
+0:21 1926: Einstein's tea leaves
+0:51 1996: Stølum's meandering river
+1:26 The 1,000 longest rivers
+2:57 The verdict
+3:16 The rivers nearest π
+4:03 What they have in common
+4:51 So, π?
 
 How it's made: every OpenStreetMap river line (via Overture Maps), joined into river systems across lakes and gaps in the mapping. Each river's length is its main stem, the longest path from source to mouth. Elevation is from Terrarium tiles. The model river follows Howard & Knutson (1984), the model Stølum used; ours averages 2.7.
 Method, sources, caveats and every river: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/rivers/ACCURACY.md
@@ -46,13 +46,13 @@ Music: an original theme, synthesized for this video (no samples).
 
 ```
 0:00 Is every river π?
-0:14 1926: Einstein's tea leaves
-0:35 1996: Stølum's meandering river
-1:00 The 1,000 longest rivers
-2:15 The verdict
-2:28 The rivers nearest π
-3:03 What they have in common
-3:40 So, π?
+0:21 1926: Einstein's tea leaves
+0:51 1996: Stølum's meandering river
+1:26 The 1,000 longest rivers
+2:57 The verdict
+3:16 The rivers nearest π
+4:03 What they have in common
+4:51 So, π?
 ```
 
 **Tags:** pi, rivers, sinuosity, meanders, Einstein, tea leaf paradox, Stølum, river length, Brahmaputra,
