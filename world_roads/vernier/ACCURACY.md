@@ -67,9 +67,12 @@ The description therefore asks for full screen at 1080p or higher.
 **Why the upload master is CRF 24.** The same test was run on masters made at HEVC CRF 26 and 28,
 which come to about 90 MB and 56 MB. In their 1080p H.264 re-encodes at 2.5 Mb/s, the ⅛ px step
 sometimes grew to 0.3–0.5 px. That would show a step bigger than the one the film names. With the
-CRF 24 master it stayed near 0.1–0.2 px in every run. The 56 MB CRF 28 copy is kept in the repository
-for reference (`media/vernier/vernier_small.mp4`). Measured in the file itself, its plates read 0.505,
-0.251 and 0.137 px.
+CRF 24 master it stayed near 0.1–0.2 px in every run.
+
+**The final files.** Measured in the files themselves, against plate 4:
+* the 150 MB CRF 24 master reads 0.516, 0.240 and 0.143 px;
+* the 53 MB CRF 28 copy kept in the repository for reference (`media/vernier/vernier_small.mp4`) reads
+  0.511, 0.230 and 0.157 px.
 
 **A still frame.** In a still, grain-free test frame, x264 at 2.5 Mb/s gave the step-free line a false
 step of about 0.3 px. The film never holds such a frame: its moving grain keeps the encoder refreshing

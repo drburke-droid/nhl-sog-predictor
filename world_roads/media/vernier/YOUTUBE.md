@@ -4,17 +4,17 @@ This remake of the hyperacuity video has no quiz rounds. It shows the step, expl
 be able to see it, and lets you see it anyway.
 
 **Upload `vernier_4k_master.mp4`:**
-* 6:19, 3840×2160, 30 fps, HEVC CRF 24, MASTER_MB MB;
+* 6:19, 3840×2160, 30 fps, HEVC CRF 24, 150 MB;
 * on-screen captions, no narration;
 * felt-piano score at −16 LUFS.
 
 The master is sent separately because it is over GitHub's 100 MB file limit. To rebuild it, run
 `python assemble.py` in `world_roads/vernier`. Its SHA-256 is in `SHA256.txt`.
 
-`vernier_small.mp4` (56 MB, HEVC CRF 28) is the same film, kept in the repository for reference:
+`vernier_small.mp4` (53 MB, HEVC CRF 28) is the same film, kept in the repository for reference:
 * it looks the same at 1:1;
-* measured in the file itself, the plates read 0.505, 0.251 and 0.137 px against the step-free plate 4
-  (drawn: ½, ¼, ⅛).
+* measured in the file itself, the plates read 0.511, 0.230 and 0.157 px against the step-free plate 4
+  (drawn: ½, ¼, ⅛). The master reads 0.516, 0.240 and 0.143 px.
 
 Don't upload `vernier_small.mp4`. When it was re-encoded to 1080p H.264 at a low bitrate, the ⅛ px step
 sometimes grew to about 0.4 px. The CRF 24 master held it near the true size (see
