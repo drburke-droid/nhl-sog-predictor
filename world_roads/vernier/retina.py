@@ -98,10 +98,24 @@ FIELD_CX, FIELD_CY, FIELD_R = 0.5, 0.455, 0.425          # the microscope's fiel
 Q = 2                                                      # the micrograph is worked at half resolution
 
 
-def mosaic(scope, y0=0.0, step=0.0, lit=1.0, band=0.0, xm=0.0, field=True, glow=None, tint=None, centre=None, radius=None):
+HALF = LINE_PX * PX_ARCSEC / 60 / CONE_ARCMIN / 2         # half the printed line's width on the retina (cone spacings)
+ROW = math.sqrt(3) / 2                                     # spacing between rows of cones
+
+
+def sharp_at(d, aa=0.0):
+    """the printed line's image with no blur at all: light (0..1) at distance d from its middle"""
+    inside = np.clip((HALF - np.abs(d)) / aa + 0.5, 0, 1) if aa > 0 else (np.abs(d) <= HALF).astype(np.float64)
+    return 1 - 0.94 * inside
+
+
+def mosaic(scope, y0=0.0, step=0.0, lit=1.0, band=0.0, xm=0.0, field=True, glow=None, tint=None, centre=None, radius=None,
+           sharp=0.0, binary=0.0):
     """the micrograph, uint8 RGB (H, W, 3).
     lit: 0 = cones shown plain; 1 = each cone shaded by the light its centre gets from the line's image.
     band: opacity of the line's image itself, drawn continuous over the cones.
+    sharp: 0 = the line's image as the eye really forms it (blurred); 1 = with no blur at all.
+    binary: 0 = each cone reports how much light it gets; 1 = "pixel logic": dark if the line covers its row's
+    centre line, light if not (a cone's own centre sits within 0.05 of its row's, too little to see).
     glow: optional per-cone highlight (array over the lattice, 0..1) in red pencil colour.
     centre: where on screen (4K px) the scope's centre sits (default: the middle of the field);
     radius: the field's radius (4K px).
@@ -115,6 +129,9 @@ def mosaic(scope, y0=0.0, step=0.0, lit=1.0, band=0.0, xm=0.0, field=True, glow=
     gap = np.array([44, 34, 38], np.float32)
     d = p[idx, 1] - line_y(p[idx, 0], y0, step, xm)
     L = light_at(d)
+    if binary > 0:
+        v_row = np.round(p[idx, 1] / ROW) * ROW
+        L = L * (1 - binary) + sharp_at(v_row - line_y(p[idx, 0], y0, step, xm)) * binary
     plain = np.array([190, 160, 160], np.float32)
     bright = np.array([246, 218, 186], np.float32)
     dim = np.array([66, 50, 52], np.float32)
@@ -135,8 +152,9 @@ def mosaic(scope, y0=0.0, step=0.0, lit=1.0, band=0.0, xm=0.0, field=True, glow=
     if band > 0:
         v = (np.arange(h, dtype=np.float32) - ccy) / k + scope.v
         xs = (np.arange(w, dtype=np.float32) - ccx) / k + scope.u
-        left = light_at(v - y0).astype(np.float32)
-        right = light_at(v - y0 - step).astype(np.float32)
+        prof = lambda dd: (light_at(dd) * (1 - sharp) + sharp_at(dd, 1.0 / k) * sharp).astype(np.float32)
+        left = prof(v - y0)
+        right = prof(v - y0 - step)
         Lm = np.where(xs[None, :] < xm, left[:, None], right[:, None])
         img *= (1 - band * (1 - Lm) * 0.9)[..., None]
     img += photo_grain()

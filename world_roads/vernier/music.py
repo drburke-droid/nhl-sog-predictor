@@ -122,14 +122,14 @@ def plan(O, total):
             rows.append((t0 + k * step, c, dens))
 
     seq(0.0, O["eye"] + 10.0, ["F", "Bb"], 0.16)
-    seq(O["retina"], O["retina"] + 40.5, ["Dm", "Bb", "F/A", "Gm", "Am"], 0.24)
-    seq(O["retina"] + 40.5, O["back"] + 6.0, ["Csus"], 0.06)            # "you shouldn't be able to see it"
+    seq(O["retina"], O["retina"] + 49.0, ["Dm", "Bb", "F/A", "Gm", "Am", "Bb"], 0.24)
+    seq(O["retina"] + 49.0, O["back"] + 6.0, ["Csus"], 0.06)            # "you shouldn't be able to see it"
     seq(O["back"] + 6.0, O["back"] + 14.0, ["C"], 0.14)
     seq(O["back"] + 14.0, O["smaller"], ["F"], 0.12)                     # "you can see it, can't you?"
     seq(O["smaller"], O["how"] - 0.5, ["Am", "Bb", "F", "C", "Am", "Bb", "Dm", "Csus"], 0.26)
-    seq(O["how"], O["how"] + 44.0, ["Dm", "Bb", "F", "C", "Dm", "Gm"], 0.40)
-    seq(O["how"] + 44.0, O["how"] + 57.0, ["Am", "Bb", "Csus"], 0.46)
-    seq(O["how"] + 57.0, O["screen"], ["F"], 0.20)                       # "each cone is coarse..."
+    seq(O["how"], O["how"] + 49.0, ["Dm", "Bb", "F", "C", "Dm", "Gm"], 0.40)
+    seq(O["how"] + 49.0, O["how"] + 62.0, ["Am", "Bb", "Csus"], 0.46)
+    seq(O["how"] + 62.0, O["screen"], ["F"], 0.20)                       # "each cone is coarse..."
     seq(O["screen"], O["numbers"], ["Bb", "F/A", "Gm", "C"], 0.30)
     seq(O["numbers"], O["uses"], ["Am", "Dm", "Bb", "Csus"], 0.26)
     seq(O["uses"], O["close"], ["F", "Am", "Bb", "Gm", "Dm", "Bb", "Csus"], 0.28)

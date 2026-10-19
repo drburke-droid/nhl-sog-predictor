@@ -112,13 +112,32 @@ the card.
   pattern reads clearly on screen. Cone apertures, colour types (L, M and S) and noise are left out.
 * **Overlay:** the faint continuous band over the cones is the line's image itself, for reference.
 
+**The paradox, in "pixel logic" (the retina section).** This is a deliberate hypothetical, stated on
+screen as "Suppose each cone works like a pixel":
+* the line's image has **no blur**: its sharp edges are 2.7 cone spacings apart;
+* each cone is **on or off**: dark if the line covers its centre, light if it doesn't.
+
+The line is placed so that the ½-pixel step (0.68 cone spacings) crosses no row of cone centres. The
+rows are 0.87 spacings apart, so this is possible, and the margin is 0.024 spacings. The same three rows
+are then dark on both sides of the step.
+* **What decides a cone.** For this verdict a cone counts by its row's centre line. Each cone's own
+  centre sits within about 0.05 spacings of it (the lattice jitter), too little to see.
+* **Not every alignment hides the step.** Placed a little differently, the same step would flip a whole
+  row on one side. Pixel logic would then show a full-cone step, also wrong.
+* **The on-off screen** beside it uses the same rule: a screen row is off if the line covers its centre.
+  The line is placed so both halves land on the same three rows, with a margin of 0.023 px.
+
+The "How?" section then lets the real blur in: the sharp image softens into the line spread function's
+image, and the cones go from on-off to graded readings.
+
 **"A cone is a pixel of your eye."** This is an analogy for sampling. Each cone reports one number, the
 light caught over its small aperture. It does not report where inside itself the light fell.
 
-**The TV close-up.** An illustration of RGB subpixel stripes, one TV pixel to one cone, not a
-particular screen.
-* Each row's brightness is 1 minus the share of the row the line covers. The percentages on screen
-  are that share, in linear light.
+**The TV close-ups.** Illustrations of RGB subpixel stripes, one TV pixel to one cone, not a particular
+screen.
+* **The on-off screen** in the retina section is a hypothetical, as above.
+* **The real screen** in "Screens…": each row's brightness is 1 minus the share of the row the line
+  covers. The percentages on screen are that share, in linear light.
 * The stripe intensities are scaled directly, not through the display's gamma, so the dimmed rows stay
   visible.
 

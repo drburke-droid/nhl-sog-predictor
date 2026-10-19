@@ -4,7 +4,7 @@ This remake of the hyperacuity video has no quiz rounds. It shows the step, expl
 be able to see it, and lets you see it anyway.
 
 **Upload `vernier_4k_master.mp4`:**
-* 6:05, 3840×2160, 30 fps, HEVC CRF 24, 147 MB;
+* 6:19, 3840×2160, 30 fps, HEVC CRF 24, MASTER_MB MB;
 * on-screen captions, no narration;
 * felt-piano score at −16 LUFS.
 
@@ -37,25 +37,25 @@ sometimes grew to about 0.4 px. The CRF 24 master held it near the true size (se
 **Description**
 
 ```
-There's a step in the middle of a line, half a pixel high. On your retina it's narrower than a single cone, the "pixels" your eye sees with. By that logic you shouldn't be able to see it. You can.
+There's a step in the middle of a line, half a pixel high. On your retina it's narrower than a single cone, the "pixels" your eye sees with. If each cone simply switched on or off like a pixel, the step would slip between the rows and the same cones would be dark on both sides of it. By that logic you shouldn't be able to see it. You can.
 
 Then we make it smaller: a quarter of a pixel (about a third of a cone), an eighth (about a sixth of a cone), and a line with no step at all, for comparison.
 
-How? Your eye blurs the line a little, so its shadow falls across several cones. Each cone reports how much light it gets, and the pattern of readings shifts when the line moves, even by a fraction of a cone. Your brain reads every column of cones along the line and pools the answers. Gerald Westheimer named this hyperacuity in 1975. Most people can see a step of 5 to 10 arcseconds, a sixth to a third of the gap between two cones.
+How? Your eye isn't perfectly sharp: it blurs the line a little, so its shadow falls across several rows of cones. And a cone isn't an on-off pixel: it reports how much light it gets. The pattern of readings shifts when the line moves, even by a fraction of a cone. Your brain reads every column of cones along the line and pools the answers. Gerald Westheimer named this hyperacuity in 1975. Most people can see a step of 5 to 10 arcseconds, a sixth to a third of the gap between two cones.
 
 It's why a vernier scale works, and why eye doctors use Amsler grids. If straight lines ever look bent or wavy to you, see your optometrist.
 
 ▶ Watch full screen, at 1080p or higher. The steps are drawn to a fraction of a pixel; lower quality settings and small players blur them away. Sizes on the retina assume a phone held at reading distance.
 
 0:00 A step you shouldn't see
-0:22 The line on your retina
-1:11 Back to real size
-1:34 Smaller and smaller
-2:42 How you see it
-3:47 How screens draw half a pixel
-4:19 Hyperacuity, in numbers
-4:54 Vernier scales and Amsler grids
-5:46 How small you saw
+0:22 If your cones were pixels
+1:20 Back to real size
+1:43 Smaller and smaller
+2:51 How you see it
+4:01 How screens draw half a pixel
+4:33 Hyperacuity, in numbers
+5:08 Vernier scales and Amsler grids
+6:00 How small you saw
 
 How it's made: every frame is rendered in code. The lines are drawn with exact pixel coverage in linear light, and we tested that the steps survive YouTube's compression. The retina is a simulation: a cone mosaic 0.5 arcminutes apart, with the eye's own blur (Westheimer's line spread function). Method, sources and the compression test: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/vernier/ACCURACY.md
 
@@ -68,14 +68,14 @@ Music: an original felt-piano score, synthesized for this video (no samples).
 
 ```
 0:00 A step you shouldn't see
-0:22 The line on your retina
-1:11 Back to real size
-1:34 Smaller and smaller
-2:42 How you see it
-3:47 How screens draw half a pixel
-4:19 Hyperacuity, in numbers
-4:54 Vernier scales and Amsler grids
-5:46 How small you saw
+0:22 If your cones were pixels
+1:20 Back to real size
+1:43 Smaller and smaller
+2:51 How you see it
+4:01 How screens draw half a pixel
+4:33 Hyperacuity, in numbers
+5:08 Vernier scales and Amsler grids
+6:00 How small you saw
 ```
 
 **Tags:** hyperacuity, vernier acuity, vision, eyes, retina, cones, fovea, pixels, sub-pixel,

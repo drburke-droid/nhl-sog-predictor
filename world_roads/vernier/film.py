@@ -216,59 +216,74 @@ def cone_um(c):
     return c * R.CONE_ARCMIN * R.UM_PER_ARCMIN
 
 
+Y_PIX = -0.3416                  # the line's middle (left of the step) on the retina, placed so the step crosses no row
+TV_Y0 = 0.7934                   # the same for the screen: the top of the line, in screen rows
+
+
 class Retina(L.Section):
-    name, dur = "retina", 50.0
-    SPLIT0, SPLIT1 = 29.0, 31.5
+    """the paradox, in pixel logic: the line's image with no blur, and each cone dark only if the line covers
+    its centre. The step slips between the rows, so the same cones are dark on both sides."""
+    name, dur = "retina", 59.0
+    SPLIT0, SPLIT1 = 37.4, 39.9
 
     def frame(self, t):
-        sc = R.Scope(0.0, STEP_HALF / 2, K_RET)
-        band = smooth((t - 0.8) / 2.0)
-        lit = smooth((t - 7.0) / 2.5)
-        bnd = band * (1 - 0.7 * lit)
+        sc = R.Scope(0.0, 0.0, K_RET)
+        band = 0.35 * smooth((t - 0.8) / 2.0)
+        lit = smooth((t - 9.4) / 2.0)
         u = smooth((t - self.SPLIT0) / (self.SPLIT1 - self.SPLIT0))
+        kw = dict(y0=Y_PIX, step=STEP_HALF, lit=lit, band=band, sharp=1.0, binary=1.0)
         if u <= 0:
-            fr = R.mosaic(sc, y0=0.0, step=STEP_HALF, lit=lit, band=bnd)
+            fr = R.mosaic(sc, **kw)
         else:
             cx = W * (0.5 - 0.21 * u)
             rad = H * (R.FIELD_R - 0.085 * u)
             k = K_RET * (1 - 0.12 * u)
-            left = R.mosaic(R.Scope(0.0, STEP_HALF / 2, k), y0=0.0, step=STEP_HALF, lit=lit, band=bnd,
-                            centre=(cx, H * R.FIELD_CY), radius=rad)
-            right = T.macro(0.0, STEP_HALF / 2 + 1.365, k, (W * 0.71, H * R.FIELD_CY), H * 0.34, y0=0.0, th=2.73, step=STEP_HALF)
+            left = R.mosaic(R.Scope(0.0, 0.0, k), centre=(cx, H * R.FIELD_CY), radius=rad, **kw)
+            right = T.macro(0.0, TV_Y0 + 1.365 + STEP_HALF / 2, k, (W * 0.71, H * R.FIELD_CY), H * 0.34, y0=TV_Y0, th=2.73,
+                            step=STEP_HALF, aa=False)
             # the screen's field fades in over the retina's, which slides left out of its way
             _, inside = R.field_mask(W * 0.71, H * R.FIELD_CY, H * 0.34)
             a = (inside * u)[..., None]
             fr = np.clip(left * (1 - a) + right * a, 0, 255).astype(np.uint8)
-        # red pencil: the middle of the line, with its step, and one cone traced beside it
-        a_b = fade(t, 16.5, self.SPLIT0 + 0.3, 0.3, 0.6)
+        # red pencil: the middle of the line with its step, one cone traced beside it, then the dark rows either side
+        a_b = fade(t, 17.6, self.SPLIT0 + 0.3, 0.3, 0.6)
         P = lambda u_, v_: (float(R.screen_x(sc, u_)), float(R.screen_y(sc, v_)))
+        y_l, y_r = Y_PIX, Y_PIX + STEP_HALF
         if a_b > 0:
-            trace = [P(-6.5, 0.0), P(-0.02, 0.0), P(0.02, STEP_HALF), P(6.5, STEP_HALF)]
+            trace = [P(-6.5, y_l), P(-0.02, y_l), P(0.02, y_r), P(6.5, y_r)]
             trace = np.concatenate([np.linspace(trace[i], trace[i + 1], 40) for i in range(3)])
-            fr = pencil(fr, [(trace, smooth((t - 16.5) / 1.6), 51),
-                             ([P(*q) for q in np.vstack([MARK_CELL, MARK_CELL[:1]])], smooth((t - 19.6) / 1.0), 53)],
+            rows = (-1.4, 1.4)                                    # the three dark rows of cones
+            fr = pencil(fr, [(trace, smooth((t - 17.6) / 1.6), 51),
+                             ([P(*q) for q in np.vstack([MARK_CELL, MARK_CELL[:1]])], smooth((t - 20.7) / 1.0), 53),
+                             (pen_bracket(P(-6.7, 0)[0], P(0, rows[0])[1], P(0, rows[1])[1], side=-1, tick=30), smooth((t - 28.4) / 0.8), 55),
+                             (pen_bracket(P(6.7, 0)[0], P(0, rows[0])[1], P(0, rows[1])[1], side=1, tick=30), smooth((t - 29.2) / 0.8), 56)],
                         col=(222, 84, 62), a=a_b, width=3.0)
         im = Image.fromarray(fr)
         if a_b > 0:
-            x_, y_ = P(0.3, STEP_HALF + 0.22)
-            note(im, (x_ / S, y_ / S), f"the step: {cone_um(STEP_HALF):.1f} µm", a_b * smooth((t - 17.6) / 0.6),
+            x_, y_ = P(0.3, y_r + 0.22)
+            note(im, (x_ / S, y_ / S), f"the step: {cone_um(STEP_HALF):.1f} µm", a_b * smooth((t - 18.7) / 0.6),
                  size=44, col=(236, 112, 90))
             x_, y_ = P(MARK_CELL[:, 0].max() + 0.25, MARK_P[1])
-            note(im, (x_ / S, y_ / S), f"one cone: {cone_um(1.0):.1f} µm", a_b * smooth((t - 20.3) / 0.6),
+            note(im, (x_ / S, y_ / S), f"one cone: {cone_um(1.0):.1f} µm", a_b * smooth((t - 21.4) / 0.6),
                  size=44, col=(176, 52, 38), anchor="lm")
+            for side, t0, an in ((-1, 29.0, "rm"), (1, 29.8, "lm")):
+                x_, y_ = P(side * 6.95, 0.0)
+                note(im, (x_ / S, y_ / S), "3 dark rows", a_b * smooth((t - t0) / 0.6), size=40, col=(236, 112, 90), anchor=an)
         if u > 0.5:
             d = ImageDraw.Draw(im)
             a = smooth((u - 0.5) / 0.5) * fade(t, 0, self.dur, 0, 0.6)
             L.text(d, (1920 * 0.29, 1080 * 0.835), "your retina, up close", 32, CREAM, a, kind="italic", anchor="mm")
-            L.text(d, (1920 * 0.71, 1080 * 0.835), "a TV screen, up close", 32, CREAM, a, kind="italic", anchor="mm")
-        caps = [(0.6, 7.6, ["This is how that line lands on your retina."]),
-                (8.2, 16.0, ["The light falls on cones, packed in a honeycomb.", "Each one reports a single brightness."]),
-                (16.6, 28.4, ["The step is narrower than one cone."]),
-                (31.8, 40.6, ["A cone is a pixel of your eye, like a pixel on a TV."]),
-                (41.0, 49.4, ["The step is smaller than a pixel.", "By that logic, you shouldn’t be able to see it."])]
+            L.text(d, (1920 * 0.71, 1080 * 0.835), "a screen, up close", 32, CREAM, a, kind="italic", anchor="mm")
+        caps = [(0.6, 8.2, ["This is that line, landing on the cones at the centre of your retina."]),
+                (8.8, 16.8, ["Suppose each cone works like a pixel:", "dark if the line covers its centre, light if it doesn’t."]),
+                (17.4, 26.8, ["The step is narrower than one cone."]),
+                (27.4, 36.8, ["So it slips between the rows of cones.", "On both sides of the step, the very same cones are dark."]),
+                (40.3, 48.8, ["A cone is a pixel of your eye. A screen that only switches pixels",
+                              "on or off can’t draw this step either: both halves land on the same rows."]),
+                (49.4, 58.4, ["The step is smaller than a pixel.", "By that logic, you shouldn’t be able to see it."])]
         for c0, c1, lines in caps:
             caption(im, lines, fade(t, c0, c1, 0.6, 0.6), col=CREAM, y=1000, size=38)
-        foot = fade(t, 17.0, 28.4, 0.6, 0.6)
+        foot = fade(t, 18.0, 36.8, 0.6, 0.6)
         if foot > 0:
             L.text(ImageDraw.Draw(im), (1780, 1050), "Sizes for a phone held at reading distance.", 22, (150, 140, 130), foot,
                    kind="italic", anchor="rm")
@@ -297,8 +312,8 @@ class Back(L.Section):
             # the micrograph, its dark surround giving way to the card, then dissolving into it
             u = ease(t / self.X1)
             field = (W * R.FIELD_CX, H * R.FIELD_CY, H * (R.FIELD_R + 0.1 * u))
-            img = R.mosaic(R.Scope(0.0, STEP_HALF / 2, z * self.K_PER_Z), y0=0.0, step=STEP_HALF, lit=1.0, band=0.3 * (1 - u),
-                           field=False)
+            img = R.mosaic(R.Scope(0.0, 0.0, z * self.K_PER_Z), y0=Y_PIX, step=STEP_HALF, lit=1.0, band=0.35 * (1 - u),
+                           field=False, sharp=1.0, binary=1.0)
             m, inside = R.field_mask(*field)
             w = smooth((t - 0.3) / 1.1)
             out = R.OUTSIDE * (1 - w) + d.astype(np.float32) * w
@@ -388,7 +403,9 @@ POOL_NOISE = [np.random.default_rng(500 + j).normal(0, 0.10, len(c)) for j, c in
 
 
 class How(L.Section):
-    name, dur = "how", 66.0
+    """starts where the paradox left off (no blur, cones as on-off pixels), lets the blur in, then explains"""
+    name, dur = "how", 71.0
+    T0 = 5.0                                    # the explanation's clock starts here, after the blur comes in
     MOVE0, MOVE1 = 26.0, 29.0
     POOL = 41.0
 
@@ -398,10 +415,12 @@ class How(L.Section):
         return y0, STEP_HALF * u, HOW_C[0] + (W * 0.5 - HOW_C[0]) * u
 
     def frame(self, t):
+        ta, t = t, t - self.T0
         y0, step, cx = self.state(t)
         sc = R.Scope(0.0, HOW_V, K_HOW)
-        fr = R.mosaic(sc, y0=y0, step=step, lit=1.0, band=0.35, centre=(cx, HOW_C[1]), radius=HOW_R)
-        fr = blackout(fr, 1 - smooth(t / 0.8))
+        m = smooth((ta - 3.2) / 3.0)                # the blur comes in; the cones go from on-off to graded
+        fr = R.mosaic(sc, y0=y0, step=step, lit=1.0, band=0.35, centre=(cx, HOW_C[1]), radius=HOW_R, sharp=1 - m, binary=1 - m)
+        fr = blackout(fr, 1 - smooth(ta / 0.8))
         X = lambda u: (np.asarray(u, np.float64) - sc.u) * sc.k + cx
         Y = lambda v: (np.asarray(v, np.float64) - sc.v) * sc.k + HOW_C[1]
         PX = lambda Lv: PLOT_X0 + (np.asarray(Lv) - 0.35) / 0.65 * PLOT_W
@@ -479,16 +498,18 @@ class How(L.Section):
         d = ImageDraw.Draw(im)
         for x_, y_, s_, a_, c_, an in texts:
             L.text(d, (x_, y_), s_, 38, c_, a_, kind="hand", anchor=an)
-        caps = [(1.0, 11.4, ["So how can you see it? It starts with blur.",
-                             "Your eye spreads the line’s shadow over several rows of cones."]),
-                (12.2, 23.6, ["Follow one column of cones across the line.", "Each cone reports how much light reaches it."]),
-                (24.4, 39.8, ["Now move the line down by a third of a cone.",
+        caps = [(1.0, 10.4, ["So how can you see it? First, your eye isn’t perfectly sharp:",
+                             "it blurs the line, spreading its shadow across several rows of cones."]),
+                (11.0, 16.6, ["The pencil curve: how much light reaches each height across the line."]),
+                (17.2, 28.6, ["And a cone isn’t an on-off pixel. Follow one column across the line:",
+                              "each cone reports how much light reaches it."]),
+                (29.4, 44.8, ["Now move the line down by a third of a cone.",
                               "Every reading changes a little, and the middle of the pattern moves with it."]),
-                (self.POOL + 3.0, 56.4, ["Your brain reads every column along the line and pools the answers.",
-                                         "Left and right of the step, they differ. That difference is what you saw."]),
-                (57.2, 65.4, ["Each cone is coarse. Comparing many of them is not."])]
+                (self.T0 + self.POOL + 3.0, 61.4, ["Your brain reads every column along the line and pools the answers.",
+                                                   "Left and right of the step, they differ. That difference is what you saw."]),
+                (62.2, 70.4, ["Each cone is coarse. Comparing many of them is not."])]
         for c0, c1, lines in caps:
-            caption(im, lines, fade(t, c0, c1, 0.6, 0.6), col=CREAM, y=1000, size=38)
+            caption(im, lines, fade(ta, c0, c1, 0.6, 0.6), col=CREAM, y=1000, size=38)
         return np.asarray(im)
 
 
@@ -522,7 +543,7 @@ class Screen(L.Section):
             for r, lv in zip(rows, lum):
                 yv = (self.C[1] + (r + 0.5 - self.V0) * self.K) / S
                 L.text(d, (x_, yv), f"{int(round(lv * 100))}%", 40, CREAM if 0 < lv < 1 else (150, 140, 130), a, kind="hand", anchor=an)
-        caps = [(0.8, 13.8, ["Screens play the same trick in reverse.",
+        caps = [(0.8, 13.8, ["Real screens don’t just switch pixels on or off, either.",
                              "To move a line a quarter of a pixel, they share its darkness between the rows it covers."]),
                 (15.8, 23.8, ["A half-pixel step is just a change in how bright the rows at its edges are."]),
                 (24.4, 32.4, ["That’s how this video drew steps smaller than a pixel.",

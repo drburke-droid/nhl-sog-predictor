@@ -17,9 +17,10 @@ def row_cover(rows, y0, th):
     return np.clip(np.minimum(rows + 1, y0 + th) - np.maximum(rows, y0), 0, 1)
 
 
-def macro(u0, v0, k, centre, radius, y0=0.0, th=2.73, step=0.0, xm=0.0, glow=1.0, labels=False):
+def macro(u0, v0, k, centre, radius, y0=0.0, th=2.73, step=0.0, xm=0.0, glow=1.0, labels=False, aa=True):
     """the screen up close in a round field: (u0, v0) the pixel coordinate at the field's centre, k screen px
-    per pixel. Returns uint8 (H, W, 3); outside the field is dark."""
+    per pixel. aa: rows dimmed by the share the line covers; without it, a row is off if the line covers its
+    centre and fully on if not. Returns uint8 (H, W, 3); outside the field is dark."""
     w, h = W // Q, H // Q
     kk = k / Q
     cx, cy = centre[0] / Q, centre[1] / Q
@@ -29,8 +30,13 @@ def macro(u0, v0, k, centre, radius, y0=0.0, th=2.73, step=0.0, xm=0.0, glow=1.0
     r0 = int(math.floor(v0 - (cy + kk) / kk)) - 1
     r1 = int(math.ceil(v0 + (h - cy + kk) / kk)) + 1
     rows = np.arange(r0, r1, dtype=np.float64)
-    left = 1 - row_cover(rows, y0, th)
-    right = 1 - row_cover(rows, y0 + step, th)
+    if aa:
+        left = 1 - row_cover(rows, y0, th)
+        right = 1 - row_cover(rows, y0 + step, th)
+    else:
+        mid = rows + 0.5
+        left = 1 - ((mid > y0) & (mid < y0 + th)).astype(np.float64)
+        right = 1 - ((mid > y0 + step) & (mid < y0 + step + th)).astype(np.float64)
     sw = kk / 3
     for ci in range(c0, c1):
         lum = left if ci + 0.5 < xm else right
