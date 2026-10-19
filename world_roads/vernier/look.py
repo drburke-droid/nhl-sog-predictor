@@ -471,6 +471,28 @@ class Section:
     def frame(self, t):
         raise NotImplementedError
 
+    def patch(self, t0, t1):
+        """re-render only the frames in [t0, t1) of an already rendered section, keeping the rest"""
+        path = os.path.join(OUT, f"{self.name}.mp4")
+        tmp = path + ".patch.mp4"
+        n = int(round(self.dur * FPS))
+        dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", path, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
+        enc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                                "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "15",
+                                "-pix_fmt", "yuv420p", tmp], stdin=subprocess.PIPE)
+        size = W * H * 3
+        for i in range(n):
+            buf = dec.stdout.read(size)
+            if len(buf) < size:
+                raise RuntimeError(f"{self.name}: only {i} frames in {path}")
+            if t0 <= i / FPS < t1:
+                buf = np.ascontiguousarray(self.frame(i / FPS)).tobytes()
+            enc.stdin.write(buf)
+        dec.stdout.close(); dec.wait()
+        enc.stdin.close(); enc.wait()
+        os.replace(tmp, path)
+        print(f"patched {self.name} {t0}-{t1} s", flush=True)
+
     def render(self, still=None):
         os.makedirs(OUT, exist_ok=True)
         if still is not None:

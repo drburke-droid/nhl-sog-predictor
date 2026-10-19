@@ -1,4 +1,5 @@
-"""Join the rendered sections with crossfades, lay the score under them, and write the final video.
+"""Join the rendered sections with crossfades, lay the score under them, and write the final video (HEVC:
+the desk's moving film grain makes H.264 four times larger for the same quality).
 
     python assemble.py
 """
@@ -39,7 +40,7 @@ def loudnorm(src, dst, I=-16.0, TP=-1.5, LRA=11.0):
     return m
 
 
-def main(crf=20):
+def main(crf=24):
     O, total = timeline()
     paths = [os.path.join(OUT, f"{s}.mp4") for s in SECS]
     for s, p in zip(SECS, paths):
@@ -63,7 +64,8 @@ def main(crf=20):
         fc.append(f"[{last}][{k}:v]xfade=transition=fade:duration={XF}:offset={O[SECS[k]]:.3f}[v{k}]")
         last = f"v{k}"
     args += ["-filter_complex", ";".join(fc), "-map", f"[{last}]", "-map", f"{len(SECS)}:a",
-             "-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-pix_fmt", "yuv420p", "-r", "30",
+             "-c:v", "libx265", "-preset", "medium", "-crf", str(crf), "-x265-params", "log-level=error", "-tag:v", "hvc1",
+             "-pix_fmt", "yuv420p", "-r", "30",
              "-c:a", "aac", "-b:a", "256k", "-shortest", "-movflags", "+faststart", FINAL]
     subprocess.run(args, check=True)
     json.dump({"sections": {s: O[s] for s in SECS}, "total": total}, open(os.path.join(OUT, "timeline.json"), "w"), indent=1)

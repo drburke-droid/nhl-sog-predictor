@@ -235,9 +235,10 @@ class Retina(L.Section):
             left = R.mosaic(R.Scope(0.0, STEP_HALF / 2, k), y0=0.0, step=STEP_HALF, lit=lit, band=bnd,
                             centre=(cx, H * R.FIELD_CY), radius=rad)
             right = T.macro(0.0, STEP_HALF / 2 + 1.365, k, (W * 0.71, H * R.FIELD_CY), H * 0.34, y0=0.0, th=2.73, step=STEP_HALF)
-            xx = np.arange(W)
-            fr = np.where((xx < W * 0.5)[None, :, None], left, mix(np.zeros_like(right) + 18, right, u))
-            fr = np.ascontiguousarray(fr.astype(np.uint8))
+            # the screen's field fades in over the retina's, which slides left out of its way
+            _, inside = R.field_mask(W * 0.71, H * R.FIELD_CY, H * 0.34)
+            a = (inside * u)[..., None]
+            fr = np.clip(left * (1 - a) + right * a, 0, 255).astype(np.uint8)
         # red pencil: the middle of the line, with its step, and one cone traced beside it
         a_b = fade(t, 16.5, self.SPLIT0 + 0.3, 0.3, 0.6)
         P = lambda u_, v_: (float(R.screen_x(sc, u_)), float(R.screen_y(sc, v_)))
