@@ -40,7 +40,7 @@ def loudnorm(src, dst, I=-16.0, TP=-1.5, LRA=11.0):
     return m
 
 
-def main(crf=24):
+def main(crf=28):
     O, total = timeline()
     paths = [os.path.join(OUT, f"{s}.mp4") for s in SECS]
     for s, p in zip(SECS, paths):

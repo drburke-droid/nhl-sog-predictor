@@ -4,11 +4,16 @@ This remake of the hyperacuity video has no quiz rounds. It shows the step, expl
 be able to see it, and lets you see it anyway.
 
 Upload `vernier.mp4`:
-* 6:05, 3840×2160, 30 fps;
+* 6:05, 3840×2160, 30 fps, HEVC, 56 MB;
 * on-screen captions, no narration;
 * felt-piano score at −16 LUFS.
 
 Ask viewers to watch full screen at 1080p or higher (see `../../vernier/ACCURACY.md` §2).
+
+Upload the 4K file as it is. The steps are drawn in 1080p pixels, so each one is a 2×2 block of the 4K
+frame. A 4K upload also gets YouTube's better encodes at every resolution. The file is HEVC because the
+desk's moving film grain made H.264 about four times larger. Measured in the file itself, the plates
+read 0.505, 0.251 and 0.137 px against the step-free plate 4 (drawn: ½, ¼, ⅛).
 
 **A/B/C test.**
 
