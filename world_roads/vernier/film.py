@@ -225,12 +225,13 @@ class Retina(L.Section):
     its centre. The step slips between the rows, so the same cones are dark on both sides."""
     name, dur = "retina", 59.0
     SPLIT0, SPLIT1 = 37.4, 39.9
+    UNSPLIT = 56.4                               # the screen gives way, so the zoom out starts from one field
 
     def frame(self, t):
         sc = R.Scope(0.0, 0.0, K_RET)
         band = 0.35 * smooth((t - 0.8) / 2.0)
         lit = smooth((t - 9.4) / 2.0)
-        u = smooth((t - self.SPLIT0) / (self.SPLIT1 - self.SPLIT0))
+        u = smooth((t - self.SPLIT0) / (self.SPLIT1 - self.SPLIT0)) * (1 - smooth((t - self.UNSPLIT) / 2.2))
         kw = dict(y0=Y_PIX, step=STEP_HALF, lit=lit, band=band, sharp=1.0, binary=1.0)
         if u <= 0:
             fr = R.mosaic(sc, **kw)
@@ -278,9 +279,9 @@ class Retina(L.Section):
                 (8.8, 16.8, ["Suppose each cone works like a pixel:", "dark if the line covers its centre, light if it doesn’t."]),
                 (17.4, 26.8, ["The step is narrower than one cone."]),
                 (27.4, 36.8, ["So it slips between the rows of cones.", "On both sides of the step, the very same cones are dark."]),
-                (40.3, 48.8, ["A cone is a pixel of your eye. A screen that only switches pixels",
+                (40.3, 48.0, ["A cone is a pixel of your eye. A screen that only switches pixels",
                               "on or off can’t draw this step either: both halves land on the same rows."]),
-                (49.4, 58.4, ["The step is smaller than a pixel.", "By that logic, you shouldn’t be able to see it."])]
+                (48.6, 56.4, ["The step is smaller than a pixel.", "By that logic, you shouldn’t be able to see it."])]
         for c0, c1, lines in caps:
             caption(im, lines, fade(t, c0, c1, 0.6, 0.6), col=CREAM, y=1000, size=38)
         foot = fade(t, 18.0, 36.8, 0.6, 0.6)
