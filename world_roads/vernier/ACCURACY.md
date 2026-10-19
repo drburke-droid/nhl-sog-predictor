@@ -1,0 +1,139 @@
+# Accuracy and sources: the vernier film ("You shouldn't be able to see this line")
+
+This is a remake of the hyperacuity video (`../hyperacuity`) without the quiz rounds. The facts and
+sources are the same, and that video's `ACCURACY.md` has the full reference table.
+
+## 1. The plates and what "a pixel" means
+
+**The plates.** Each plate is a white card with a black line 2 px thick and 1,080 px long. The right
+half of the line is lower than the left half by:
+
+| Plate | Step | Arcseconds* | Cone spacings* | On the retina* |
+|---|---:|---:|---:|---:|
+| 1 | ½ px | 20.5″ | 0.68 | 1.7 µm |
+| 2 | ¼ px | 10.3″ | 0.34 ("about a third") | 0.8 µm |
+| 3 | ⅛ px | 5.1″ | 0.17 ("about a sixth") | 0.4 µm |
+| 4 | none | 0 | 0 | 0 |
+
+\* Assumes a phone held at reading distance (30 cm), with the video full screen. One 1080p pixel of
+the video is then about 41″ (460 ppi phone, 1,179 px tall screen; see `../hyperacuity/ACCURACY.md` §2).
+On screen this assumption is the footnote "Sizes for a phone held at reading distance." Other screens
+give 31–95″ per pixel.
+
+**Pixels.** All sizes are in pixels of a **1080p frame**. The film is rendered at 4K, so one pixel is a
+2×2 block of the upload. Watched at 1080p, it is exactly one pixel.
+
+**Drawing.** The line is drawn with exact area coverage (each screen pixel is shaded by how much of it
+the line covers), blended in **linear light**, then encoded to sRGB. The card is printed flat:
+1. no film grain or paper texture inside the card;
+2. the camera holds still at exactly 1 unit = 1 pixel whenever you are asked to look.
+
+## 2. Does the step survive YouTube? (`codec_check.py`)
+
+The method:
+1. Two seconds of each plate, exactly as the film shows it (moving film grain on the desk around the
+   card), are encoded as the 4K master.
+2. Each is then scaled and re-encoded the ways YouTube might stream it, and decoded at six moments.
+3. The line's dark centre is measured on each side of the step, in linear light, against each column's
+   own background.
+4. Plate 4 (no step) is the control: its reading, which comes from the lamp's shading on the card, is
+   subtracted.
+
+Medians (and the range over the six frames), in 1080p pixels:
+
+CODEC_TABLE
+
+**What it means.**
+* At 4K and 1080p, the step survives.
+* Fast VP9 encodes can throw off a single frame by up to about 0.3 px. YouTube's own encodes are slower
+  and better than these settings.
+* At 720p and below, the ¼ and ⅛ plates are unreliable.
+
+The description therefore asks for full screen at 1080p or higher. In a still, grain-free test frame,
+x264 at 2.5 Mb/s gave the step-free line a false step of about 0.3 px. The film never holds such a frame:
+its moving grain keeps the encoder refreshing the card.
+
+## 3. The numbers on screen
+
+| Claim | Value used | Source |
+|---|---|---|
+| Foveal cone spacing | ≈ 0.5′ (30″), ≈ 2.4 µm at the very centre | Curcio et al. 1990, *J Comp Neurol* 292:497 |
+| Retinal scale | ≈ 291 µm per degree (4.85 µm per arcminute) | Drasdo & Fowler 1974, *Br J Ophthalmol* 58:709 |
+| Vernier thresholds | 5–10″ typical for attentive observers (2–5″ when practised) | Westheimer & McKee 1977, *Vision Res* 17:941 |
+| "Hyperacuity" | coined by Gerald Westheimer in 1975 | Westheimer 1975, *Invest Ophthalmol* 14:570 |
+| The eye's blur | line spread function L(x) = 0.47·e^(−3.3x²) + 0.53·e^(−0.93\|x\|), x in arcmin | Westheimer 1986; Wandell 1995, *Foundations of Vision* ch. 2 |
+| A pencil lead | 0.5 mm at 20 m is 5.2″ | arithmetic: 0.5 mm ÷ 20 m × 206,265″ |
+| The vernier scale | Pierre Vernier, Brussels, 1631 | *La construction, l'usage, et les propriétés du quadrant nouveau de mathématiques* |
+| The Amsler grid | Marc Amsler, 1947 | *Ophthalmologica* 114:248 |
+| Home monitors for AMD | preferential hyperacuity perimetry | FDA 510(k) K091579 (2009); Chew et al. 2014, *Ophthalmology* 121:535 |
+
+**Ranges between people.**
+* **Cone spacing:** peak foveal cone density varies about threefold between eyes, so spacing is
+  roughly 0.4–0.7′. The "one cone: 2.4 µm" label and the cone counts use the 0.5′ average.
+* **Thresholds:** these rise for untrained observers, low contrast, or viewing off-centre. That is why
+  the film says "Some people can still see this one" for plate 3, not "everyone".
+
+## 4. The drawings
+
+**The eye.** A schematic, not to scale.
+* The rays bend most at the cornea and a little more at the lens, about 2:1, as in a real eye, where
+  the cornea supplies roughly two-thirds of the focusing power.
+* The fovea is drawn on the axis.
+* "The line" is a point because the sketch is a side view: the line runs into the page.
+
+**The retina micrograph.** A simulation, not a photograph.
+* **Mosaic:** cone centres on a hexagonal lattice, 0.5′ apart, with 4.5% positional jitter. Each cone
+  is drawn as its Voronoi cell, with a membrane gap and a brighter inner segment.
+* **Line image:** the printed line (2 px ≈ 82″ ≈ 2.7 cone spacings wide) blurred by the line spread
+  function above (3 mm pupil).
+* **Cone brightness:** each cone is shaded by the light at its centre, raised to the power 1.8 so the
+  pattern reads clearly on screen. Cone apertures, colour types (L, M and S) and noise are left out.
+* **Overlay:** the faint continuous band over the cones is the line's image itself, for reference.
+
+**"A cone is a pixel of your eye."** This is an analogy for sampling. Each cone reports one number, the
+light caught over its small aperture. It does not report where inside itself the light fell.
+
+**The TV close-up.** An illustration of RGB subpixel stripes, one TV pixel to one cone, not a
+particular screen.
+* Each row's brightness is 1 minus the share of the row the line covers. The percentages on screen
+  are that share, in linear light.
+* The stripe intensities are scaled directly, not through the display's gamma, so the dimmed rows stay
+  visible.
+
+## 5. "How?" (the column of cones)
+
+**The readings.** The dots on the pencil plot are the cones' simulated readings in one column across
+the line: the light at each cone's centre.
+
+**The "middle".** The line's middle is found by a least-squares fit of the blur profile to those
+readings.
+* Without noise, the fit recovers the true position exactly. Moving the line by ⅓ cone moves the fit
+  by ⅓ cone (checked: 0.333).
+* A simple balance point (centroid) of the readings gets within about 10%, because the blur's long
+  tails run past the 13 cones in the column.
+
+**Pooling.** Here each cone's reading has **illustrative noise** added (standard deviation 0.10, on a
+0–1 scale). The noise makes each column's answer rough: its spread is about 0.22 cone. The averages of
+the six columns either side of the step land within 0.011 cone of the truth.
+
+**The brain's version.** Real observers pool along the length of the line in the visual cortex. Noise in
+cones and neurons is what sets real thresholds at a few arcseconds rather than zero.
+
+## 6. The clinical part
+
+* **Amsler grid:** 20 × 20 squares and a centre dot, as printed. The bulge is simulated (a smooth
+  radial displacement) and is labelled "simulated".
+* **Home monitors:** no device is named. The line "Some home monitors for macular degeneration are
+  built on hyperacuity" refers to preferential hyperacuity perimetry.
+* **What the film advises:** "If straight lines ever look bent or wavy to you, see your optometrist."
+  It is not a diagnosis.
+
+## 7. The score
+
+The music is synthesized for the film in `music.py`, with no samples:
+* a felt piano, built from additive partials with string inharmonicity, two slightly detuned strings
+  per note, felt damping and a soft hammer knock;
+* a quiet pad;
+* a synthetic room reverb.
+
+It is normalised to −16 LUFS.
