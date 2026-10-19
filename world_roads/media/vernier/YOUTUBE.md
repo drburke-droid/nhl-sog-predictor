@@ -4,7 +4,7 @@ This remake of the hyperacuity video has no quiz rounds. It shows the step, expl
 be able to see it, and lets you see it anyway.
 
 **Upload `vernier_4k_master.mp4`:**
-* 6:05, 3840×2160, 30 fps, HEVC CRF 24, MASTER_MB MB;
+* 6:05, 3840×2160, 30 fps, HEVC CRF 24, 147 MB;
 * on-screen captions, no narration;
 * felt-piano score at −16 LUFS.
 

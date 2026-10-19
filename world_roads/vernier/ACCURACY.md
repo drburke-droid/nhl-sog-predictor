@@ -32,7 +32,7 @@ the line covers), blended in **linear light**, then encoded to sRGB. The card is
 
 The method:
 1. Two seconds of each plate, exactly as the film shows it (moving film grain on the desk around the
-   card), are encoded as the 4K master.
+   card), are encoded as the 4K master (HEVC, CRF 24, as uploaded).
 2. Each is then scaled and re-encoded the ways YouTube might stream it, and decoded at six moments.
 3. The line's dark centre is measured on each side of the step, in linear light, against each column's
    own background.
@@ -41,17 +41,39 @@ The method:
 
 Medians (and the range over the six frames), in 1080p pixels:
 
-CODEC_TABLE
+| Encode | ½ px | ¼ px | ⅛ px |
+|---|---:|---:|---:|
+| As drawn (PNG, before any encoding) | 0.491 | 0.246 | 0.123 |
+| **4K master (HEVC, CRF 24)** | **0.496** | **0.253** | **0.125** (0.125–0.128) |
+| 4K VP9, 8 Mb/s | 0.496 (0.496–0.501) | 0.256 (0.256–0.265) | 0.118 (0.118–0.127) |
+| 1080p VP9, 1.5 Mb/s | 0.468 (0.467–0.532) | 0.283 (0.148–0.298) | 0.183 (−0.065 to 0.192) |
+| 1080p H.264, 2.5 Mb/s | 0.434 (0.434–0.546) | 0.190 (0.186–0.245) | 0.076 (0.072–0.119) |
+| 1080p AV1, 1 Mb/s | 0.505 (0.505) | 0.248 (0.241–0.255) | 0.144 (0.139–0.144) |
+| 720p VP9, 0.8 Mb/s | 0.272 (0.208–0.330) | 0.154 (0.018–0.556) | 0.262 (0.233–0.425) |
+| 480p VP9, 0.4 Mb/s | 0.830 (0.760–0.831) | 0.431 (0.389–0.738) | 0.105 (0.049–0.448) |
+
+The raw readings for every frame are in `out/codec_check.json`, written by `codec_check.py`.
 
 **What it means.**
-* At 4K and 1080p, the step survives.
-* Fast VP9 encodes can throw off a single frame by up to about 0.3 px. YouTube's own encodes are slower
-  and better than these settings.
-* At 720p and below, the ¼ and ⅛ plates are unreliable.
+* **4K, and 1080p VP9 or AV1:** the steps survive, to within about 0.05 px in a typical frame.
+* **1080p H.264:** reads the steps a little small (⅛ px as about 0.08 px), so plate 3 may be a touch
+  harder on players that fall back to H.264.
+* **Fast VP9 encodes:** can throw off a single frame by up to about 0.2 px. YouTube's own encodes are
+  slower and better than these test settings.
+* **720p and below:** the ¼ and ⅛ plates are unreliable.
 
-The description therefore asks for full screen at 1080p or higher. In a still, grain-free test frame,
-x264 at 2.5 Mb/s gave the step-free line a false step of about 0.3 px. The film never holds such a frame:
-its moving grain keeps the encoder refreshing the card.
+The description therefore asks for full screen at 1080p or higher.
+
+**Why the upload master is CRF 24.** The same test was run on masters made at HEVC CRF 26 and 28,
+which come to about 90 MB and 56 MB. In their 1080p H.264 re-encodes at 2.5 Mb/s, the ⅛ px step
+sometimes grew to 0.3–0.5 px. That would show a step bigger than the one the film names. With the
+CRF 24 master it stayed near 0.1–0.2 px in every run. The 56 MB CRF 28 copy is kept in the repository
+for reference (`media/vernier/vernier_small.mp4`). Measured in the file itself, its plates read 0.505,
+0.251 and 0.137 px.
+
+**A still frame.** In a still, grain-free test frame, x264 at 2.5 Mb/s gave the step-free line a false
+step of about 0.3 px. The film never holds such a frame: its moving grain keeps the encoder refreshing
+the card.
 
 ## 3. The numbers on screen
 

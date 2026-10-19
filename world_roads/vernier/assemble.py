@@ -10,7 +10,7 @@ sys.path.insert(0, HERE)
 OUT = os.path.join(HERE, "out")
 SECS = ["open", "eye", "retina", "back", "smaller", "how", "screen", "numbers", "uses", "close"]
 XF = 1.0                                         # crossfade between sections (s)
-FINAL = os.path.join(OUT, "vernier.mp4")
+FINAL = os.path.join(OUT, "vernier_4k_master.mp4")
 
 
 def timeline():
