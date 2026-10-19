@@ -15,7 +15,7 @@ import film
 
 TMP = os.path.join(L.OUT, "codec")
 VARIANTS = [  # name, width, codec args (None: the master itself)
-    ("master 2160p (HEVC crf 28)", 3840, None),
+    ("master 2160p (HEVC crf 24)", 3840, None),
     ("2160p VP9 8 Mb/s", 3840, ["-c:v", "libvpx-vp9", "-b:v", "8M", "-deadline", "realtime", "-cpu-used", "8"]),
     ("1080p VP9 1.5 Mb/s", 1920, ["-c:v", "libvpx-vp9", "-b:v", "1500k", "-deadline", "realtime", "-cpu-used", "8"]),
     ("1080p H.264 2.5 Mb/s", 1920, ["-c:v", "libx264", "-b:v", "2500k", "-preset", "fast"]),
@@ -54,7 +54,7 @@ def main():
     for k, card in enumerate(film.CARDS):
         master = os.path.join(TMP, f"plate{k + 1}_master.mp4")
         p = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L.W}x{L.H}", "-r", "30",
-                              "-i", "-", "-c:v", "libx265", "-preset", "medium", "-crf", "28", "-x265-params", "log-level=error",
+                              "-i", "-", "-c:v", "libx265", "-preset", "medium", "-crf", "24", "-x265-params", "log-level=error",
                               "-pix_fmt", "yuv420p", master],
                              stdin=subprocess.PIPE)
         for i in range(60):

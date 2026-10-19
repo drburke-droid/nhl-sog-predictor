@@ -3,17 +3,28 @@
 This remake of the hyperacuity video has no quiz rounds. It shows the step, explains why you shouldn't
 be able to see it, and lets you see it anyway.
 
-Upload `vernier.mp4`:
-* 6:05, 3840×2160, 30 fps, HEVC, 56 MB;
+**Upload `vernier_4k_master.mp4`:**
+* 6:05, 3840×2160, 30 fps, HEVC CRF 24, MASTER_MB MB;
 * on-screen captions, no narration;
 * felt-piano score at −16 LUFS.
 
-Ask viewers to watch full screen at 1080p or higher (see `../../vernier/ACCURACY.md` §2).
+The master is sent separately because it is over GitHub's 100 MB file limit. To rebuild it, run
+`python assemble.py` in `world_roads/vernier`. Its SHA-256 is in `SHA256.txt`.
 
-Upload the 4K file as it is. The steps are drawn in 1080p pixels, so each one is a 2×2 block of the 4K
-frame. A 4K upload also gets YouTube's better encodes at every resolution. The file is HEVC because the
-desk's moving film grain made H.264 about four times larger. Measured in the file itself, the plates
-read 0.505, 0.251 and 0.137 px against the step-free plate 4 (drawn: ½, ¼, ⅛).
+`vernier_small.mp4` (56 MB, HEVC CRF 28) is the same film, kept in the repository for reference:
+* it looks the same at 1:1;
+* measured in the file itself, the plates read 0.505, 0.251 and 0.137 px against the step-free plate 4
+  (drawn: ½, ¼, ⅛).
+
+Don't upload `vernier_small.mp4`. When it was re-encoded to 1080p H.264 at a low bitrate, the ⅛ px step
+sometimes grew to about 0.4 px. The CRF 24 master held it near the true size (see
+`../../vernier/ACCURACY.md` §2).
+
+**Notes on the upload.**
+* **Upload the 4K file as it is.** The steps are drawn in 1080p pixels, so each one is a 2×2 block of
+  the 4K frame. A 4K upload also gets YouTube's better encodes at every resolution.
+* **Why HEVC.** The desk's moving film grain made H.264 about four times larger at the same quality.
+* **Ask viewers** to watch full screen at 1080p or higher.
 
 **A/B/C test.**
 
