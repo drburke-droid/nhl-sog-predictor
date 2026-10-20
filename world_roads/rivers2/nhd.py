@@ -144,7 +144,7 @@ def process(vpu, ks):
     cl = extract(arch["VPUAttributeExtension"], want, work)
 
     # flowlines: geometry and type
-    sf = shapefile.Reader(fl["NHDFlowline.shp"])
+    sf = shapefile.Reader(fl["NHDFlowline.shp"], encoding="latin-1", encodingErrors="replace")
     fields = [f[0].upper() for f in sf.fields[1:]]
     i_com, i_fc = fields.index("COMID"), fields.index("FCODE")
     comid, fcode, geoms = [], [], []
@@ -258,9 +258,9 @@ def process(vpu, ks):
     # ---- Hack: the longest channel upstream of each flowline's outlet
     hs = vaa["Hydroseq"].astype(np.int64)
     up_of = {}
+    # minor divergences count too: NHDPlus's TotDASqKM is total upstream accumulation, so a reach below a
+    # minor divergence drains everything above it, and its longest upstream channel runs through it
     for i in range(n):
-        if div[i] == 2:
-            continue
         for j in outgoing.get(to_node[i], []):
             up_of.setdefault(j, []).append(i)
     lup = np.zeros(n)
@@ -288,6 +288,7 @@ def process(vpu, ks):
     # ---- main stems: every level path (NHDPlus's main-stem chains), source to mouth
     lp = vaa["LevelPathI"].astype(np.int64)
     terminal = vaa["TerminalFl"].astype(np.int64)
+    start = vaa["StartFlag"].astype(np.int64)        # 1 on headwater flowlines: a level path starting on one runs from a source, not a divergence
     paths = []
     order_lp = np.lexsort((-hs, lp))
     bounds = np.r_[0, np.nonzero(np.diff(lp[order_lp]))[0] + 1, len(order_lp)]
@@ -306,7 +307,7 @@ def process(vpu, ks):
         straight = 2 * R * math.asin(min(1.0, math.sqrt(h)))
         nat = np.mean([fcode[gi[vc[i]]] in NATURAL if vc[i] in gi else False for i in idx])
         paths.append([lp[top], lenkm[idx].sum(), straight, da[bot], lo0, la0, lo1, la1, terminal[bot], complete[top] and complete[bot],
-                      nat, slope.get(vc[bot], np.nan), ai.get(vc[bot], np.nan), len(idx)])
+                      nat, slope.get(vc[bot], np.nan), ai.get(vc[bot], np.nan), len(idx), start[top]])
     np.savez_compressed(out, junctions=J, hack=H, horton=np.array(horton, np.float64), paths=np.array(paths, np.float64))
     shutil.rmtree(work, ignore_errors=True)
     return out

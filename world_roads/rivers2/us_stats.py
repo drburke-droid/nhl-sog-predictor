@@ -12,7 +12,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 JCOLS = ["x", "y", "a250", "a500", "a1000", "o1", "o2", "odn", "da1", "da2", "dadn", "ai", "p", "slope", "len1", "len2"]
-PCOLS = ["lp", "len", "straight", "da", "lon0", "lat0", "lon1", "lat1", "terminal", "complete", "natural", "slope", "ai", "n"]
+PCOLS = ["lp", "len", "straight", "da", "lon0", "lat0", "lon1", "lat1", "terminal", "complete", "natural", "slope", "ai", "n", "head"]
 AI_EDGES = [0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0, 1.25, 1.5, 2.0, 3.0, 6.0]
 
 
@@ -68,22 +68,24 @@ def junction_stats(J, key="a1000"):
 
 def hack_stats(H):
     da, lup, comp, nat, order = H.T
-    m = (comp > 0) & (nat > 0) & (da > 0.05) & (lup > 0.05)
+    # areas below 1 km2 are left out: at 1:100,000 the mapped channel stops well short of the divide
+    # and above ~18,000 km2 basins span several processing units, whose upstream lengths can't be joined here
+    m = (comp > 0) & (nat > 0) & (da >= 1.0) & (da <= 10 ** 4.25) & (lup > 0.05)
     x, y = np.log10(da[m]), np.log10(lup[m])
     b, a = np.polyfit(x, y, 1)
-    local = []
-    for lo in np.arange(-1, 6, 0.5):
-        s = (x >= lo) & (x < lo + 1.0)
-        if s.sum() < 100:
-            continue
-        bb, aa = np.polyfit(x[s], y[s], 1)
-        local.append({"log10_area": [float(lo), float(lo + 1)], "n": int(s.sum()), "h": float(bb), "c": float(10 ** aa)})
-    # binned medians for plotting
+    # the binned median curve, and its local slope (the local Hack exponent) over each decade of area
     curve = []
-    for lo in np.arange(-1, 6.25, 0.25):
+    for lo in np.arange(0, 4.25, 0.25):
         s = (x >= lo) & (x < lo + 0.25)
         if s.sum() >= 30:
             curve.append([float(lo + 0.125), float(np.median(y[s])), float(np.percentile(y[s], 10)), float(np.percentile(y[s], 90)), int(s.sum())])
+    cv = np.array(curve)
+    local = []
+    for lo in np.arange(0, 3.5, 0.5):
+        s = (cv[:, 0] >= lo) & (cv[:, 0] < lo + 1.0)
+        if s.sum() >= 3:
+            bb = np.polyfit(cv[s, 0], cv[s, 1], 1)[0]
+            local.append({"log10_area": [float(lo), float(lo + 1)], "n": int(cv[s, 4].sum()), "h": float(bb)})
     return {"n": int(m.sum()), "h": float(b), "c": float(10 ** a), "local": local, "curve": curve}
 
 
@@ -101,7 +103,8 @@ def horton_stats(Ho):
 
 
 def path_stats(P):
-    m = (P["complete"] > 0) & (P["natural"] > 0.5) & (P["straight"] > 0.5) & (P["len"] >= P["straight"])
+    # rivers that start at a source: level paths that begin at a divergence are side channels of another river
+    m = (P["head"] > 0) & (P["complete"] > 0) & (P["natural"] > 0.5) & (P["straight"] > 0.5) & (P["len"] >= P["straight"])
     L, S = P["len"][m], P["straight"][m]
     s = L / S
     rows = []
@@ -112,7 +115,16 @@ def path_stats(P):
         rows.append({"len_km": [lo, hi], "n": int(k.sum()), "ratio_of_totals": float(L[k].sum() / S[k].sum()),
                      "median": float(np.median(s[k])), "p90": float(np.percentile(s[k], 90)),
                      "near_pi": float(np.mean(np.abs(s[k] - math.pi) < 0.2))})
-    return {"n": int(m.sum()), "km": float(L.sum()), "ratio_of_totals": float(L.sum() / S.sum()), "median": float(np.median(s)),
+    fx, fy = np.log10(S), np.log10(L)
+    keep = S >= 1.0
+    dfit = np.polyfit(fx[keep], fy[keep], 1)
+    curve = []
+    for lo in np.arange(0, 3.0, 0.25):
+        k = keep & (fx >= lo) & (fx < lo + 0.25)
+        if k.sum() >= 20:
+            curve.append([float(lo + 0.125), float(np.median(fy[k])), int(k.sum())])
+    return {"fractal_D": float(dfit[0]), "fractal_c": float(10 ** dfit[1]), "len_vs_straight": curve,
+            "n": int(m.sum()), "km": float(L.sum()), "ratio_of_totals": float(L.sum() / S.sum()), "median": float(np.median(s)),
             "near_pi": float(np.mean(np.abs(s - math.pi) < 0.2)), "above_pi": float(np.mean(s > math.pi)), "by_length": rows}
 
 

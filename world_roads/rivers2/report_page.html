@@ -1,0 +1,504 @@
+<title>Rivers Beyond π</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a single reading column of findings; each finding is text, then its chart, then its numbers. */
+  :root {
+    --bg: #f5f7f8;
+    --surface: #fcfcfb;
+    --ink: #111416;
+    --ink-2: #474d54;
+    --muted: #6a7179;
+    --rule: #dde1e5;
+    --band: #eceff1;
+    --s1: #2a78d6;
+    --s2: #eb6834;
+    --display: "Literata", Georgia, "Times New Roman", serif;
+    --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121314; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9b9b94; --rule: #2e3032; --band: #222423;
+      --s1: #3987e5; --s2: #d95926; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121314; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9b9b94; --rule: #2e3032; --band: #222423;
+    --s1: #3987e5; --s2: #d95926; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); margin: 0;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 44px 80px;
+  }
+  .col { max-width: 860px; margin: 0 auto; display: grid; gap: 64px; }
+  header { display: grid; gap: 16px; }
+  .eyebrow { font: 500 13px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 650 clamp(40px, 7vw, 64px)/1.02 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font: 650 30px/1.15 var(--display); margin: 0; text-wrap: balance; }
+  h3 { font: 600 17px/1.3 var(--body); margin: 0; }
+  p { margin: 0; max-width: 68ch; }
+  .lede { font-size: 20px; color: var(--ink-2); max-width: 62ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; font: 14px/1.4 var(--mono); color: var(--muted); }
+  .facts b { color: var(--ink); font-weight: 500; }
+  .findings { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; counter-reset: f; }
+  .findings li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 4px; }
+  .findings li::before { counter-increment: f; content: counter(f); font: 500 15px/1.6 var(--mono); color: var(--s1); }
+  section { display: grid; gap: 18px; }
+  .nc { text-transform: none; }
+  .kicker { font: 500 13px/1.2 var(--mono); color: var(--s1); letter-spacing: 0.06em; text-transform: uppercase; }
+  .chart { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 18px 12px; display: grid; gap: 10px; min-width: 0; }
+  .chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; }
+  .chart-title { font: 600 15px/1.35 var(--body); }
+  .chart-sub { font-size: 13.5px; color: var(--muted); }
+  .plot { position: relative; width: 100%; min-width: 0; }
+  .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; }
+  .seg label { font: 500 13px/1 var(--mono); padding: 7px 10px; cursor: pointer; color: var(--ink-2); }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg input:checked + span { color: var(--ink); }
+  .seg label:has(input:checked) { background: var(--band); }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--s1); outline-offset: -2px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--ink-2); }
+  .legend i { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 6px; }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--rule); border-radius: 5px;
+    padding: 8px 10px; font-size: 13px; line-height: 1.45; color: var(--ink-2); box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
+    min-width: 160px; max-width: 260px; z-index: 5;
+  }
+  .tip b { color: var(--ink); font: 500 15px/1.3 var(--mono); display: block; }
+  details { font-size: 14px; color: var(--ink-2); }
+  summary { cursor: pointer; color: var(--muted); font: 500 13px/1.6 var(--mono); }
+  .tbl { overflow-x: auto; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { font: 500 12px/1.3 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .note { font-size: 15px; color: var(--ink-2); }
+  .small { font-size: 14.5px; color: var(--muted); }
+  ol.refs { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14.5px; color: var(--ink-2); }
+  ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15.5px; color: var(--ink-2); }
+  svg text { font-family: var(--body); }
+  .axis text { fill: var(--muted); font-size: 12px; font-family: var(--mono); }
+  .axis line, .axis path { stroke: var(--rule); }
+  @media (max-width: 560px) { body { font-size: 16px; } .chart { padding: 14px 10px 10px; } }
+</style>
+
+<div class="col">
+  <header>
+    <div class="eyebrow">Rivers and <span class="nc">π</span>, part two</div>
+    <h1>Rivers Beyond π</h1>
+    <p class="lede">We went back to the rivers with far more data: every reach of the US national river network and every river line mapped in OpenStreetMap. The π claim fails again, at every size. Three other patterns came through clearly, and one of them repeats a little-known 2017 discovery almost to the degree.</p>
+    <div class="facts">
+      <span><b id="f-fl"></b> US river reaches</span>
+      <span><b id="f-st"></b> US rivers, source to mouth</span>
+      <span><b id="f-km"></b> km of mapped river worldwide</span>
+      <span><b id="f-jn"></b> US river junctions</span>
+    </div>
+    <ol class="findings">
+      <li><span><b>Rivers branch wider where the climate is wetter.</b> Junction angles rise from about 44° in deserts to about 72° in humid country, as Seybold, Rothman and Kirchner found in 2017.</span></li>
+      <li><span><b>No single ratio fits rivers, because rivers are slightly fractal.</b> The length-to-straight-line ratio grows with size, from 1.1 for creeks to about 2 for great rivers. It reaches π for almost none.</span></li>
+      <li><span><b>Hack’s 1957 law holds across two million reaches</b>, with an exponent of 0.58 that eases toward 0.5 in big basins.</span></li>
+      <li><span><b>The Earth’s spin barely shapes rivers.</b> Baer’s 1860 law, which Einstein explained in his meander paper, shows no sign in nine million kilometres of river. At most a faint trace appears in the biggest rivers of Russia, where Baer did his fieldwork.</span></li>
+    </ol>
+  </header>
+
+  <section id="angles">
+    <div class="kicker">Finding 1 · confirms Seybold et al. 2017</div>
+    <h2>Wet climates make wider river junctions</h2>
+    <p>Where two streams meet, the angle between them is a record of climate. In a dry landscape, water runs off the surface in sheets and carves narrow, steep branches. In a wet one, springs fed by groundwater eat into the ground and the branches spread. Theory for spring-fed networks predicts 72°, or 2π/5 (Devauchelle et al. 2012). Seybold, Rothman and Kirchner measured junctions across the United States in 2017 and reported about 45° in arid regions and 72° in humid ones.</p>
+    <p>We measured every confluence of two natural channels in the lower 48 states, using the straight line from the junction to a point 1 km up each branch. The climate at each junction is its aridity index: yearly precipitation divided by the water the air could evaporate (Thornthwaite’s method, from NHDPlus’s monthly PRISM climate).</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Mean junction angle against aridity</div>
+          <div class="chart-sub" id="a-sub"></div>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="Distance up each branch">
+          <label><input type="radio" name="dist" id="dist-250" value="250"><span>250 m</span></label>
+          <label><input type="radio" name="dist" id="dist-500" value="500"><span>500 m</span></label>
+          <label><input type="radio" name="dist" id="dist-1000" value="1000" checked><span>1 km</span></label>
+        </div>
+      </div>
+      <div class="plot" id="p-angles"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-angles"></div></details>
+    </div>
+    <p class="note">The trend holds within flat, middling and steep ground, and for junctions of two headwater streams alone. The distance up each branch shifts every angle, since channels bend as they approach a junction, but not the gap between dry and wet. Steeper ground also narrows junctions, as Howard (1971) predicted.</p>
+    <div class="tbl" id="t-controls"></div>
+  </section>
+
+  <section id="ratio">
+    <div class="kicker">Finding 2 · the <span class="nc">π</span> claim, at every size</div>
+    <h2>No single ratio fits rivers</h2>
+    <p>The story goes that a river’s length divided by the straight line from source to mouth averages π. We now have that ratio for <span id="r-n"></span> US rivers, every main stem in the national network from a 1 km creek to the Missouri, and for the world’s <span id="r-w"></span> river systems longer than 100 km.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Median length ÷ straight-line distance, by river length</div>
+          <div class="chart-sub">π shown dashed; log scale of length</div>
+        </div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>US rivers (NHDPlus)</span><span><i style="background:var(--s2)"></i>World systems over 100 km (OpenStreetMap)</span></div>
+      </div>
+      <div class="plot" id="p-ratio"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-ratio"></div></details>
+    </div>
+    <p>The idea traces to Hans-Henrik Stølum’s 1996 model, in which meandering rivers organise themselves around a sinuosity of about π. But Stølum’s ratio was channel length over valley length along a meandering stretch, not the straight line from source to mouth; the popular version stretched it.</p>
+    <p>Measured from source to mouth, the ratio is not a constant at all. It grows with the size of the river, from about 1.1 for creeks to about 2 for the great rivers, and it levels off there. Only <span id="r-pi"></span> of US rivers land within 0.2 of π. The growth is what you expect if rivers are slightly fractal: across US rivers, length rises roughly as the straight-line distance to the power 1.07. Mandelbrot (1982) argued from Hack’s law that rivers are fractal, with an exponent a little above 1. A fractal has no single ratio, so π could only ever be true of rivers of one particular size.</p>
+  </section>
+
+  <section id="hack">
+    <div class="kicker">Finding 3 · Hack’s law</div>
+    <h2>Big basins grow longer, at a slowing rate</h2>
+    <p>In 1957 John Hack measured streams in Virginia and Maryland and found that a river’s length grows as the 0.6 power of the area it drains. Double the basin and the river gets about 50% longer, not twice as long, so big basins are fatter than small ones. Later work found the exponent slips toward 0.5 for the largest basins (Mueller 1972). Here it is for <span id="h-n"></span> reaches of the US network.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Longest channel upstream against drainage area</div>
+          <div class="chart-sub">Median, with the middle 80% shaded; log–log</div>
+        </div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>US reaches, median</span><span><i style="background:var(--muted)"></i>Hack (1957): L = 1.27 A<sup>0.6</sup></span></div>
+      </div>
+      <div class="plot" id="p-hack"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-hack"></div></details>
+    </div>
+    <p class="note" id="h-note"></p>
+  </section>
+
+  <section id="baer">
+    <div class="kicker">Finding 4 · Baer’s law and Einstein</div>
+    <h2>The Earth’s spin barely bends rivers</h2>
+    <p>In 1860 Karl Ernst von Baer, studying Russian rivers, proposed that the Earth’s rotation pushes a river’s water toward its right bank in the northern hemisphere, so right banks erode more. Einstein’s 1926 paper on meanders, the one with the tea leaves, is titled after this law and argues it should be real.</p>
+    <p>If right banks erode more, left-hand bends grow a little more, because a bend’s outer bank is the one that wears away. So a slightly larger share of a northern river’s length should curve left, and of a southern river’s length should curve right. We measured the share curving left along every mapped river line, smoothed at the scale of bends.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Share of river length curving left, every OpenStreetMap river line</div>
+          <div class="chart-sub" id="b1-sub"></div>
+        </div>
+      </div>
+      <div class="plot" id="p-baer1"></div>
+    </div>
+    <p>Across nine million kilometres, the share is 50.02% in both hemispheres. Every well-sampled band of latitude sits within about a tenth of a percent of 50%; only the sparse far south wanders further, and its interval includes 50%. Left and right bends are equally tight, too. Rotation should matter most for large, slow rivers with wide bends, so we ran the test again on the main stems of the 1,000 longest rivers.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Share of river length curving left, the 1,000 longest rivers</div>
+          <div class="chart-sub">Bends smoothed at 5 km; bars are 95% intervals from resampling rivers</div>
+        </div>
+      </div>
+      <div class="plot" id="p-baer2"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-baer"></div></details>
+    </div>
+    <p>Here a trace appears. In big northern rivers, 50.4% of curving length bends left, and 55% of the rivers curve left more than right. The excess is larger at high latitudes, where the rotational force is stronger. But almost all of it comes from Russia and Siberia, the rivers Baer studied, where permafrost and lopsided valleys offer other explanations. Without Russia, the northern figure falls inside chance. The southern rivers lean the predicted way, but within chance. A test on all 1,525 named rivers of the 7,311 systems, with a larger southern sample, finds nothing significant in either hemisphere. Our verdict: rotation is at most a whisper in the shape of rivers.</p>
+  </section>
+
+  <section id="also">
+    <h2>Also in the data</h2>
+    <ul class="plain">
+      <li><b>No direction dominates.</b> Of the world’s 7,311 systems over 100 km, <span id="fd"></span> run north, east, south and west, measured from source to mouth. The Nile flowing north is not unusual.</li>
+      <li><b>The world’s big rivers settle near 2.</b> Every size class of the 7,311 systems has a median length-to-straight-line ratio between 1.88 and 2.13. About 4% fall within 0.2 of π.</li>
+    </ul>
+  </section>
+
+  <section id="method">
+    <h2>How this was done</h2>
+    <ul class="plain">
+      <li><b>US network:</b> NHDPlus Version 2 (US EPA and USGS, 1:100,000), all 21 processing units of the lower 48: 2.69 million flowlines, their stream order, drainage area, slope and network links, and each catchment’s monthly precipitation and temperature (PRISM, 1971–2000).</li>
+      <li><b>Junction angles:</b> every node where two natural channels (not canals, pipes or lake paths) join into one, with matching tributary end points and no braiding. Angle between straight lines from the junction to points 250 m, 500 m and 1 km up each branch. Intervals come from resampling whole 1° cells, since nearby junctions are not independent.</li>
+      <li><b>Aridity:</b> annual precipitation over Thornthwaite (1948) potential evapotranspiration, from each catchment’s twelve monthly temperatures and its latitude. Seybold et al. used a different index (Zomer’s global aridity map), so the axis matches theirs only roughly.</li>
+      <li><b>Hack’s law:</b> for each reach, the longest channel upstream of its outlet, against the area draining to it. Basins under 1 km² are left out, because at this map scale the channels stop short of the divide, and so are basins over about 18,000 km², which span several processing units.</li>
+      <li><b>Main stems:</b> NHDPlus’s level paths, each a river from its source to where it ends, at a larger river or the sea. Length is the sum of its reaches; the straight line runs from first point to last.</li>
+      <li><b>World rivers:</b> every OpenStreetMap waterway=river line, via Overture Maps (the data behind our π video). Baer test: each line at least 2 km long, resampled every 25 m, with heading smoothed at 250 m and 1 km; OSM draws waterways downstream. The 1,000 longest main stems are rebuilt from the π project’s river systems and smoothed at 1 to 10 km.</li>
+      <li><b>Not reached:</b> published river lengths (Wikidata, Wikipedia), the global HydroSHEDS network, and journal websites are blocked from this computer. The references below are from memory, and their page numbers are unchecked.</li>
+    </ul>
+  </section>
+
+  <section id="refs">
+    <h2>References</h2>
+    <ol class="refs">
+      <li>Seybold, H., Rothman, D. H. &amp; Kirchner, J. W. (2017). Climate’s watermark in the geometry of stream networks. <i>Geophysical Research Letters</i> 44.</li>
+      <li>Devauchelle, O., Petroff, A. P., Seybold, H. F. &amp; Rothman, D. H. (2012). Ramification of stream networks. <i>PNAS</i> 109.</li>
+      <li>Howard, A. D. (1971). Optimal angles of stream junction. <i>Water Resources Research</i> 7.</li>
+      <li>Hack, J. T. (1957). Studies of longitudinal stream profiles in Virginia and Maryland. <i>USGS Professional Paper</i> 294-B.</li>
+      <li>Mueller, J. E. (1972). Re-evaluation of the relationship of master streams and drainage basins. <i>Geological Society of America Bulletin</i> 83.</li>
+      <li>Mandelbrot, B. B. (1982). <i>The Fractal Geometry of Nature.</i></li>
+      <li>Stølum, H.-H. (1996). River meandering as a self-organization process. <i>Science</i> 271.</li>
+      <li>von Baer, K. E. (1860). On a general law in the shaping of river beds (in German). Bulletin of the St Petersburg Academy of Sciences.</li>
+      <li>Einstein, A. (1926). Die Ursache der Mäanderbildung der Flußläufe und des sogenannten Baerschen Gesetzes. <i>Die Naturwissenschaften</i> 14.</li>
+      <li>Thornthwaite, C. W. (1948). An approach toward a rational classification of climate. <i>Geographical Review</i> 38.</li>
+      <li>US EPA &amp; USGS. NHDPlus Version 2 (2012). River data © OpenStreetMap contributors (ODbL), via Overture Maps.</li>
+    </ol>
+  </section>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(function () {
+  "use strict";
+  const R = JSON.parse(document.getElementById("data").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+  const fmt = (n) => n.toLocaleString("en-US");
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // ---------- page numbers
+  document.getElementById("f-fl").textContent = (R.totals.us_flowlines / 1e6).toFixed(2) + " million";
+  document.getElementById("f-st").textContent = fmt(R.us_stems.n);
+  document.getElementById("f-km").textContent = (R.baer_lines.km / 1e6).toFixed(1) + " million";
+  document.getElementById("f-jn").textContent = fmt(R.junctions["250"].n);
+  document.getElementById("r-n").textContent = fmt(R.us_stems.n);
+  document.getElementById("r-w").textContent = fmt(R.world_systems.n);
+  document.getElementById("r-pi").textContent = (R.us_stems.near_pi * 100).toFixed(2) + "%";
+  document.getElementById("h-n").textContent = (R.hack.n / 1e6).toFixed(2) + " million";
+  const fd = R.flow_direction;
+  document.getElementById("fd").textContent = `${fd.north}%, ${fd.east}%, ${fd.south}% and ${fd.west}%`;
+  const loc = R.hack.local;
+  document.getElementById("h-note").textContent =
+    `The local exponent is ${loc[2].h.toFixed(2)} for basins of 10–100 km² and ${loc[4].h.toFixed(2)} for 100–1,000 km², right on Hack’s 0.6. ` +
+    `It eases to ${loc[loc.length - 1].h.toFixed(2)} for 1,000–10,000 km², as Mueller found. Above that size the US data can’t join basins across processing units, so we stop.`;
+
+  // ---------- helpers
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function txt(parent, x, y, s, attrs) {
+    const t = el("text", Object.assign({ x, y }, attrs || {}), parent);
+    t.textContent = s;
+    return t;
+  }
+  const lin = (d0, d1, r0, r1) => (v) => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
+  const lg = (d0, d1, r0, r1) => (v) => r0 + (Math.log10(v) - Math.log10(d0)) / (Math.log10(d1) - Math.log10(d0)) * (r1 - r0);
+  function tooltip(plot) {
+    let t = plot.querySelector(".tip");
+    if (!t) { t = document.createElement("div"); t.className = "tip"; t.hidden = true; plot.appendChild(t); }
+    return {
+      show(x, y, lines) {
+        t.replaceChildren();
+        const b = document.createElement("b"); b.textContent = lines[0]; t.appendChild(b);
+        for (const s of lines.slice(1)) { const d = document.createElement("div"); d.textContent = s; t.appendChild(d); }
+        t.hidden = false;
+        const pw = plot.clientWidth, tw = t.offsetWidth;
+        t.style.left = Math.max(0, Math.min(pw - tw, x + 14)) + "px";
+        t.style.top = Math.max(0, y - t.offsetHeight - 10) + "px";
+      },
+      hide() { t.hidden = true; }
+    };
+  }
+  function table(host, head, rows) {
+    const tb = document.createElement("table");
+    const tr = document.createElement("tr");
+    for (const h of head) { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); }
+    const th_ = document.createElement("thead"); th_.appendChild(tr); tb.appendChild(th_);
+    const body = document.createElement("tbody");
+    for (const r of rows) {
+      const row = document.createElement("tr");
+      for (const c of r) { const td = document.createElement("td"); td.textContent = c; row.appendChild(td); }
+      body.appendChild(row);
+    }
+    tb.appendChild(body);
+    host.replaceChildren(tb);
+  }
+  function frame(host, H) {
+    host.querySelectorAll("svg").forEach((s) => s.remove());
+    const W = Math.max(300, host.clientWidth);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img" });
+    host.insertBefore(svg, host.firstChild);
+    return { svg, W, H, narrow: W < 520 };
+  }
+  function axisX(g, sx, ticks, y0, y1, label, f) {
+    const a = el("g", { class: "axis" }, g);
+    for (const v of ticks) {
+      const x = sx(v);
+      el("line", { x1: x, x2: x, y1: y0, y2: y1, "stroke-width": 1 }, a);
+      txt(a, x, y1 + 16, f ? f(v) : String(v), { "text-anchor": "middle" });
+    }
+    if (label) txt(a, (sx(ticks[0]) + sx(ticks[ticks.length - 1])) / 2, y1 + 36, label, { "text-anchor": "middle" });
+  }
+  function axisY(g, sy, ticks, x0, x1, f) {
+    const a = el("g", { class: "axis" }, g);
+    for (const v of ticks) {
+      const y = sy(v);
+      el("line", { x1: x0, x2: x1, y1: y, y2: y, "stroke-width": 1 }, a);
+      txt(a, x0 - 8, y + 4, f ? f(v) : String(v), { "text-anchor": "end" });
+    }
+  }
+
+  // ---------- 1. junction angles
+  const AIcls = [[0.05, 0.2, "arid"], [0.2, 0.5, "semi-arid"], [0.5, 0.65, "dry sub-humid"], [0.65, 6, "humid"]];
+  function drawAngles() {
+    const dist = document.querySelector('input[name="dist"]:checked').value;
+    const J = R.junctions[dist];
+    document.getElementById("a-sub").textContent =
+      `${fmt(J.n)} junctions, branches measured ${dist === "1000" ? "1 km" : dist + " m"} from the junction; bars are 95% intervals`;
+    const host = document.getElementById("p-angles");
+    const { svg, W, H, narrow } = frame(host, narrow0(host) ? 330 : 380);
+    const m = { l: 46, r: narrow ? 14 : 150, t: 26, b: 52 };
+    const sx = lg(0.05, 6, m.l, W - m.r), sy = lin(40, 85, H - m.b, m.t);
+    const g = el("g", {}, svg);
+    AIcls.forEach(([a, b, name], i) => {
+      el("rect", { x: sx(a), y: m.t, width: sx(b) - sx(a), height: H - m.b - m.t, fill: i % 2 ? "transparent" : css("--band") }, g);
+      if (!narrow || i !== 2) txt(g, (sx(a) + sx(b)) / 2, m.t - 8, name, { "text-anchor": "middle", fill: css("--muted"), "font-size": 12 });
+    });
+    axisY(g, sy, [40, 50, 60, 70, 80], m.l, W - m.r, (v) => v + "°");
+    axisX(g, sx, [0.05, 0.1, 0.2, 0.5, 1, 2, 5], H - m.b, H - m.b, narrow ? "aridity index  →  wetter" : "aridity index (precipitation ÷ potential evaporation)  →  wetter");
+    for (const [v, s] of [[45, narrow ? "45°" : "45°: arid, Seybold et al."], [72, narrow ? "72°" : "72° = 2π/5: humid"]]) {
+      el("line", { x1: m.l, x2: W - m.r, y1: sy(v), y2: sy(v), stroke: css("--muted"), "stroke-dasharray": "5 4", "stroke-width": 1.2 }, g);
+      txt(g, W - m.r + 8, sy(v) + 4, s, { fill: css("--ink-2"), "font-size": 12.5 });
+    }
+    const pts = J.bins;
+    el("path", { d: pts.map((p, i) => (i ? "L" : "M") + sx(p.mid) + " " + sy(p.mean)).join(" "), fill: "none", stroke: css("--s1"), "stroke-width": 2 }, g);
+    for (const p of pts) {
+      el("line", { x1: sx(p.mid), x2: sx(p.mid), y1: sy(p.lo), y2: sy(p.hi), stroke: css("--s1"), "stroke-width": 1.5 }, g);
+      el("circle", { cx: sx(p.mid), cy: sy(p.mean), r: 4.5, fill: css("--s1"), stroke: css("--surface"), "stroke-width": 2 }, g);
+    }
+    const cross = el("line", { y1: m.t, y2: H - m.b, stroke: css("--ink-2"), "stroke-width": 1, opacity: 0 }, g);
+    const tip = tooltip(host);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.r - m.l, height: H - m.b - m.t, fill: "transparent", tabindex: 0 }, svg);
+    const pick = (x) => pts.reduce((a, p) => Math.abs(sx(p.mid) - x) < Math.abs(sx(a.mid) - x) ? p : a, pts[0]);
+    const show = (p) => {
+      cross.setAttribute("x1", sx(p.mid)); cross.setAttribute("x2", sx(p.mid)); cross.setAttribute("opacity", 0.5);
+      const sc = W / host.clientWidth;
+      tip.show(sx(p.mid) / sc, sy(p.mean) / sc, [`${p.mean.toFixed(1)}° mean`, `95% interval ${p.lo}–${p.hi}°`, `aridity ${p.ai[0]}–${p.ai[1]}`, `${fmt(p.n)} junctions`]);
+    };
+    hit.addEventListener("pointermove", (e) => { const r = svg.getBoundingClientRect(); show(pick((e.clientX - r.left) * W / r.width)); });
+    hit.addEventListener("pointerleave", () => { tip.hide(); cross.setAttribute("opacity", 0); });
+    let ki = pts.length - 1;
+    hit.addEventListener("focus", () => show(pts[ki]));
+    hit.addEventListener("blur", () => { tip.hide(); cross.setAttribute("opacity", 0); });
+    hit.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") ki = Math.max(0, ki - 1); else if (e.key === "ArrowRight") ki = Math.min(pts.length - 1, ki + 1); else return;
+      e.preventDefault(); show(pts[ki]);
+    });
+    table(document.getElementById("t-angles"), ["Aridity index", "Junctions", "Mean angle", "95% interval"],
+      pts.map((p) => [`${p.ai[0]}–${p.ai[1]}`, fmt(p.n), p.mean.toFixed(1) + "°", `${p.lo}–${p.hi}°`]));
+    const C = J.controls, names = { flat: "Flattest third", middle: "Middle third", steep: "Steepest third", first_order_pairs: "Two headwater streams" };
+    table(document.getElementById("t-controls"), ["Junctions (" + (dist === "1000" ? "1 km" : dist + " m") + ")", "Dry, aridity < 0.5", "Wet, aridity > 1", "Gap"],
+      Object.keys(names).map((k) => [names[k], C[k].dry.toFixed(1) + "°", C[k].wet.toFixed(1) + "°", "+" + (C[k].wet - C[k].dry).toFixed(1) + "°"]));
+  }
+  function narrow0(host) { return host.clientWidth < 520; }
+
+  // ---------- 2. ratio by length
+  function drawRatio() {
+    const host = document.getElementById("p-ratio");
+    const { svg, W, H, narrow } = frame(host, 340);
+    const m = { l: 46, r: narrow ? 16 : 56, t: 16, b: 52 };
+    const sx = lg(1, 8000, m.l, W - m.r), sy = lin(1, 3.4, H - m.b, m.t);
+    const g = el("g", {}, svg);
+    axisY(g, sy, [1, 1.5, 2, 2.5, 3], m.l, W - m.r, (v) => v.toFixed(1));
+    axisX(g, sx, [1, 10, 100, 1000, 8000], H - m.b, H - m.b, "river length (km)", (v) => fmt(v));
+    el("line", { x1: m.l, x2: W - m.r, y1: sy(Math.PI), y2: sy(Math.PI), stroke: css("--muted"), "stroke-dasharray": "5 4", "stroke-width": 1.2 }, g);
+    txt(g, m.l + 6, sy(Math.PI) - 7, "π = 3.14", { fill: css("--ink-2"), "font-size": 12.5 });
+    const series = [
+      { name: "US rivers", col: css("--s1"), rows: R.us_stems.by_length },
+      { name: "World systems", col: css("--s2"), rows: R.world_systems.by_length }
+    ];
+    const all = [];
+    for (const s of series) {
+      const pts = s.rows.map((r) => ({ x: Math.sqrt(r.len[0] * r.len[1]), y: r.median, r, s }));
+      el("path", { d: pts.map((p, i) => (i ? "L" : "M") + sx(p.x) + " " + sy(p.y)).join(" "), fill: "none", stroke: s.col, "stroke-width": 2 }, g);
+      for (const p of pts) {
+        el("circle", { cx: sx(p.x), cy: sy(p.y), r: 4.5, fill: s.col, stroke: css("--surface"), "stroke-width": 2 }, g);
+        all.push(p);
+      }
+    }
+    const tip = tooltip(host);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.r - m.l, height: H - m.b - m.t, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", (e) => {
+      const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+      const p = all.reduce((a, q) => Math.hypot(sx(q.x) - x, sy(q.y) - y) < Math.hypot(sx(a.x) - x, sy(a.y) - y) ? q : a, all[0]);
+      const sc = W / host.clientWidth;
+      tip.show(sx(p.x) / sc, sy(p.y) / sc, [`${p.y.toFixed(2)} median`, `${p.s.name}, ${fmt(p.r.len[0])}–${fmt(p.r.len[1])} km`, `${fmt(p.r.n)} rivers`, `${(p.r.near_pi * 100).toFixed(2)}% within 0.2 of π`]);
+    });
+    hit.addEventListener("pointerleave", () => tip.hide());
+    const rows = [];
+    for (const s of series) for (const r of s.rows) rows.push([s.name, `${fmt(r.len[0])}–${fmt(r.len[1])} km`, fmt(r.n), r.median.toFixed(2), r.ratio.toFixed(2), (r.near_pi * 100).toFixed(2) + "%"]);
+    table(document.getElementById("t-ratio"), ["Rivers", "Length", "Count", "Median ratio", "Ratio of totals", "Within 0.2 of π"], rows);
+  }
+
+  // ---------- 3. Hack
+  function drawHack() {
+    const host = document.getElementById("p-hack");
+    const { svg, W, H, narrow } = frame(host, 340);
+    const m = { l: 52, r: narrow ? 16 : 30, t: 16, b: 52 };
+    const sx = lg(1, 18000, m.l, W - m.r), sy = lg(1, 1000, H - m.b, m.t);
+    const g = el("g", {}, svg);
+    axisY(g, sy, [1, 10, 100, 1000], m.l, W - m.r, (v) => fmt(v) + " km");
+    axisX(g, sx, [1, 10, 100, 1000, 10000], H - m.b, H - m.b, "drainage area (km²)", (v) => fmt(v));
+    const C = R.hack.curve;
+    const band = C.map((p, i) => (i ? "L" : "M") + sx(p.area) + " " + sy(p.p90)).join(" ") + " " +
+      C.slice().reverse().map((p) => "L" + sx(p.area) + " " + sy(p.p10)).join(" ") + " Z";
+    el("path", { d: band, fill: css("--s1"), opacity: 0.14 }, g);
+    const hk = (a) => 1.27 * Math.pow(a, 0.6);
+    el("path", { d: `M${sx(1)} ${sy(hk(1))} L${sx(18000)} ${sy(hk(18000))}`, stroke: css("--muted"), "stroke-dasharray": "5 4", "stroke-width": 1.4, fill: "none" }, g);
+    el("path", { d: C.map((p, i) => (i ? "L" : "M") + sx(p.area) + " " + sy(p.len)).join(" "), fill: "none", stroke: css("--s1"), "stroke-width": 2 }, g);
+    const cross = el("circle", { r: 5, fill: css("--s1"), stroke: css("--surface"), "stroke-width": 2, opacity: 0 }, g);
+    const tip = tooltip(host);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.r - m.l, height: H - m.b - m.t, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", (e) => {
+      const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width;
+      const p = C.reduce((a, q) => Math.abs(sx(q.area) - x) < Math.abs(sx(a.area) - x) ? q : a, C[0]);
+      cross.setAttribute("cx", sx(p.area)); cross.setAttribute("cy", sy(p.len)); cross.setAttribute("opacity", 1);
+      const sc = W / host.clientWidth;
+      tip.show(sx(p.area) / sc, sy(p.len) / sc, [`${p.len.toFixed(1)} km median`, `area ≈ ${fmt(Math.round(p.area * 10) / 10)} km²`, `middle 80%: ${p.p10.toFixed(1)}–${p.p90.toFixed(1)} km`, `Hack 1957: ${hk(p.area).toFixed(1)} km`, `${fmt(p.n)} reaches`]);
+    });
+    hit.addEventListener("pointerleave", () => { tip.hide(); cross.setAttribute("opacity", 0); });
+    table(document.getElementById("t-hack"), ["Drainage area", "Local exponent h"],
+      R.hack.local.map((r) => [`${fmt(Math.round(r.area[0]))}–${fmt(Math.round(r.area[1]))} km²`, r.h.toFixed(3)]));
+  }
+
+  // ---------- 4. Baer: dot and whisker
+  function dots(hostId, rows, dom, ticks, note) {
+    const host = document.getElementById(hostId);
+    const rowH = 30;
+    const { svg, W, H, narrow } = frame(host, 40 + rows.length * rowH + 44);
+    const m = { l: narrow ? 128 : 190, r: 18, t: 30, b: 44 };
+    const sx = lin(dom[0], dom[1], m.l, W - m.r);
+    const g = el("g", {}, svg);
+    axisX(g, sx, narrow ? ticks.filter((_, i) => i % 2 === 0) : ticks, m.t - 8, H - m.b, "share of length curving left", (v) => v.toFixed(1) + "%");
+    el("line", { x1: sx(50), x2: sx(50), y1: m.t - 8, y2: H - m.b, stroke: css("--ink-2"), "stroke-width": 1.2 }, g);
+    txt(g, sx(50) - 6, m.t - 14, "← more right", { fill: css("--muted"), "font-size": 12, "text-anchor": "end" });
+    txt(g, sx(50) + 6, m.t - 14, "more left →", { fill: css("--muted"), "font-size": 12 });
+    const tip = tooltip(host);
+    rows.forEach((r, i) => {
+      const y = m.t + i * rowH + rowH / 2;
+      if (r.sep) el("line", { x1: 0, x2: W - m.r, y1: y - rowH / 2, y2: y - rowH / 2, stroke: css("--rule") }, g);
+      txt(g, m.l - 12, y + 4, r.name, { "text-anchor": "end", fill: css("--ink-2"), "font-size": narrow ? 12 : 13.5 });
+      el("line", { x1: sx(Math.max(dom[0], r.lo)), x2: sx(Math.min(dom[1], r.hi)), y1: y, y2: y, stroke: r.col, "stroke-width": 2 }, g);
+      el("circle", { cx: sx(r.share), cy: y, r: 5, fill: r.col, stroke: css("--surface"), "stroke-width": 2 }, g);
+      const h = el("rect", { x: 0, y: y - rowH / 2, width: W, height: rowH, fill: "transparent", tabindex: 0 }, svg);
+      const show = () => { const sc = W / host.clientWidth; tip.show(sx(r.share) / sc, y / sc, [`${r.share.toFixed(r.dp || 2)}% left`, `95% interval ${r.lo.toFixed(r.dp || 2)}–${r.hi.toFixed(r.dp || 2)}%`, r.name, r.extra]); };
+      h.addEventListener("pointermove", show); h.addEventListener("focus", show);
+      h.addEventListener("pointerleave", () => tip.hide()); h.addEventListener("blur", () => tip.hide());
+    });
+    if (note) document.getElementById(note[0]).textContent = note[1];
+  }
+  function drawBaer() {
+    const s1 = css("--s1"), s2 = css("--s2");
+    const b = R.baer_lines.bands["1000"].slice().reverse();
+    const lab = (band) => { const [lo, hi] = band; const f = (v) => Math.abs(v) + "°" + (v < 0 ? "S" : v > 0 ? "N" : ""); return lo < 0 && hi > 0 ? "5°S–5°N" : (hi <= 0 ? `${f(hi)}–${f(lo)}` : `${f(lo)}–${f(hi)}`); };
+    dots("p-baer1", b.map((r) => ({ name: lab(r.band), share: r.share, lo: r.lo, hi: r.hi, dp: 3, col: r.band[0] >= 0 ? s1 : s2,
+      extra: `${fmt(r.lines)} lines, ${fmt(r.km)} km` })), [49.6, 50.8], [49.6, 49.8, 50, 50.2, 50.4, 50.6, 50.8],
+      ["b1-sub", `${fmt(R.baer_lines.lines)} lines, ${(R.baer_lines.km / 1e6).toFixed(2)} million km; bends smoothed at 1 km; bars are 95% intervals from resampling 1° cells`]);
+    const big = R.baer_big.by_latitude.slice().reverse().map((r) => Object.assign({}, r, { name: r.name.replace(/^Tropics north \((.*)\)$/, "$1"), col: r.name.startsWith("Southern") ? s2 : s1 }));
+    const reg = R.baer_big.by_region.map((r, i) => Object.assign({}, r, { col: r.name.includes("southern") ? s2 : s1, sep: i === 0 }));
+    const rows = big.concat(reg).map((r) => Object.assign(r, { extra: `${fmt(r.rivers)} rivers; ${r.mostly_left}% curve left more than right` }));
+    dots("p-baer2", rows, [48.9, 51.3], [49, 49.5, 50, 50.5, 51]);
+    table(document.getElementById("t-baer"), ["Group", "Rivers", "Share left", "95% interval", "Rivers mostly left"],
+      rows.map((r) => [r.name, fmt(r.rivers), r.share.toFixed(2) + "%", `${r.lo.toFixed(2)}–${r.hi.toFixed(2)}%`, r.mostly_left + "%"]));
+  }
+
+  function drawAll() { drawAngles(); drawRatio(); drawHack(); drawBaer(); }
+  document.querySelectorAll('input[name="dist"]').forEach((i) => i.addEventListener("change", drawAngles));
+  drawAll();
+  let rt;
+  new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawAll, 120); }).observe(document.querySelector(".col"));
+  if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
