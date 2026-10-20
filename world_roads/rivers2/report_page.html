@@ -102,7 +102,7 @@
     <ol class="findings">
       <li><span><b>Rivers branch wider where the climate is wetter.</b> Junction angles rise from about 44° in deserts to about 72° in humid country, as Seybold, Rothman and Kirchner found in 2017.</span></li>
       <li><span><b>No single ratio fits rivers, because rivers are slightly fractal.</b> The length-to-straight-line ratio grows with size, from 1.1 for creeks to about 2 for great rivers. It reaches π for almost none.</span></li>
-      <li><span><b>Hack’s 1957 law holds across two million reaches</b>, with an exponent of 0.58 that eases toward 0.5 in big basins.</span></li>
+      <li><span><b>Hack’s 1957 law holds almost exactly across two million reaches.</b> River length grows as drainage area to the power 0.59. Hack found 0.6 from streams in Virginia and Maryland.</span></li>
       <li><span><b>The Earth’s spin barely shapes rivers.</b> Baer’s 1860 law, which Einstein explained in his meander paper, shows no sign in nine million kilometres of river. At most a faint trace appears in the biggest rivers of Russia, where Baer did his fieldwork.</span></li>
     </ol>
   </header>
@@ -151,16 +151,16 @@
   </section>
 
   <section id="hack">
-    <div class="kicker">Finding 3 · Hack’s law</div>
-    <h2>Big basins grow longer, at a slowing rate</h2>
-    <p>In 1957 John Hack measured streams in Virginia and Maryland and found that a river’s length grows as the 0.6 power of the area it drains. Double the basin and the river gets about 50% longer, not twice as long, so big basins are fatter than small ones. Later work found the exponent slips toward 0.5 for the largest basins (Mueller 1972). Here it is for <span id="h-n"></span> reaches of the US network.</p>
+    <div class="kicker">Finding 3 · confirms Hack 1957</div>
+    <h2>A 1957 law, across a continent</h2>
+    <p>In 1957 John Hack measured streams in Virginia and Maryland and found that a river’s length grows as the 0.6 power of the area it drains. Double the basin and the river gets about 50% longer, not twice as long, so big basins are fatter than small ones. Why it is 0.6, rather than the 0.5 that simple geometry would give, is still debated; Mandelbrot took it as a sign that rivers are fractal. Here it is for <span id="h-n"></span> reaches of the US network.</p>
     <div class="chart">
       <div class="chart-head">
         <div>
           <div class="chart-title">Longest channel upstream against drainage area</div>
           <div class="chart-sub">Median, with the middle 80% shaded; log–log</div>
         </div>
-        <div class="legend"><span><i style="background:var(--s1)"></i>US reaches, median</span><span><i style="background:var(--muted)"></i>Hack (1957): L = 1.27 A<sup>0.6</sup></span></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>US reaches, median</span><span><i style="background:var(--muted)"></i>Hack (1957): L = 1.27 A<sup>0.6</sup>, in km</span></div>
       </div>
       <div class="plot" id="p-hack"></div>
       <details><summary>Show the numbers</summary><div class="tbl" id="t-hack"></div></details>
@@ -210,8 +210,8 @@
       <li><b>US network:</b> NHDPlus Version 2 (US EPA and USGS, 1:100,000), all 21 processing units of the lower 48: 2.69 million flowlines, their stream order, drainage area, slope and network links, and each catchment’s monthly precipitation and temperature (PRISM, 1971–2000).</li>
       <li><b>Junction angles:</b> every node where two natural channels (not canals, pipes or lake paths) join into one, with matching tributary end points and no braiding. Angle between straight lines from the junction to points 250 m, 500 m and 1 km up each branch. Intervals come from resampling whole 1° cells, since nearby junctions are not independent.</li>
       <li><b>Aridity:</b> annual precipitation over Thornthwaite (1948) potential evapotranspiration, from each catchment’s twelve monthly temperatures and its latitude. Seybold et al. used a different index (Zomer’s global aridity map), so the axis matches theirs only roughly.</li>
-      <li><b>Hack’s law:</b> for each reach, the longest channel upstream of its outlet, against the area draining to it. Basins under 1 km² are left out, because at this map scale the channels stop short of the divide, and so are basins over about 18,000 km², which span several processing units.</li>
-      <li><b>Main stems:</b> NHDPlus’s level paths, each a river from its source to where it ends, at a larger river or the sea. Length is the sum of its reaches; the straight line runs from first point to last.</li>
+      <li><b>Hack’s law:</b> for each reach, the longest channel upstream of its outlet, against the area draining to it. Braids and distributaries are followed, as NHDPlus’s drainage area includes them. Basins under 1 km² are left out, because at this map scale the channels stop short of the divide, and so are basins over about 18,000 km², which span several processing units.</li>
+      <li><b>Main stems:</b> NHDPlus’s level paths, each a river from its source to where it ends, at a larger river or the sea. Paths that begin at a braid or distributary, rather than a source, are left out. Length is the sum of its reaches; the straight line runs from first point to last.</li>
       <li><b>World rivers:</b> every OpenStreetMap waterway=river line, via Overture Maps (the data behind our π video). Baer test: each line at least 2 km long, resampled every 25 m, with heading smoothed at 250 m and 1 km; OSM draws waterways downstream. The 1,000 longest main stems are rebuilt from the π project’s river systems and smoothed at 1 to 10 km.</li>
       <li><b>Not reached:</b> published river lengths (Wikidata, Wikipedia), the global HydroSHEDS network, and journal websites are blocked from this computer. The references below are from memory, and their page numbers are unchecked.</li>
     </ul>
@@ -256,9 +256,11 @@
   const fd = R.flow_direction;
   document.getElementById("fd").textContent = `${fd.north}%, ${fd.east}%, ${fd.south}% and ${fd.west}%`;
   const loc = R.hack.local;
-  document.getElementById("h-note").textContent =
-    `The local exponent is ${loc[2].h.toFixed(2)} for basins of 10–100 km² and ${loc[4].h.toFixed(2)} for 100–1,000 km², right on Hack’s 0.6. ` +
-    `It eases to ${loc[loc.length - 1].h.toFixed(2)} for 1,000–10,000 km², as Mueller found. Above that size the US data can’t join basins across processing units, so we stop.`;
+  const hs = loc.slice(1).map((r) => r.h);
+  document.getElementById("h-note").innerHTML =
+    `Fitted over every reach, L = ${R.hack.c.toFixed(2)} A<sup>${R.hack.h.toFixed(2)}</sup> in km. Over each decade of area from 3 km² to 10,000 km², the local exponent stays between ` +
+    `${Math.min(...hs).toFixed(2)} and ${Math.max(...hs).toFixed(2)}. It dips to ${loc[0].h.toFixed(2)} only for the smallest basins, where a 1:100,000 map stops channels short of the divide. ` +
+    `Mueller (1972) reported the exponent falling toward 0.5 in the very largest basins. Those are bigger than the US data can join here, so this test stops at about 18,000 km².`;
 
   // ---------- helpers
   function el(tag, attrs, parent) {

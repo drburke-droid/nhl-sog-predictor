@@ -1,0 +1,506 @@
+<title>Rivers Beyond π</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a single reading column of findings; each finding is text, then its chart, then its numbers. */
+  :root {
+    --bg: #f5f7f8;
+    --surface: #fcfcfb;
+    --ink: #111416;
+    --ink-2: #474d54;
+    --muted: #6a7179;
+    --rule: #dde1e5;
+    --band: #eceff1;
+    --s1: #2a78d6;
+    --s2: #eb6834;
+    --display: "Literata", Georgia, "Times New Roman", serif;
+    --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121314; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9b9b94; --rule: #2e3032; --band: #222423;
+      --s1: #3987e5; --s2: #d95926; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121314; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9b9b94; --rule: #2e3032; --band: #222423;
+    --s1: #3987e5; --s2: #d95926; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); margin: 0;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 44px 80px;
+  }
+  .col { max-width: 860px; margin: 0 auto; display: grid; gap: 64px; }
+  header { display: grid; gap: 16px; }
+  .eyebrow { font: 500 13px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 650 clamp(40px, 7vw, 64px)/1.02 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font: 650 30px/1.15 var(--display); margin: 0; text-wrap: balance; }
+  h3 { font: 600 17px/1.3 var(--body); margin: 0; }
+  p { margin: 0; max-width: 68ch; }
+  .lede { font-size: 20px; color: var(--ink-2); max-width: 62ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; font: 14px/1.4 var(--mono); color: var(--muted); }
+  .facts b { color: var(--ink); font-weight: 500; }
+  .findings { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; counter-reset: f; }
+  .findings li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 4px; }
+  .findings li::before { counter-increment: f; content: counter(f); font: 500 15px/1.6 var(--mono); color: var(--s1); }
+  section { display: grid; gap: 18px; }
+  .nc { text-transform: none; }
+  .kicker { font: 500 13px/1.2 var(--mono); color: var(--s1); letter-spacing: 0.06em; text-transform: uppercase; }
+  .chart { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 18px 12px; display: grid; gap: 10px; min-width: 0; }
+  .chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; }
+  .chart-title { font: 600 15px/1.35 var(--body); }
+  .chart-sub { font-size: 13.5px; color: var(--muted); }
+  .plot { position: relative; width: 100%; min-width: 0; }
+  .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; }
+  .seg label { font: 500 13px/1 var(--mono); padding: 7px 10px; cursor: pointer; color: var(--ink-2); }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg input:checked + span { color: var(--ink); }
+  .seg label:has(input:checked) { background: var(--band); }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--s1); outline-offset: -2px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--ink-2); }
+  .legend i { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 6px; }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--rule); border-radius: 5px;
+    padding: 8px 10px; font-size: 13px; line-height: 1.45; color: var(--ink-2); box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
+    min-width: 160px; max-width: 260px; z-index: 5;
+  }
+  .tip b { color: var(--ink); font: 500 15px/1.3 var(--mono); display: block; }
+  details { font-size: 14px; color: var(--ink-2); }
+  summary { cursor: pointer; color: var(--muted); font: 500 13px/1.6 var(--mono); }
+  .tbl { overflow-x: auto; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { font: 500 12px/1.3 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .note { font-size: 15px; color: var(--ink-2); }
+  .small { font-size: 14.5px; color: var(--muted); }
+  ol.refs { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14.5px; color: var(--ink-2); }
+  ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15.5px; color: var(--ink-2); }
+  svg text { font-family: var(--body); }
+  .axis text { fill: var(--muted); font-size: 12px; font-family: var(--mono); }
+  .axis line, .axis path { stroke: var(--rule); }
+  @media (max-width: 560px) { body { font-size: 16px; } .chart { padding: 14px 10px 10px; } }
+</style>
+
+<div class="col">
+  <header>
+    <div class="eyebrow">Rivers and <span class="nc">π</span>, part two</div>
+    <h1>Rivers Beyond π</h1>
+    <p class="lede">We went back to the rivers with far more data: every reach of the US national river network and every river line mapped in OpenStreetMap. The π claim fails again, at every size. Three other patterns came through clearly, and one of them repeats a little-known 2017 discovery almost to the degree.</p>
+    <div class="facts">
+      <span><b id="f-fl"></b> US river reaches</span>
+      <span><b id="f-st"></b> US rivers, source to mouth</span>
+      <span><b id="f-km"></b> km of mapped river worldwide</span>
+      <span><b id="f-jn"></b> US river junctions</span>
+    </div>
+    <ol class="findings">
+      <li><span><b>Rivers branch wider where the climate is wetter.</b> Junction angles rise from about 44° in deserts to about 72° in humid country, as Seybold, Rothman and Kirchner found in 2017.</span></li>
+      <li><span><b>No single ratio fits rivers, because rivers are slightly fractal.</b> The length-to-straight-line ratio grows with size, from 1.1 for creeks to about 2 for great rivers. It reaches π for almost none.</span></li>
+      <li><span><b>Hack’s 1957 law holds almost exactly across two million reaches.</b> River length grows as drainage area to the power 0.59. Hack found 0.6 from streams in Virginia and Maryland.</span></li>
+      <li><span><b>The Earth’s spin barely shapes rivers.</b> Baer’s 1860 law, which Einstein explained in his meander paper, shows no sign in nine million kilometres of river. At most a faint trace appears in the biggest rivers of Russia, where Baer did his fieldwork.</span></li>
+    </ol>
+  </header>
+
+  <section id="angles">
+    <div class="kicker">Finding 1 · confirms Seybold et al. 2017</div>
+    <h2>Wet climates make wider river junctions</h2>
+    <p>Where two streams meet, the angle between them is a record of climate. In a dry landscape, water runs off the surface in sheets and carves narrow, steep branches. In a wet one, springs fed by groundwater eat into the ground and the branches spread. Theory for spring-fed networks predicts 72°, or 2π/5 (Devauchelle et al. 2012). Seybold, Rothman and Kirchner measured junctions across the United States in 2017 and reported about 45° in arid regions and 72° in humid ones.</p>
+    <p>We measured every confluence of two natural channels in the lower 48 states, using the straight line from the junction to a point 1 km up each branch. The climate at each junction is its aridity index: yearly precipitation divided by the water the air could evaporate (Thornthwaite’s method, from NHDPlus’s monthly PRISM climate).</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Mean junction angle against aridity</div>
+          <div class="chart-sub" id="a-sub"></div>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="Distance up each branch">
+          <label><input type="radio" name="dist" id="dist-250" value="250"><span>250 m</span></label>
+          <label><input type="radio" name="dist" id="dist-500" value="500"><span>500 m</span></label>
+          <label><input type="radio" name="dist" id="dist-1000" value="1000" checked><span>1 km</span></label>
+        </div>
+      </div>
+      <div class="plot" id="p-angles"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-angles"></div></details>
+    </div>
+    <p class="note">The trend holds within flat, middling and steep ground, and for junctions of two headwater streams alone. The distance up each branch shifts every angle, since channels bend as they approach a junction, but not the gap between dry and wet. Steeper ground also narrows junctions, as Howard (1971) predicted.</p>
+    <div class="tbl" id="t-controls"></div>
+  </section>
+
+  <section id="ratio">
+    <div class="kicker">Finding 2 · the <span class="nc">π</span> claim, at every size</div>
+    <h2>No single ratio fits rivers</h2>
+    <p>The story goes that a river’s length divided by the straight line from source to mouth averages π. We now have that ratio for <span id="r-n"></span> US rivers, every main stem in the national network from a 1 km creek to the Missouri, and for the world’s <span id="r-w"></span> river systems longer than 100 km.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Median length ÷ straight-line distance, by river length</div>
+          <div class="chart-sub">π shown dashed; log scale of length</div>
+        </div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>US rivers (NHDPlus)</span><span><i style="background:var(--s2)"></i>World systems over 100 km (OpenStreetMap)</span></div>
+      </div>
+      <div class="plot" id="p-ratio"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-ratio"></div></details>
+    </div>
+    <p>The idea traces to Hans-Henrik Stølum’s 1996 model, in which meandering rivers organise themselves around a sinuosity of about π. But Stølum’s ratio was channel length over valley length along a meandering stretch, not the straight line from source to mouth; the popular version stretched it.</p>
+    <p>Measured from source to mouth, the ratio is not a constant at all. It grows with the size of the river, from about 1.1 for creeks to about 2 for the great rivers, and it levels off there. Only <span id="r-pi"></span> of US rivers land within 0.2 of π. The growth is what you expect if rivers are slightly fractal: across US rivers, length rises roughly as the straight-line distance to the power 1.07. Mandelbrot (1982) argued from Hack’s law that rivers are fractal, with an exponent a little above 1. A fractal has no single ratio, so π could only ever be true of rivers of one particular size.</p>
+  </section>
+
+  <section id="hack">
+    <div class="kicker">Finding 3 · confirms Hack 1957</div>
+    <h2>A 1957 law, across a continent</h2>
+    <p>In 1957 John Hack measured streams in Virginia and Maryland and found that a river’s length grows as the 0.6 power of the area it drains. Double the basin and the river gets about 50% longer, not twice as long, so big basins are fatter than small ones. Why it is 0.6, rather than the 0.5 that simple geometry would give, is still debated; Mandelbrot took it as a sign that rivers are fractal. Here it is for <span id="h-n"></span> reaches of the US network.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Longest channel upstream against drainage area</div>
+          <div class="chart-sub">Median, with the middle 80% shaded; log–log</div>
+        </div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>US reaches, median</span><span><i style="background:var(--muted)"></i>Hack (1957): L = 1.27 A<sup>0.6</sup>, in km</span></div>
+      </div>
+      <div class="plot" id="p-hack"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-hack"></div></details>
+    </div>
+    <p class="note" id="h-note"></p>
+  </section>
+
+  <section id="baer">
+    <div class="kicker">Finding 4 · Baer’s law and Einstein</div>
+    <h2>The Earth’s spin barely bends rivers</h2>
+    <p>In 1860 Karl Ernst von Baer, studying Russian rivers, proposed that the Earth’s rotation pushes a river’s water toward its right bank in the northern hemisphere, so right banks erode more. Einstein’s 1926 paper on meanders, the one with the tea leaves, is titled after this law and argues it should be real.</p>
+    <p>If right banks erode more, left-hand bends grow a little more, because a bend’s outer bank is the one that wears away. So a slightly larger share of a northern river’s length should curve left, and of a southern river’s length should curve right. We measured the share curving left along every mapped river line, smoothed at the scale of bends.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Share of river length curving left, every OpenStreetMap river line</div>
+          <div class="chart-sub" id="b1-sub"></div>
+        </div>
+      </div>
+      <div class="plot" id="p-baer1"></div>
+    </div>
+    <p>Across nine million kilometres, the share is 50.02% in both hemispheres. Every well-sampled band of latitude sits within about a tenth of a percent of 50%; only the sparse far south wanders further, and its interval includes 50%. Left and right bends are equally tight, too. Rotation should matter most for large, slow rivers with wide bends, so we ran the test again on the main stems of the 1,000 longest rivers.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Share of river length curving left, the 1,000 longest rivers</div>
+          <div class="chart-sub">Bends smoothed at 5 km; bars are 95% intervals from resampling rivers</div>
+        </div>
+      </div>
+      <div class="plot" id="p-baer2"></div>
+      <details><summary>Show the numbers</summary><div class="tbl" id="t-baer"></div></details>
+    </div>
+    <p>Here a trace appears. In big northern rivers, 50.4% of curving length bends left, and 55% of the rivers curve left more than right. The excess is larger at high latitudes, where the rotational force is stronger. But almost all of it comes from Russia and Siberia, the rivers Baer studied, where permafrost and lopsided valleys offer other explanations. Without Russia, the northern figure falls inside chance. The southern rivers lean the predicted way, but within chance. A test on all 1,525 named rivers of the 7,311 systems, with a larger southern sample, finds nothing significant in either hemisphere. Our verdict: rotation is at most a whisper in the shape of rivers.</p>
+  </section>
+
+  <section id="also">
+    <h2>Also in the data</h2>
+    <ul class="plain">
+      <li><b>No direction dominates.</b> Of the world’s 7,311 systems over 100 km, <span id="fd"></span> run north, east, south and west, measured from source to mouth. The Nile flowing north is not unusual.</li>
+      <li><b>The world’s big rivers settle near 2.</b> Every size class of the 7,311 systems has a median length-to-straight-line ratio between 1.88 and 2.13. About 4% fall within 0.2 of π.</li>
+    </ul>
+  </section>
+
+  <section id="method">
+    <h2>How this was done</h2>
+    <ul class="plain">
+      <li><b>US network:</b> NHDPlus Version 2 (US EPA and USGS, 1:100,000), all 21 processing units of the lower 48: 2.69 million flowlines, their stream order, drainage area, slope and network links, and each catchment’s monthly precipitation and temperature (PRISM, 1971–2000).</li>
+      <li><b>Junction angles:</b> every node where two natural channels (not canals, pipes or lake paths) join into one, with matching tributary end points and no braiding. Angle between straight lines from the junction to points 250 m, 500 m and 1 km up each branch. Intervals come from resampling whole 1° cells, since nearby junctions are not independent.</li>
+      <li><b>Aridity:</b> annual precipitation over Thornthwaite (1948) potential evapotranspiration, from each catchment’s twelve monthly temperatures and its latitude. Seybold et al. used a different index (Zomer’s global aridity map), so the axis matches theirs only roughly.</li>
+      <li><b>Hack’s law:</b> for each reach, the longest channel upstream of its outlet, against the area draining to it. Braids and distributaries are followed, as NHDPlus’s drainage area includes them. Basins under 1 km² are left out, because at this map scale the channels stop short of the divide, and so are basins over about 18,000 km², which span several processing units.</li>
+      <li><b>Main stems:</b> NHDPlus’s level paths, each a river from its source to where it ends, at a larger river or the sea. Paths that begin at a braid or distributary, rather than a source, are left out. Length is the sum of its reaches; the straight line runs from first point to last.</li>
+      <li><b>World rivers:</b> every OpenStreetMap waterway=river line, via Overture Maps (the data behind our π video). Baer test: each line at least 2 km long, resampled every 25 m, with heading smoothed at 250 m and 1 km; OSM draws waterways downstream. The 1,000 longest main stems are rebuilt from the π project’s river systems and smoothed at 1 to 10 km.</li>
+      <li><b>Not reached:</b> published river lengths (Wikidata, Wikipedia), the global HydroSHEDS network, and journal websites are blocked from this computer. The references below are from memory, and their page numbers are unchecked.</li>
+    </ul>
+  </section>
+
+  <section id="refs">
+    <h2>References</h2>
+    <ol class="refs">
+      <li>Seybold, H., Rothman, D. H. &amp; Kirchner, J. W. (2017). Climate’s watermark in the geometry of stream networks. <i>Geophysical Research Letters</i> 44.</li>
+      <li>Devauchelle, O., Petroff, A. P., Seybold, H. F. &amp; Rothman, D. H. (2012). Ramification of stream networks. <i>PNAS</i> 109.</li>
+      <li>Howard, A. D. (1971). Optimal angles of stream junction. <i>Water Resources Research</i> 7.</li>
+      <li>Hack, J. T. (1957). Studies of longitudinal stream profiles in Virginia and Maryland. <i>USGS Professional Paper</i> 294-B.</li>
+      <li>Mueller, J. E. (1972). Re-evaluation of the relationship of master streams and drainage basins. <i>Geological Society of America Bulletin</i> 83.</li>
+      <li>Mandelbrot, B. B. (1982). <i>The Fractal Geometry of Nature.</i></li>
+      <li>Stølum, H.-H. (1996). River meandering as a self-organization process. <i>Science</i> 271.</li>
+      <li>von Baer, K. E. (1860). On a general law in the shaping of river beds (in German). Bulletin of the St Petersburg Academy of Sciences.</li>
+      <li>Einstein, A. (1926). Die Ursache der Mäanderbildung der Flußläufe und des sogenannten Baerschen Gesetzes. <i>Die Naturwissenschaften</i> 14.</li>
+      <li>Thornthwaite, C. W. (1948). An approach toward a rational classification of climate. <i>Geographical Review</i> 38.</li>
+      <li>US EPA &amp; USGS. NHDPlus Version 2 (2012). River data © OpenStreetMap contributors (ODbL), via Overture Maps.</li>
+    </ol>
+  </section>
+</div>
+
+<script type="application/json" id="data">{"junctions":{"250":{"n":734270,"spearman":0.123,"bins":[{"ai":[0.05,0.1],"mid":0.07071067811865477,"n":1699,"mean":52.3,"lo":49.7,"hi":54.1},{"ai":[0.1,0.15],"mid":0.1224744871391589,"n":3390,"mean":53.6,"lo":51.8,"hi":55.3},{"ai":[0.15,0.2],"mid":0.17320508075688773,"n":3891,"mean":53.6,"lo":52.0,"hi":55.3},{"ai":[0.2,0.3],"mid":0.2449489742783178,"n":11822,"mean":60.4,"lo":58.0,"hi":63.0},{"ai":[0.3,0.4],"mid":0.34641016151377546,"n":24561,"mean":63.6,"lo":61.9,"hi":65.4},{"ai":[0.4,0.5],"mid":0.4472135954999579,"n":31088,"mean":65.8,"lo":64.6,"hi":67.0},{"ai":[0.5,0.65],"mid":0.570087712549569,"n":65714,"mean":72.9,"lo":71.5,"hi":74.2},{"ai":[0.65,0.8],"mid":0.7211102550927979,"n":75633,"mean":78.4,"lo":77.1,"hi":79.6},{"ai":[0.8,1.0],"mid":0.8944271909999159,"n":58312,"mean":77.4,"lo":76.4,"hi":78.5},{"ai":[1.0,1.25],"mid":1.118033988749895,"n":58277,"mean":79.5,"lo":78.4,"hi":80.6},{"ai":[1.25,1.5],"mid":1.3693063937629153,"n":175442,"mean":79.7,"lo":79.0,"hi":80.4},{"ai":[1.5,2.0],"mid":1.7320508075688772,"n":179074,"mean":78.2,"lo":76.9,"hi":79.5},{"ai":[2.0,3.0],"mid":2.449489742783178,"n":34800,"mean":79.9,"lo":78.8,"hi":81.0},{"ai":[3.0,6.0],"mid":4.242640687119285,"n":10059,"mean":78.3,"lo":75.5,"hi":80.8}],"controls":{"flat":{"dry":74.0,"wet":83.2,"n_dry":9199,"n_wet":186871},"middle":{"dry":63.7,"wet":77.4,"n_dry":21029,"n_wet":151256},"steep":{"dry":60.2,"wet":74.6,"n_dry":46254,"n_wet":120002},"first_order_pairs":{"dry":57.3,"wet":72.9,"n_dry":20409,"n_wet":123552}}},"500":{"n":644826,"spearman":0.144,"bins":[{"ai":[0.05,0.1],"mid":0.07071067811865477,"n":1524,"mean":48.4,"lo":46.1,"hi":50.1},{"ai":[0.1,0.15],"mid":0.1224744871391589,"n":3057,"mean":50.3,"lo":48.7,"hi":52.0},{"ai":[0.15,0.2],"mid":0.17320508075688773,"n":3430,"mean":50.1,"lo":48.6,"hi":51.6},{"ai":[0.2,0.3],"mid":0.2449489742783178,"n":10513,"mean":56.4,"lo":54.0,"hi":58.9},{"ai":[0.3,0.4],"mid":0.34641016151377546,"n":21829,"mean":59.1,"lo":57.5,"hi":60.8},{"ai":[0.4,0.5],"mid":0.4472135954999579,"n":27645,"mean":61.9,"lo":60.7,"hi":63.2},{"ai":[0.5,0.65],"mid":0.570087712549569,"n":58851,"mean":68.2,"lo":66.8,"hi":69.4},{"ai":[0.65,0.8],"mid":0.7211102550927979,"n":67525,"mean":72.6,"lo":71.4,"hi":73.8},{"ai":[0.8,1.0],"mid":0.8944271909999159,"n":52296,"mean":71.6,"lo":70.7,"hi":72.5},{"ai":[1.0,1.25],"mid":1.118033988749895,"n":51489,"mean":74.3,"lo":73.3,"hi":75.5},{"ai":[1.25,1.5],"mid":1.3693063937629153,"n":151914,"mean":75.8,"lo":75.2,"hi":76.5},{"ai":[1.5,2.0],"mid":1.7320508075688772,"n":154858,"mean":74.4,"lo":73.3,"hi":75.8},{"ai":[2.0,3.0],"mid":2.449489742783178,"n":30432,"mean":77.0,"lo":75.8,"hi":78.3},{"ai":[3.0,6.0],"mid":4.242640687119285,"n":9002,"mean":75.8,"lo":73.2,"hi":78.3}],"controls":{"flat":{"dry":70.3,"wet":79.2,"n_dry":8060,"n_wet":162607},"middle":{"dry":59.9,"wet":73.2,"n_dry":18855,"n_wet":131004},"steep":{"dry":56.0,"wet":71.3,"n_dry":41108,"n_wet":104520},"first_order_pairs":{"dry":53.2,"wet":68.4,"n_dry":19910,"n_wet":117359}}},"1000":{"n":480617,"spearman":0.155,"bins":[{"ai":[0.05,0.1],"mid":0.07071067811865477,"n":1243,"mean":44.4,"lo":42.3,"hi":46.0},{"ai":[0.1,0.15],"mid":0.1224744871391589,"n":2450,"mean":46.6,"lo":45.5,"hi":48.3},{"ai":[0.15,0.2],"mid":0.17320508075688773,"n":2724,"mean":46.1,"lo":44.6,"hi":47.6},{"ai":[0.2,0.3],"mid":0.2449489742783178,"n":8310,"mean":51.6,"lo":49.3,"hi":54.0},{"ai":[0.3,0.4],"mid":0.34641016151377546,"n":17100,"mean":53.5,"lo":51.9,"hi":55.6},{"ai":[0.4,0.5],"mid":0.4472135954999579,"n":21725,"mean":56.8,"lo":55.4,"hi":58.2},{"ai":[0.5,0.65],"mid":0.570087712549569,"n":46562,"mean":62.2,"lo":61.1,"hi":63.4},{"ai":[0.65,0.8],"mid":0.7211102550927979,"n":52544,"mean":64.8,"lo":63.7,"hi":65.8},{"ai":[0.8,1.0],"mid":0.8944271909999159,"n":40685,"mean":64.1,"lo":63.0,"hi":65.0},{"ai":[1.0,1.25],"mid":1.118033988749895,"n":38845,"mean":67.3,"lo":66.2,"hi":68.5},{"ai":[1.25,1.5],"mid":1.3693063937629153,"n":109065,"mean":69.0,"lo":68.4,"hi":69.6},{"ai":[1.5,2.0],"mid":1.7320508075688772,"n":110148,"mean":67.9,"lo":66.6,"hi":69.2},{"ai":[2.0,3.0],"mid":2.449489742783178,"n":22150,"mean":71.6,"lo":70.2,"hi":73.1},{"ai":[3.0,6.0],"mid":4.242640687119285,"n":6698,"mean":72.0,"lo":69.6,"hi":74.5}],"controls":{"flat":{"dry":65.9,"wet":73.4,"n_dry":6284,"n_wet":118099},"middle":{"dry":55.3,"wet":65.9,"n_dry":15119,"n_wet":93594},"steep":{"dry":50.4,"wet":64.6,"n_dry":32169,"n_wet":75561},"first_order_pairs":{"dry":48.1,"wet":60.8,"n_dry":19031,"n_wet":103670}}}},"us_stems":{"n":837690,"km":4559810,"ratio_of_totals":1.299,"median":1.154,"near_pi":0.0005550979479282312,"above_pi":0.001043345390299514,"by_length":[{"len":[1,3],"n":395792,"median":1.113,"ratio":1.14,"near_pi":0.00015159477705461454},{"len":[3,10],"n":348748,"median":1.184,"ratio":1.224,"near_pi":0.0005878169910651818},{"len":[10,30],"n":70211,"median":1.315,"ratio":1.355,"near_pi":0.0016806483314580336},{"len":[30,100],"n":11626,"median":1.533,"ratio":1.57,"near_pi":0.004644761740925512},{"len":[100,300],"n":1397,"median":1.808,"ratio":1.816,"near_pi":0.01789549033643522},{"len":[300,1000],"n":138,"median":2.01,"ratio":2.081,"near_pi":0.021739130434782608}],"curve":[{"straight_km":1.33,"ratio":1.315,"n":175856},{"straight_km":2.37,"ratio":1.126,"n":316807},{"straight_km":4.22,"ratio":1.151,"n":188185},{"straight_km":7.5,"ratio":1.19,"n":88169},{"straight_km":13.34,"ratio":1.243,"n":35504},{"straight_km":23.71,"ratio":1.32,"n":12302},{"straight_km":42.17,"ratio":1.436,"n":3893},{"straight_km":74.99,"ratio":1.525,"n":1234},{"straight_km":133.35,"ratio":1.585,"n":363},{"straight_km":237.14,"ratio":1.733,"n":85}]},"world_systems":{"n":7311,"ratio_of_totals":1.992,"median":1.973,"near_pi":0.04459034331828751,"by_length":[{"len":[100,200],"n":2380,"median":1.882,"ratio":1.859,"near_pi":0.03235294117647059},{"len":[200,500],"n":3960,"median":2.021,"ratio":2.017,"near_pi":0.05126262626262626},{"len":[500,1000],"n":758,"median":2.033,"ratio":2.026,"near_pi":0.05408970976253298},{"len":[1000,2000],"n":160,"median":1.985,"ratio":2.014,"near_pi":0.025},{"len":[2000,8000],"n":26,"median":2.129,"ratio":2.097,"near_pi":0.038461538461538464}]},"hack":{"n":2069467,"h":0.592,"c":1.43,"local":[{"area":[1.0,10.0],"h":0.541},{"area":[3.1622776601683795,31.622776601683793],"h":0.594},{"area":[10.0,100.0],"h":0.59},{"area":[31.622776601683793,316.22776601683796],"h":0.592},{"area":[100.0,1000.0],"h":0.596},{"area":[316.22776601683796,3162.2776601683795],"h":0.581},{"area":[1000.0,10000.0],"h":0.595}],"curve":[{"area":1.334,"len":1.879,"p10":1.184,"p90":2.562,"n":246002},{"area":2.371,"len":2.432,"p10":1.636,"p90":3.492,"n":321296},{"area":4.217,"len":3.38,"p10":2.181,"p90":4.903,"n":299578},{"area":7.499,"len":4.756,"p10":3.099,"p90":6.906,"n":252663},{"area":13.335,"len":6.695,"p10":4.462,"p90":9.687,"n":204600},{"area":23.714,"len":9.429,"p10":6.449,"p90":13.526,"n":162515},{"area":42.17,"len":13.217,"p10":9.201,"p90":18.845,"n":129613},{"area":74.989,"len":18.573,"p10":13.022,"p90":26.319,"n":104817},{"area":133.352,"len":26.018,"p10":18.304,"p90":37.029,"n":84454},{"area":237.137,"len":36.775,"p10":25.861,"p90":52.916,"n":69555},{"area":421.697,"len":51.684,"p10":36.464,"p90":75.818,"n":55208},{"area":749.894,"len":72.937,"p10":50.95,"p90":108.625,"n":43890},{"area":1333.521,"len":99.797,"p10":70.366,"p90":153.849,"n":33665},{"area":2371.374,"len":142.045,"p10":99.615,"p90":211.387,"n":25358},{"area":4216.965,"len":207.42,"p10":140.848,"p90":312.378,"n":18165},{"area":7498.942,"len":275.523,"p10":188.3,"p90":413.704,"n":11179},{"area":13335.214,"len":384.084,"p10":251.58,"p90":658.758,"n":6909}]},"baer_lines":{"lines":734468,"km":9064174,"bands":{"250":[{"band":[-60,-40],"share":50.165,"lo":50.036,"hi":50.315,"km":87323,"lines":6947},{"band":[-40,-20],"share":50.035,"lo":49.984,"hi":50.086,"km":693987,"lines":55385},{"band":[-20,-5],"share":50.0,"lo":49.96,"hi":50.041,"km":981476,"lines":66117},{"band":[-5,5],"share":50.027,"lo":49.979,"hi":50.071,"km":806531,"lines":59782},{"band":[5,20],"share":49.983,"lo":49.945,"hi":50.02,"km":1219422,"lines":105666},{"band":[20,40],"share":50.007,"lo":49.972,"hi":50.039,"km":1970632,"lines":171439},{"band":[40,60],"share":50.03,"lo":50.002,"hi":50.064,"km":2179045,"lines":195008},{"band":[60,80],"share":49.974,"lo":49.929,"hi":50.02,"km":1122896,"lines":73817}],"1000":[{"band":[-60,-40],"share":50.298,"lo":49.857,"hi":50.711,"km":87323,"lines":6947},{"band":[-40,-20],"share":49.995,"lo":49.882,"hi":50.108,"km":693987,"lines":55385},{"band":[-20,-5],"share":50.019,"lo":49.936,"hi":50.104,"km":981476,"lines":66117},{"band":[-5,5],"share":49.98,"lo":49.859,"hi":50.086,"km":806531,"lines":59782},{"band":[5,20],"share":49.933,"lo":49.826,"hi":50.032,"km":1219422,"lines":105666},{"band":[20,40],"share":50.031,"lo":49.96,"hi":50.119,"km":1970632,"lines":171439},{"band":[40,60],"share":50.046,"lo":49.961,"hi":50.115,"km":2179045,"lines":195008},{"band":[60,80],"share":50.04,"lo":49.942,"hi":50.128,"km":1122896,"lines":73817}]},"north":{"250":{"share_left":0.5000443180930725,"ci":[0.4998914805699575,0.5002199062241417],"lines":546231,"cells":11395,"deg_per_km_left":52.43943923138075,"deg_per_km_right":52.454635356556686},"1000":{"share_left":0.5001848824843474,"ci":[0.4998033723915545,0.5006297724508274],"lines":546231,"cells":11395,"deg_per_km_left":14.620024915865852,"deg_per_km_right":14.62931840157374}},"south":{"250":{"share_left":0.5002242844771706,"ci":[0.499954331563062,0.5005544741869076],"lines":128455,"cells":2690,"deg_per_km_left":56.52628766369321,"deg_per_km_right":56.555634044301726},"1000":{"share_left":0.5002345704004467,"ci":[0.4995236654858891,0.5009982082705854],"lines":128455,"cells":2690,"deg_per_km_left":15.157758593157466,"deg_per_km_right":15.152334250760578}}},"baer_big":{"rivers":1000,"scale_km":5,"by_latitude":[{"name":"Southern hemisphere","share":49.79,"lo":49.42,"hi":50.17,"rivers":252,"mostly_left":47.2},{"name":"Tropics north (5\u201325\u00b0N)","share":49.88,"lo":49.16,"hi":50.51,"rivers":112,"mostly_left":49.1},{"name":"25\u201345\u00b0N","share":50.25,"lo":49.8,"hi":50.69,"rivers":177,"mostly_left":52.5},{"name":"45\u201360\u00b0N","share":50.58,"lo":50.13,"hi":51.0,"rivers":226,"mostly_left":58.0},{"name":"60\u201380\u00b0N","share":50.48,"lo":49.88,"hi":51.07,"rivers":117,"mostly_left":57.3}],"by_region":[{"name":"North America","share":50.36,"lo":49.79,"hi":50.92,"rivers":172,"mostly_left":53.5},{"name":"Europe","share":50.0,"lo":49.4,"hi":50.64,"rivers":107,"mostly_left":50.5},{"name":"Russia and Siberia","share":50.62,"lo":50.19,"hi":51.07,"rivers":224,"mostly_left":60.3},{"name":"North, without Russia","share":50.2,"lo":49.88,"hi":50.56,"rivers":408,"mostly_left":51.7},{"name":"All northern","share":50.37,"lo":50.11,"hi":50.62,"rivers":632,"mostly_left":54.7},{"name":"All southern","share":49.79,"lo":49.4,"hi":50.13,"rivers":252,"mostly_left":47.2}]},"flow_direction":{"north":26.2,"east":27.5,"south":23.7,"west":22.6},"totals":{"us_flowlines":2691339,"us_units":21}}</script>
+<script>
+(function () {
+  "use strict";
+  const R = JSON.parse(document.getElementById("data").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+  const fmt = (n) => n.toLocaleString("en-US");
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // ---------- page numbers
+  document.getElementById("f-fl").textContent = (R.totals.us_flowlines / 1e6).toFixed(2) + " million";
+  document.getElementById("f-st").textContent = fmt(R.us_stems.n);
+  document.getElementById("f-km").textContent = (R.baer_lines.km / 1e6).toFixed(1) + " million";
+  document.getElementById("f-jn").textContent = fmt(R.junctions["250"].n);
+  document.getElementById("r-n").textContent = fmt(R.us_stems.n);
+  document.getElementById("r-w").textContent = fmt(R.world_systems.n);
+  document.getElementById("r-pi").textContent = (R.us_stems.near_pi * 100).toFixed(2) + "%";
+  document.getElementById("h-n").textContent = (R.hack.n / 1e6).toFixed(2) + " million";
+  const fd = R.flow_direction;
+  document.getElementById("fd").textContent = `${fd.north}%, ${fd.east}%, ${fd.south}% and ${fd.west}%`;
+  const loc = R.hack.local;
+  const hs = loc.slice(1).map((r) => r.h);
+  document.getElementById("h-note").innerHTML =
+    `Fitted over every reach, L = ${R.hack.c.toFixed(2)} A<sup>${R.hack.h.toFixed(2)}</sup> in km. Over each decade of area from 3 km² to 10,000 km², the local exponent stays between ` +
+    `${Math.min(...hs).toFixed(2)} and ${Math.max(...hs).toFixed(2)}. It dips to ${loc[0].h.toFixed(2)} only for the smallest basins, where a 1:100,000 map stops channels short of the divide. ` +
+    `Mueller (1972) reported the exponent falling toward 0.5 in the very largest basins. Those are bigger than the US data can join here, so this test stops at about 18,000 km².`;
+
+  // ---------- helpers
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function txt(parent, x, y, s, attrs) {
+    const t = el("text", Object.assign({ x, y }, attrs || {}), parent);
+    t.textContent = s;
+    return t;
+  }
+  const lin = (d0, d1, r0, r1) => (v) => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
+  const lg = (d0, d1, r0, r1) => (v) => r0 + (Math.log10(v) - Math.log10(d0)) / (Math.log10(d1) - Math.log10(d0)) * (r1 - r0);
+  function tooltip(plot) {
+    let t = plot.querySelector(".tip");
+    if (!t) { t = document.createElement("div"); t.className = "tip"; t.hidden = true; plot.appendChild(t); }
+    return {
+      show(x, y, lines) {
+        t.replaceChildren();
+        const b = document.createElement("b"); b.textContent = lines[0]; t.appendChild(b);
+        for (const s of lines.slice(1)) { const d = document.createElement("div"); d.textContent = s; t.appendChild(d); }
+        t.hidden = false;
+        const pw = plot.clientWidth, tw = t.offsetWidth;
+        t.style.left = Math.max(0, Math.min(pw - tw, x + 14)) + "px";
+        t.style.top = Math.max(0, y - t.offsetHeight - 10) + "px";
+      },
+      hide() { t.hidden = true; }
+    };
+  }
+  function table(host, head, rows) {
+    const tb = document.createElement("table");
+    const tr = document.createElement("tr");
+    for (const h of head) { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); }
+    const th_ = document.createElement("thead"); th_.appendChild(tr); tb.appendChild(th_);
+    const body = document.createElement("tbody");
+    for (const r of rows) {
+      const row = document.createElement("tr");
+      for (const c of r) { const td = document.createElement("td"); td.textContent = c; row.appendChild(td); }
+      body.appendChild(row);
+    }
+    tb.appendChild(body);
+    host.replaceChildren(tb);
+  }
+  function frame(host, H) {
+    host.querySelectorAll("svg").forEach((s) => s.remove());
+    const W = Math.max(300, host.clientWidth);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img" });
+    host.insertBefore(svg, host.firstChild);
+    return { svg, W, H, narrow: W < 520 };
+  }
+  function axisX(g, sx, ticks, y0, y1, label, f) {
+    const a = el("g", { class: "axis" }, g);
+    for (const v of ticks) {
+      const x = sx(v);
+      el("line", { x1: x, x2: x, y1: y0, y2: y1, "stroke-width": 1 }, a);
+      txt(a, x, y1 + 16, f ? f(v) : String(v), { "text-anchor": "middle" });
+    }
+    if (label) txt(a, (sx(ticks[0]) + sx(ticks[ticks.length - 1])) / 2, y1 + 36, label, { "text-anchor": "middle" });
+  }
+  function axisY(g, sy, ticks, x0, x1, f) {
+    const a = el("g", { class: "axis" }, g);
+    for (const v of ticks) {
+      const y = sy(v);
+      el("line", { x1: x0, x2: x1, y1: y, y2: y, "stroke-width": 1 }, a);
+      txt(a, x0 - 8, y + 4, f ? f(v) : String(v), { "text-anchor": "end" });
+    }
+  }
+
+  // ---------- 1. junction angles
+  const AIcls = [[0.05, 0.2, "arid"], [0.2, 0.5, "semi-arid"], [0.5, 0.65, "dry sub-humid"], [0.65, 6, "humid"]];
+  function drawAngles() {
+    const dist = document.querySelector('input[name="dist"]:checked').value;
+    const J = R.junctions[dist];
+    document.getElementById("a-sub").textContent =
+      `${fmt(J.n)} junctions, branches measured ${dist === "1000" ? "1 km" : dist + " m"} from the junction; bars are 95% intervals`;
+    const host = document.getElementById("p-angles");
+    const { svg, W, H, narrow } = frame(host, narrow0(host) ? 330 : 380);
+    const m = { l: 46, r: narrow ? 14 : 150, t: 26, b: 52 };
+    const sx = lg(0.05, 6, m.l, W - m.r), sy = lin(40, 85, H - m.b, m.t);
+    const g = el("g", {}, svg);
+    AIcls.forEach(([a, b, name], i) => {
+      el("rect", { x: sx(a), y: m.t, width: sx(b) - sx(a), height: H - m.b - m.t, fill: i % 2 ? "transparent" : css("--band") }, g);
+      if (!narrow || i !== 2) txt(g, (sx(a) + sx(b)) / 2, m.t - 8, name, { "text-anchor": "middle", fill: css("--muted"), "font-size": 12 });
+    });
+    axisY(g, sy, [40, 50, 60, 70, 80], m.l, W - m.r, (v) => v + "°");
+    axisX(g, sx, [0.05, 0.1, 0.2, 0.5, 1, 2, 5], H - m.b, H - m.b, narrow ? "aridity index  →  wetter" : "aridity index (precipitation ÷ potential evaporation)  →  wetter");
+    for (const [v, s] of [[45, narrow ? "45°" : "45°: arid, Seybold et al."], [72, narrow ? "72°" : "72° = 2π/5: humid"]]) {
+      el("line", { x1: m.l, x2: W - m.r, y1: sy(v), y2: sy(v), stroke: css("--muted"), "stroke-dasharray": "5 4", "stroke-width": 1.2 }, g);
+      txt(g, W - m.r + 8, sy(v) + 4, s, { fill: css("--ink-2"), "font-size": 12.5 });
+    }
+    const pts = J.bins;
+    el("path", { d: pts.map((p, i) => (i ? "L" : "M") + sx(p.mid) + " " + sy(p.mean)).join(" "), fill: "none", stroke: css("--s1"), "stroke-width": 2 }, g);
+    for (const p of pts) {
+      el("line", { x1: sx(p.mid), x2: sx(p.mid), y1: sy(p.lo), y2: sy(p.hi), stroke: css("--s1"), "stroke-width": 1.5 }, g);
+      el("circle", { cx: sx(p.mid), cy: sy(p.mean), r: 4.5, fill: css("--s1"), stroke: css("--surface"), "stroke-width": 2 }, g);
+    }
+    const cross = el("line", { y1: m.t, y2: H - m.b, stroke: css("--ink-2"), "stroke-width": 1, opacity: 0 }, g);
+    const tip = tooltip(host);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.r - m.l, height: H - m.b - m.t, fill: "transparent", tabindex: 0 }, svg);
+    const pick = (x) => pts.reduce((a, p) => Math.abs(sx(p.mid) - x) < Math.abs(sx(a.mid) - x) ? p : a, pts[0]);
+    const show = (p) => {
+      cross.setAttribute("x1", sx(p.mid)); cross.setAttribute("x2", sx(p.mid)); cross.setAttribute("opacity", 0.5);
+      const sc = W / host.clientWidth;
+      tip.show(sx(p.mid) / sc, sy(p.mean) / sc, [`${p.mean.toFixed(1)}° mean`, `95% interval ${p.lo}–${p.hi}°`, `aridity ${p.ai[0]}–${p.ai[1]}`, `${fmt(p.n)} junctions`]);
+    };
+    hit.addEventListener("pointermove", (e) => { const r = svg.getBoundingClientRect(); show(pick((e.clientX - r.left) * W / r.width)); });
+    hit.addEventListener("pointerleave", () => { tip.hide(); cross.setAttribute("opacity", 0); });
+    let ki = pts.length - 1;
+    hit.addEventListener("focus", () => show(pts[ki]));
+    hit.addEventListener("blur", () => { tip.hide(); cross.setAttribute("opacity", 0); });
+    hit.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") ki = Math.max(0, ki - 1); else if (e.key === "ArrowRight") ki = Math.min(pts.length - 1, ki + 1); else return;
+      e.preventDefault(); show(pts[ki]);
+    });
+    table(document.getElementById("t-angles"), ["Aridity index", "Junctions", "Mean angle", "95% interval"],
+      pts.map((p) => [`${p.ai[0]}–${p.ai[1]}`, fmt(p.n), p.mean.toFixed(1) + "°", `${p.lo}–${p.hi}°`]));
+    const C = J.controls, names = { flat: "Flattest third", middle: "Middle third", steep: "Steepest third", first_order_pairs: "Two headwater streams" };
+    table(document.getElementById("t-controls"), ["Junctions (" + (dist === "1000" ? "1 km" : dist + " m") + ")", "Dry, aridity < 0.5", "Wet, aridity > 1", "Gap"],
+      Object.keys(names).map((k) => [names[k], C[k].dry.toFixed(1) + "°", C[k].wet.toFixed(1) + "°", "+" + (C[k].wet - C[k].dry).toFixed(1) + "°"]));
+  }
+  function narrow0(host) { return host.clientWidth < 520; }
+
+  // ---------- 2. ratio by length
+  function drawRatio() {
+    const host = document.getElementById("p-ratio");
+    const { svg, W, H, narrow } = frame(host, 340);
+    const m = { l: 46, r: narrow ? 16 : 56, t: 16, b: 52 };
+    const sx = lg(1, 8000, m.l, W - m.r), sy = lin(1, 3.4, H - m.b, m.t);
+    const g = el("g", {}, svg);
+    axisY(g, sy, [1, 1.5, 2, 2.5, 3], m.l, W - m.r, (v) => v.toFixed(1));
+    axisX(g, sx, [1, 10, 100, 1000, 8000], H - m.b, H - m.b, "river length (km)", (v) => fmt(v));
+    el("line", { x1: m.l, x2: W - m.r, y1: sy(Math.PI), y2: sy(Math.PI), stroke: css("--muted"), "stroke-dasharray": "5 4", "stroke-width": 1.2 }, g);
+    txt(g, m.l + 6, sy(Math.PI) - 7, "π = 3.14", { fill: css("--ink-2"), "font-size": 12.5 });
+    const series = [
+      { name: "US rivers", col: css("--s1"), rows: R.us_stems.by_length },
+      { name: "World systems", col: css("--s2"), rows: R.world_systems.by_length }
+    ];
+    const all = [];
+    for (const s of series) {
+      const pts = s.rows.map((r) => ({ x: Math.sqrt(r.len[0] * r.len[1]), y: r.median, r, s }));
+      el("path", { d: pts.map((p, i) => (i ? "L" : "M") + sx(p.x) + " " + sy(p.y)).join(" "), fill: "none", stroke: s.col, "stroke-width": 2 }, g);
+      for (const p of pts) {
+        el("circle", { cx: sx(p.x), cy: sy(p.y), r: 4.5, fill: s.col, stroke: css("--surface"), "stroke-width": 2 }, g);
+        all.push(p);
+      }
+    }
+    const tip = tooltip(host);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.r - m.l, height: H - m.b - m.t, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", (e) => {
+      const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+      const p = all.reduce((a, q) => Math.hypot(sx(q.x) - x, sy(q.y) - y) < Math.hypot(sx(a.x) - x, sy(a.y) - y) ? q : a, all[0]);
+      const sc = W / host.clientWidth;
+      tip.show(sx(p.x) / sc, sy(p.y) / sc, [`${p.y.toFixed(2)} median`, `${p.s.name}, ${fmt(p.r.len[0])}–${fmt(p.r.len[1])} km`, `${fmt(p.r.n)} rivers`, `${(p.r.near_pi * 100).toFixed(2)}% within 0.2 of π`]);
+    });
+    hit.addEventListener("pointerleave", () => tip.hide());
+    const rows = [];
+    for (const s of series) for (const r of s.rows) rows.push([s.name, `${fmt(r.len[0])}–${fmt(r.len[1])} km`, fmt(r.n), r.median.toFixed(2), r.ratio.toFixed(2), (r.near_pi * 100).toFixed(2) + "%"]);
+    table(document.getElementById("t-ratio"), ["Rivers", "Length", "Count", "Median ratio", "Ratio of totals", "Within 0.2 of π"], rows);
+  }
+
+  // ---------- 3. Hack
+  function drawHack() {
+    const host = document.getElementById("p-hack");
+    const { svg, W, H, narrow } = frame(host, 340);
+    const m = { l: 52, r: narrow ? 16 : 30, t: 16, b: 52 };
+    const sx = lg(1, 18000, m.l, W - m.r), sy = lg(1, 1000, H - m.b, m.t);
+    const g = el("g", {}, svg);
+    axisY(g, sy, [1, 10, 100, 1000], m.l, W - m.r, (v) => fmt(v) + " km");
+    axisX(g, sx, [1, 10, 100, 1000, 10000], H - m.b, H - m.b, "drainage area (km²)", (v) => fmt(v));
+    const C = R.hack.curve;
+    const band = C.map((p, i) => (i ? "L" : "M") + sx(p.area) + " " + sy(p.p90)).join(" ") + " " +
+      C.slice().reverse().map((p) => "L" + sx(p.area) + " " + sy(p.p10)).join(" ") + " Z";
+    el("path", { d: band, fill: css("--s1"), opacity: 0.14 }, g);
+    const hk = (a) => 1.27 * Math.pow(a, 0.6);
+    el("path", { d: `M${sx(1)} ${sy(hk(1))} L${sx(18000)} ${sy(hk(18000))}`, stroke: css("--muted"), "stroke-dasharray": "5 4", "stroke-width": 1.4, fill: "none" }, g);
+    el("path", { d: C.map((p, i) => (i ? "L" : "M") + sx(p.area) + " " + sy(p.len)).join(" "), fill: "none", stroke: css("--s1"), "stroke-width": 2 }, g);
+    const cross = el("circle", { r: 5, fill: css("--s1"), stroke: css("--surface"), "stroke-width": 2, opacity: 0 }, g);
+    const tip = tooltip(host);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.r - m.l, height: H - m.b - m.t, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", (e) => {
+      const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width;
+      const p = C.reduce((a, q) => Math.abs(sx(q.area) - x) < Math.abs(sx(a.area) - x) ? q : a, C[0]);
+      cross.setAttribute("cx", sx(p.area)); cross.setAttribute("cy", sy(p.len)); cross.setAttribute("opacity", 1);
+      const sc = W / host.clientWidth;
+      tip.show(sx(p.area) / sc, sy(p.len) / sc, [`${p.len.toFixed(1)} km median`, `area ≈ ${fmt(Math.round(p.area * 10) / 10)} km²`, `middle 80%: ${p.p10.toFixed(1)}–${p.p90.toFixed(1)} km`, `Hack 1957: ${hk(p.area).toFixed(1)} km`, `${fmt(p.n)} reaches`]);
+    });
+    hit.addEventListener("pointerleave", () => { tip.hide(); cross.setAttribute("opacity", 0); });
+    table(document.getElementById("t-hack"), ["Drainage area", "Local exponent h"],
+      R.hack.local.map((r) => [`${fmt(Math.round(r.area[0]))}–${fmt(Math.round(r.area[1]))} km²`, r.h.toFixed(3)]));
+  }
+
+  // ---------- 4. Baer: dot and whisker
+  function dots(hostId, rows, dom, ticks, note) {
+    const host = document.getElementById(hostId);
+    const rowH = 30;
+    const { svg, W, H, narrow } = frame(host, 40 + rows.length * rowH + 44);
+    const m = { l: narrow ? 128 : 190, r: 18, t: 30, b: 44 };
+    const sx = lin(dom[0], dom[1], m.l, W - m.r);
+    const g = el("g", {}, svg);
+    axisX(g, sx, narrow ? ticks.filter((_, i) => i % 2 === 0) : ticks, m.t - 8, H - m.b, "share of length curving left", (v) => v.toFixed(1) + "%");
+    el("line", { x1: sx(50), x2: sx(50), y1: m.t - 8, y2: H - m.b, stroke: css("--ink-2"), "stroke-width": 1.2 }, g);
+    txt(g, sx(50) - 6, m.t - 14, "← more right", { fill: css("--muted"), "font-size": 12, "text-anchor": "end" });
+    txt(g, sx(50) + 6, m.t - 14, "more left →", { fill: css("--muted"), "font-size": 12 });
+    const tip = tooltip(host);
+    rows.forEach((r, i) => {
+      const y = m.t + i * rowH + rowH / 2;
+      if (r.sep) el("line", { x1: 0, x2: W - m.r, y1: y - rowH / 2, y2: y - rowH / 2, stroke: css("--rule") }, g);
+      txt(g, m.l - 12, y + 4, r.name, { "text-anchor": "end", fill: css("--ink-2"), "font-size": narrow ? 12 : 13.5 });
+      el("line", { x1: sx(Math.max(dom[0], r.lo)), x2: sx(Math.min(dom[1], r.hi)), y1: y, y2: y, stroke: r.col, "stroke-width": 2 }, g);
+      el("circle", { cx: sx(r.share), cy: y, r: 5, fill: r.col, stroke: css("--surface"), "stroke-width": 2 }, g);
+      const h = el("rect", { x: 0, y: y - rowH / 2, width: W, height: rowH, fill: "transparent", tabindex: 0 }, svg);
+      const show = () => { const sc = W / host.clientWidth; tip.show(sx(r.share) / sc, y / sc, [`${r.share.toFixed(r.dp || 2)}% left`, `95% interval ${r.lo.toFixed(r.dp || 2)}–${r.hi.toFixed(r.dp || 2)}%`, r.name, r.extra]); };
+      h.addEventListener("pointermove", show); h.addEventListener("focus", show);
+      h.addEventListener("pointerleave", () => tip.hide()); h.addEventListener("blur", () => tip.hide());
+    });
+    if (note) document.getElementById(note[0]).textContent = note[1];
+  }
+  function drawBaer() {
+    const s1 = css("--s1"), s2 = css("--s2");
+    const b = R.baer_lines.bands["1000"].slice().reverse();
+    const lab = (band) => { const [lo, hi] = band; const f = (v) => Math.abs(v) + "°" + (v < 0 ? "S" : v > 0 ? "N" : ""); return lo < 0 && hi > 0 ? "5°S–5°N" : (hi <= 0 ? `${f(hi)}–${f(lo)}` : `${f(lo)}–${f(hi)}`); };
+    dots("p-baer1", b.map((r) => ({ name: lab(r.band), share: r.share, lo: r.lo, hi: r.hi, dp: 3, col: r.band[0] >= 0 ? s1 : s2,
+      extra: `${fmt(r.lines)} lines, ${fmt(r.km)} km` })), [49.6, 50.8], [49.6, 49.8, 50, 50.2, 50.4, 50.6, 50.8],
+      ["b1-sub", `${fmt(R.baer_lines.lines)} lines, ${(R.baer_lines.km / 1e6).toFixed(2)} million km; bends smoothed at 1 km; bars are 95% intervals from resampling 1° cells`]);
+    const big = R.baer_big.by_latitude.slice().reverse().map((r) => Object.assign({}, r, { name: r.name.replace(/^Tropics north \((.*)\)$/, "$1"), col: r.name.startsWith("Southern") ? s2 : s1 }));
+    const reg = R.baer_big.by_region.map((r, i) => Object.assign({}, r, { col: r.name.includes("southern") ? s2 : s1, sep: i === 0 }));
+    const rows = big.concat(reg).map((r) => Object.assign(r, { extra: `${fmt(r.rivers)} rivers; ${r.mostly_left}% curve left more than right` }));
+    dots("p-baer2", rows, [48.9, 51.3], [49, 49.5, 50, 50.5, 51]);
+    table(document.getElementById("t-baer"), ["Group", "Rivers", "Share left", "95% interval", "Rivers mostly left"],
+      rows.map((r) => [r.name, fmt(r.rivers), r.share.toFixed(2) + "%", `${r.lo.toFixed(2)}–${r.hi.toFixed(2)}%`, r.mostly_left + "%"]));
+  }
+
+  function drawAll() { drawAngles(); drawRatio(); drawHack(); drawBaer(); }
+  document.querySelectorAll('input[name="dist"]').forEach((i) => i.addEventListener("change", drawAngles));
+  drawAll();
+  let rt;
+  new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawAll, 120); }).observe(document.querySelector(".col"));
+  if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
