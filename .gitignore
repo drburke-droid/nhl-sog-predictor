@@ -4,3 +4,4 @@ app.log
 .claude/
 *.vbs
 analysis.py
+nhl_history.db

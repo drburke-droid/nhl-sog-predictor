@@ -1,0 +1,558 @@
+<style>
+#dash-root { --dash-gutter: var(--cds-pad-lg); }
+.hs { max-width: 72rem; margin-inline: auto; display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+.hs-head { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.hs-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.35); line-height: 1.15; margin: 0; text-wrap: balance; }
+.hs-take { font-size: var(--cds-font-size-body); line-height: 1.55; margin: 0; max-width: 46rem; }
+.hs .hs-take b { font-weight: 600; }
+.hs-asof { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; }
+
+.hs-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
+.hs-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.hs-tile-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-tile-value { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.5); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hs-tile-value small { font-size: 0.55em; color: var(--color-fg-muted); margin-right: 0.15em; }
+.hs-tile-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.4; }
+
+.hs-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md) var(--cds-gap-lg); align-items: center; }
+.hs-seg { display: inline-flex; align-items: center; gap: var(--cds-gap-sm); flex-wrap: wrap; }
+.hs-seg-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-seg-group { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.hs-seg-group button { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-md); background: var(--color-panel); color: var(--color-fg); border: 0; cursor: pointer; }
+.hs-seg-group button + button { border-left: 1px solid var(--color-border-line); }
+.hs-seg-group button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); }
+.hs-seg-group button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+
+.hs-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.hs-card h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+.hs-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.45; }
+.hs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+.hs-plot { position: relative; min-height: 18rem; }
+.hs-plot svg { display: block; overflow: visible; }
+.hs-plot text { font-family: var(--font-anthropic-sans); }
+.hs-tick { font-size: var(--cds-font-size-caption); fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.hs-endlabel { font-size: var(--cds-font-size-caption); fill: var(--color-fg); paint-order: stroke; stroke: var(--color-panel); stroke-width: 4px; stroke-linejoin: round; }
+.hs-endlabel.is-target { font-weight: 600; }
+
+.hs-bars { position: relative; display: flex; flex-direction: column; gap: 2px; min-height: 10rem; }
+.hs-bar-row { display: grid; grid-template-columns: 2.25rem minmax(0, 9.5rem) minmax(0, 1fr); align-items: center; gap: var(--cds-gap-sm); padding: 3px 0; border-radius: var(--cds-radius); }
+.hs-bar-row:hover { background: var(--color-bg); }
+.hs-bar-rank { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-align: right; font-variant-numeric: tabular-nums; }
+.hs-bar-name { font-size: var(--cds-font-size-caption); line-height: 1.25; overflow-wrap: anywhere; }
+.hs-bar-name span { display: block; color: var(--color-fg-muted); }
+.hs-bar-row.is-target .hs-bar-name { font-weight: 600; }
+.hs-bar-track { display: flex; align-items: center; gap: var(--cds-gap-xs); min-width: 0; }
+.hs-bar { height: 16px; border-radius: 0 4px 4px 0; flex: none; }
+.hs-bar-val { font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hs-bar-row.is-target .hs-bar-val { font-weight: 600; }
+
+.hs-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 15rem; }
+.hs-tip-head { color: var(--cds-text-secondary); }
+.hs-tip b { font-weight: 600; }
+
+.hs-table-wrap { overflow-x: auto; }
+.hs-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.hs-table th, .hs-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.hs-table th { color: var(--color-fg-muted); font-weight: 400; }
+.hs-table th:nth-child(-n+3), .hs-table td:nth-child(-n+3) { text-align: left; }
+.hs-table td:last-child { font-weight: 600; }
+
+.hs-method { display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 46rem; }
+.hs-method h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.hs-method p { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.55; margin: 0; }
+
+.hs-fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-sm); min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-fail::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="hs">
+  <header class="hs-head">
+    <h1 id="hs-title"><span data-source="summary" data-field="player" class="dash-skeleton">—</span>'s hot start</h1>
+    <p class="hs-take" id="hs-takeaway">
+      <span data-source="summary" data-field="player">—</span> has <b data-source="summary" data-field="pts">—</b> points in his first
+      <span data-source="summary" data-field="gp">—</span> games of <span data-source="summary" data-field="season">—</span>.
+      That ranks No. <b data-source="summary" data-field="rank">—</b><span class="hs-tied" data-tie="tied"></span>
+      among <span data-source="summary" data-field="starts">—</span> starts since <span data-source="summary" data-field="first_season">—</span>,
+      No. <b data-source="summary" data-field="adj_rank">—</b><span class="hs-tied" data-tie="adj_tied"></span> once scoring levels are adjusted,
+      and his <span data-source="summary" data-field="assists">—</span> assists rank No. <b data-source="summary" data-field="assist_rank">—</b><span class="hs-tied" data-tie="assist_tied"></span> all-time.
+    </p>
+    <p class="hs-asof">Through <span data-source="summary" data-field="as_of">—</span> · regular season only · every game since <span data-source="summary" data-field="first_season">—</span> from the NHL stats API</p>
+  </header>
+
+  <section class="hs-tiles" aria-label="Headline figures">
+    <div class="hs-tile">
+      <div class="hs-tile-label">Points, first <span data-source="summary" data-field="gp">—</span> games</div>
+      <div class="hs-tile-value"><span data-source="summary" data-field="pts" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span data-source="summary" data-field="goals">—</span> goals · <span data-source="summary" data-field="assists">—</span> assists</div>
+    </div>
+    <div class="hs-tile">
+      <div class="hs-tile-label">All-time rank</div>
+      <div class="hs-tile-value"><small>No.</small><span data-source="summary" data-field="rank" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span class="hs-tied-sub" data-tie="tied"></span>of <span data-source="summary" data-field="starts">—</span> starts since <span data-source="summary" data-field="first_season">—</span></div>
+    </div>
+    <div class="hs-tile">
+      <div class="hs-tile-label">Era-adjusted rank</div>
+      <div class="hs-tile-value"><small>No.</small><span data-source="summary" data-field="adj_rank" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span data-source="summary" data-field="adj_pts">—</span> adjusted points · of <span data-source="summary" data-field="adj_starts">—</span> starts since <span data-source="summary" data-field="adj_first_season">—</span></div>
+    </div>
+    <div class="hs-tile">
+      <div class="hs-tile-label">Assists rank</div>
+      <div class="hs-tile-value"><small>No.</small><span data-source="summary" data-field="assist_rank" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span class="hs-tied-sub" data-tie="assist_tied"></span><span data-source="summary" data-field="assists">—</span> assists through <span data-source="summary" data-field="gp">—</span> games, against every start since <span data-source="summary" data-field="first_season">—</span></div>
+    </div>
+  </section>
+
+  <div class="hs-controls">
+    <div class="hs-seg">
+      <span class="hs-seg-label" id="hs-scale-label">Count</span>
+      <div class="hs-seg-group" role="group" aria-labelledby="hs-scale-label">
+        <button type="button" id="hs-scale-pts" data-hs-set="scale:pts">Raw points</button>
+        <button type="button" id="hs-scale-adj" data-hs-set="scale:adj">Era-adjusted</button>
+      </div>
+    </div>
+    <div class="hs-seg">
+      <span class="hs-seg-label" id="hs-compare-label">Compare with</span>
+      <div class="hs-seg-group" role="group" aria-labelledby="hs-compare-label">
+        <button type="button" id="hs-compare-best" data-hs-set="compare:best">Best starts ever</button>
+        <button type="button" id="hs-compare-own" data-hs-set="compare:own">His other seasons</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="hs-card" id="race">
+    <h2 id="hs-race-title">Running points total, game by game</h2>
+    <p class="hs-note" id="hs-race-note"></p>
+    <div class="hs-plot" id="hs-race-chart" data-source="curves ranking"></div>
+  </section>
+
+  <div class="hs-grid">
+    <section class="hs-card" id="ranking">
+      <h2 id="hs-rank-title">Most points through <span data-source="summary" data-field="gp">—</span> games</h2>
+      <p class="hs-note" id="hs-rank-note"></p>
+      <div class="hs-bars" id="hs-rank-bars" data-source="ranking"></div>
+    </section>
+    <section class="hs-card" id="assists">
+      <h2>Most assists through <span data-source="summary" data-field="gp">—</span> games</h2>
+      <p class="hs-note">Every season since <span data-source="summary" data-field="first_season">—</span>. Hover a bar for that start's points.</p>
+      <div class="hs-bars" id="hs-assist-bars" data-source="assist_leaders"></div>
+    </section>
+  </div>
+
+  <div class="hs-grid">
+    <section class="hs-card" id="own">
+      <h2>McDavid's starts, season by season</h2>
+      <p class="hs-note" id="hs-own-note"></p>
+      <div class="hs-plot" id="hs-own-chart" data-source="own_starts" style="min-height: 15rem"></div>
+    </section>
+    <section class="hs-card" id="log">
+      <h2>This season, game by game</h2>
+      <p class="hs-note">Goals, assists and points in each game, with the running total.</p>
+      <div class="hs-table-wrap">
+        <table class="hs-table" id="hs-log-table" data-source="game_log" data-row-key="gp">
+          <thead><tr>
+            <th data-field="gp">Game</th><th data-field="date">Date</th><th data-field="opponent">Opp.</th>
+            <th data-field="goals">G</th><th data-field="assists">A</th><th data-field="pts">P</th><th data-field="cum_pts">Total</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="hs-method" id="method">
+    <h2>How this was counted</h2>
+    <p>A start is a player's first <span data-source="summary" data-field="gp">—</span> regular-season games played, in date order. The comparison pool is every player-season in NHL history that reached that many games: <span data-source="summary" data-field="starts">—</span> starts across <span data-source="summary" data-field="seasons">—</span> seasons, built from <span data-source="summary" data-field="game_rows">—</span> regular-season skater game lines pulled from the NHL's stats API.</p>
+    <p>Raw points are as the league recorded them. Scoring has swung widely, from about 7.4 goals a game in the late 1980s to about 5.3 in the late 1990s, so the era-adjusted count scales each goal and each assist by how common they were that season compared with 2023-24 through 2025-26. Early seasons credited far fewer assists per goal, which no scaling repairs, so the adjusted ranking starts in <span data-source="summary" data-field="adj_first_season">—</span>, the first season of the unbroken run in which assists per goal sit within 15% of today's rate.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  const root = document.querySelector('.hs');
+  const state = { scale: 'pts', compare: 'best' };
+  const BEST = 8;          // best starts drawn on the race chart
+  const BAR_ROWS = 15;     // rows in the points ranking
+  const fmt = d3.format(',');
+  const fmt1 = d3.format(',.1f');
+  const fmtDate = d3.utcFormat('%b %-d, %Y');
+  const fmtDay = d3.utcFormat('%b %-d');
+  const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+  const yes = (v) => v === true || v === 'true' || v === 1 || v === '1';
+  const accent = dash.colors[0];
+  const muted = 'var(--cds-chart-muted)';
+
+  root.querySelectorAll('[data-hs-set]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const [k, v] = btn.dataset.hsSet.split(':');
+      state[k] = v;
+      render();
+    });
+  });
+
+  function status(el, ...results) {
+    const bad = results.find((r) => r.status !== 'ok');
+    el.classList.toggle('dash-skeleton', !!bad && bad.status !== 'error');
+    if (!bad) return true;
+    el.replaceChildren();
+    if (bad.status === 'error') {
+      const f = document.createElement('div');
+      f.className = 'hs-fail';
+      f.textContent = 'Failed to load';
+      el.append(f);
+    }
+    return false;
+  }
+
+  function measure(svg, text, cls) {
+    const t = svg.append('text').attr('class', cls).text(text);
+    const w = t.node().getComputedTextLength();
+    t.remove();
+    return w;
+  }
+
+  function tooltip(box) {
+    let tip = box.querySelector(':scope > .hs-tip');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.className = 'hs-tip';
+      tip.hidden = true;
+      box.append(tip);
+    }
+    return {
+      show(head, lines, x, y) {
+        tip.replaceChildren();
+        const h = document.createElement('div');
+        h.className = 'hs-tip-head';
+        h.textContent = head;
+        tip.append(h);
+        lines.forEach((l) => { const d = document.createElement('div'); d.textContent = l; tip.append(d); });
+        tip.hidden = false;
+        const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+        let left = x + 14;
+        if (left + tw > bw) left = x - tw - 14;
+        tip.style.left = Math.max(0, left) + 'px';
+        tip.style.top = Math.max(0, y - th - 10) + 'px';
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+
+  // ---------------------------------------------------------------- summary
+  function fillSummary(s) {
+    const els = root.querySelectorAll('[data-source="summary"][data-field]');
+    const ok = s.status === 'ok' && s.data.length;
+    els.forEach((el) => {
+      el.classList.toggle('dash-skeleton', !ok && s.status !== 'error');
+      if (!ok) { el.textContent = '—'; return; }
+      const v = s.data[0][el.dataset.field];
+      if (el.dataset.field === 'as_of') el.textContent = fmtDate(new Date(v));
+      else if (el.dataset.field === 'adj_pts') el.textContent = fmt1(num(v));
+      else if (typeof v === 'number' || /^\d+$/.test(String(v))) el.textContent = fmt(num(v));
+      else el.textContent = v;
+    });
+    root.querySelectorAll('[data-tie]').forEach((el) => {
+      const t = ok ? num(s.data[0][el.dataset.tie]) : 0;
+      el.textContent = t > 0 ? (el.classList.contains('hs-tied') ? ' (tied)' : 'Tied · ') : '';
+    });
+  }
+
+  // -------------------------------------------------------------- race chart
+  function drawRace(cur, rk, sm) {
+    const box = root.querySelector('#hs-race-chart');
+    const note = root.querySelector('#hs-race-note');
+    if (!status(box, cur, rk, sm)) { note.textContent = ''; return; }
+    const adj = state.scale === 'adj';
+    const field = adj ? 'adj_pts' : 'pts';
+    const rankField = adj ? 'adj_rank' : 'rank';
+    const n = num(sm.data[0].gp);
+    const player = sm.data[0].player;
+    const lastName = player.split(' ').slice(-1)[0];
+
+    const byKey = d3.group(cur.data, (r) => r.key);
+    const targetRow = cur.data.find((r) => r.group === 'this season');
+    const target = targetRow && targetRow.key;
+    let keys;
+    if (state.compare === 'best') {
+      keys = rk.data.filter((r) => !yes(r.this_season) && num(r[rankField]) !== null && num(r[rankField]) <= BEST)
+        .map((r) => r.key).filter((k) => byKey.has(k));
+      note.textContent = `${player} this season against every start that ranks in the top ${BEST} through ${n} games${adj ? ', era-adjusted, since ' + sm.data[0].adj_first_season : ''}. Their lines carry on to game 20 to show what came next.`;
+    } else {
+      keys = [...byKey.keys()].filter((k) => k !== target && byKey.get(k)[0].group !== 'top start');
+      note.textContent = `${player} this season against his ${keys.length} other seasons, each through 20 games.`;
+    }
+    const series = keys.concat(target ? [target] : []).map((k) => {
+      const rows = byKey.get(k).slice().sort((a, b) => num(a.gp) - num(b.gp));
+      return {
+        key: k, target: k === target, player: rows[0].player, season: rows[0].season,
+        pts: rows.map((r) => ({ gp: num(r.gp), v: num(r[field]), date: r.date })).filter((p) => p.v !== null && p.gp <= 20),
+      };
+    }).filter((s) => s.pts.length);
+
+    box.replaceChildren();
+    const W = box.clientWidth;
+    const H = Math.round(Math.max(280, Math.min(420, W * 0.5)));
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Running points total by game played');
+    const yMax = d3.max(series, (s) => d3.max(s.pts, (p) => p.v)) || 1;
+    const y = d3.scaleLinear([0, yMax], [0, 0]).nice();
+    const yTicks = y.ticks(6);
+    const left = Math.ceil(d3.max(yTicks, (t) => measure(svg, fmt(t), 'hs-tick'))) + 10;
+
+    // end labels: this season, plus the line that finishes highest
+    const others = series.filter((s) => !s.target);
+    const top = others.slice().sort((a, b) => b.pts[b.pts.length - 1].v - a.pts[a.pts.length - 1].v)[0];
+    const label = (s) => s.target
+      ? `${lastName} ${s.season} · ${adj ? fmt1(s.pts[s.pts.length - 1].v) : fmt(s.pts[s.pts.length - 1].v)}`
+      : `${state.compare === 'own' ? '' : s.player.split(' ').slice(-1)[0] + ' '}${s.season}`;
+    const labelled = [top, series.find((s) => s.target)].filter(Boolean);
+    const topLast = top ? top.pts[top.pts.length - 1].gp : 20;
+    const right = Math.ceil(Math.max(12, ...labelled.filter((s) => s.pts[s.pts.length - 1].gp >= topLast)
+      .map((s) => measure(svg, label(s), 'hs-endlabel') + 10)));
+    const m = { top: 12, right, bottom: 34, left };
+    const x = d3.scaleLinear([1, 20], [m.left, W - m.right]);
+    y.range([H - m.bottom, m.top]);
+
+    const g = svg.append('g');
+    g.selectAll('line.grid').data(yTicks).join('line')
+      .attr('x1', m.left).attr('x2', W - m.right).attr('y1', (t) => y(t)).attr('y2', (t) => y(t))
+      .style('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+    g.selectAll('text.yt').data(yTicks).join('text').attr('class', 'hs-tick')
+      .attr('x', m.left - 8).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => fmt(t));
+    const xTicks = W < 480 ? [1, 5, 10, 15, 20] : d3.range(1, 21);
+    g.selectAll('text.xt').data(xTicks).join('text').attr('class', 'hs-tick')
+      .attr('x', (t) => x(t)).attr('y', H - m.bottom + 16).attr('text-anchor', 'middle').text((t) => t);
+    g.append('text').attr('class', 'hs-tick').attr('x', (m.left + W - m.right) / 2).attr('y', H - 2)
+      .attr('text-anchor', 'middle').text('Games played');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', H - m.bottom).attr('y2', H - m.bottom)
+      .style('stroke', 'var(--cds-chart-axis)');
+    // today marker
+    g.append('line').attr('x1', x(n)).attr('x2', x(n)).attr('y1', m.top).attr('y2', H - m.bottom)
+      .style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    g.append('text').attr('class', 'hs-tick').attr('x', x(n) + 4).attr('y', m.top + 4).attr('dy', '0.7em')
+      .text(`Game ${n}, today`);
+
+    const line = d3.line().x((p) => x(p.gp)).y((p) => y(p.v));
+    const paths = g.append('g').selectAll('path').data(series.slice().sort((a, b) => a.target - b.target)).join('path')
+      .attr('d', (s) => line(s.pts)).attr('fill', 'none')
+      .style('stroke', (s) => (s.target ? accent : muted))
+      .attr('stroke-width', (s) => (s.target ? 3 : 1.5))
+      .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+    const tgt = series.find((s) => s.target);
+    if (tgt) {
+      const p = tgt.pts[tgt.pts.length - 1];
+      g.append('circle').attr('cx', x(p.gp)).attr('cy', y(p.v)).attr('r', 5)
+        .style('fill', accent).style('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    }
+
+    // end labels, nudged apart
+    const labels = labelled.map((s) => {
+      const p = s.pts[s.pts.length - 1];
+      return { s, x: x(p.gp) + 8, y: y(p.v) };
+    }).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < labels.length; i++) {
+      if (Math.abs(labels[i].x - labels[i - 1].x) < 160 && labels[i].y - labels[i - 1].y < 16) labels[i].y = labels[i - 1].y + 16;
+    }
+    g.selectAll('text.end').data(labels).join('text')
+      .attr('class', (l) => 'hs-endlabel' + (l.s.target ? ' is-target' : ''))
+      .attr('x', (l) => l.x).attr('y', (l) => l.y).attr('dy', '0.32em').text((l) => label(l.s));
+
+    // hover: nearest point
+    const pts = series.flatMap((s) => s.pts.map((p) => ({ s, p })));
+    const delaunay = d3.Delaunay.from(pts, (d) => x(d.p.gp), (d) => y(d.p.v));
+    const dot = g.append('circle').attr('r', 4.5).attr('stroke-width', 2).style('stroke', 'var(--color-panel)').attr('visibility', 'hidden');
+    const tip = tooltip(box);
+    svg.on('pointermove', (ev) => {
+      const [mx, my] = d3.pointer(ev);
+      const d = pts[delaunay.find(mx, my)];
+      if (!d || Math.hypot(x(d.p.gp) - mx, y(d.p.v) - my) > 48) { reset(); return; }
+      paths.style('stroke', (s) => (s === d.s ? (s.target ? accent : 'var(--color-fg)') : s.target ? accent : muted))
+        .style('opacity', (s) => (s === d.s || s.target ? 1 : 0.35));
+      dot.attr('cx', x(d.p.gp)).attr('cy', y(d.p.v)).style('fill', d.s.target ? accent : 'var(--color-fg)').attr('visibility', 'visible');
+      const val = adj ? `${fmt1(d.p.v)} era-adjusted points` : `${fmt(d.p.v)} points`;
+      tip.show(`${d.s.player} · ${d.s.season}`, [`Game ${d.p.gp} (${fmtDay(new Date(d.p.date))}): ${val}`], x(d.p.gp) * box.clientWidth / W, y(d.p.v) * box.clientWidth / W);
+    });
+    svg.on('pointerleave', reset);
+    function reset() {
+      paths.style('stroke', (s) => (s.target ? accent : muted)).style('opacity', 1);
+      dot.attr('visibility', 'hidden');
+      tip.hide();
+    }
+  }
+
+  // ------------------------------------------------------------ bar lists
+  function barList(box, rows, opt) {
+    box.replaceChildren();
+    const max = d3.max(rows, (r) => opt.value(r)) || 1;
+    const tip = tooltip(box);
+    rows.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'hs-bar-row' + (opt.target(r) ? ' is-target' : '');
+      const rank = document.createElement('div');
+      rank.className = 'hs-bar-rank';
+      rank.textContent = opt.rank(r);
+      const name = document.createElement('div');
+      name.className = 'hs-bar-name';
+      name.textContent = r.player;
+      const season = document.createElement('span');
+      season.textContent = r.season;
+      name.append(season);
+      const track = document.createElement('div');
+      track.className = 'hs-bar-track';
+      const bar = document.createElement('div');
+      bar.className = 'hs-bar';
+      bar.style.width = `calc((100% - 3rem) * ${opt.value(r) / max})`;
+      bar.style.background = opt.target(r) ? accent : muted;
+      const val = document.createElement('span');
+      val.className = 'hs-bar-val';
+      val.textContent = opt.format(opt.value(r));
+      track.append(bar, val);
+      row.append(rank, name, track);
+      row.addEventListener('pointermove', (ev) => {
+        const b = box.getBoundingClientRect();
+        tip.show(`${r.player} · ${r.season}`, opt.tip(r), ev.clientX - b.left, ev.clientY - b.top);
+      });
+      row.addEventListener('pointerleave', () => tip.hide());
+      box.append(row);
+    });
+  }
+
+  function drawRanking(rk, sm) {
+    const box = root.querySelector('#hs-rank-bars');
+    const note = root.querySelector('#hs-rank-note');
+    if (!status(box, rk, sm)) { note.textContent = ''; return; }
+    const adj = state.scale === 'adj';
+    const field = adj ? 'adj_pts' : 'pts';
+    const rankField = adj ? 'adj_rank' : 'rank';
+    let rows = rk.data.filter((r) => num(r[field]) !== null)
+      .sort((a, b) => num(b[field]) - num(a[field]) || num(b.goals) - num(a.goals));
+    const shown = rows.slice(0, BAR_ROWS);
+    const t = rows.find((r) => yes(r.this_season));
+    if (t && !shown.includes(t)) shown.push(t);
+    note.textContent = adj
+      ? `Era-adjusted points, every season since ${sm.data[0].adj_first_season}. Hover a bar for goals, assists and how the season ended.`
+      : `Points as recorded, every season since ${sm.data[0].first_season}. Hover a bar for goals, assists and how the season ended.`;
+    barList(box, shown, {
+      value: (r) => num(r[field]),
+      format: (v) => (adj ? fmt1(v) : fmt(v)),
+      rank: (r) => num(r[rankField]),
+      target: (r) => yes(r.this_season),
+      tip: (r) => [
+        `${fmt(num(r.goals))} goals, ${fmt(num(r.assists))} assists: ${fmt(num(r.pts))} points` +
+          (num(r.adj_pts) === null ? '' : `, ${fmt1(num(r.adj_pts))} era-adjusted`),
+        yes(r.this_season) ? 'Season in progress' : `Finished with ${fmt(num(r.season_pts))} points in ${fmt(num(r.season_gp))} games`,
+      ],
+    });
+  }
+
+  function drawAssists(al) {
+    const box = root.querySelector('#hs-assist-bars');
+    if (!status(box, al)) return;
+    barList(box, al.data, {
+      value: (r) => num(r.assists),
+      format: fmt,
+      rank: (r) => num(r.assist_rank),
+      target: (r) => yes(r.this_season),
+      tip: (r) => [`${fmt(num(r.assists))} assists, ${fmt(num(r.pts))} points`],
+    });
+  }
+
+  // ------------------------------------------------------------ own seasons
+  function drawOwn(os, sm) {
+    const box = root.querySelector('#hs-own-chart');
+    const note = root.querySelector('#hs-own-note');
+    if (!status(box, os, sm)) { note.textContent = ''; return; }
+    const adj = state.scale === 'adj';
+    const field = adj ? 'adj_pts' : 'pts';
+    const rows = os.data.map((r) => ({ ...r, v: num(r[field]) }));
+    const n = num(sm.data[0].gp);
+    const prevBest = d3.max(rows.filter((r) => !yes(r.this_season)), (r) => r.v);
+    note.textContent = `${adj ? 'Era-adjusted points' : 'Points'} in the first ${n} games of each of his ${rows.length} seasons.`;
+
+    box.replaceChildren();
+    const W = box.clientWidth;
+    const H = 240;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', 'Points through the opening games of each McDavid season');
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.v) || 1], [0, 0]).nice();
+    const ticks = y.ticks(4);
+    const left = Math.ceil(d3.max(ticks, (t) => measure(svg, fmt(t), 'hs-tick'))) + 10;
+    const m = { top: 20, right: 4, bottom: 24, left };
+    y.range([H - m.bottom, m.top]);
+    const x = d3.scaleBand(rows.map((r) => r.season), [m.left, W - m.right]).padding(0.25);
+    const g = svg.append('g');
+    g.selectAll('line').data(ticks).join('line').attr('x1', m.left).attr('x2', W - m.right)
+      .attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+    g.selectAll('text.yt').data(ticks).join('text').attr('class', 'hs-tick').attr('x', m.left - 8).attr('y', (t) => y(t))
+      .attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => fmt(t));
+    if (prevBest) {
+      g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(prevBest)).attr('y2', y(prevBest))
+        .style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    }
+    const bw = Math.min(24, x.bandwidth());
+    const cx = (r) => x(r.season) + x.bandwidth() / 2;
+    g.selectAll('path.bar').data(rows).join('path')
+      .attr('d', (r) => {
+        const x0 = cx(r) - bw / 2, y0 = y(r.v), h = y(0) - y0, rr = Math.min(4, h, bw / 2);
+        return `M${x0},${y(0)}V${y0 + rr}Q${x0},${y0} ${x0 + rr},${y0}H${x0 + bw - rr}Q${x0 + bw},${y0} ${x0 + bw},${y0 + rr}V${y(0)}Z`;
+      })
+      .style('fill', (r) => (yes(r.this_season) ? accent : muted));
+    g.selectAll('text.val').data(rows).join('text').attr('class', 'hs-tick')
+      .style('fill', (r) => (yes(r.this_season) ? 'var(--color-fg)' : 'var(--color-fg-muted)'))
+      .style('font-weight', (r) => (yes(r.this_season) ? 600 : 400))
+      .attr('x', cx).attr('y', (r) => y(r.v) - 5).attr('text-anchor', 'middle').text((r) => (adj ? d3.format('.0f')(r.v) : fmt(r.v)));
+    const every = x.bandwidth() < 34 ? 2 : 1;
+    g.selectAll('text.xl').data(rows.filter((r, i) => (rows.length - 1 - i) % every === 0)).join('text').attr('class', 'hs-tick')
+      .attr('x', cx).attr('y', H - m.bottom + 16).attr('text-anchor', 'middle').text((r) => r.season.slice(2));
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+
+    const tip = tooltip(box);
+    g.selectAll('rect.hit').data(rows).join('rect').attr('x', (r) => x(r.season)).attr('width', x.bandwidth())
+      .attr('y', m.top).attr('height', H - m.top - m.bottom).style('fill', 'transparent')
+      .on('pointermove', (ev, r) => {
+        const s = box.clientWidth / W;
+        tip.show(r.season, [
+          `${fmt(num(r.goals))} goals, ${fmt(num(r.assists))} assists in the first ${n} games`,
+          yes(r.this_season) ? 'Season in progress' : `Finished with ${fmt(num(r.season_pts))} points in ${fmt(num(r.season_gp))} games`,
+        ], cx(r) * s, y(r.v) * s);
+      })
+      .on('pointerleave', () => tip.hide());
+  }
+
+  // ------------------------------------------------------------- game log
+  function drawLog(gl) {
+    const table = root.querySelector('#hs-log-table');
+    const body = table.querySelector('tbody');
+    body.replaceChildren();
+    table.classList.toggle('dash-skeleton', gl.status !== 'ok' && gl.status !== 'error');
+    if (gl.status !== 'ok') return;
+    const cols = ['gp', 'date', 'opponent', 'goals', 'assists', 'pts', 'cum_pts'];
+    gl.data.slice().sort((a, b) => num(a.gp) - num(b.gp)).forEach((r) => {
+      const tr = document.createElement('tr');
+      cols.forEach((c) => {
+        const td = document.createElement('td');
+        td.textContent = c === 'date' ? fmtDay(new Date(r[c])) : c === 'opponent' ? r[c] : fmt(num(r[c]));
+        tr.append(td);
+      });
+      body.append(tr);
+    });
+  }
+
+  function render() {
+    root.querySelectorAll('[data-hs-set]').forEach((b) => {
+      const [k, v] = b.dataset.hsSet.split(':');
+      b.setAttribute('aria-pressed', String(state[k] === v));
+    });
+    const sm = dash.data('summary');
+    fillSummary(sm);
+    drawRace(dash.data('curves'), dash.data('ranking'), sm);
+    drawRanking(dash.data('ranking'), sm);
+    drawAssists(dash.data('assist_leaders'));
+    drawOwn(dash.data('own_starts'), sm);
+    drawLog(dash.data('game_log'));
+  }
+
+  dash.onData(render);
+})();
+</script>
