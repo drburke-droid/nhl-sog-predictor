@@ -21,16 +21,17 @@ Each level adds one idea and has something to try; a bar shows how steep it is.
 | 2. Fires that count | fires worth 8, 4, 2, 1, like market weights (*binary*); each added fire doubles the reach | 1 to 10 fires, type a number, goals 13, 49, 100, 255, 1,000 |
 | 3. The relay keeper is a wire | the signal-fire card, "copy the fire you watch"; 2 s per keeper | send a change down 6 relays |
 | 4. Keepers that decide | NOT, AND, OR cards and their *truth tables* | pick a card, tap A and B |
-| 5. One card is enough | NAND on its own; why it is enough (it can flip a fire and combine two, which rebuilds every card); the stand-ins for NOT (1 keeper), AND (2), OR (3) are an optional fold-out | tap A and B |
+| 5. One card is enough | NAND on its own; when its two fires match it shows the opposite, so a keeper watching one fire twice flips it; flip + combine rebuilds every card; the stand-ins for NOT (1 keeper), AND (2), OR (3) are an optional fold-out | tap A and B |
 | 6. 1 + 1 | ones fire = "exactly one lit", twos fire = "both lit": 5 NAND keepers | the checked half adder |
-| 7. Carrying the one | school column addition next to binary; 9 keepers add A + B + carry | the checked full adder |
+| 7. Carrying the one | school column addition next to binary; carry in, sum and carry out of one column; the whole 4-column chain (32 keepers), each carry out feeding the next column | top and bottom numbers, examples 11 + 6, 5 + 2, 15 + 1; the written sum updates as the fires settle |
 | 8. Sightlines are wires | village counts down ridges into a 32-keeper adder, total up to the mill | send two counts |
 | 9. The drum | memory keepers copy on the beat (a computer's *clock*); a 3-bit counter | beat the drum |
 | 10. Scrambling a message | the AI can see bonfires; mix in the key, swap by the table, shuffle | each move on its own |
 | 11. The field at Bletchley Park | 2,110 fires make a *mask* from key + block number; one key fire flipped changes about half the mask | scramble a message |
 | 12. Out along the beacon chain | hex digits to Paris; the same field unscrambles | send, then unscramble |
 
-Levels 1 to 5 are drawn with the cards they name. From Level 6 on, every keeper comes from the checked
+Pointing at (or tapping) any fire from Level 3 on explains it: what it watches, what the card says,
+and whether the keeper has reacted yet. Levels 1 to 5 are drawn with the cards they name. From Level 6 on, every keeper comes from the checked
 circuits in `circuits.py` (NAND and memory keepers only).
 
 ## The rules

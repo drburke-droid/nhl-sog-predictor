@@ -109,6 +109,34 @@ def layout_full_adder(f):
     return spot
 
 
+def layout_adder_columns(f, n, outs):
+    """The whole adding chain as written on paper: one column per place (1s on the right), the two
+    numbers' fires on top, each column's keepers below them, and the answer along the bottom
+    (the last carry becomes the answer's extra left-hand fire)."""
+    depth = f.depth()
+    W = 5.0
+    cx = lambda i: (n - i) * W            # column i (the 2**i place); column n is the extra fire
+    row = lambda d: 1.2 + d * 0.95        # the two numbers sit on rows 0 and 0.9, the keepers below
+    pos = {}
+    for i in range(n):
+        rows = {}
+        for k in range(len(f.kind)):
+            if f.tag[k] == f'bit{i}' and f.kind[k] == 'nand' and k not in outs:
+                rows.setdefault(depth[k], []).append(k)
+        carry = f.carries[i]
+        for d, ks in rows.items():
+            ks = sorted(k for k in ks if k != carry)
+            for j, k in enumerate(ks):
+                pos[k] = (cx(i) + 0.4 + (j - (len(ks) - 1) / 2) * 1.2, row(d))
+        if carry not in outs:                 # the carry out sits at the column's left edge, next to the column it feeds
+            pos[carry] = (cx(i) - 1.9, row(depth[carry]))
+        a, b = [k for k in range(len(f.kind)) if f.tag[k] == f'bit{i}' and f.kind[k] == 'in']
+        pos[a], pos[b] = (cx(i), 0), (cx(i), 0.9)
+    for i, o in enumerate(outs):
+        pos[o] = (cx(i), row(max(depth)) + 1.2)
+    return [pos[k] for k in range(len(f.kind))]
+
+
 def layout_counter(f, n):
     """Memory fires in a row on top (the highest bit on the left), each bit's keepers below it."""
     depth = f.depth()
@@ -302,6 +330,7 @@ def main():
     page_data = {
         'stats': stats,
         'act1': {'net': ha.export(layout_half_adder(ha)), 'inputs': ha_in, 'outputs': ha_out},
+        'chain': {'net': ad.export(layout_adder_columns(ad, 4, ad_out)), 'A': adA, 'B': adB, 'outputs': ad_out, 'carries': ad.carries},
         'full': {'net': fa.export(layout_full_adder(fa)), 'inputs': fa_in, 'outputs': fa_out},
         'counter': {'net': ct.export(layout_counter(ct, 3)), 'mem': ct_mem},
         'act2': {'net': ad.export(layout_adder(ad, 4)), 'A': adA, 'B': adB, 'outputs': ad_out},

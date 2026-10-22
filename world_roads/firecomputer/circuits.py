@@ -43,7 +43,7 @@ def adder(n):
         f.group = f'bit{i}'
         A.append(f.input(f'A{i}'))
         B.append(f.input(f'B{i}'))
-    out, carry = [], None
+    out, carry, carries = [], None, []
     for i in range(n):
         f.group = f'bit{i}'
         if carry is None:
@@ -51,6 +51,8 @@ def adder(n):
         else:
             s, carry = f.full_adder(A[i], B[i], carry)
         out.append(s)
+        carries.append(carry)
+    f.carries = carries          # each column's carry out (the next column's carry in)
     return f, A, B, out + [carry]
 
 

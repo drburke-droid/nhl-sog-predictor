@@ -109,6 +109,10 @@ table.truth tr.now td { color: var(--flame); }
 details.more { border-top: 1px solid var(--hill-2); border-bottom: 1px solid var(--hill-2); padding: 10px 0; max-width: 900px; }
 details.more summary { cursor: pointer; color: var(--flame); font-size: 0.95rem; }
 details.more[open] summary { margin-bottom: 14px; }
+.tip { position: fixed; z-index: 20; max-width: 300px; background: var(--parchment); color: var(--card-ink); font: 0.86rem/1.45 var(--body); padding: 9px 11px; border-radius: 3px; box-shadow: 0 8px 24px rgb(0 0 0 / 0.45); pointer-events: none; }
+.tip b { color: var(--card-ink); font-weight: 600; }
+.tip .lag { display: block; margin-top: 4px; color: var(--card-k); font-style: italic; }
+.hint { font: 0.8rem/1.3 var(--mono); color: var(--smoke); }
 .side { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; align-items: start; }
 .side > * { min-width: 0; }
 
@@ -154,6 +158,7 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
   .blocks .row { grid-template-columns: 5.5ch 1fr; }
   .blocks .row span:last-child { grid-column: 1 / -1; }
   .sbox { grid-template-columns: repeat(2, auto); }
+  canvas.tallphone { aspect-ratio: 16 / 12 !important; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
@@ -267,7 +272,15 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
 
   <h3>Why one card is enough</h3>
   <div class="prose">
-    <p>Every job a keeper could ever do comes down to two abilities: <b>flipping</b> a fire (lit becomes dark, dark becomes lit) and <b>combining</b> two fires into one answer. NAND can do both. Have a keeper watch the same fire twice and it flips it. Have it watch two different fires and it combines them.</p>
+    <p>Every job a keeper could ever do comes down to two abilities: <b>flipping</b> a fire (lit becomes dark, dark becomes lit) and <b>combining</b> two fires into one answer. Combining is what NAND does every time: two fires in, one answer out.</p>
+    <p>Flipping hides in the table above. Look at the two rows where A and B <b>match</b>. Dark + dark gives lit, and lit + lit gives dark: <b>when the two fires a NAND keeper watches match, it shows the opposite.</b> So point a keeper at the <i>same</i> fire twice. Its two fires always match, so it always shows the opposite of that fire. It flips it.</p>
+  </div>
+  <div class="demo">
+    <div class="try">Try it: tap A. The keeper watches A twice, so it always shows the opposite.</div>
+    <canvas id="m5f" style="aspect-ratio: 16 / 5" aria-label="One fire A watched twice by a NAND keeper"></canvas>
+    <div class="readout"><span class="big" id="m5fr"></span></div>
+  </div>
+  <div class="prose">
     <p>Flipping and combining are enough to rebuild every other card, so they are enough to build anything: NOT takes 1 NAND keeper, AND takes 2, and OR takes 3. AND and OR can't do this on their own, because neither can flip a fire. Real chips lean on the same fact: in silicon, NAND is one of the cheapest things to make.</p>
   </div>
   <details class="more">
@@ -293,7 +306,7 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
     <p>Look at the pattern. The ones fire is lit when exactly one of A and B is lit. The twos fire is lit only when both are. Five NAND keepers do both jobs, sharing the middle keeper.</p>
   </div>
   <div class="demo">
-    <div class="try">Try it: tap A or B and count the keeper steps</div>
+    <div class="try">Try it: tap A or B and count the keeper steps. Point at any keeper (or tap it) to see why it is lit or dark.</div>
     <canvas id="m6" style="aspect-ratio: 16 / 8.2" aria-label="Seven fires: A and B on top, five keepers below, the twos and ones fires at the bottom"></canvas>
     <div class="readout"><span class="big" id="m6r"></span><span class="status" id="m6s"></span></div>
   </div>
@@ -317,14 +330,34 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
  1 0 0 0 1    (17)</pre></div>
   </div>
   <div class="prose">
-    <p>Every column after the first has three fires to add: one from each number, plus the carry from the column to its right. Nine NAND keepers handle one column. They do Level 6's trick twice: first A + B, then that answer plus the carry.</p>
+    <p>Look at one column on its own. It adds up to three fires: the top number's fire, the bottom number's fire, and the <b>carry in</b>, a 1 handed over by the column to its right (or nothing, if that column didn't overflow). It writes one fire of the answer, the <b>sum</b>. If the column overflows, it hands a 1 to the column on its left: its <b>carry out</b>.</p>
   </div>
-  <div class="demo">
-    <div class="try">Try it: one column. Tap A, B or the carry coming in.</div>
-    <canvas id="m7" style="aspect-ratio: 16 / 9" aria-label="Nine keepers adding A, B and a carry"></canvas>
-    <div class="readout"><span class="big" id="m7r"></span><span class="status" id="m7s"></span></div>
+  <table class="truth" aria-label="What one column does">
+    <tr><th>Top + bottom + carry in</th><th>Total</th><th>Sum (write)</th><th>Carry out (hand left)</th></tr>
+    <tr><td>0 + 0 + 0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>1 + 0 + 0</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td>1 + 1 + 0</td><td>2</td><td>0</td><td>1</td></tr>
+    <tr><td>1 + 1 + 1</td><td>3</td><td>1</td><td>1</td></tr>
+  </table>
+  <div class="prose">
+    <p>The carry out of one column <i>is</i> the carry in of the next: the same fire, watched by the keepers in the column next door. That handover is all "carrying the one" means. The 1s column never has a carry in, so it needs only Level 6's 5 keepers. The other columns need 9 each, and the last carry out becomes the answer's extra fire on the left.</p>
   </div>
-  <p class="takeaway prose">Line up four of these columns, each passing its carry to the next, and the field can add any two numbers up to 15.</p>
+  <div class="demo wide">
+    <div class="controls">
+      <span class="note">Top</span>
+      <span class="num"><button type="button" id="m7Am" aria-label="Top number: one less">−</button><output id="m7A">11</output><button type="button" id="m7Ap" aria-label="Top number: one more">+</button></span>
+      <span class="note">Bottom</span>
+      <span class="num"><button type="button" id="m7Bm" aria-label="Bottom number: one less">−</button><output id="m7B">6</output><button type="button" id="m7Bp" aria-label="Bottom number: one more">+</button></span>
+      <span class="seg" role="group" aria-label="Examples" id="m7ex"><button type="button" data-a="11" data-b="6">11 + 6</button><button type="button" data-a="5" data-b="2">5 + 2: no carries</button><button type="button" data-a="15" data-b="1">15 + 1: carry runs all the way</button></span>
+    </div>
+    <p class="hint">The whole chain: 4 columns and 32 keepers. Tap the top fires to change the numbers. Point at a keeper to see its reasoning, or at a carry fire to see where it goes.</p>
+    <canvas id="m7" class="tallphone" style="aspect-ratio: 16 / 9.5" aria-label="Four columns of keepers adding two 4-fire numbers, each passing its carry to the column on its left"></canvas>
+    <div class="side">
+      <pre class="sumwork" id="m7w" aria-live="polite"></pre>
+      <div><div class="readout"><span class="big" id="m7r"></span></div><p class="status" id="m7s"></p></div>
+    </div>
+  </div>
+  <p class="takeaway prose">Watch 15 + 1. The 1s column overflows, so its carry makes the 2s column overflow, and so on up the line. The carry has to pass through every column, one after another, which makes it the slowest sum this field can do. Level 8 puts this same field in a valley.</p>
 </section>
 
 <section class="level" id="l8" data-steep="3">
@@ -340,6 +373,7 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
     <span class="num"><button type="button" id="a2Bm" aria-label="South village: one fewer">−</button><output id="a2B">6</output><button type="button" id="a2Bp" aria-label="South village: one more">+</button></span>
     <button class="go" id="a2go" type="button">Send the counts</button>
   </div>
+  <p class="hint">Point at any fire in the valley field to see what it watches and why it is lit or dark.</p>
   <canvas id="c2" style="aspect-ratio: 16 / 8" aria-label="Two hill villages send their counts down ridges of relay fires to an adding field in the valley; the total climbs a third ridge to the mill"></canvas>
   <div class="readout"><span class="big" id="a2r"></span><span class="status" id="a2s"></span></div>
   <p class="prose note" id="a2note"></p>
@@ -360,6 +394,7 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
   </div>
   <div class="demo">
     <div class="controls"><button class="go" id="m9go" type="button">Beat the drum</button><span class="status" id="m9s"></span></div>
+    <p class="hint">Point at a memory fire to see what it will copy on the next beat.</p>
     <canvas id="m9" style="aspect-ratio: 16 / 6.4" aria-label="Three memory fires and the keepers that add one to them"></canvas>
     <div class="readout"><span class="big" id="m9r"></span></div>
   </div>
@@ -422,6 +457,7 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
     <button id="a3skip" type="button" disabled>Skip to the answer</button>
   </div>
   <canvas id="c3" style="aspect-ratio: 16 / 3.3" aria-label="The cipher field: sixteen columns of fires for the block being scrambled, with the key machinery on the right"></canvas>
+  <p class="hint">Point at any of the 2,110 fires to see what it watches and why.</p>
   <div class="legend">
     <span>Each of the 16 columns handles 4 of the 64 fires. Top of a column: memory fires holding the block · middle: mixing in the key and the swap table · bottom: the message and the output row · right: the 128 key fires and the round count.</span>
   </div>
@@ -554,6 +590,69 @@ function project(v, box) {
   return { s, at: p => [ox + (p[0] - v.x0) * s, oy + (p[1] - v.y0) * s] };
 }
 
+// ---------- hover or tap a fire: why is it lit? ----------
+const tip = document.createElement('div');
+tip.className = 'tip'; tip.hidden = true;
+document.body.appendChild(tip);
+let tipOwner = null;
+function placeTip(html, cx, cy) {
+  if (tip.innerHTML !== html) tip.innerHTML = html;
+  tip.hidden = false;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let x = cx + 16, y = cy + 16;
+  if (x + tw > innerWidth - 8) x = Math.max(8, cx - tw - 16);
+  if (y + th > innerHeight - 8) y = Math.max(8, cy - th - 16);
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+// pick(x, y) -> fire under the pointer or -1; text(i) -> why it is lit or dark
+function hoverable(cv, pick, text) {
+  const h = { i: -1, cx: 0, cy: 0 };
+  const show = e => {
+    const r = cv.getBoundingClientRect();
+    h.i = pick(e.clientX - r.left, e.clientY - r.top); h.cx = e.clientX; h.cy = e.clientY;
+    if (h.i >= 0) { tipOwner = h; placeTip(text(h.i), h.cx, h.cy); } else if (tipOwner === h) { tip.hidden = true; tipOwner = null; }
+  };
+  const hide = () => { h.i = -1; if (tipOwner === h) { tip.hidden = true; tipOwner = null; } };
+  cv.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') show(e); });
+  cv.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') show(e); });
+  cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
+  window.addEventListener('scroll', () => { if (tipOwner === h) hide(); }, { passive: true });
+  h.refresh = () => { if (h.i >= 0 && tipOwner === h) placeTip(text(h.i), h.cx, h.cy); };
+  return h;
+}
+const nearest = (n, at, x, y, rad) => { let best = -1, bd = rad; for (let i = 0; i < n; i++) { const [fx, fy] = at(i); const d = Math.hypot(fx - x, fy - y); if (d < bd) { bd = d; best = i; } } return best; };
+// the explanation: kind is the card ('in', 'nand', 'mem', 'copy', 'not', 'and', 'or'); name(i, mark) names a fire
+function why(kind, i, s, src, name) {
+  const me = name(i), now = s[i];
+  if (kind === 'in') return `<b>${me}</b> is set by hand. It is ${word(now)}.`;
+  const a = src[0], b = src.length > 1 ? src[1] : src[0];
+  const A = `<b>${name(a, 1)}</b> (${word(s[a])})`, B = `<b>${name(b, 2)}</b> (${word(s[b])})`;
+  if (kind === 'mem') return `<b>${me}</b> is a memory keeper, now ${word(now)}. It copies ${A} only when the drum beats, so after the next beat it will be ${word(s[a])}.`;
+  let out, rule;
+  if (kind === 'nand' && a === b) { out = 1 - s[a]; rule = `watches ${A} twice. That is ${s[a] ? 'lit + lit' : 'dark + dark'}, a match, so it shows the opposite: <b>${word(out)}</b>. It flips ${name(a, 1)}.`; }
+  else if (kind === 'nand') { out = 1 - (s[a] & s[b]); rule = `watches ${A} and ${B}. ${s[a] && s[b] ? 'Both are lit, so the card says put the fire out: <b>dark</b>.' : `${s[a] || s[b] ? 'Only one is' : 'Neither is'} lit, so the card says keep it <b>lit</b>.`}`; }
+  else if (kind === 'copy') { out = s[a]; rule = `copies ${A}, so it is <b>${word(out)}</b>.`; }
+  else if (kind === 'not') { out = 1 - s[a]; rule = `watches ${A} and shows the opposite: <b>${word(out)}</b>.`; }
+  else if (kind === 'and') { out = s[a] & s[b]; rule = `watches ${A} and ${B}. It is lit only if both are lit: <b>${word(out)}</b>.`; }
+  else { out = s[a] | s[b]; rule = `watches ${A} and ${B}. It is lit if either is lit: <b>${word(out)}</b>.`; }
+  const lag = out !== now ? `<span class="lag">Right now it still shows ${word(now)}: the keeper hasn't reacted yet (that takes about 2 s).</span>` : '';
+  return `<b>${me}</b> ${rule}${lag}`;
+}
+// ring the hovered fire and the fires it watches, marking unnamed ones 1 and 2
+function drawWhy(ctx, h, at, src, r, named) {
+  if (h.i < 0) return;
+  const [x, y] = at(h.i);
+  ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(235,227,207,0.95)';
+  ctx.beginPath(); ctx.arc(x, y, Math.max(r * 1.8, 6), 0, 7); ctx.stroke();
+  (src || []).filter((v, k, arr) => arr.indexOf(v) === k).forEach((sI, k) => {
+    const [sx, sy] = at(sI);
+    ctx.setLineDash([4, 3]); ctx.strokeStyle = 'rgba(255,216,138,0.9)';
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(sx, sy, Math.max(r * 1.8, 6), 0, 7); ctx.stroke();
+    if (!named(sI)) { ctx.fillStyle = css('--flame'); ctx.font = `600 ${Math.max(11, r * 1.1)}px ${css('--mono')}`; ctx.textAlign = 'center'; ctx.fillText(String(k + 1), sx + Math.max(r * 2.4, 9), sy - Math.max(r * 1.6, 6)); }
+  });
+}
+
 // ---------- a small field for the early levels ----------
 // fires: [{card: 'in'|'copy'|'not'|'and'|'or'|'nand'|'mem', src: [..], x, y, label, below, sub}]
 function Mini(cv, spec) {
@@ -586,6 +685,7 @@ function Mini(cv, spec) {
   const api = {
     get state() { return s; },
     toggle(i) { s[i] ^= 1; s = [...s]; run(); },
+    set(vals) { s = [...s]; for (const k in vals) s[k] = vals[k]; run(); },
     drum() { clearInterval(timer); step(true); steps = 1; report(false); run2(); },
   };
   function run2() {   // after the drum: keep counting steps from 1
@@ -599,15 +699,22 @@ function Mini(cv, spec) {
     if (best >= 0) api.toggle(best);
   });
   const V = bounds(F.map(f => [f.x, f.y]));
+  let rNow = 10;
+  const atF = i => P.at([F[i].x, F[i].y]);
+  const named = i => !!(F[i].label || F[i].name);
+  const nameF = (i, mark) => F[i].name || F[i].label || (mark ? `fire ${mark}` : 'This keeper');
+  const hv = hoverable(cv, (x, y) => P ? nearest(n, atF, x, y, Math.max(rNow * 2.2, 18)) : -1, i => why(F[i].card, i, s, F[i].src || [], nameF) + (F[i].note ? `<span class="lag" style="font-style:normal">${F[i].note}</span>` : ''));
   animate(cv, tm => {
     const { ctx, w, h } = fit(cv);
     ctx.clearRect(0, 0, w, h);
     const pad = spec.pad || [0.12, 0.2];
     P = project(V, { x: w * pad[0], y: h * pad[1], w: w * (1 - 2 * pad[0]), h: h * (1 - 2 * pad[1]) });
     const r = Math.max(5, Math.min(spec.rmax || 14, w / (spec.rdiv || 55)));
+    rNow = r;
+    if (spec.under) spec.under(ctx, P, r, w, h);
     ctx.lineWidth = 1;
     F.forEach((f, i) => {
-      if (f.card === 'in') return;
+      if (f.card === 'in' || spec.noWires) return;
       const [x, y] = P.at([f.x, f.y]);
       for (const sI of [...new Set(f.src)]) {
         const [sx, sy] = P.at([F[sI].x, F[sI].y]);
@@ -628,6 +735,8 @@ function Mini(cv, spec) {
       if (f.sub) { ctx.fillStyle = css('--smoke'); ctx.font = `${Math.max(10, r * 0.8)}px ${css('--mono')}`; ctx.fillText(f.sub, x, y + r * (f.below ? 4.6 : 2.9)); }
     });
     if (spec.extra) spec.extra(ctx, P, r, w, h);
+    drawWhy(ctx, hv, atF, hv.i >= 0 ? F[hv.i].src : null, r, named);
+    hv.refresh();
   });
   return api;
 }
@@ -720,8 +829,8 @@ Mini($('m3'), {
 // Level 5
 (function () {
   function table(s) {
-    $('m5at').innerHTML = '<tr><th>A</th><th>B</th><th>NAND keeper</th></tr>' + [[0, 0], [0, 1], [1, 0], [1, 1]].map(([a, b]) =>
-      `<tr class="${a === s[0] && b === s[1] ? 'now' : ''}"><td>${word(a)}</td><td>${word(b)}</td><td>${word(1 - (a & b))}</td></tr>`).join('');
+    $('m5at').innerHTML = '<tr><th>A</th><th>B</th><th>NAND keeper</th><th></th></tr>' + [[0, 0], [0, 1], [1, 0], [1, 1]].map(([a, b]) =>
+      `<tr class="${a === s[0] && b === s[1] ? 'now' : ''}"><td>${word(a)}</td><td>${word(b)}</td><td>${word(1 - (a & b))}</td><td class="hint">${a === b ? 'match → opposite' : ''}</td></tr>`).join('');
   }
   Mini($('m5a'), {
     fires: [{ card: 'in', x: 0, y: 0, label: 'A', init: 1 }, { card: 'in', x: 2, y: 0, label: 'B', init: 1 },
@@ -729,6 +838,17 @@ Mini($('m3'), {
     pad: [0.22, 0.2], rmax: 16, rdiv: 30, onChange: s => table(s),
   });
 })();
+Mini($('m5f'), {
+  fires: [{ card: 'in', x: 0, y: 0, label: 'A', init: 1 }, { card: 'nand', src: [0, 0], x: 1.6, y: 0, label: 'keeper', sub: 'watches A twice' }],
+  pad: [0.3, 0.42], rmax: 18, rdiv: 34,
+  onChange: s => $('m5fr').innerHTML = `A is ${word(s[0])}, so the keeper sees ${s[0] ? 'lit + lit' : 'dark + dark'}: a match, so it shows the opposite, <b>${word(1 - s[0])}</b>.`,
+  extra: (ctx, P, r) => {   // draw the two lines of sight as two arcs, so "watches twice" is visible
+    const [ax, ay] = P.at([0, 0]), [kx, ky] = P.at([1.6, 0]);
+    ctx.strokeStyle = 'rgba(255,176,90,0.5)'; ctx.lineWidth = 1;
+    for (const bend of [-1, 1]) { ctx.beginPath(); ctx.moveTo(ax + r, ay); ctx.quadraticCurveTo((ax + kx) / 2, ay + bend * r * 3, kx - r, ky); ctx.stroke(); }
+  },
+  noWires: true,
+});
 (function () {
   const builds = {
     not: {
@@ -788,19 +908,57 @@ Mini($('m3'), {
     },
   });
 })();
-// Level 7: one column with a carry
+// Level 7: the whole adding chain
 (function () {
-  const D = DATA.full, ex = { [D.inputs[0]]: { label: 'A' }, [D.inputs[1]]: { label: 'B' }, [D.inputs[2]]: { label: 'carry in' }, [D.outputs[0]]: { label: 'sum', below: true }, [D.outputs[1]]: { label: 'carry out', below: true } };
+  const D = DATA.chain, place = ['1s', '2s', '4s', '8s', '16s'], ex = {};
+  D.A.forEach((f, i) => ex[f] = { name: `top number's ${place[i]}` });
+  D.B.forEach((f, i) => ex[f] = { name: `bottom number's ${place[i]}` });
+  D.carries.slice(0, 3).forEach((f, i) => ex[f] = { name: `carry out of the ${place[i]} column`, note: `This fire is also the <b>carry in</b> of the ${place[i + 1]} column: the keepers there watch it.` });
+  D.outputs.forEach((f, i) => ex[f] = i < 4 ? { name: `answer's ${place[i]}`, note: `This is the <b>sum</b> the ${place[i]} column writes.` } : { name: `answer's 16s`, note: `This is the 8s column's <b>carry out</b>. There is no column to its left, so it becomes the answer's extra fire.` });
   const fires = fromNet(D.net, ex);
-  [1, 1, 1].forEach((v, k) => fires[D.inputs[k]].init = [1, 1, 0][k]);
-  Mini($('m7'), {
-    fires, pad: [0.2, 0.1], rdiv: 64,
+  let a = 11, b = 6;
+  D.A.forEach((f, i) => fires[f].init = (a >> i) & 1); D.B.forEach((f, i) => fires[f].init = (b >> i) & 1);
+  const cx = i => (4 - i) * 5, val = (s, fs) => fs.reduce((acc, f, i) => acc + (s[f] << i), 0);
+  const m = Mini($('m7'), {
+    fires, pad: [0.06, 0.12], rmax: 9, rdiv: 95, ms: 450,
+    under: (ctx, P, r) => {
+      const ys = fires.map(f => f.y), y0 = Math.min(...ys) - 0.6, y1 = Math.max(...ys) + 0.6;
+      ctx.textAlign = 'center';
+      for (let i = 0; i < 5; i++) {
+        const [x0, top] = P.at([cx(i) - 2.3, y0]), [x1, bot] = P.at([cx(i) + 2.3, y1]);
+        ctx.fillStyle = i === 4 ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.035)';
+        ctx.fillRect(x0, top, x1 - x0, bot - top);
+        ctx.fillStyle = css('--smoke'); ctx.font = `500 ${Math.max(10, r * 1.2)}px ${css('--mono')}`;
+        ctx.fillText(i === 4 ? '16s' : `${place[i]} column`, (x0 + x1) / 2, top - 6);
+      }
+      const [lx] = P.at([cx(4) + 2.1, 0]);
+      ctx.textAlign = 'right'; ctx.font = `${Math.max(10, r * 1.1)}px ${css('--mono')}`;
+      ctx.fillText('top', lx, P.at([0, 0])[1] + 4); ctx.fillText('bottom', lx, P.at([0, 0.9])[1] + 4);
+      ctx.textAlign = 'center'; ctx.fillText('answer', P.at([cx(4), 0])[0], P.at([0, fires[D.outputs[0]].y - 0.8])[1]);
+    },
+    extra: (ctx, P, r) => {
+      ctx.font = `600 ${Math.max(10, r * 1.1)}px ${css('--mono')}`; ctx.textAlign = 'right'; ctx.fillStyle = css('--ember');
+      ctx.textAlign = 'center';
+      D.carries.slice(0, 3).forEach(f => { const [x, y] = P.at([fires[f].x, fires[f].y]); ctx.fillText('carry', x, y + r * 2.6 + 6); });
+    },
     onChange: (s, steps, done) => {
-      const [a, b, c] = D.inputs.map(f => s[f]), sum = s[D.outputs[0]], co = s[D.outputs[1]];
-      $('m7r').innerHTML = `${a} + ${b} + ${c} = <span class="mono">${co}${sum}</span> = ${2 * co + sum} &nbsp;<span class="note">(write ${sum}, carry ${co})</span>`;
+      const A = val(s, D.A), B = val(s, D.B), ans = val(s, D.outputs), c = D.carries.map(f => s[f]);
+      a = A; b = B; $('m7A').textContent = A; $('m7B').textContent = B;
+      const bit = (v, i) => (v >> i) & 1, cell = (x) => String(x).padStart(2);
+      const carryRow = [c[3], c[2], c[1], c[0], null].map(x => x ? ' 1' : '  ').join('');
+      $('m7w').innerHTML = `<span class="c">${carryRow}   ← carries</span>\n  ${[3, 2, 1, 0].map(i => cell(bit(A, i))).join('')}   (${A})\n+ ${[3, 2, 1, 0].map(i => cell(bit(B, i))).join('')}   (${B})\n ----------\n${[4, 3, 2, 1, 0].map(i => cell(bit(ans, i))).join('')}   (${ans})`;
+      $('m7r').innerHTML = `${A} + ${B} = ${done ? `<b>${ans}</b>` : '…'}`;
       $('m7s').textContent = stepText(steps, done);
     },
   });
+  const setAB = (A, B) => {
+    a = Math.max(0, Math.min(15, A)); b = Math.max(0, Math.min(15, B));
+    const v = {}; D.A.forEach((f, i) => v[f] = (a >> i) & 1); D.B.forEach((f, i) => v[f] = (b >> i) & 1);
+    m.set(v);
+  };
+  $('m7Am').onclick = () => setAB(a - 1, b); $('m7Ap').onclick = () => setAB(a + 1, b);
+  $('m7Bm').onclick = () => setAB(a, b - 1); $('m7Bp').onclick = () => setAB(a, b + 1);
+  document.querySelectorAll('#m7ex button').forEach(bt => bt.onclick = () => setAB(+bt.dataset.a, +bt.dataset.b));
 })();
 // Level 9: the counter
 (function () {
@@ -881,6 +1039,16 @@ Mini($('m3'), {
   $('a2Bm').onclick = () => setB(b - 1); $('a2Bp').onclick = () => setB(b + 1);
   $('a2go').onclick = send;
   rest();
+  const place = ['1s', '2s', '4s', '8s', '16s'];
+  const nm = {};
+  D.A.forEach((f, i) => nm[f] = `North's ${place[i]}`); D.B.forEach((f, i) => nm[f] = `South's ${place[i]}`); D.outputs.forEach((f, i) => nm[f] = `total's ${place[i]}`);
+  const nameD = (i, mark) => nm[i] || (mark ? `fire ${mark}` : 'This keeper');
+  let P2 = null, r2 = 4;
+  const at2 = i => P2.at(D.net.pos[i]);
+  const hv = hoverable(cv, (x, y) => P2 ? nearest(D.net.kind.length, at2, x, y, Math.max(r2 * 2.5, 10)) : -1, i => {
+    if (D.net.kind[i] === 'i') return `<b>${nm[i]}</b> fire copies the last relay on the ${D.A.includes(i) ? 'north' : 'south'} ridge. It is ${word(st[i])}.`;
+    return why('nand', i, st, D.net.src[i], nameD);
+  });
   function ridge(ctx, w, h, pts, fill) {
     ctx.beginPath(); ctx.moveTo(pts[0][0] * w, h);
     for (const [x, y] of pts) ctx.lineTo(x * w, y * h);
@@ -897,6 +1065,7 @@ Mini($('m3'), {
     ridge(ctx, w, h, [[0, 0.78], [0.05, 0.74], [0.12, 0.68], [0.22, 0.62], [0.3, 0.78], [0.5, 0.9], [0.7, 0.82], [0.78, 0.66], [0.86, 0.7], [1, 0.8]], '#1b2038');
     const r = Math.max(2.6, Math.min(7, w / 150));
     const P = project(V, { x: box.x * w, y: box.y * h, w: box.w * w, h: box.h * h });
+    P2 = P; r2 = r;
     ctx.lineWidth = 1;
     for (let i = 0; i < D.net.kind.length; i++) {
       if (D.net.kind[i] !== 'n') continue;
@@ -921,6 +1090,8 @@ Mini($('m3'), {
     ctx.fillText(`South village · ${b}`, south[0][0] * w + 30, south[0][1] * h + r * 4);
     ctx.fillText(`Mill · ${show.up[2] == null ? '?' : show.up[2]}`, upR[2][0] * w - 10, upR[2][1] * h + r * 4);
     ctx.fillText('the adding field', (box.x + box.w / 2) * w, (box.y + box.h) * h + r * 4);
+    drawWhy(ctx, hv, at2, hv.i >= 0 && D.net.kind[hv.i] === 'n' ? D.net.src[hv.i] : null, r, i => !!nm[i]);
+    hv.refresh();
   });
 })();
 
@@ -1019,6 +1190,17 @@ const cipher = (function () {
   });
   st = runInstant(0n, NONCE_BASE, 0n)[1];
   let drumFlash = 0;
+  const nm = {};
+  C.msg.forEach((f, i) => nm[f] = `message fire ${i + 1}`); C.state.forEach((f, i) => nm[f] = `block fire ${i + 1}`);
+  C.key.forEach((f, i) => nm[f] = `key fire ${i + 1}`); C.round.forEach((f, i) => nm[f] = `round-count fire ${i + 1}`); C.outputs.forEach((f, i) => nm[f] = `output fire ${i + 1}`);
+  const nameC = (i, mark) => nm[i] || (mark ? `fire ${mark}` : 'This keeper');
+  let P3 = null, r3 = 2;
+  const at3 = i => P3.at(C.net.pos[i]);
+  const hv = hoverable(cv, (x, y) => P3 ? nearest(C.net.kind.length, at3, x, y, Math.max(r3 * 2.5, 7)) : -1, i => {
+    const k = C.net.kind[i];
+    if (k === 'i') return `<b>${nm[i]}</b> is set by hand from your message. It is ${word(st[i])}.`;
+    return why(k === 'm' ? 'mem' : 'nand', i, st, C.net.src[i], nameC);
+  });
   animate(cv, tm => {
     if (job) {
       const now = performance.now(), dt = Math.min(250, now - job.last); job.last = now;
@@ -1031,11 +1213,14 @@ const cipher = (function () {
     ctx.clearRect(0, 0, w, h);
     const P = project(V, { x: 6, y: 8, w: w - 12, h: h - 16 });
     const r = Math.max(1.1, P.s * 0.27), since = performance.now() - drumFlash;
+    P3 = P; r3 = r;
     for (let i = 0; i < C.net.kind.length; i++) {
       const [x, y] = P.at(C.net.pos[i]);
       fire(ctx, x, y, r, st[i], noise(i, tm));
       if (C.net.kind[i] === 'm' && since < 300) { ctx.strokeStyle = `rgba(255,216,138,${0.5 * (1 - since / 300)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, r * 1.9, 0, 7); ctx.stroke(); }
     }
+    drawWhy(ctx, hv, at3, hv.i >= 0 && C.net.kind[hv.i] !== 'i' ? C.net.src[hv.i] : null, r, i => !!nm[i]);
+    hv.refresh();
   });
   return { play, runInstant, NONCE_BASE, totalSteps, show: s => { if (!job) st = s; } };
 })();
