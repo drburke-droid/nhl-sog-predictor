@@ -79,8 +79,10 @@ def layout_half_adder(f):
     """A and B on top; the shared NAND fire; its two helpers; the twos and ones fires at the bottom."""
     a, b = 0, 1
     m = f.nand(a, b)
-    spot = {a: (0.4, 0), b: (3.6, 0), m: (2, 1), f.nand(a, m): (1.75, 2.15), f.nand(b, m): (3.3, 2.15),
-            f.NOT(m): (0.3, 3.3), f.nand(f.nand(a, m), f.nand(b, m)): (2.55, 3.3)}
+    # the two helpers sit wide, so neither A -> helper nor B -> helper points straight at the ones fire,
+    # and the twos fire hangs below the shared keeper, clear of both helpers
+    spot = {a: (0.2, 0), b: (3.8, 0), m: (2, 1), f.nand(a, m): (0.4, 2.1), f.nand(b, m): (3.9, 2.1),
+            f.NOT(m): (1.6, 3.4), f.nand(f.nand(a, m), f.nand(b, m)): (3.0, 3.4)}
     assert len(spot) == len(f.kind)
     return [spot[i] for i in range(len(f.kind))]
 
