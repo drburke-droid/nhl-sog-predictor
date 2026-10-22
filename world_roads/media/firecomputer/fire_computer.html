@@ -106,6 +106,9 @@ table.truth th { font-size: 0.72rem; color: var(--smoke); letter-spacing: 0.08em
 table.truth tr.now td { color: var(--flame); }
 .sumwork { font: 1rem/1.5 var(--mono); white-space: pre; background: var(--hill); padding: 12px 16px; border-radius: 3px; margin: 0; overflow-x: auto; max-width: 100%; }
 .sumwork .c { color: var(--ember); }
+details.more { border-top: 1px solid var(--hill-2); border-bottom: 1px solid var(--hill-2); padding: 10px 0; max-width: 900px; }
+details.more summary { cursor: pointer; color: var(--flame); font-size: 0.95rem; }
+details.more[open] summary { margin-bottom: 14px; }
 .side { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; align-items: start; }
 .side > * { min-width: 0; }
 
@@ -262,18 +265,22 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
     </div>
   </div>
 
-  <h3>NAND can stand in for the other cards</h3>
+  <h3>Why one card is enough</h3>
   <div class="prose">
-    <p>A few NAND keepers, watching the right fires, give exactly the same answers as the NOT, AND and OR cards from Level 4. Pick one to see how.</p>
+    <p>Every job a keeper could ever do comes down to two abilities: <b>flipping</b> a fire (lit becomes dark, dark becomes lit) and <b>combining</b> two fires into one answer. NAND can do both. Have a keeper watch the same fire twice and it flips it. Have it watch two different fires and it combines them.</p>
+    <p>Flipping and combining are enough to rebuild every other card, so they are enough to build anything: NOT takes 1 NAND keeper, AND takes 2, and OR takes 3. AND and OR can't do this on their own, because neither can flip a fire. Real chips lean on the same fact: in silicon, NAND is one of the cheapest things to make.</p>
   </div>
-  <div class="demo">
-    <div class="controls"><span class="try">Make</span><span class="seg" role="group" aria-label="Card to imitate" id="m5card"><button type="button" data-c="not" aria-pressed="true">NOT</button><button type="button" data-c="and">AND</button><button type="button" data-c="or">OR</button></span><span class="try">from NAND keepers, then tap A or B</span></div>
-    <div class="side">
-      <canvas id="m5" style="aspect-ratio: 16 / 10" aria-label="NAND keepers arranged to imitate another card"></canvas>
-      <div><p id="m5x" style="margin:0 0 12px"></p><table class="truth" id="m5t" aria-label="The NAND keepers against the card they imitate"></table><p class="status" id="m5s" style="margin-top:8px"></p></div>
+  <details class="more">
+    <summary>Optional: watch NAND keepers stand in for NOT, AND and OR</summary>
+    <div class="demo">
+      <div class="controls"><span class="try">Make</span><span class="seg" role="group" aria-label="Card to imitate" id="m5card"><button type="button" data-c="not" aria-pressed="true">NOT</button><button type="button" data-c="and">AND</button><button type="button" data-c="or">OR</button></span><span class="try">from NAND keepers, then tap A or B</span></div>
+      <div class="side">
+        <canvas id="m5" style="aspect-ratio: 16 / 10" aria-label="NAND keepers arranged to imitate another card"></canvas>
+        <div><p id="m5x" style="margin:0 0 12px"></p><table class="truth" id="m5t" aria-label="The NAND keepers against the card they imitate"></table><p class="status" id="m5s" style="margin-top:8px"></p></div>
+      </div>
     </div>
-  </div>
-  <p class="takeaway prose">From here on, every keeper carries the NAND card. Building a computer is mostly a matter of deciding which two fires each keeper watches.</p>
+  </details>
+  <p class="takeaway prose">The one thing to take away: from here on, every keeper carries the same NAND card. Building a computer is mostly a matter of deciding which two fires each keeper watches.</p>
 </section>
 
 <!-- PART 3 -->
