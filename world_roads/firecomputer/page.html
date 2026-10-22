@@ -1,0 +1,783 @@
+<title>The Fire Computer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<style>
+/* Layout: one night-time column; each act opens with its question, then the field itself, drawn on canvas. */
+:root {
+  --night: #0e1120;      /* sky behind everything */
+  --hill: #171b2e;       /* panels, ridges */
+  --hill-2: #20263d;     /* nearer ridges, borders */
+  --parchment: #ebe3cf;  /* text */
+  --smoke: #a3a0ad;      /* secondary text */
+  --ember: #ff9a3c;      /* a lit fire */
+  --flame: #ffd88a;      /* the hot core, emphasis */
+  --ash: #4a4556;        /* a dark fire */
+  --display: "IM Fell English", "Iowan Old Style", Georgia, serif;
+  --body: "Literata", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+html { background: var(--night); }
+body {
+  background: var(--night); color: var(--parchment);
+  font: 17px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+main { max-width: 1040px; margin: 0 auto; display: grid; gap: 72px; }
+.prose { max-width: 66ch; }
+.prose p { margin: 0 0 0.9em; }
+h1, h2 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.6rem, 7vw, 4.6rem); line-height: 1; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.8rem, 4.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.4em; }
+.act-label { font: 500 0.78rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; }
+header { padding-top: 56px; display: grid; gap: 22px; }
+.dek { font-size: 1.2rem; color: var(--parchment); max-width: 60ch; margin: 0; }
+.dek em { color: var(--flame); font-style: italic; }
+small, .note { color: var(--smoke); font-size: 0.88rem; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+b, strong { font-weight: 600; color: var(--flame); }
+a { color: var(--flame); }
+
+/* the rule card a keeper carries */
+.cards { display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch; }
+.card {
+  background: var(--parchment); color: #2a2218; border-radius: 3px; padding: 16px 18px 14px;
+  max-width: 330px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); transform: rotate(-0.6deg);
+}
+.card:nth-child(2) { transform: rotate(0.5deg); }
+.card .k { font: 500 0.7rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #7b5a2f; }
+.card .r { font-family: var(--display); font-size: 1.35rem; line-height: 1.25; margin: 8px 0 10px; }
+.card table { border-collapse: collapse; font: 0.8rem/1.3 var(--mono); }
+.card td { padding: 1px 10px 1px 0; }
+.card td.o { font-weight: 500; }
+
+.stage { display: grid; gap: 14px; }
+canvas { display: block; width: 100%; max-width: 100%; background: transparent; border-radius: 4px; touch-action: manipulation; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+button, .seg button {
+  font: 500 0.92rem/1 var(--body); color: var(--parchment); background: var(--hill-2);
+  border: 1px solid #343b58; border-radius: 3px; padding: 10px 14px; cursor: pointer;
+}
+button:hover { border-color: var(--ember); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+button.go { background: var(--ember); color: #2a1606; border-color: var(--ember); font-weight: 600; }
+button.go:hover { background: var(--flame); }
+button:disabled { opacity: 0.45; cursor: default; }
+.seg { display: inline-flex; border: 1px solid #343b58; border-radius: 3px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: transparent; padding: 8px 10px; font: 0.8rem/1 var(--mono); }
+.seg button[aria-pressed="true"] { background: var(--hill-2); color: var(--flame); }
+label { font-size: 0.9rem; color: var(--smoke); display: grid; gap: 6px; }
+input[type="text"] {
+  font: 1rem/1.2 var(--mono); color: var(--parchment); background: var(--hill); border: 1px solid #343b58;
+  border-radius: 3px; padding: 9px 10px; width: 100%; min-width: 0;
+}
+.num { display: inline-flex; align-items: center; gap: 0; border: 1px solid #343b58; border-radius: 3px; }
+.num button { border: 0; border-radius: 0; padding: 8px 12px; background: var(--hill); }
+.num output { font: 500 1.1rem/1 var(--mono); min-width: 3.2ch; text-align: center; color: var(--flame); }
+.readout {
+  display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: baseline; padding: 12px 0;
+  border-top: 1px solid var(--hill-2); border-bottom: 1px solid var(--hill-2);
+}
+.readout .big { font: 400 1.7rem/1.2 var(--display); }
+.readout .big .mono { font-size: 1.25rem; }
+.status { font: 0.85rem/1.4 var(--mono); color: var(--smoke); font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 0.85rem; color: var(--smoke); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; }
+.dot.lit { background: var(--flame); box-shadow: 0 0 8px var(--ember); }
+.dot.dark { background: var(--ash); }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px 24px; align-items: end; }
+.blocks { display: grid; gap: 6px; font: 0.95rem/1.35 var(--mono); }
+.blocks .row { display: grid; grid-template-columns: 6.5ch 10.5ch 1fr; gap: 10px; align-items: baseline; min-width: 0; }
+.blocks .row span:last-child { overflow-wrap: anywhere; min-width: 0; }
+.blocks .tag { color: var(--smoke); font-size: 0.78rem; }
+.blocks .hex { color: var(--flame); letter-spacing: 0.04em; }
+.pips { display: flex; gap: 3px; flex-wrap: wrap; }
+.pips i { width: 9px; height: 9px; border-radius: 2px; background: var(--hill-2); }
+.pips i.on { background: var(--ember); }
+.check { font: 0.82rem/1.4 var(--mono); color: var(--smoke); }
+.check .ok { color: var(--flame); }
+
+.table-wrap { overflow-x: auto; }
+table.scale { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.95rem; }
+table.scale th, table.scale td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--hill-2); vertical-align: baseline; }
+table.scale th { font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--smoke); }
+table.scale td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 22px; }
+table.scale th.n { text-align: right; padding-right: 22px; }
+table.scale tr.hl td { color: var(--flame); }
+.versus { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.versus div { border-top: 2px solid var(--hill-2); padding-top: 12px; }
+.versus .v { font: 400 2.1rem/1.1 var(--display); color: var(--flame); }
+.versus div:first-child .v { color: var(--parchment); }
+footer { color: var(--smoke); font-size: 0.85rem; max-width: 70ch; }
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .blocks .row { grid-template-columns: 5.5ch 1fr; }
+  .blocks .row span:last-child { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<main>
+<header>
+  <div class="act-label">After the signal fires</div>
+  <h1>The Fire Computer</h1>
+  <p class="dek">A chain of signal fires can carry a message from mountain to mountain. Give each fire a keeper and a rule, and a field of them can <em>calculate</em>. A lit fire is a 1 and a dark fire is a 0. Every keeper watches two fires and carries the same card.</p>
+  <div class="cards">
+    <div class="card" aria-label="The keeper's card">
+      <div class="k">Every keeper's card</div>
+      <div class="r">Keep your fire lit, unless both of the fires you watch are lit.</div>
+      <table aria-label="The card's rule for every case">
+        <tr><td>dark, dark</td><td>→</td><td class="o">lit</td></tr>
+        <tr><td>dark, lit</td><td>→</td><td class="o">lit</td></tr>
+        <tr><td>lit, dark</td><td>→</td><td class="o">lit</td></tr>
+        <tr><td>lit, lit</td><td>→</td><td class="o">dark</td></tr>
+      </table>
+    </div>
+    <div class="card" aria-label="The memory keeper's card">
+      <div class="k">The memory keeper's card (Act III)</div>
+      <div class="r">When the drum beats, make your fire match the one you watch. Between beats, leave it alone.</div>
+      <div class="note" style="color:#5b4a35">Every fire has a lid, so a keeper can show or hide its light as often as needed.</div>
+    </div>
+  </div>
+  <p class="prose note" style="margin:0">Engineers call the first card <b>NAND</b> ("not and"). Every other rule, and every circuit on this page, is built from it. The only difference between keepers is which two fires each one watches. Each keeper takes about 2 seconds to see a change, check the card and move the lid.</p>
+</header>
+
+<!-- ACT I -->
+<section class="stage" id="act1" aria-labelledby="a1h">
+  <div class="prose">
+    <div class="act-label">Act I · 7 fires</div>
+    <h2 id="a1h">1 + 1, with five keepers</h2>
+    <p>Two fires on top hold the numbers being added, A and B. Five keepers below them add the numbers. The fire on the bottom right shows the ones place, and the fire on the bottom left shows the twos place. Tap A or B to change it, and watch the change pass down one keeper at a time.</p>
+  </div>
+  <canvas id="c1" style="aspect-ratio: 16 / 8.2" aria-label="Seven fires: A and B on top, five keepers below, the twos and ones fires at the bottom"></canvas>
+  <div class="controls">
+    <button id="a1A" type="button">A: lit (1)</button>
+    <button id="a1B" type="button">B: lit (1)</button>
+    <span class="status" id="a1s"></span>
+  </div>
+  <div class="readout"><span class="big" id="a1r"></span><span class="note" id="a1n"></span></div>
+  <div class="prose note">
+    <p>The first keeper (the middle fire) goes dark only when A and B are both lit. The two keepers under it each compare that fire with A or with B, and the ones fire combines them. Together those four NAND fires make "lit if exactly one of A and B is lit". The twos fire flips the first keeper's fire: it is lit only when both A and B are. That is binary addition: 1 + 1 = <span class="mono">10</span>, one two and no ones.</p>
+  </div>
+</section>
+
+<!-- ACT II -->
+<section class="stage" id="act2" aria-labelledby="a2h">
+  <div class="prose">
+    <div class="act-label">Act II · 40 fires and three ridges</div>
+    <h2 id="a2h">Sightlines are wires</h2>
+    <p>Two hill villages each count their sacks of grain and send the count down a ridge as 4 lidded fires: the 8s, 4s, 2s and 1s. Each relay copies the four fires it sees, like the signal-fire chains, but with lids instead of new bonfires. In the valley, 32 keepers add the two counts with four copies of the Act I trick, each passing its carry to the next. The total climbs the far ridge to the mill.</p>
+  </div>
+  <div class="controls">
+    <span class="note">North village</span>
+    <span class="num"><button type="button" id="a2Am" aria-label="North village: one fewer">−</button><output id="a2A">11</output><button type="button" id="a2Ap" aria-label="North village: one more">+</button></span>
+    <span class="note">South village</span>
+    <span class="num"><button type="button" id="a2Bm" aria-label="South village: one fewer">−</button><output id="a2B">6</output><button type="button" id="a2Bp" aria-label="South village: one more">+</button></span>
+    <button class="go" id="a2go" type="button">Send the counts</button>
+  </div>
+  <canvas id="c2" style="aspect-ratio: 16 / 8" aria-label="Two hill villages send their counts down ridges of relay fires to an adding field in the valley; the total climbs a third ridge to the mill"></canvas>
+  <div class="readout"><span class="big" id="a2r"></span><span class="status" id="a2s"></span></div>
+  <p class="prose note" id="a2note"></p>
+</section>
+
+<!-- ACT III -->
+<section class="stage" id="act3" aria-labelledby="a3h">
+  <div class="prose">
+    <div class="act-label">Act III · 2,110 fires and a chain to Paris</div>
+    <h2 id="a3h">A message the sky can't read</h2>
+    <p>In the analog-backup story, an AI holds every phone, cable and satellite, and the warning goes out by bonfire. A satellite can see every bonfire, though, and so can the AI. To keep a message private you need a real cipher. Real ciphers are far too long to work by hand: <span id="handline"></span></p>
+    <p>So Bletchley Park, where Colossus broke codes in the war, builds one out of fire. The field runs <b>PRESENT</b>, a published lightweight cipher (ISO/IEC 29192-2) with a 128-bit key that no computer could guess. It sits under a roof so the sky can't see it. It scrambles 8 letters at a time in 31 rounds, one round per drum beat, and the scrambled digits go out on the open beacon chain. Paris builds an identical field with the same key, and the same steps turn the scramble back into the message.</p>
+  </div>
+  <div class="grid2">
+    <label for="a3msg">Message (up to 24 letters)<input type="text" id="a3msg" maxlength="24" value="UNPLUG AT DAWN" spellcheck="false" autocomplete="off"></label>
+    <label for="a3key">Key, shared in person beforehand (32 hex digits)<input type="text" id="a3key" maxlength="32" spellcheck="false" autocomplete="off"></label>
+  </div>
+  <div class="controls">
+    <button class="go" id="a3go" type="button">Scramble at Bletchley Park</button>
+    <button id="a3newkey" type="button">New random key</button>
+    <span class="note">Speed</span>
+    <span class="seg" role="group" aria-label="Speed" id="a3speed"><button type="button" data-x="1">real time</button><button type="button" data-x="10">×10</button><button type="button" data-x="40" aria-pressed="true">×40</button><button type="button" data-x="200">×200</button></span>
+    <button id="a3skip" type="button" disabled>Skip to the answer</button>
+  </div>
+  <canvas id="c3" style="aspect-ratio: 16 / 3.3" aria-label="The cipher field: sixteen columns of fires for the block being scrambled, with the key machinery on the right"></canvas>
+  <div class="legend">
+    <span><i class="dot lit"></i>lit (1)</span><span><i class="dot dark"></i>dark (0)</span>
+    <span>Top of each column: the block being scrambled (memory fires) · middle: mixing in the key, then the substitution · bottom: the message and the output row · right: the 128 key fires and the round count</span>
+  </div>
+  <div class="controls"><div class="pips" id="a3pips" aria-hidden="true"></div><span class="status" id="a3s"></span></div>
+  <div class="blocks" id="a3blocks" aria-live="polite"></div>
+  <p class="check" id="a3check"></p>
+
+  <div class="prose" style="margin-top:18px">
+    <h2 style="font-size:1.6rem">Out along the beacon chain</h2>
+    <p>The scrambled block goes out as hex digits, 4 bits each, using the beacon chain Video 2 lit from Bletchley Park to Paris. Each station has 4 lidded fires for the bits and a fifth that is lit while a digit is showing. Every keeper can see the digits, and so can the satellites, but without the key they mean nothing.</p>
+  </div>
+  <canvas id="c4" style="aspect-ratio: 16 / 5" aria-label="Side view of the beacon chain from Bletchley Park to Paris, with five fires at each station"></canvas>
+  <div class="controls">
+    <button class="go" id="a4go" type="button">Send to Paris</button>
+    <button id="a4dec" type="button">Unscramble in Paris</button>
+    <span class="status" id="a4s"></span>
+  </div>
+  <div class="blocks" id="a4blocks" aria-live="polite"></div>
+</section>
+
+<!-- SCALE -->
+<section class="stage" aria-labelledby="a5h">
+  <div class="prose">
+    <div class="act-label">How big it gets</div>
+    <h2 id="a5h">Every circuit, counted fire by fire</h2>
+    <p>Every row was built from the same NAND card (plus memory keepers for the cipher), then run keeper by keeper and checked against the right answers. "Keepers deep" is the longest chain of keepers a change has to pass through, one after another.</p>
+  </div>
+  <div class="table-wrap"><table class="scale" id="scale"></table></div>
+</section>
+
+<section class="stage" aria-labelledby="a6h">
+  <div class="prose">
+    <div class="act-label">Fire against pencil</div>
+    <h2 id="a6h">When the field is worth lighting</h2>
+  </div>
+  <div class="versus" id="versus"></div>
+  <div class="prose">
+    <p>For everyday arithmetic, the field loses. One person multiplies 2,400 × 365 with a pencil in about a minute, while the multiplier field needs 2,640 keepers and about five minutes. The cipher is different because it is long, not because it is hard. It is thousands of tiny steps, and a single slip ruins the whole block, which is the kind of job a field of rule-followers does well. None of the keepers needs to know any arithmetic, or even what the field is for.</p>
+    <p>That is also the point of the whole exercise. <b>Computers aren't smart.</b> They are enormous numbers of very simple rule-followers. A phone has billions of them, each switching billions of times a second. In <i>The Three-Body Problem</i>, an emperor's army becomes a computer, each soldier raising or lowering a flag by a rule. The fire field is the same idea, at a size and speed you can watch.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Built and checked by <span class="mono">world_roads/firecomputer/build.py</span>: every circuit is a list of who watches whom, run one keeper step (2 s) at a time. The adders are checked on every input or 200 random sums, the multipliers on 200 random products, and the cipher on the four published PRESENT-128 test vectors plus 20 random blocks against plain software PRESENT. Assumed timings: 2 s per field keeper; 10 s per mountain hop with lidded fires; 30 s per hex digit on the chain (shown for 20 s, dark for 10 s). The beacon chain is Video 2's terrain-checked route. The cipher runs in counter mode: the field scrambles the block number 1588 × 65,536 + n with the key and adds the result to the message, so the same field both scrambles and unscrambles.</p>
+</footer>
+</main>
+
+<script>/*FIRE_SIM*/</script>
+<script>
+const DATA = /*FIRE_DATA*/null;
+const S = DATA.stats;
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// ---------- drawing fires ----------
+const sprites = {};
+function sprite(r, lit) {
+  const key = (lit ? 'L' : 'D') + Math.round(r * 10);
+  if (sprites[key]) return sprites[key];
+  const R = lit ? r * 3.2 : r * 1.2, c = document.createElement('canvas');
+  c.width = c.height = Math.ceil(R * 2);
+  const g = c.getContext('2d'), m = R;
+  if (lit) {
+    const grd = g.createRadialGradient(m, m, 0, m, m, R);
+    grd.addColorStop(0, 'rgba(255,246,214,1)');
+    grd.addColorStop(0.16, 'rgba(255,216,138,1)');
+    grd.addColorStop(0.32, 'rgba(255,154,60,0.75)');
+    grd.addColorStop(0.6, 'rgba(255,110,30,0.18)');
+    grd.addColorStop(1, 'rgba(255,90,20,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, c.width, c.height);
+  } else {
+    g.beginPath(); g.arc(m, m, r * 0.82, 0, 7);
+    g.fillStyle = '#4a4556'; g.fill();
+    g.lineWidth = Math.max(0.6, r * 0.18); g.strokeStyle = 'rgba(120,96,110,0.55)'; g.stroke();
+  }
+  return (sprites[key] = c);
+}
+function fire(ctx, x, y, r, lit, flick) {
+  const sp = sprite(r, lit);
+  if (lit) ctx.globalAlpha = reduced ? 1 : 0.82 + 0.18 * flick;
+  ctx.drawImage(sp, x - sp.width / 2, y - sp.height / 2);
+  ctx.globalAlpha = 1;
+}
+function fit(cv) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w, h };
+}
+function noise(i, t) { return 0.5 + 0.5 * Math.sin(t * 0.009 + i * 12.9898) * Math.sin(t * 0.0137 + i * 4.1414); }
+const bitsOf = (v, n) => Array.from({ length: n }, (_, i) => (v >> i) & 1);
+const fmtT = s => s < 60 ? `${Math.round(s)} s` : s < 3600 ? `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, '0')} s` : `${Math.floor(s / 3600)} h ${String(Math.floor(s % 3600 / 60)).padStart(2, '0')} min`;
+
+// a canvas that redraws every frame while on screen
+const live = [];
+function animate(cv, draw) {
+  const item = { cv, draw, visible: true };
+  live.push(item);
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => item.visible = e.isIntersecting)).observe(cv);
+}
+function frame(t) {
+  for (const it of live) if (it.visible) it.draw(t);
+  requestAnimationFrame(frame);
+}
+
+// a field drawn from its layout
+function fieldView(net, pad) {
+  const xs = net.pos.map(p => p[0]), ys = net.pos.map(p => p[1]);
+  return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys), pad };
+}
+function project(v, box) {   // box: {x, y, w, h} in px -> function(fire) => [x, y], scale
+  const sx = box.w / Math.max(1e-9, v.x1 - v.x0), sy = box.h / Math.max(1e-9, v.y1 - v.y0);
+  const s = Math.min(sx, sy);
+  const ox = box.x + (box.w - s * (v.x1 - v.x0)) / 2, oy = box.y + (box.h - s * (v.y1 - v.y0)) / 2;
+  return { s, at: p => [ox + (p[0] - v.x0) * s, oy + (p[1] - v.y0) * s] };
+}
+function drawWires(ctx, net, P, state, alpha) {
+  ctx.lineWidth = 1;
+  for (let i = 0; i < net.kind.length; i++) {
+    const k = net.kind[i];
+    if (k === 'i') continue;
+    const [x, y] = P.at(net.pos[i]);
+    const srcs = k === 'n' ? (net.src[i][0] === net.src[i][1] ? [net.src[i][0]] : net.src[i]) : [net.src[i][0]];
+    for (const s of srcs) {
+      const [sx, sy] = P.at(net.pos[s]);
+      ctx.strokeStyle = state && state[s] ? `rgba(255,176,90,${alpha * 1.6})` : `rgba(150,140,170,${alpha})`;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(x, y); ctx.stroke();
+    }
+  }
+}
+
+// ---------- ACT I ----------
+(function () {
+  const A = DATA.act1, F = new FireField(A.net), cv = document.getElementById('c1');
+  const V = fieldView(A.net);
+  let inp = [1, 1], s = settleNow(), t = 0, running = null;
+  function settleNow() { let st = F.start({ [A.inputs[0]]: inp[0], [A.inputs[1]]: inp[1] }); for (let i = 0; i < 6; i++) st = F.step(st); return st; }
+  const labels = { [A.inputs[0]]: 'A', [A.inputs[1]]: 'B', [A.outputs[0]]: 'ones', [A.outputs[1]]: 'twos' };
+  function readout(st, steps) {
+    const sum = st[A.outputs[1]] * 2 + st[A.outputs[0]];
+    document.getElementById('a1r').innerHTML = `${inp[0]} + ${inp[1]} = <span class="mono">${st[A.outputs[1]]}${st[A.outputs[0]]}</span> in binary = ${sum}`;
+    document.getElementById('a1n').textContent = steps == null ? '' : `settled after ${steps} keeper steps, about ${steps * S.keeper_s} s`;
+  }
+  function btns() {
+    document.getElementById('a1A').textContent = `A: ${inp[0] ? 'lit (1)' : 'dark (0)'}`;
+    document.getElementById('a1B').textContent = `B: ${inp[1] ? 'lit (1)' : 'dark (0)'}`;
+  }
+  function run() {
+    clearInterval(running);
+    s[A.inputs[0]] = inp[0]; s[A.inputs[1]] = inp[1];
+    btns();
+    let step = 0;
+    document.getElementById('a1s').textContent = 'the keepers are reacting…';
+    running = setInterval(() => {
+      const n = F.step(s); step++;
+      const changed = n.some((v, i) => v !== s[i]);
+      s = n;
+      document.getElementById('a1s').textContent = `keeper step ${step} · ${step * S.keeper_s} s`;
+      if (!changed) { clearInterval(running); document.getElementById('a1s').textContent = `settled · ${(step - 1) * S.keeper_s} s`; readout(s, step - 1); }
+    }, 750);
+  }
+  function toggle(k) { inp[k] ^= 1; run(); }
+  document.getElementById('a1A').onclick = () => toggle(0);
+  document.getElementById('a1B').onclick = () => toggle(1);
+  let P = null;
+  cv.addEventListener('click', e => {
+    if (!P) return;
+    const r = cv.getBoundingClientRect();
+    for (const k of [0, 1]) {
+      const [x, y] = P.at(A.net.pos[A.inputs[k]]);
+      if (Math.hypot(e.clientX - r.left - x, e.clientY - r.top - y) < 40) toggle(k);
+    }
+  });
+  btns(); readout(s, null);
+  animate(cv, tm => {
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    P = project(V, { x: w * 0.16, y: h * 0.14, w: w * 0.68, h: h * 0.7 });
+    drawWires(ctx, A.net, P, s, 0.35);
+    const r = Math.max(5, Math.min(14, w / 60));
+    ctx.font = `500 ${Math.max(11, r * 0.95)}px ${css('--mono')}`;
+    ctx.textAlign = 'center';
+    for (let i = 0; i < A.net.kind.length; i++) {
+      const [x, y] = P.at(A.net.pos[i]);
+      fire(ctx, x, y, r, s[i], noise(i, tm));
+      if (labels[i]) {
+        ctx.fillStyle = css('--smoke');
+        const below = labels[i] === 'ones' || labels[i] === 'twos';
+        ctx.fillText(labels[i], x, below ? y + r * 3 : y - r * 2.4);
+      }
+    }
+  });
+})();
+
+// ---------- ACT II ----------
+(function () {
+  const D = DATA.act2, F = new FireField(D.net), cv = document.getElementById('c2'), V = fieldView(D.net);
+  let a = 11, b = 6, st = null, t = 0;  // st: field state
+  const HOP = S.hop_s, KS = S.keeper_s;
+  // geometry in fractions of the canvas
+  const north = [[0.08, 0.16], [0.17, 0.3], [0.255, 0.42]];
+  const south = [[0.06, 0.82], [0.155, 0.76], [0.245, 0.68]];
+  const up = [[0.72, 0.58], [0.81, 0.4], [0.9, 0.2]];
+  const box = { x: 0.33, y: 0.3, w: 0.32, h: 0.6 };
+  let show = null;   // what each station is showing: {north:[v|null x3], south:[...], up:[...]} plus the field state
+  function settledState() {
+    const v = {}; D.A.forEach((f, i) => v[f] = (a >> i) & 1); D.B.forEach((f, i) => v[f] = (b >> i) & 1);
+    let s = F.start(v), n = 0;
+    for (;;) { const m = F.step(s); if (m.every((x, i) => x === s[i])) break; s = m; n++; }
+    return [s, n];
+  }
+  const sumOf = s => D.outputs.reduce((acc, f, i) => acc + (s[f] << i), 0);
+  function rest() {
+    const [s, n] = settledState(); st = s;
+    show = { north: [a, a, a], south: [b, b, b], up: [a + b, a + b, a + b] };
+    readout(n, true);
+  }
+  function readout(n, done) {
+    const sum = sumOf(st);
+    const bin = (v, k) => v.toString(2).padStart(k, '0');
+    document.getElementById('a2r').innerHTML = `<span class="mono">${bin(a, 4)}</span> + <span class="mono">${bin(b, 4)}</span> = <span class="mono">${bin(sum, 5)}</span> &nbsp;·&nbsp; ${a} + ${b} = ${done ? sum : '…'}`;
+    const total = 3 * HOP + n * KS + 3 * HOP;
+    document.getElementById('a2note').textContent = `Timing: 3 hops down each ridge (${HOP} s each, with lids), ${n} keeper steps in the field (${n * KS} s) for these two numbers, 3 hops up to the mill. The mill knows the total ${fmtT(total)} after the villages light their counts. The slowest pair of numbers needs ${S.circuits[1].worst_steps} keeper steps, because the carry passes from bit to bit.`;
+  }
+  let timer = null;
+  function send() {
+    clearTimeout(timer);
+    const v = {}; D.A.forEach((f, i) => v[f] = 0); D.B.forEach((f, i) => v[f] = 0);
+    st = F.start(v); st = F.step(st);  // a dark, quiet field
+    for (let i = 0; i < 6; i++) st = F.step(st);
+    show = { north: [a, null, null], south: [b, null, null], up: [null, null, null] };
+    const events = [];
+    let T = 0;
+    events.push([600, () => { show.north[1] = a; show.south[1] = b; T = HOP; }]);
+    events.push([600, () => { show.north[2] = a; show.south[2] = b; T = 2 * HOP; }]);
+    events.push([600, () => { D.A.forEach((f, i) => st[f] = (a >> i) & 1); D.B.forEach((f, i) => st[f] = (b >> i) & 1); T = 3 * HOP; }]);
+    let n = 0;
+    function fieldStep() {
+      const m = F.step(st);
+      if (m.every((x, i) => x === st[i])) { climb(); return; }
+      st = m; n++; T = 3 * HOP + n * KS;
+      status(`keeper step ${n} in the field · ${fmtT(T)}`);
+      timer = setTimeout(fieldStep, 380);
+    }
+    function climb() {
+      const sum = sumOf(st); let k = 0;
+      (function hop() {
+        show.up[k] = sum; k++; T = 3 * HOP + n * KS + k * HOP;
+        status(k < 3 ? `relay ${k} on the far ridge · ${fmtT(T)}` : `the mill reads ${sum} · ${fmtT(T)}`);
+        if (k < 3) timer = setTimeout(hop, 600); else readout(n, true);
+      })();
+    }
+    let e = 0;
+    status('the villages light their counts · 0 s');
+    (function next() {
+      if (e < events.length) { const [ms, fn] = events[e++]; timer = setTimeout(() => { fn(); status(e < 3 ? `relay ${e} on each ridge · ${fmtT(T)}` : `the field's top row copies the last relays · ${fmtT(T)}`); next(); }, ms); }
+      else timer = setTimeout(fieldStep, 450);
+    })();
+    readout(0, false);
+  }
+  const status = txt => document.getElementById('a2s').textContent = txt;
+  const setA = v => { a = Math.max(0, Math.min(15, v)); document.getElementById('a2A').value = a; document.getElementById('a2A').textContent = a; rest(); status(''); };
+  const setB = v => { b = Math.max(0, Math.min(15, v)); document.getElementById('a2B').value = b; document.getElementById('a2B').textContent = b; rest(); status(''); };
+  document.getElementById('a2Am').onclick = () => { clearTimeout(timer); setA(a - 1); };
+  document.getElementById('a2Ap').onclick = () => { clearTimeout(timer); setA(a + 1); };
+  document.getElementById('a2Bm').onclick = () => { clearTimeout(timer); setB(b - 1); };
+  document.getElementById('a2Bp').onclick = () => { clearTimeout(timer); setB(b + 1); };
+  document.getElementById('a2go').onclick = send;
+  rest();
+
+  function ridge(ctx, w, h, pts, fill) {
+    ctx.beginPath(); ctx.moveTo(pts[0][0] * w, h);
+    for (const [x, y] of pts) ctx.lineTo(x * w, y * h);
+    ctx.lineTo(pts[pts.length - 1][0] * w, h); ctx.closePath();
+    ctx.fillStyle = fill; ctx.fill();
+  }
+  function station(ctx, x, y, r, val, nbits, tm, seed) {
+    // nbits fires stacked, highest bit on top
+    const gap = r * 2.3;
+    for (let k = 0; k < nbits; k++) {
+      const bit = val == null ? 0 : (val >> (nbits - 1 - k)) & 1;
+      fire(ctx, x, y - (nbits - 1 - k) * gap, r, bit, noise(seed + k, tm));
+    }
+  }
+  animate(cv, tm => {
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    // hills, far to near
+    ridge(ctx, w, h, [[0, 0.24], [0.04, 0.12], [0.09, 0.1], [0.15, 0.22], [0.24, 0.4], [0.33, 0.52], [0.45, 0.56], [0.6, 0.5], [0.72, 0.42], [0.86, 0.14], [0.92, 0.1], [0.97, 0.16], [1, 0.22]], '#141830');
+    ridge(ctx, w, h, [[0, 0.78], [0.05, 0.74], [0.12, 0.68], [0.22, 0.62], [0.3, 0.78], [0.5, 0.9], [0.7, 0.82], [0.78, 0.66], [0.86, 0.7], [1, 0.8]], '#1b2038');
+    const r = Math.max(2.6, Math.min(7, w / 150));
+    // sightlines: last relay -> field inputs, field outputs -> first relay up
+    const P = project(V, { x: box.x * w, y: box.y * h, w: box.w * w, h: box.h * h });
+    drawWires(ctx, D.net, P, st, 0.22);
+    ctx.setLineDash([3, 5]); ctx.lineWidth = 1;
+    const lineTo = (x1, y1, x2, y2, on) => { ctx.strokeStyle = on ? 'rgba(255,176,90,0.45)' : 'rgba(150,140,170,0.25)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+    for (const [chain, val] of [[north, show.north], [south, show.south]]) for (let k = 0; k + 1 < chain.length; k++) lineTo(chain[k][0] * w, chain[k][1] * h, chain[k + 1][0] * w, chain[k + 1][1] * h, val[k + 1] != null);
+    const nl = north[2], sl = south[2];
+    D.A.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(nl[0] * w, nl[1] * h, x, y, st[f]); });
+    D.B.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(sl[0] * w, sl[1] * h, x, y, st[f]); });
+    D.outputs.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(x, y, up[0][0] * w, up[0][1] * h, show.up[0] != null); });
+    for (let k = 0; k + 1 < up.length; k++) lineTo(up[k][0] * w, up[k][1] * h, up[k + 1][0] * w, up[k + 1][1] * h, show.up[k + 1] != null);
+    ctx.setLineDash([]);
+    // field fires
+    for (let i = 0; i < D.net.kind.length; i++) { const [x, y] = P.at(D.net.pos[i]); fire(ctx, x, y, r, st[i], noise(i, tm)); }
+    // relay stations
+    north.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.north[k], 4, tm, 100 + k * 7));
+    south.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.south[k], 4, tm, 200 + k * 7));
+    up.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.up[k], 5, tm, 300 + k * 7));
+    ctx.font = `${Math.max(11, w / 70)}px ${css('--body')}`; ctx.fillStyle = css('--smoke'); ctx.textAlign = 'center';
+    ctx.textAlign = 'left';
+    ctx.fillText(`North village · ${a}`, north[0][0] * w - 20, north[0][1] * h - r * 9);
+    ctx.textAlign = 'center';
+    ctx.fillText(`South village · ${b}`, south[0][0] * w + 30, south[0][1] * h + r * 4);
+    ctx.fillText(`Mill · ${show.up[2] == null ? '?' : show.up[2]}`, up[2][0] * w - 10, up[2][1] * h + r * 4);
+    ctx.fillText('the adding field', (box.x + box.w / 2) * w, (box.y + box.h) * h + r * 4);
+  });
+})();
+
+// ---------- ACT III ----------
+const cipher = (function () {
+  const C = DATA.act3, F = new FireField(C.net), cv = document.getElementById('c3'), V = fieldView(C.net);
+  const NONCE_BASE = BigInt(S.cipher.sample.nonce_base);
+  let st = null, beat = 0, stepInBeat = 0, speed = 40, job = null, label = '';
+  const big2bits = (v, n) => Array.from({ length: n }, (_, i) => Number((v >> BigInt(i)) & 1n));
+  const bits2big = (s, fires) => fires.reduce((acc, f, i) => acc | (BigInt(s[f]) << BigInt(i)), 0n);
+  function startState(msgBig, nonceBig, keyBig) {
+    const v = {};
+    big2bits(msgBig, 64).forEach((x, i) => v[C.msg[i]] = x);
+    big2bits(nonceBig, 64).forEach((x, i) => v[C.state[i]] = x);
+    big2bits(keyBig, 128).forEach((x, i) => v[C.key[i]] = x);
+    C.round.forEach((f, i) => v[f] = i === 0 ? 1 : 0);
+    return F.start(v);
+  }
+  const outDepth = F.maxDepth(C.outputs);
+  const totalSteps = 31 * F.beatSteps + outDepth;
+  function runInstant(msgBig, nonceBig, keyBig) {
+    let s = startState(msgBig, nonceBig, keyBig);
+    for (let b = 0; b < 31; b++) { for (let k = 1; k < F.beatSteps; k++) s = F.step(s); s = F.step(s, true); }
+    for (let k = 0; k < outDepth; k++) s = F.step(s);
+    return [bits2big(s, C.outputs), s];
+  }
+  // the published test vector: key 0, block 0 -> 96db702a2e6900af (message 0, so the output is the cipher itself)
+  const [tv] = runInstant(0n, 0n, 0n);
+  const want = BigInt('0x' + S.cipher.test_vectors[0][2]);
+  document.getElementById('a3check').innerHTML = `Check, run on this page: key 0, block 0 → <span class="${tv === want ? 'ok' : ''}">${tv.toString(16).padStart(16, '0')}</span> ${tv === want ? '✓ matches the published PRESENT-128 test vector' : '✗ does not match ' + S.cipher.test_vectors[0][2]}`;
+
+  // jobs: a list of blocks to run through the field, animated one keeper step at a time
+  function play(blocks, keyBig, onBlock, onDone, title) {
+    job = { blocks, keyBig, i: 0, onBlock, onDone, acc: 0, last: performance.now(), title };
+    loadBlock();
+    document.getElementById('a3skip').disabled = false;
+  }
+  function loadBlock() {
+    const b = job.blocks[job.i];
+    st = startState(b, NONCE_BASE + BigInt(job.i), job.keyBig);
+    beat = 0; stepInBeat = 0; job.steps = 0;
+  }
+  function advance() {   // one keeper step
+    if (beat < 31) {
+      const drum = stepInBeat === F.beatSteps - 1;
+      st = F.step(st, drum);
+      stepInBeat++; job.steps++;
+      if (drum) { beat++; stepInBeat = 0; }
+    } else {
+      st = F.step(st); job.steps++;
+    }
+    if (job.steps >= totalSteps) {
+      const out = bits2big(st, C.outputs);
+      job.onBlock(job.i, out);
+      job.i++;
+      if (job.i < job.blocks.length) loadBlock();
+      else { const fin = job.onDone; job = null; document.getElementById('a3skip').disabled = true; fin(); }
+      return false;
+    }
+    return true;
+  }
+  function skip() {
+    if (!job) return;
+    while (job) advance();
+  }
+  function status() {
+    const el = document.getElementById('a3s');
+    if (!job) return;
+    const tSim = job.steps * S.keeper_s;
+    el.textContent = `${job.title} · block ${job.i + 1} of ${job.blocks.length} · ${beat < 31 ? `drum beat ${beat + 1} of 31` : 'reading the output row'} · ${fmtT(tSim)} of ${fmtT(totalSteps * S.keeper_s)}`;
+    const pips = document.getElementById('a3pips');
+    if (pips.children.length !== 31) pips.innerHTML = '<i></i>'.repeat(31);
+    [...pips.children].forEach((p, k) => p.classList.toggle('on', k < beat));
+  }
+  document.getElementById('a3skip').onclick = skip;
+  document.querySelectorAll('#a3speed button').forEach(bt => bt.onclick = () => {
+    speed = +bt.dataset.x;
+    document.querySelectorAll('#a3speed button').forEach(x => x.setAttribute('aria-pressed', x === bt ? 'true' : 'false'));
+  });
+
+  // at rest: the sample block, finished
+  st = runInstant(0n, NONCE_BASE, 0n)[1];
+  let drumFlash = 0;
+  animate(cv, tm => {
+    if (job) {
+      const now = performance.now(), dt = Math.min(250, now - job.last); job.last = now;
+      job.acc += dt * speed / (1000 * S.keeper_s);
+      let guard = 0;
+      while (job && job.acc >= 1 && guard++ < 400) { job.acc -= 1; const b0 = beat; if (!advance()) break; if (beat !== b0) drumFlash = now; }
+      status();
+    }
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const P = project(V, { x: 6, y: 8, w: w - 12, h: h - 16 });
+    const r = Math.max(1.1, P.s * 0.27);
+    const since = performance.now() - drumFlash;
+    for (let i = 0; i < C.net.kind.length; i++) {
+      const [x, y] = P.at(C.net.pos[i]);
+      fire(ctx, x, y, r, st[i], noise(i, tm));
+      if (C.net.kind[i] === 'm' && since < 300) { ctx.strokeStyle = `rgba(255,216,138,${0.5 * (1 - since / 300)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, r * 1.9, 0, 7); ctx.stroke(); }
+    }
+  });
+  return { play, runInstant, bits2big, NONCE_BASE, F, totalSteps, show: s => { if (!job) st = s; } };
+})();
+
+// message <-> blocks
+function textBlocks(txt) {
+  const clean = [...txt].map(ch => { const c = ch.charCodeAt(0); return c >= 32 && c < 127 ? c : 63; });
+  while (clean.length === 0 || clean.length % 8) clean.push(32);
+  const out = [];
+  for (let i = 0; i < clean.length; i += 8) out.push(clean.slice(i, i + 8).reduce((acc, c) => (acc << 8n) | BigInt(c), 0n));
+  return out;
+}
+const blockText = v => Array.from({ length: 8 }, (_, k) => { const c = Number((v >> BigInt(8 * (7 - k))) & 0xffn); return c >= 32 && c < 127 ? String.fromCharCode(c) : '·'; }).join('');
+const hex16 = v => v.toString(16).padStart(16, '0');
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+let secret = null, secretKey = null;
+const keyIn = document.getElementById('a3key');
+keyIn.value = S.cipher.sample.key;
+function readKey() {
+  const k = keyIn.value.trim().toLowerCase();
+  if (!/^[0-9a-f]{32}$/.test(k)) { document.getElementById('a3s').textContent = 'The key needs exactly 32 hex digits (0–9, a–f).'; return null; }
+  return BigInt('0x' + k);
+}
+document.getElementById('a3newkey').onclick = () => {
+  const b = new Uint8Array(16); crypto.getRandomValues(b);
+  keyIn.value = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+};
+function renderBlocks(el, rows) {
+  el.innerHTML = rows.map(r => `<div class="row"><span class="tag">${r.tag}</span><span>${esc(r.left)}</span><span class="hex">${esc(r.right)}</span></div>`).join('');
+}
+function scramble(animated) {
+  const key = readKey(); if (key == null) return;
+  const msg = document.getElementById('a3msg').value || ' ';
+  const blocks = textBlocks(msg);
+  const rows = blocks.map((b, i) => ({ tag: `block ${i + 1}`, left: `"${blockText(b)}"`, right: '…' }));
+  renderBlocks(document.getElementById('a3blocks'), rows);
+  const outs = [];
+  const done = () => {
+    secret = outs; secretKey = key;
+    document.getElementById('a3s').textContent = `Done: ${blocks.length * 8} letters in ${blocks.length} runs of the field, ${fmtT(blocks.length * cipher.totalSteps * S.keeper_s)} of keeper time.`;
+    document.getElementById('a4go').disabled = false;
+    chain.load(outs);
+  };
+  const onBlock = (i, out) => { outs[i] = out; rows[i].right = hex16(out); renderBlocks(document.getElementById('a3blocks'), rows); };
+  if (animated) cipher.play(blocks, key, onBlock, done, 'Bletchley Park');
+  else {
+    blocks.forEach((b, i) => { const [out, s] = cipher.runInstant(b, cipher.NONCE_BASE + BigInt(i), key); onBlock(i, out); cipher.show(s); });
+    done();
+  }
+}
+document.getElementById('a3go').onclick = () => scramble(true);
+document.getElementById('handline').textContent = `scrambling just 8 letters takes about ${S.cipher.by_hand_steps.toLocaleString()} written steps, ${fmtT(S.cipher.by_hand_s_at_1_per_s)} at one perfect step a second, and one slip ruins the block.`;
+
+// ---------- the beacon chain to Paris ----------
+const chain = (function () {
+  const R = DATA.act3.route, cv = document.getElementById('c4');
+  const HOP = S.hop_s, SYM = S.symbol_s;
+  let digits = [], t0 = null, simT = 0, playing = false;
+  const kmMax = R[R.length - 1].km, hMax = Math.max(...R.map(p => p.h_m));
+  function load(blocks) { digits = blocks.flatMap(b => [...hex16(b)].map(c => parseInt(c, 16))); simT = 0; playing = false; status(); }
+  const total = () => digits.length * SYM + (R.length - 1) * HOP;
+  // what station k shows at time T: digit d is on at the first station during [d*SYM, d*SYM + 20), k hops later downstream
+  function showing(k, T) {
+    const t = T - k * HOP; if (t < 0) return null;
+    const d = Math.floor(t / SYM); if (d >= digits.length) return null;
+    return (t - d * SYM) < SYM - 10 ? digits[d] : null;
+  }
+  function received(T) { const t = T - (R.length - 1) * HOP; if (t < 0) return 0; return Math.min(digits.length, Math.floor((t + 10) / SYM)); }
+  function status() {
+    const el = document.getElementById('a4s');
+    if (!digits.length) { el.textContent = ''; return; }
+    const n = received(simT);
+    el.textContent = `${fmtT(simT)} · Paris has ${n} of ${digits.length} digits · the whole message takes ${fmtT(total())}`;
+  }
+  document.getElementById('a4go').onclick = () => {
+    if (!digits.length) scramble(false);
+    simT = 0; playing = true; t0 = performance.now();
+  };
+  document.getElementById('a4dec').onclick = () => {
+    if (!secret) scramble(false);
+    const key = readKey(); if (key == null) return;
+    simT = total(); playing = false; status();
+    const rows = secret.map((b, i) => ({ tag: `block ${i + 1}`, left: hex16(b), right: '…' }));
+    renderBlocks(document.getElementById('a4blocks'), rows);
+    document.getElementById('act3').querySelector('canvas#c3').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+    cipher.play(secret, key, (i, out) => { rows[i].right = `"${blockText(out)}"`; renderBlocks(document.getElementById('a4blocks'), rows); },
+      () => { document.getElementById('a3s').textContent = key === secretKey ? 'Paris reads the message: the same field, the same key, the same block numbers.' : 'A different key gives gibberish: the digits mean nothing without the right key.'; }, 'Paris');
+  };
+  animate(cv, tm => {
+    if (playing) {
+      simT = (performance.now() - t0) / 1000 * 60;   // one second on screen = one minute on the chain
+      if (simT >= total()) { simT = total(); playing = false; }
+      status();
+    }
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const X = km => 40 + (w - 80) * km / kmMax, base = h * 0.86, Y = m => base - (h * 0.42) * m / hMax;
+    // ground profile through the stations (sea for the Channel hop)
+    ctx.beginPath(); ctx.moveTo(X(0), h);
+    R.forEach(p => ctx.lineTo(X(p.km), Y(p.h_m)));
+    ctx.lineTo(X(kmMax), h); ctx.closePath(); ctx.fillStyle = '#171b2e'; ctx.fill();
+    ctx.fillStyle = 'rgba(70,100,150,0.35)';
+    ctx.fillRect(X(R[3].km - 8), base - 2, X(R[4].km - 30) - X(R[3].km - 8), 4);
+    const r = Math.max(2, Math.min(5, w / 190));
+    ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(150,140,170,0.3)'; ctx.lineWidth = 1;
+    for (let k = 0; k + 1 < R.length; k++) { ctx.beginPath(); ctx.moveTo(X(R[k].km), Y(R[k].h_m) - r * 6); ctx.lineTo(X(R[k + 1].km), Y(R[k + 1].h_m) - r * 6); ctx.stroke(); }
+    ctx.setLineDash([]);
+    R.forEach((p, k) => {
+      const v = digits.length ? showing(k, simT) : null, x = X(p.km), y = Y(p.h_m);
+      fire(ctx, x, y - r * 1.2, r, v != null, noise(500 + k, tm));                      // the "digit showing" fire
+      for (let j = 0; j < 4; j++) fire(ctx, x, y - r * 3.6 - j * r * 2.3, r, v != null && ((v >> j) & 1), noise(520 + k * 5 + j, tm));
+      if (v != null) { ctx.fillStyle = css('--flame'); ctx.font = `500 ${Math.max(10, r * 2.4)}px ${css('--mono')}`; ctx.textAlign = 'center'; ctx.fillText(v.toString(16), x, y - r * 14); }
+    });
+    ctx.fillStyle = css('--smoke'); ctx.font = `${Math.max(11, w / 75)}px ${css('--body')}`;
+    ctx.textAlign = 'left'; ctx.fillText('Bletchley Park', X(0) - 20, h - 6);
+    ctx.textAlign = 'right'; ctx.fillText('Paris', X(kmMax) + 20, h - 6);
+    ctx.textAlign = 'center'; ctx.fillText('the Channel', (X(R[3].km) + X(R[4].km)) / 2, base + 16 > h - 18 ? h - 22 : base + 16);
+    const n = digits.length ? received(simT) : 0;
+    if (digits.length) {
+      ctx.textAlign = 'left'; ctx.font = `500 ${Math.max(11, w / 70)}px ${css('--mono')}`; ctx.fillStyle = css('--flame');
+      const got = digits.slice(0, n).map(d => d.toString(16)).join('');
+      ctx.fillText('Paris has: ' + (got.match(/.{1,16}/g) || ['']).join(' '), 40, 20);
+    }
+  });
+  return { load, peek: T => { simT = T; status(); } };
+})();
+
+// ---------- the tables ----------
+(function () {
+  const rows = S.circuits.map(c => {
+    const t = c.block_steps ? c.block_steps * S.keeper_s : c.layers * S.keeper_s;
+    const what = {
+      'half adder (1 + 1)': 'Act I', '4-bit adder': 'Act II: counts up to 15', '8-bit adder': 'numbers up to 255',
+      '16-bit adder': 'up to 65,535', '32-bit adder': 'up to about 4 billion',
+      '8-bit x 8-bit multiplier': 'products up to 255 × 255', '16-bit x 16-bit multiplier': '2,400 × 365 rations',
+      '30-bit x 30-bit multiplier': 'numbers up to about a billion', 'PRESENT-128 cipher (8 letters)': 'Act III: 31 drum beats of ' + S.cipher.beat_s + ' s'
+    }[c.name] || '';
+    return `<tr class="${c.name.startsWith('PRESENT') ? 'hl' : ''}"><td>${c.name.replace(' x ', ' × ')}</td><td class="n">${c.fires.toLocaleString()}</td><td class="n">${c.block_steps ? (c.beat_steps - 1) + ' a beat' : c.layers}</td><td class="n">${fmtT(t)}</td><td>${what}</td></tr>`;
+  });
+  document.getElementById('scale').innerHTML = `<thead><tr><th>Circuit</th><th class="n">Fires</th><th class="n">Keepers deep</th><th class="n">Time</th><th>For</th></tr></thead><tbody>${rows.join('')}</tbody>`;
+  const c = S.cipher;
+  document.getElementById('versus').innerHTML = `
+    <div><div class="v">${fmtT(c.by_hand_s_at_1_per_s)}</div><p class="note">one clerk, 8 letters, ${c.by_hand_steps.toLocaleString()} steps at a perfect step a second. In practice, with checking, most of a day.</p></div>
+    <div><div class="v">${fmtT(c.block_s)}</div><p class="note">the field, 8 letters: ${c.fires.toLocaleString()} keepers, 31 beats of ${c.beat_s} s. Two fields side by side keep up with the chain.</p></div>
+    <div><div class="v">${fmtT(c.wire_block_s)}</div><p class="note">the beacon chain, 8 letters (16 hex digits at ${S.symbol_s} s). The first digit reaches Paris, ${c.hops} hops and ${Math.round(c.route_km)} km away, ${c.latency_s} s after it leaves.</p></div>`;
+})();
+
+// at rest: the sample message scrambled, and its digits part-way along the chain
+scramble(false);
+chain.peek(S.symbol_s * 5 + 12);
+document.getElementById('a3s').textContent = `The field at the end of a run: the last block of "${document.getElementById('a3msg').value}", scrambled. Press Scramble to watch it work.`;
+requestAnimationFrame(frame);
+</script>

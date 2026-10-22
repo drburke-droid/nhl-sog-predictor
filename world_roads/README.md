@@ -259,6 +259,23 @@ An earlier draft of the long video used a single chain through as many countries
 
 Method and limits: ACCURACY.md sections 11–13.
 
+## The fire computer (`firecomputer/`)
+
+A follow-up to the signal fires: give every fire a keeper and one rule card ("keep your fire lit unless
+both fires you watch are lit"), and a field of fires computes. Act I adds 1 + 1 with 5 keepers. Act II uses
+ridges of lidded relay fires as wires into a 32-keeper adding field. Act III is a 2,110-fire field at
+Bletchley Park running the PRESENT-128 cipher, 13 min 38 s per 8 letters (about 8,800 written steps by
+hand). It sends the scrambled digits along Video 2's beacon chain to Paris, where an identical field
+unscrambles them. Every circuit is run keeper by keeper and checked; the cipher matches the published test vectors.
+
+```bash
+cd firecomputer
+python build.py      # checks + counts -> media/firecomputer/fire_computer.json and the interactive fire_computer.html
+node test_sim.js     # the page's simulator agrees with Python
+```
+
+Details, numbers and assumptions: [firecomputer/README.md](firecomputer/README.md).
+
 ## Hyperacuity: your eyes see smaller than their own pixels (`hyperacuity/`)
 
 A caption-only explainer and test. You can see one pair of bars misaligned by a fraction of a pixel,

@@ -1,0 +1,129 @@
+{
+ "keeper_s": 2.0,
+ "hop_s": 10,
+ "symbol_s": 30,
+ "circuits": [
+  {
+   "name": "half adder (1 + 1)",
+   "fires": 7,
+   "nand": 5,
+   "memory": 0,
+   "inputs": 2,
+   "layers": 3
+  },
+  {
+   "name": "4-bit adder",
+   "fires": 40,
+   "nand": 32,
+   "memory": 0,
+   "inputs": 8,
+   "layers": 10,
+   "worst_steps": 10
+  },
+  {
+   "name": "8-bit adder",
+   "fires": 84,
+   "nand": 68,
+   "memory": 0,
+   "inputs": 16,
+   "layers": 18
+  },
+  {
+   "name": "16-bit adder",
+   "fires": 172,
+   "nand": 140,
+   "memory": 0,
+   "inputs": 32,
+   "layers": 34
+  },
+  {
+   "name": "32-bit adder",
+   "fires": 348,
+   "nand": 284,
+   "memory": 0,
+   "inputs": 64,
+   "layers": 66
+  },
+  {
+   "name": "8-bit x 8-bit multiplier",
+   "fires": 616,
+   "nand": 600,
+   "memory": 0,
+   "inputs": 16,
+   "layers": 68
+  },
+  {
+   "name": "16-bit x 16-bit multiplier",
+   "fires": 2640,
+   "nand": 2608,
+   "memory": 0,
+   "inputs": 32,
+   "layers": 148
+  },
+  {
+   "name": "30-bit x 30-bit multiplier",
+   "fires": 9570,
+   "nand": 9510,
+   "memory": 0,
+   "inputs": 60,
+   "layers": 288
+  },
+  {
+   "name": "PRESENT-128 cipher (8 letters)",
+   "fires": 2110,
+   "nand": 1849,
+   "memory": 197,
+   "inputs": 64,
+   "layers": 6,
+   "beat_steps": 13,
+   "beats": 31,
+   "block_steps": 409,
+   "note": "13 steps a beat (26 s); a block takes 409 steps = 13 min 38 s"
+  }
+ ],
+ "cipher": {
+  "fires": 2110,
+  "beat_s": 26.0,
+  "block_s": 818.0,
+  "by_hand_steps": 8777,
+  "by_hand_s_at_1_per_s": 8777,
+  "wire_block_s": 480,
+  "route": "Bletchley Park to Paris",
+  "hops": 10,
+  "route_km": 476.2,
+  "latency_s": 100,
+  "sample": {
+   "text": "UNPLUG EVERYTHING AT DAWN",
+   "key": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+   "nonce_base": 104071168,
+   "secret": [
+    "3c2d0a387b0a2429",
+    "cd461664a9c39989",
+    "e183ba5130011c1c",
+    "92d2bce86f8559e4"
+   ]
+  },
+  "test_vectors": [
+   [
+    "0000000000000000",
+    "00000000000000000000000000000000",
+    "96db702a2e6900af"
+   ],
+   [
+    "0000000000000000",
+    "ffffffffffffffffffffffffffffffff",
+    "13238c710272a5d8"
+   ],
+   [
+    "ffffffffffffffff",
+    "00000000000000000000000000000000",
+    "3c6019e5e5edd563"
+   ],
+   [
+    "ffffffffffffffff",
+    "ffffffffffffffffffffffffffffffff",
+    "628d9fbd4218e5b4"
+   ]
+  ]
+ }
+}
