@@ -86,7 +86,7 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 button.go { background: var(--ember); color: #2a1606; border-color: var(--ember); font-weight: 600; }
 button.go:hover { background: var(--flame); }
 button:disabled { opacity: 0.45; cursor: default; }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
 .seg button { border: 0; border-radius: 0; background: transparent; padding: 8px 11px; font: 0.82rem/1 var(--mono); }
 .seg button[aria-pressed="true"] { background: var(--hill-2); color: var(--flame); }
 label { font-size: 0.9rem; color: var(--smoke); display: grid; gap: 6px; }
@@ -116,7 +116,7 @@ details.more[open] summary { margin-bottom: 14px; }
 .side { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; align-items: start; }
 .side > * { min-width: 0; }
 
-/* fires drawn as page elements (Level 10) */
+/* fires drawn as page elements (Level 12) */
 .bits { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .bits .lab { font: 0.8rem/1 var(--mono); color: var(--smoke); width: 8ch; }
 .f { width: 22px; height: 22px; border-radius: 50%; background: var(--ash); border: 0; padding: 0; position: relative; cursor: default; }
@@ -167,8 +167,8 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
 <header>
   <div class="eyebrow">After the signal fires</div>
   <h1>The Fire Computer</h1>
-  <p class="dek">A chain of signal fires can carry one piece of news across a continent. This page shows, one small step at a time, how a field of fires and the people who tend them can <em>calculate</em>: first 1 + 1, then real sums, and at the end a secret code that would take a person most of a day to work by hand.</p>
-  <p class="prose note" style="margin:0">No maths needed to start. Each of the twelve levels adds one idea and has something to try. The bar beside each title shows how steep that level is.</p>
+  <p class="dek">A chain of signal fires can carry one piece of news across a continent. This page shows, one small step at a time, how a field of fires and the people who tend them can <em>calculate</em>: first 1 + 1, then real sums. Then the big question: how many fires would it take to match the fastest supercomputer on Earth? Optional levels after that add memory and a secret code.</p>
+  <p class="prose note" style="margin:0">No maths needed to start. Each of the fourteen levels adds one idea and has something to try. The bar beside each title shows how steep that level is.</p>
   <nav class="route" aria-label="Levels" id="route"></nav>
 </header>
 
@@ -380,10 +380,41 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
 </section>
 
 <!-- PART 4 -->
-<div class="part"><div class="eyebrow">Part four</div><h2>Memory</h2></div>
+<div class="part"><div class="eyebrow">Part four</div><h2>How far to a supercomputer?</h2></div>
 
 <section class="level" id="l9" data-steep="3">
-  <div class="lvl-head"><h2>9. The drum</h2></div>
+  <div class="lvl-head"><h2>9. One real calculation</h2></div>
+  <div class="prose">
+    <p>Supercomputers are ranked by how many calculations they do in a second. Each calculation there is a multiplication or an addition of two numbers in scientific notation with about 16 significant digits, like 6.02214076 × 10<sup>23</sup>. Inside the computer those digits are binary, 53 fires long. That needs much bigger fields than 11 + 6, but they are built only from things you have already seen: long multiplication made of Level 7 adding columns, plus a few rows of keepers that line the numbers up.</p>
+  </div>
+  <div class="table-wrap"><table class="scale" id="fmaparts" aria-label="The fields inside one calculation"></table></div>
+  <div class="prose">
+    <p id="fmatext"></p>
+    <p>A real chip doesn't wait for one answer before starting the next. It works like a factory line: put a second keeper behind every keeper, whose only job is to hold each half-finished answer, and the next pair of numbers can follow right behind. That doubles the fires, but the line turns out a new answer every few seconds instead of every half hour.</p>
+  </div>
+  <div class="versus" id="fmaline"></div>
+</section>
+
+<section class="level" id="l10" data-steep="3">
+  <div class="lvl-head"><h2>10. The fastest computer on Earth</h2></div>
+  <div class="prose">
+    <p id="toptext"></p>
+    <p>The keepers' cards don't care what the 1s and 0s are made of. A fire, a raised flag or a flashlight all work, and so does a relay or a vacuum tube, so swap them in and see what changes.</p>
+  </div>
+  <div class="controls"><span class="try">Match</span><span class="seg" role="group" aria-label="Computer to match" id="sTarget"></span></div>
+  <div class="controls"><span class="try">Using</span><span class="seg" role="group" aria-label="What each switch is made of" id="sSwitch"></span></div>
+  <div class="readout" style="display:grid;gap:4px"><span class="big" id="sBig"></span><span class="note" id="sSub"></span></div>
+  <div class="versus" id="sFacts"></div>
+  <canvas id="sLog" style="aspect-ratio: 16 / 4.2" aria-label="A scale of powers of ten from one to a hundred trillion trillion, with the answer marked"></canvas>
+  <p class="note">Each step on the scale is 100 times the last. The grains of sand and the stars are rough published estimates.</p>
+  <p class="takeaway prose" id="stake"></p>
+</section>
+
+<!-- PART 5 -->
+<div class="part"><div class="eyebrow">Part five · optional</div><h2>Going further: memory and secrets</h2></div>
+
+<section class="level" id="l11" data-steep="3">
+  <div class="lvl-head"><h2>11. The drum</h2></div>
   <div class="prose">
     <p>So far the field only answers what it is shown. A computer also has to <i>remember</i>, so it can work in steps: do something, keep the result, then do the next thing to it. That needs a second kind of keeper with a second card.</p>
     <p>Why a drum? While the field works, fires flicker as changes ripple through. Memory keepers must not copy halfway through, or they would copy a wrong answer. So they wait for the drum, which beats only after the field has had time to settle. Then they all copy at the same moment, like rowers pulling on the beat. Electronic computers do the same thing with a <span class="term">clock</span>. When a phone's chip is advertised at "3 GHz", that means its drum beats 3 billion times a second.</p>
@@ -401,11 +432,9 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
   <p class="takeaway prose">Keepers that calculate, plus memory, plus a drum: that is a complete computer. Everything after this is the same three ingredients, just more of them.</p>
 </section>
 
-<!-- PART 5 -->
-<div class="part"><div class="eyebrow">Part five</div><h2>Something worth the trouble</h2></div>
 
-<section class="level" id="l10" data-steep="4">
-  <div class="lvl-head"><h2>10. Scrambling a message</h2></div>
+<section class="level" id="l12" data-steep="4">
+  <div class="lvl-head"><h2>12. Scrambling a message</h2></div>
   <div class="prose">
     <p>Back to the signal-fire story. An AI has taken every phone, cable and satellite, and the warning goes out by bonfire. But a satellite can see every bonfire, and so can the AI. Anything we send across the hills, it reads. We need a secret code, a <span class="term">cipher</span>, and the two ends need to share a secret pattern, the <span class="term">key</span>, agreed in person beforehand.</p>
     <p>A good cipher uses three simple moves, repeated many times.</p>
@@ -439,8 +468,8 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
   </div>
 </section>
 
-<section class="level" id="l11" data-steep="5">
-  <div class="lvl-head"><h2>11. The field at Bletchley Park</h2></div>
+<section class="level" id="l13" data-steep="5">
+  <div class="lvl-head"><h2>13. The field at Bletchley Park</h2></div>
   <div class="prose">
     <p>So Bletchley Park, where Colossus broke codes in the war, builds a cipher field out of fire, under a roof so the sky can't see it. It has <b>2,110 fires</b>: 64 memory fires for the block, 128 for the key, 5 that count the rounds, 64 for the message, and 1,849 NAND keepers doing the three moves. One drum beat is one round.</p>
     <p>One more trick keeps it simple. The field doesn't scramble the message directly. It scrambles a block number, using the key, into 64 fires that look random: a <span class="term">mask</span>. Then it mixes the mask into the message with Move 1. Paris builds the same field with the same key, makes the same mask, and mixes it in again, which flips every fire back.</p>
@@ -474,8 +503,8 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
   </div>
 </section>
 
-<section class="level" id="l12" data-steep="4">
-  <div class="lvl-head"><h2>12. Out along the beacon chain</h2></div>
+<section class="level" id="l14" data-steep="4">
+  <div class="lvl-head"><h2>14. Out along the beacon chain</h2></div>
   <div class="prose">
     <p>The scrambled block goes out on the open beacon chain from the Video 2 route, Bletchley Park to Paris: 10 hops and 476 km, including one jump across the Channel. Each station shows one hex digit at a time (4 bits, written 0–9 and a–f) with 4 lidded fires, plus a fifth that is lit while a digit is showing. Every keeper on the way can see the digits, and so can the satellites, but without the key they mean nothing.</p>
   </div>
@@ -960,7 +989,7 @@ Mini($('m5f'), {
   $('m7Bm').onclick = () => setAB(a, b - 1); $('m7Bp').onclick = () => setAB(a, b + 1);
   document.querySelectorAll('#m7ex button').forEach(bt => bt.onclick = () => setAB(+bt.dataset.a, +bt.dataset.b));
 })();
-// Level 9: the counter
+// Level 11: the counter
 (function () {
   const D = DATA.counter, labels = ['1s', '2s', '4s'];
   const ex = {}; D.mem.forEach((f, i) => ex[f] = { label: labels[i] });
@@ -1095,7 +1124,7 @@ Mini($('m5f'), {
   });
 })();
 
-// ---------- Level 10: the three moves ----------
+// ---------- Level 12: the three moves ----------
 const SBOX = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2];
 function fireRow(el, bits, onTap, cls) {
   el.innerHTML = bits.map((b, i) => onTap ? `<button type="button" class="f ${b ? 'lit' : ''} ${cls ? cls(i) : ''}" aria-label="fire ${i + 1}: ${b ? 'lit' : 'dark'}" data-i="${i}"></button>` : `<span class="f ${b ? 'lit' : ''} ${cls ? cls(i) : ''}" role="img" aria-label="${b ? 'lit' : 'dark'}"></span>`).join('');
@@ -1138,7 +1167,7 @@ function fireRow(el, bits, onTap, cls) {
   });
 })();
 
-// ---------- Level 11: the cipher field ----------
+// ---------- Level 13: the cipher field ----------
 const cipher = (function () {
   const C = DATA.act3, F = new FireField(C.net), cv = $('c3'), V = bounds(C.net.pos);
   const NONCE_BASE = BigInt(S.cipher.sample.nonce_base);
@@ -1278,7 +1307,7 @@ function avalanche() {
 $('avgo').onclick = () => { flipAt = (flipAt * 37 + 53) % 128; avalanche(); };
 keyIn.addEventListener('change', avalanche);
 
-// ---------- Level 12: the beacon chain to Paris ----------
+// ---------- Level 14: the beacon chain to Paris ----------
 const chain = (function () {
   const R = DATA.act3.route, cv = $('c4'), HOP = S.hop_s, SYM = S.symbol_s;
   let digits = [], t0 = null, simT = 0, playing = false;
@@ -1330,13 +1359,98 @@ const chain = (function () {
   return { load, peek: T => { simT = T; status(); } };
 })();
 
+// ---------- Levels 9 and 10: how far to a supercomputer ----------
+const bigWords = n => {
+  const names = [[1e24, 'septillion'], [1e21, 'sextillion'], [1e18, 'quintillion'], [1e15, 'quadrillion'], [1e12, 'trillion'], [1e9, 'billion'], [1e6, 'million']];
+  for (const [v, w] of names) if (n >= v) { const x = n / v; return `${x >= 100 ? Math.round(x) : x >= 10 ? x.toFixed(0) : x.toFixed(1).replace(/\.0$/, '')} ${w}`; }
+  return Math.round(n).toLocaleString();
+};
+const sci = n => { const e = Math.floor(Math.log10(n)), m = n / 10 ** e; return `${m.toFixed(1)} × 10<sup>${e}</sup>`; };
+const dur = sec => {
+  const y = sec / 31557600;
+  if (y >= 1e6) return `${bigWords(y)} years`;
+  if (y >= 2) return `${Math.round(y).toLocaleString()} years`;
+  if (sec >= 86400 * 2) return `${Math.round(sec / 86400).toLocaleString()} days`;
+  return fmtT(sec);
+};
+(function () {
+  const U = S.super;
+  $('fmaparts').innerHTML = '<thead><tr><th>Inside one calculation</th><th class="n">Keepers</th><th class="n">Keepers deep</th></tr></thead><tbody>' +
+    U.parts.map(p => `<tr><td>${p.name}</td><td class="n">${p.fires.toLocaleString()}</td><td class="n">${p.deep}</td></tr>`).join('') +
+    `<tr class="hl"><td>one calculating field</td><td class="n">${U.unit_nand.toLocaleString()}</td><td class="n">about ${U.unit_deep}</td></tr></tbody>`;
+  $('fmatext').innerHTML = `So one calculating field needs about <b>${U.unit_nand.toLocaleString()} keepers</b> (a little more in practice, for rounding and special cases). A change has to pass through about ${U.unit_deep} keepers one after another, so at 2 seconds each, every answer takes about <b>${fmtT(U.unit_deep * S.keeper_s)}</b>.`;
+  $('fmaline').innerHTML = `
+    <div><div class="v">${fmtT(U.unit_deep * S.keeper_s)}</div><p class="note">per answer, one calculating field of ${U.unit_nand.toLocaleString()} keepers working one answer at a time</p></div>
+    <div><div class="v">${U.line_fires.toLocaleString()}</div><p class="note">fires in the factory-line version: a holding keeper behind every keeper</p></div>
+    <div><div class="v">1 every ${2 * S.keeper_s / 2} s</div><p class="note">answers from the factory line: each beat takes two keeper reactions (${2 * S.keeper_s} s) and finishes two calculations</p></div>`;
+
+  let target = U.targets[0], sw = U.switches[0];
+  const top = U.targets[0];
+  $('toptext').innerHTML = `The fastest computer on the June 2026 TOP500 list is <b>${top.name}</b>, in Shenzhen. It does about <b>${(top.flops).toLocaleString('en-US')}</b> of those calculations every second: ${bigWords(top.flops)}. How many fires would it take to keep up, if every fire works like Level 9's factory line?`;
+  function segs(el, list, cur, label, pick) {
+    el.innerHTML = list.map(x => `<button type="button" data-id="${x.id}" aria-pressed="${x === cur}">${label(x)}</button>`).join('');
+    el.querySelectorAll('button').forEach(b => b.onclick = () => { pick(list.find(x => x.id === b.dataset.id)); render(); });
+  }
+  const EARTH = 5.1e14, LAND = 1.49e14, FIELD = 7140;
+  let need = 1;
+  function render() {
+    segs($('sTarget'), U.targets, target, x => x.name, x => target = x);
+    segs($('sSwitch'), U.switches, sw, x => x.name, x => sw = x);
+    need = target.flops * sw.react_s * U.line_fires;        // calculating lines needed x fires per line
+    const area = need * sw.spacing_m ** 2;
+    $('sBig').innerHTML = `${bigWords(need)} ${sw.name} <span class="note">(${sci(need)})</span>`;
+    const stars = need > 2e22 && need < 2e24 ? ' That is about as many as there are stars in the observable universe.' : '';
+    $('sSub').textContent = `to match ${target.name}, ${target.what}. Each one: ${sw.what}.${stars}`;
+    const areaText = area >= EARTH ? `They would cover the whole Earth, oceans included, <b>${bigWords(area / EARTH)} times over</b>.`
+      : area >= LAND * 0.01 ? `They would cover ${Math.round(100 * area / LAND)}% of all the land on Earth.`
+      : area >= 1e6 ? `They would cover ${bigWords(area / 1e6)} km², ${bigWords(area / FIELD)} soccer fields.`
+      : `They would fit in ${Math.max(1, Math.round(area)).toLocaleString()} m², about ${Math.max(1, Math.round(area / FIELD)).toLocaleString()} soccer field${area / FIELD >= 1.5 ? 's' : ''}.`;
+    const pop = U.world_pop, perPerson = need / pop;
+    const peopleText = sw.person ? (perPerson >= 1 ? `Every person alive would have to work <b>${bigWords(perPerson)}</b> of them at once.` : `That is ${Math.round(100 * need / pop)}% of everyone alive, each working one.`)
+      : `No people needed: ${sw.one === 'relay' ? 'relays click by themselves' : 'tubes switch by themselves'}, but they would still need ${sw.one === 'relay' ? 'wiring and power' : 'power and constant repairs'}.`;
+    const ours = pop / (sw.react_s * U.line_fires);             // calculations a second if everyone on Earth ran one
+    const humanText = sw.person ? `If all ${bigWords(pop)} people on Earth each worked one, they would do about <b>${Math.round(ours).toLocaleString()}</b> calculations a second, ${ours >= target.flops ? `about ${Math.round(ours / target.flops).toLocaleString()} times ${target.name}.` : `and need <b>${dur(target.flops / ours)}</b> to do what ${target.name} does in one second.`}` : `A ${sw.one} switches about ${sw.react_s >= 0.01 ? Math.round(1 / sw.react_s).toLocaleString() : bigWords(1 / sw.react_s)} times a second, against a fire's once every 2 seconds.`;
+    $('sFacts').innerHTML = [areaText, peopleText, humanText].map(t => `<div><p style="margin:0">${t}</p></div>`).join('');
+    $('stake').innerHTML = `The real ${target.flops > 1e15 ? target.name : 'supercomputer'} does it with transistors: switches with no moving parts, so small that billions fit on a chip the size of a fingernail, each flipping billions of times a second. Same cards, same "who watches whom". Only the switch is different.`;
+  }
+  render();
+  // the powers-of-ten scale
+  const marks = [
+    [1, 'one keeper'], [40, 'Level 8 field'], [U.line_fires, 'one calculating line'], [U.world_pop, 'everyone on Earth'],
+    [7.5e18, 'grains of sand on Earth (rough)'], [2e23, 'stars in the observable universe (rough)'],
+  ];
+  const cv = $('sLog');
+  animate(cv, tm => {
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const E = 26, X = v => 20 + (w - 40) * Math.log10(v) / E, base = h * 0.58;
+    ctx.strokeStyle = css('--line'); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(X(1), base); ctx.lineTo(X(10 ** E), base); ctx.stroke();
+    ctx.fillStyle = css('--smoke'); ctx.font = `${Math.max(9, w / 110)}px ${css('--mono')}`; ctx.textAlign = 'center';
+    for (let e = 0; e <= E; e += 2) { const x = X(10 ** e); ctx.beginPath(); ctx.moveTo(x, base - 4); ctx.lineTo(x, base + 4); ctx.stroke(); if (w > 520 || e % 4 === 0) ctx.fillText(`10${String(e).split('').map(d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d]).join('')}`, x, base + 18); }
+    ctx.font = `${Math.max(10, w / 95)}px ${css('--body')}`;
+    marks.forEach(([v, label], k) => {
+      const x = X(v), up = k % 2 === 0, y = up ? base - 26 : base + 40;
+      ctx.fillStyle = css('--parchment'); ctx.beginPath(); ctx.arc(x, base, 3, 0, 7); ctx.fill();
+      ctx.strokeStyle = css('--line'); ctx.beginPath(); ctx.moveTo(x, base); ctx.lineTo(x, up ? base - 18 : base + 26); ctx.stroke();
+      ctx.fillStyle = css('--smoke'); ctx.textAlign = x < w * 0.15 ? 'left' : x > w * 0.85 ? 'right' : 'center';
+      ctx.fillText(label, x, y);
+    });
+    const x = X(Math.min(need, 10 ** E));
+    fire(ctx, x, base, Math.max(4, w / 160), 1, noise(1, tm));
+    ctx.fillStyle = css('--flame'); ctx.font = `600 ${Math.max(11, w / 85)}px ${css('--body')}`; ctx.textAlign = x > w * 0.8 ? 'right' : 'center';
+    ctx.fillText(`${sw.name} needed: ${bigWords(need)}`, x, h * 0.16);
+    ctx.strokeStyle = 'rgba(255,216,138,0.7)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(x, h * 0.2); ctx.lineTo(x, base - 6); ctx.stroke(); ctx.setLineDash([]);
+  });
+})();
+
 // ---------- the tables ----------
 (function () {
   const what = {
-    'half adder (1 + 1)': 'Level 6', 'full adder (one column, with carry)': 'Level 7', '3-bit counter': 'Level 9: counts 0 to 7',
+    'half adder (1 + 1)': 'Level 6', 'full adder (one column, with carry)': 'Level 7', '3-bit counter': 'Level 11: counts 0 to 7',
     '4-bit adder': 'Level 8: counts up to 15', '8-bit adder': 'numbers up to 255', '16-bit adder': 'up to 65,535', '32-bit adder': 'up to about 4 billion',
     '8-bit x 8-bit multiplier': 'products up to 255 × 255', '16-bit x 16-bit multiplier': '2,400 × 365 rations',
-    '30-bit x 30-bit multiplier': 'numbers up to about a billion', 'PRESENT-128 cipher (8 letters)': `Level 11: 31 drum beats of ${S.cipher.beat_s} s`,
+    '30-bit x 30-bit multiplier': 'numbers up to about a billion', 'PRESENT-128 cipher (8 letters)': `Level 13: 31 drum beats of ${S.cipher.beat_s} s`,
   };
   const rows = S.circuits.map(c => {
     const drum = c.beat_steps != null;

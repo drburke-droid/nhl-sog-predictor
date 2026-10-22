@@ -65,6 +65,10 @@ class Field:
         m = self.nand(a, b)
         return self.nand(self.nand(a, m), self.nand(b, m))
 
+    def MUX(self, s, a, b, ns=None):               # IF/THEN: b if s is lit, otherwise a (3 fires + a shared NOT)
+        ns = self.NOT(s) if ns is None else ns
+        return self.nand(self.nand(a, ns), self.nand(b, s))
+
     def half_adder(self, a, b):                      # 5 fires: (sum, carry)
         m = self.nand(a, b)
         return self.nand(self.nand(a, m), self.nand(b, m)), self.NOT(m)

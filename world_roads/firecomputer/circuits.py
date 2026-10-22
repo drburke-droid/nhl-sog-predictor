@@ -3,6 +3,7 @@
 * half_adder()    1 + 1 with 5 fires
 * adder(n)        add two n-bit numbers (4 bits: 32 fires)
 * counter(n)      memory fires that count drum beats
+* shifter(n), fma_parts()  one supercomputer-style calculation, counted
 * multiplier(n)   long multiplication in binary (the fire computer note's 600 / 2,608 / 9,510 fires)
 * present_ctr()   the PRESENT-128 block cipher in counter mode: scrambles (and unscrambles) 8 letters
 """
@@ -100,6 +101,46 @@ def counter(n):
         s, carry = f.half_adder(mem[j], carry)
         f.wire_memory(mem[j], s)
     return f, mem
+
+
+def shifter(n):
+    """Slide an n-bit number right by 0 to n-1 places (the "line up the decimal points" step of
+    adding two numbers in scientific notation). One row of IF/THEN fires per bit of the distance."""
+    import math
+    f = Field()
+    f.group = 'in'
+    x = [f.input(f'x{i}') for i in range(n)]
+    k = max(1, math.ceil(math.log2(n)))
+    by = [f.input(f'by{j}') for j in range(k)]
+    zero = f.AND(x[0], f.NOT(x[0]))            # a fire that is always dark
+    f.group = 'gates'
+    cur = x
+    for j in range(k):
+        ns = f.NOT(by[j])
+        step = 2 ** j
+        cur = [f.MUX(by[j], cur[i], cur[i + step] if i + step < n else zero, ns) for i in range(n)]
+    return f, x, by, cur
+
+
+def fma_parts():
+    """The circuits inside one "calculation" as supercomputers count them: a multiply-and-add of two
+    numbers in scientific notation with 16 significant digits (IEEE double precision, 53-bit digits).
+    Returns {part: (NAND fires, keepers deep)}; the unit does 2 calculations each time."""
+    parts = {}
+    f, A, B, o = multiplier(53)
+    d = f.depth()
+    parts['multiply the digits (long multiplication)'] = (f.count('nand'), max(d[x] for x in o))
+    for name in ('line up the two numbers', 'tidy the result back into shape'):
+        f, x, by, o = shifter(106)
+        d = f.depth()
+        parts[name] = (f.count('nand'), max(d[q] for q in o))
+    f, A, B, o = adder(106)
+    d = f.depth()
+    parts['add the digits'] = (f.count('nand'), max(d[x] for x in o))
+    f, A, B, o = adder(13)
+    d = f.depth()
+    parts['add the powers of ten'] = (f.count('nand'), max(d[x] for x in o))
+    return parts
 
 
 # --- the cipher -----------------------------------------------------------------------------------

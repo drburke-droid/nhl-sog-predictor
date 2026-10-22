@@ -98,6 +98,113 @@
    "layers": 288
   }
  ],
+ "super": {
+  "parts": [
+   {
+    "name": "multiply the digits (long multiplication)",
+    "fires": 30210,
+    "deep": 518
+   },
+   {
+    "name": "line up the two numbers",
+    "fires": 2116,
+    "deep": 17
+   },
+   {
+    "name": "tidy the result back into shape",
+    "fires": 2116,
+    "deep": 17
+   },
+   {
+    "name": "add the digits",
+    "fires": 950,
+    "deep": 214
+   },
+   {
+    "name": "add the powers of ten",
+    "fires": 113,
+    "deep": 28
+   }
+  ],
+  "unit_nand": 35505,
+  "unit_deep": 766,
+  "line_fires": 71010,
+  "line_note": "memory keeper behind every keeper; a beat is 2 reactions; 2 calculations per beat",
+  "world_pop": 8200000000.0,
+  "targets": [
+   {
+    "id": "lineshine",
+    "name": "LineShine",
+    "what": "No. 1 on the June 2026 TOP500, Shenzhen",
+    "flops": 2.1984e+18
+   },
+   {
+    "id": "elcap",
+    "name": "El Capitan",
+    "what": "No. 2, Lawrence Livermore",
+    "flops": 1.809e+18
+   },
+   {
+    "id": "cray1",
+    "name": "Cray-1 (1976)",
+    "what": "the first famous supercomputer, at its peak",
+    "flops": 160000000.0
+   },
+   {
+    "id": "eniac",
+    "name": "ENIAC (1946)",
+    "what": "the first electronic general-purpose computer: about 385 multiplications of 10-digit numbers a second",
+    "flops": 385
+   }
+  ],
+  "switches": [
+   {
+    "id": "fire",
+    "name": "fires",
+    "one": "fire",
+    "react_s": 2.0,
+    "spacing_m": 5.0,
+    "person": true,
+    "what": "a lidded fire and its keeper"
+   },
+   {
+    "id": "flag",
+    "name": "flags",
+    "one": "flag",
+    "react_s": 1.0,
+    "spacing_m": 1.0,
+    "person": true,
+    "what": "a soldier with a flag, as in The Three-Body Problem"
+   },
+   {
+    "id": "torch",
+    "name": "flashlights",
+    "one": "flashlight",
+    "react_s": 0.5,
+    "spacing_m": 0.6,
+    "person": true,
+    "what": "a person with a flashlight, packed like a stadium crowd"
+   },
+   {
+    "id": "relay",
+    "name": "relays",
+    "one": "relay",
+    "react_s": 0.01,
+    "spacing_m": 0.05,
+    "person": false,
+    "what": "a 1940s telephone relay, clicking in about a hundredth of a second"
+   },
+   {
+    "id": "tube",
+    "name": "vacuum tubes",
+    "one": "vacuum tube",
+    "react_s": 1e-05,
+    "spacing_m": 0.1,
+    "person": false,
+    "what": "a vacuum tube, at ENIAC's 100,000 steps a second"
+   }
+  ]
+ },
  "cipher": {
   "fires": 2110,
   "beat_s": 26.0,

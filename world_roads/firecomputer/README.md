@@ -11,7 +11,7 @@ node test_sim.js     # the page's simulator gives the same answers as Python
 
 Interactive page: `../media/firecomputer/fire_computer.html` (also published as an artifact).
 
-## The page: twelve levels, from no maths to a cipher
+## The page: fourteen levels, from no maths to a supercomputer (and a cipher)
 
 Each level adds one idea and has something to try; a bar shows how steep it is.
 
@@ -25,10 +25,12 @@ Each level adds one idea and has something to try; a bar shows how steep it is.
 | 6. 1 + 1 | ones fire = "exactly one lit", twos fire = "both lit": 5 NAND keepers | the checked half adder |
 | 7. Carrying the one | school column addition next to binary; carry in, sum and carry out of one column; the whole 4-column chain (32 keepers), each carry out feeding the next column | top and bottom numbers, examples 11 + 6, 5 + 2, 15 + 1; the written sum updates as the fires settle |
 | 8. Sightlines are wires | village counts down ridges into a 32-keeper adder, total up to the mill | send two counts |
-| 9. The drum | memory keepers copy on the beat (a computer's *clock*); a 3-bit counter | beat the drum |
-| 10. Scrambling a message | the AI can see bonfires; mix in the key, swap by the table, shuffle | each move on its own |
-| 11. The field at Bletchley Park | 2,110 fires make a *mask* from key + block number; one key fire flipped changes about half the mask | scramble a message |
-| 12. Out along the beacon chain | hex digits to Paris; the same field unscrambles | send, then unscramble |
+| 9. One real calculation | a supercomputer's calculation (16-digit scientific notation) built from the same fields: 35,505 keepers, 766 deep (25 min 32 s per answer); a factory line of 71,010 fires gives one answer every 2 s | the parts, counted |
+| 10. The fastest computer on Earth | how many fires to match LineShine (No. 1, June 2026 TOP500, 2.198 × 10¹⁸ calculations a second), El Capitan, the Cray-1 or ENIAC; swap fires for flags, flashlights, relays or vacuum tubes | pick a computer and a switch; a powers-of-ten scale |
+| 11. The drum | memory keepers copy on the beat (a computer's *clock*); a 3-bit counter | beat the drum |
+| 12. Scrambling a message | the AI can see bonfires; mix in the key, swap by the table, shuffle | each move on its own |
+| 13. The field at Bletchley Park | 2,110 fires make a *mask* from key + block number; one key fire flipped changes about half the mask | scramble a message |
+| 14. Out along the beacon chain | hex digits to Paris; the same field unscrambles | send, then unscramble |
 
 Pointing at (or tapping) any fire from Level 3 on explains it: what it watches, what the card says,
 and whether the keeper has reacted yet. Levels 1 to 5 are drawn with the cards they name. From Level 6 on, every keeper comes from the checked
@@ -59,12 +61,12 @@ the 5-fire total climbs a third ridge to the mill. 11 + 6 = 17 reaches the mill 
 the villages light their counts (6 hops at 10 s, plus about 16 s in the field); the slowest pair of numbers
 needs 10 keeper steps in the field, because the carry passes from bit to bit.
 
-## The drum (Level 9, 14 fires)
+## The drum (Level 11, 14 fires)
 
 Three memory fires hold a number; 11 NAND keepers below work out the number plus one, and on each beat
 the memory copies it. A beat is 6 keeper steps. Checked for 16 beats (it counts 0 to 7 and wraps).
 
-## A message the sky can't read (Levels 10–12, 2,110 fires)
+## A message the sky can't read (Levels 12–14, 2,110 fires)
 
 In Video 2's story an AI holds every phone, cable and satellite, and the warning goes out by bonfire.
 But satellites can see bonfires. A private message needs a real cipher, and a real cipher is thousands of
@@ -92,6 +94,42 @@ tiny steps where one slip ruins the result: the job a field of rule-followers is
 
 Example: "UNPLUG EVERYTHING AT DAWN" with key `0f1e2d3c4b5a69788796a5b4c3d2e1f0` →
 `3c2d0a387b0a2429 cd461664a9c39989 e183ba5130011c1c 92d2bce86f8559e4`.
+
+## How far to a supercomputer? (Levels 9 and 10)
+
+Supercomputers are ranked by calculations a second, each a multiply or add of two double-precision
+numbers (scientific notation, 53 binary digits). One multiply-and-add unit (2 calculations), built and
+counted in `circuits.fma_parts()`:
+
+| Part | NAND keepers | Keepers deep |
+|---|---:|---:|
+| multiply the digits (53 × 53 long multiplication) | 30,210 | 518 |
+| line up the two numbers (106-bit shifter, checked) | 2,116 | 17 |
+| tidy the result back into shape (same shifter) | 2,116 | 17 |
+| add the digits (106-bit adder) | 950 | 214 |
+| add the powers of ten (13-bit adder) | 113 | 28 |
+| **one calculating field** | **35,505** | **about 766** |
+
+It leaves out rounding, leading-zero counting and special cases, so it slightly undercounts.
+Unpipelined, one answer takes 766 × 2 s = 25 min 32 s. As a factory line, with a holding (memory) keeper
+behind every keeper, it is 71,010 fires, a beat is two reactions, and it finishes 2 calculations a beat:
+**one calculation every reaction time per 71,010 switches.** So switches needed = calculations a second ×
+reaction time × 71,010.
+
+| To match LineShine (2.198 × 10¹⁸ a second) | Reaction | Spacing | Needed | Covers |
+|---|---:|---:|---:|---|
+| fires (lidded, one keeper each) | 2 s | 5 m | 3.1 × 10²³ | the Earth 15 billion times |
+| flags (The Three-Body Problem) | 1 s | 1 m | 1.6 × 10²³ | the Earth 306 million times |
+| flashlights (stadium crowd) | 0.5 s | 0.6 m | 7.8 × 10²² | the Earth 55 million times |
+| telephone relays (1940s) | 0.01 s | 5 cm | 1.6 × 10²¹ | the Earth 7,652 times |
+| vacuum tubes (ENIAC's 100 kHz) | 10 µs | 10 cm | 1.6 × 10¹⁸ | the Earth 31 times |
+
+* Every person alive (8.2 billion) tending one fire: about 57,700 calculations a second, so 1.2 million
+  years to do one second of LineShine's work. About 150 times ENIAC (1946, taken as 385 calculations a
+  second, its 10-digit multiplication rate); matching ENIAC takes 55 million fire keepers.
+* 3.1 × 10²³ fires is about the number of stars in the observable universe (rough estimate, ~2 × 10²³).
+* Sources: TOP500 June 2026 (LineShine 2,198.40 PFlop/s Rmax; El Capitan 1,809.00); Cray-1 160 MFLOPS
+  peak. Reaction times and spacings for flags, flashlights, relays and tubes are round assumptions.
 
 ## How big it gets
 
@@ -136,9 +174,12 @@ different because it is long, not because it is hard, and nobody in the field ne
 
 ## For a video (Video 3)
 
-The page's twelve levels are the storyboard: the problem (the sky can read every bonfire), the card,
-one fire as a bit, the cards, 1 + 1, carrying, the ridges as wires, the drum, the three cipher moves, the full field, the digits
-crossing the Channel, Paris turning them back into words, and the closing point: computers aren't smart,
-they are enormous numbers of very simple rule-followers. Precedents: the human-army computer in Liu Cixin's
-*The Three-Body Problem*; Colossus at Bletchley Park; Polybius's torch alphabet (2nd century BC);
-Matt Parker's 10,000-domino computer.
+The likely angle: **how powerful today's supercomputers are, shown with fire.** Explain very simply how a
+computer works (Levels 1–8: a fire is a bit, fires count, keepers and cards, NAND, 1 + 1, carrying,
+ridges as wires), build one real calculation (Level 9), then ask how many fires it would take to match
+the fastest computer on Earth (Level 10: about 3 × 10²³, as many as the stars in the observable universe)
+and swap fires for flags, flashlights, relays and vacuum tubes on the way to the transistor. The memory,
+cipher and Paris levels (11–14) are optional extras or a follow-up. Closing point: computers aren't smart;
+they are enormous numbers of very simple rule-followers, switching unimaginably fast. Precedents: the
+human-army computer in Liu Cixin's *The Three-Body Problem*; Colossus at Bletchley Park; Polybius's torch
+alphabet (2nd century BC); Matt Parker's 10,000-domino computer.

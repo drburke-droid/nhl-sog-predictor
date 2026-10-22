@@ -264,7 +264,9 @@ Method and limits: ACCURACY.md sections 11–13.
 A follow-up to the signal fires: give every fire a keeper and one rule card ("keep your fire lit unless
 both fires you watch are lit"), and a field of fires computes. The page teaches it in twelve levels, from one
 fire as a yes/no answer through 1 + 1 with 5 keepers, carrying, ridges of lidded relay fires as wires into a
-32-keeper adding field, and a drum-driven counter, up to a 2,110-fire field at
+32-keeper adding field, then how many fires it would take to match the fastest supercomputer (about 3 × 10²³ for LineShine, the June
+2026 TOP500 No. 1, with flags, flashlights, relays and vacuum tubes to compare), and as optional extras a
+drum-driven counter and a 2,110-fire field at
 Bletchley Park running the PRESENT-128 cipher, 13 min 38 s per 8 letters (about 8,800 written steps by
 hand). It sends the scrambled digits along Video 2's beacon chain to Paris, where an identical field
 unscrambles them. Every circuit is run keeper by keeper and checked; the cipher matches the published test vectors.

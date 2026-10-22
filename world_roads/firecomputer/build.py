@@ -12,7 +12,7 @@ import math
 import os
 import random
 
-from circuits import (adder, bits, counter, half_adder, multiplier, present_ctr, present_ref, present_run,
+from circuits import (adder, bits, counter, fma_parts, half_adder, multiplier, present_ctr, present_ref, present_run,
                       value)
 from field import KEEPER_S, Field
 
@@ -310,6 +310,36 @@ def main():
          'note': f'{beat} steps a beat ({beat * KEEPER_S:.0f} s); a block takes {steps} steps = {fmt_time(steps * KEEPER_S)}'})
 
     stats['circuits'].sort(key=lambda r: r['fires'])
+    # how far to a supercomputer: one calculation (a multiply-and-add in double precision) in fires
+    parts = fma_parts()
+    nand_unit = sum(n for n, _ in parts.values())
+    deep = parts['multiply the digits (long multiplication)'][1] + parts['add the digits'][1] + 2 * parts['line up the two numbers'][1]
+    line_fires = 2 * nand_unit          # a factory line: a memory keeper behind every keeper
+    stats['super'] = {
+        'parts': [{'name': k, 'fires': v[0], 'deep': v[1]} for k, v in parts.items()],
+        'unit_nand': nand_unit, 'unit_deep': deep, 'line_fires': line_fires,
+        'line_note': 'memory keeper behind every keeper; a beat is 2 reactions; 2 calculations per beat',
+        'world_pop': 8.2e9,
+        'targets': [
+            {'id': 'lineshine', 'name': 'LineShine', 'what': 'No. 1 on the June 2026 TOP500, Shenzhen', 'flops': 2.1984e18},
+            {'id': 'elcap', 'name': 'El Capitan', 'what': 'No. 2, Lawrence Livermore', 'flops': 1.809e18},
+            {'id': 'cray1', 'name': 'Cray-1 (1976)', 'what': 'the first famous supercomputer, at its peak', 'flops': 160e6},
+            {'id': 'eniac', 'name': 'ENIAC (1946)', 'what': 'the first electronic general-purpose computer: about 385 multiplications of 10-digit numbers a second', 'flops': 385},
+        ],
+        'switches': [
+            {'id': 'fire', 'name': 'fires', 'one': 'fire', 'react_s': 2.0, 'spacing_m': 5.0, 'person': True, 'what': 'a lidded fire and its keeper'},
+            {'id': 'flag', 'name': 'flags', 'one': 'flag', 'react_s': 1.0, 'spacing_m': 1.0, 'person': True, 'what': 'a soldier with a flag, as in The Three-Body Problem'},
+            {'id': 'torch', 'name': 'flashlights', 'one': 'flashlight', 'react_s': 0.5, 'spacing_m': 0.6, 'person': True, 'what': 'a person with a flashlight, packed like a stadium crowd'},
+            {'id': 'relay', 'name': 'relays', 'one': 'relay', 'react_s': 0.01, 'spacing_m': 0.05, 'person': False, 'what': 'a 1940s telephone relay, clicking in about a hundredth of a second'},
+            {'id': 'tube', 'name': 'vacuum tubes', 'one': 'vacuum tube', 'react_s': 1e-5, 'spacing_m': 0.1, 'person': False, 'what': "a vacuum tube, at ENIAC's 100,000 steps a second"},
+        ],
+    }
+    top = stats['super']['targets'][0]['flops']
+    n_fire = top * 2.0 * line_fires
+    print(f"\nOne calculation: {nand_unit:,} NAND keepers, {deep} deep ({fmt_time(deep * KEEPER_S)} per answer); "
+          f"factory line {line_fires:,} fires, 2 calculations per 4 s")
+    print(f"To match LineShine (2.198e18/s): {n_fire:.2e} fires; everyone on Earth tending one fire = "
+          f"{8.2e9 / (2.0 * line_fires):,.0f} calculations a second")
     hand = by_hand_steps()
     route = chain_to('Paris')
     stats['cipher'] = {
