@@ -12,6 +12,23 @@
    "layers": 3
   },
   {
+   "name": "full adder (one column, with carry)",
+   "fires": 12,
+   "nand": 9,
+   "memory": 0,
+   "inputs": 3,
+   "layers": 6
+  },
+  {
+   "name": "3-bit counter",
+   "fires": 14,
+   "nand": 11,
+   "memory": 3,
+   "inputs": 0,
+   "layers": 0,
+   "beat_steps": 6
+  },
+  {
    "name": "4-bit adder",
    "fires": 40,
    "nand": 32,
@@ -53,6 +70,18 @@
    "layers": 68
   },
   {
+   "name": "PRESENT-128 cipher (8 letters)",
+   "fires": 2110,
+   "nand": 1849,
+   "memory": 197,
+   "inputs": 64,
+   "layers": 6,
+   "beat_steps": 13,
+   "beats": 31,
+   "block_steps": 409,
+   "note": "13 steps a beat (26 s); a block takes 409 steps = 13 min 38 s"
+  },
+  {
    "name": "16-bit x 16-bit multiplier",
    "fires": 2640,
    "nand": 2608,
@@ -67,18 +96,6 @@
    "memory": 0,
    "inputs": 60,
    "layers": 288
-  },
-  {
-   "name": "PRESENT-128 cipher (8 letters)",
-   "fires": 2110,
-   "nand": 1849,
-   "memory": 197,
-   "inputs": 64,
-   "layers": 6,
-   "beat_steps": 13,
-   "beats": 31,
-   "block_steps": 409,
-   "note": "13 steps a beat (26 s); a block takes 409 steps = 13 min 38 s"
   }
  ],
  "cipher": {

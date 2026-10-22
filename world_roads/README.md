@@ -262,8 +262,9 @@ Method and limits: ACCURACY.md sections 11–13.
 ## The fire computer (`firecomputer/`)
 
 A follow-up to the signal fires: give every fire a keeper and one rule card ("keep your fire lit unless
-both fires you watch are lit"), and a field of fires computes. Act I adds 1 + 1 with 5 keepers. Act II uses
-ridges of lidded relay fires as wires into a 32-keeper adding field. Act III is a 2,110-fire field at
+both fires you watch are lit"), and a field of fires computes. The page teaches it in twelve levels, from one
+fire as a yes/no answer through 1 + 1 with 5 keepers, carrying, ridges of lidded relay fires as wires into a
+32-keeper adding field, and a drum-driven counter, up to a 2,110-fire field at
 Bletchley Park running the PRESENT-128 cipher, 13 min 38 s per 8 letters (about 8,800 written steps by
 hand). It sends the scrambled digits along Video 2's beacon chain to Paris, where an identical field
 unscrambles them. Every circuit is run keeper by keeper and checked; the cipher matches the published test vectors.

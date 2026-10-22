@@ -2,6 +2,7 @@
 
 * half_adder()    1 + 1 with 5 fires
 * adder(n)        add two n-bit numbers (4 bits: 32 fires)
+* counter(n)      memory fires that count drum beats
 * multiplier(n)   long multiplication in binary (the fire computer note's 600 / 2,608 / 9,510 fires)
 * present_ctr()   the PRESENT-128 block cipher in counter mode: scrambles (and unscrambles) 8 letters
 """
@@ -80,6 +81,23 @@ def multiplier(n):
         out.append(row[0])
         acc = row[1:]
     return f, A, B, out + acc
+
+
+def counter(n):
+    """n memory fires that count up by one on every drum beat (0, 1, 2, ... then back to 0)."""
+    f = Field()
+    mem = []
+    for i in range(n):
+        f.group = f'bit{i}'
+        mem.append(f.memory(f'c{i}'))
+    f.group = 'bit0'
+    f.wire_memory(mem[0], f.NOT(mem[0]))
+    carry = mem[0]
+    for j in range(1, n):
+        f.group = f'bit{j}'
+        s, carry = f.half_adder(mem[j], carry)
+        f.wire_memory(mem[j], s)
+    return f, mem
 
 
 # --- the cipher -----------------------------------------------------------------------------------

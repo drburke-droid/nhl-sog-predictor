@@ -4,93 +4,125 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
 <style>
-/* Layout: one night-time column; each act opens with its question, then the field itself, drawn on canvas. */
+/* Layout: one night-time column, twelve levels that each add one idea; every level has a small field to try. */
 :root {
   --night: #0e1120;      /* sky behind everything */
   --hill: #171b2e;       /* panels, ridges */
   --hill-2: #20263d;     /* nearer ridges, borders */
+  --line: #343b58;       /* control borders */
   --parchment: #ebe3cf;  /* text */
   --smoke: #a3a0ad;      /* secondary text */
   --ember: #ff9a3c;      /* a lit fire */
   --flame: #ffd88a;      /* the hot core, emphasis */
   --ash: #4a4556;        /* a dark fire */
+  --card-ink: #2a2218;   /* text on a parchment card */
+  --card-k: #7b5a2f;     /* card captions */
   --display: "IM Fell English", "Iowan Old Style", Georgia, serif;
   --body: "Literata", "Iowan Old Style", Georgia, serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
   color-scheme: dark;
 }
-html { background: var(--night); }
+html { background: var(--night); scroll-behavior: smooth; }
 body {
   background: var(--night); color: var(--parchment);
-  font: 17px/1.6 var(--body);
+  font: 17px/1.62 var(--body);
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 0 64px;
 }
-main { max-width: 1040px; margin: 0 auto; display: grid; gap: 72px; }
+main { max-width: 1040px; margin: 0 auto; display: grid; gap: 64px; }
 .prose { max-width: 66ch; }
 .prose p { margin: 0 0 0.9em; }
-h1, h2 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+.prose p:last-child { margin-bottom: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
 h1 { font-size: clamp(2.6rem, 7vw, 4.6rem); line-height: 1; letter-spacing: -0.01em; }
-h2 { font-size: clamp(1.8rem, 4.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.4em; }
-.act-label { font: 500 0.78rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; }
+h2 { font-size: clamp(1.75rem, 4vw, 2.4rem); line-height: 1.12; margin-bottom: 0.45em; }
+h3 { font-size: 1.35rem; line-height: 1.2; margin-bottom: 0.3em; }
+.eyebrow { font: 500 0.76rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ember); }
 header { padding-top: 56px; display: grid; gap: 22px; }
-.dek { font-size: 1.2rem; color: var(--parchment); max-width: 60ch; margin: 0; }
-.dek em { color: var(--flame); font-style: italic; }
-small, .note { color: var(--smoke); font-size: 0.88rem; }
+.dek { font-size: 1.2rem; max-width: 60ch; margin: 0; }
+.dek em { color: var(--flame); }
+.note, small { color: var(--smoke); font-size: 0.9rem; }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 b, strong { font-weight: 600; color: var(--flame); }
 a { color: var(--flame); }
+.term { color: var(--flame); font-style: italic; }
 
-/* the rule card a keeper carries */
-.cards { display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch; }
-.card {
-  background: var(--parchment); color: #2a2218; border-radius: 3px; padding: 16px 18px 14px;
-  max-width: 330px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); transform: rotate(-0.6deg);
-}
-.card:nth-child(2) { transform: rotate(0.5deg); }
-.card .k { font: 500 0.7rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #7b5a2f; }
-.card .r { font-family: var(--display); font-size: 1.35rem; line-height: 1.25; margin: 8px 0 10px; }
-.card table { border-collapse: collapse; font: 0.8rem/1.3 var(--mono); }
-.card td { padding: 1px 10px 1px 0; }
-.card td.o { font-weight: 500; }
+/* the route through the levels */
+nav.route { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 4px 28px; font-size: 0.93rem; }
+nav.route a { display: grid; grid-template-columns: 2.2ch 1fr auto; gap: 10px; align-items: baseline; color: var(--parchment); text-decoration: none; padding: 5px 0; border-bottom: 1px solid var(--hill-2); }
+nav.route a:hover { color: var(--flame); }
+nav.route .n { font: 500 0.8rem/1 var(--mono); color: var(--ember); }
+.part { display: grid; gap: 6px; padding-top: 8px; border-top: 1px solid var(--hill-2); }
+.part h2 { margin: 0; }
 
-.stage { display: grid; gap: 14px; }
-canvas { display: block; width: 100%; max-width: 100%; background: transparent; border-radius: 4px; touch-action: manipulation; }
+/* each level */
+.level { display: grid; gap: 16px; scroll-margin-top: 16px; }
+.lvl-head { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; }
+.steep { display: inline-flex; gap: 3px; align-items: center; font: 0.72rem/1 var(--mono); color: var(--smoke); letter-spacing: 0.06em; }
+.steep i { width: 14px; height: 4px; border-radius: 2px; background: var(--hill-2); }
+.steep i.on { background: var(--ember); }
+.try { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--smoke); }
+.takeaway { border-left: 2px solid var(--ember); padding: 2px 0 2px 14px; max-width: 64ch; }
+
+/* a keeper's card */
+.cards { display: flex; flex-wrap: wrap; gap: 16px; }
+.card { background: var(--parchment); color: var(--card-ink); border-radius: 3px; padding: 14px 16px 12px; max-width: 300px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); }
+.card:nth-child(odd) { transform: rotate(-0.6deg); }
+.card:nth-child(even) { transform: rotate(0.5deg); }
+.card .k { font: 500 0.68rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--card-k); }
+.card .r { font-family: var(--display); font-size: 1.25rem; line-height: 1.25; margin: 8px 0 0; }
+
+.demo { display: grid; gap: 10px; max-width: 760px; }
+.demo.wide { max-width: none; }
+canvas { display: block; width: 100%; max-width: 100%; border-radius: 4px; touch-action: manipulation; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
-button, .seg button {
+button {
   font: 500 0.92rem/1 var(--body); color: var(--parchment); background: var(--hill-2);
-  border: 1px solid #343b58; border-radius: 3px; padding: 10px 14px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 3px; padding: 10px 14px; cursor: pointer;
 }
 button:hover { border-color: var(--ember); }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
 button.go { background: var(--ember); color: #2a1606; border-color: var(--ember); font-weight: 600; }
 button.go:hover { background: var(--flame); }
 button:disabled { opacity: 0.45; cursor: default; }
-.seg { display: inline-flex; border: 1px solid #343b58; border-radius: 3px; overflow: hidden; }
-.seg button { border: 0; border-radius: 0; background: transparent; padding: 8px 10px; font: 0.8rem/1 var(--mono); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: transparent; padding: 8px 11px; font: 0.82rem/1 var(--mono); }
 .seg button[aria-pressed="true"] { background: var(--hill-2); color: var(--flame); }
 label { font-size: 0.9rem; color: var(--smoke); display: grid; gap: 6px; }
-input[type="text"] {
-  font: 1rem/1.2 var(--mono); color: var(--parchment); background: var(--hill); border: 1px solid #343b58;
-  border-radius: 3px; padding: 9px 10px; width: 100%; min-width: 0;
-}
-.num { display: inline-flex; align-items: center; gap: 0; border: 1px solid #343b58; border-radius: 3px; }
+input[type="text"] { font: 1rem/1.2 var(--mono); color: var(--parchment); background: var(--hill); border: 1px solid var(--line); border-radius: 3px; padding: 9px 10px; width: 100%; min-width: 0; }
+.num { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 3px; }
 .num button { border: 0; border-radius: 0; padding: 8px 12px; background: var(--hill); }
 .num output { font: 500 1.1rem/1 var(--mono); min-width: 3.2ch; text-align: center; color: var(--flame); }
-.readout {
-  display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: baseline; padding: 12px 0;
-  border-top: 1px solid var(--hill-2); border-bottom: 1px solid var(--hill-2);
-}
-.readout .big { font: 400 1.7rem/1.2 var(--display); }
-.readout .big .mono { font-size: 1.25rem; }
+.readout { display: flex; flex-wrap: wrap; gap: 6px 26px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--hill-2); border-bottom: 1px solid var(--hill-2); }
+.readout .big { font: 400 1.6rem/1.25 var(--display); }
+.readout .big .mono { font-size: 1.2rem; }
 .status { font: 0.85rem/1.4 var(--mono); color: var(--smoke); font-variant-numeric: tabular-nums; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 0.85rem; color: var(--smoke); }
-.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; }
-.dot.lit { background: var(--flame); box-shadow: 0 0 8px var(--ember); }
-.dot.dark { background: var(--ash); }
 
-.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px 24px; align-items: end; }
+/* truth tables and the substitution card */
+table.truth { border-collapse: collapse; font: 0.9rem/1.3 var(--mono); }
+table.truth th, table.truth td { padding: 4px 14px 4px 0; text-align: left; border-bottom: 1px solid var(--hill-2); }
+table.truth th { font-size: 0.72rem; color: var(--smoke); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+table.truth tr.now td { color: var(--flame); }
+.sumwork { font: 1rem/1.5 var(--mono); white-space: pre; background: var(--hill); padding: 12px 16px; border-radius: 3px; margin: 0; overflow-x: auto; max-width: 100%; }
+.sumwork .c { color: var(--ember); }
+.side { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; align-items: start; }
+.side > * { min-width: 0; }
+
+/* fires drawn as page elements (Level 10) */
+.bits { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.bits .lab { font: 0.8rem/1 var(--mono); color: var(--smoke); width: 8ch; }
+.f { width: 22px; height: 22px; border-radius: 50%; background: var(--ash); border: 0; padding: 0; position: relative; cursor: default; }
+.f.lit { background: radial-gradient(circle, #fff6d6 0 18%, var(--flame) 30%, var(--ember) 55%, rgb(255 110 30 / 0) 72%); box-shadow: 0 0 12px rgb(255 140 50 / 0.55); }
+button.f { cursor: pointer; }
+button.f:hover { outline: 1px solid var(--ember); outline-offset: 2px; }
+.f.small { width: 11px; height: 11px; }
+.f.changed::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 1px solid var(--flame); }
+.sbox { display: grid; grid-template-columns: repeat(4, auto); gap: 2px 22px; font: 0.82rem/1.5 var(--mono); justify-content: start; }
+.sbox span { color: var(--smoke); white-space: nowrap; }
+.sbox span.now { color: var(--flame); }
+.maskrow { display: flex; flex-wrap: wrap; gap: 3px; max-width: 560px; }
+
 .blocks { display: grid; gap: 6px; font: 0.95rem/1.35 var(--mono); }
 .blocks .row { display: grid; grid-template-columns: 6.5ch 10.5ch 1fr; gap: 10px; align-items: baseline; min-width: 0; }
 .blocks .row span:last-child { overflow-wrap: anywhere; min-width: 0; }
@@ -99,6 +131,7 @@ input[type="text"] {
 .pips { display: flex; gap: 3px; flex-wrap: wrap; }
 .pips i { width: 9px; height: 9px; border-radius: 2px; background: var(--hill-2); }
 .pips i.on { background: var(--ember); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 0.86rem; color: var(--smoke); }
 .check { font: 0.82rem/1.4 var(--mono); color: var(--smoke); }
 .check .ok { color: var(--flame); }
 
@@ -106,72 +139,161 @@ input[type="text"] {
 table.scale { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.95rem; }
 table.scale th, table.scale td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--hill-2); vertical-align: baseline; }
 table.scale th { font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--smoke); }
-table.scale td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 22px; }
-table.scale th.n { text-align: right; padding-right: 22px; }
+table.scale td.n, table.scale th.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 22px; }
 table.scale tr.hl td { color: var(--flame); }
-.versus { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.versus { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
 .versus div { border-top: 2px solid var(--hill-2); padding-top: 12px; }
 .versus .v { font: 400 2.1rem/1.1 var(--display); color: var(--flame); }
 .versus div:first-child .v { color: var(--parchment); }
-footer { color: var(--smoke); font-size: 0.85rem; max-width: 70ch; }
+footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
 @media (max-width: 520px) {
   body { font-size: 16px; }
   .blocks .row { grid-template-columns: 5.5ch 1fr; }
   .blocks .row span:last-child { grid-column: 1 / -1; }
+  .sbox { grid-template-columns: repeat(2, auto); }
 }
-@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 
 <main>
 <header>
-  <div class="act-label">After the signal fires</div>
+  <div class="eyebrow">After the signal fires</div>
   <h1>The Fire Computer</h1>
-  <p class="dek">A chain of signal fires can carry a message from mountain to mountain. Give each fire a keeper and a rule, and a field of them can <em>calculate</em>. A lit fire is a 1 and a dark fire is a 0. Every keeper watches two fires and carries the same card.</p>
-  <div class="cards">
-    <div class="card" aria-label="The keeper's card">
-      <div class="k">Every keeper's card</div>
-      <div class="r">Keep your fire lit, unless both of the fires you watch are lit.</div>
-      <table aria-label="The card's rule for every case">
-        <tr><td>dark, dark</td><td>→</td><td class="o">lit</td></tr>
-        <tr><td>dark, lit</td><td>→</td><td class="o">lit</td></tr>
-        <tr><td>lit, dark</td><td>→</td><td class="o">lit</td></tr>
-        <tr><td>lit, lit</td><td>→</td><td class="o">dark</td></tr>
-      </table>
-    </div>
-    <div class="card" aria-label="The memory keeper's card">
-      <div class="k">The memory keeper's card (Act III)</div>
-      <div class="r">When the drum beats, make your fire match the one you watch. Between beats, leave it alone.</div>
-      <div class="note" style="color:#5b4a35">Every fire has a lid, so a keeper can show or hide its light as often as needed.</div>
-    </div>
-  </div>
-  <p class="prose note" style="margin:0">Engineers call the first card <b>NAND</b> ("not and"). Every other rule, and every circuit on this page, is built from it. The only difference between keepers is which two fires each one watches. Each keeper takes about 2 seconds to see a change, check the card and move the lid.</p>
+  <p class="dek">A chain of signal fires can carry one piece of news across a continent. This page shows, one small step at a time, how a field of fires and the people who tend them can <em>calculate</em>: first 1 + 1, then real sums, and at the end a secret code that would take a person most of a day to work by hand.</p>
+  <p class="prose note" style="margin:0">No maths needed to start. Each of the twelve levels adds one idea and has something to try. The bar beside each title shows how steep that level is.</p>
+  <nav class="route" aria-label="Levels" id="route"></nav>
 </header>
 
-<!-- ACT I -->
-<section class="stage" id="act1" aria-labelledby="a1h">
+<!-- PART 1 -->
+<div class="part"><div class="eyebrow">Part one</div><h2>Fires as numbers</h2></div>
+
+<section class="level" id="l1" data-steep="1">
+  <div class="lvl-head"><h2>1. One fire, one answer</h2></div>
   <div class="prose">
-    <div class="act-label">Act I · 7 fires</div>
-    <h2 id="a1h">1 + 1, with five keepers</h2>
-    <p>Two fires on top hold the numbers being added, A and B. Five keepers below them add the numbers. The fire on the bottom right shows the ones place, and the fire on the bottom left shows the twos place. Tap A or B to change it, and watch the change pass down one keeper at a time.</p>
+    <p>A signal fire answers one yes-or-no question. <i>Is the fleet coming?</i> Lit means yes and dark means no. Nothing in between.</p>
+    <p>Computers use the same idea. Write a lit fire as <b>1</b> and a dark fire as <b>0</b>. One fire holds one of these answers, and computer people call it a <span class="term">bit</span>.</p>
   </div>
-  <canvas id="c1" style="aspect-ratio: 16 / 8.2" aria-label="Seven fires: A and B on top, five keepers below, the twos and ones fires at the bottom"></canvas>
-  <div class="controls">
-    <button id="a1A" type="button">A: lit (1)</button>
-    <button id="a1B" type="button">B: lit (1)</button>
-    <span class="status" id="a1s"></span>
-  </div>
-  <div class="readout"><span class="big" id="a1r"></span><span class="note" id="a1n"></span></div>
-  <div class="prose note">
-    <p>The first keeper (the middle fire) goes dark only when A and B are both lit. The two keepers under it each compare that fire with A or with B, and the ones fire combines them. Together those four NAND fires make "lit if exactly one of A and B is lit". The twos fire flips the first keeper's fire: it is lit only when both A and B are. That is binary addition: 1 + 1 = <span class="mono">10</span>, one two and no ones.</p>
+  <div class="demo">
+    <div class="try">Try it: tap the fire</div>
+    <canvas id="m1" style="aspect-ratio: 16 / 3.4" aria-label="One fire you can light or put out"></canvas>
+    <div class="readout"><span class="big" id="m1r"></span></div>
   </div>
 </section>
 
-<!-- ACT II -->
-<section class="stage" id="act2" aria-labelledby="a2h">
+<section class="level" id="l2" data-steep="1">
+  <div class="lvl-head"><h2>2. Fires that count</h2></div>
   <div class="prose">
-    <div class="act-label">Act II · 40 fires and three ridges</div>
-    <h2 id="a2h">Sightlines are wires</h2>
-    <p>Two hill villages each count their sacks of grain and send the count down a ridge as 4 lidded fires: the 8s, 4s, 2s and 1s. Each relay copies the four fires it sees, like the signal-fire chains, but with lids instead of new bonfires. In the valley, 32 keepers add the two counts with four copies of the Act I trick, each passing its carry to the next. The total climbs the far ridge to the mill.</p>
+    <p>One fire can only say yes or no. A row of fires can say a number, if each fire is worth something different. Give the fires the values <b>8, 4, 2 and 1</b>, and add up the lit ones.</p>
+    <p>It works like a set of weights on a market scale. With one 8 kg, one 4 kg, one 2 kg and one 1 kg weight, you can weigh out any whole amount from 0 to 15 kg: 11 kg is 8 + 2 + 1. This way of writing numbers is called <span class="term">binary</span>, and 11 is written <span class="mono">1011</span>.</p>
+  </div>
+  <div class="demo">
+    <div class="try">Try it: make 13. Then make 15, the most four fires can show.</div>
+    <canvas id="m2" style="aspect-ratio: 16 / 4.6" aria-label="Four fires worth 8, 4, 2 and 1"></canvas>
+    <div class="readout"><span class="big" id="m2r"></span></div>
+  </div>
+  <p class="takeaway prose">Each extra fire doubles how far the row can count. 8 fires reach 255, 16 reach 65,535, and 64 fires can hold 8 letters of text.</p>
+</section>
+
+<!-- PART 2 -->
+<div class="part"><div class="eyebrow">Part two</div><h2>Keepers and their cards</h2></div>
+
+<section class="level" id="l3" data-steep="1">
+  <div class="lvl-head"><h2>3. The relay keeper is a wire</h2></div>
+  <div class="prose">
+    <p>Every fire has a <span class="term">keeper</span>, and every keeper carries a card with one rule. The simplest card is the one from the signal-fire chains: <i>copy the fire you watch.</i></p>
+    <p>Each fire also has a lid, like a brazier with a cover, so a keeper can hide the light again as easily as show it. A keeper takes about <b>2 seconds</b> to notice a change, check the card and move the lid. A line of copying keepers carries a 1 or a 0 from one place to another, which is exactly what a wire does in an electronic computer.</p>
+  </div>
+  <div class="cards"><div class="card"><div class="k">The relay card</div><div class="r">Make your fire match the one you watch.</div></div></div>
+  <div class="demo">
+    <div class="try">Try it: tap the first fire and watch the change travel</div>
+    <canvas id="m3" style="aspect-ratio: 16 / 3.6" aria-label="A chain of six relay fires"></canvas>
+    <div class="status" id="m3s"></div>
+  </div>
+</section>
+
+<section class="level" id="l4" data-steep="2">
+  <div class="lvl-head"><h2>4. Keepers that decide</h2></div>
+  <div class="prose">
+    <p>A relay keeper only passes news on. A keeper becomes useful when the card makes a decision. Here are three cards. The first watches one fire, the other two watch two fires, A and B.</p>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="k">NOT</div><div class="r">Light yours if the fire you watch is dark.</div></div>
+    <div class="card"><div class="k">AND</div><div class="r">Light yours only if both fires you watch are lit.</div></div>
+    <div class="card"><div class="k">OR</div><div class="r">Light yours if either fire you watch is lit.</div></div>
+  </div>
+  <div class="demo">
+    <div class="controls"><span class="try">Card</span><span class="seg" role="group" aria-label="Card" id="m4card"><button type="button" data-c="not">NOT</button><button type="button" data-c="and" aria-pressed="true">AND</button><button type="button" data-c="or">OR</button></span><span class="try">then tap A or B</span></div>
+    <div class="side">
+      <canvas id="m4" style="aspect-ratio: 16 / 9" aria-label="Fires A and B watched by one keeper"></canvas>
+      <div><table class="truth" id="m4t" aria-label="Every case of the chosen card"></table><p class="note" style="margin-top:10px">A list like this, every possible case and its answer, is called a <span class="term">truth table</span>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="level" id="l5" data-steep="2">
+  <div class="lvl-head"><h2>5. One card is enough</h2></div>
+  <div class="prose">
+    <p>Here is a surprise that makes the whole computer possible. You don't need a different card for every job. One card, carried by every keeper, can do all of them. It is AND with the answer flipped, so engineers call it <span class="term">NAND</span> ("not and").</p>
+    <p>Below, the same two fires A and B feed three little groups of NAND keepers. A keeper who watches the same fire twice acts as NOT. Two keepers make AND, and three make OR. The only difference between the groups is <i>who watches whom</i>.</p>
+  </div>
+  <div class="cards"><div class="card"><div class="k">Every keeper's card from here on</div><div class="r">Keep your fire lit, unless both of the fires you watch are lit.</div></div></div>
+  <div class="demo wide">
+    <div class="try">Try it: tap A or B. All three groups use only the NAND card.</div>
+    <canvas id="m5" style="aspect-ratio: 16 / 6.2" aria-label="Three groups of NAND keepers making NOT, AND and OR"></canvas>
+    <div class="status" id="m5s"></div>
+  </div>
+  <p class="takeaway prose">From here on, every circuit on this page uses the same NAND card. Building a computer is mostly a matter of deciding which two fires each keeper watches.</p>
+</section>
+
+<!-- PART 3 -->
+<div class="part"><div class="eyebrow">Part three</div><h2>Arithmetic</h2></div>
+
+<section class="level" id="l6" data-steep="2">
+  <div class="lvl-head"><h2>6. 1 + 1, with five keepers</h2></div>
+  <div class="prose">
+    <p>Adding two single fires has only four cases: 0 + 0 = 0, 0 + 1 = 1, 1 + 0 = 1, and 1 + 1 = 2. In binary, 2 is written <span class="mono">10</span> (one 2 and no 1s), so the answer needs two fires: a <b>ones</b> fire and a <b>twos</b> fire.</p>
+    <p>Look at the pattern. The ones fire is lit when exactly one of A and B is lit. The twos fire is lit only when both are. Five NAND keepers do both jobs, sharing the middle keeper.</p>
+  </div>
+  <div class="demo">
+    <div class="try">Try it: tap A or B and count the keeper steps</div>
+    <canvas id="m6" style="aspect-ratio: 16 / 8.2" aria-label="Seven fires: A and B on top, five keepers below, the twos and ones fires at the bottom"></canvas>
+    <div class="readout"><span class="big" id="m6r"></span><span class="status" id="m6s"></span></div>
+  </div>
+</section>
+
+<section class="level" id="l7" data-steep="3">
+  <div class="lvl-head"><h2>7. Carrying the one</h2></div>
+  <div class="prose">
+    <p>To add bigger numbers, do what you learned at school: add one column at a time, and carry when a column overflows. Binary works the same way, except a column overflows at 2 instead of 10.</p>
+  </div>
+  <div class="side">
+    <div><div class="try" style="margin-bottom:6px">At school, 47 + 38</div><pre class="sumwork"><span class="c">  1    ← carry</span>
+  4 7
++ 3 8
+-----
+  8 5</pre></div>
+    <div><div class="try" style="margin-bottom:6px">In fires, 11 + 6</div><pre class="sumwork"><span class="c"> 1 1 1     ← carries</span>
+   1 0 1 1    (11)
+ + 0 1 1 0    (6)
+ ---------
+ 1 0 0 0 1    (17)</pre></div>
+  </div>
+  <div class="prose">
+    <p>Every column after the first has three fires to add: one from each number, plus the carry from the column to its right. Nine NAND keepers handle one column. They do Level 6's trick twice: first A + B, then that answer plus the carry.</p>
+  </div>
+  <div class="demo">
+    <div class="try">Try it: one column. Tap A, B or the carry coming in.</div>
+    <canvas id="m7" style="aspect-ratio: 16 / 9" aria-label="Nine keepers adding A, B and a carry"></canvas>
+    <div class="readout"><span class="big" id="m7r"></span><span class="status" id="m7s"></span></div>
+  </div>
+  <p class="takeaway prose">Line up four of these columns, each passing its carry to the next, and the field can add any two numbers up to 15.</p>
+</section>
+
+<section class="level" id="l8" data-steep="3">
+  <div class="lvl-head"><h2>8. Sightlines are wires</h2></div>
+  <div class="prose">
+    <p>Now put the adding field in a valley. Two hill villages each count their sacks of grain and send the count down a ridge as 4 lidded fires (the 8s, 4s, 2s and 1s). Each station copies the four fires it sees, like a signal-fire chain carrying four bits side by side. A mountain hop is slower than a field keeper, so take it as 10 seconds.</p>
+    <p>In the valley, 32 keepers add the counts: one Level 6 group for the first column and three Level 7 columns. The total climbs the far ridge to the mill as 5 fires.</p>
   </div>
   <div class="controls">
     <span class="note">North village</span>
@@ -185,17 +307,74 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 70ch; }
   <p class="prose note" id="a2note"></p>
 </section>
 
-<!-- ACT III -->
-<section class="stage" id="act3" aria-labelledby="a3h">
+<!-- PART 4 -->
+<div class="part"><div class="eyebrow">Part four</div><h2>Memory</h2></div>
+
+<section class="level" id="l9" data-steep="3">
+  <div class="lvl-head"><h2>9. The drum</h2></div>
   <div class="prose">
-    <div class="act-label">Act III · 2,110 fires and a chain to Paris</div>
-    <h2 id="a3h">A message the sky can't read</h2>
-    <p>In the analog-backup story, an AI holds every phone, cable and satellite, and the warning goes out by bonfire. A satellite can see every bonfire, though, and so can the AI. To keep a message private you need a real cipher. Real ciphers are far too long to work by hand: <span id="handline"></span></p>
-    <p>So Bletchley Park, where Colossus broke codes in the war, builds one out of fire. The field runs <b>PRESENT</b>, a published lightweight cipher (ISO/IEC 29192-2) with a 128-bit key that no computer could guess. It sits under a roof so the sky can't see it. It scrambles 8 letters at a time in 31 rounds, one round per drum beat, and the scrambled digits go out on the open beacon chain. Paris builds an identical field with the same key, and the same steps turn the scramble back into the message.</p>
+    <p>So far the field only answers what it is shown. A computer also has to <i>remember</i>, so it can work in steps: do something, keep the result, then do the next thing to it. That needs a second kind of keeper with a second card.</p>
+    <p>Why a drum? While the field works, fires flicker as changes ripple through. Memory keepers must not copy halfway through, or they would copy a wrong answer. So they wait for the drum, which beats only after the field has had time to settle. Then they all copy at the same moment, like rowers pulling on the beat. Electronic computers do the same thing with a <span class="term">clock</span>. When a phone's chip is advertised at "3 GHz", that means its drum beats 3 billion times a second.</p>
   </div>
-  <div class="grid2">
+  <div class="cards"><div class="card"><div class="k">The memory keeper's card</div><div class="r">When the drum beats, make your fire match the one you watch. Between beats, leave it alone.</div></div></div>
+  <div class="prose">
+    <p>Here the three memory fires on top hold a number. The keepers below them work out that number plus one (Level 6's trick again). On every beat, the memory keepers copy the answer, so the field counts.</p>
+  </div>
+  <div class="demo">
+    <div class="controls"><button class="go" id="m9go" type="button">Beat the drum</button><span class="status" id="m9s"></span></div>
+    <canvas id="m9" style="aspect-ratio: 16 / 6.4" aria-label="Three memory fires and the keepers that add one to them"></canvas>
+    <div class="readout"><span class="big" id="m9r"></span></div>
+  </div>
+  <p class="takeaway prose">Keepers that calculate, plus memory, plus a drum: that is a complete computer. Everything after this is the same three ingredients, just more of them.</p>
+</section>
+
+<!-- PART 5 -->
+<div class="part"><div class="eyebrow">Part five</div><h2>Something worth the trouble</h2></div>
+
+<section class="level" id="l10" data-steep="4">
+  <div class="lvl-head"><h2>10. Scrambling a message</h2></div>
+  <div class="prose">
+    <p>Back to the signal-fire story. An AI has taken every phone, cable and satellite, and the warning goes out by bonfire. But a satellite can see every bonfire, and so can the AI. Anything we send across the hills, it reads. We need a secret code, a <span class="term">cipher</span>, and the two ends need to share a secret pattern, the <span class="term">key</span>, agreed in person beforehand.</p>
+    <p>A good cipher uses three simple moves, repeated many times.</p>
+  </div>
+
+  <h3>Move 1: mix in the key</h3>
+  <div class="prose"><p>Wherever the key fire is lit, flip the message fire. Where the key is dark, leave it alone. Do it a second time with the same key and every flip is undone. That is how the other end gets the message back.</p></div>
+  <div class="demo">
+    <div class="try">Try it: tap any message or key fire</div>
+    <div class="bits"><span class="lab">message</span><span class="bits" id="x1m"></span></div>
+    <div class="bits"><span class="lab">key</span><span class="bits" id="x1k"></span></div>
+    <div class="bits"><span class="lab">mixed</span><span class="bits" id="x1o"></span></div>
+    <div class="bits"><span class="lab">again</span><span class="bits" id="x1b"></span><span class="note" style="margin-left:8px">mixed with the key a second time: the message is back</span></div>
+  </div>
+
+  <h3>Move 2: swap by the table</h3>
+  <div class="prose"><p>Mixing alone is too easy to undo by guesswork. So every group of 4 fires is swapped for a different pattern, using a fixed table everyone knows. The table is designed so that changing one fire going in changes about half the fires coming out. In the field, each table takes 72 NAND keepers.</p></div>
+  <div class="demo">
+    <div class="try">Try it: tap the 4 fires going in</div>
+    <div class="bits"><span class="lab">in</span><span class="bits" id="x2i"></span><span class="mono" id="x2iv" style="margin-left:8px"></span></div>
+    <div class="bits"><span class="lab">out</span><span class="bits" id="x2o"></span><span class="mono" id="x2ov" style="margin-left:8px"></span></div>
+    <div class="sbox" id="x2t" aria-label="The swap table, in → out"></div>
+  </div>
+
+  <h3>Move 3: shuffle</h3>
+  <div class="prose"><p>Finally, the 64 fires of a block change places, so each table's output feeds four different tables next time. In the field this move costs <b>no fires at all</b>: each memory keeper simply watches a different fire.</p></div>
+  <canvas id="x3" style="aspect-ratio: 16 / 3.2" aria-label="64 lines showing where each fire moves in the shuffle"></canvas>
+
+  <div class="prose">
+    <p>Mix, swap, shuffle: that is one <span class="term">round</span>. The cipher on this page, <b>PRESENT</b> (a published standard, ISO/IEC 29192-2), does 31 rounds, with the key changing slightly each round. Each round only needs simple steps, but there are a lot of them: <span id="handline"></span></p>
+  </div>
+</section>
+
+<section class="level" id="l11" data-steep="5">
+  <div class="lvl-head"><h2>11. The field at Bletchley Park</h2></div>
+  <div class="prose">
+    <p>So Bletchley Park, where Colossus broke codes in the war, builds a cipher field out of fire, under a roof so the sky can't see it. It has <b>2,110 fires</b>: 64 memory fires for the block, 128 for the key, 5 that count the rounds, 64 for the message, and 1,849 NAND keepers doing the three moves. One drum beat is one round.</p>
+    <p>One more trick keeps it simple. The field doesn't scramble the message directly. It scrambles a block number, using the key, into 64 fires that look random: a <span class="term">mask</span>. Then it mixes the mask into the message with Move 1. Paris builds the same field with the same key, makes the same mask, and mixes it in again, which flips every fire back.</p>
+  </div>
+  <div class="side">
     <label for="a3msg">Message (up to 24 letters)<input type="text" id="a3msg" maxlength="24" value="UNPLUG AT DAWN" spellcheck="false" autocomplete="off"></label>
-    <label for="a3key">Key, shared in person beforehand (32 hex digits)<input type="text" id="a3key" maxlength="32" spellcheck="false" autocomplete="off"></label>
+    <label for="a3key">Key, agreed in person beforehand (32 hex digits)<input type="text" id="a3key" maxlength="32" spellcheck="false" autocomplete="off"></label>
   </div>
   <div class="controls">
     <button class="go" id="a3go" type="button">Scramble at Bletchley Park</button>
@@ -206,16 +385,25 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 70ch; }
   </div>
   <canvas id="c3" style="aspect-ratio: 16 / 3.3" aria-label="The cipher field: sixteen columns of fires for the block being scrambled, with the key machinery on the right"></canvas>
   <div class="legend">
-    <span><i class="dot lit"></i>lit (1)</span><span><i class="dot dark"></i>dark (0)</span>
-    <span>Top of each column: the block being scrambled (memory fires) · middle: mixing in the key, then the substitution · bottom: the message and the output row · right: the 128 key fires and the round count</span>
+    <span>Each of the 16 columns handles 4 of the 64 fires. Top of a column: memory fires holding the block · middle: mixing in the key and the swap table · bottom: the message and the output row · right: the 128 key fires and the round count.</span>
   </div>
   <div class="controls"><div class="pips" id="a3pips" aria-hidden="true"></div><span class="status" id="a3s"></span></div>
   <div class="blocks" id="a3blocks" aria-live="polite"></div>
   <p class="check" id="a3check"></p>
 
-  <div class="prose" style="margin-top:18px">
-    <h2 style="font-size:1.6rem">Out along the beacon chain</h2>
-    <p>The scrambled block goes out as hex digits, 4 bits each, using the beacon chain Video 2 lit from Bletchley Park to Paris. Each station has 4 lidded fires for the bits and a fifth that is lit while a digit is showing. Every keeper can see the digits, and so can the satellites, but without the key they mean nothing.</p>
+  <h3 style="margin-top:12px">How much does one key fire matter?</h3>
+  <div class="prose"><p>Here is the mask for the first block, then the mask with just one of the 128 key fires flipped. A good cipher changes about half the fires, with no pattern to which ones. Without the exact key, a near miss is no help at all.</p></div>
+  <div class="demo">
+    <div class="bits"><span class="lab">key</span><span class="maskrow" id="avA"></span></div>
+    <div class="bits"><span class="lab">1 flipped</span><span class="maskrow" id="avB"></span></div>
+    <div class="controls"><button id="avgo" type="button">Flip a different key fire</button><span class="status" id="avs"></span></div>
+  </div>
+</section>
+
+<section class="level" id="l12" data-steep="4">
+  <div class="lvl-head"><h2>12. Out along the beacon chain</h2></div>
+  <div class="prose">
+    <p>The scrambled block goes out on the open beacon chain from the Video 2 route, Bletchley Park to Paris: 10 hops and 476 km, including one jump across the Channel. Each station shows one hex digit at a time (4 bits, written 0–9 and a–f) with 4 lidded fires, plus a fifth that is lit while a digit is showing. Every keeper on the way can see the digits, and so can the satellites, but without the key they mean nothing.</p>
   </div>
   <canvas id="c4" style="aspect-ratio: 16 / 5" aria-label="Side view of the beacon chain from Bletchley Park to Paris, with five fires at each station"></canvas>
   <div class="controls">
@@ -226,30 +414,24 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 70ch; }
   <div class="blocks" id="a4blocks" aria-live="polite"></div>
 </section>
 
-<!-- SCALE -->
-<section class="stage" aria-labelledby="a5h">
-  <div class="prose">
-    <div class="act-label">How big it gets</div>
-    <h2 id="a5h">Every circuit, counted fire by fire</h2>
-    <p>Every row was built from the same NAND card (plus memory keepers for the cipher), then run keeper by keeper and checked against the right answers. "Keepers deep" is the longest chain of keepers a change has to pass through, one after another.</p>
-  </div>
+<!-- WRAP -->
+<div class="part"><div class="eyebrow">Afterwards</div><h2>How big it gets</h2></div>
+<section class="level">
+  <div class="prose"><p>Every row was built from the same NAND card (plus memory keepers where there's a drum), then run keeper by keeper and checked against the right answers. "Keepers deep" is the longest chain of keepers a change has to pass through, one after another.</p></div>
   <div class="table-wrap"><table class="scale" id="scale"></table></div>
 </section>
 
-<section class="stage" aria-labelledby="a6h">
-  <div class="prose">
-    <div class="act-label">Fire against pencil</div>
-    <h2 id="a6h">When the field is worth lighting</h2>
-  </div>
+<section class="level">
+  <h2>When the field is worth lighting</h2>
   <div class="versus" id="versus"></div>
   <div class="prose">
-    <p>For everyday arithmetic, the field loses. One person multiplies 2,400 × 365 with a pencil in about a minute, while the multiplier field needs 2,640 keepers and about five minutes. The cipher is different because it is long, not because it is hard. It is thousands of tiny steps, and a single slip ruins the whole block, which is the kind of job a field of rule-followers does well. None of the keepers needs to know any arithmetic, or even what the field is for.</p>
+    <p>For everyday arithmetic, the field loses. One person multiplies 2,400 × 365 with a pencil in about a minute, while the multiplier field needs 2,640 keepers and about five minutes. The cipher is different because it is long, not because it is hard. It is thousands of tiny steps where a single slip ruins the whole block. That is the kind of job a field of rule-followers does well, and none of them needs to know any arithmetic, or even what the field is for.</p>
     <p>That is also the point of the whole exercise. <b>Computers aren't smart.</b> They are enormous numbers of very simple rule-followers. A phone has billions of them, each switching billions of times a second. In <i>The Three-Body Problem</i>, an emperor's army becomes a computer, each soldier raising or lowering a flag by a rule. The fire field is the same idea, at a size and speed you can watch.</p>
   </div>
 </section>
 
 <footer>
-  <p>Built and checked by <span class="mono">world_roads/firecomputer/build.py</span>: every circuit is a list of who watches whom, run one keeper step (2 s) at a time. The adders are checked on every input or 200 random sums, the multipliers on 200 random products, and the cipher on the four published PRESENT-128 test vectors plus 20 random blocks against plain software PRESENT. Assumed timings: 2 s per field keeper; 10 s per mountain hop with lidded fires; 30 s per hex digit on the chain (shown for 20 s, dark for 10 s). The beacon chain is Video 2's terrain-checked route. The cipher runs in counter mode: the field scrambles the block number 1588 × 65,536 + n with the key and adds the result to the message, so the same field both scrambles and unscrambles.</p>
+  <p>Built and checked by <span class="mono">world_roads/firecomputer/build.py</span>: every circuit is a list of who watches whom, run one keeper step (2 s) at a time. The adders are checked on every input or 200 random sums, the counter for 16 beats, the multipliers on 200 random products, and the cipher on the four published PRESENT-128 test vectors plus 20 random blocks against plain software PRESENT. Assumed timings: 2 s per field keeper; 10 s per mountain hop with lidded fires; 30 s per hex digit on the chain (shown for 20 s, dark for 10 s). The beacon chain is Video 2's terrain-checked route. The block number is 1588 × 65,536 + the block's position. Levels 1 to 5 are drawn with the cards they name; from Level 6 on, every keeper is a NAND or memory keeper from the checked circuits.</p>
 </footer>
 </main>
 
@@ -259,6 +441,21 @@ const DATA = /*FIRE_DATA*/null;
 const S = DATA.stats;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const $ = id => document.getElementById(id);
+
+// ---------- the route and the steepness bars ----------
+(function () {
+  const levels = [...document.querySelectorAll('section.level[id]')];
+  $('route').innerHTML = levels.map(l => {
+    const n = l.id.slice(1), title = l.querySelector('h2').textContent.replace(/^\d+\.\s*/, '');
+    const k = +l.dataset.steep;
+    return `<a href="#${l.id}"><span class="n">${n}</span><span>${title}</span><span class="steep" aria-label="steepness ${k} of 5">${'<i class="on"></i>'.repeat(k)}${'<i></i>'.repeat(5 - k)}</span></a>`;
+  }).join('');
+  for (const l of levels) {
+    const k = +l.dataset.steep;
+    l.querySelector('.lvl-head').insertAdjacentHTML('beforeend', `<span class="steep" title="How steep this level is">${'<i class="on"></i>'.repeat(k)}${'<i></i>'.repeat(5 - k)}&nbsp; ${['', 'gentle', 'gentle', 'moderate', 'steeper', 'steepest'][k]}</span>`);
+  }
+})();
 
 // ---------- drawing fires ----------
 const sprites = {};
@@ -292,129 +489,230 @@ function fire(ctx, x, y, r, lit, flick) {
 function fit(cv) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = cv.clientWidth, h = cv.clientHeight;
-  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
-    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-  }
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
   const ctx = cv.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return { ctx, w, h };
 }
 function noise(i, t) { return 0.5 + 0.5 * Math.sin(t * 0.009 + i * 12.9898) * Math.sin(t * 0.0137 + i * 4.1414); }
-const bitsOf = (v, n) => Array.from({ length: n }, (_, i) => (v >> i) & 1);
 const fmtT = s => s < 60 ? `${Math.round(s)} s` : s < 3600 ? `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, '0')} s` : `${Math.floor(s / 3600)} h ${String(Math.floor(s % 3600 / 60)).padStart(2, '0')} min`;
 
-// a canvas that redraws every frame while on screen
 const live = [];
 function animate(cv, draw) {
   const item = { cv, draw, visible: true };
   live.push(item);
   if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => item.visible = e.isIntersecting)).observe(cv);
 }
-function frame(t) {
-  for (const it of live) if (it.visible) it.draw(t);
-  requestAnimationFrame(frame);
-}
+function frame(t) { for (const it of live) if (it.visible) it.draw(t); requestAnimationFrame(frame); }
 
-// a field drawn from its layout
-function fieldView(net, pad) {
-  const xs = net.pos.map(p => p[0]), ys = net.pos.map(p => p[1]);
-  return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys), pad };
+function bounds(pts) {
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
 }
-function project(v, box) {   // box: {x, y, w, h} in px -> function(fire) => [x, y], scale
+function project(v, box) {
   const sx = box.w / Math.max(1e-9, v.x1 - v.x0), sy = box.h / Math.max(1e-9, v.y1 - v.y0);
   const s = Math.min(sx, sy);
   const ox = box.x + (box.w - s * (v.x1 - v.x0)) / 2, oy = box.y + (box.h - s * (v.y1 - v.y0)) / 2;
   return { s, at: p => [ox + (p[0] - v.x0) * s, oy + (p[1] - v.y0) * s] };
 }
-function drawWires(ctx, net, P, state, alpha) {
-  ctx.lineWidth = 1;
-  for (let i = 0; i < net.kind.length; i++) {
-    const k = net.kind[i];
-    if (k === 'i') continue;
-    const [x, y] = P.at(net.pos[i]);
-    const srcs = k === 'n' ? (net.src[i][0] === net.src[i][1] ? [net.src[i][0]] : net.src[i]) : [net.src[i][0]];
-    for (const s of srcs) {
-      const [sx, sy] = P.at(net.pos[s]);
-      ctx.strokeStyle = state && state[s] ? `rgba(255,176,90,${alpha * 1.6})` : `rgba(150,140,170,${alpha})`;
-      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(x, y); ctx.stroke();
-    }
-  }
-}
 
-// ---------- ACT I ----------
-(function () {
-  const A = DATA.act1, F = new FireField(A.net), cv = document.getElementById('c1');
-  const V = fieldView(A.net);
-  let inp = [1, 1], s = settleNow(), t = 0, running = null;
-  function settleNow() { let st = F.start({ [A.inputs[0]]: inp[0], [A.inputs[1]]: inp[1] }); for (let i = 0; i < 6; i++) st = F.step(st); return st; }
-  const labels = { [A.inputs[0]]: 'A', [A.inputs[1]]: 'B', [A.outputs[0]]: 'ones', [A.outputs[1]]: 'twos' };
-  function readout(st, steps) {
-    const sum = st[A.outputs[1]] * 2 + st[A.outputs[0]];
-    document.getElementById('a1r').innerHTML = `${inp[0]} + ${inp[1]} = <span class="mono">${st[A.outputs[1]]}${st[A.outputs[0]]}</span> in binary = ${sum}`;
-    document.getElementById('a1n').textContent = steps == null ? '' : `settled after ${steps} keeper steps, about ${steps * S.keeper_s} s`;
-  }
-  function btns() {
-    document.getElementById('a1A').textContent = `A: ${inp[0] ? 'lit (1)' : 'dark (0)'}`;
-    document.getElementById('a1B').textContent = `B: ${inp[1] ? 'lit (1)' : 'dark (0)'}`;
-  }
+// ---------- a small field for the early levels ----------
+// fires: [{card: 'in'|'copy'|'not'|'and'|'or'|'nand'|'mem', src: [..], x, y, label, below, sub}]
+function Mini(cv, spec) {
+  const F = spec.fires, n = F.length;
+  let s = F.map(f => f.init || 0), steps = 0, timer = null, P = null;
+  const val = (f, s, drum, i) => {
+    if (f.card === 'in') return s[i];
+    const a = s[f.src[0]], b = f.src.length > 1 ? s[f.src[1]] : a;
+    switch (f.card) {
+      case 'copy': return a;
+      case 'not': return 1 - a;
+      case 'and': return a & b;
+      case 'or': return a | b;
+      case 'nand': return 1 - (a & b);
+      case 'mem': return drum ? a : s[i];
+      default: return s[i];
+    }
+  };
+  function step(drum) { const t = F.map((f, i) => val(f, s, drum, i)); const ch = t.some((v, i) => v !== s[i]); s = t; return ch; }
+  function settle() { for (let k = 0; k < 200 && step(false); k++); }
+  function report(done) { spec.onChange && spec.onChange(s, steps, done); }
   function run() {
-    clearInterval(running);
-    s[A.inputs[0]] = inp[0]; s[A.inputs[1]] = inp[1];
-    btns();
-    let step = 0;
-    document.getElementById('a1s').textContent = 'the keepers are reacting…';
-    running = setInterval(() => {
-      const n = F.step(s); step++;
-      const changed = n.some((v, i) => v !== s[i]);
-      s = n;
-      document.getElementById('a1s').textContent = `keeper step ${step} · ${step * S.keeper_s} s`;
-      if (!changed) { clearInterval(running); document.getElementById('a1s').textContent = `settled · ${(step - 1) * S.keeper_s} s`; readout(s, step - 1); }
-    }, 750);
+    clearInterval(timer); steps = 0; report(false);
+    timer = setInterval(() => {
+      if (step(false)) { steps++; report(false); }
+      else { clearInterval(timer); report(true); }
+    }, spec.ms || 600);
   }
-  function toggle(k) { inp[k] ^= 1; run(); }
-  document.getElementById('a1A').onclick = () => toggle(0);
-  document.getElementById('a1B').onclick = () => toggle(1);
-  let P = null;
+  settle(); report(true);
+  const api = {
+    get state() { return s; },
+    toggle(i) { s[i] ^= 1; s = [...s]; run(); },
+    drum() { clearInterval(timer); step(true); steps = 1; report(false); run2(); },
+  };
+  function run2() {   // after the drum: keep counting steps from 1
+    timer = setInterval(() => { if (step(false)) { steps++; report(false); } else { clearInterval(timer); report(true); } }, spec.ms || 600);
+  }
   cv.addEventListener('click', e => {
     if (!P) return;
     const r = cv.getBoundingClientRect();
-    for (const k of [0, 1]) {
-      const [x, y] = P.at(A.net.pos[A.inputs[k]]);
-      if (Math.hypot(e.clientX - r.left - x, e.clientY - r.top - y) < 40) toggle(k);
-    }
+    let best = -1, bd = 44;
+    F.forEach((f, i) => { if (f.card !== 'in') return; const [x, y] = P.at([f.x, f.y]); const d = Math.hypot(e.clientX - r.left - x, e.clientY - r.top - y); if (d < bd) { bd = d; best = i; } });
+    if (best >= 0) api.toggle(best);
   });
-  btns(); readout(s, null);
+  const V = bounds(F.map(f => [f.x, f.y]));
   animate(cv, tm => {
     const { ctx, w, h } = fit(cv);
     ctx.clearRect(0, 0, w, h);
-    P = project(V, { x: w * 0.16, y: h * 0.14, w: w * 0.68, h: h * 0.7 });
-    drawWires(ctx, A.net, P, s, 0.35);
-    const r = Math.max(5, Math.min(14, w / 60));
-    ctx.font = `500 ${Math.max(11, r * 0.95)}px ${css('--mono')}`;
-    ctx.textAlign = 'center';
-    for (let i = 0; i < A.net.kind.length; i++) {
-      const [x, y] = P.at(A.net.pos[i]);
-      fire(ctx, x, y, r, s[i], noise(i, tm));
-      if (labels[i]) {
-        ctx.fillStyle = css('--smoke');
-        const below = labels[i] === 'ones' || labels[i] === 'twos';
-        ctx.fillText(labels[i], x, below ? y + r * 3 : y - r * 2.4);
+    const pad = spec.pad || [0.12, 0.2];
+    P = project(V, { x: w * pad[0], y: h * pad[1], w: w * (1 - 2 * pad[0]), h: h * (1 - 2 * pad[1]) });
+    const r = Math.max(5, Math.min(spec.rmax || 14, w / (spec.rdiv || 55)));
+    ctx.lineWidth = 1;
+    F.forEach((f, i) => {
+      if (f.card === 'in') return;
+      const [x, y] = P.at([f.x, f.y]);
+      for (const sI of [...new Set(f.src)]) {
+        const [sx, sy] = P.at([F[sI].x, F[sI].y]);
+        ctx.setLineDash(f.card === 'mem' ? [3, 4] : []);
+        ctx.strokeStyle = s[sI] ? 'rgba(255,176,90,0.6)' : 'rgba(150,140,170,0.32)';
+        ctx.beginPath();
+        if (f.card === 'mem') { const bend = w * 0.06; ctx.moveTo(sx, sy); ctx.bezierCurveTo(sx + bend, sy, x + bend, y, x, y); }
+        else { ctx.moveTo(sx, sy); ctx.lineTo(x, y); }
+        ctx.stroke();
       }
-    }
+    });
+    ctx.setLineDash([]);
+    ctx.textAlign = 'center';
+    F.forEach((f, i) => {
+      const [x, y] = P.at([f.x, f.y]);
+      fire(ctx, x, y, r, s[i], noise(i, tm));
+      if (f.label) { ctx.fillStyle = css('--parchment'); ctx.font = `500 ${Math.max(11, r)}px ${css('--mono')}`; ctx.fillText(f.label, x, f.below ? y + r * 3.1 : y - r * 2.4); }
+      if (f.sub) { ctx.fillStyle = css('--smoke'); ctx.font = `${Math.max(10, r * 0.8)}px ${css('--mono')}`; ctx.fillText(f.sub, x, y + r * (f.below ? 4.6 : 2.9)); }
+    });
+    if (spec.extra) spec.extra(ctx, P, r, w, h);
+  });
+  return api;
+}
+const fromNet = (net, extra) => net.kind.split('').map((k, i) => Object.assign({ card: { i: 'in', n: 'nand', m: 'mem' }[k], src: net.src[i], x: net.pos[i][0], y: net.pos[i][1], init: net.init[i] }, (extra || {})[i] || {}));
+const stepText = (steps, done) => done ? (steps ? `settled after ${steps} keeper step${steps > 1 ? 's' : ''}, about ${steps * S.keeper_s} s` : 'settled') : `keeper step ${steps} · ${steps * S.keeper_s} s`;
+
+// Level 1
+Mini($('m1'), {
+  fires: [{ card: 'in', x: 0, y: 0, init: 1, label: 'Is the fleet coming?' }], pad: [0.3, 0.42], rmax: 22, rdiv: 30,
+  onChange: s => $('m1r').innerHTML = s[0] ? 'Lit: <b>yes</b>, written <span class="mono">1</span>' : 'Dark: <b>no</b>, written <span class="mono">0</span>',
+});
+// Level 2
+Mini($('m2'), {
+  fires: [8, 4, 2, 1].map((v, k) => ({ card: 'in', x: k, y: 0, label: String(v), init: [1, 0, 1, 1][k] })), pad: [0.25, 0.4], rmax: 20, rdiv: 34,
+  onChange: s => {
+    const vals = [8, 4, 2, 1], on = vals.filter((v, k) => s[k]);
+    const total = on.reduce((a, b) => a + b, 0);
+    $('m2r').innerHTML = `<span class="mono">${s.join('')}</span> &nbsp;=&nbsp; ${on.length ? on.join(' + ') : '0'} = <b>${total}</b>${total === 13 ? ' &nbsp;✓ that is 13' : total === 15 ? ' &nbsp;✓ all lit: 15' : ''}`;
+  },
+});
+// Level 3
+Mini($('m3'), {
+  fires: [{ card: 'in', x: 0, y: 0, label: 'first', init: 0 }, ...[1, 2, 3, 4, 5].map(k => ({ card: 'copy', src: [k - 1], x: k, y: 0, sub: 'COPY' }))],
+  pad: [0.07, 0.4], rmax: 15, rdiv: 50, ms: 700,
+  onChange: (s, steps, done) => $('m3s').textContent = done ? (steps ? `the last fire matches after ${steps} keepers, ${steps * S.keeper_s} s` : 'tap the first fire') : `keeper ${steps} has copied · ${steps * S.keeper_s} s`,
+});
+// Level 4
+(function () {
+  const rows = { not: [[0, 1], [1, 0]], and: [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]], or: [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]] };
+  let card = 'and', m = null, cur = [1, 1, 1];
+  const word = v => v ? 'lit' : 'dark';
+  function table(s) {
+    const r = rows[card], two = card !== 'not';
+    $('m4t').innerHTML = `<tr><th>A</th>${two ? '<th>B</th>' : ''}<th>Keeper</th></tr>` + r.map(row => {
+      const now = two ? row[0] === s[0] && row[1] === s[1] : row[0] === s[0];
+      return `<tr class="${now ? 'now' : ''}"><td>${word(row[0])}</td>${two ? `<td>${word(row[1])}</td>` : ''}<td>${word(row[row.length - 1])}</td></tr>`;
+    }).join('');
+  }
+  function build() {
+    const cv = $('m4'), fresh = cv.cloneNode(true);
+    cv.replaceWith(fresh);
+    const two = card !== 'not';
+    const fires = [{ card: 'in', x: 0, y: 0, label: 'A', init: cur[0] }];
+    if (two) fires.push({ card: 'in', x: 2, y: 0, label: 'B', init: cur[1] });
+    fires.push({ card, src: two ? [0, 1] : [0], x: two ? 1 : 0, y: 1.2, label: 'keeper', below: true, sub: card.toUpperCase() });
+    m = Mini(fresh, { fires, pad: [0.22, 0.2], rmax: 16, rdiv: 30, onChange: s => { cur = [s[0], two ? s[1] : cur[1]]; table(two ? s : [s[0]]); } });
+  }
+  document.querySelectorAll('#m4card button').forEach(b => b.onclick = () => {
+    card = b.dataset.c;
+    document.querySelectorAll('#m4card button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    build();
+  });
+  build();
+})();
+// Level 5: NOT, AND, OR from NAND keepers only
+(function () {
+  const f = [
+    { card: 'in', x: 2.2, y: 0, label: 'A', init: 1 }, { card: 'in', x: 5.2, y: 0, label: 'B', init: 0 },
+    { card: 'nand', src: [0, 0], x: 0.4, y: 1.7, label: 'NOT A', below: true, sub: '1 keeper' },              // 2
+    { card: 'nand', src: [0, 1], x: 3.6, y: 1.1 }, { card: 'nand', src: [3, 3], x: 3.6, y: 2.3, label: 'A AND B', below: true, sub: '2 keepers' },  // 3, 4
+    { card: 'nand', src: [0, 0], x: 6.4, y: 1.1 }, { card: 'nand', src: [1, 1], x: 7.9, y: 1.1 },            // 5, 6
+    { card: 'nand', src: [5, 6], x: 7.15, y: 2.3, label: 'A OR B', below: true, sub: '3 keepers' },          // 7
+  ];
+  Mini($('m5'), {
+    fires: f, pad: [0.08, 0.14], rmax: 14, rdiv: 60,
+    onChange: (s, steps, done) => $('m5s').textContent = `${stepText(steps, done)} · NOT A is ${s[2] ? 'lit' : 'dark'}, A AND B is ${s[4] ? 'lit' : 'dark'}, A OR B is ${s[7] ? 'lit' : 'dark'}`,
   });
 })();
-
-// ---------- ACT II ----------
+// Level 6: the checked half adder
 (function () {
-  const D = DATA.act2, F = new FireField(D.net), cv = document.getElementById('c2'), V = fieldView(D.net);
-  let a = 11, b = 6, st = null, t = 0;  // st: field state
+  const A = DATA.act1, ex = { [A.inputs[0]]: { label: 'A' }, [A.inputs[1]]: { label: 'B' }, [A.outputs[0]]: { label: 'ones', below: true }, [A.outputs[1]]: { label: 'twos', below: true } };
+  const fires = fromNet(A.net, ex);
+  fires[A.inputs[0]].init = 1; fires[A.inputs[1]].init = 1;
+  Mini($('m6'), {
+    fires, pad: [0.16, 0.14], rdiv: 60,
+    onChange: (s, steps, done) => {
+      const a = s[A.inputs[0]], b = s[A.inputs[1]], tw = s[A.outputs[1]], on = s[A.outputs[0]];
+      $('m6r').innerHTML = `${a} + ${b} = <span class="mono">${tw}${on}</span> in binary = ${2 * tw + on}`;
+      $('m6s').textContent = stepText(steps, done);
+    },
+  });
+})();
+// Level 7: one column with a carry
+(function () {
+  const D = DATA.full, ex = { [D.inputs[0]]: { label: 'A' }, [D.inputs[1]]: { label: 'B' }, [D.inputs[2]]: { label: 'carry in' }, [D.outputs[0]]: { label: 'sum', below: true }, [D.outputs[1]]: { label: 'carry out', below: true } };
+  const fires = fromNet(D.net, ex);
+  [1, 1, 1].forEach((v, k) => fires[D.inputs[k]].init = [1, 1, 0][k]);
+  Mini($('m7'), {
+    fires, pad: [0.2, 0.1], rdiv: 64,
+    onChange: (s, steps, done) => {
+      const [a, b, c] = D.inputs.map(f => s[f]), sum = s[D.outputs[0]], co = s[D.outputs[1]];
+      $('m7r').innerHTML = `${a} + ${b} + ${c} = <span class="mono">${co}${sum}</span> = ${2 * co + sum} &nbsp;<span class="note">(write ${sum}, carry ${co})</span>`;
+      $('m7s').textContent = stepText(steps, done);
+    },
+  });
+})();
+// Level 9: the counter
+(function () {
+  const D = DATA.counter, labels = ['1s', '2s', '4s'];
+  const ex = {}; D.mem.forEach((f, i) => ex[f] = { label: labels[i] });
+  const fires = fromNet(D.net, ex);
+  let beats = 0;
+  const m = Mini($('m9'), {
+    fires, pad: [0.18, 0.18], rdiv: 64, ms: 380,
+    onChange: (s, steps, done) => {
+      const v = D.mem.reduce((acc, f, i) => acc + (s[f] << i), 0);
+      $('m9r').innerHTML = `memory: <span class="mono">${D.mem.slice().reverse().map(f => s[f]).join('')}</span> = ${v}`;
+      $('m9s').textContent = beats ? `beat ${beats} · ${done ? 'settled, ready for the next beat' : 'the keepers are working out the next number'}` : 'the memory starts at 0';
+    },
+  });
+  $('m9go').onclick = () => { beats++; m.drum(); };
+})();
+
+// ---------- Level 8: the ridges ----------
+(function () {
+  const D = DATA.act2, F = new FireField(D.net), cv = $('c2'), V = bounds(D.net.pos);
+  let a = 11, b = 6, st = null;
   const HOP = S.hop_s, KS = S.keeper_s;
-  // geometry in fractions of the canvas
   const north = [[0.08, 0.16], [0.17, 0.3], [0.255, 0.42]];
   const south = [[0.06, 0.82], [0.155, 0.76], [0.245, 0.68]];
-  const up = [[0.72, 0.58], [0.81, 0.4], [0.9, 0.2]];
+  const upR = [[0.72, 0.58], [0.81, 0.4], [0.9, 0.2]];
   const box = { x: 0.33, y: 0.3, w: 0.32, h: 0.6 };
-  let show = null;   // what each station is showing: {north:[v|null x3], south:[...], up:[...]} plus the field state
+  let show = null;
   function settledState() {
     const v = {}; D.A.forEach((f, i) => v[f] = (a >> i) & 1); D.B.forEach((f, i) => v[f] = (b >> i) & 1);
     let s = F.start(v), n = 0;
@@ -422,31 +720,25 @@ function drawWires(ctx, net, P, state, alpha) {
     return [s, n];
   }
   const sumOf = s => D.outputs.reduce((acc, f, i) => acc + (s[f] << i), 0);
-  function rest() {
-    const [s, n] = settledState(); st = s;
-    show = { north: [a, a, a], south: [b, b, b], up: [a + b, a + b, a + b] };
-    readout(n, true);
-  }
+  function rest() { const [s, n] = settledState(); st = s; show = { north: [a, a, a], south: [b, b, b], up: [a + b, a + b, a + b] }; readout(n, true); }
   function readout(n, done) {
-    const sum = sumOf(st);
-    const bin = (v, k) => v.toString(2).padStart(k, '0');
-    document.getElementById('a2r').innerHTML = `<span class="mono">${bin(a, 4)}</span> + <span class="mono">${bin(b, 4)}</span> = <span class="mono">${bin(sum, 5)}</span> &nbsp;·&nbsp; ${a} + ${b} = ${done ? sum : '…'}`;
-    const total = 3 * HOP + n * KS + 3 * HOP;
-    document.getElementById('a2note').textContent = `Timing: 3 hops down each ridge (${HOP} s each, with lids), ${n} keeper steps in the field (${n * KS} s) for these two numbers, 3 hops up to the mill. The mill knows the total ${fmtT(total)} after the villages light their counts. The slowest pair of numbers needs ${S.circuits[1].worst_steps} keeper steps, because the carry passes from bit to bit.`;
+    const sum = sumOf(st), bin = (v, k) => v.toString(2).padStart(k, '0');
+    $('a2r').innerHTML = `<span class="mono">${bin(a, 4)}</span> + <span class="mono">${bin(b, 4)}</span> = <span class="mono">${bin(sum, 5)}</span> &nbsp;·&nbsp; ${a} + ${b} = ${done ? sum : '…'}`;
+    $('a2note').textContent = `Timing: 3 hops down each ridge (${HOP} s each), ${n} keeper steps in the field (${n * KS} s) for these two numbers, then 3 hops up to the mill: the mill knows the total ${fmtT(3 * HOP + n * KS + 3 * HOP)} after the villages light their counts. The slowest pair of numbers needs ${S.circuits.find(c => c.name === '4-bit adder').worst_steps} keeper steps, because a carry can pass through every column.`;
   }
   let timer = null;
+  const status = txt => $('a2s').textContent = txt;
   function send() {
     clearTimeout(timer);
-    const v = {}; D.A.forEach((f, i) => v[f] = 0); D.B.forEach((f, i) => v[f] = 0);
-    st = F.start(v); st = F.step(st);  // a dark, quiet field
-    for (let i = 0; i < 6; i++) st = F.step(st);
+    const v = {}; D.A.forEach(f => v[f] = 0); D.B.forEach(f => v[f] = 0);
+    st = F.start(v); for (let i = 0; i < 12; i++) st = F.step(st);
     show = { north: [a, null, null], south: [b, null, null], up: [null, null, null] };
-    const events = [];
-    let T = 0;
-    events.push([600, () => { show.north[1] = a; show.south[1] = b; T = HOP; }]);
-    events.push([600, () => { show.north[2] = a; show.south[2] = b; T = 2 * HOP; }]);
-    events.push([600, () => { D.A.forEach((f, i) => st[f] = (a >> i) & 1); D.B.forEach((f, i) => st[f] = (b >> i) & 1); T = 3 * HOP; }]);
-    let n = 0;
+    let T = 0, n = 0;
+    const events = [
+      () => { show.north[1] = a; show.south[1] = b; T = HOP; status(`relay 1 on each ridge · ${fmtT(T)}`); },
+      () => { show.north[2] = a; show.south[2] = b; T = 2 * HOP; status(`relay 2 on each ridge · ${fmtT(T)}`); },
+      () => { D.A.forEach((f, i) => st[f] = (a >> i) & 1); D.B.forEach((f, i) => st[f] = (b >> i) & 1); T = 3 * HOP; status(`the field's first keepers copy the last relays · ${fmtT(T)}`); },
+    ];
     function fieldStep() {
       const m = F.step(st);
       if (m.every((x, i) => x === st[i])) { climb(); return; }
@@ -464,76 +756,106 @@ function drawWires(ctx, net, P, state, alpha) {
     }
     let e = 0;
     status('the villages light their counts · 0 s');
-    (function next() {
-      if (e < events.length) { const [ms, fn] = events[e++]; timer = setTimeout(() => { fn(); status(e < 3 ? `relay ${e} on each ridge · ${fmtT(T)}` : `the field's top row copies the last relays · ${fmtT(T)}`); next(); }, ms); }
-      else timer = setTimeout(fieldStep, 450);
-    })();
     readout(0, false);
+    (function next() { if (e < events.length) timer = setTimeout(() => { events[e++](); next(); }, 650); else timer = setTimeout(fieldStep, 450); })();
   }
-  const status = txt => document.getElementById('a2s').textContent = txt;
-  const setA = v => { a = Math.max(0, Math.min(15, v)); document.getElementById('a2A').value = a; document.getElementById('a2A').textContent = a; rest(); status(''); };
-  const setB = v => { b = Math.max(0, Math.min(15, v)); document.getElementById('a2B').value = b; document.getElementById('a2B').textContent = b; rest(); status(''); };
-  document.getElementById('a2Am').onclick = () => { clearTimeout(timer); setA(a - 1); };
-  document.getElementById('a2Ap').onclick = () => { clearTimeout(timer); setA(a + 1); };
-  document.getElementById('a2Bm').onclick = () => { clearTimeout(timer); setB(b - 1); };
-  document.getElementById('a2Bp').onclick = () => { clearTimeout(timer); setB(b + 1); };
-  document.getElementById('a2go').onclick = send;
+  const setA = v => { clearTimeout(timer); a = Math.max(0, Math.min(15, v)); $('a2A').textContent = a; rest(); status(''); };
+  const setB = v => { clearTimeout(timer); b = Math.max(0, Math.min(15, v)); $('a2B').textContent = b; rest(); status(''); };
+  $('a2Am').onclick = () => setA(a - 1); $('a2Ap').onclick = () => setA(a + 1);
+  $('a2Bm').onclick = () => setB(b - 1); $('a2Bp').onclick = () => setB(b + 1);
+  $('a2go').onclick = send;
   rest();
-
   function ridge(ctx, w, h, pts, fill) {
     ctx.beginPath(); ctx.moveTo(pts[0][0] * w, h);
     for (const [x, y] of pts) ctx.lineTo(x * w, y * h);
-    ctx.lineTo(pts[pts.length - 1][0] * w, h); ctx.closePath();
-    ctx.fillStyle = fill; ctx.fill();
+    ctx.lineTo(pts[pts.length - 1][0] * w, h); ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
   }
   function station(ctx, x, y, r, val, nbits, tm, seed) {
-    // nbits fires stacked, highest bit on top
     const gap = r * 2.3;
-    for (let k = 0; k < nbits; k++) {
-      const bit = val == null ? 0 : (val >> (nbits - 1 - k)) & 1;
-      fire(ctx, x, y - (nbits - 1 - k) * gap, r, bit, noise(seed + k, tm));
-    }
+    for (let k = 0; k < nbits; k++) fire(ctx, x, y - (nbits - 1 - k) * gap, r, val == null ? 0 : (val >> (nbits - 1 - k)) & 1, noise(seed + k, tm));
   }
   animate(cv, tm => {
     const { ctx, w, h } = fit(cv);
     ctx.clearRect(0, 0, w, h);
-    // hills, far to near
     ridge(ctx, w, h, [[0, 0.24], [0.04, 0.12], [0.09, 0.1], [0.15, 0.22], [0.24, 0.4], [0.33, 0.52], [0.45, 0.56], [0.6, 0.5], [0.72, 0.42], [0.86, 0.14], [0.92, 0.1], [0.97, 0.16], [1, 0.22]], '#141830');
     ridge(ctx, w, h, [[0, 0.78], [0.05, 0.74], [0.12, 0.68], [0.22, 0.62], [0.3, 0.78], [0.5, 0.9], [0.7, 0.82], [0.78, 0.66], [0.86, 0.7], [1, 0.8]], '#1b2038');
     const r = Math.max(2.6, Math.min(7, w / 150));
-    // sightlines: last relay -> field inputs, field outputs -> first relay up
     const P = project(V, { x: box.x * w, y: box.y * h, w: box.w * w, h: box.h * h });
-    drawWires(ctx, D.net, P, st, 0.22);
-    ctx.setLineDash([3, 5]); ctx.lineWidth = 1;
+    ctx.lineWidth = 1;
+    for (let i = 0; i < D.net.kind.length; i++) {
+      if (D.net.kind[i] !== 'n') continue;
+      const [x, y] = P.at(D.net.pos[i]);
+      for (const sI of [...new Set(D.net.src[i])]) { const [sx, sy] = P.at(D.net.pos[sI]); ctx.strokeStyle = st[sI] ? 'rgba(255,176,90,0.35)' : 'rgba(150,140,170,0.22)'; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(x, y); ctx.stroke(); }
+    }
+    ctx.setLineDash([3, 5]);
     const lineTo = (x1, y1, x2, y2, on) => { ctx.strokeStyle = on ? 'rgba(255,176,90,0.45)' : 'rgba(150,140,170,0.25)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
     for (const [chain, val] of [[north, show.north], [south, show.south]]) for (let k = 0; k + 1 < chain.length; k++) lineTo(chain[k][0] * w, chain[k][1] * h, chain[k + 1][0] * w, chain[k + 1][1] * h, val[k + 1] != null);
-    const nl = north[2], sl = south[2];
-    D.A.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(nl[0] * w, nl[1] * h, x, y, st[f]); });
-    D.B.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(sl[0] * w, sl[1] * h, x, y, st[f]); });
-    D.outputs.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(x, y, up[0][0] * w, up[0][1] * h, show.up[0] != null); });
-    for (let k = 0; k + 1 < up.length; k++) lineTo(up[k][0] * w, up[k][1] * h, up[k + 1][0] * w, up[k + 1][1] * h, show.up[k + 1] != null);
+    D.A.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(north[2][0] * w, north[2][1] * h, x, y, st[f]); });
+    D.B.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(south[2][0] * w, south[2][1] * h, x, y, st[f]); });
+    D.outputs.forEach(f => { const [x, y] = P.at(D.net.pos[f]); lineTo(x, y, upR[0][0] * w, upR[0][1] * h, show.up[0] != null); });
+    for (let k = 0; k + 1 < upR.length; k++) lineTo(upR[k][0] * w, upR[k][1] * h, upR[k + 1][0] * w, upR[k + 1][1] * h, show.up[k + 1] != null);
     ctx.setLineDash([]);
-    // field fires
     for (let i = 0; i < D.net.kind.length; i++) { const [x, y] = P.at(D.net.pos[i]); fire(ctx, x, y, r, st[i], noise(i, tm)); }
-    // relay stations
     north.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.north[k], 4, tm, 100 + k * 7));
     south.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.south[k], 4, tm, 200 + k * 7));
-    up.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.up[k], 5, tm, 300 + k * 7));
-    ctx.font = `${Math.max(11, w / 70)}px ${css('--body')}`; ctx.fillStyle = css('--smoke'); ctx.textAlign = 'center';
-    ctx.textAlign = 'left';
-    ctx.fillText(`North village · ${a}`, north[0][0] * w - 20, north[0][1] * h - r * 9);
+    upR.forEach((p, k) => station(ctx, p[0] * w, p[1] * h, r, show.up[k], 5, tm, 300 + k * 7));
+    ctx.font = `${Math.max(11, w / 70)}px ${css('--body')}`; ctx.fillStyle = css('--smoke');
+    ctx.textAlign = 'left'; ctx.fillText(`North village · ${a}`, north[0][0] * w - 20, north[0][1] * h - r * 9);
     ctx.textAlign = 'center';
     ctx.fillText(`South village · ${b}`, south[0][0] * w + 30, south[0][1] * h + r * 4);
-    ctx.fillText(`Mill · ${show.up[2] == null ? '?' : show.up[2]}`, up[2][0] * w - 10, up[2][1] * h + r * 4);
+    ctx.fillText(`Mill · ${show.up[2] == null ? '?' : show.up[2]}`, upR[2][0] * w - 10, upR[2][1] * h + r * 4);
     ctx.fillText('the adding field', (box.x + box.w / 2) * w, (box.y + box.h) * h + r * 4);
   });
 })();
 
-// ---------- ACT III ----------
+// ---------- Level 10: the three moves ----------
+const SBOX = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2];
+function fireRow(el, bits, onTap, cls) {
+  el.innerHTML = bits.map((b, i) => onTap ? `<button type="button" class="f ${b ? 'lit' : ''} ${cls ? cls(i) : ''}" aria-label="fire ${i + 1}: ${b ? 'lit' : 'dark'}" data-i="${i}"></button>` : `<span class="f ${b ? 'lit' : ''} ${cls ? cls(i) : ''}" role="img" aria-label="${b ? 'lit' : 'dark'}"></span>`).join('');
+  if (onTap) el.querySelectorAll('button').forEach(b => b.onclick = () => onTap(+b.dataset.i));
+}
+(function () {
+  const msg = [1, 0, 1, 1, 0, 0, 1, 0], key = [0, 1, 1, 0, 1, 0, 0, 1];
+  function draw() {
+    const mixed = msg.map((v, i) => v ^ key[i]);
+    fireRow($('x1m'), msg, i => { msg[i] ^= 1; draw(); });
+    fireRow($('x1k'), key, i => { key[i] ^= 1; draw(); });
+    fireRow($('x1o'), mixed, null, i => key[i] ? 'changed' : '');
+    fireRow($('x1b'), mixed.map((v, i) => v ^ key[i]));
+  }
+  draw();
+  let x = [0, 1, 1, 0];   // highest bit first
+  const hex = v => v.toString(16);
+  function draw2() {
+    const v = x.reduce((a, b) => a * 2 + b, 0), o = SBOX[v];
+    fireRow($('x2i'), x, i => { x[i] ^= 1; draw2(); });
+    fireRow($('x2o'), [3, 2, 1, 0].map(k => (o >> k) & 1));
+    $('x2iv').textContent = `${x.join('')} (${hex(v)})`;
+    $('x2ov').textContent = `${o.toString(2).padStart(4, '0')} (${hex(o)})`;
+    $('x2t').innerHTML = SBOX.map((s, i) => `<span class="${i === v ? 'now' : ''}">${i.toString(2).padStart(4, '0')} → ${s.toString(2).padStart(4, '0')}</span>`).join('');
+  }
+  draw2();
+  const cv = $('x3');
+  const P = i => i === 63 ? 63 : (i * 16) % 63;
+  animate(cv, tm => {
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const X = i => 12 + (w - 24) * (63 - i) / 63, top = 14, bot = h - 14;
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 64; i++) {
+      ctx.strokeStyle = (i >> 2) % 2 ? 'rgba(255,176,90,0.4)' : 'rgba(170,160,190,0.35)';
+      ctx.beginPath(); ctx.moveTo(X(i), top); ctx.bezierCurveTo(X(i), h / 2, X(P(i)), h / 2, X(P(i)), bot); ctx.stroke();
+    }
+    const r = Math.max(1.6, Math.min(4, w / 300));
+    for (let i = 0; i < 64; i++) { fire(ctx, X(i), top, r, (i >> 2) % 2, noise(i, tm)); fire(ctx, X(P(i)), bot, r, (i >> 2) % 2, noise(i + 64, tm)); }
+  });
+})();
+
+// ---------- Level 11: the cipher field ----------
 const cipher = (function () {
-  const C = DATA.act3, F = new FireField(C.net), cv = document.getElementById('c3'), V = fieldView(C.net);
+  const C = DATA.act3, F = new FireField(C.net), cv = $('c3'), V = bounds(C.net.pos);
   const NONCE_BASE = BigInt(S.cipher.sample.nonce_base);
-  let st = null, beat = 0, stepInBeat = 0, speed = 40, job = null, label = '';
+  let st = null, beat = 0, stepInBeat = 0, speed = 40, job = null;
   const big2bits = (v, n) => Array.from({ length: n }, (_, i) => Number((v >> BigInt(i)) & 1n));
   const bits2big = (s, fires) => fires.reduce((acc, f, i) => acc | (BigInt(s[f]) << BigInt(i)), 0n);
   function startState(msgBig, nonceBig, keyBig) {
@@ -544,69 +866,41 @@ const cipher = (function () {
     C.round.forEach((f, i) => v[f] = i === 0 ? 1 : 0);
     return F.start(v);
   }
-  const outDepth = F.maxDepth(C.outputs);
-  const totalSteps = 31 * F.beatSteps + outDepth;
+  const outDepth = F.maxDepth(C.outputs), totalSteps = 31 * F.beatSteps + outDepth;
   function runInstant(msgBig, nonceBig, keyBig) {
     let s = startState(msgBig, nonceBig, keyBig);
     for (let b = 0; b < 31; b++) { for (let k = 1; k < F.beatSteps; k++) s = F.step(s); s = F.step(s, true); }
     for (let k = 0; k < outDepth; k++) s = F.step(s);
     return [bits2big(s, C.outputs), s];
   }
-  // the published test vector: key 0, block 0 -> 96db702a2e6900af (message 0, so the output is the cipher itself)
-  const [tv] = runInstant(0n, 0n, 0n);
-  const want = BigInt('0x' + S.cipher.test_vectors[0][2]);
-  document.getElementById('a3check').innerHTML = `Check, run on this page: key 0, block 0 → <span class="${tv === want ? 'ok' : ''}">${tv.toString(16).padStart(16, '0')}</span> ${tv === want ? '✓ matches the published PRESENT-128 test vector' : '✗ does not match ' + S.cipher.test_vectors[0][2]}`;
-
-  // jobs: a list of blocks to run through the field, animated one keeper step at a time
-  function play(blocks, keyBig, onBlock, onDone, title) {
-    job = { blocks, keyBig, i: 0, onBlock, onDone, acc: 0, last: performance.now(), title };
-    loadBlock();
-    document.getElementById('a3skip').disabled = false;
-  }
-  function loadBlock() {
-    const b = job.blocks[job.i];
-    st = startState(b, NONCE_BASE + BigInt(job.i), job.keyBig);
-    beat = 0; stepInBeat = 0; job.steps = 0;
-  }
-  function advance() {   // one keeper step
-    if (beat < 31) {
-      const drum = stepInBeat === F.beatSteps - 1;
-      st = F.step(st, drum);
-      stepInBeat++; job.steps++;
-      if (drum) { beat++; stepInBeat = 0; }
-    } else {
-      st = F.step(st); job.steps++;
-    }
+  const [tv] = runInstant(0n, 0n, 0n), want = BigInt('0x' + S.cipher.test_vectors[0][2]);
+  $('a3check').innerHTML = `Check, run on this page: key all dark, block 0 → <span class="${tv === want ? 'ok' : ''}">${tv.toString(16).padStart(16, '0')}</span> ${tv === want ? '✓ matches the published PRESENT-128 test vector' : '✗ does not match ' + S.cipher.test_vectors[0][2]}`;
+  function play(blocks, keyBig, onBlock, onDone, title) { job = { blocks, keyBig, i: 0, onBlock, onDone, acc: 0, last: performance.now(), title }; loadBlock(); $('a3skip').disabled = false; }
+  function loadBlock() { st = startState(job.blocks[job.i], NONCE_BASE + BigInt(job.i), job.keyBig); beat = 0; stepInBeat = 0; job.steps = 0; }
+  function advance() {
+    if (beat < 31) { const drum = stepInBeat === F.beatSteps - 1; st = F.step(st, drum); stepInBeat++; if (drum) { beat++; stepInBeat = 0; } }
+    else st = F.step(st);
+    job.steps++;
     if (job.steps >= totalSteps) {
-      const out = bits2big(st, C.outputs);
-      job.onBlock(job.i, out);
-      job.i++;
+      job.onBlock(job.i, bits2big(st, C.outputs)); job.i++;
       if (job.i < job.blocks.length) loadBlock();
-      else { const fin = job.onDone; job = null; document.getElementById('a3skip').disabled = true; fin(); }
+      else { const fin = job.onDone; job = null; $('a3skip').disabled = true; fin(); }
       return false;
     }
     return true;
   }
-  function skip() {
-    if (!job) return;
-    while (job) advance();
-  }
   function status() {
-    const el = document.getElementById('a3s');
     if (!job) return;
-    const tSim = job.steps * S.keeper_s;
-    el.textContent = `${job.title} · block ${job.i + 1} of ${job.blocks.length} · ${beat < 31 ? `drum beat ${beat + 1} of 31` : 'reading the output row'} · ${fmtT(tSim)} of ${fmtT(totalSteps * S.keeper_s)}`;
-    const pips = document.getElementById('a3pips');
+    $('a3s').textContent = `${job.title} · block ${job.i + 1} of ${job.blocks.length} · ${beat < 31 ? `drum beat ${beat + 1} of 31` : 'reading the output row'} · ${fmtT(job.steps * S.keeper_s)} of ${fmtT(totalSteps * S.keeper_s)}`;
+    const pips = $('a3pips');
     if (pips.children.length !== 31) pips.innerHTML = '<i></i>'.repeat(31);
     [...pips.children].forEach((p, k) => p.classList.toggle('on', k < beat));
   }
-  document.getElementById('a3skip').onclick = skip;
+  $('a3skip').onclick = () => { while (job) advance(); };
   document.querySelectorAll('#a3speed button').forEach(bt => bt.onclick = () => {
     speed = +bt.dataset.x;
     document.querySelectorAll('#a3speed button').forEach(x => x.setAttribute('aria-pressed', x === bt ? 'true' : 'false'));
   });
-
-  // at rest: the sample block, finished
   st = runInstant(0n, NONCE_BASE, 0n)[1];
   let drumFlash = 0;
   animate(cv, tm => {
@@ -620,18 +914,16 @@ const cipher = (function () {
     const { ctx, w, h } = fit(cv);
     ctx.clearRect(0, 0, w, h);
     const P = project(V, { x: 6, y: 8, w: w - 12, h: h - 16 });
-    const r = Math.max(1.1, P.s * 0.27);
-    const since = performance.now() - drumFlash;
+    const r = Math.max(1.1, P.s * 0.27), since = performance.now() - drumFlash;
     for (let i = 0; i < C.net.kind.length; i++) {
       const [x, y] = P.at(C.net.pos[i]);
       fire(ctx, x, y, r, st[i], noise(i, tm));
       if (C.net.kind[i] === 'm' && since < 300) { ctx.strokeStyle = `rgba(255,216,138,${0.5 * (1 - since / 300)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, r * 1.9, 0, 7); ctx.stroke(); }
     }
   });
-  return { play, runInstant, bits2big, NONCE_BASE, F, totalSteps, show: s => { if (!job) st = s; } };
+  return { play, runInstant, NONCE_BASE, totalSteps, show: s => { if (!job) st = s; } };
 })();
 
-// message <-> blocks
 function textBlocks(txt) {
   const clean = [...txt].map(ch => { const c = ch.charCodeAt(0); return c >= 32 && c < 127 ? c : 63; });
   while (clean.length === 0 || clean.length % 8) clean.push(32);
@@ -644,111 +936,93 @@ const hex16 = v => v.toString(16).padStart(16, '0');
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 let secret = null, secretKey = null;
-const keyIn = document.getElementById('a3key');
+const keyIn = $('a3key');
 keyIn.value = S.cipher.sample.key;
 function readKey() {
   const k = keyIn.value.trim().toLowerCase();
-  if (!/^[0-9a-f]{32}$/.test(k)) { document.getElementById('a3s').textContent = 'The key needs exactly 32 hex digits (0–9, a–f).'; return null; }
+  if (!/^[0-9a-f]{32}$/.test(k)) { $('a3s').textContent = 'The key needs exactly 32 hex digits (0–9, a–f).'; return null; }
   return BigInt('0x' + k);
 }
-document.getElementById('a3newkey').onclick = () => {
-  const b = new Uint8Array(16); crypto.getRandomValues(b);
-  keyIn.value = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
-};
-function renderBlocks(el, rows) {
-  el.innerHTML = rows.map(r => `<div class="row"><span class="tag">${r.tag}</span><span>${esc(r.left)}</span><span class="hex">${esc(r.right)}</span></div>`).join('');
-}
+$('a3newkey').onclick = () => { const b = new Uint8Array(16); crypto.getRandomValues(b); keyIn.value = [...b].map(x => x.toString(16).padStart(2, '0')).join(''); avalanche(); };
+function renderBlocks(el, rows) { el.innerHTML = rows.map(r => `<div class="row"><span class="tag">${r.tag}</span><span>${esc(r.left)}</span><span class="hex">${esc(r.right)}</span></div>`).join(''); }
 function scramble(animated) {
   const key = readKey(); if (key == null) return;
-  const msg = document.getElementById('a3msg').value || ' ';
-  const blocks = textBlocks(msg);
+  const blocks = textBlocks($('a3msg').value || ' ');
   const rows = blocks.map((b, i) => ({ tag: `block ${i + 1}`, left: `"${blockText(b)}"`, right: '…' }));
-  renderBlocks(document.getElementById('a3blocks'), rows);
+  renderBlocks($('a3blocks'), rows);
   const outs = [];
   const done = () => {
     secret = outs; secretKey = key;
-    document.getElementById('a3s').textContent = `Done: ${blocks.length * 8} letters in ${blocks.length} runs of the field, ${fmtT(blocks.length * cipher.totalSteps * S.keeper_s)} of keeper time.`;
-    document.getElementById('a4go').disabled = false;
+    $('a3s').textContent = `Done: ${blocks.length * 8} letters in ${blocks.length} runs of the field, ${fmtT(blocks.length * cipher.totalSteps * S.keeper_s)} of keeper time.`;
     chain.load(outs);
   };
-  const onBlock = (i, out) => { outs[i] = out; rows[i].right = hex16(out); renderBlocks(document.getElementById('a3blocks'), rows); };
+  const onBlock = (i, out) => { outs[i] = out; rows[i].right = hex16(out); renderBlocks($('a3blocks'), rows); };
   if (animated) cipher.play(blocks, key, onBlock, done, 'Bletchley Park');
-  else {
-    blocks.forEach((b, i) => { const [out, s] = cipher.runInstant(b, cipher.NONCE_BASE + BigInt(i), key); onBlock(i, out); cipher.show(s); });
-    done();
-  }
+  else { blocks.forEach((b, i) => { const [out, s] = cipher.runInstant(b, cipher.NONCE_BASE + BigInt(i), key); onBlock(i, out); cipher.show(s); }); done(); }
 }
-document.getElementById('a3go').onclick = () => scramble(true);
-document.getElementById('handline').textContent = `scrambling just 8 letters takes about ${S.cipher.by_hand_steps.toLocaleString()} written steps, ${fmtT(S.cipher.by_hand_s_at_1_per_s)} at one perfect step a second, and one slip ruins the block.`;
+$('a3go').onclick = () => scramble(true);
+$('handline').textContent = `scrambling just 8 letters by hand takes about ${S.cipher.by_hand_steps.toLocaleString()} written steps. That is ${fmtT(S.cipher.by_hand_s_at_1_per_s)} at one perfect step a second, and one slip ruins the block.`;
 
-// ---------- the beacon chain to Paris ----------
+// one key fire flipped
+let flipAt = 0;
+function avalanche() {
+  const key = readKey(); if (key == null) return;
+  const a = cipher.runInstant(0n, cipher.NONCE_BASE, key)[0], b = cipher.runInstant(0n, cipher.NONCE_BASE, key ^ (1n << BigInt(flipAt)))[0];
+  const ba = Array.from({ length: 64 }, (_, i) => Number((a >> BigInt(63 - i)) & 1n)), bb = Array.from({ length: 64 }, (_, i) => Number((b >> BigInt(63 - i)) & 1n));
+  const diff = ba.filter((v, i) => v !== bb[i]).length;
+  $('avA').innerHTML = ba.map(v => `<span class="f small ${v ? 'lit' : ''}"></span>`).join('');
+  $('avB').innerHTML = bb.map((v, i) => `<span class="f small ${v ? 'lit' : ''} ${v !== ba[i] ? 'changed' : ''}"></span>`).join('');
+  $('avs').textContent = `key fire ${flipAt + 1} of 128 flipped: ${diff} of the 64 mask fires changed (ringed)`;
+}
+$('avgo').onclick = () => { flipAt = (flipAt * 37 + 53) % 128; avalanche(); };
+keyIn.addEventListener('change', avalanche);
+
+// ---------- Level 12: the beacon chain to Paris ----------
 const chain = (function () {
-  const R = DATA.act3.route, cv = document.getElementById('c4');
-  const HOP = S.hop_s, SYM = S.symbol_s;
+  const R = DATA.act3.route, cv = $('c4'), HOP = S.hop_s, SYM = S.symbol_s;
   let digits = [], t0 = null, simT = 0, playing = false;
   const kmMax = R[R.length - 1].km, hMax = Math.max(...R.map(p => p.h_m));
   function load(blocks) { digits = blocks.flatMap(b => [...hex16(b)].map(c => parseInt(c, 16))); simT = 0; playing = false; status(); }
   const total = () => digits.length * SYM + (R.length - 1) * HOP;
-  // what station k shows at time T: digit d is on at the first station during [d*SYM, d*SYM + 20), k hops later downstream
-  function showing(k, T) {
-    const t = T - k * HOP; if (t < 0) return null;
-    const d = Math.floor(t / SYM); if (d >= digits.length) return null;
-    return (t - d * SYM) < SYM - 10 ? digits[d] : null;
-  }
+  function showing(k, T) { const t = T - k * HOP; if (t < 0) return null; const d = Math.floor(t / SYM); if (d >= digits.length) return null; return (t - d * SYM) < SYM - 10 ? digits[d] : null; }
   function received(T) { const t = T - (R.length - 1) * HOP; if (t < 0) return 0; return Math.min(digits.length, Math.floor((t + 10) / SYM)); }
-  function status() {
-    const el = document.getElementById('a4s');
-    if (!digits.length) { el.textContent = ''; return; }
-    const n = received(simT);
-    el.textContent = `${fmtT(simT)} · Paris has ${n} of ${digits.length} digits · the whole message takes ${fmtT(total())}`;
-  }
-  document.getElementById('a4go').onclick = () => {
-    if (!digits.length) scramble(false);
-    simT = 0; playing = true; t0 = performance.now();
-  };
-  document.getElementById('a4dec').onclick = () => {
+  function status() { $('a4s').textContent = digits.length ? `${fmtT(simT)} · Paris has ${received(simT)} of ${digits.length} digits · the whole message takes ${fmtT(total())}` : ''; }
+  $('a4go').onclick = () => { if (!digits.length) scramble(false); simT = 0; playing = true; t0 = performance.now(); };
+  $('a4dec').onclick = () => {
     if (!secret) scramble(false);
     const key = readKey(); if (key == null) return;
     simT = total(); playing = false; status();
     const rows = secret.map((b, i) => ({ tag: `block ${i + 1}`, left: hex16(b), right: '…' }));
-    renderBlocks(document.getElementById('a4blocks'), rows);
-    document.getElementById('act3').querySelector('canvas#c3').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-    cipher.play(secret, key, (i, out) => { rows[i].right = `"${blockText(out)}"`; renderBlocks(document.getElementById('a4blocks'), rows); },
-      () => { document.getElementById('a3s').textContent = key === secretKey ? 'Paris reads the message: the same field, the same key, the same block numbers.' : 'A different key gives gibberish: the digits mean nothing without the right key.'; }, 'Paris');
+    renderBlocks($('a4blocks'), rows);
+    $('c3').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+    cipher.play(secret, key, (i, out) => { rows[i].right = `"${blockText(out)}"`; renderBlocks($('a4blocks'), rows); },
+      () => { $('a3s').textContent = key === secretKey ? 'Paris reads the message: the same field, the same key, the same mask, mixed in a second time.' : 'A different key gives gibberish: the digits mean nothing without the right key.'; }, 'Paris');
   };
   animate(cv, tm => {
-    if (playing) {
-      simT = (performance.now() - t0) / 1000 * 60;   // one second on screen = one minute on the chain
-      if (simT >= total()) { simT = total(); playing = false; }
-      status();
-    }
+    if (playing) { simT = (performance.now() - t0) / 1000 * 60; if (simT >= total()) { simT = total(); playing = false; } status(); }
     const { ctx, w, h } = fit(cv);
     ctx.clearRect(0, 0, w, h);
     const X = km => 40 + (w - 80) * km / kmMax, base = h * 0.86, Y = m => base - (h * 0.42) * m / hMax;
-    // ground profile through the stations (sea for the Channel hop)
     ctx.beginPath(); ctx.moveTo(X(0), h);
     R.forEach(p => ctx.lineTo(X(p.km), Y(p.h_m)));
     ctx.lineTo(X(kmMax), h); ctx.closePath(); ctx.fillStyle = '#171b2e'; ctx.fill();
-    ctx.fillStyle = 'rgba(70,100,150,0.35)';
-    ctx.fillRect(X(R[3].km - 8), base - 2, X(R[4].km - 30) - X(R[3].km - 8), 4);
     const r = Math.max(2, Math.min(5, w / 190));
     ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(150,140,170,0.3)'; ctx.lineWidth = 1;
     for (let k = 0; k + 1 < R.length; k++) { ctx.beginPath(); ctx.moveTo(X(R[k].km), Y(R[k].h_m) - r * 6); ctx.lineTo(X(R[k + 1].km), Y(R[k + 1].h_m) - r * 6); ctx.stroke(); }
     ctx.setLineDash([]);
     R.forEach((p, k) => {
       const v = digits.length ? showing(k, simT) : null, x = X(p.km), y = Y(p.h_m);
-      fire(ctx, x, y - r * 1.2, r, v != null, noise(500 + k, tm));                      // the "digit showing" fire
+      fire(ctx, x, y - r * 1.2, r, v != null, noise(500 + k, tm));
       for (let j = 0; j < 4; j++) fire(ctx, x, y - r * 3.6 - j * r * 2.3, r, v != null && ((v >> j) & 1), noise(520 + k * 5 + j, tm));
       if (v != null) { ctx.fillStyle = css('--flame'); ctx.font = `500 ${Math.max(10, r * 2.4)}px ${css('--mono')}`; ctx.textAlign = 'center'; ctx.fillText(v.toString(16), x, y - r * 14); }
     });
     ctx.fillStyle = css('--smoke'); ctx.font = `${Math.max(11, w / 75)}px ${css('--body')}`;
     ctx.textAlign = 'left'; ctx.fillText('Bletchley Park', X(0) - 20, h - 6);
     ctx.textAlign = 'right'; ctx.fillText('Paris', X(kmMax) + 20, h - 6);
-    ctx.textAlign = 'center'; ctx.fillText('the Channel', (X(R[3].km) + X(R[4].km)) / 2, base + 16 > h - 18 ? h - 22 : base + 16);
-    const n = digits.length ? received(simT) : 0;
+    ctx.textAlign = 'center'; ctx.fillText('the Channel', (X(R[3].km) + X(R[4].km)) / 2, h - 22);
     if (digits.length) {
       ctx.textAlign = 'left'; ctx.font = `500 ${Math.max(11, w / 70)}px ${css('--mono')}`; ctx.fillStyle = css('--flame');
-      const got = digits.slice(0, n).map(d => d.toString(16)).join('');
+      const got = digits.slice(0, received(simT)).map(d => d.toString(16)).join('');
       ctx.fillText('Paris has: ' + (got.match(/.{1,16}/g) || ['']).join(' '), 40, 20);
     }
   });
@@ -757,27 +1031,30 @@ const chain = (function () {
 
 // ---------- the tables ----------
 (function () {
+  const what = {
+    'half adder (1 + 1)': 'Level 6', 'full adder (one column, with carry)': 'Level 7', '3-bit counter': 'Level 9: counts 0 to 7',
+    '4-bit adder': 'Level 8: counts up to 15', '8-bit adder': 'numbers up to 255', '16-bit adder': 'up to 65,535', '32-bit adder': 'up to about 4 billion',
+    '8-bit x 8-bit multiplier': 'products up to 255 × 255', '16-bit x 16-bit multiplier': '2,400 × 365 rations',
+    '30-bit x 30-bit multiplier': 'numbers up to about a billion', 'PRESENT-128 cipher (8 letters)': `Level 11: 31 drum beats of ${S.cipher.beat_s} s`,
+  };
   const rows = S.circuits.map(c => {
-    const t = c.block_steps ? c.block_steps * S.keeper_s : c.layers * S.keeper_s;
-    const what = {
-      'half adder (1 + 1)': 'Act I', '4-bit adder': 'Act II: counts up to 15', '8-bit adder': 'numbers up to 255',
-      '16-bit adder': 'up to 65,535', '32-bit adder': 'up to about 4 billion',
-      '8-bit x 8-bit multiplier': 'products up to 255 × 255', '16-bit x 16-bit multiplier': '2,400 × 365 rations',
-      '30-bit x 30-bit multiplier': 'numbers up to about a billion', 'PRESENT-128 cipher (8 letters)': 'Act III: 31 drum beats of ' + S.cipher.beat_s + ' s'
-    }[c.name] || '';
-    return `<tr class="${c.name.startsWith('PRESENT') ? 'hl' : ''}"><td>${c.name.replace(' x ', ' × ')}</td><td class="n">${c.fires.toLocaleString()}</td><td class="n">${c.block_steps ? (c.beat_steps - 1) + ' a beat' : c.layers}</td><td class="n">${fmtT(t)}</td><td>${what}</td></tr>`;
+    const drum = c.beat_steps != null;
+    const deep = c.block_steps ? `${c.beat_steps - 1} a beat` : drum ? `${c.beat_steps - 1} a beat` : c.layers;
+    const t = c.block_steps ? c.block_steps * S.keeper_s : drum ? c.beat_steps * S.keeper_s : c.layers * S.keeper_s;
+    return `<tr class="${c.name.startsWith('PRESENT') ? 'hl' : ''}"><td>${c.name.replace(' x ', ' × ')}</td><td class="n">${c.fires.toLocaleString()}</td><td class="n">${deep}</td><td class="n">${fmtT(t)}${drum && !c.block_steps ? ' a beat' : ''}</td><td>${what[c.name] || ''}</td></tr>`;
   });
-  document.getElementById('scale').innerHTML = `<thead><tr><th>Circuit</th><th class="n">Fires</th><th class="n">Keepers deep</th><th class="n">Time</th><th>For</th></tr></thead><tbody>${rows.join('')}</tbody>`;
+  $('scale').innerHTML = `<thead><tr><th>Circuit</th><th class="n">Fires</th><th class="n">Keepers deep</th><th class="n">Time</th><th>Where</th></tr></thead><tbody>${rows.join('')}</tbody>`;
   const c = S.cipher;
-  document.getElementById('versus').innerHTML = `
-    <div><div class="v">${fmtT(c.by_hand_s_at_1_per_s)}</div><p class="note">one clerk, 8 letters, ${c.by_hand_steps.toLocaleString()} steps at a perfect step a second. In practice, with checking, most of a day.</p></div>
+  $('versus').innerHTML = `
+    <div><div class="v">${fmtT(c.by_hand_s_at_1_per_s)}</div><p class="note">one clerk, 8 letters: ${c.by_hand_steps.toLocaleString()} steps at a perfect step a second. In practice, with checking, most of a day.</p></div>
     <div><div class="v">${fmtT(c.block_s)}</div><p class="note">the field, 8 letters: ${c.fires.toLocaleString()} keepers, 31 beats of ${c.beat_s} s. Two fields side by side keep up with the chain.</p></div>
     <div><div class="v">${fmtT(c.wire_block_s)}</div><p class="note">the beacon chain, 8 letters (16 hex digits at ${S.symbol_s} s). The first digit reaches Paris, ${c.hops} hops and ${Math.round(c.route_km)} km away, ${c.latency_s} s after it leaves.</p></div>`;
 })();
 
-// at rest: the sample message scrambled, and its digits part-way along the chain
+// at rest: the sample message scrambled, its digits part-way along the chain, and the key test
 scramble(false);
 chain.peek(S.symbol_s * 5 + 12);
-document.getElementById('a3s').textContent = `The field at the end of a run: the last block of "${document.getElementById('a3msg').value}", scrambled. Press Scramble to watch it work.`;
+avalanche();
+$('a3s').textContent = `The field at the end of a run: the last block of "${$('a3msg').value}", scrambled. Press Scramble to watch it work.`;
 requestAnimationFrame(frame);
 </script>

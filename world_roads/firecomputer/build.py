@@ -12,9 +12,9 @@ import math
 import os
 import random
 
-from circuits import (adder, bits, half_adder, multiplier, present_ctr, present_ref, present_run,
+from circuits import (adder, bits, counter, half_adder, multiplier, present_ctr, present_ref, present_run,
                       value)
-from field import KEEPER_S
+from field import KEEPER_S, Field
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(HERE, '..', 'media', 'firecomputer')
@@ -97,6 +97,28 @@ def layout_adder(f, n):
         for d, ks in cols.items():
             for j, k in enumerate(sorted(ks)):
                 out[k] = (d, (n - 1 - i) * 3.2 + j + (2 - len(ks)) / 2 + 0.5)
+    return [out[k] for k in range(len(f.kind))]
+
+
+def layout_full_adder(f):
+    """A, B and the carry on top; the 9 keepers in rows by depth; the sum and the carry out at the bottom."""
+    spot = [(0, 0), (2, 0), (4.2, 0), (1, 1), (0.35, 2), (1.65, 2), (1, 3), (2.6, 4), (1.9, 5), (3.3, 5), (2.6, 6.1), (0.2, 6.1)]
+    assert len(spot) == len(f.kind) and f.kind[10] == f.kind[11] == 'nand'
+    return spot
+
+
+def layout_counter(f, n):
+    """Memory fires in a row on top (the highest bit on the left), each bit's keepers below it."""
+    depth = f.depth()
+    out = {}
+    for i in range(n):
+        cols = {}
+        for k in range(len(f.kind)):
+            if f.tag[k] == f'bit{i}':
+                cols.setdefault(0 if f.kind[k] == 'mem' else depth[k], []).append(k)
+        for d, ks in cols.items():
+            for j, k in enumerate(sorted(ks)):
+                out[k] = ((n - 1 - i) * 3 + j - (len(ks) - 1) / 2, d * 1.1)
     return [out[k] for k in range(len(f.kind))]
 
 
@@ -218,6 +240,24 @@ def main():
             assert value(f.evaluate(f.start(v)), out) == a * b
         row(f'{n}-bit x {n}-bit multiplier', f, out)
 
+    # one column of adding: two bits and a carry
+    fa = Field()
+    fa_in = [fa.input('A'), fa.input('B'), fa.input('C')]
+    fa_out = list(fa.full_adder(*fa_in))
+    for v in range(8):
+        assert settle(fa, dict(zip(fa_in, bits(v, 3))), fa_out)[0] == sum(bits(v, 3))
+    row('full adder (one column, with carry)', fa, fa_out)
+
+    # a 3-bit counter, keeper by keeper with the drum
+    ct, ct_mem = counter(3)
+    s = ct.start({})
+    for beat in range(1, 17):
+        for _ in range(ct.beat_steps() - 1):
+            s = ct.step(s)
+        s = ct.step(s, drum=True)
+        assert value(s, ct_mem) == beat % 8
+    row('3-bit counter', ct, ct_mem, {'beat_steps': ct.beat_steps()})
+
     # the cipher, keeper by keeper
     cf, msg, state, key, rnd, out = present_ctr()
     steps = None
@@ -239,6 +279,7 @@ def main():
         {'beat_steps': beat, 'beats': 31, 'block_steps': steps,
          'note': f'{beat} steps a beat ({beat * KEEPER_S:.0f} s); a block takes {steps} steps = {fmt_time(steps * KEEPER_S)}'})
 
+    stats['circuits'].sort(key=lambda r: r['fires'])
     hand = by_hand_steps()
     route = chain_to('Paris')
     stats['cipher'] = {
@@ -259,6 +300,8 @@ def main():
     page_data = {
         'stats': stats,
         'act1': {'net': ha.export(layout_half_adder(ha)), 'inputs': ha_in, 'outputs': ha_out},
+        'full': {'net': fa.export(layout_full_adder(fa)), 'inputs': fa_in, 'outputs': fa_out},
+        'counter': {'net': ct.export(layout_counter(ct, 3)), 'mem': ct_mem},
         'act2': {'net': ad.export(layout_adder(ad, 4)), 'A': adA, 'B': adB, 'outputs': ad_out},
         'act3': {'net': cf.export(layout_cipher(cf, msg, key, rnd)), 'msg': msg, 'state': state,
                  'key': key, 'round': rnd, 'outputs': out, 'route': route},
