@@ -18,10 +18,10 @@ Each level adds one idea and has something to try; a bar shows how steep it is.
 | Level | Idea | Try it |
 |---|---|---|
 | 1. One fire, one answer | lit = yes = 1, dark = no = 0 (a *bit*) | tap the fire |
-| 2. Fires that count | fires worth 8, 4, 2, 1, like market weights (*binary*) | make 13, then 15 |
+| 2. Fires that count | fires worth 8, 4, 2, 1, like market weights (*binary*); each added fire doubles the reach | 1 to 10 fires, type a number, goals 13, 49, 100, 255, 1,000 |
 | 3. The relay keeper is a wire | the signal-fire card, "copy the fire you watch"; 2 s per keeper | send a change down 6 relays |
 | 4. Keepers that decide | NOT, AND, OR cards and their *truth tables* | pick a card, tap A and B |
-| 5. One card is enough | NAND alone makes NOT (1 keeper), AND (2), OR (3) | all three groups at once |
+| 5. One card is enough | NAND on its own first, then NAND keepers standing in for NOT (1 keeper), AND (2), OR (3), with their truth tables side by side | tap A and B; pick which card to imitate |
 | 6. 1 + 1 | ones fire = "exactly one lit", twos fire = "both lit": 5 NAND keepers | the checked half adder |
 | 7. Carrying the one | school column addition next to binary; 9 keepers add A + B + carry | the checked full adder |
 | 8. Sightlines are wires | village counts down ridges into a 32-keeper adder, total up to the mill | send two counts |

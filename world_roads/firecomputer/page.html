@@ -90,7 +90,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 .seg button { border: 0; border-radius: 0; background: transparent; padding: 8px 11px; font: 0.82rem/1 var(--mono); }
 .seg button[aria-pressed="true"] { background: var(--hill-2); color: var(--flame); }
 label { font-size: 0.9rem; color: var(--smoke); display: grid; gap: 6px; }
-input[type="text"] { font: 1rem/1.2 var(--mono); color: var(--parchment); background: var(--hill); border: 1px solid var(--line); border-radius: 3px; padding: 9px 10px; width: 100%; min-width: 0; }
+input[type="text"], input[type="number"] { font: 1rem/1.2 var(--mono); color: var(--parchment); background: var(--hill); border: 1px solid var(--line); border-radius: 3px; padding: 9px 10px; width: 100%; min-width: 0; }
 .num { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 3px; }
 .num button { border: 0; border-radius: 0; padding: 8px 12px; background: var(--hill); }
 .num output { font: 500 1.1rem/1 var(--mono); min-width: 3.2ch; text-align: center; color: var(--flame); }
@@ -183,15 +183,30 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
 <section class="level" id="l2" data-steep="1">
   <div class="lvl-head"><h2>2. Fires that count</h2></div>
   <div class="prose">
-    <p>One fire can only say yes or no. A row of fires can say a number, if each fire is worth something different. Give the fires the values <b>8, 4, 2 and 1</b>, and add up the lit ones.</p>
+    <p>One fire can only say yes or no. A row of fires can say a number, if each fire is worth something different. Start with fires worth <b>8, 4, 2 and 1</b>, and add up the lit ones.</p>
     <p>It works like a set of weights on a market scale. With one 8 kg, one 4 kg, one 2 kg and one 1 kg weight, you can weigh out any whole amount from 0 to 15 kg: 11 kg is 8 + 2 + 1. This way of writing numbers is called <span class="term">binary</span>, and 11 is written <span class="mono">1011</span>.</p>
+    <p>Need a bigger number? Add a fire on the left, worth double the fire next to it: 16, then 32, then 64. Every new fire doubles how far the row can count. The row below starts with six fires showing 11. Try to make 49, then add fires with + and go for 1,000.</p>
   </div>
   <div class="demo">
-    <div class="try">Try it: make 13. Then make 15, the most four fires can show.</div>
-    <canvas id="m2" style="aspect-ratio: 16 / 4.6" aria-label="Four fires worth 8, 4, 2 and 1"></canvas>
-    <div class="readout"><span class="big" id="m2r"></span></div>
+    <div class="controls">
+      <span class="note">Fires in the row</span>
+      <span class="num"><button type="button" id="m2less" aria-label="One fire fewer">−</button><output id="m2n">6</output><button type="button" id="m2more" aria-label="One fire more">+</button></span>
+      <label for="m2type" style="display:flex;gap:8px;align-items:center">Light up a number <input type="number" id="m2type" min="0" max="1023" inputmode="numeric" style="width:7ch"></label>
+    </div>
+    <div class="controls"><span class="try">Goals</span><span class="seg" role="group" aria-label="Goal" id="m2goals"><button type="button" data-g="13">13</button><button type="button" data-g="49" aria-pressed="true">49</button><button type="button" data-g="100">100</button><button type="button" data-g="255">255</button><button type="button" data-g="1000">1,000</button></span><span class="note">Tap the fires to make the goal.</span></div>
+    <canvas id="m2" style="aspect-ratio: 16 / 3.4" aria-label="A row of fires, each worth double the one to its right"></canvas>
+    <div class="readout"><span class="big" id="m2r"></span><span class="status" id="m2g"></span></div>
+    <p class="note" id="m2c"></p>
   </div>
-  <p class="takeaway prose">Each extra fire doubles how far the row can count. 8 fires reach 255, 16 reach 65,535, and 64 fires can hold 8 letters of text.</p>
+  <div class="table-wrap"><table class="truth" aria-label="How far a row of fires can count">
+    <tr><th>Fires</th><th>Patterns</th><th>Counts up to</th></tr>
+    <tr><td>4</td><td>16</td><td>15</td></tr>
+    <tr><td>6</td><td>64</td><td>63</td></tr>
+    <tr><td>8</td><td>256</td><td>255</td></tr>
+    <tr><td>10</td><td>1,024</td><td>1,023</td></tr>
+    <tr><td>16</td><td>65,536</td><td>65,535</td></tr>
+    <tr><td>64</td><td>about 18 billion billion</td><td>enough for 8 letters of text</td></tr>
+  </table></div>
 </section>
 
 <!-- PART 2 -->
@@ -233,16 +248,32 @@ footer { color: var(--smoke); font-size: 0.85rem; max-width: 72ch; }
 <section class="level" id="l5" data-steep="2">
   <div class="lvl-head"><h2>5. One card is enough</h2></div>
   <div class="prose">
-    <p>Here is a surprise that makes the whole computer possible. You don't need a different card for every job. One card, carried by every keeper, can do all of them. It is AND with the answer flipped, so engineers call it <span class="term">NAND</span> ("not and").</p>
-    <p>Below, the same two fires A and B feed three little groups of NAND keepers. A keeper who watches the same fire twice acts as NOT. Two keepers make AND, and three make OR. The only difference between the groups is <i>who watches whom</i>.</p>
+    <p>Here is the surprise that makes the whole computer possible. You don't need a different card for every job. One card can do all of them. Meet it first on its own.</p>
   </div>
-  <div class="cards"><div class="card"><div class="k">Every keeper's card from here on</div><div class="r">Keep your fire lit, unless both of the fires you watch are lit.</div></div></div>
-  <div class="demo wide">
-    <div class="try">Try it: tap A or B. All three groups use only the NAND card.</div>
-    <canvas id="m5" style="aspect-ratio: 16 / 6.2" aria-label="Three groups of NAND keepers making NOT, AND and OR"></canvas>
-    <div class="status" id="m5s"></div>
+  <div class="cards"><div class="card"><div class="k">NAND</div><div class="r">Keep your fire lit, unless both of the fires you watch are lit.</div></div></div>
+  <div class="prose">
+    <p>It is the AND card with the answer flipped: this keeper goes dark only when both fires are lit, and stays lit in every other case. Engineers call it <span class="term">NAND</span>, short for "not and".</p>
   </div>
-  <p class="takeaway prose">From here on, every circuit on this page uses the same NAND card. Building a computer is mostly a matter of deciding which two fires each keeper watches.</p>
+  <div class="demo">
+    <div class="try">Try it: tap A or B. Only lit + lit puts the keeper's fire out.</div>
+    <div class="side">
+      <canvas id="m5a" style="aspect-ratio: 16 / 9" aria-label="Fires A and B watched by one NAND keeper"></canvas>
+      <table class="truth" id="m5at" aria-label="Every case of the NAND card"></table>
+    </div>
+  </div>
+
+  <h3>NAND can stand in for the other cards</h3>
+  <div class="prose">
+    <p>A few NAND keepers, watching the right fires, give exactly the same answers as the NOT, AND and OR cards from Level 4. Pick one to see how.</p>
+  </div>
+  <div class="demo">
+    <div class="controls"><span class="try">Make</span><span class="seg" role="group" aria-label="Card to imitate" id="m5card"><button type="button" data-c="not" aria-pressed="true">NOT</button><button type="button" data-c="and">AND</button><button type="button" data-c="or">OR</button></span><span class="try">from NAND keepers, then tap A or B</span></div>
+    <div class="side">
+      <canvas id="m5" style="aspect-ratio: 16 / 10" aria-label="NAND keepers arranged to imitate another card"></canvas>
+      <div><p id="m5x" style="margin:0 0 12px"></p><table class="truth" id="m5t" aria-label="The NAND keepers against the card they imitate"></table><p class="status" id="m5s" style="margin-top:8px"></p></div>
+    </div>
+  </div>
+  <p class="takeaway prose">From here on, every keeper carries the NAND card. Building a computer is mostly a matter of deciding which two fires each keeper watches.</p>
 </section>
 
 <!-- PART 3 -->
@@ -594,6 +625,7 @@ function Mini(cv, spec) {
   return api;
 }
 const fromNet = (net, extra) => net.kind.split('').map((k, i) => Object.assign({ card: { i: 'in', n: 'nand', m: 'mem' }[k], src: net.src[i], x: net.pos[i][0], y: net.pos[i][1], init: net.init[i] }, (extra || {})[i] || {}));
+const word = v => v ? 'lit' : 'dark';
 const stepText = (steps, done) => done ? (steps ? `settled after ${steps} keeper step${steps > 1 ? 's' : ''}, about ${steps * S.keeper_s} s` : 'settled') : `keeper step ${steps} · ${steps * S.keeper_s} s`;
 
 // Level 1
@@ -602,15 +634,50 @@ Mini($('m1'), {
   onChange: s => $('m1r').innerHTML = s[0] ? 'Lit: <b>yes</b>, written <span class="mono">1</span>' : 'Dark: <b>no</b>, written <span class="mono">0</span>',
 });
 // Level 2
-Mini($('m2'), {
-  fires: [8, 4, 2, 1].map((v, k) => ({ card: 'in', x: k, y: 0, label: String(v), init: [1, 0, 1, 1][k] })), pad: [0.25, 0.4], rmax: 20, rdiv: 34,
-  onChange: s => {
-    const vals = [8, 4, 2, 1], on = vals.filter((v, k) => s[k]);
-    const total = on.reduce((a, b) => a + b, 0);
-    $('m2r').innerHTML = `<span class="mono">${s.join('')}</span> &nbsp;=&nbsp; ${on.length ? on.join(' + ') : '0'} = <b>${total}</b>${total === 13 ? ' &nbsp;✓ that is 13' : total === 15 ? ' &nbsp;✓ all lit: 15' : ''}`;
-  },
-});
-// Level 3
+(function () {
+  let n = 6, bits = [0, 0, 1, 0, 1, 1], goal = 49;
+  const vals = () => Array.from({ length: n }, (_, k) => 2 ** (n - 1 - k));
+  const total = () => bits.reduce((a, b, k) => a + b * 2 ** (n - 1 - k), 0);
+  function readout() {
+    const v = vals(), on = v.filter((x, k) => bits[k]), t = total(), max = 2 ** n - 1;
+    $('m2r').innerHTML = `<span class="mono">${bits.join('')}</span> &nbsp;=&nbsp; ${on.length ? on.map(x => x.toLocaleString()).join(' + ') : '0'} = <b>${t.toLocaleString()}</b>`;
+    $('m2c').textContent = `${n} fire${n > 1 ? 's' : ''}: ${(max + 1).toLocaleString()} different patterns, so any whole number from 0 to ${max.toLocaleString()}.`;
+    $('m2g').textContent = goal > max ? `${goal.toLocaleString()} doesn't fit in ${n} fires (the most is ${max.toLocaleString()}). Add a fire with +.`
+      : t === goal ? `✓ ${goal.toLocaleString()}, made with ${on.length} lit fire${on.length > 1 ? 's' : ''}`
+      : t < goal ? `goal ${goal.toLocaleString()}: ${(goal - t).toLocaleString()} more to go` : `goal ${goal.toLocaleString()}: ${(t - goal).toLocaleString()} too many`;
+  }
+  function build() {
+    const cv = $('m2'), fresh = cv.cloneNode(true);
+    cv.replaceWith(fresh);
+    $('m2n').textContent = n;
+    Mini(fresh, {
+      fires: vals().map((v, k) => ({ card: 'in', x: k, y: 0, label: v.toLocaleString(), init: bits[k] })),
+      pad: [n < 4 ? 0.3 : 0.06, 0.38], rmax: 20, rdiv: Math.max(34, n * 7),
+      onChange: s => { bits = [...s]; readout(); },
+    });
+  }
+  function resize(k) {
+    k = Math.max(1, Math.min(10, k));
+    while (n < k) { bits.unshift(0); n++; }
+    while (n > k) { bits.shift(); n--; }
+    build();
+  }
+  $('m2more').onclick = () => resize(n + 1);
+  $('m2less').onclick = () => resize(n - 1);
+  $('m2type').addEventListener('input', e => {
+    const v = Math.max(0, Math.min(1023, Math.floor(+e.target.value || 0)));
+    let need = 1; while (2 ** need - 1 < v) need++;
+    if (need > n) resize(need);
+    bits = vals().map(x => (v & x) ? 1 : 0);
+    build();
+  });
+  document.querySelectorAll('#m2goals button').forEach(b => b.onclick = () => {
+    goal = +b.dataset.g;
+    document.querySelectorAll('#m2goals button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    readout();
+  });
+  build();
+})();
 Mini($('m3'), {
   fires: [{ card: 'in', x: 0, y: 0, label: 'first', init: 0 }, ...[1, 2, 3, 4, 5].map(k => ({ card: 'copy', src: [k - 1], x: k, y: 0, sub: 'COPY' }))],
   pad: [0.07, 0.4], rmax: 15, rdiv: 50, ms: 700,
@@ -620,7 +687,6 @@ Mini($('m3'), {
 (function () {
   const rows = { not: [[0, 1], [1, 0]], and: [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]], or: [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]] };
   let card = 'and', m = null, cur = [1, 1, 1];
-  const word = v => v ? 'lit' : 'dark';
   function table(s) {
     const r = rows[card], two = card !== 'not';
     $('m4t').innerHTML = `<tr><th>A</th>${two ? '<th>B</th>' : ''}<th>Keeper</th></tr>` + r.map(row => {
@@ -644,19 +710,62 @@ Mini($('m3'), {
   });
   build();
 })();
-// Level 5: NOT, AND, OR from NAND keepers only
+// Level 5
 (function () {
-  const f = [
-    { card: 'in', x: 2.2, y: 0, label: 'A', init: 1 }, { card: 'in', x: 5.2, y: 0, label: 'B', init: 0 },
-    { card: 'nand', src: [0, 0], x: 0.4, y: 1.7, label: 'NOT A', below: true, sub: '1 keeper' },              // 2
-    { card: 'nand', src: [0, 1], x: 3.6, y: 1.1 }, { card: 'nand', src: [3, 3], x: 3.6, y: 2.3, label: 'A AND B', below: true, sub: '2 keepers' },  // 3, 4
-    { card: 'nand', src: [0, 0], x: 6.4, y: 1.1 }, { card: 'nand', src: [1, 1], x: 7.9, y: 1.1 },            // 5, 6
-    { card: 'nand', src: [5, 6], x: 7.15, y: 2.3, label: 'A OR B', below: true, sub: '3 keepers' },          // 7
-  ];
-  Mini($('m5'), {
-    fires: f, pad: [0.08, 0.14], rmax: 14, rdiv: 60,
-    onChange: (s, steps, done) => $('m5s').textContent = `${stepText(steps, done)} · NOT A is ${s[2] ? 'lit' : 'dark'}, A AND B is ${s[4] ? 'lit' : 'dark'}, A OR B is ${s[7] ? 'lit' : 'dark'}`,
+  function table(s) {
+    $('m5at').innerHTML = '<tr><th>A</th><th>B</th><th>NAND keeper</th></tr>' + [[0, 0], [0, 1], [1, 0], [1, 1]].map(([a, b]) =>
+      `<tr class="${a === s[0] && b === s[1] ? 'now' : ''}"><td>${word(a)}</td><td>${word(b)}</td><td>${word(1 - (a & b))}</td></tr>`).join('');
+  }
+  Mini($('m5a'), {
+    fires: [{ card: 'in', x: 0, y: 0, label: 'A', init: 1 }, { card: 'in', x: 2, y: 0, label: 'B', init: 1 },
+            { card: 'nand', src: [0, 1], x: 1, y: 1.2, label: 'keeper', below: true, sub: 'NAND' }],
+    pad: [0.22, 0.2], rmax: 16, rdiv: 30, onChange: s => table(s),
   });
+})();
+(function () {
+  const builds = {
+    not: {
+      fires: [{ card: 'in', x: 1, y: 0, label: 'A', init: 1 }, { card: 'nand', src: [0, 0], x: 1, y: 1.4, label: 'NOT A', below: true, sub: 'NAND' }],
+      two: false, want: (a) => 1 - a,
+      text: 'One NAND keeper watches A twice. If A is lit, both of the fires it watches are lit, so it goes dark. If A is dark, it stays lit. That is exactly the NOT card.',
+    },
+    and: {
+      fires: [{ card: 'in', x: 0, y: 0, label: 'A', init: 1 }, { card: 'in', x: 2, y: 0, label: 'B', init: 1 },
+              { card: 'nand', src: [0, 1], x: 1, y: 1.1, sub: 'NAND' }, { card: 'nand', src: [2, 2], x: 1, y: 2.3, label: 'A AND B', below: true, sub: 'NAND' }],
+      two: true, want: (a, b) => a & b,
+      text: 'The first keeper gives AND with the answer flipped. The second keeper watches the first one twice, which flips it back, the NOT trick above. Flipped twice is AND.',
+    },
+    or: {
+      fires: [{ card: 'in', x: 0, y: 0, label: 'A', init: 1 }, { card: 'in', x: 2, y: 0, label: 'B', init: 0 },
+              { card: 'nand', src: [0, 0], x: 0, y: 1.1, sub: 'NAND' }, { card: 'nand', src: [1, 1], x: 2, y: 1.1, sub: 'NAND' },
+              { card: 'nand', src: [2, 3], x: 1, y: 2.3, label: 'A OR B', below: true, sub: 'NAND' }],
+      two: true, want: (a, b) => a | b,
+      text: 'The top two keepers flip A and B. The bottom keeper goes dark only if both flipped fires are lit, which means A and B were both dark. So it is lit whenever A or B is lit: the OR card.',
+    },
+  };
+  let card = 'not';
+  function build() {
+    const B = builds[card], cv = $('m5'), fresh = cv.cloneNode(true);
+    cv.replaceWith(fresh);
+    $('m5x').textContent = B.text;
+    const out = B.fires.length - 1, name = card.toUpperCase();
+    Mini(fresh, {
+      fires: B.fires.map(f => ({ ...f })), pad: [0.24, 0.16], rmax: 15, rdiv: 32,
+      onChange: (s, steps, done) => {
+        const cases = B.two ? [[0, 0], [0, 1], [1, 0], [1, 1]] : [[0], [1]];
+        const nand = c => { const t = B.fires.map((f, i) => f.card === 'in' ? c[i] : 0); for (let k = 0; k < 6; k++) B.fires.forEach((f, i) => { if (f.card === 'nand') t[i] = 1 - (t[f.src[0]] & t[f.src[1]]); }); return t[out]; };
+        $('m5t').innerHTML = `<tr><th>A</th>${B.two ? '<th>B</th>' : ''}<th>NAND keepers</th><th>${name} card</th></tr>` + cases.map(c =>
+          `<tr class="${c.every((v, i) => v === s[i]) ? 'now' : ''}"><td>${word(c[0])}</td>${B.two ? `<td>${word(c[1])}</td>` : ''}<td>${word(nand(c))}</td><td>${word(B.want(...c))} ✓</td></tr>`).join('');
+        $('m5s').textContent = stepText(steps, done);
+      },
+    });
+  }
+  document.querySelectorAll('#m5card button').forEach(b => b.onclick = () => {
+    card = b.dataset.c;
+    document.querySelectorAll('#m5card button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    build();
+  });
+  build();
 })();
 // Level 6: the checked half adder
 (function () {
