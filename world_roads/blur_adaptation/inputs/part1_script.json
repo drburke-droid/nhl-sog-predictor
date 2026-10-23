@@ -1,0 +1,104 @@
+[
+ {
+  "id": "P01",
+  "start": 0.6,
+  "max": 5.4,
+  "text": "Your brain is about to re-tune your eyes. [0.5] Watch this in full screen mode."
+ },
+ {
+  "id": "P02",
+  "start": 6.5,
+  "max": 12.5,
+  "text": "Here's how it works. [0.8] Stare at the glowing dot in the middle of the screen the whole time. [0.8] When the frames turn gold, that means it's test time. [0.6] Keep your eyes on the dot, [0.2] and decide which side looks sharper. [0.5] Left [0.2] or right."
+ },
+ {
+  "id": "P03",
+  "start": 19.1,
+  "max": 2.9,
+  "text": "OK [0.1] Eyes on the dot."
+ },
+ {
+  "id": "P04",
+  "start": 27.0,
+  "max": 20,
+  "text": "Keep staring at the dot. [0.6] Let the pictures play in your peripheral vision."
+ },
+ {
+  "id": "P05",
+  "start": 50.0,
+  "max": 20,
+  "text": "Don't look at the pictures. [0.5] Just the dot."
+ },
+ {
+  "id": "P06",
+  "start": 71.0,
+  "max": 10,
+  "text": "Almost there. [0.3] Keep staring."
+ },
+ {
+  "id": "P07",
+  "start": 82.15,
+  "max": 2.85,
+  "text": "[0.3] Test one. [0.3] Which side is sharper?"
+ },
+ {
+  "id": "P08",
+  "start": 85.3,
+  "max": 2.2,
+  "text": "[0.5] Remember your answer."
+ },
+ {
+  "id": "P09",
+  "start": 87.9,
+  "max": 10,
+  "text": "Back to the dot."
+ },
+ {
+  "id": "P10",
+  "start": 98.85,
+  "max": 2.85,
+  "text": "[0.5] Test two."
+ },
+ {
+  "id": "P11",
+  "start": 101.9,
+  "max": 2.3,
+  "text": "Left, or right?"
+ },
+ {
+  "id": "P12",
+  "start": 104.4,
+  "max": 10,
+  "text": "Now back to the dot."
+ },
+ {
+  "id": "P13",
+  "start": 115.55,
+  "max": 2.85,
+  "text": "[0.5] Last one."
+ },
+ {
+  "id": "P14",
+  "start": 118.6,
+  "max": 2.3,
+  "text": "Left, or right?"
+ },
+ {
+  "id": "P15",
+  "start": 121.3,
+  "max": 12.7,
+  "text": "Now here is the twist. [1.0] All three test pairs were identical. [1.0] The left side spent a minute on blurry photos, so your brain turned its sense of sharpness up. [0.6] The right side saw over-sharpened photos, so it turned it down."
+ },
+ {
+  "id": "P16",
+  "start": 134.0,
+  "max": 3.7,
+  "text": "[0.3] Now that your eyes have reset, [0.4] they should look the same."
+ },
+ {
+  "id": "P17",
+  "start": 137.7,
+  "max": 5.2,
+  "text": "Sharp isn't a fact about the image. [0.6] It's what your brain has learned to expect."
+ }
+]

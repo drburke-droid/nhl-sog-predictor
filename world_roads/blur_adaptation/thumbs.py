@@ -78,5 +78,6 @@ def thumb_c():
     save(D.comp(img, ov), "thumb_C")
 
 
-thumb_a(); thumb_b(); thumb_c()
-print("ok")
+if __name__ == "__main__":
+    thumb_a(); thumb_b(); thumb_c()
+    print("ok")

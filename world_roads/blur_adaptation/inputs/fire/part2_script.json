@@ -1,0 +1,117 @@
+[
+ {
+  "id": "A1",
+  "pause": 1.0,
+  "text": "Part two. [0.8] Why does this happen? [1.0] To understand it, we need to look at the blur inside your own eye."
+ },
+ {
+  "id": "A2",
+  "pause": 1.0,
+  "text": "Imagine looking at a single star. [0.8] In a perfect eye, all of its light would land on your retina as one tiny, crisp point."
+ },
+ {
+  "id": "A3",
+  "pause": 1.0,
+  "text": "But no eye is perfect. [0.8] In a real eye, that same starlight lands as a small, uneven smudge."
+ },
+ {
+  "id": "A4",
+  "pause": 1.2,
+  "text": "That smudge is your blur. [0.6] Everything you look at, every letter, every face, is made of points of light. [0.5] And every one of them gets smeared into that same little smudge."
+ },
+ {
+  "id": "A5",
+  "pause": 1.0,
+  "text": "And here's the interesting part. [0.8] Everyone's smudge has a different shape. [0.6] Like a fingerprint."
+ },
+ {
+  "id": "A6",
+  "pause": 1.0,
+  "text": "Glasses fix the biggest part of it, like nearsightedness and astigmatism. [0.6] But even with perfect glasses, a small, uneven smudge is left over. [0.8] Your eye never quite delivers that perfect point."
+ },
+ {
+  "id": "A7",
+  "pause": 1.5,
+  "text": "So why doesn't the world look smudged? [1.2] Maybe your brain has learned the shape of your smudge, [0.4] and quietly cleans it up."
+ },
+ {
+  "id": "B1",
+  "pause": 1.0,
+  "text": "In two thousand and four, scientists at the University of Rochester and the University of Murcia found a clever way to test that idea."
+ },
+ {
+  "id": "B2",
+  "pause": 1.2,
+  "text": "Their reasoning was simple. [0.8] If your brain has learned your own smudge, it should handle your own smudge better than any other. [1.0] So the exact same smudge, just turned to a different angle, should look worse to you."
+ },
+ {
+  "id": "B3",
+  "pause": 1.2,
+  "text": "It's a bit like handwriting. [0.6] Your own writing is easy for you to read. [0.6] Turn the page on its side, and the very same writing takes more effort, even though not a single letter has changed."
+ },
+ {
+  "id": "C1",
+  "pause": 1.0,
+  "text": "To run the test, they needed complete control over blur. [0.6] So they used adaptive optics, [0.3] a technology borrowed from astronomy, where big telescopes use it to cancel the shimmer of the atmosphere."
+ },
+ {
+  "id": "C2",
+  "pause": 1.2,
+  "text": "A sensor measured the person's smudge thirty times a second. [0.6] Then a flexible mirror bent itself into the opposite shape, [0.3] cancelling the blur. [1.0] For a moment, their eye saw starlight almost like a perfect eye would."
+ },
+ {
+  "id": "C3",
+  "pause": 1.0,
+  "text": "Then the mirror did something clever. [0.8] It put the blur back in. [0.6] Sometimes it was the person's own smudge. [0.6] Sometimes it was the very same smudge, turned to a different angle."
+ },
+ {
+  "id": "C4",
+  "pause": 1.2,
+  "text": "The scientists checked: [0.5] the turned smudge was exactly as blurry as the original. [0.6] Only its direction had changed."
+ },
+ {
+  "id": "D1",
+  "pause": 1.0,
+  "text": "Five people looked through the machine at a pattern of black and white specks. [0.6] It flicked back and forth, [0.3] half a second through their own smudge, [0.3] half a second through a turned one."
+ },
+ {
+  "id": "D2",
+  "pause": 1.2,
+  "text": "Now, the same amount of blur should look the same. [1.0] If the brain doesn't care about the shape of the blur, both should look equally blurry."
+ },
+ {
+  "id": "D3",
+  "pause": 1.5,
+  "text": "But that's not what happened. [1.0] For every single person, their own smudge always looked sharper. [0.6] The turned smudge looked blurrier."
+ },
+ {
+  "id": "D4",
+  "pause": 1.5,
+  "text": "To measure how much blurrier, each person turned down the turned blur, like a focus knob, until the two looked the same. [1.0] They had to remove twenty to forty percent of it, [0.4] before it looked as clear as their own."
+ },
+ {
+  "id": "D5",
+  "pause": 1.5,
+  "text": "Even flipping the smudge upside down, which keeps the amount of blur identical in every way, still made it look worse. [1.0] So the brain isn't just used to how much your eye blurs. [0.6] It's used to the exact shape of your blur."
+ },
+ {
+  "id": "E1",
+  "pause": 1.5,
+  "text": "So here's what's going on. [0.8] Your eye never delivers a perfect point. [0.6] But over a lifetime, your brain has learned your smudge, [0.4] and it quietly corrects for it. [1.0] You see more clearly than your eyes alone should allow."
+ },
+ {
+  "id": "E2",
+  "pause": 1.2,
+  "text": "It's also part of why new glasses, or surgery that removes old blur, can take time to feel right. [0.6] Your brain is still correcting for the blur you used to have."
+ },
+ {
+  "id": "E3",
+  "pause": 2.0,
+  "text": "And in the first half of this video, you felt a fast version of it. [0.6] One minute of blur, and your sense of sharp shifted. [1.0] Your brain is re-calibrating all the time."
+ },
+ {
+  "id": "E4",
+  "pause": 1.5,
+  "text": "And if you didn't notice, [0.4] every photo in the first half is something mentioned in Billy Joel's We Didn't Start the Fire. [0.8] We didn't start it. [0.3] We just blurred it."
+ }
+]

@@ -1,0 +1,121 @@
+{
+ "adapt": [
+  "harry_truman.jpg",
+  "marilyn_monroe.jpg",
+  "korea.jpg",
+  "marlon_brando.jpg",
+  "mickey_mantle.jpg",
+  "little_rock.jpg",
+  "sputnik.jpg",
+  "eisenhower.jpg",
+  "hula_hoops.jpg",
+  "ernest_hemingway.jpg",
+  "vaccine.jpg",
+  "beatles.jpg",
+  "richard_nixon.jpg",
+  "space_monkey.jpg",
+  "liberace.jpg",
+  "u2.jpg",
+  "castro.jpg",
+  "disneyland.jpg",
+  "jfk.jpg",
+  "roy_campanella.jpg",
+  "bob_dylan.jpg",
+  "moonshot.jpg",
+  "floyd_patterson.jpg",
+  "reagan.jpg",
+  "studebaker.jpg",
+  "h_bomb.jpg",
+  "buddy_holly_statue.jpg",
+  "berlin.jpg",
+  "malcolm_x.jpg",
+  "sally_ride.jpg"
+ ],
+ "tests": [
+  "elvis_presley.jpg",
+  "joe_dimaggio.jpg",
+  "einstein.jpg"
+ ],
+ "crops": {
+  "beatles.jpg": [
+   0.48,
+   0.5,
+   1.0
+  ],
+  "mickey_mantle.jpg": [
+   0.58,
+   0.42,
+   0.8
+  ],
+  "floyd_patterson.jpg": [
+   0.66,
+   0.45,
+   0.85
+  ],
+  "marilyn_monroe.jpg": [
+   0.3,
+   0.5,
+   1.0
+  ],
+  "joe_dimaggio.jpg": [
+   0.5,
+   0.5,
+   1.0
+  ],
+  "elvis_presley.jpg": [
+   0.46,
+   0.42,
+   0.6
+  ],
+  "marlon_brando.jpg": [
+   0.38,
+   0.5,
+   1.0
+  ],
+  "roy_campanella.jpg": [
+   0.5,
+   0.42,
+   1.0
+  ],
+  "liberace.jpg": [
+   0.5,
+   0.58,
+   0.75
+  ],
+  "ernest_hemingway.jpg": [
+   0.45,
+   0.5,
+   1.0
+  ],
+  "bob_dylan.jpg": [
+   0.64,
+   0.5,
+   1.0
+  ],
+  "disneyland.jpg": [
+   0.5,
+   0.38,
+   1.0
+  ],
+  "buddy_holly_statue.jpg": [
+   0.5,
+   0.42,
+   1.0
+  ],
+  "einstein.jpg": [
+   0.4,
+   0.5,
+   1.0
+  ],
+  "castro.jpg": [
+   0.5,
+   0.42,
+   1.0
+  ],
+  "malcolm_x.jpg": [
+   0.5,
+   0.55,
+   0.85
+  ]
+ }
+}

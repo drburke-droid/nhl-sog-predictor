@@ -23,8 +23,8 @@ Rendered copies are committed in [`../media/blur_adaptation/`](../media/blur_ada
 | `YOUTUBE.md`, `YOUTUBE_fire.md` | Titles, descriptions with chapters, tags |
 | `fire_manifest.json` | Every Fire-edition photo: source page and the rights statement quoted from it |
 
-The narration script is a Claude Doc ("Blur Adaptation Video Script"); `data/part1_script.json` and
-`data/part2_script.json` are the copies the pipeline reads. `[0.8]` in a line is 0.8 s of silence.
+The narration script is a Claude Doc ("Blur Adaptation Video Script"); `inputs/part1_script.json` and
+`inputs/part2_script.json` are the copies the pipeline reads. `[0.8]` in a line is 0.8 s of silence.
 
 ## Run it
 
@@ -33,9 +33,9 @@ separate Python 3.12 venv for Kokoro (`pip install torch --index-url https://dow
 plus `apt install espeak-ng`). Renders go to `work/` (or `$BLUR_WORK`), which is git-ignored:
 
 ```
-work/blur/src_images/      the NASA photos listed in data/nasa_images.json (images-api.nasa.gov, "~large.jpg")
-work/v2/                   copy data/part1_script.json and data/part2_script.json here
-work/fire/src_images/      the photos in data/fire/manifest.json;  copy data/fire/sets.json here
+work/blur/src_images/      the NASA photos listed in inputs/nasa_images.json (images-api.nasa.gov, "~large.jpg")
+work/v2/                   copy inputs/part1_script.json and inputs/part2_script.json here
+work/fire/src_images/      the photos in inputs/fire/manifest.json;  copy inputs/fire/sets.json here
 ```
 
 | Step | Command | Output |
@@ -47,7 +47,7 @@ work/fire/src_images/      the photos in data/fire/manifest.json;  copy data/fir
 | 5. Thumbnails | `python3 thumbs.py` | `work/v2/thumbs/` |
 
 Fire edition: the same steps with `DEMO_SET=fire PART2_DIR=work/fire DEMO_VIDEO=work/fire/demo1_fire.mp4
-FINAL_NAME=blur_adaptation_fire.mp4`, and `data/fire/part2_script.json` (it adds the end-card line E4).
+FINAL_NAME=blur_adaptation_fire.mp4`, and `inputs/fire/part2_script.json` (it adds the end-card line E4).
 
 ## How it works
 
