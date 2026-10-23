@@ -10,7 +10,12 @@ Tables
 The stats API caps any one query at 10,000 rows, so each season is pulled in
 date windows small enough to stay under the cap; a window that hits the cap
 is split in half and pulled again.  Window count is sized from the season's
-game count so most seasons need only a handful of requests.  Re-running only fetches seasons that are
+game count so most seasons need only a handful of requests.
+
+The stats API publishes a night's games a few hours after they end.  For the
+season in progress, finished games it does not have yet are filled from the
+league's live boxscores (skater lines only, source = 'boxscore'); the next
+run replaces them with the stats API's own rows once they appear.  Re-running only fetches seasons that are
 missing or still in progress.
 
     python nhl_history_collector.py              # everything
@@ -26,6 +31,8 @@ from datetime import date, datetime, timedelta
 import requests
 
 STATS_URL = "https://api.nhle.com/stats/rest/en"
+WEB_URL = "https://api-web.nhle.com/v1"
+FINISHED = {"OFF", "FINAL", "OVER"}
 DB_PATH = "nhl_history.db"
 ROW_CAP = 10000
 ROWS_PER_WINDOW = 7000
@@ -118,6 +125,56 @@ def store(conn: sqlite3.Connection, table: str, season_id: int, rows: list):
         [tuple(r.get(c) for c in cols) for r in rows])
 
 
+def fill_from_boxscores(conn: sqlite3.Connection, season: dict) -> int:
+    """Add skater lines for finished games the stats API has not published yet."""
+    sid = season["id"]
+    have = {g for (g,) in conn.execute(
+        "SELECT DISTINCT gameId FROM skater_games WHERE seasonId = ?", (sid,))}
+    last = conn.execute("SELECT MAX(gameDate) FROM skater_games WHERE seasonId = ?",
+                        (sid,)).fetchone()[0]
+    day = (date.fromisoformat(last) if last else
+           datetime.fromisoformat(season["startDate"]).date()) - timedelta(days=3)
+    missing = []
+    while day <= date.today():
+        for g in _get(f"{WEB_URL}/score/{day}").get("games", []):
+            if g["gameType"] in (2, 3) and g["gameState"] in FINISHED and g["id"] not in have:
+                missing.append(g["id"])
+        day += timedelta(days=1)
+    rows = []
+    for game_id in missing:
+        box = _get(f"{WEB_URL}/gamecenter/{game_id}/boxscore")
+        for side, other, home_road in (("homeTeam", "awayTeam", "H"), ("awayTeam", "homeTeam", "R")):
+            stats = box["playerByGameStats"][side]
+            for p in stats.get("forwards", []) + stats.get("defense", []):
+                mins, secs = p["toi"].split(":")
+                rows.append({
+                    "gameId": game_id, "gameDate": box["gameDate"], "seasonId": sid,
+                    "gameTypeId": box["gameType"], "playerId": p["playerId"],
+                    "skaterFullName": p["name"]["default"], "positionCode": p["position"],
+                    "teamAbbrev": box[side]["abbrev"], "opponentTeamAbbrev": box[other]["abbrev"],
+                    "homeRoad": home_road, "gamesPlayed": 1, "goals": p["goals"],
+                    "assists": p["assists"], "points": p["points"], "plusMinus": p["plusMinus"],
+                    "penaltyMinutes": p["pim"], "ppGoals": p["powerPlayGoals"], "shots": p["sog"],
+                    "timeOnIcePerGame": int(mins) * 60 + int(secs), "source": "boxscore"})
+    if not rows:
+        return 0
+    cols = sorted(rows[0])
+    existing = {c[1] for c in conn.execute("PRAGMA table_info(skater_games)")}
+    for c in cols:
+        if c not in existing:
+            conn.execute(f"ALTER TABLE skater_games ADD COLUMN {c}")
+    # boxscores abbreviate first names; use the stats API's full name where known
+    names = dict(conn.execute("SELECT playerId, skaterFullName FROM skater_games "
+                              "WHERE source IS NULL GROUP BY playerId"))
+    for r in rows:
+        r["skaterFullName"] = names.get(r["playerId"], r["skaterFullName"])
+    conn.executemany(
+        f"INSERT OR REPLACE INTO skater_games ({', '.join(cols)}) "
+        f"VALUES ({', '.join('?' * len(cols))})",
+        [tuple(r[c] for c in cols) for r in rows])
+    return len(missing)
+
+
 def main(only=None):
     conn = sqlite3.connect(DB_PATH)
     seasons = fetch_seasons()
@@ -137,6 +194,8 @@ def main(only=None):
             rows = fetch_season(endpoint, rows_per_game, season)
             store(conn, table, sid, rows)
             counts.append(f"{len(rows):>6} {table}")
+        if datetime.fromisoformat(season["endDate"]).date() >= date.today():
+            counts.append(f"{fill_from_boxscores(conn, season):>3} games from boxscores")
         conn.execute("INSERT OR REPLACE INTO seasons VALUES (?,?,?,?,?,?,?,?)",
                      (sid, season["formattedSeasonId"], season["startDate"],
                       season["regularSeasonEndDate"], season["endDate"],
