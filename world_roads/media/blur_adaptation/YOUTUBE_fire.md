@@ -7,9 +7,9 @@ public-domain pictures of things named in Billy Joel's "We Didn't Start the Fire
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | `thumb_A_fire.png`: Billy Joel ×2 in gold frames, ONE WILL LOOK SHARPER / (they're identical) | This 1-Minute Test Re-Tunes What "Sharp" Means to Your Brain |
-| B | `thumb_B_fire.png`: Elvis & Nixon, Marilyn, the Beatles, JFK, blurred vs sharp, WE JUST BLURRED IT / (we didn't start the fire) | Your Eyes Are Blurrier Than You Think. Your Brain Hides It. |
-| C | `thumb_C.png`: YOU SEE SHARPER THAN YOUR EYES ALLOW | Scientists Rotated People's Blur. It Looked Worse. Here's Why. |
+| A | `thumb_A_fire.png`: Elvis & Nixon ×2 in gold frames, ONE WILL LOOK SHARPER / (they're identical) | We Didn't Start the Fire. We Just Blurred It. |
+| B | `thumb_B_fire.png`: Elvis & Nixon, Marilyn, the Beatles, JFK, blurred vs sharp, WHICH SIDE IS SHARPER? | Elvis, Marilyn, JFK… and the 1-Minute Test That Re-Tunes Your Eyes |
+| C | `thumb_C_fire.png`: mosaic of the song's icons, blurred to sharp, WE DIDN'T START THE BLUR | Your Eyes Are Blurrier Than You Think. Your Brain Hides It. |
 
 **Description**
 
@@ -50,7 +50,7 @@ Getting used to new glasses or contact lenses can take a few days. If your visio
 
 How it was made: the eye blur in Part 2 is simulated with real optics (illustrative eye aberrations turned into point-spread functions), not a measurement of any real person's eye. Voice: AI. Music: original synthesized score. Not affiliated with or endorsed by Billy Joel.
 
-Photos (public domain): Library of Congress, Prints & Photographs Division: Harry Truman, JFK, Einstein (Al Aumuller), Little Rock (John T. Bledsoe), Castro, Malcolm X and the Beatles (Marion S. Trikosko), Roy Campanella (William C. Greene), Liberace (Bernard Gotfryd), hula hoops (Angelo Rizzuto), Disneyland, Studebaker and Buddy Holly statue (Carol M. Highsmith). National Archives: Korea, Nixon, Marilyn Monroe and Joe DiMaggio (U.S. Army Signal Corps); Eisenhower (U.S. Navy); Reagan, Berlin and Floyd Patterson (White House, Reagan Library); Elvis Presley (White House, Nixon Library); Mickey Mantle (White House, Ford Library); H-bomb (Department of Energy); Marlon Brando and Bob Dylan (U.S. Information Agency); Ernest Hemingway (Marshall Plan photo file). NASA: Sputnik, space monkey, U-2, moonshot, Sally Ride. CDC: vaccine (Maler D. Bogue). Billy Joel (thumbnail): U.S. Department of Defense / SrA Andrew J. Rice, USAF.
+Photos (public domain): Library of Congress, Prints & Photographs Division: Harry Truman, JFK, Einstein (Al Aumuller), Little Rock (John T. Bledsoe), Castro, Malcolm X and the Beatles (Marion S. Trikosko), Roy Campanella (William C. Greene), Liberace (Bernard Gotfryd), hula hoops (Angelo Rizzuto), Disneyland, Studebaker and Buddy Holly statue (Carol M. Highsmith). National Archives: Korea, Nixon, Marilyn Monroe and Joe DiMaggio (U.S. Army Signal Corps); Eisenhower (U.S. Navy); Reagan, Berlin and Floyd Patterson (White House, Reagan Library); Elvis Presley (White House, Nixon Library); Mickey Mantle (White House, Ford Library); H-bomb (Department of Energy); Marlon Brando and Bob Dylan (U.S. Information Agency); Ernest Hemingway (Marshall Plan photo file). NASA: Sputnik, space monkey, U-2, moonshot, Sally Ride. CDC: vaccine (Maler D. Bogue).
 
 #eyes #vision #brain #optometry #wedidntstartthefire
 ```
