@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>McDavid 2026-27</title>
+<meta name="description" content="Connor McDavid's 2026-27 start against every start in NHL history since 1917-18, and what it would take to reach 200 points.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<style>
+:root {
+  color-scheme: light;
+  --color-bg: #eef2f6; --color-panel: #ffffff; --color-fg: #0d1b2e; --color-fg-muted: #586578;
+  --color-border-line: #d9e0e8; --color-bad: #c8332c;
+  --series-1: #d9520b; --series-2: #1d4f91;
+  --cds-chart-muted: #a9b3c0; --cds-chart-grid: #e5eaf0; --cds-chart-axis: #b6c0cc; --cds-chart-reference: #7d8899;
+  --cds-surface-popover: #ffffff; --cds-border: #d0d8e2; --cds-shadow-popover: 0 6px 20px rgba(13, 27, 46, 0.12);
+  --cds-text-secondary: #586578;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --cds-font-size-caption: 0.8125rem; --cds-font-size-body: 1rem; --cds-font-size-heading: 1.0625rem; --cds-font-size-title: 1.5rem;
+  --cds-font-weight-medium: 500;
+  --cds-gap-xs: 0.25rem; --cds-gap-sm: 0.5rem; --cds-gap-md: 0.875rem; --cds-gap-lg: 1.5rem; --cds-gap-xl: 2.5rem;
+  --cds-pad-xs: 0.375rem; --cds-pad-sm: 0.625rem; --cds-pad-md: 0.875rem; --cds-pad-lg: 1.25rem;
+  --cds-radius: 8px; --cds-dur-slow: 300ms;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #0a111d; --color-panel: #111b2b; --color-fg: #e7edf4; --color-fg-muted: #98a5b6;
+    --color-border-line: #223047; --color-bad: #ef6a63;
+    --series-1: #ff7b2e; --series-2: #78a9ec;
+    --cds-chart-muted: #4b586b; --cds-chart-grid: #1a2638; --cds-chart-axis: #34425a; --cds-chart-reference: #75839a;
+    --cds-surface-popover: #17233a; --cds-border: #2b3b56; --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, 0.45);
+    --cds-text-secondary: #98a5b6;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0a111d; --color-panel: #111b2b; --color-fg: #e7edf4; --color-fg-muted: #98a5b6;
+  --color-border-line: #223047; --color-bad: #ef6a63;
+  --series-1: #ff7b2e; --series-2: #78a9ec;
+  --cds-chart-muted: #4b586b; --cds-chart-grid: #1a2638; --cds-chart-axis: #34425a; --cds-chart-reference: #75839a;
+  --cds-surface-popover: #17233a; --cds-border: #2b3b56; --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --cds-text-secondary: #98a5b6;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-sans); font-size: 15px;
+  padding-block: 2rem 3rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.dash-skeleton { color: transparent !important; background: var(--color-border-line); border-radius: 4px; }
+@media (prefers-reduced-motion: no-preference) { .dash-skeleton { animation: hs-pulse 1.2s ease-in-out infinite alternate; } }
+@keyframes hs-pulse { from { opacity: 1; } to { opacity: .45; } }
+.hs-nav { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); }
+.hs-nav a { font-size: var(--cds-font-size-caption); color: var(--color-fg); text-decoration: none; border: 1px solid var(--color-border-line); background: var(--color-panel); border-radius: 999px; padding: 0.3rem 0.8rem; }
+.hs-nav a:hover { border-color: var(--color-fg-muted); }
+.hs-nav a:focus-visible, .hs a:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.hs-part { display: flex; flex-direction: column; gap: var(--cds-gap-lg); scroll-margin-top: 1rem; }
+.hs-part + .hs-part { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-xl); }
+.hs-part-title { font-family: var(--font-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.15); margin: 0; }
+.hs-eyebrow { font-size: var(--cds-font-size-caption); letter-spacing: 0.06em; text-transform: uppercase; color: var(--series-1); font-weight: 600; margin: 0; }
+.hs-foot { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-foot a { color: inherit; }
+
+.hs { max-width: 72rem; margin-inline: auto; display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-sans); color: var(--color-fg); }
+.hs-head { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.hs-head h1 { font-family: var(--font-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.35); line-height: 1.15; margin: 0; text-wrap: balance; }
+.hs-take { font-size: var(--cds-font-size-body); line-height: 1.55; margin: 0; max-width: 46rem; }
+.hs .hs-take b { font-weight: 600; }
+.hs-asof { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; }
+
+.hs-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
+.hs-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.hs-tile-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-tile-value { font-family: var(--font-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.5); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hs-tile-value small { font-size: 0.55em; color: var(--color-fg-muted); margin-right: 0.15em; }
+.hs-tile-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.4; }
+
+.hs-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md) var(--cds-gap-lg); align-items: center; }
+.hs-seg { display: inline-flex; align-items: center; gap: var(--cds-gap-sm); flex-wrap: wrap; }
+.hs-seg-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-seg-group { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.hs-seg-group button { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-md); background: var(--color-panel); color: var(--color-fg); border: 0; cursor: pointer; }
+.hs-seg-group button + button { border-left: 1px solid var(--color-border-line); }
+.hs-seg-group button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); }
+.hs-seg-group button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+
+.hs-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.hs-card h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+.hs-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.45; }
+.hs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+.hs-plot { position: relative; min-height: 18rem; }
+.hs-plot svg { display: block; overflow: visible; }
+.hs-plot text { font-family: var(--font-sans); }
+.hs-tick { font-size: var(--cds-font-size-caption); fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.hs-endlabel { font-size: var(--cds-font-size-caption); fill: var(--color-fg); paint-order: stroke; stroke: var(--color-panel); stroke-width: 4px; stroke-linejoin: round; }
+.hs-endlabel.is-target { font-weight: 600; }
+
+.hs-bars { position: relative; display: flex; flex-direction: column; gap: 2px; min-height: 10rem; }
+.hs-bar-row { display: grid; grid-template-columns: 2.25rem minmax(0, 9.5rem) minmax(0, 1fr); align-items: center; gap: var(--cds-gap-sm); padding: 3px 0; border-radius: var(--cds-radius); }
+.hs-bar-row:hover { background: var(--color-bg); }
+.hs-bar-rank { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-align: right; font-variant-numeric: tabular-nums; }
+.hs-bar-name { font-size: var(--cds-font-size-caption); line-height: 1.25; overflow-wrap: anywhere; }
+.hs-bar-name span { display: block; color: var(--color-fg-muted); }
+.hs-bar-row.is-target .hs-bar-name { font-weight: 600; }
+.hs-bar-track { display: flex; align-items: center; gap: var(--cds-gap-xs); min-width: 0; }
+.hs-bar { height: 16px; border-radius: 0 4px 4px 0; flex: none; }
+.hs-bar-val { font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hs-bar-row.is-target .hs-bar-val { font-weight: 600; }
+
+.hs-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 15rem; }
+.hs-tip-head { color: var(--cds-text-secondary); }
+.hs-tip b { font-weight: 600; }
+
+.hs-table-wrap { overflow-x: auto; }
+.hs-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.hs-table th, .hs-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.hs-table th { color: var(--color-fg-muted); font-weight: 400; }
+.hs-table th:nth-child(-n+3), .hs-table td:nth-child(-n+3) { text-align: left; }
+.hs-table td:last-child { font-weight: 600; }
+
+.hs-method { display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 46rem; }
+.hs-method h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.hs-method p { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.55; margin: 0; }
+
+.hs-fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-sm); min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.hs-fail::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+.ch-unit { font-family: var(--font-sans); font-size: 0.4em !important; margin-left: 0.35em; }
+.ch-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ch-legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.ch-swatch { width: 18px; height: 0; border-top: 3px solid var(--sw); border-radius: 2px; }
+.ch-swatch.is-dashed { border-top-style: dashed; }
+.ch-finish { display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-height: 10rem; position: relative; }
+.ch-fin-row { display: grid; grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); gap: var(--cds-gap-sm); align-items: center; }
+.ch-fin-track { display: flex; align-items: center; gap: var(--cds-gap-xs); min-width: 0; }
+.ch-fin-area { position: relative; flex: 1; height: 20px; min-width: 0; }
+.ch-fin-area .hs-bar { position: absolute; left: 0; top: 2px; }
+.ch-fin-mark { position: absolute; top: -3px; bottom: -3px; width: 0; border-left: 1.5px dashed var(--color-fg); }
+.ch-fin-track .hs-bar-val { width: 2.5rem; }
+.ch-fin-axis .ch-fin-area { height: 1rem; }
+.ch-fin-label { position: absolute; transform: translateX(-50%); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ch-streak-table td:nth-child(-n+3), .ch-streak-table th:nth-child(-n+3) { text-align: right; }
+.ch-streak-table td:first-child, .ch-streak-table th:first-child { text-align: left; }
+.ch-streak-table td:last-child { font-weight: 400; text-align: left; }
+.ch-streak-table th:last-child { text-align: left; }
+.ch-streak-table tr.is-target td { font-weight: 600; color: var(--color-fg); }
+.hs-table tr.is-target td:last-child { font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="hs">
+  <nav class="hs-nav" aria-label="Sections">
+    <a href="#hot-start">Hot start</a><a href="#chase">Chase to 200</a><a href="#method">How this was counted</a>
+  </nav>
+  <section class="hs-part" id="hot-start">
+  <header class="hs-head">
+      <p class="hs-eyebrow">Edmonton Oilers · 2026-27</p>
+    <h1 id="hs-title"><span data-source="summary" data-field="player" class="dash-skeleton">—</span>'s hot start</h1>
+    <p class="hs-take" id="hs-takeaway">
+      <span data-source="summary" data-field="player">—</span> has <b data-source="summary" data-field="pts">—</b> points in his first
+      <span data-source="summary" data-field="gp">—</span> games of <span data-source="summary" data-field="season">—</span>.
+      That ranks No. <b data-source="summary" data-field="rank">—</b><span class="hs-tied" data-tie="tied"></span>
+      among <span data-source="summary" data-field="starts">—</span> starts since <span data-source="summary" data-field="first_season">—</span>,
+      No. <b data-source="summary" data-field="adj_rank">—</b><span class="hs-tied" data-tie="adj_tied"></span> once scoring levels are adjusted,
+      and his <span data-source="summary" data-field="assists">—</span> assists rank No. <b data-source="summary" data-field="assist_rank">—</b><span class="hs-tied" data-tie="assist_tied"></span> all-time.
+    </p>
+    <p class="hs-asof">Through <span data-source="summary" data-field="as_of">—</span> · regular season only · every game since <span data-source="summary" data-field="first_season">—</span> from the NHL stats API</p>
+  </header>
+  <section class="hs-tiles" aria-label="Headline figures">
+    <div class="hs-tile">
+      <div class="hs-tile-label">Points, first <span data-source="summary" data-field="gp">—</span> games</div>
+      <div class="hs-tile-value"><span data-source="summary" data-field="pts" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span data-source="summary" data-field="goals">—</span> goals · <span data-source="summary" data-field="assists">—</span> assists</div>
+    </div>
+    <div class="hs-tile">
+      <div class="hs-tile-label">All-time rank</div>
+      <div class="hs-tile-value"><small>No.</small><span data-source="summary" data-field="rank" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span class="hs-tied-sub" data-tie="tied"></span>of <span data-source="summary" data-field="starts">—</span> starts since <span data-source="summary" data-field="first_season">—</span></div>
+    </div>
+    <div class="hs-tile">
+      <div class="hs-tile-label">Era-adjusted rank</div>
+      <div class="hs-tile-value"><small>No.</small><span data-source="summary" data-field="adj_rank" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span data-source="summary" data-field="adj_pts">—</span> adjusted points · of <span data-source="summary" data-field="adj_starts">—</span> starts since <span data-source="summary" data-field="adj_first_season">—</span></div>
+    </div>
+    <div class="hs-tile">
+      <div class="hs-tile-label">Assists rank</div>
+      <div class="hs-tile-value"><small>No.</small><span data-source="summary" data-field="assist_rank" class="dash-skeleton">—</span></div>
+      <div class="hs-tile-sub"><span class="hs-tied-sub" data-tie="assist_tied"></span><span data-source="summary" data-field="assists">—</span> assists through <span data-source="summary" data-field="gp">—</span> games, against every start since <span data-source="summary" data-field="first_season">—</span></div>
+    </div>
+  </section>
+
+  <div class="hs-controls">
+    <div class="hs-seg">
+      <span class="hs-seg-label" id="hs-scale-label">Count</span>
+      <div class="hs-seg-group" role="group" aria-labelledby="hs-scale-label">
+        <button type="button" id="hs-scale-pts" data-hs-set="scale:pts">Raw points</button>
+        <button type="button" id="hs-scale-adj" data-hs-set="scale:adj">Era-adjusted</button>
+      </div>
+    </div>
+    <div class="hs-seg">
+      <span class="hs-seg-label" id="hs-compare-label">Compare with</span>
+      <div class="hs-seg-group" role="group" aria-labelledby="hs-compare-label">
+        <button type="button" id="hs-compare-best" data-hs-set="compare:best">Best starts ever</button>
+        <button type="button" id="hs-compare-own" data-hs-set="compare:own">His other seasons</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="hs-card" id="race">
+    <h2 id="hs-race-title">Running points total, game by game</h2>
+    <p class="hs-note" id="hs-race-note"></p>
+    <div class="hs-plot" id="hs-race-chart" data-source="curves ranking"></div>
+  </section>
+
+  <div class="hs-grid">
+    <section class="hs-card" id="ranking">
+      <h2 id="hs-rank-title">Most points through <span data-source="summary" data-field="gp">—</span> games</h2>
+      <p class="hs-note" id="hs-rank-note"></p>
+      <div class="hs-bars" id="hs-rank-bars" data-source="ranking"></div>
+    </section>
+    <section class="hs-card" id="assists">
+      <h2>Most assists through <span data-source="summary" data-field="gp">—</span> games</h2>
+      <p class="hs-note">Every season since <span data-source="summary" data-field="first_season">—</span>. Hover a bar for that start's points.</p>
+      <div class="hs-bars" id="hs-assist-bars" data-source="assist_leaders"></div>
+    </section>
+  </div>
+
+  <div class="hs-grid">
+    <section class="hs-card" id="own">
+      <h2>McDavid's starts, season by season</h2>
+      <p class="hs-note" id="hs-own-note"></p>
+      <div class="hs-plot" id="hs-own-chart" data-source="own_starts" style="min-height: 15rem"></div>
+    </section>
+    <section class="hs-card" id="log">
+      <h2>This season, game by game</h2>
+      <p class="hs-note">Goals, assists and points in each game, with the running total.</p>
+      <div class="hs-table-wrap">
+        <table class="hs-table" id="hs-log-table" data-source="game_log" data-row-key="gp">
+          <thead><tr>
+            <th data-field="gp">Game</th><th data-field="date">Date</th><th data-field="opponent">Opp.</th>
+            <th data-field="goals">G</th><th data-field="assists">A</th><th data-field="pts">P</th><th data-field="cum_pts">Total</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  </section>
+
+  <section class="hs-part" id="chase">
+    <header class="hs-head">
+      <h2 class="hs-part-title">The chase to <span data-chase="target" class="dash-skeleton">—</span></h2>
+      <p class="hs-take" id="ch-takeaway"><span class="dash-skeleton">—</span></p>
+    </header>
+
+    <section class="hs-tiles" aria-label="Chase to 200 figures">
+      <div class="hs-tile">
+        <div class="hs-tile-label">Points needed</div>
+        <div class="hs-tile-value"><span data-chase="needed" class="dash-skeleton">—</span></div>
+        <div class="hs-tile-sub">in the Oilers' last <span data-chase="games_left">—</span> games, if he plays every one</div>
+      </div>
+      <div class="hs-tile">
+        <div class="hs-tile-label">Pace required</div>
+        <div class="hs-tile-value"><span data-chase="required_ppg" data-fmt="ppg" class="dash-skeleton">—</span><small class="ch-unit">pts/game</small></div>
+        <div class="hs-tile-sub">His pace so far this season: <span data-chase="this_season_ppg" data-fmt="ppg">—</span></div>
+      </div>
+      <div class="hs-tile">
+        <div class="hs-tile-label">Above his best season</div>
+        <div class="hs-tile-value"><span data-chase="pace_vs_best_season" data-fmt="pct" class="dash-skeleton">—</span></div>
+        <div class="hs-tile-sub">Best: <span data-chase="best_season_ppg" data-fmt="ppg">—</span> a game in <span data-chase="best_season">—</span>. Career: <span data-chase="career_ppg" data-fmt="ppg">—</span></div>
+      </div>
+      <div class="hs-tile">
+        <div class="hs-tile-label"><span data-chase="games_left">—</span>-game stretches at that pace</div>
+        <div class="hs-tile-value"><span data-chase="rest_streaks" class="dash-skeleton">—</span></div>
+        <div class="hs-tile-sub">In his <span data-chase="all_gp">—</span> career games. His best: <span data-chase="best_rest_ppg" data-fmt="ppg">—</span> a game, <span data-chase="best_rest_from" data-fmt="month">—</span> to <span data-chase="best_rest_to" data-fmt="month">—</span></div>
+      </div>
+    </section>
+
+    <section class="hs-card" id="road">
+      <h2>The road to <span data-chase="target">—</span></h2>
+      <p class="hs-note">Running points total by game played. The dashed line is the path to <span data-chase="target">—</span>: <span data-chase="required_ppg" data-fmt="ppg">—</span> points in every remaining game.</p>
+      <div class="ch-legend" id="ch-road-legend"></div>
+      <div class="hs-plot" id="ch-road-chart"></div>
+    </section>
+
+    <div class="hs-grid">
+      <section class="hs-card" id="pace-by-season">
+        <h2>Points per game, every season</h2>
+        <p class="hs-note" id="ch-season-note"></p>
+        <div class="hs-plot" id="ch-season-chart" style="min-height: 15rem"></div>
+      </section>
+      <section class="hs-card" id="finish">
+        <h2>Where he finishes at each pace</h2>
+        <p class="hs-note">His <span data-chase="pts">—</span> points so far plus <span data-chase="games_left">—</span> more games at each rate. The line marks <span data-chase="target">—</span>.</p>
+        <div class="ch-finish" id="ch-finish"></div>
+      </section>
+    </div>
+
+    <section class="hs-card" id="rolling">
+      <h2>His pace over every stretch of his career</h2>
+      <p class="hs-note" id="ch-rolling-note"></p>
+      <div class="hs-seg">
+        <span class="hs-seg-label" id="ch-k-label">Stretch length</span>
+        <div class="hs-seg-group" role="group" aria-labelledby="ch-k-label" id="ch-k-buttons"></div>
+      </div>
+      <div class="hs-plot" id="ch-rolling-chart"></div>
+    </section>
+
+    <section class="hs-card" id="streaks">
+      <h2>Stretches at <span data-chase="required_ppg" data-fmt="ppg">—</span> points a game</h2>
+      <p class="hs-note">How often he has averaged the required pace over runs of consecutive games, counted without overlap. Runs cross season breaks.</p>
+      <div class="hs-table-wrap">
+        <table class="hs-table ch-streak-table" id="ch-streak-table">
+          <thead><tr>
+            <th>Run length</th><th>Runs at pace</th><th>Share of all runs</th><th>Best average</th><th>Points</th><th>Best run</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+
+  <section class="hs-method" id="method">
+    <h2>How this was counted</h2>
+    <p>A start is a player's first <span data-source="summary" data-field="gp">—</span> regular-season games played, in date order. The comparison pool is every player-season in NHL history that reached that many games: <span data-source="summary" data-field="starts">—</span> starts across <span data-source="summary" data-field="seasons">—</span> seasons, built from <span data-source="summary" data-field="game_rows">—</span> regular-season skater game lines pulled from the NHL's stats API.</p>
+    <p>The chase to 200 assumes he plays every remaining Oilers game of the 84-game schedule: the pace needed is the points still needed divided by those games. His rolling pace runs over consecutive regular-season games across his whole career, season breaks included. Runs at the required pace are counted without overlap: scanning forward, once a run qualifies, the count picks up after it.</p>
+    <p>Raw points are as the league recorded them. Scoring has swung widely, from about 7.4 goals a game in the late 1980s to about 5.3 in the late 1990s, so the era-adjusted count scales each goal and each assist by how common they were that season compared with 2023-24 through 2025-26. Early seasons credited far fewer assists per goal, which no scaling repairs, so the adjusted ranking starts in <span data-source="summary" data-field="adj_first_season">—</span>, the first season of the unbroken run in which assists per goal sit within 15% of today's rate.</p>
+  </section>
+  <p class="hs-foot">Data: NHL stats API (api.nhle.com), every regular-season game since 1917-18. Code and data: <a href="https://github.com/drburke-droid/nhl-sog-predictor">drburke-droid/nhl-sog-predictor</a>.</p>
+</div>
+<script>
+// A small stand-in for the dashboard runtime: loads the JSON tables beside this page.
+window.dash = (function () {
+  const ids = ['summary', 'ranking', 'curves', 'own_starts', 'assist_leaders', 'game_log',
+    'chase', 'chase_seasons', 'chase_streaks', 'chase_rolling', 'chase_curves'];
+  const store = Object.fromEntries(ids.map((id) => [id, { status: 'loading', data: [] }]));
+  const subs = [];
+  const notify = () => subs.forEach((fn) => fn());
+  Promise.all(ids.map((id) => fetch(`data/${id}.json`, { cache: 'no-cache' })
+    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then((rows) => { store[id] = { status: 'ok', data: rows }; })
+    .catch(() => { store[id] = { status: 'error', data: [] }; }))).then(notify);
+  let lastW = window.innerWidth, t;
+  window.addEventListener('resize', () => {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    clearTimeout(t);
+    t = setTimeout(notify, 150);
+  });
+  return {
+    data: (id) => store[id] || { status: 'missing', data: [] },
+    onData: (fn) => { subs.push(fn); fn(); },
+  };
+})();
+</script>
+<script>
+(function () {
+  const root = document.querySelector('.hs');
+  const state = { scale: 'pts', compare: 'best' };
+  const BEST = 8;          // best starts drawn on the race chart
+  const BAR_ROWS = 15;     // rows in the points ranking
+  const fmt = d3.format(',');
+  const fmt1 = d3.format(',.1f');
+  const fmtDate = d3.utcFormat('%b %-d, %Y');
+  const fmtDay = d3.utcFormat('%b %-d');
+  const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+  const yes = (v) => v === true || v === 'true' || v === 1 || v === '1';
+  const accent = 'var(--series-1)';
+  const muted = 'var(--cds-chart-muted)';
+
+  root.querySelectorAll('[data-hs-set]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const [k, v] = btn.dataset.hsSet.split(':');
+      state[k] = v;
+      render();
+    });
+  });
+
+  function status(el, ...results) {
+    const bad = results.find((r) => r.status !== 'ok');
+    el.classList.toggle('dash-skeleton', !!bad && bad.status !== 'error');
+    if (!bad) return true;
+    el.replaceChildren();
+    if (bad.status === 'error') {
+      const f = document.createElement('div');
+      f.className = 'hs-fail';
+      f.textContent = 'Failed to load';
+      el.append(f);
+    }
+    return false;
+  }
+
+  function measure(svg, text, cls) {
+    const t = svg.append('text').attr('class', cls).text(text);
+    const w = t.node().getComputedTextLength();
+    t.remove();
+    return w;
+  }
+
+  function tooltip(box) {
+    let tip = box.querySelector(':scope > .hs-tip');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.className = 'hs-tip';
+      tip.hidden = true;
+      box.append(tip);
+    }
+    return {
+      show(head, lines, x, y) {
+        tip.replaceChildren();
+        const h = document.createElement('div');
+        h.className = 'hs-tip-head';
+        h.textContent = head;
+        tip.append(h);
+        lines.forEach((l) => { const d = document.createElement('div'); d.textContent = l; tip.append(d); });
+        tip.hidden = false;
+        const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+        let left = x + 14;
+        if (left + tw > bw) left = x - tw - 14;
+        tip.style.left = Math.max(0, left) + 'px';
+        tip.style.top = Math.max(0, y - th - 10) + 'px';
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+
+  // ---------------------------------------------------------------- summary
+  function fillSummary(s) {
+    const els = root.querySelectorAll('[data-source="summary"][data-field]');
+    const ok = s.status === 'ok' && s.data.length;
+    els.forEach((el) => {
+      el.classList.toggle('dash-skeleton', !ok && s.status !== 'error');
+      if (!ok) { el.textContent = '—'; return; }
+      const v = s.data[0][el.dataset.field];
+      if (el.dataset.field === 'as_of') el.textContent = fmtDate(new Date(v));
+      else if (el.dataset.field === 'adj_pts') el.textContent = fmt1(num(v));
+      else if (typeof v === 'number' || /^\d+$/.test(String(v))) el.textContent = fmt(num(v));
+      else el.textContent = v;
+    });
+    root.querySelectorAll('[data-tie]').forEach((el) => {
+      const t = ok ? num(s.data[0][el.dataset.tie]) : 0;
+      el.textContent = t > 0 ? (el.classList.contains('hs-tied') ? ' (tied)' : 'Tied · ') : '';
+    });
+  }
+
+  // -------------------------------------------------------------- race chart
+  function drawRace(cur, rk, sm) {
+    const box = root.querySelector('#hs-race-chart');
+    const note = root.querySelector('#hs-race-note');
+    if (!status(box, cur, rk, sm)) { note.textContent = ''; return; }
+    const adj = state.scale === 'adj';
+    const field = adj ? 'adj_pts' : 'pts';
+    const rankField = adj ? 'adj_rank' : 'rank';
+    const n = num(sm.data[0].gp);
+    const player = sm.data[0].player;
+    const lastName = player.split(' ').slice(-1)[0];
+
+    const byKey = d3.group(cur.data, (r) => r.key);
+    const targetRow = cur.data.find((r) => r.group === 'this season');
+    const target = targetRow && targetRow.key;
+    let keys;
+    if (state.compare === 'best') {
+      keys = rk.data.filter((r) => !yes(r.this_season) && num(r[rankField]) !== null && num(r[rankField]) <= BEST)
+        .map((r) => r.key).filter((k) => byKey.has(k));
+      note.textContent = `${player} this season against every start that ranks in the top ${BEST} through ${n} games${adj ? ', era-adjusted, since ' + sm.data[0].adj_first_season : ''}. Their lines carry on to game 20 to show what came next.`;
+    } else {
+      keys = [...byKey.keys()].filter((k) => k !== target && byKey.get(k)[0].group !== 'top start');
+      note.textContent = `${player} this season against his ${keys.length} other seasons, each through 20 games.`;
+    }
+    const series = keys.concat(target ? [target] : []).map((k) => {
+      const rows = byKey.get(k).slice().sort((a, b) => num(a.gp) - num(b.gp));
+      return {
+        key: k, target: k === target, player: rows[0].player, season: rows[0].season,
+        pts: rows.map((r) => ({ gp: num(r.gp), v: num(r[field]), date: r.date })).filter((p) => p.v !== null && p.gp <= 20),
+      };
+    }).filter((s) => s.pts.length);
+
+    box.replaceChildren();
+    const W = box.clientWidth;
+    const H = Math.round(Math.max(280, Math.min(420, W * 0.5)));
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Running points total by game played');
+    const yMax = d3.max(series, (s) => d3.max(s.pts, (p) => p.v)) || 1;
+    const y = d3.scaleLinear([0, yMax], [0, 0]).nice();
+    const yTicks = y.ticks(6);
+    const left = Math.ceil(d3.max(yTicks, (t) => measure(svg, fmt(t), 'hs-tick'))) + 10;
+
+    // end labels: this season, plus the line that finishes highest
+    const others = series.filter((s) => !s.target);
+    const top = others.slice().sort((a, b) => b.pts[b.pts.length - 1].v - a.pts[a.pts.length - 1].v)[0];
+    const label = (s) => s.target
+      ? `${lastName} ${s.season} · ${adj ? fmt1(s.pts[s.pts.length - 1].v) : fmt(s.pts[s.pts.length - 1].v)}`
+      : `${state.compare === 'own' ? '' : s.player.split(' ').slice(-1)[0] + ' '}${s.season}`;
+    const labelled = [top, series.find((s) => s.target)].filter(Boolean);
+    const topLast = top ? top.pts[top.pts.length - 1].gp : 20;
+    const right = Math.ceil(Math.max(12, ...labelled.filter((s) => s.pts[s.pts.length - 1].gp >= topLast)
+      .map((s) => measure(svg, label(s), 'hs-endlabel') + 10)));
+    const m = { top: 12, right, bottom: 34, left };
+    const x = d3.scaleLinear([1, 20], [m.left, W - m.right]);
+    y.range([H - m.bottom, m.top]);
+
+    const g = svg.append('g');
+    g.selectAll('line.grid').data(yTicks).join('line')
+      .attr('x1', m.left).attr('x2', W - m.right).attr('y1', (t) => y(t)).attr('y2', (t) => y(t))
+      .style('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+    g.selectAll('text.yt').data(yTicks).join('text').attr('class', 'hs-tick')
+      .attr('x', m.left - 8).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => fmt(t));
+    const xTicks = W < 480 ? [1, 5, 10, 15, 20] : d3.range(1, 21);
+    g.selectAll('text.xt').data(xTicks).join('text').attr('class', 'hs-tick')
+      .attr('x', (t) => x(t)).attr('y', H - m.bottom + 16).attr('text-anchor', 'middle').text((t) => t);
+    g.append('text').attr('class', 'hs-tick').attr('x', (m.left + W - m.right) / 2).attr('y', H - 2)
+      .attr('text-anchor', 'middle').text('Games played');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', H - m.bottom).attr('y2', H - m.bottom)
+      .style('stroke', 'var(--cds-chart-axis)');
+    // today marker
+    g.append('line').attr('x1', x(n)).attr('x2', x(n)).attr('y1', m.top).attr('y2', H - m.bottom)
+      .style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    g.append('text').attr('class', 'hs-tick').attr('x', x(n) + 4).attr('y', m.top + 4).attr('dy', '0.7em')
+      .text(`Game ${n}, today`);
+
+    const line = d3.line().x((p) => x(p.gp)).y((p) => y(p.v));
+    const paths = g.append('g').selectAll('path').data(series.slice().sort((a, b) => a.target - b.target)).join('path')
+      .attr('d', (s) => line(s.pts)).attr('fill', 'none')
+      .style('stroke', (s) => (s.target ? accent : muted))
+      .attr('stroke-width', (s) => (s.target ? 3 : 1.5))
+      .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+    const tgt = series.find((s) => s.target);
+    if (tgt) {
+      const p = tgt.pts[tgt.pts.length - 1];
+      g.append('circle').attr('cx', x(p.gp)).attr('cy', y(p.v)).attr('r', 5)
+        .style('fill', accent).style('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    }
+
+    // end labels, nudged apart
+    const labels = labelled.map((s) => {
+      const p = s.pts[s.pts.length - 1];
+      return { s, x: x(p.gp) + 8, y: y(p.v) };
+    }).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < labels.length; i++) {
+      if (Math.abs(labels[i].x - labels[i - 1].x) < 160 && labels[i].y - labels[i - 1].y < 16) labels[i].y = labels[i - 1].y + 16;
+    }
+    g.selectAll('text.end').data(labels).join('text')
+      .attr('class', (l) => 'hs-endlabel' + (l.s.target ? ' is-target' : ''))
+      .attr('x', (l) => l.x).attr('y', (l) => l.y).attr('dy', '0.32em').text((l) => label(l.s));
+
+    // hover: nearest point
+    const pts = series.flatMap((s) => s.pts.map((p) => ({ s, p })));
+    const delaunay = d3.Delaunay.from(pts, (d) => x(d.p.gp), (d) => y(d.p.v));
+    const dot = g.append('circle').attr('r', 4.5).attr('stroke-width', 2).style('stroke', 'var(--color-panel)').attr('visibility', 'hidden');
+    const tip = tooltip(box);
+    svg.on('pointermove', (ev) => {
+      const [mx, my] = d3.pointer(ev);
+      const d = pts[delaunay.find(mx, my)];
+      if (!d || Math.hypot(x(d.p.gp) - mx, y(d.p.v) - my) > 48) { reset(); return; }
+      paths.style('stroke', (s) => (s === d.s ? (s.target ? accent : 'var(--color-fg)') : s.target ? accent : muted))
+        .style('opacity', (s) => (s === d.s || s.target ? 1 : 0.35));
+      dot.attr('cx', x(d.p.gp)).attr('cy', y(d.p.v)).style('fill', d.s.target ? accent : 'var(--color-fg)').attr('visibility', 'visible');
+      const val = adj ? `${fmt1(d.p.v)} era-adjusted points` : `${fmt(d.p.v)} points`;
+      tip.show(`${d.s.player} · ${d.s.season}`, [`Game ${d.p.gp} (${fmtDay(new Date(d.p.date))}): ${val}`], x(d.p.gp) * box.clientWidth / W, y(d.p.v) * box.clientWidth / W);
+    });
+    svg.on('pointerleave', reset);
+    function reset() {
+      paths.style('stroke', (s) => (s.target ? accent : muted)).style('opacity', 1);
+      dot.attr('visibility', 'hidden');
+      tip.hide();
+    }
+  }
+
+  // ------------------------------------------------------------ bar lists
+  function barList(box, rows, opt) {
+    box.replaceChildren();
+    const max = d3.max(rows, (r) => opt.value(r)) || 1;
+    const tip = tooltip(box);
+    rows.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'hs-bar-row' + (opt.target(r) ? ' is-target' : '');
+      const rank = document.createElement('div');
+      rank.className = 'hs-bar-rank';
+      rank.textContent = opt.rank(r);
+      const name = document.createElement('div');
+      name.className = 'hs-bar-name';
+      name.textContent = r.player;
+      const season = document.createElement('span');
+      season.textContent = r.season;
+      name.append(season);
+      const track = document.createElement('div');
+      track.className = 'hs-bar-track';
+      const bar = document.createElement('div');
+      bar.className = 'hs-bar';
+      bar.style.width = `calc((100% - 3rem) * ${opt.value(r) / max})`;
+      bar.style.background = opt.target(r) ? accent : muted;
+      const val = document.createElement('span');
+      val.className = 'hs-bar-val';
+      val.textContent = opt.format(opt.value(r));
+      track.append(bar, val);
+      row.append(rank, name, track);
+      row.addEventListener('pointermove', (ev) => {
+        const b = box.getBoundingClientRect();
+        tip.show(`${r.player} · ${r.season}`, opt.tip(r), ev.clientX - b.left, ev.clientY - b.top);
+      });
+      row.addEventListener('pointerleave', () => tip.hide());
+      box.append(row);
+    });
+  }
+
+  function drawRanking(rk, sm) {
+    const box = root.querySelector('#hs-rank-bars');
+    const note = root.querySelector('#hs-rank-note');
+    if (!status(box, rk, sm)) { note.textContent = ''; return; }
+    const adj = state.scale === 'adj';
+    const field = adj ? 'adj_pts' : 'pts';
+    const rankField = adj ? 'adj_rank' : 'rank';
+    let rows = rk.data.filter((r) => num(r[field]) !== null)
+      .sort((a, b) => num(b[field]) - num(a[field]) || num(b.goals) - num(a.goals));
+    const shown = rows.slice(0, BAR_ROWS);
+    const t = rows.find((r) => yes(r.this_season));
+    if (t && !shown.includes(t)) shown.push(t);
+    note.textContent = adj
+      ? `Era-adjusted points, every season since ${sm.data[0].adj_first_season}. Hover a bar for goals, assists and how the season ended.`
+      : `Points as recorded, every season since ${sm.data[0].first_season}. Hover a bar for goals, assists and how the season ended.`;
+    barList(box, shown, {
+      value: (r) => num(r[field]),
+      format: (v) => (adj ? fmt1(v) : fmt(v)),
+      rank: (r) => num(r[rankField]),
+      target: (r) => yes(r.this_season),
+      tip: (r) => [
+        `${fmt(num(r.goals))} goals, ${fmt(num(r.assists))} assists: ${fmt(num(r.pts))} points` +
+          (num(r.adj_pts) === null ? '' : `, ${fmt1(num(r.adj_pts))} era-adjusted`),
+        yes(r.this_season) ? 'Season in progress' : `Finished with ${fmt(num(r.season_pts))} points in ${fmt(num(r.season_gp))} games`,
+      ],
+    });
+  }
+
+  function drawAssists(al) {
+    const box = root.querySelector('#hs-assist-bars');
+    if (!status(box, al)) return;
+    barList(box, al.data, {
+      value: (r) => num(r.assists),
+      format: fmt,
+      rank: (r) => num(r.assist_rank),
+      target: (r) => yes(r.this_season),
+      tip: (r) => [`${fmt(num(r.assists))} assists, ${fmt(num(r.pts))} points`],
+    });
+  }
+
+  // ------------------------------------------------------------ own seasons
+  function drawOwn(os, sm) {
+    const box = root.querySelector('#hs-own-chart');
+    const note = root.querySelector('#hs-own-note');
+    if (!status(box, os, sm)) { note.textContent = ''; return; }
+    const adj = state.scale === 'adj';
+    const field = adj ? 'adj_pts' : 'pts';
+    const rows = os.data.map((r) => ({ ...r, v: num(r[field]) }));
+    const n = num(sm.data[0].gp);
+    const prevBest = d3.max(rows.filter((r) => !yes(r.this_season)), (r) => r.v);
+    note.textContent = `${adj ? 'Era-adjusted points' : 'Points'} in the first ${n} games of each of his ${rows.length} seasons.`;
+
+    box.replaceChildren();
+    const W = box.clientWidth;
+    const H = 240;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', 'Points through the opening games of each McDavid season');
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.v) || 1], [0, 0]).nice();
+    const ticks = y.ticks(4);
+    const left = Math.ceil(d3.max(ticks, (t) => measure(svg, fmt(t), 'hs-tick'))) + 10;
+    const m = { top: 20, right: 4, bottom: 24, left };
+    y.range([H - m.bottom, m.top]);
+    const x = d3.scaleBand(rows.map((r) => r.season), [m.left, W - m.right]).padding(0.25);
+    const g = svg.append('g');
+    g.selectAll('line').data(ticks).join('line').attr('x1', m.left).attr('x2', W - m.right)
+      .attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+    g.selectAll('text.yt').data(ticks).join('text').attr('class', 'hs-tick').attr('x', m.left - 8).attr('y', (t) => y(t))
+      .attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => fmt(t));
+    if (prevBest) {
+      g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(prevBest)).attr('y2', y(prevBest))
+        .style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    }
+    const bw = Math.min(24, x.bandwidth());
+    const cx = (r) => x(r.season) + x.bandwidth() / 2;
+    g.selectAll('path.bar').data(rows).join('path')
+      .attr('d', (r) => {
+        const x0 = cx(r) - bw / 2, y0 = y(r.v), h = y(0) - y0, rr = Math.min(4, h, bw / 2);
+        return `M${x0},${y(0)}V${y0 + rr}Q${x0},${y0} ${x0 + rr},${y0}H${x0 + bw - rr}Q${x0 + bw},${y0} ${x0 + bw},${y0 + rr}V${y(0)}Z`;
+      })
+      .style('fill', (r) => (yes(r.this_season) ? accent : muted));
+    g.selectAll('text.val').data(rows).join('text').attr('class', 'hs-tick')
+      .style('fill', (r) => (yes(r.this_season) ? 'var(--color-fg)' : 'var(--color-fg-muted)'))
+      .style('font-weight', (r) => (yes(r.this_season) ? 600 : 400))
+      .attr('x', cx).attr('y', (r) => y(r.v) - 5).attr('text-anchor', 'middle').text((r) => (adj ? d3.format('.0f')(r.v) : fmt(r.v)));
+    const every = x.bandwidth() < 34 ? 2 : 1;
+    g.selectAll('text.xl').data(rows.filter((r, i) => (rows.length - 1 - i) % every === 0)).join('text').attr('class', 'hs-tick')
+      .attr('x', cx).attr('y', H - m.bottom + 16).attr('text-anchor', 'middle').text((r) => r.season.slice(2));
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+
+    const tip = tooltip(box);
+    g.selectAll('rect.hit').data(rows).join('rect').attr('x', (r) => x(r.season)).attr('width', x.bandwidth())
+      .attr('y', m.top).attr('height', H - m.top - m.bottom).style('fill', 'transparent')
+      .on('pointermove', (ev, r) => {
+        const s = box.clientWidth / W;
+        tip.show(r.season, [
+          `${fmt(num(r.goals))} goals, ${fmt(num(r.assists))} assists in the first ${n} games`,
+          yes(r.this_season) ? 'Season in progress' : `Finished with ${fmt(num(r.season_pts))} points in ${fmt(num(r.season_gp))} games`,
+        ], cx(r) * s, y(r.v) * s);
+      })
+      .on('pointerleave', () => tip.hide());
+  }
+
+  // ------------------------------------------------------------- game log
+  function drawLog(gl) {
+    const table = root.querySelector('#hs-log-table');
+    const body = table.querySelector('tbody');
+    body.replaceChildren();
+    table.classList.toggle('dash-skeleton', gl.status !== 'ok' && gl.status !== 'error');
+    if (gl.status !== 'ok') return;
+    const cols = ['gp', 'date', 'opponent', 'goals', 'assists', 'pts', 'cum_pts'];
+    gl.data.slice().sort((a, b) => num(a.gp) - num(b.gp)).forEach((r) => {
+      const tr = document.createElement('tr');
+      cols.forEach((c) => {
+        const td = document.createElement('td');
+        td.textContent = c === 'date' ? fmtDay(new Date(r[c])) : c === 'opponent' ? r[c] : fmt(num(r[c]));
+        tr.append(td);
+      });
+      body.append(tr);
+    });
+  }
+
+  function render() {
+    root.querySelectorAll('[data-hs-set]').forEach((b) => {
+      const [k, v] = b.dataset.hsSet.split(':');
+      b.setAttribute('aria-pressed', String(state[k] === v));
+    });
+    const sm = dash.data('summary');
+    fillSummary(sm);
+    drawRace(dash.data('curves'), dash.data('ranking'), sm);
+    drawRanking(dash.data('ranking'), sm);
+    drawAssists(dash.data('assist_leaders'));
+    drawOwn(dash.data('own_starts'), sm);
+    drawLog(dash.data('game_log'));
+  }
+
+  window.hsKit = { tooltip, measure, status };
+  dash.onData(render);
+})();
+</script>
+<script>
+(function () {
+  const root = document.querySelector('#chase');
+  const { tooltip, measure, status } = window.hsKit;
+  const fmt = d3.format(',');
+  const ppg = d3.format('.2f');
+  const pct = d3.format('+.0%');
+  const fmtDay = d3.utcFormat('%b %-d, %Y');
+  const fmtMonth = d3.utcFormat('%b %Y');
+  const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+  const yes = (v) => v === true || v === 'true' || v === 1 || v === '1';
+  const accent = 'var(--series-1)';
+  const second = 'var(--series-2)';
+  const muted = 'var(--cds-chart-muted)';
+  let k = null; // stretch length on the rolling chart
+
+  const FORMATS = {
+    ppg: (v) => ppg(num(v)),
+    pct: (v) => pct(num(v)),
+    month: (v) => fmtMonth(new Date(v)),
+    int: (v) => fmt(num(v)),
+  };
+
+  function fillTiles(c) {
+    const ok = c.status === 'ok' && c.data.length;
+    document.querySelectorAll('[data-chase]').forEach((el) => {
+      el.classList.toggle('dash-skeleton', !ok && c.status !== 'error');
+      if (!ok) { el.textContent = '—'; return; }
+      const v = c.data[0][el.dataset.chase];
+      el.textContent = (FORMATS[el.dataset.fmt] || ((x) => (typeof x === 'number' ? fmt(x) : x)))(v);
+    });
+  }
+
+  function takeaway(c, st) {
+    const el = root.querySelector('#ch-takeaway');
+    if (c.status !== 'ok' || st.status !== 'ok') return;
+    const d = c.data[0];
+    const never = st.data.map((r) => ({ ...r, games: num(r.games) }))
+      .filter((r) => num(r.streaks) === 0).sort((a, b) => a.games - b.games)[0];
+    const parts = [
+      `To reach ${d.target}, ${d.player.split(' ').slice(-1)[0]} needs ${d.needed} points in Edmonton's last ${d.games_left} games: ${ppg(d.required_ppg)} a game.`,
+      `That is ${pct(d.pace_vs_best_season).replace('+', '')} above his best season (${ppg(d.best_season_ppg)} in ${d.best_season}) and ${pct(d.pace_vs_career).replace('+', '')} above his career rate.`,
+      never
+        ? `His best ${d.games_left}-game run ever averaged ${ppg(d.best_rest_ppg)}, and he has never held ${ppg(d.required_ppg)} for even ${never.games} games in a row (his best ${never.games}-game run: ${ppg(never.best_ppg)}).`
+        : `He has averaged that over ${d.games_left} straight games ${d.rest_streaks} time${d.rest_streaks === 1 ? '' : 's'} before.`,
+      d.seasons_200
+        ? `Only ${d.players_200 === 1 ? d.last_200_player : d.players_200 + ' players'} ${d.players_200 === 1 ? 'has' : 'have'} reached ${d.target} (${d.seasons_200} time${d.seasons_200 === 1 ? '' : 's'}), last in ${d.last_200}.`
+        : '',
+    ];
+    el.textContent = parts.join(' ');
+  }
+
+  // ----------------------------------------------------------- road to 200
+  function drawRoad(cv, c) {
+    const box = root.querySelector('#ch-road-chart');
+    const legend = root.querySelector('#ch-road-legend');
+    if (!status(box, cv, c)) { legend.replaceChildren(); return; }
+    const d = c.data[0];
+    const games = num(d.season_games);
+    const target = num(d.target);
+    const series = d3.groups(cv.data, (r) => r.key).map(([key, rows]) => ({
+      key, player: rows[0].player, season: rows[0].season, target: yes(rows[0].this_season),
+      pts: rows.map((r) => ({ gp: num(r.gp), v: num(r.pts) })).sort((a, b) => a.gp - b.gp),
+    }));
+    const now = series.find((s) => s.target);
+    const last = now.pts[now.pts.length - 1];
+    const need = { key: 'need', path: true, player: `Path to ${target}`, season: '',
+      pts: [last, { gp: last.gp + num(d.games_left), v: target }] };
+
+    // legend (always shown; end labels join it on wide screens)
+    legend.replaceChildren();
+    const short = (s) => `${s.player.split(' ').slice(-1)[0]} ${s.season}`;
+    [now, need, ...series.filter((s) => !s.target)].forEach((s) => {
+      const item = document.createElement('span');
+      item.className = 'ch-legend-item';
+      const sw = document.createElement('span');
+      sw.className = 'ch-swatch' + (s.path ? ' is-dashed' : '');
+      sw.style.setProperty('--sw', s.target || s.path ? accent : s.player === d.player ? second : muted);
+      const label = document.createElement('span');
+      label.textContent = s.path ? `Path to ${target} (${ppg(d.required_ppg)}/game)`
+        : `${short(s)} · ${fmt(s.pts[s.pts.length - 1].v)}`;
+      item.append(sw, label);
+      legend.append(item);
+    });
+
+    box.replaceChildren();
+    const W = box.clientWidth;
+    const H = Math.round(Math.max(280, Math.min(440, W * 0.52)));
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', `Running points total against the path to ${target}`);
+    const y = d3.scaleLinear([0, Math.max(target, d3.max(series, (s) => d3.max(s.pts, (p) => p.v)))], [0, 0]).nice();
+    const yTicks = y.ticks(5);
+    const left = Math.ceil(d3.max(yTicks, (t) => measure(svg, fmt(t), 'hs-tick'))) + 10;
+    const wide = W >= 640;
+    const endText = (s) => (s.path ? `${target}` : `${short(s)} · ${fmt(s.pts[s.pts.length - 1].v)}`);
+    const enders = [...series.filter((s) => !s.target)];
+    const right = wide ? Math.ceil(d3.max(enders, (s) => measure(svg, endText(s), 'hs-endlabel'))) + 14 : 12;
+    const m = { top: 12, right, bottom: 34, left };
+    const x = d3.scaleLinear([1, games], [m.left, W - m.right]);
+    y.range([H - m.bottom, m.top]);
+
+    const g = svg.append('g');
+    g.selectAll('line.grid').data(yTicks).join('line').attr('x1', m.left).attr('x2', W - m.right)
+      .attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+    g.selectAll('text.yt').data(yTicks).join('text').attr('class', 'hs-tick').attr('x', m.left - 8)
+      .attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => fmt(t));
+    const xTicks = [1, ...d3.range(10, games + 1, 10), games].filter((t, i, a) => a.indexOf(t) === i && (t === games || games - t >= 7));
+    g.selectAll('text.xt').data(xTicks).join('text').attr('class', 'hs-tick').attr('x', (t) => x(t))
+      .attr('y', H - m.bottom + 16).attr('text-anchor', 'middle').text((t) => t);
+    g.append('text').attr('class', 'hs-tick').attr('x', (m.left + W - m.right) / 2).attr('y', H - 2)
+      .attr('text-anchor', 'middle').text('Games played');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(target)).attr('y2', y(target))
+      .style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    g.append('text').attr('class', 'hs-tick').attr('x', m.left + 4).attr('y', y(target) - 5).text(`${target} points`);
+
+    const line = d3.line().x((p) => x(p.gp)).y((p) => y(p.v));
+    const drawn = series.filter((s) => !s.target).concat([need, now]);
+    const color = (s) => (s.target || s.path ? accent : s.player === d.player ? second : muted);
+    const paths = g.append('g').selectAll('path').data(drawn).join('path').attr('d', (s) => line(s.pts))
+      .attr('fill', 'none').style('stroke', color)
+      .attr('stroke-width', (s) => (s.target ? 3 : 2)).attr('stroke-dasharray', (s) => (s.path ? '6 5' : null))
+      .attr('stroke-linejoin', 'round').attr('stroke-linecap', (s) => (s.path ? 'butt' : 'round'));
+    g.append('circle').attr('cx', x(last.gp)).attr('cy', y(last.v)).attr('r', 5).style('fill', accent)
+      .style('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    g.append('text').attr('class', 'hs-endlabel is-target').attr('x', x(last.gp) + 9).attr('y', y(last.v) + 4)
+      .attr('dy', '0.32em').text(`${fmt(last.v)} now`);
+
+    if (wide) {
+      const labels = enders.map((s) => ({ s, y: y(s.pts[s.pts.length - 1].v) })).sort((a, b) => a.y - b.y);
+      for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < 15) labels[i].y = labels[i - 1].y + 15;
+      g.selectAll('text.end').data(labels).join('text').attr('class', 'hs-endlabel')
+        .attr('x', (l) => x(l.s.pts[l.s.pts.length - 1].gp) + 6).attr('y', (l) => l.y).attr('dy', '0.32em').text((l) => endText(l.s));
+    }
+
+    const pts = drawn.flatMap((s) => (s.path
+      ? d3.range(s.pts[0].gp, s.pts[1].gp + 1).map((gp) => ({ s, p: { gp, v: last.v + (gp - last.gp) * num(d.required_ppg) } }))
+      : s.pts.map((p) => ({ s, p }))));
+    const delaunay = d3.Delaunay.from(pts, (q) => x(q.p.gp), (q) => y(q.p.v));
+    const dot = g.append('circle').attr('r', 4.5).attr('stroke-width', 2).style('stroke', 'var(--color-panel)').attr('visibility', 'hidden');
+    const tip = tooltip(box);
+    svg.on('pointermove', (ev) => {
+      const [mx, my] = d3.pointer(ev);
+      const q = pts[delaunay.find(mx, my)];
+      if (!q || Math.hypot(x(q.p.gp) - mx, y(q.p.v) - my) > 48) { reset(); return; }
+      paths.style('opacity', (s) => (s === q.s || s.target ? 1 : 0.35));
+      dot.attr('cx', x(q.p.gp)).attr('cy', y(q.p.v)).style('fill', color(q.s)).attr('visibility', 'visible');
+      const s = box.clientWidth / W;
+      tip.show(q.s.path ? `Path to ${target}` : `${q.s.player} · ${q.s.season}`,
+        [`Game ${q.p.gp}: ${q.s.path ? 'needs ' + fmt(Math.round(q.p.v)) : fmt(q.p.v)} points`], x(q.p.gp) * s, y(q.p.v) * s);
+    });
+    svg.on('pointerleave', reset);
+    function reset() { paths.style('opacity', 1); dot.attr('visibility', 'hidden'); tip.hide(); }
+  }
+
+  // ------------------------------------------------- points per game by season
+  function drawSeasons(se, c) {
+    const box = root.querySelector('#ch-season-chart');
+    const note = root.querySelector('#ch-season-note');
+    if (!status(box, se, c)) return;
+    const d = c.data[0];
+    const need = num(d.required_ppg);
+    note.textContent = `The dashed line is the ${ppg(need)} a game he needs from here on. ` +
+      (num(d.seasons_at_pace) === 0 ? `None of his finished seasons reached it; his best was ${ppg(d.best_season_ppg)} in ${d.best_season}.`
+        : `He has finished ${d.seasons_at_pace} season${num(d.seasons_at_pace) === 1 ? '' : 's'} at it.`);
+    const rows = se.data.map((r) => ({ ...r, v: num(r.ppg) }));
+    box.replaceChildren();
+    const W = box.clientWidth, H = 250;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', 'Points per game in each season against the required pace');
+    const y = d3.scaleLinear([0, Math.max(need, d3.max(rows, (r) => r.v))], [0, 0]).nice();
+    const ticks = y.ticks(4);
+    const left = Math.ceil(d3.max(ticks, (t) => measure(svg, d3.format('.1f')(t), 'hs-tick'))) + 10;
+    const m = { top: 20, right: 4, bottom: 24, left };
+    y.range([H - m.bottom, m.top]);
+    const x = d3.scaleBand(rows.map((r) => r.season), [m.left, W - m.right]).padding(0.25);
+    const g = svg.append('g');
+    g.selectAll('line').data(ticks).join('line').attr('x1', m.left).attr('x2', W - m.right)
+      .attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+    g.selectAll('text.yt').data(ticks).join('text').attr('class', 'hs-tick').attr('x', m.left - 8).attr('y', (t) => y(t))
+      .attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => d3.format('.1f')(t));
+    const bw = Math.min(24, x.bandwidth());
+    const cx = (r) => x(r.season) + x.bandwidth() / 2;
+    g.selectAll('path.bar').data(rows).join('path').attr('d', (r) => {
+      const x0 = cx(r) - bw / 2, y0 = y(r.v), h = y(0) - y0, rr = Math.min(4, h, bw / 2);
+      return `M${x0},${y(0)}V${y0 + rr}Q${x0},${y0} ${x0 + rr},${y0}H${x0 + bw - rr}Q${x0 + bw},${y0} ${x0 + bw},${y0 + rr}V${y(0)}Z`;
+    }).style('fill', (r) => (yes(r.this_season) ? accent : muted));
+    const lab = x.bandwidth() >= 30 ? ppg : d3.format('.1f');
+    g.selectAll('text.val').data(rows).join('text').attr('class', 'hs-tick')
+      .style('fill', (r) => (yes(r.this_season) ? 'var(--color-fg)' : 'var(--color-fg-muted)'))
+      .style('font-weight', (r) => (yes(r.this_season) ? 600 : 400))
+      .attr('x', cx).attr('y', (r) => y(r.v) - 5).attr('text-anchor', 'middle').text((r) => lab(r.v));
+    const every = x.bandwidth() < 34 ? 2 : 1;
+    g.selectAll('text.xl').data(rows.filter((r, i) => (rows.length - 1 - i) % every === 0)).join('text')
+      .attr('class', 'hs-tick').attr('x', cx).attr('y', H - m.bottom + 16).attr('text-anchor', 'middle').text((r) => r.season.slice(2));
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(need)).attr('y2', y(need))
+      .style('stroke', accent).attr('stroke-width', 1.5).attr('stroke-dasharray', '6 5');
+    g.append('text').attr('class', 'hs-endlabel').attr('x', m.left + 4).attr('y', y(need) - 6)
+      .text(`Needed: ${ppg(need)}`);
+    const tip = tooltip(box);
+    g.selectAll('rect.hit').data(rows).join('rect').attr('x', (r) => x(r.season)).attr('width', x.bandwidth())
+      .attr('y', m.top).attr('height', H - m.top - m.bottom).style('fill', 'transparent')
+      .on('pointermove', (ev, r) => {
+        const s = box.clientWidth / W;
+        tip.show(r.season, [`${fmt(num(r.pts))} points in ${fmt(num(r.gp))} games: ${ppg(r.v)} a game`,
+          yes(r.this_season) ? 'Season in progress' : `Over ${d.season_games} games: ${fmt(num(r.pace_84))} points`], cx(r) * s, y(r.v) * s);
+      })
+      .on('pointerleave', () => tip.hide());
+  }
+
+  // ------------------------------------------------------- finish at each pace
+  function drawFinish(c) {
+    const box = root.querySelector('#ch-finish');
+    if (!status(box, c)) return;
+    const d = c.data[0];
+    const target = num(d.target);
+    const rows = [
+      { label: 'This season so far', rate: d.this_season_ppg, v: d.finish_at_this_season_pace },
+      { label: `Best season (${d.best_season})`, rate: d.best_season_ppg, v: d.finish_at_best_season_pace },
+      { label: `Last season (${d.last_season})`, rate: d.last_season_ppg, v: d.finish_at_last_season_pace },
+      { label: 'Career', rate: d.career_ppg, v: d.finish_at_career_pace },
+    ].map((r) => ({ ...r, v: num(r.v), rate: num(r.rate) }));
+    const max = Math.max(target, d3.max(rows, (r) => r.v)) * 1.04;
+    box.replaceChildren();
+    rows.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'ch-fin-row';
+      const name = document.createElement('div');
+      name.className = 'hs-bar-name';
+      name.textContent = r.label;
+      const sub = document.createElement('span');
+      sub.textContent = `${ppg(r.rate)} a game`;
+      name.append(sub);
+      const track = document.createElement('div');
+      track.className = 'ch-fin-track';
+      const area = document.createElement('div');
+      area.className = 'ch-fin-area';
+      const bar = document.createElement('div');
+      bar.className = 'hs-bar';
+      bar.style.width = `${(r.v / max) * 100}%`;
+      bar.style.background = r.v >= target ? accent : muted;
+      const mark = document.createElement('div');
+      mark.className = 'ch-fin-mark';
+      mark.style.left = `${(target / max) * 100}%`;
+      area.append(bar, mark);
+      const val = document.createElement('span');
+      val.className = 'hs-bar-val';
+      val.textContent = fmt(r.v);
+      track.append(area, val);
+      row.append(name, track);
+      box.append(row);
+    });
+    const axis = document.createElement('div');
+    axis.className = 'ch-fin-row ch-fin-axis';
+    axis.innerHTML = '<div></div><div class="ch-fin-track"><div class="ch-fin-area"><span class="ch-fin-label"></span></div><span class="hs-bar-val"></span></div>';
+    const lbl = axis.querySelector('.ch-fin-label');
+    lbl.textContent = `${target}`;
+    lbl.style.left = `${(target / max) * 100}%`;
+    box.append(axis);
+  }
+
+  // ------------------------------------------------------- rolling career pace
+  function drawRolling(ro, st, c) {
+    const box = root.querySelector('#ch-rolling-chart');
+    const buttons = root.querySelector('#ch-k-buttons');
+    const note = root.querySelector('#ch-rolling-note');
+    if (!status(box, ro, st, c)) { buttons.replaceChildren(); return; }
+    const d = c.data[0];
+    const need = num(d.required_ppg);
+    const ks = st.data.map((r) => num(r.games)).sort((a, b) => a - b);
+    if (!ks.includes(k)) k = num(d.games_left);
+    buttons.replaceChildren(...ks.map((n) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.id = `ch-k-${n}`;
+      b.textContent = n === num(d.games_left) ? `${n} (rest of season)` : `${n}`;
+      b.setAttribute('aria-pressed', String(n === k));
+      b.addEventListener('click', () => { k = n; drawRolling(dash.data('chase_rolling'), dash.data('chase_streaks'), dash.data('chase')); });
+      return b;
+    }));
+    const row = st.data.find((r) => num(r.games) === k);
+    note.textContent = `Each point is his average over the ${k} games ending there, across all ${fmt(num(d.all_gp))} games of his career. ` +
+      (num(row.streaks) ? `Shaded runs reach ${ppg(need)}; there are ${row.streaks} separate ${k}-game runs at that pace.`
+        : `None of his ${k}-game runs has reached ${ppg(need)}; his best was ${ppg(num(row.best_ppg))}.`);
+
+    const field = `ppg_${k}`;
+    const pts = ro.data.map((r) => ({ game: num(r.game), date: r.date, season: r.season, v: num(r[field]) }));
+    const shown = pts.filter((p) => p.v !== null);
+    box.replaceChildren();
+    const W = box.clientWidth, H = Math.round(Math.max(260, Math.min(380, W * 0.42)));
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', `Rolling ${k}-game points per game across his career`);
+    const y = d3.scaleLinear([0, Math.max(need, d3.max(shown, (p) => p.v))], [0, 0]).nice();
+    const ticks = y.ticks(5);
+    const left = Math.ceil(d3.max(ticks, (t) => measure(svg, d3.format('.1f')(t), 'hs-tick'))) + 10;
+    const m = { top: 14, right: 8, bottom: 34, left };
+    y.range([H - m.bottom, m.top]);
+    const x = d3.scaleLinear([1, pts.length], [m.left, W - m.right]);
+    const g = svg.append('g');
+    g.selectAll('line.grid').data(ticks).join('line').attr('x1', m.left).attr('x2', W - m.right)
+      .attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+    g.selectAll('text.yt').data(ticks).join('text').attr('class', 'hs-tick').attr('x', m.left - 8).attr('y', (t) => y(t))
+      .attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => d3.format('.1f')(t));
+    // season starts on the x axis
+    const starts = pts.filter((p, i) => i === 0 || p.season !== pts[i - 1].season);
+    const minGap = measure(svg, '00-00', 'hs-tick') + 8;
+    let lastX = -Infinity;
+    const labelled = starts.filter((p) => { const px = x(p.game); if (px - lastX < minGap) return false; lastX = px; return true; });
+    g.selectAll('line.season').data(starts.slice(1)).join('line').attr('x1', (p) => x(p.game)).attr('x2', (p) => x(p.game))
+      .attr('y1', H - m.bottom).attr('y2', H - m.bottom + 4).style('stroke', 'var(--cds-chart-axis)');
+    g.selectAll('text.xt').data(labelled).join('text').attr('class', 'hs-tick').attr('x', (p) => x(p.game) + 2)
+      .attr('y', H - m.bottom + 16).text((p) => p.season.slice(2));
+    g.append('text').attr('class', 'hs-tick').attr('x', (m.left + W - m.right) / 2).attr('y', H - 2)
+      .attr('text-anchor', 'middle').text('Career games, by season');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+
+    // shade where the run reaches the required pace
+    const area = d3.area().defined((p) => p.v !== null).x((p) => x(p.game)).y0(y(need)).y1((p) => y(Math.max(p.v, need)));
+    g.append('path').attr('d', area(pts)).style('fill', accent).style('fill-opacity', 0.22);
+    const line = d3.line().defined((p) => p.v !== null).x((p) => x(p.game)).y((p) => y(p.v));
+    g.append('path').attr('d', line(pts)).attr('fill', 'none').style('stroke', second).attr('stroke-width', 2)
+      .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+    g.append('line').attr('x1', m.left).attr('x2', W - m.right).attr('y1', y(need)).attr('y2', y(need))
+      .style('stroke', accent).attr('stroke-width', 1.5).attr('stroke-dasharray', '6 5');
+    g.append('text').attr('class', 'hs-endlabel').attr('x', m.left + 6).attr('y', y(need) - 6).text(`Needed: ${ppg(need)}`);
+
+    const best = shown.reduce((a, b) => (b.v > a.v ? b : a));
+    g.append('circle').attr('cx', x(best.game)).attr('cy', y(best.v)).attr('r', 4.5).style('fill', second)
+      .style('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+
+    const dot = g.append('circle').attr('r', 4.5).attr('stroke-width', 2).style('stroke', 'var(--color-panel)')
+      .style('fill', second).attr('visibility', 'hidden');
+    const rule = g.append('line').attr('y1', m.top).attr('y2', H - m.bottom).style('stroke', 'var(--cds-chart-reference)').attr('visibility', 'hidden');
+    const tip = tooltip(box);
+    const bisect = d3.bisector((p) => p.game).center;
+    svg.on('pointermove', (ev) => {
+      const [mx] = d3.pointer(ev);
+      const p = pts[bisect(pts, x.invert(mx))];
+      if (!p || p.v === null) { reset(); return; }
+      const from = pts[p.game - k];
+      dot.attr('cx', x(p.game)).attr('cy', y(p.v)).attr('visibility', 'visible');
+      rule.attr('x1', x(p.game)).attr('x2', x(p.game)).attr('visibility', 'visible');
+      const s = box.clientWidth / W;
+      tip.show(`${fmtDay(new Date(from.date))} to ${fmtDay(new Date(p.date))}`,
+        [`${ppg(p.v)} points a game over ${k} games`, `${fmt(Math.round(p.v * k))} points`], x(p.game) * s, y(p.v) * s);
+    });
+    svg.on('pointerleave', reset);
+    function reset() { dot.attr('visibility', 'hidden'); rule.attr('visibility', 'hidden'); tip.hide(); }
+  }
+
+  // ------------------------------------------------------------ streak table
+  function drawStreaks(st, c) {
+    const table = root.querySelector('#ch-streak-table');
+    const body = table.querySelector('tbody');
+    body.replaceChildren();
+    if (st.status !== 'ok' || c.status !== 'ok') return;
+    st.data.slice().sort((a, b) => num(a.games) - num(b.games)).forEach((r) => {
+      const tr = document.createElement('tr');
+      if (yes(r.is_rest_of_season)) tr.className = 'is-target';
+      [
+        yes(r.is_rest_of_season) ? `${r.games} games (rest of season)` : `${r.games} games`,
+        fmt(num(r.streaks)),
+        d3.format('.1%')(num(r.share_of_stretches)),
+        ppg(num(r.best_ppg)),
+        fmt(num(r.best_pts)),
+        `${fmtDay(new Date(r.best_from))} to ${fmtDay(new Date(r.best_to))}`,
+      ].forEach((t) => { const td = document.createElement('td'); td.textContent = t; tr.append(td); });
+      body.append(tr);
+    });
+  }
+
+  function render() {
+    const c = dash.data('chase');
+    const st = dash.data('chase_streaks');
+    fillTiles(c);
+    takeaway(c, st);
+    drawRoad(dash.data('chase_curves'), c);
+    drawSeasons(dash.data('chase_seasons'), c);
+    drawFinish(c);
+    drawRolling(dash.data('chase_rolling'), st, c);
+    drawStreaks(st, c);
+  }
+
+  dash.onData(render);
+})();
+</script>
+</body>
+</html>

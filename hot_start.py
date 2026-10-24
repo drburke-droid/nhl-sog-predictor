@@ -1,7 +1,7 @@
 """
 How does a player's start to this season compare with every start in NHL
 history?  Reads nhl_history.db (built by nhl_history_collector.py) and writes
-the tables behind the chart as JSON to docs/reports/hot_start/.
+the tables behind the chart as JSON to docs/mcdavid/data/.
 
     python hot_start.py                 # Connor McDavid
     python hot_start.py 8471675         # any player id
@@ -22,7 +22,7 @@ import sys
 import pandas as pd
 
 DB_PATH = "nhl_history.db"
-OUT_DIR = "docs/reports/hot_start"
+OUT_DIR = "docs/mcdavid/data"
 MCDAVID = 8478402
 CURVE_GAMES = 20   # how far to draw each start's curve
 CURVE_LEADERS = 12 # best starts drawn as curves, on each scale
