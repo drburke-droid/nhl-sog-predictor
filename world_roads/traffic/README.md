@@ -61,6 +61,7 @@ python video.py fill 20 41                                         # stills of o
 python assemble.py render                                          # all sections (4 at a time) + score
 python thumbs.py          # A, B, C; D wraps the maps-app screenshot (media/traffic/maps_screenshot.png)
 python voiceover.py       # the narration script -> ../media/traffic/VOICEOVER.md; recorded clips in ../media/traffic/voice/ are mixed in by assemble.py
+python lily.py            # records the narration with ElevenLabs' Lily voice (needs ELEVENLABS_API_KEY) -> ../media/traffic/voice/
 ```
 
 The full render takes about 25 minutes on 4 cores.
