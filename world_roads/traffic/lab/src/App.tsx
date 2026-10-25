@@ -40,7 +40,11 @@ export default function App() {
     else document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
   useEffect(() => {
-    history.replaceState(null, "", `#${tab}`);
+    try {
+      history.replaceState(null, "", `#${tab}`);
+    } catch {
+      /* some embedded contexts refuse history changes; the tab still works */
+    }
   }, [tab]);
   useEffect(() => {
     const onHash = () => {
