@@ -63,10 +63,10 @@ class MapView:
         self.ox, self.oy, self.s, self.kx, self.ky, self.name = ox, oy, s, kx, ky, name
 
     @classmethod
-    def fit(cls, box, name, fill=0.92):
-        """the view that fits the three routes (and both trip ends) into the screen box (x0, y0, x1, y1)"""
+    def fit(cls, box, name, fill=0.92, which=(0, 1, 2)):
+        """the view that fits the main routes `which` (and both trip ends) into the screen box (x0, y0, x1, y1)"""
         R = routes_json()
-        P = np.vstack([np.asarray(R["routes"][i]["detail"]["xy"]) for i in R["main"]])
+        P = np.vstack([np.asarray(R["routes"][R["main"][i]]["detail"]["xy"]) for i in which])
         x0, y0 = P.min(0)
         x1, y1 = P.max(0)
         s = fill * min((box[2] - box[0]) / (x1 - x0), (box[3] - box[1]) / (y1 - y0))

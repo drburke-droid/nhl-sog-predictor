@@ -14,7 +14,7 @@ CAP = [2000.0, 1500.0, 1100.0]          # veh/h, illustrative (the lab's default
 from cities import C, CITY                # noqa: E402
 D_RUSH = C["d_rush"]                    # veh/h making this kind of trip at the peak, illustrative
 D_NIGHT = 300.0
-START = [0.6, 0.2, 0.2]                 # first day: most drivers try the route that is fastest when empty
+START = C.get("learn_start", [0.6, 0.2, 0.2])   # "Monday": most drivers try the route that is fastest when empty
 RUN_CHASE = dict(replan=0.5)            # half of all drivers jump to yesterday's quickest route
 RUN_CALM = C["calm"]                    # a few reconsider each day; nobody switches to save under a minute
 NAMES, SIDES = C["names"], C["sides"]
@@ -75,9 +75,9 @@ def myth(R):
                 lone=myth_times(R, cfg, start[0], 1e-6, start[2])[1], night=night, steps=steps, curve=curve)
 
 
-def why_start(t0, fast=45.0):
-    """an unbalanced moment for the 'why equal?' demonstration: route A shows `fast` minutes and the other two a
-    common slower time, with the same rush-hour drivers as the equilibrium"""
+def why_start(t0, fast):
+    """an unbalanced moment for the 'why equal?' demonstration: route A shows `fast` minutes and the routes still
+    in use a common slower time, with the same rush-hour drivers as the equilibrium"""
     fA = M._flow_at(fast, t0[0], CAP[0], M.ALPHA, M.BETA)
     lo, hi = fast, 300.0
     for _ in range(100):
@@ -100,7 +100,9 @@ def numbers():
     k = int(np.argmax(poa))
     chase = M.learning(t0, CAP, D_RUSH, days=40, start=START, **RUN_CHASE)
     calm = M.learning(t0, CAP, D_RUSH, days=40, start=START, **RUN_CALM)
-    settle = next(d for d in range(41) if all(max(T) - min(T) < 1.0 for T in calm["times"][d:]))   # first day from which all stay within a minute
+    used = [i for i in range(3) if ue["used"][i]]
+    # first day from which the routes in use stay within a minute of each other
+    settle = next((d for d in range(41) if all(max(T[i] for i in used) - min(T[i] for i in used) < 1.0 for T in calm["times"][d:])), None)
     br_c = M.network_ue(M.braess_network(False))
     br_o = M.network_ue(M.braess_network(True))
     br_other = {str(D): [M.network_ue(M.braess_network(False, D))["avg_min"], M.network_ue(M.braess_network(True, D))["avg_min"]]
@@ -112,7 +114,7 @@ def numbers():
         crossings=[r.get("crossing") for r in main], t0=t0, km=[r["km"] for r in main], via=[r["via"] for r in main], cap=CAP,
         main_overlap=R["main_overlap"], origin=R["origin"]["name"], dest=R["dest"]["name"],
         d_rush=D_RUSH, d_night=D_NIGHT, joins=joins,
-        ue=dict(level=ue["level"], flows=ue["flows"], times=ue["times"], avg=ue["avg_min"], total=ue["total_veh_min"]),
+        ue=dict(level=ue["level"], flows=ue["flows"], times=ue["times"], avg=ue["avg_min"], total=ue["total_veh_min"], used=used),
         so=dict(flows=so["flows"], times=so["times"], avg=so["avg_min"], total=so["total_veh_min"]),
         poa=M.price_of_anarchy(ue, so), poa_max=dict(value=poa[k], demand=float(ds[k])),
         learn=dict(start=START, chase=dict(params=RUN_CHASE, times=chase["times"], flows=chase["flows"]),
@@ -121,7 +123,7 @@ def numbers():
         braess=dict(closed=dict(paths=br_c["paths"], flows=br_c["path_flows"], times=br_c["path_times"], avg=br_c["avg_min"]),
                     opened=dict(paths=br_o["paths"], flows=br_o["path_flows"], times=br_o["path_times"], avg=br_o["avg_min"]),
                     other_demands=br_other),
-        myth=myth(R), why_start=why_start(t0),
+        myth=myth(R), why_start=why_start(t0, round(ue["level"]) - 5.0),
         app=dict(top3=sorted(alts)[:3], n_alternatives=len(alts), via_n=len(via), via_min=float(via.min()), via_max=float(via.max()),
                  via_median=float(np.median(via))),
     )

@@ -1,12 +1,13 @@
-# Accuracy and sources: three routes, one ETA
+# Accuracy and sources: two routes home, one ETA
 
-The video asks why a map app so often offers three completely different routes with the same ETA. It
-answers with two separate effects. The first is traffic: drivers crowd the quicker roads until no one gains
-by switching (Wardrop's user equilibrium). The second is selection: the app lists only the quickest few
-routes. The video then covers the fine print of "the same ETA", the system optimum, the price of anarchy,
-and Braess's paradox, shown on the same map with a mythical tunnel.
+The video asks why a drive home so often offers two completely different routes with almost the same ETA.
+It answers with two separate effects. The first is traffic: drivers crowd the quicker roads until no one gains
+by switching (Wardrop's user equilibrium). The second is selection: the app lists only a few quick, distinct
+routes. It explains why it is usually two routes rather than three (a slower route nobody takes is never
+pulled into line), the fine print of "the same ETA", the system optimum, the price of anarchy, and Braess's
+paradox, shown on the same map with a mythical tunnel.
 
-The trip is **JFK Airport to Times Square**.
+The trip is an evening drive home **from Times Square to a house in Bayside, Queens**.
 
 **What is real, and what is a toy model:**
 * **Real:** the road geometry, the three routes and their free-flow times.
@@ -33,19 +34,20 @@ modelled.
 
 **Speed.** Each road is timed at its speed limit.
 * **Mapped limits:** OpenStreetMap's `maxspeed` where it is mapped. That is 33% of all road length, but
-  47–63% of motorway, primary and secondary length, and 64–74% of the three routes.
+  47–63% of motorway, primary and secondary length, and 77–85% of the three routes.
 * **Defaults elsewhere:**
   * New York's 25 mph default for city streets;
   * 50 mph on expressways, 40 mph on other limited-access roads, 30 mph on ramps.
 
 **Free-flow time = length ÷ speed limit.** There is no traffic, no traffic-light delay and no time for
-turns. The tolls on the RFK Bridge and both tunnels are ignored too, and so is Manhattan's congestion
-charge. Real drivers weigh tolls as well as time, one more reason real ETAs differ. This gives the time
-an ideal driver could make at 3 a.m.; real trips take longer.
+turns. Tolls (the Queens-Midtown Tunnel, the RFK and Throgs Neck bridges, the Battery Tunnel) are ignored,
+and so is Manhattan's congestion charge. Real drivers weigh tolls as well as time, one more reason real ETAs
+differ. This gives the time an ideal driver could make at 3 a.m.; real trips take longer.
 
 **The trip.**
-* **Start:** the road network nearest JFK's central terminal area (40.6447° N, 73.7812° W).
-* **Finish:** the nearest street junction to Times Square (40.7570° N, 73.9866° W).
+* **Start ("work"):** the nearest street junction to Times Square (40.7570° N, 73.9866° W).
+* **Finish ("home"):** the nearest residential street junction to a point in Bayside, Queens
+  (40.7686° N, 73.7771° W), near 35th Avenue. It stands for any house there; no real address is used.
 
 **Finding alternatives.** We used the via-node method used by route planners:
 1. Run a Dijkstra search forward from the start and backward from the finish.
@@ -55,26 +57,30 @@ an ideal driver could make at 3 a.m.; real trips take longer.
    al., "Alternative routes in road networks", 2013).
 5. Keep the quickest 20 that share at most 80% of their road with each other.
 
-All of these leave JFK on the Van Wyck Expressway, and most also share the Long Island Expressway. So
-they are variations of one route rather than completely different ones.
+Most of these are variations of route A: they leave Manhattan through the Queens-Midtown Tunnel and use the
+Long Island Expressway.
 
-**The three in the video** are therefore the fastest route through each of three river crossings into
-Manhattan, one in the north, one in the middle and one in the south. Only nodes inside the bridge or
-tunnel count, so each route has to actually cross it.
+**The three in the video** are therefore the fastest route home through each of three river crossings out
+of Manhattan: east, north and south. Only nodes inside the bridge or tunnel count, so each route has to
+actually cross it. Twelve candidate homes across Queens were compared before picking Bayside, where the two
+quickest crossings share almost no road.
 
 | Route | Free-flow time | Length | Roads (km on each) |
 |---|---:|---:|---|
-| A, Midtown Tunnel, straight through Queens | 26.2 min | 29.0 km | Van Wyck Expressway 13.6, Long Island Expressway 7.5, Queens-Midtown Tunnel 2.1 |
-| B, RFK Bridge, around the north | 33.1 min | 36.0 km | Van Wyck 9.8, Grand Central Parkway 11.7, Robert F. Kennedy Bridge 3.1, FDR Drive 6.0 |
-| C, Battery Tunnel, around Brooklyn | 38.0 min | 34.7 km | JFK Expressway 2.1, Belt Parkway 3.0, Linden Boulevard 9.4, Prospect and Gowanus Expressways 2.8, Brooklyn-Battery Tunnel 3.0, West Street 3.2, 8th Avenue 2.8 |
+| A, Midtown Tunnel: east, under the river | 21.0 min | 23.9 km (14.9 mi) | Queens-Midtown Tunnel 2.2, Long Island Expressway 14.8, Clearview Expressway 2.2 |
+| B, Throgs Neck Bridge: north, through the Bronx | 26.3 min | 28.5 km (17.7 mi) | FDR Drive 6.0, Robert F. Kennedy Bridge 1.0, Bruckner Expressway 6.4, Cross Bronx Expressway 2.4, Throgs Neck Bridge 3.4, Clearview Expressway 2.6 |
+| C, Battery Tunnel: south, round Brooklyn | 37.7 min | 37.9 km (23.6 mi) | 7th Avenue 2.6, West Street 2.2, Brooklyn-Battery Tunnel 2.9, Brooklyn-Queens Expressway 10.4, Long Island Expressway 11.2, Clearview Expressway 2.2 |
 
 **How much they share:**
-* A and B share 36%, almost all of it the Van Wyck out of JFK.
-* C shares about 1% with either.
-* The Queensboro Bridge (27.7 min) and Williamsburg Bridge (32.1 min) routes were left out because they
-  share 70–76% of their road with route A.
+* A and B share 2% (0.5 km): a few blocks at each end, near Times Square and in Bayside. Both use the
+  Clearview Expressway, but in opposite directions (A comes north from the LIE, B comes south from the
+  Throgs Neck), so they share none of it.
+* C shares 63% of its road with A: the Long Island Expressway and the Clearview into Bayside. It is the
+  long way round, and in the video it is the slower route nobody takes.
 
-The Brooklyn-Battery Tunnel is officially the Hugh L. Carey Tunnel; the video uses the older name, which
+Route B is found as "the fastest route through the RFK Bridge". It uses the bridge's Manhattan–Bronx span,
+then crosses the Bronx to the Throgs Neck Bridge, so the video names it after the Throgs Neck. The
+Brooklyn-Battery Tunnel is officially the Hugh L. Carey Tunnel; the video uses the older name, which
 OpenStreetMap carries.
 
 ## 2. The congestion curve (a standard simplification)
@@ -90,7 +96,8 @@ T(f) = T₀ · (1 + 0.15 · (f / c)⁴)
   breaking down.
 * **Capacities: made up.** 2,000, 1,500 and 1,100 vehicles per hour for A, B and C. They are not
   measurements of these roads.
-* **Demand: also made up.** Rush hour is 6,500 drivers per hour making this kind of trip.
+* **Demand: also made up.** The evening rush is 4,000 drivers per hour making this kind of trip. It was
+  chosen so that two routes are in use and the third is not.
 
 **The routes are treated as independent.** Real routes share roads with each other and with every other
 trip in the city, which couples their times.
@@ -108,20 +115,24 @@ trip in the city, which couples their times.
 
   We find the λ at which the flows add up to the demand, by bisection.
 * **Numbers in the video:**
-  * Route B starts carrying traffic at **2,303** drivers per hour and C at **4,121**.
-  * At 6,500 per hour all three take **50.0 min**, with flows of 3,137, 2,037 and 1,326 per hour.
-* **"Why do the times end up equal?"** The video starts from an unbalanced split of the same 6,500 drivers:
-  2,957 on A (45.0 min) and 2,132 and 1,411 on B and C (53.4 min each). It then moves drivers linearly to
-  the equilibrium split. That illustrates why a gap closes (arrivals slow the quicker route, departures
-  speed up the others); it is not a dynamic model. The equilibrium is a Nash equilibrium of the routing
-  game: no single driver can gain by switching. Nobody computes it; it is what remains once drivers stop
-  finding quicker routes.
+  * Route B starts carrying traffic at **2,277** drivers per hour. Route C would start at **4,986**.
+  * At 4,000 per hour, A and B both take **29.6 min**, with flows of 2,568 and 1,432 per hour. C carries
+    nobody and stays at its empty-road 37.7 min.
+* **Why two, not three:** with fewer drivers only A is used; between 2,277 and 4,986 an hour exactly two
+  routes are used, with equal times; above 4,986 all three are. So whether you see two or three equal ETAs
+  depends on how busy the trip is, and a route that stays slower is a route nobody takes.
+* **"Why do the times end up equal?"** The video starts from an unbalanced split of the same 4,000 drivers:
+  2,121 on A (25.0 min) and 1,879 on B (36.0 min), with C unused. It then moves drivers linearly to the
+  equilibrium split. That illustrates why a gap closes (arrivals slow the quicker route, departures speed up
+  the other); it is not a dynamic model. The equilibrium is a Nash equilibrium of the routing game: no
+  single driver can gain by switching. Nobody computes it; it is what remains once drivers stop finding
+  quicker routes.
 
 ## 3a. The fine print (what "the same ETA" does and doesn't mean)
 
-1. **Only routes in use.** Wardrop's condition says nothing equalizes the times of routes nobody uses. At
-   3 a.m. (300 drivers an hour in the toy model) everyone takes A, and B and C stay slower: 26, 33 and
-   38 min.
+1. **Only routes in use.** Wardrop's condition says nothing equalizes the times of routes nobody uses. In
+   the evening rush C stays at 37.7 min while A and B are at 29.6. On a heavier night (over 4,986 drivers
+   an hour in this model) C fills too, and all three match.
 2. **One trip, one moment.** The equilibrium is for one origin, destination and departure time. Other trips
    share the roads in reality (and are ignored here), and the balance shifts through the day.
 3. **"Equal" is approximate.** Drivers don't switch for trivial savings, real ETAs are predictions with
@@ -129,6 +140,9 @@ trip in the city, which couples their times.
    not exactly equal.
 4. **Equal is not best.** The equilibrium is what selfish choices produce, not the minimum total time
    (section 6).
+
+"Your house isn't magically placed at some sweet spot in the traffic" is the same point from the other side:
+the balance is a property of any trip with two or more busy routes, not of a particular address.
 
 ## 4. How drivers might find it (a behavioural sketch)
 
@@ -139,17 +153,17 @@ The day-to-day sequence is a model of learning, not a solver and not a model of 
 2. A reconsidering driver switches to the quickest route only if it saves more than a threshold.
 3. Drivers move between routes, so no vehicles are created or lost and no flow goes negative.
 
-**Day 1** (the video's "Monday"): 60% of drivers try the Midtown Tunnel, 20% each try the other two. That
-gives 83, 36 and 49 min. The video frames both runs as "what if it hadn't settled yet?": a start that is
-deliberately far from equilibrium, to show how drivers could find it.
+**Day 1** (the video's "Monday"): 80% of drivers try the Midtown Tunnel, 15% the Throgs Neck Bridge and
+5% the Battery Tunnel. That gives 42, 26 and 38 min. The video frames both runs as "what if it hadn't settled
+yet?": a start that is deliberately far from equilibrium, to show how drivers could find it.
 
 | Run | Who switches | Result |
 |---|---|---|
-| "The jam moves" | Half of all drivers jump to yesterday's quickest route, whatever the saving | Day 2 ("Tuesday"): half of everyone moves to the RFK Bridge, which jams (over 2 hours in this model). It never settles. The BPR curve makes the overloaded route absurdly slow, so the chart is cut off at 120 min and anything slower shows as "2 h+". |
-| "Settles" | 1 in 50 reconsider each day, and nobody switches to save a minute or less | All three times are within 1 minute of each other from day 13. After 40 days they are 49.6, 50.2 and 50.4 min. |
+| "The jam moves" | Half of all drivers jump to yesterday's quickest route, whatever the saving | Day 2 ("Tuesday"): half of everyone moves to the Throgs Neck Bridge, which jams (48 min). It never settles: the jam alternates between A and B, with B reaching 66 min. |
+| "Settles" | 1 in 50 reconsider each day, and nobody switches to save a minute or less | A and B are within 1 minute of each other from day 13. After 40 days they are 29.12 and 29.13 min. C still carries 89 drivers an hour who have not yet reconsidered, which is why A and B sit a little below the exact 29.6. |
 
-Rounded to the minute, the "settles" run's final times all show **50 min**: that is the opening and closing
-display. They are not exactly equal; rounding makes them look it.
+Rounded to the minute, the "settles" run's final times both show **29 min**: that is the opening and
+closing display. They are not exactly equal; rounding makes them look it.
 
 Real drivers differ far more than this. Many never switch. Some follow live directions. Times change
 through the day. Trips with different origins and destinations share the roads.
@@ -157,17 +171,16 @@ through the day. Trips with different origins and destinations share the roads.
 ## 5. What the app shows (selection, no traffic at all)
 
 * **The 400 routes:** each one is forced through a different random junction on a major road within 18 km
-  of the map centre (seeded). At 3 a.m. they take **26 to 61 min**, with a median of 37.6.
-* **Our three on the histogram:** A, B and C (26.2, 33.1 and 38.0 min) are marked among the 400. They are
+  of the map centre (seeded). At 3 a.m. they take **21 to 67 min**, with a median of 31.5.
+* **Our three on the histogram:** A, B and C (21.0, 26.3 and 37.7 min) are marked among the 400. They are
   the quickest route through each of three river crossings, which is the kind of choice an app makes: a
   few routes that are quick *and* genuinely different.
-* **The point:** a selection effect. The app never lists the slow routes (up to 61 min here), or
+* **The point:** a selection effect. The app never lists the slow routes (up to 67 min here), or
   near-copies of a quicker route, so the routes you see are already the close calls. At rush hour traffic
   then evens out the ones people use.
-* **Why "genuinely different" matters:** the three quickest of all 22 alternatives in section 1 take 26.2,
-  27.7 and 28.0 min, within 2 minutes with no traffic. But they are route A and two small variations of
-  it (all on the Van Wyck and the LIE). An earlier cut showed those three, and they were confusing beside
-  A, B and C, so the video now uses only A, B and C.
+* **Why "genuinely different" matters:** the three quickest of the 21 alternatives in section 1 take 21.0,
+  22.6 and 23.4 min, but they are route A and two small variations of it (all through the Queens-Midtown
+  Tunnel and along the LIE). The video therefore shows only A, B and C.
 * **The filter is stylized:** "show a few quick, distinct routes". It is not any real app's algorithm,
   and real ETAs are predictions with error.
 
@@ -178,29 +191,30 @@ through the day. Trips with different origins and destinations share the roads.
   T₀ · (1 + 0.15 · 5 · (f/c)⁴) for BPR. It does not equalize the travel times.
 * **Why selfish is not best:** a driver joining a busy road slows everyone behind them a little (the
   extra 0.15 · 4 · (f/c)⁴ · T₀ term). Nobody pays that cost when choosing, so an externality separates the
-  two. This is what the video means by "nobody counts that cost when choosing a route".
-* **At rush hour:**
+  two. This is what the video means by "nobody counts that cost".
+* **In the evening rush:**
 
   | | A | B | C | Average |
   |---|---:|---:|---:|---:|
-  | Flow (veh/h) | 2,982 | 2,071 | 1,447 | |
-  | Trip time (min) | 45.6 | 51.2 | 55.1 | 49.5 |
+  | Flow (veh/h) | 2,083 | 1,358 | 559 | |
+  | Trip time (min) | 24.7 | 29.0 | 38.0 | 28.0 |
 
-  The average compares with 50.0 at equilibrium, so the price of anarchy (total time at user
-  equilibrium ÷ total at system optimum) is **1.010**.
-* **In lighter traffic** it peaks at **1.12**, around 2,300 drivers per hour, just as route B starts to
-  fill.
+  The controller sends 559 drivers an hour the long way round Brooklyn, a route nobody chooses for
+  themselves. The average compares with 29.6 at equilibrium, so the price of anarchy (total time at user
+  equilibrium ÷ total at system optimum) is **1.056**.
+* **It peaks at 1.19**, at about 5,000 drivers per hour, just as route C would start to fill.
 * **These are toy-model values.** Gaps like this depend entirely on the curves and capacities. For
   linear costs the price of anarchy can never exceed 4/3 (Roughgarden and Tardos, "How bad is selfish
   routing?", *J. ACM* 2002). For quartic BPR curves the bound is much higher. In the mythical-tunnel
-  example below, total time with the tunnel is 51.9/38.2 = 1.36 times total time without it.
+  example below, total time with the tunnel is 33.6/26.5 = 1.27 times total time without it.
 
 ## 7. Braess's paradox on the map: the mythical tunnel (a thought experiment)
 
 * **Source:** D. Braess, "Über ein Paradoxon aus der Verkehrsplanung", *Unternehmensforschung* 12,
   1968. English translation: Braess, Nagurney and Wakolbinger, *Transportation Science* 39, 2005.
-* **The tunnel is imaginary.** There is no road like it. It would run about 16 km in a straight line, so
-  3 minutes means over 300 km/h. It exists to show the paradox on familiar geometry.
+* **The tunnel is imaginary.** There is no road like it. It would run about 15 km in a straight line, from
+  Long Island City to the Bronx end of the Throgs Neck Bridge, so 3 minutes means over 300 km/h. It exists
+  to show the paradox on familiar geometry.
 * **What a bottleneck is (the lane-drop diagram):** a road narrowing from 4 lanes to 2. In light traffic
   fewer cars arrive than 2 lanes can pass, and nobody waits. In heavy traffic more arrive than it can pass,
   so a queue builds and the wait grows. The diagram is a schematic queue, not to scale (`video.py: Neck`).
@@ -209,28 +223,28 @@ through the day. Trips with different origins and destinations share the roads.
   the model each bottleneck is a BPR link with a made-up capacity for this trip's drivers, which stands for
   what is left of a road's capacity after all other traffic. No real lane counts are claimed.
 * **On the map**, each bottleneck's label shows the minutes it takes to get through, from its BPR time at
-  the current flow. The JFK Expressway's goes from 2 to 16 min as drivers switch to the tunnel, and the
-  Queens-Midtown Tunnel's from 15 to 29.
-* **The network** (`scenario.py: myth_network`, settings in `cities.py`): routes A and C only, with B
+  the current flow. As drivers switch to the tunnel, the Queens-Midtown Tunnel's goes from 8 to 15 min and
+  the Throgs Neck Bridge's from 3 to 10.
+* **The network** (`scenario.py: myth_network`, settings in `cities.py`): routes A and B only, with C
   ignored. Each is cut into one bottleneck and stretches that are assumed never to slow down.
-  * **Route C** (around Brooklyn, 38.0 min empty): the JFK Expressway, minutes 1.1–3.0 of the route, is a
-    BPR bottleneck with a made-up capacity of 1,000 vehicles per hour. The rest is fixed.
-  * **Route A** (through Queens, 26.2 min empty): the Queens-Midtown Tunnel, minutes 19.8–22.9, is a BPR
+  * **Route A** (east, 21.0 min empty): the Queens-Midtown Tunnel, minutes 3.1–5.1 of the route, is a BPR
     bottleneck with a made-up capacity of 800 vehicles per hour. The rest is fixed.
-  * **The mythical tunnel** joins the end of the JFK Expressway to the Queens-Midtown Tunnel's entrance:
-    3 minutes, with no congestion. The route through it uses *both* bottlenecks.
-  * **Demand:** 2,750 drivers an hour, made up.
-* **Tunnel closed:** 942 drivers per hour take C and 1,808 take A, 38.2 min each.
-* **Tunnel open:** at user equilibrium 2,107 take the tunnel route, 563 stay on C and 80 on A, and all three
-  take **51.9 min**: 13.7 min (36%) more for everyone. A lone driver switching back to either old route
-  would also take 51.9 min, so nobody gains by switching.
-* **The first driver to try it** (with everyone else still on the old split) takes 24.5 min instead of
-  38.2. That is why the switching starts.
-* **At 3 a.m.** (no traffic) the tunnel route takes 12.3 min, against 26.2 on A and 38.0 on C.
-* **It only happens at some demands.** With fewer than about 2,070 drivers an hour the tunnel helps
-  (at 1,500 it saves 12.5 min). From 2,070 to 4,860 it makes everyone slower. Above about 4,860 nobody
-  uses it: each bottleneck is then so slow that the tunnel route, which needs both, loses to the old routes. The video's chart
-  is computed every 100 drivers per hour from 100 to 6,000.
+  * **Route B** (north, 26.3 min empty): the Throgs Neck Bridge, minutes 20.7–23.3, is a BPR bottleneck
+    with a made-up capacity of 1,000 vehicles per hour. The rest is fixed.
+  * **The mythical tunnel** joins the Queens end of the Queens-Midtown Tunnel to the Bronx end of the
+    Throgs Neck Bridge: 3 minutes, with no congestion. The route through it uses *both* bottlenecks.
+  * **Demand:** 2,500 drivers an hour, made up.
+* **Tunnel closed:** 1,641 drivers per hour take A and 859 take B, 26.5 min each.
+* **Tunnel open:** at user equilibrium 1,615 take the tunnel route, 404 stay on A and 481 on B, and all three
+  take **33.6 min**: 7.1 min (27%) more for everyone. A lone driver switching back to either old route
+  would also take 33.6 min, so nobody gains by switching.
+* **The first driver to try it** (with everyone else still on the old split) takes 19.4 min instead of
+  26.5. That is why the switching starts.
+* **At 3 a.m.** (no traffic) the tunnel route takes 13.7 min, against 21.0 on A and 26.3 on B.
+* **It only happens at some demands.** With fewer than about 1,830 drivers an hour the tunnel helps
+  (at 1,500 it saves 5.4 min). From 1,830 to 4,120 it makes everyone slower. Above about 4,120 nobody
+  uses it: each bottleneck is then so slow that the tunnel route, which needs both, loses to the old
+  routes. The video's chart is computed every 100 drivers per hour from 100 to 6,000.
 * **Solver:** path equilibration in `model.py`, extended to BPR links and tested against the parallel-route
   solver.
 * **The switching animation** moves drivers linearly from the closed equilibrium to the open one. It
@@ -247,6 +261,8 @@ through the day. Trips with different origins and destinations share the roads.
 * **Music** is original, synthesized for this video by `music.py` on the instruments in
   `../flights/score.py`. There are no samples.
 * **Fonts:** Inter (SIL OFL).
+* **Thumbnail D** wraps the creator's own Google Maps screenshot, unedited, when one is supplied
+  (`thumbs.py`).
 
 ## 9. Reproduce
 
@@ -255,6 +271,6 @@ cd traffic
 python city_routes.py fetch && python city_routes.py build         # roads -> graph -> routes (~3 min); TRAFFIC_CITY=calgary for the other trip
 python scenario.py                                                 # every number in the video
 python -m pytest -q test_model.py                                  # 36 model tests
-python assemble.py render                                          # sections (4 at a time) + score -> out/three_routes_one_eta.mp4
-python thumbs.py                                                   # thumbnails A/B/C
+python assemble.py render                                          # sections (4 at a time) + score -> out/two_routes_one_eta.mp4
+python thumbs.py                                                   # thumbnails A/B/C (+ D with a screenshot)
 ```

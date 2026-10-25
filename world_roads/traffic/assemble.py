@@ -1,7 +1,7 @@
 """Join the sections (cross-fades) and add the score.
 
     python assemble.py render [names...]   -> render sections (4 at a time), then assemble
-    python assemble.py                     -> out/three_routes_one_eta.mp4 from rendered sections
+    python assemble.py                     -> out/two_routes_one_eta.mp4 from rendered sections
 """
 import os, sys, json, subprocess
 from concurrent.futures import ThreadPoolExecutor
@@ -65,7 +65,7 @@ def main():
     subprocess.run(args, check=True)
     wav = os.path.join(OUT, "score.wav")
     SC.write(music.main_track(O, total), wav)
-    final = os.path.join(OUT, "three_routes_one_eta.mp4")
+    final = os.path.join(OUT, "two_routes_one_eta.mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
                     "-af", AF, "-c:a", "aac", "-b:a", "320k", "-shortest", "-movflags", "+faststart", final], check=True)
     os.remove(vid)

@@ -1,6 +1,6 @@
-# Three routes, one ETA: traffic equilibrium
+# Two routes home, one ETA: traffic equilibrium
 
-Why does a map app so often offer three completely different routes with the same ETA? This folder
+Why does a drive home so often offer two completely different routes with almost the same ETA? This folder
 holds three things:
 
 * **A tested model** (`model.py`) of route choice:
@@ -11,10 +11,11 @@ holds three things:
   * the selection effect of an app that lists only the fastest few routes.
 * **An interactive lab** (`lab/`, Vite + React + TypeScript) with four tabs. It is an optional companion
   that the video does not link to, and builds to `docs/traffic/`.
-* **A caption-only video** (7:18, 1920×1080), framed by the title *You're not the only one who constantly
-  gets 3 or more completely different routes to your destination with the same ETA*. It is set on real
-  New York roads (JFK Airport to Times Square), in the look of the light-speed film. Master, thumbnails
-  and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
+* **A caption-only video** (7:18, 1920×1080), framed by the question *Ever noticed your drive home has two
+  routes with almost the exact same ETA, heading completely different ways?* (*You're not unique, and your
+  house isn't magically placed at some sweet spot in the traffic.*) It is set on real New York roads, an
+  evening drive home from Times Square to Bayside, Queens, in the look of the light-speed film. Master,
+  thumbnails and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
   (`TRAFFIC_CITY=calgary`).
 
 What is real and what is a toy model: [ACCURACY.md](ACCURACY.md). In short, the road geometry and the

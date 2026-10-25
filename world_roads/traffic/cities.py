@@ -9,29 +9,32 @@ import os
 MPH = 1.609344
 CITIES = {
     "nyc": dict(
-        name="New York", trip="JFK Airport to Times Square",
+        name="New York", trip="Times Square to Bayside, Queens",
         bbox=(-74.08, 40.56, -73.70, 40.90),                 # Queens, Brooklyn, Manhattan, the south Bronx, the Hudson shore
         centre=(-73.88, 40.71),
-        origin=(-73.7812, 40.6447, "JFK Airport"), dest=(-73.9866, 40.7570, "Times Square"),
-        snap_origin=("trunk", "primary", "secondary", "tertiary", "motorway"),
-        snap_dest=("primary", "secondary", "tertiary"),
+        # an evening drive home: from work near Times Square to a house in Bayside
+        origin=(-73.9866, 40.7570, "Times Square"), dest=(-73.7771, 40.7686, "Bayside"),
+        pin_names=("Work · Times Square", "Home · Bayside"),
+        snap_origin=("primary", "secondary", "tertiary"),
+        snap_dest=("residential", "tertiary", "secondary"),
         # New York's default limit is 25 mph unless posted; expressways are typically posted 45-50 mph
         default_kmh={"motorway": 50 * MPH, "trunk": 40 * MPH, "primary": 25 * MPH, "secondary": 25 * MPH,
                      "tertiary": 25 * MPH, "unclassified": 25 * MPH, "residential": 25 * MPH, "living_street": 10 * MPH},
         link_kmh=30 * MPH, via_radius_km=18.0,
-        # the three: the fastest way through each of three river crossings into Manhattan, north, middle and south
-        # (the Queensboro and Williamsburg bridge routes share 70-76 % of their road with the Midtown Tunnel's)
+        # the fastest way home through each of three river crossings out of Manhattan: east under the river, north
+        # through the Bronx (the RFK Bridge, then the Throgs Neck), south round Brooklyn
         crossings=[["Queens-Midtown Tunnel"], ["Robert F. Kennedy Bridge"], ["Brooklyn-Battery Tunnel"]],
-        names=["Midtown Tunnel", "RFK Bridge", "Battery Tunnel"],
-        sides=["straight through Queens", "around the north", "around Brooklyn"], units="mph",
-        d_rush=6500.0,                                       # toy-model drivers per hour at the peak
+        names=["Midtown Tunnel", "Throgs Neck Bridge", "Battery Tunnel"],
+        sides=["east, under the river", "north, through the Bronx", "south, round Brooklyn"], units="mph",
+        d_rush=4000.0,                                       # toy-model drivers per hour in the evening rush: two routes in use
         calm=dict(replan=0.02, theta=1.0),                   # the learning run that settles: 1 in 50 rethink each day
-        names_in=["the Midtown Tunnel", "the RFK Bridge", "the Battery Tunnel"],   # as they read mid-sentence
+        learn_start=[0.8, 0.15, 0.05],                       # "Monday": most drivers try the route that is fastest when empty
+        names_in=["the Midtown Tunnel", "the Throgs Neck Bridge", "the Battery Tunnel"],   # as they read mid-sentence
         pin_labels=("b", "t"),                               # where the start / destination labels sit
-        # Braess's paradox on the map: a mythical tunnel from the end of route C's bottleneck (the JFK Expressway)
-        # to the start of route A's (the Queens-Midtown Tunnel). A thought experiment with its own made-up numbers.
-        myth=dict(from_route=2, from_road="JFK Expressway", to_route=0, to_road="Queens-Midtown Tunnel", minutes=3.0,
-                  cap_from=1000.0, cap_to=800.0, demand=2750.0)),
+        # Braess's paradox on the map: a mythical tunnel from the end of route A's bottleneck (the Queens-Midtown
+        # Tunnel) to the start of route B's (the Throgs Neck Bridge). A thought experiment with its own made-up numbers.
+        myth=dict(from_route=0, from_road="Queens-Midtown Tunnel", to_route=1, to_road="Throgs Neck Bridge", minutes=3.0,
+                  cap_from=800.0, cap_to=1000.0, demand=2500.0)),
     "calgary": dict(
         name="Calgary", trip="Rocky Ridge to Seton",
         bbox=(-114.40, 50.79, -113.78, 51.25),              # Calgary with the whole Stoney Trail ring road

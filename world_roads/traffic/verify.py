@@ -1,4 +1,4 @@
-"""Probe the master with ffprobe:  python verify.py [path]   (default ../media/traffic/three_routes_one_eta.mp4)
+"""Probe the master with ffprobe:  python verify.py [path]   (default ../media/traffic/two_routes_one_eta.mp4)
 
 Asserts H.264 High / yuv420p, 1920x1080, 30/1 fps, the frame count and duration of the timeline, and an
 AAC stereo track of the same length.
@@ -9,7 +9,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import assemble as A    # noqa: E402
 
-path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(HERE), "media", "traffic", "three_routes_one_eta.mp4")
+path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(HERE), "media", "traffic", "two_routes_one_eta.mp4")
 pr = json.loads(subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-show_streams", "-show_format", "-of", "json", path],
                                capture_output=True, text=True, check=True).stdout)
 v = next(s for s in pr["streams"] if s["codec_type"] == "video")

@@ -2,7 +2,7 @@
 
 C major at 96 BPM (Cmaj7 - Am7 - Fmaj7 - G), so every section, being a whole number of bars, starts on a
 downbeat. An energy curve follows the story: a quiet hook, a pulsing 3 a.m. race, a long build as rush hour
-fills the roads (a bell for each route that joins, a unison chime when the three times meet), calm cards, a
+fills the roads (a bell when the second route joins, a unison chime at "one ETA"), calm cards, a
 minor-key turn for Braess's paradox, and a resolution at the end. Instruments come from flights/score.py.
 """
 import os, sys
@@ -82,18 +82,18 @@ def main_track(O, total):
     """O: section start times (seconds) from assemble.py"""
     import video as V
     E = [  # (time, energy)
-        (0, 0.22), (O["hook"] + 18.5, 0.28), (O["hook"] + 19.5, 0.42),
+        (0, 0.22), (O["hook"] + V.Hook.UNIQUE - 0.7, 0.28), (O["hook"] + V.Hook.UNIQUE + 0.3, 0.42),
         (O["light"], 0.4), (O["empty"], 0.5), (O["empty"] + V.Empty.GO, 0.66), (O["empty"] + 16.0, 0.66), (O["empty"] + 16.5, 0.42),
-        (O["curve"], 0.22), (O["fill"], 0.3), (O["fill"] + 13.0, 0.5), (O["fill"] + 25.0, 0.64), (O["fill"] + 41.0, 0.92),
+        (O["curve"], 0.22), (O["fill"], 0.3), (O["fill"] + 13.0, 0.5), (O["fill"] + 27.2, 0.64), (O["fill"] + V.Fill.MEET, 0.92),
         (O["why"] - 0.1, 0.92), (O["why"], 0.3), (O["why"] + V.Why.MOVE0, 0.34), (O["why"] + V.Why.MOVE1, 0.5),
         (O["fine"] - 0.1, 0.5), (O["fine"], 0.2), (O["learn"], 0.42), (O["learn"] + V.Learn.R1, 0.78),
         (O["learn"] + V.Learn.R2 - 0.6, 0.78), (O["learn"] + V.Learn.R2, 0.4), (O["app"], 0.36), (O["app"] + 15.0, 0.5),
         (O["optimum"], 0.24), (O["myth"], 0.34), (O["myth"] + V.Myth.OPEN0, 0.48), (O["myth"] + V.Myth.SW0, 0.62),
         (O["myth"] + V.Myth.SW1, 0.84), (O["myth"] + V.Myth.SW1 + 7.0, 0.6), (O["myth"] + V.Myth.CHART0, 0.4), (O["outro"], 0.6), (O["outro"] + 15.0, 0.85), (total - 6.0, 0.85), (total - 5.9, 0.0), (total, 0.0)]
     E = sorted(E)
-    impacts = [(O["empty"] + V.Empty.GO, 0.6), (O["fill"] + 41.0, 1.1), (O["myth"] + V.Myth.OPEN0, 0.8),
+    impacts = [(O["empty"] + V.Empty.GO, 0.6), (O["fill"] + V.Fill.MEET, 1.1), (O["myth"] + V.Myth.OPEN0, 0.8),
                (O["myth"] + V.Myth.SW1, 0.9), (O["outro"], 0.7)]
-    risers = [(O["light"] + 11.0, O["empty"] + V.Empty.GO), (O["fill"] + 33.0, O["fill"] + 41.0),
+    risers = [(O["light"] + 11.0, O["empty"] + V.Empty.GO), (O["fill"] + V.Fill.MEET - 7.0, O["fill"] + V.Fill.MEET),
               (O["myth"] + V.Myth.SW0, O["myth"] + V.Myth.SW1), (O["outro"] + 11.0, O["outro"] + 15.0)]
     T = Track(total, E, impacts, risers)
     minor_from, minor_to = O["myth"] + V.Myth.SW0, O["myth"] + V.Myth.CHART0     # the paradox, in a minor key
@@ -108,9 +108,8 @@ def main_track(O, total):
     for i, m in enumerate((79, 83, 86)):                                     # each racer finishing at 3 a.m.
         T.bell(O["empty"] + V.Empty.GO + V.Empty.RACE * N["t0"][i] / 40.0, m, 0.8, pan=(i - 1) * 0.4)
     T.bell(O["fill"] + 13.0, 79, 1.0, -0.3)                                   # B joins
-    T.bell(O["fill"] + 25.0, 83, 1.0, 0.3)                                    # C joins
-    for m in (72, 84, 96):                                                    # one ETA: the three in unison
-        T.bell(O["fill"] + 41.0, m, 1.0)
+    for m in (72, 84, 96):                                                    # one ETA: the two in unison
+        T.bell(O["fill"] + V.Fill.MEET, m, 1.0)
     for m in (72, 84):                                                        # the gap closes: equal again
         T.bell(O["why"] + V.Why.MOVE1, m, 0.7)
     T.bell(O["learn"] + V.Learn.R2 + V.Learn.SPD * (N["learn"]["calm"]["settle_day"] + 1), 84, 0.9)

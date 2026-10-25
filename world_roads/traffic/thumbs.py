@@ -1,7 +1,7 @@
 """Thumbnails for A/B/C testing (1280x720):  python thumbs.py [A B C D] -> out/thumb_<k>.png
 
 D is built around a real Google Maps screenshot: put it at media/traffic/gmaps_screenshot.png (a phone screenshot
-of three routes showing the same ETA). An optional gmaps_screenshot.json next to it can crop it and ring the ETAs,
+of two or more routes showing the same ETA). An optional gmaps_screenshot.json next to it can crop it and ring the ETAs,
 in the screenshot's own pixels: {"crop": [x0, y0, x1, y1], "circles": [[x, y, r], ...]}. The screenshot is placed
 as it is (never edited), so keep Google's logo and map-data attribution in the crop. Without a screenshot, D is a
 layout preview with an empty placeholder phone (out/thumb_D_layout.png).
@@ -20,10 +20,13 @@ N = V.N
 OUT = L.OUT
 
 
-def map_frame(view, width=7, glow_scale=1.0, dim=1.0):
+USED = V.USED                     # the routes in use at rush hour: the ones with the same ETA
+
+
+def map_frame(view, width=7, glow_scale=1.0, dim=1.0, which=(0, 1, 2)):
     sc = V.Scene(view)
     sc.glow.clear()
-    for i in range(3):
+    for i in which:
         sc.route(i, width, 1.0 * glow_scale)
     return sc, sc.compose(dim=dim)
 
@@ -33,54 +36,59 @@ def big_pill(d, x, y, i, s, size=64):
 
 
 def thumb_a():
-    """the map and three identical-looking ETAs: 3 ROUTES. 1 ETA."""
-    view = L.MapView.fit((900, 40, 1890, 1040), "thumbA")
-    sc, fr = map_frame(view, 8)
+    """the map and two identical ETAs home: 2 ROUTES HOME. SAME ETA."""
+    view = L.MapView.fit((900, 60, 1890, 1020), "thumbA", which=tuple(USED))
+    sc, fr = map_frame(view, 8, which=USED)
     im = Image.fromarray(fr)
     d = ImageDraw.Draw(im, "RGBA")
-    sc.badges(d)
-    text(d, (70, 90), "3 ROUTES.", 150, INK, 1.0, "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold")
-    text(d, (70, 260), "SAME ETA.", 150, GOLD, 1.0, "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold")
-    for i in range(3):
-        big_pill(d, 80, 560 + i * 140, i, f"{N['eta_final'][i]} min", size=66)
+    sc.badges(d, which=USED)
+    heavy = "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold"
+    text(d, (70, 70), "2 ROUTES", 150, INK, 1.0, heavy)
+    text(d, (70, 230), "HOME.", 150, INK, 1.0, heavy)
+    text(d, (70, 390), "SAME ETA.", 150, GOLD, 1.0, heavy)
+    for k, i in enumerate(USED):
+        big_pill(d, 80, 690 + k * 140, i, f"{N['eta_final'][i]} min", size=66)
     return im
 
 
 def thumb_b():
-    """not a coincidence: the three times meeting on the chart"""
-    view = L.MapView.fit((1040, 60, 1890, 1020), "thumbB")
-    sc, fr = map_frame(view, 7, dim=0.7)
+    """not a coincidence: the two times meeting on the chart"""
+    view = L.MapView.fit((1040, 60, 1890, 1020), "thumbB", which=tuple(USED))
+    sc, fr = map_frame(view, 7, dim=0.7, which=USED)
     im = Image.fromarray(fr)
     d = ImageDraw.Draw(im, "RGBA")
-    ax = L.Axes((120, 380, 1000, 900), (0, N["d_rush"]), (30, 50))
+    lo_t = 5 * np.floor((min(N["t0"]) - 2) / 5)
+    ax = L.Axes((120, 380, 1000, 900), (0, N["d_rush"]), (lo_t, 5 * np.ceil((N["ue"]["level"] + 4) / 5)))
     dg = np.linspace(0, N["d_rush"], 301)
     Tg = np.array([V.M.parallel_ue(V.T0, V.CAP, x)["times"] for x in dg])
-    for i in range(3):
+    for i in USED:
         j = N["joins"][i]
         ax.series(d, dg[dg <= j], Tg[dg <= j, i], i=i, width=5, a=0.5, dash=(6, 10))
         ax.series(d, dg[dg >= j], Tg[dg >= j, i] + (i - 1) * 0.15, i=i, width=10, dash=None)
         L.badge(d, float(ax.X(j)) - (0 if i == 0 else 0), float(ax.Y(N["t0"][i])) - 44, i, r=28)
     x, y = float(ax.X(N["d_rush"])), float(ax.Y(Tg[-1, 0]))
-    lo, hi = min(N["eta_final"]), max(N["eta_final"])
-    text(d, (x, y + 80), f"all three: {lo} min" if lo == hi else f"all {lo}–{hi} min", 58, GOLD, 1.0, "ExtraBold", "rm")
+    eta = [N["eta_final"][i] for i in USED]
+    lo, hi = min(eta), max(eta)
+    both = "both" if len(USED) == 2 else "all"
+    text(d, (x, y + 150), f"{both}: {lo} min" if lo == hi else f"{both} {lo}–{hi} min", 64, GOLD, 1.0, "ExtraBold", "rm")
     text(d, (100, 70), "NOT A", 130, INK, 1.0, "ExtraBold")
     text(d, (100, 210), "COINCIDENCE", 130, GOLD, 1.0, "ExtraBold")
     return im
 
 
 def thumb_c():
-    """3 a.m. vs rush hour"""
-    view = L.MapView.fit((800, 40, 1890, 1040), "thumbC")
-    sc, fr = map_frame(view, 8)
+    """3 a.m. vs the evening rush, for the two routes home"""
+    view = L.MapView.fit((820, 60, 1890, 1020), "thumbC", which=tuple(USED))
+    sc, fr = map_frame(view, 8, which=USED)
     im = Image.fromarray(fr)
     d = ImageDraw.Draw(im, "RGBA")
-    sc.badges(d)
-    text(d, (80, 80), "3 A.M.", 86, INK2, 1.0, "ExtraBold")
-    for i in range(3):
-        L.pill(d, 90, 230 + i * 100, i, f"{N['t0'][i]:.0f} min", None, size=50, anchor="lm")
-    text(d, (80, 560), "RUSH HOUR", 86, GOLD, 1.0, "ExtraBold")
-    for i in range(3):
-        L.pill(d, 90, 710 + i * 100, i, f"{N['eta_final'][i]} min", None, size=50, anchor="lm")
+    sc.badges(d, which=USED)
+    text(d, (80, 90), "3 A.M.", 96, INK2, 1.0, "ExtraBold")
+    for k, i in enumerate(USED):
+        L.pill(d, 90, 260 + k * 110, i, f"{N['t0'][i]:.0f} min", None, size=56, anchor="lm")
+    text(d, (80, 560), "RUSH HOUR", 96, GOLD, 1.0, "ExtraBold")
+    for k, i in enumerate(USED):
+        L.pill(d, 90, 730 + k * 110, i, f"{N['eta_final'][i]} min", None, size=56, anchor="lm")
     return im
 
 
@@ -125,15 +133,15 @@ def placeholder(h=930):
     w = int(h * 0.462)
     im = Image.new("RGB", (w, h), (28, 32, 42))
     d = ImageDraw.Draw(im, "RGBA")
-    for k, s in enumerate(["YOUR GOOGLE MAPS", "SCREENSHOT HERE", "", "three routes,", "the same ETA", "", "gmaps_screenshot.png"]):
+    for k, s in enumerate(["YOUR GOOGLE MAPS", "SCREENSHOT HERE", "", "two routes,", "the same ETA", "", "gmaps_screenshot.png"]):
         text(d, (w / 2, h * 0.36 + k * 46), s, 34 if k < 2 else 28, INK if k < 2 else INK2, 1.0, "Bold" if k < 2 else "Medium", "mm")
     return im
 
 
 def thumb_d():
     """a real Google Maps screenshot with three equal ETAs, beside the hook"""
-    view = L.MapView.fit((60, 60, 1100, 1040), "thumbD")
-    sc, fr = map_frame(view, 7, dim=0.55)
+    view = L.MapView.fit((60, 60, 1100, 1040), "thumbD", which=tuple(USED))
+    sc, fr = map_frame(view, 7, dim=0.55, which=USED)
     im = Image.fromarray(fr).convert("RGBA")
     have = os.path.exists(SHOT)
     shot = Image.open(SHOT) if have else placeholder()
@@ -143,7 +151,7 @@ def thumb_d():
     im.alpha_composite(ph, (int(1460 - ph.width / 2), int(540 - ph.height / 2)))
     d = ImageDraw.Draw(im, "RGBA")
     heavy = "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold"
-    for k, (s, col) in enumerate((("3 ROUTES.", INK), ("SAME ETA.", GOLD), ("WHY?", INK))):
+    for k, (s, col) in enumerate((("2 ROUTES.", INK), ("SAME ETA.", GOLD), ("WHY?", INK))):
         x, y = 70, 120 + k * 200
         for dx, dy in ((0, 6), (0, 3)):                # a drop shadow so the words read over the map
             text(d, (x + dx, y + dy), s, 160, (0, 0, 0), 0.55, heavy)
