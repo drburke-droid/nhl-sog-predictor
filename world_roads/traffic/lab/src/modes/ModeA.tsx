@@ -28,7 +28,7 @@ export function RouteControls({ s, set, showDemand = true }: { s: Shared; set: (
       <h3>Routes</h3>
       <div className="btnrow" role="group" aria-label="Route scenarios">
         <button className="btn" onClick={() => set({ routes: TEXTBOOK })}>Textbook</button>
-        <button className="btn" onClick={() => set({ routes: CALGARY, demand: 4300 })} title="Free-flow times from real Calgary roads at the speed limit; capacities illustrative">Calgary cross-town</button>
+        <button className="btn" onClick={() => set({ routes: CALGARY, demand: 5500 })} title="Free-flow times from real Calgary roads at the speed limit; capacities illustrative">Calgary cross-town</button>
         <button className="btn" onClick={() => set({ routes: SYMMETRIC, demand: 3000 })}>Identical routes</button>
       </div>
       {s.routes.map((r, i) => (

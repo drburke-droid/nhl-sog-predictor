@@ -310,3 +310,36 @@ python thumbs.py                                                             # t
   (`cover.py`). Counts are in blocks (intersection to intersection): 91,022 in NYC, 23.0 million in the US.
 * **Sources and methods:** [roomba/ACCURACY.md](roomba/ACCURACY.md). Master, Shorts, thumbnails and
   YouTube copy: `media/roomba/`.
+
+## Three routes, one ETA (`traffic/`)
+
+*You're not the only one who constantly gets 3 or more completely different routes to your destination
+with the same ETA.* A caption-only video (5:30) on why that happens, plus an interactive lab.
+
+**The trip.** Rocky Ridge to Seton, across Calgary, on real roads (Overture/OpenStreetMap, one-way rules,
+speed limits). It has three genuinely different routes:
+* around the west on Stoney Trail;
+* through the middle on Crowchild and Deerfoot;
+* up the east side on Barlow and 52 St.
+
+At 3 a.m. they take 33, 37 and 38 min.
+
+**The traffic** is a toy model with made-up capacities and the BPR congestion curve. At its rush hour
+the three meet at 46–47 min: Wardrop's user equilibrium. The video also covers how drivers might find it
+day by day, the app's selection effect, the system optimum and price of anarchy, and Braess's paradox
+(65 → 80 min).
+
+```bash
+cd traffic
+python -m pytest -q test_model.py                                  # the model (35 tests)
+python calgary_routes.py fetch && python calgary_routes.py build   # roads -> graph -> routes
+python scenario.py                                                 # every number in the video
+python assemble.py render && python thumbs.py                      # -> out/three_routes_one_eta.mp4, thumbnails
+cd lab && npm install && npm run dev                               # the lab; npm run build -> docs/traffic/
+```
+
+* **The lab** has four tabs: three competing routes (UE vs SO), drivers learning day by day, Braess's
+  paradox, and what the app shows. It is built to `docs/traffic/` for GitHub Pages.
+* **Sources and methods:** [traffic/ACCURACY.md](traffic/ACCURACY.md); how to change the scenarios:
+  [traffic/README.md](traffic/README.md).
+* **Deliverables:** master, thumbnails and YouTube copy are in `media/traffic/`.

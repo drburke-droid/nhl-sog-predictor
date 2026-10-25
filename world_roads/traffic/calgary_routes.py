@@ -366,6 +366,10 @@ def build():
                                   max_overlap=round(r["overlap"], 3), km_by_class={c: round(v, 2) for c, v in cls_km.items()},
                                   speed_limit_mapped_share=round(mapped, 3),
                                   xy=simplify(g, r["nodes"], 0.004)))
+        if k in main:                                      # full geometry + time along the route, for the race
+            em = g["emin"][r["edges"]]
+            out["routes"][-1]["detail"] = dict(xy=np.round(np.c_[g["nx"][r["nodes"]], g["ny"][r["nodes"]]], 3).tolist(),
+                                               tmin=np.round(np.r_[0, np.cumsum(em)], 4).tolist())
         print(f"{k:2d} {r['minutes']:6.1f} min {km:5.1f} km overlap {r['overlap']:.2f} via {', '.join(via)}")
     vs = via_sample(g, o, d)
     out["via_sample"] = [dict(minutes=round(t, 3), xy=simplify(g, nd)) for t, nd in vs]
