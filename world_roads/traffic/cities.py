@@ -27,7 +27,11 @@ CITIES = {
         d_rush=6500.0,                                       # toy-model drivers per hour at the peak
         calm=dict(replan=0.02, theta=1.0),                   # the learning run that settles: 1 in 50 rethink each day
         names_in=["the Midtown Tunnel", "the RFK Bridge", "the Battery Tunnel"],   # as they read mid-sentence
-        pin_labels=("b", "t")),                              # where the start / destination labels sit
+        pin_labels=("b", "t"),                               # where the start / destination labels sit
+        # Braess's paradox on the map: a mythical tunnel from the end of route C's bottleneck (the JFK Expressway)
+        # to the start of route A's (the Queens-Midtown Tunnel). A thought experiment with its own made-up numbers.
+        myth=dict(from_route=2, from_road="JFK Expressway", to_route=0, to_road="Queens-Midtown Tunnel", minutes=3.0,
+                  cap_from=1000.0, cap_to=800.0, demand=2750.0)),
     "calgary": dict(
         name="Calgary", trip="Rocky Ridge to Seton",
         bbox=(-114.40, 50.79, -113.78, 51.25),              # Calgary with the whole Stoney Trail ring road

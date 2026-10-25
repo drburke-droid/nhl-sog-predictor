@@ -261,9 +261,20 @@ def braess_network(connector=True, D=4000.0, slope=100.0, const=45.0, conn_cost=
     return dict(links=links, origin="S", dest="T", demand=D)
 
 
+def _link(l):
+    """(from, to, a, b): time a + b * flow.  {"from", "to", "t0", "cap", "plus"}: a BPR bottleneck (cap None: always
+    t0) plus an optional stretch of `plus` minutes that traffic does not slow."""
+    if isinstance(l, dict):
+        t0, cap, plus = float(l["t0"]), l.get("cap"), float(l.get("plus", 0.0))
+        return l["from"], l["to"], ((lambda x: plus + t0) if cap is None else (lambda x: plus + bpr(t0, cap, x)))
+    u, v, a, b = l
+    return u, v, (lambda x: a + b * x)
+
+
 def simple_paths(links, o, d):
     out, adj = [], {}
-    for k, (u, v, *_) in enumerate(links):
+    for k, l in enumerate(links):
+        u, v, _ = _link(l)
         adj.setdefault(u, []).append((v, k))
 
     def walk(u, seen, path):
@@ -278,15 +289,16 @@ def simple_paths(links, o, d):
 
 
 def network_ue(net, iters=10000, tol=1e-9):
-    """User equilibrium on a small network with link times a + b * flow (b >= 0), over every simple path.
+    """User equilibrium on a small network over every simple path. Links are linear, (from, to, a, b) with
+    time a + b * flow, or BPR, {"from", "to", "t0", "cap"}.
     Pairwise path equilibration: start everyone on the free-flow shortest path, then repeatedly move flow
     from the slowest used path to the fastest one until their times are equal (a bisection per move). Each
     move lowers Beckmann's objective, so this converges for any increasing link costs.
     Returns path flows/times, link flows/times, total vehicle-minutes and the max unilateral gain."""
     links, D = net["links"], float(net["demand"])
+    L = [_link(l) for l in links]
     paths = simple_paths(links, net["origin"], net["dest"])
     m, P = len(links), len(paths)
-    inc = [[k in p for k in range(m)] for p in paths]
 
     def load(pf):
         x = [0.0] * m
@@ -295,8 +307,11 @@ def network_ue(net, iters=10000, tol=1e-9):
                 x[k] += q
         return x
 
+    def ltimes(x):
+        return [L[k][2](x[k]) for k in range(m)]
+
     def ptimes(x):
-        t = [links[k][2] + links[k][3] * x[k] for k in range(m)]
+        t = ltimes(x)
         return [sum(t[k] for k in p) for p in paths]
     pf = [0.0] * P
     if D > 0 and P:
@@ -305,27 +320,41 @@ def network_ue(net, iters=10000, tol=1e-9):
     for _ in range(iters):
         if D <= 0 or P < 2:
             break
-        x = load(pf)
-        c = ptimes(x)
+        c = ptimes(load(pf))
         used = [i for i in range(P) if pf[i] > 0]
         w = max(used, key=lambda i: c[i])
         bst = min(range(P), key=lambda i: (c[i], i))
         if c[w] - c[bst] <= tol * max(1.0, c[bst]):
             break
-        # moving d from w to bst changes their time difference linearly (links on both paths cancel)
-        slope = sum(links[k][3] * (1 if inc[w][k] else 0) + links[k][3] * (1 if inc[bst][k] else 0)
-                    - 2 * links[k][3] * (1 if (inc[w][k] and inc[bst][k]) else 0) for k in range(m))
-        d = pf[w] if slope <= 0 else min(pf[w], (c[w] - c[bst]) / slope)
+
+        def gap(dd):
+            q = list(pf)
+            q[w] -= dd
+            q[bst] += dd
+            cc = ptimes(load(q))
+            return cc[w] - cc[bst]
+        # moving flow from w to bst shrinks their time gap; find where it closes (or move everyone)
+        if gap(pf[w]) >= 0:
+            d = pf[w]
+        else:
+            lo, hi = 0.0, pf[w]
+            for _ in range(80):
+                mid = 0.5 * (lo + hi)
+                if gap(mid) > 0:
+                    lo = mid
+                else:
+                    hi = mid
+            d = 0.5 * (lo + hi)
         pf[w] -= d
         pf[bst] += d
     x = load(pf)
-    t = [links[k][2] + links[k][3] * x[k] for k in range(m)]
+    t = ltimes(x)
     c = ptimes(x)
     total = sum(x[k] * t[k] for k in range(m))
     used = [q > 1e-9 * max(D, 1) for q in pf]
     best = min(c) if c else math.nan
     gain = max((ci for ci, u in zip(c, used) if u), default=best) - best if any(used) else 0.0
-    names = ["-".join([net["origin"]] + [links[k][1] for k in p]) for p in paths]
+    names = ["-".join([net["origin"]] + [L[k][1] for k in p]) for p in paths]
     return dict(paths=names, path_flows=pf, path_times=c, link_flows=x, link_times=t, used=used,
                 total_veh_min=total, avg_min=(total / D if D > 0 else math.nan), max_gain_min=max(0.0, gain))
 

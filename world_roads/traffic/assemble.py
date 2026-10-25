@@ -23,7 +23,7 @@ def render_all(names, jobs=4):
         r = subprocess.run([sys.executable, "video.py", nm], cwd=HERE, stdout=log, stderr=subprocess.STDOUT)
         print(f"  {nm}: exit {r.returncode}", flush=True)
         return r.returncode
-    heavy = ["fill", "learn", "braess", "app", "hook", "empty", "outro"]
+    heavy = ["fill", "learn", "myth", "app", "hook", "empty", "outro", "why"]
     order = [n for n in heavy if n in names] + [n for n in names if n not in heavy]
     with ThreadPoolExecutor(jobs) as ex:
         codes = list(ex.map(one, order))

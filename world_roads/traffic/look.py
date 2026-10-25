@@ -244,8 +244,9 @@ def badge(d, cx, cy, i, r=17, a=1.0):
     text(d, (cx, cy + 1), LET[i], int(r * 1.15), (10, 12, 20), a, "Bold", "mm")
 
 
-def pill(d, x, y, i, main, sub=None, a=1.0, size=30, anchor="mm", strong=True):
-    """a rounded ETA label: letter badge, big text, optional small text; (x, y) is its anchor point"""
+def pill(d, x, y, i, main, sub=None, a=1.0, size=30, anchor="mm", strong=True, col=None, letter=None):
+    """a rounded ETA label: letter badge, big text, optional small text; (x, y) is its anchor point.
+    col / letter override route i's colour and letter (for paths that are not one of the three routes)"""
     if a <= 0:
         return (0, 0, 0, 0)
     f1 = ST.font(size, "Bold" if strong else "SemiBold")
@@ -258,8 +259,14 @@ def pill(d, x, y, i, main, sub=None, a=1.0, size=30, anchor="mm", strong=True):
     h = int(size * 1.6)
     x0 = x - w / 2 if anchor[0] == "m" else (x if anchor[0] == "l" else x - w)
     y0 = y - h / 2
-    d.rounded_rectangle([x0, y0, x0 + w, y0 + h], h // 2, fill=ST.PANEL + (int(220 * a),), outline=tuple(ROUTE[i]) + (int(200 * a),), width=2)
-    badge(d, x0 + h / 2, y0 + h / 2, i, r=int(h * 0.36), a=a)
+    c = tuple(col or ROUTE[i])
+    d.rounded_rectangle([x0, y0, x0 + w, y0 + h], h // 2, fill=ST.PANEL + (int(220 * a),), outline=c + (int(200 * a),), width=2)
+    if letter is None:
+        badge(d, x0 + h / 2, y0 + h / 2, i, r=int(h * 0.36), a=a)
+    else:
+        rr = int(h * 0.36)
+        d.ellipse([x0 + h / 2 - rr, y0 + h / 2 - rr, x0 + h / 2 + rr, y0 + h / 2 + rr], fill=c + (int(255 * a),))
+        text(d, (x0 + h / 2, y0 + h / 2 + 1), letter, int(rr * 1.15), (10, 12, 20), a, "Bold", "mm")
     text(d, (x0 + h / 2 + r + pad, y0 + h / 2 + 1), main, size, INK, a, "Bold" if strong else "SemiBold", "lm")
     if sub:
         text(d, (x0 + h / 2 + r + 2 * pad + w1, y0 + h / 2 + 2), sub, max(20, int(size * 0.62)), INK2, a, "Medium", "lm")

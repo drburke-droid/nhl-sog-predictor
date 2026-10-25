@@ -427,8 +427,15 @@ def build():
                                   xy=simplify(g, r["nodes"], 0.004)))
         if k in main:                                      # full geometry + time along the route, for the race
             em = g["emin"][r["edges"]]
+            tm = np.r_[0, np.cumsum(em)]
+            roads, nm = [], g["seg_name"][g["seg"][r["edges"]]]
+            for k2, n2 in enumerate(nm):                    # named stretches along the route: [name, from minute, to minute]
+                if roads and roads[-1][0] == n2:
+                    roads[-1][2] = round(float(tm[k2 + 1]), 3)
+                else:
+                    roads.append([str(n2), round(float(tm[k2]), 3), round(float(tm[k2 + 1]), 3)])
             out["routes"][-1]["detail"] = dict(xy=np.round(np.c_[g["nx"][r["nodes"]], g["ny"][r["nodes"]]], 3).tolist(),
-                                               tmin=np.round(np.r_[0, np.cumsum(em)], 4).tolist())
+                                               tmin=np.round(tm, 4).tolist(), roads=roads)
         print(f"{k:2d} {r['minutes']:6.1f} min {km:5.1f} km overlap {r['overlap']:.2f} via {', '.join(via)}")
     vs = via_sample(g, o, d)
     out["via_sample"] = [dict(minutes=round(t, 3), xy=simplify(g, nd)) for t, nd in vs]

@@ -85,22 +85,23 @@ def main_track(O, total):
         (0, 0.22), (O["hook"] + 18.5, 0.28), (O["hook"] + 19.5, 0.42),
         (O["light"], 0.4), (O["empty"], 0.5), (O["empty"] + V.Empty.GO, 0.66), (O["empty"] + 16.0, 0.66), (O["empty"] + 16.5, 0.42),
         (O["curve"], 0.22), (O["fill"], 0.3), (O["fill"] + 13.0, 0.5), (O["fill"] + 25.0, 0.64), (O["fill"] + 41.0, 0.92),
-        (O["wardrop"] - 0.1, 0.92), (O["wardrop"], 0.2), (O["learn"], 0.42), (O["learn"] + V.Learn.R1, 0.78),
+        (O["why"] - 0.1, 0.92), (O["why"], 0.3), (O["why"] + V.Why.MOVE0, 0.34), (O["why"] + V.Why.MOVE1, 0.5),
+        (O["fine"] - 0.1, 0.5), (O["fine"], 0.2), (O["learn"], 0.42), (O["learn"] + V.Learn.R1, 0.78),
         (O["learn"] + V.Learn.R2 - 0.6, 0.78), (O["learn"] + V.Learn.R2, 0.4), (O["app"], 0.36), (O["app"] + 15.0, 0.5),
-        (O["optimum"], 0.24), (O["braess"], 0.4), (O["braess"] + V.Braess.SW0, 0.62), (O["braess"] + V.Braess.SW1, 0.84),
-        (O["braess"] + 38.0, 0.4), (O["outro"], 0.6), (O["outro"] + 15.0, 0.85), (total - 6.0, 0.85), (total - 5.9, 0.0), (total, 0.0)]
+        (O["optimum"], 0.24), (O["myth"], 0.34), (O["myth"] + V.Myth.OPEN0, 0.48), (O["myth"] + V.Myth.SW0, 0.62),
+        (O["myth"] + V.Myth.SW1, 0.84), (O["myth"] + V.Myth.SW1 + 7.0, 0.6), (O["myth"] + V.Myth.CHART0, 0.4), (O["outro"], 0.6), (O["outro"] + 15.0, 0.85), (total - 6.0, 0.85), (total - 5.9, 0.0), (total, 0.0)]
     E = sorted(E)
-    impacts = [(O["empty"] + V.Empty.GO, 0.6), (O["fill"] + 41.0, 1.1), (O["braess"] + V.Braess.OPEN0, 0.8),
-               (O["braess"] + V.Braess.SW1, 0.9), (O["outro"], 0.7)]
+    impacts = [(O["empty"] + V.Empty.GO, 0.6), (O["fill"] + 41.0, 1.1), (O["myth"] + V.Myth.OPEN0, 0.8),
+               (O["myth"] + V.Myth.SW1, 0.9), (O["outro"], 0.7)]
     risers = [(O["light"] + 11.0, O["empty"] + V.Empty.GO), (O["fill"] + 33.0, O["fill"] + 41.0),
-              (O["braess"] + V.Braess.SW0, O["braess"] + V.Braess.SW1), (O["outro"] + 11.0, O["outro"] + 15.0)]
+              (O["myth"] + V.Myth.SW0, O["myth"] + V.Myth.SW1), (O["outro"] + 11.0, O["outro"] + 15.0)]
     T = Track(total, E, impacts, risers)
-    minor_from, minor_to = O["braess"], O["braess"] + 38.0
+    minor_from, minor_to = O["myth"] + V.Myth.SW0, O["myth"] + V.Myth.CHART0     # the paradox, in a minor key
 
     def plan(t):
         e = float(np.interp(t, *zip(*E)))
         minor = minor_from <= t < minor_to
-        arp = not (O["curve"] <= t < O["fill"] or O["wardrop"] <= t < O["learn"] or O["optimum"] <= t < O["braess"])
+        arp = not (O["curve"] <= t < O["fill"] or O["fine"] <= t < O["learn"] or O["optimum"] <= t < O["myth"])
         return e, minor, arp
     T.compose_bars(plan)
     N = L.numbers()
@@ -110,6 +111,8 @@ def main_track(O, total):
     T.bell(O["fill"] + 25.0, 83, 1.0, 0.3)                                    # C joins
     for m in (72, 84, 96):                                                    # one ETA: the three in unison
         T.bell(O["fill"] + 41.0, m, 1.0)
+    for m in (72, 84):                                                        # the gap closes: equal again
+        T.bell(O["why"] + V.Why.MOVE1, m, 0.7)
     T.bell(O["learn"] + V.Learn.R2 + V.Learn.SPD * (N["learn"]["calm"]["settle_day"] + 1), 84, 0.9)
     T.ending(total - 6.0)
     for t, s in T.impacts:

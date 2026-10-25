@@ -3,7 +3,8 @@
 The video asks why a map app so often offers three completely different routes with the same ETA. It
 answers with two separate effects. The first is traffic: drivers crowd the quicker roads until no one gains
 by switching (Wardrop's user equilibrium). The second is selection: the app lists only the quickest few
-routes. The video then covers the system optimum, the price of anarchy and Braess's paradox.
+routes. The video then covers the fine print of "the same ETA", the system optimum, the price of anarchy,
+and Braess's paradox, shown on the same map with a mythical tunnel.
 
 The trip is **JFK Airport to Times Square**.
 
@@ -16,7 +17,7 @@ Every number on screen comes from `scenario.py` (written to `media/traffic/video
 tested functions in `model.py`.
 
 The same pipeline also runs on a Calgary trip, Rocky Ridge to Seton (`TRAFFIC_CITY=calgary`). Its routes
-are in `media/traffic/routes_calgary.json`, and the lab offers both trips.
+are in `media/traffic/routes_calgary.json`.
 
 ## 1. The roads and the three routes (real data, idealized driving)
 
@@ -91,8 +92,8 @@ T(f) = T₀ · (1 + 0.15 · (f / c)⁴)
   measurements of these roads.
 * **Demand: also made up.** Rush hour is 6,500 drivers per hour making this kind of trip.
 
-**The routes are treated as independent** (Mode A of the lab). Real routes share roads with each other
-and with every other trip in the city, which couples their times.
+**The routes are treated as independent.** Real routes share roads with each other and with every other
+trip in the city, which couples their times.
 
 ## 3. User equilibrium (exact)
 
@@ -109,6 +110,25 @@ and with every other trip in the city, which couples their times.
 * **Numbers in the video:**
   * Route B starts carrying traffic at **2,303** drivers per hour and C at **4,121**.
   * At 6,500 per hour all three take **50.0 min**, with flows of 3,137, 2,037 and 1,326 per hour.
+* **"Why do the times end up equal?"** The video starts from an unbalanced split of the same 6,500 drivers:
+  2,957 on A (45.0 min) and 2,132 and 1,411 on B and C (53.4 min each). It then moves drivers linearly to
+  the equilibrium split. That illustrates why a gap closes (arrivals slow the quicker route, departures
+  speed up the others); it is not a dynamic model. The equilibrium is a Nash equilibrium of the routing
+  game: no single driver can gain by switching. Nobody computes it; it is what remains once drivers stop
+  finding quicker routes.
+
+## 3a. The fine print (what "the same ETA" does and doesn't mean)
+
+1. **Only routes in use.** Wardrop's condition says nothing equalizes the times of routes nobody uses. At
+   3 a.m. (300 drivers an hour in the toy model) everyone takes A, and B and C stay slower: 26, 33 and
+   38 min.
+2. **One trip, one moment.** The equilibrium is for one origin, destination and departure time. Other trips
+   share the roads in reality (and are ignored here), and the balance shifts through the day.
+3. **"Equal" is approximate.** Drivers don't switch for trivial savings, real ETAs are predictions with
+   error, and apps round to the minute. In the learning run of section 4 the times end within a minute,
+   not exactly equal.
+4. **Equal is not best.** The equilibrium is what selfish choices produce, not the minimum total time
+   (section 6).
 
 ## 4. How drivers might find it (a behavioural sketch)
 
@@ -148,6 +168,9 @@ through the day. Trips with different origins and destinations share the roads.
 * **Wardrop's second principle:** the system optimum minimizes total travel time. It equalizes each
   route's marginal social cost: the driver's own time plus the delay they add to everyone else,
   T₀ · (1 + 0.15 · 5 · (f/c)⁴) for BPR. It does not equalize the travel times.
+* **Why selfish is not best:** a driver joining a busy road slows everyone behind them a little (the
+  extra 0.15 · 4 · (f/c)⁴ · T₀ term). Nobody pays that cost when choosing, so an externality separates the
+  two. This is what the video means by "nobody counts that cost when choosing a route".
 * **At rush hour:**
 
   | | A | B | C | Average |
@@ -161,26 +184,43 @@ through the day. Trips with different origins and destinations share the roads.
   fill.
 * **These are toy-model values.** Gaps like this depend entirely on the curves and capacities. For
   linear costs the price of anarchy can never exceed 4/3 (Roughgarden and Tardos, "How bad is selfish
-  routing?", *J. ACM* 2002). The Braess example below has 80/65 = 1.23.
+  routing?", *J. ACM* 2002). For quartic BPR curves the bound is much higher. In the mythical-tunnel
+  example below, total time with the tunnel is 51.9/38.2 = 1.36 times total time without it.
 
-## 7. Braess's paradox (exact, the textbook example)
+## 7. Braess's paradox on the map: the mythical tunnel (a thought experiment)
 
 * **Source:** D. Braess, "Über ein Paradoxon aus der Verkehrsplanung", *Unternehmensforschung* 12,
   1968. English translation: Braess, Nagurney and Wakolbinger, *Transportation Science* 39, 2005.
-* **The network:** 4,000 drivers.
-  * S→A and B→T take flow ÷ 100 minutes.
-  * A→T and S→B take 45 minutes.
-  * The connector A→B takes 0 minutes.
-* **Connector closed:** 2,000 drivers per route, 65 min each.
-* **Connector open:** at equilibrium all 4,000 take S-A-B-T, 80 min each. A lone driver switching to
-  S-A-T or S-B-T would take 85 min, so nobody switches.
-* **Solver:** path equilibration in `model.py`, tested.
+* **The tunnel is imaginary.** There is no road like it. It would run about 16 km in a straight line, so
+  3 minutes means over 300 km/h. It exists to show the paradox on familiar geometry.
+* **The network** (`scenario.py: myth_network`, settings in `cities.py`): routes A and C only, with B
+  ignored. Each is cut into one bottleneck and stretches that are assumed never to slow down.
+  * **Route C** (around Brooklyn, 38.0 min empty): the JFK Expressway, minutes 1.1–3.0 of the route, is a
+    BPR bottleneck with a made-up capacity of 1,000 vehicles per hour. The rest is fixed.
+  * **Route A** (through Queens, 26.2 min empty): the Queens-Midtown Tunnel, minutes 19.8–22.9, is a BPR
+    bottleneck with a made-up capacity of 800 vehicles per hour. The rest is fixed.
+  * **The mythical tunnel** joins the end of the JFK Expressway to the Queens-Midtown Tunnel's entrance:
+    3 minutes, with no congestion. The route through it uses *both* bottlenecks.
+  * **Demand:** 2,750 drivers an hour, made up.
+* **Tunnel closed:** 942 drivers per hour take C and 1,808 take A, 38.2 min each.
+* **Tunnel open:** at user equilibrium 2,107 take the tunnel route, 563 stay on C and 80 on A, and all three
+  take **51.9 min**: 13.7 min (36%) more for everyone. A lone driver switching back to either old route
+  would also take 51.9 min, so nobody gains by switching.
+* **The first driver to try it** (with everyone else still on the old split) takes 24.5 min instead of
+  38.2. That is why the switching starts.
+* **At 3 a.m.** (no traffic) the tunnel route takes 12.3 min, against 26.2 on A and 38.0 on C.
+* **It only happens at some demands.** With fewer than about 2,070 drivers an hour the tunnel helps
+  (at 1,500 it saves 12.5 min). From 2,070 to 4,860 it makes everyone slower. Above about 4,860 nobody
+  uses it: each bottleneck is then so slow that the tunnel route, which needs both, loses to the old routes. The video's chart
+  is computed every 100 drivers per hour from 100 to 6,000.
+* **Solver:** path equilibration in `model.py`, extended to BPR links and tested against the parallel-route
+  solver.
 * **The switching animation** moves drivers linearly from the closed equilibrium to the open one. It
   illustrates the move; it is not a dynamic model.
-* **It only happens at some demands.** With 2,000 drivers the connector *helps* (55 → 40 min). At 3,000
-  it changes nothing, and from 9,000 on nobody uses it. The paradox needs demand between 3,000 and 9,000
-  (lab tab C). It shows that a new road *can* slow everyone down, not that new roads usually do. Induced
-  demand (new roads attracting new trips) is a different effect.
+* **What it shows:** a new road *can* slow everyone down, when it sends traffic through bottlenecks it did
+  not use before. It does not show that new roads usually do. Induced demand (new roads attracting new
+  trips) is a different effect. `model.py` also still computes and tests Braess's original textbook
+  network (4,000 drivers, 65 → 80 min).
 
 ## 8. Other material
 
@@ -196,7 +236,7 @@ through the day. Trips with different origins and destinations share the roads.
 cd traffic
 python city_routes.py fetch && python city_routes.py build         # roads -> graph -> routes (~3 min); TRAFFIC_CITY=calgary for the other trip
 python scenario.py                                                 # every number in the video
-python -m pytest -q test_model.py                                  # 35 model tests
+python -m pytest -q test_model.py                                  # 36 model tests
 python assemble.py render                                          # sections (4 at a time) + score -> out/three_routes_one_eta.mp4
 python thumbs.py                                                   # thumbnails A/B/C
 ```

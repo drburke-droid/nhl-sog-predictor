@@ -1,7 +1,7 @@
 """Three routes, one ETA: the video (1920x1080, 30 fps, caption-only). Every number comes from scenario.py.
 
     python video.py NAME [still times...]
-    NAME: hook, light, empty, curve, fill, wardrop, learn, app, optimum, braess, outro
+    NAME: hook, light, empty, curve, fill, why, fine, learn, app, optimum, myth, outro
 """
 import os, sys, math, subprocess
 import numpy as np
@@ -488,32 +488,94 @@ def LET(i):
     return L.LET[i]
 
 
-# ================================================================== 6. Wardrop's principle
-class Wardrop(L.Section):
-    name, dur = "wardrop", bars(8)
+# ================================================================== 6. why the times end up equal
+class Why(L.Section):
+    name, dur = "why", bars(12)
+    MOVE0, MOVE1 = 5.0, 12.5                         # drivers switching from the unbalanced start to the equilibrium
+
+    def __init__(self):
+        self.sc = Scene(RIGHT)
+        self.f0, self.f1 = N["why_start"]["flows"], N["ue"]["flows"]
+        self.cars = Cars(self.sc, self.state, self.dur)
+
+    def state(self, t):
+        u = smooth((t - self.MOVE0) / (self.MOVE1 - self.MOVE0))
+        f = [lerp(a, b, u) for a, b in zip(self.f0, self.f1)]
+        return f, [M.bpr(T0[i], CAP[i], f[i]) for i in range(3)]
+
+    def frame(self, t):
+        sc = self.sc
+        sc.glow.clear()
+        f, T = self.state(t)
+        for i in range(3):
+            sc.route(i, flow_width(f[i]), 0.95)
+        self.cars.draw(t)
+        im = Image.fromarray(sc.compose())
+        d = ImageDraw.Draw(im, "RGBA")
+        sc.pins(d, 1.0)
+        sc.badges(d)
+        x, a0 = 70, smooth(t / 0.6)
+        text(d, (x, 96), "Why do the times", 56, INK, a0, "Bold")
+        text(d, (x, 162), "end up equal?", 56, INK, a0, "Bold")
+        text(d, (x, 270), "RUSH HOUR · TOY MODEL", 22, MUTED, a0, "SemiBold")
+        for i in range(3):
+            y = 336 + i * 66
+            L.pill(d, x, y, i, f"{T[i]:.0f} min", f"{NAMES[i]} · {cars_h(f[i])}", a=a0, size=30, anchor="lm")
+            dlt = f[i] - self.f0[i]
+            if abs(dlt) > 20 and t < 17.0:
+                text(d, (x + 560, y), f"{'+' if dlt > 0 else '−'}{fmt_int(abs(dlt))} cars/h", 24, GOLDISH if dlt > 0 else INK2,
+                     smooth((t - self.MOVE0) / 1.0) * (1 - smooth((t - 16.4) / 0.6)), "SemiBold", "lm")
+        aw = ST.fade(t, 17.0, 1e9)
+        d.rounded_rectangle([x - 10, 530, x + 830, 810], 22, fill=ST.PANEL + (int(210 * aw),))
+        text(d, (x + 20, 562), "WARDROP'S PRINCIPLE (1952)", 22, MUTED, aw, "SemiBold")
+        text(d, (x + 20, 602), "Traffic settles where no driver can get", 34, INK, aw, "Bold")
+        text(d, (x + 20, 646), "there sooner by switching on their own.", 34, INK, aw, "Bold")
+        text(d, (x + 20, 718), "Routes people use", 30, INK, aw, "SemiBold", "lm")
+        text(d, (x + 800, 718), "the same time", 30, GOLD, aw, "Bold", "rm")
+        text(d, (x + 20, 772), "Routes nobody uses", 30, INK, aw, "SemiBold", "lm")
+        text(d, (x + 800, 772), "slower", 30, INK2, aw, "Bold", "rm")
+        ts = N["why_start"]["times"]
+        caps(d, t, [(0.4, 4.8, [cap(f"Suppose {IN[0]} showed {ts[0]:.0f} minutes, and the other two {ts[1]:.0f}.", 36)]),
+                    (5.2, 11.8, [cap("Drivers leave the slower routes for the quicker one.", 34),
+                                 cap("It slows down as they arrive, and the others speed up.", 34, INK2)]),
+                    (12.2, 16.6, [cap("They meet in the middle. Any gap left over would tempt more drivers to switch, so it closes.", 32)]),
+                    (17.0, 23.6, [cap("That's Wardrop's principle: a state no driver can improve on by switching alone.", 34)]),
+                    (24.0, 30.6, [cap("Game theorists call it a Nash equilibrium. Nobody plans it: it's what's left", 34),
+                                  cap("once everyone has picked the quickest route they know.", 34, INK2)])])
+        return np.asarray(im)
+
+
+class Fine(L.Section):
+    name, dur = "fine", bars(12)
+    AT = [1.0, 7.5, 14.0, 20.5]
 
     def __init__(self):
         sc = Scene(CENTER)
-        b = sc.base * 0.35
-        self.bg = cv2.GaussianBlur(b, (0, 0), 4).astype(np.uint8)
+        self.bg = cv2.GaussianBlur(sc.base * 0.3, (0, 0), 4).astype(np.uint8)
 
     def frame(self, t):
         im = Image.fromarray(self.bg.copy())
         d = ImageDraw.Draw(im, "RGBA")
-        a0 = ST.fade(t, 0.2, 1e9)
-        text(d, (W / 2, 210), "John Glen Wardrop, 1952", 30, MUTED, a0, "SemiBold", "ma")
-        text(d, (W / 2, 290), "Traffic settles where no driver", 62, INK, a0, "Bold", "ma")
-        text(d, (W / 2, 372), "can get there sooner by switching alone.", 62, INK, a0, "Bold", "ma")
-        a1 = ST.fade(t, 5.5, 1e9)
-        a2 = ST.fade(t, 8.0, 1e9)
-        d.rounded_rectangle([420, 520, 1500, 720], 26, fill=ST.PANEL + (int(210 * max(a1, 0.001)),))
-        text(d, (480, 575), "Routes people use", 40, INK, a1, "SemiBold", "lm")
-        text(d, (1440, 575), "the same travel time", 40, GOLD, a1, "Bold", "rm")
-        text(d, (480, 665), "Routes nobody uses", 40, INK, a2, "SemiBold", "lm")
-        text(d, (1440, 665), "slower", 40, INK2, a2, "Bold", "rm")
-        a3 = ST.fade(t, 11.5, 1e9)
-        text(d, (W / 2, 800), "Game theorists call this a Nash equilibrium: a state nobody wants to leave on their own.", 32, INK2, a3, "Medium", "ma")
-        text(d, (W / 2, 1010), "J. G. Wardrop (1952), Some theoretical aspects of road traffic research, Proc. Institution of Civil Engineers", 20, MUTED, a0, "Regular", "ma")
+        a0 = smooth(t / 0.6)
+        text(d, (W / 2, 96), "The fine print", 60, INK, a0, "Bold", "ma")
+        text(d, (W / 2, 176), "\u201cthe same ETA\u201d is true only in a narrow sense", 30, INK2, a0, "Medium", "ma")
+        items = [("It only applies to routes people actually use.",
+                  f"At 3 a.m. everyone takes {IN[0]} ({T0[0]:.0f} min). The other two stay slower ({T0[1]:.0f} and {T0[2]:.0f}), and nothing evens them out."),
+                 ("It's about the same trip, at the same time.",
+                  "A driver heading somewhere else, or you an hour earlier, faces a different balance."),
+                 ("\u201cEqual\u201d means close enough.",
+                  "Nobody switches to save 30 seconds, ETAs are predictions, and apps round to the minute."),
+                 ("It isn't the best outcome for everyone.",
+                  "Each driver picks what's quickest for them. As we'll see, that can leave everyone slower.")]
+        for k, (head, body) in enumerate(items):
+            a = smooth((t - self.AT[k]) / 0.6)
+            y = 280 + k * 175
+            d.rounded_rectangle([280, y - 14, 1640, y + 136], 20, fill=ST.PANEL + (int(200 * a),))
+            d.ellipse([310, y + 8, 360, y + 58], fill=GOLD + (int(255 * a),))
+            text(d, (335, y + 34), str(k + 1), 30, (10, 12, 20), a, "Bold", "mm")
+            text(d, (390, y + 10), head, 38, INK, a, "Bold")
+            for j, line in enumerate(wrap(body, 28, 1210)):
+                text(d, (390, y + 66 + 34 * j), line, 28, INK2, a, "Medium")
         return np.asarray(im)
 
 
@@ -667,7 +729,7 @@ class App(L.Section):
 
 # ================================================================== 9. everyone for themselves vs the best for everyone
 class Optimum(L.Section):
-    name, dur = "optimum", bars(10)
+    name, dur = "optimum", bars(12)
 
     def __init__(self):
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
@@ -700,115 +762,176 @@ class Optimum(L.Section):
         self.panel(d, 1060, "A perfect traffic controller", so["flows"], so["times"], ST.fade(t, 5.8, 1e9), so["avg"])
         caps(d, t, [(0.4, 5.4, [cap("Is everyone choosing for themselves the best for everyone?", 36)]),
                     (5.8, 12.6, [cap("Not quite. A controller would send a few more drivers the slower way, so the rest save more.", 32)]),
-                    (13.0, 19.6, [cap(f"Average trip: {ue['avg']:.1f} → {so['avg']:.1f} minutes. Here, choosing for yourself costs just {100 * (N['poa'] - 1):.1f}%.", 34)]),
-                    (20.0, 25.6, [cap("Economists call that gap the price of anarchy. Sometimes it's much bigger.", 34, GOLD)])],)
+                    (13.0, 19.6, [cap("Why? Joining a busy road slows everyone behind you, and nobody counts that cost.", 34)]),
+                    (20.0, 25.4, [cap(f"Here the gap is small: {ue['avg']:.1f} → {so['avg']:.1f} minutes on average, just {100 * (N['poa'] - 1):.1f}%.", 34)]),
+                    (25.8, 30.6, [cap("Economists call it the price of anarchy. A new road can make it much bigger.", 34, GOLD)])],)
         note(d, f"Toy model at rush hour ({fmt_int(N['d_rush'])} drivers per hour). The gap peaks at {100 * (N['poa_max']['value'] - 1):.0f}% in lighter traffic.")
         return np.asarray(im)
 
 
-# ================================================================== 10. Braess's paradox
-class Braess(L.Section):
-    name, dur = "braess", bars(18)
-    NODES = {"S": (430, 520), "A": (960, 250), "B": (960, 790), "T": (1490, 520)}
-    PATHS = {"S-A-T": "SAT", "S-B-T": "SBT", "S-A-B-T": "SABT"}
-    OPEN0, SW0, SW1 = 12.0, 16.0, 26.0
+# ================================================================== 10. Braess's paradox, on the map
+def piece(P, cum, L0, L1):
+    """the polyline between arc lengths L0 and L1"""
+    i0, i1 = int(np.searchsorted(cum, L0)), int(np.searchsorted(cum, L1))
+    return np.vstack([L.at(P, cum, L0)] + [P[k] for k in range(i0, i1)] + [L.at(P, cum, L1)])
+
+
+class Myth(L.Section):
+    name, dur = "myth", bars(32)
+    HI0, OPEN0, NIGHT0, FIRST0, SW0, SW1, CHART0 = 6.0, 22.0, 29.0, 35.0, 41.0, 51.0, 72.0
+    PER = 15.0                                                  # vehicles per dot
 
     def __init__(self):
-        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        v = np.clip(1 - 0.38 * (((xx - W / 2) / (W * 0.62)) ** 2 + ((yy - H * 0.52) / (H * 0.75)) ** 2), 0.4, 1)
-        self.bg = (L.BG[None, None] * v[..., None]).astype(np.float32)
-        self.glow = L.Glow()
-        self.poly = {k: self.path_pts(v) for k, v in self.PATHS.items()}
-        self.cum = {k: L.polyline_cum(p) for k, p in self.poly.items()}
+        m = self.m = N["myth"]
+        cfg = m["cfg"]
+        sc = self.sc = Scene(RIGHT)
+        X, Y = self.X, self.Y = cfg["from_route"], cfg["to_route"]
+        bx, by = m["bottleneck_from"], m["bottleneck_to"]
+        lx0, lx1 = np.interp([bx[1], bx[2]], sc.tmin[X], sc.cum[X])
+        ly0, ly1 = np.interp([by[1], by[2]], sc.tmin[Y], sc.cum[Y])
+        self.bn = [piece(sc.P[X], sc.cum[X], lx0, lx1), piece(sc.P[Y], sc.cum[Y], ly0, ly1)]
+        self.bn_names = [bx[0], by[0]]
+        self.Pp, self.Qp = L.at(sc.P[X], sc.cum[X], lx1), L.at(sc.P[Y], sc.cum[Y], ly0)
+        bore = np.linspace(self.Pp, self.Qp, 60)
+        self.bore, self.bore_cum = bore, L.polyline_cum(bore)
+        tunnel = np.vstack([L.partial(sc.P[X], sc.cum[X], lx1), bore, piece(sc.P[Y], sc.cum[Y], ly0, sc.cum[Y][-1])])
+        self.paths = [sc.P[X], tunnel, sc.P[Y]]
+        self.pcum = [L.polyline_cum(p) for p in self.paths]
+        self.cols = [ROUTE[X], GOLDISH, ROUTE[Y]]
+        self.dash = dash_polys(bore, self.bore_cum, 14, 10)
         ts = np.arange(0, self.dur + 2 / FPS, 1 / FPS)
-        sp = np.array([[1.0 / (self.times(t)[k] * 0.11) for k in self.PATHS] for t in ts])
+        sp = np.array([[1.0 / max(1e-6, T * 0.25) for T in self.state(t)[1]] for t in ts])
         self.u = np.cumsum(sp, axis=0) / FPS
 
-    def path_pts(self, nodes):
-        P = []
-        for a, b in zip(nodes[:-1], nodes[1:]):
-            (x0, y0), (x1, y1) = self.NODES[a], self.NODES[b]
-            for u in np.linspace(0, 1, 40):
-                P.append((x0 + (x1 - x0) * u, y0 + (y1 - y0) * u))
-        return np.array(P)
-
-    def x_short(self, t):
-        return 4000.0 * smooth((t - self.SW0) / (self.SW1 - self.SW0))
-
-    def flows(self, t):
-        x = self.x_short(t)
-        return {"S-A-T": (4000 - x) / 2, "S-B-T": (4000 - x) / 2, "S-A-B-T": x}
-
-    def times(self, t):
-        f = self.flows(t)
-        sa = f["S-A-T"] + f["S-A-B-T"]
-        bt = f["S-B-T"] + f["S-A-B-T"]
-        return {"S-A-T": sa / 100 + 45, "S-B-T": 45 + bt / 100, "S-A-B-T": sa / 100 + bt / 100}
+    def state(self, t):
+        """flows and trip times on (old route X, the tunnel route, old route Y)"""
+        st = self.m["steps"]
+        u = smooth((t - self.SW0) / (self.SW1 - self.SW0)) * (len(st) - 1)
+        k = min(int(u), len(st) - 2)
+        w = u - k
+        f = [lerp(a, b, w) for a, b in zip(st[k]["flows"], st[k + 1]["flows"])]
+        T = [lerp(a, b, w) for a, b in zip(st[k]["times"], st[k + 1]["times"])]
+        return f, T
 
     def frame(self, t):
-        g = self.glow
+        sc, m = self.sc, self.m
+        g = sc.glow
         g.clear()
-        f, T = self.flows(t), self.times(t)
-        conn = smooth((t - self.OPEN0) / 1.5)
-        a0 = smooth(t / 0.8)
-        edges = [("S", "A", "cars ÷ 100 min"), ("A", "T", "45 min"), ("S", "B", "45 min"), ("B", "T", "cars ÷ 100 min")]
-        for a, b, _ in edges:
-            g.line([self.NODES[a], self.NODES[b]], (60, 90, 130), 26, a0 * 0.8)
-        if conn > 0:
-            (x0, y0), (x1, y1) = self.NODES["A"], self.NODES["B"]
-            g.line([(x0, y0), (x0, y0 + (y1 - y0) * conn)], (255, 214, 140), 14, 0.9)
+        f, T = self.state(t)
+        opened = smooth((t - self.OPEN0) / 2.0)
+        aside = smooth((t - 1.0) / 1.5)
+        other = 3 - self.X - self.Y
+        sc.route(other, 2, 0.95 * (1 - aside) + 0.1 * aside)
+        sc.route(self.X, flow_width(f[0] + f[1]), 0.95)
+        sc.route(self.Y, flow_width(f[1] + f[2]), 0.95)
+        hi = smooth((t - self.HI0) / 1.0)
+        pulse = 0.75 + 0.25 * math.sin(2 * math.pi * t / 1.6)
+        for P in self.bn:
+            g.line(P, (255, 246, 230), 11, 0.9 * hi * pulse)
+        if opened > 0:
+            reach = opened * self.bore_cum[-1]
+            for seg in self.dash:
+                if np.hypot(*(seg[0] - self.bore[0])) <= reach:
+                    g.line(seg, GOLDISH, 6, 1.0)
         k = min(len(self.u) - 1, int(round(t * FPS)))
-        for j, p in enumerate(self.PATHS):
-            n = int(round(f[p] * T[p] / 60 / 30))
-            if n <= 0:
+        for j in range(3):
+            if f[j] <= 0.5:
                 continue
-            s = (Cars.PHI[:n] + self.u[k, j]) % 1.0
-            Ls = s * self.cum[p][-1]
-            xs = np.interp(Ls, self.cum[p], self.poly[p][:, 0])
-            ys = np.interp(Ls, self.cum[p], self.poly[p][:, 1])
-            col = (255, 230, 190) if p == "S-A-B-T" else (200, 225, 255)
-            g.dots(zip(xs, ys), col, 4, a0)
-        img = g.compose(self.bg)
-        im = Image.fromarray(img)
+            n = int(min(len(Cars.PHI), round(f[j] * T[j] / 60.0 / self.PER)))
+            s_ = (Cars.PHI[:n] + self.u[k, j]) % 1.0
+            Ls = s_ * self.pcum[j][-1]
+            xs = np.interp(Ls, self.pcum[j], self.paths[j][:, 0])
+            ys = np.interp(Ls, self.pcum[j], self.paths[j][:, 1])
+            col = tuple(min(255, c * 0.6 + 110) for c in self.cols[j])
+            g.dots(zip(xs, ys), col, 3.0, 1.0)
+        im = Image.fromarray(sc.compose())
         d = ImageDraw.Draw(im, "RGBA")
-        for a, b, lab in edges:
-            (x0, y0), (x1, y1) = self.NODES[a], self.NODES[b]
-            mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-            L_ = math.hypot(x1 - x0, y1 - y0)
-            nx, ny = -(y1 - y0) / L_, (x1 - x0) / L_
-            if nx * (mx - 960) + ny * (my - 520) < 0:
-                nx, ny = -nx, -ny
-            text(d, (mx + nx * 80, my + ny * 80), lab, 30, INK2, a0, "SemiBold", "mm")
-        if conn > 0:
-            text(d, (990, 520), "shortcut: 0 min", 30, GOLDISH, conn, "Bold", "lm")
-        for nm, (x, y) in self.NODES.items():
-            d.ellipse([x - 34, y - 34, x + 34, y + 34], fill=(240, 244, 250, int(255 * a0)))
-            text(d, (x, y + 2), nm, 36, (8, 12, 20), a0, "Bold", "mm")
-        text(d, (self.NODES["S"][0], self.NODES["S"][1] + 60), "start", 24, MUTED, a0, "Medium", "ma")
-        text(d, (self.NODES["T"][0], self.NODES["T"][1] + 60), "destination", 24, MUTED, a0, "Medium", "ma")
-        # path board
-        x0 = 1580
-        text(d, (x0, 160), "4,000 DRIVERS", 24, MUTED, a0, "SemiBold")
-        rows = [("S-A-T", "via A"), ("S-B-T", "via B"), ("S-A-B-T", "via the shortcut")]
-        for r, (p, lab) in enumerate(rows):
-            if p == "S-A-B-T" and conn <= 0:
-                continue
-            a = a0 if p != "S-A-B-T" else conn
-            y = 210 + r * 96
-            text(d, (x0, y), lab, 28, INK, a, "SemiBold")
-            text(d, (x0, y + 36), f"{fmt_int(f[p])} drivers · {T[p]:.0f} min", 26, GOLDISH if f[p] > 0.5 else MUTED, a, "Medium")
-        avg = sum(f[p] * T[p] for p in f) / 4000
-        text(d, (x0, 520), "AVERAGE TRIP", 24, MUTED, a0, "SemiBold")
-        text(d, (x0, 552), f"{avg:.0f} min", 72, GOLD, a0, "Bold")
-        caps(d, t, [(0.3, 4.0, [cap("Sometimes the price of choosing for yourself is much higher.", 36)]),
-                    (4.4, 11.6, [cap("4,000 drivers, two routes. They split evenly, and every trip takes 65 minutes.", 36)]),
-                    (12.0, 15.8, [cap("Now add a shortcut: a free road from A to B.", 36)]),
-                    (16.2, 25.8, [cap("Each driver who takes it gets there sooner, so more and more drivers switch...", 34)]),
-                    (26.2, 31.0, [cap("...until everyone takes the shortcut. Now every trip takes 80 minutes.", 36)]),
-                    (31.4, 38.0, [cap("A new road made everyone 15 minutes slower. Closing it would get everyone home sooner.", 34, GOLD)]),
-                    (38.4, 45.6, [cap("Braess's paradox (Dietrich Braess, 1968). It can happen, but it isn't the rule:", 34),
-                                  cap("with 2,000 drivers, the same shortcut saves everyone 15 minutes.", 34, INK2)])])
-        note(d, "The classic textbook example; link times are toy numbers.", a0)
+        sc.pins(d, 1.0)
+        sc.badges(d, which=(self.X, self.Y))
+        # labels on the map
+        for P, nm, side in zip(self.bn, self.bn_names, (1, -1)):
+            x, y = P[len(P) // 2]
+            lab = f"BOTTLENECK · {nm}"
+            tw = d.textlength(lab, font=ST.font(22, "SemiBold"))
+            bx = x + 30 if side > 0 else x - 30 - tw - 24
+            bx = min(max(bx, 960), W - tw - 40)
+            d.rounded_rectangle([bx, y - 50, bx + tw + 24, y - 14], 12, fill=ST.PANEL + (int(220 * hi),), outline=(255, 246, 230, int(160 * hi)), width=1)
+            text(d, (bx + 12, y - 32), lab, 22, INK, hi, "SemiBold", "lm")
+        if opened > 0:
+            mx, my = self.bore[len(self.bore) // 2]
+            lab = f"MYTHICAL TUNNEL · {m['cfg']['minutes']:.0f} min, never any traffic"
+            tw = d.textlength(lab, font=ST.font(24, "Bold"))
+            d.rounded_rectangle([mx - tw / 2 - 14, my + 18, mx + tw / 2 + 14, my + 58], 14, fill=ST.PANEL + (int(225 * opened),), outline=GOLDISH + (int(220 * opened),), width=2)
+            text(d, (mx, my + 38), lab, 24, GOLDISH, opened, "Bold", "mm")
+        # the board
+        x, a0 = 70, smooth(t / 0.6)
+        text(d, (x, 96), "Can a new road make", 52, INK, a0, "Bold")
+        text(d, (x, 158), "everyone slower?", 52, INK, a0, "Bold")
+        text(d, (x, 262), f"THOUGHT EXPERIMENT · {fmt_int(m['cfg']['demand'])} DRIVERS AN HOUR", 22, MUTED, a0, "SemiBold")
+        rows = [(self.X, f[0], T[0]), (None, f[1], T[1]), (self.Y, f[2], T[2])]
+        y = 326
+        for j, (i, fl, tm) in enumerate(rows):
+            if i is None:
+                if opened <= 0:
+                    continue
+                if t < self.FIRST0:
+                    main, sub = f"{m['night'][1]:.0f} min", "via the tunnel, at 3 a.m."
+                    a = opened * smooth((t - self.NIGHT0) / 0.6)
+                    if t < self.NIGHT0:
+                        main, sub, a = "—", "via the tunnel", opened
+                elif t < self.SW0:
+                    main, sub, a = f"{m['lone']:.0f} min", "the first driver to try it", 1.0
+                else:
+                    main, sub, a = f"{tm:.0f} min", f"via the tunnel · {cars_h(fl)}", 1.0
+                L.pill(d, x, y, 0, main, sub, a=a, size=30, anchor="lm", col=GOLDISH, letter="T")
+            else:
+                L.pill(d, x, y, i, f"{tm:.0f} min", f"{NAMES[i]} route · {cars_h(fl)}", a=a0, size=30, anchor="lm")
+            y += 66
+        avg = sum(a_ * b_ for a_, b_ in zip(f, T)) / max(1.0, sum(f))
+        ab = a0 * (1 - smooth((t - self.CHART0) / 0.6))
+        text(d, (x, 560), "AVERAGE TRIP", 22, MUTED, ab, "SemiBold")
+        text(d, (x, 590), f"{avg:.0f} min", 80, GOLD, ab, "Bold")
+        if t > self.SW1:
+            xw = x + d.textlength(f"{avg:.0f} min", font=ST.font(80, "Bold")) + 28
+            text(d, (xw, 640), f"+{m['opened']['avg'] - m['closed']['avg']:.0f} min for everyone", 34, INK, ab * smooth((t - self.SW1) / 0.8), "Bold", "lm")
+        ac = smooth((t - self.CHART0) / 0.6)
+        if ac > 0:
+            cv = np.array(m["curve"])
+            ax = L.Axes((150, 545, 860, 770), (0, 6000), (0, 80))
+            hurt = cv[cv[:, 2] > cv[:, 1] + 0.05, 0]
+            if len(hurt):
+                d.rectangle([float(ax.X(hurt.min())), ax.y0, float(ax.X(hurt.max())), ax.y1], fill=(255, 186, 80, int(40 * ac)))
+                text(d, (float(ax.X((hurt.min() + hurt.max()) / 2)), ax.y0 + 8), "the tunnel makes everyone slower", 20, GOLDISH, ac, "SemiBold", "ma")
+            ax.draw(d, range(0, 6001, 2000), range(0, 81, 20), lambda v: f"{v:,}", str, "Drivers per hour", "Average trip (min)", ac, size=20)
+            ax.series(d, cv[:, 0], cv[:, 1], col=INK2, width=3, dash=(8, 6), a=ac)
+            ax.series(d, cv[:, 0], cv[:, 2], col=GOLDISH, width=4, dash=None, a=ac)
+            for k, (lab, col, dsh) in enumerate((("without the tunnel", INK2, (8, 6)), ("with the tunnel", GOLDISH, None))):
+                ly = ax.y1 - 56 + 26 * k
+                L.dashed(d, [(ax.x1 - 250, ly), (ax.x1 - 210, ly)], col, 3, dsh, ac)
+                text(d, (ax.x1 - 200, ly), lab, 19, INK2, ac, "Medium", "lm")
+            xx = float(ax.X(m["cfg"]["demand"]))
+            d.line([(xx, ax.y0), (xx, ax.y1)], fill=(240, 244, 250, int(200 * ac)), width=2)
+        before, after = m["closed"]["avg"], m["opened"]["avg"]
+        caps(d, t, [(0.3, 5.6, [cap("Can a new road make everyone slower? Here's a thought experiment on the same map.", 34)]),
+                    (6.0, 14.6, [cap("Keep two routes, each with one bottleneck that slows down as traffic grows:", 32),
+                                 cap(f"the {self.bn_names[0]} and the {self.bn_names[1]}. Say the rest never jams.", 32, INK2)]),
+                    (15.0, 21.6, [cap(f"With {fmt_int(m['cfg']['demand'])} drivers an hour, they split so both routes take {before:.0f} minutes.", 34)]),
+                    (22.0, 28.6, [cap(f"Now dig a mythical tunnel from the end of the {self.bn_names[0]}", 34),
+                                  cap(f"straight to the {self.bn_names[1]}: {m['cfg']['minutes']:.0f} minutes, never any traffic.", 34, GOLDISH)]),
+                    (29.0, 34.6, [cap(f"At 3 a.m. it's a real shortcut: {m['night'][1]:.0f} minutes instead of {m['night'][2]:.0f}.", 34)]),
+                    (35.0, 40.6, [cap(f"At rush hour, the first driver to try it arrives in {m['lone']:.0f} minutes, not {before:.0f}.", 34),
+                                  cap("So others follow...", 34, INK2)]),
+                    (41.0, 50.6, [cap("...and every one of them squeezes through both bottlenecks.", 34),
+                                  cap(f"The {self.bn_names[0]} and the {self.bn_names[1]} fill up.", 32, INK2)]),
+                    (51.0, 57.6, [cap(f"When the switching stops, every route takes {after:.0f} minutes:", 34),
+                                  cap(f"{after - before:.0f} minutes longer than before the tunnel, for everyone.", 34, GOLD)]),
+                    (58.0, 64.6, [cap("And nobody can do better by going back: both old routes now share", 34),
+                                  cap("a jammed bottleneck with the tunnel route.", 34, INK2)]),
+                    (65.0, 71.6, [cap("Each driver who switched saved time, but slowed everyone in two bottlenecks.", 32),
+                                  cap(f"Close the tunnel, and everyone arrives {after - before:.0f} minutes sooner.", 32, INK2)]),
+                    (72.0, 80.6, [cap("This is Braess's paradox (Dietrich Braess, 1968). It isn't the rule:", 34),
+                                  cap("with fewer drivers the same tunnel helps. It depends on the bottlenecks.", 32, INK2)])])
+        note(d, "Thought experiment: the tunnel is imaginary, and the bottleneck capacities and driver numbers are made up.", a0)
         return np.asarray(im)
 
 
@@ -843,7 +966,7 @@ class Outro(L.Section):
         for k, s in enumerate(["Thousands of drivers, each taking the fastest", "way they know, made those times match. And", "the app only showed you the close calls."]):
             text(d, (x, 640 + 44 * k), s, 32, INK2, a3, "Medium")
         a4 = ST.fade(t, 15.5, 1e9)
-        text(d, (x, 820), "Try it yourself: the traffic lab is linked below.", 32, INK, a4, "SemiBold")
+        text(d, (x, 820), "And beware the shortcut that everyone takes.", 32, INK, a4, "SemiBold")
         a5 = ST.fade(t, 19.0, 1e9)
         for k, s in enumerate(["Roads © OpenStreetMap contributors, via Overture Maps. Free-flow times: real roads at the speed limit.",
                                f"Traffic: a toy model with made-up capacities, not {N['city_name']} traffic data. Music: original, synthesized for this video."]):
@@ -851,8 +974,8 @@ class Outro(L.Section):
         return np.asarray(im)
 
 
-SECTIONS = {c.name: c for c in (Hook, Light, Empty, Curve, Fill, Wardrop, Learn, App, Optimum, Braess, Outro)}
-ORDER = ["hook", "light", "empty", "curve", "fill", "wardrop", "learn", "app", "optimum", "braess", "outro"]
+SECTIONS = {c.name: c for c in (Hook, Light, Empty, Curve, Fill, Why, Fine, Learn, App, Optimum, Myth, Outro)}
+ORDER = ["hook", "light", "empty", "curve", "fill", "why", "fine", "learn", "app", "optimum", "myth", "outro"]
 
 if __name__ == "__main__":
     s = SECTIONS[sys.argv[1]]()

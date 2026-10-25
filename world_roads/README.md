@@ -314,7 +314,7 @@ python thumbs.py                                                             # t
 ## Three routes, one ETA (`traffic/`)
 
 *You're not the only one who constantly gets 3 or more completely different routes to your destination
-with the same ETA.* A caption-only video (5:30) on why that happens, plus an interactive lab.
+with the same ETA.* A caption-only video (6:50) on why that happens.
 
 **The trip.** JFK Airport to Times Square, on real New York roads (Overture/OpenStreetMap, one-way rules,
 speed limits). It takes three genuinely different ways into Manhattan:
@@ -325,21 +325,24 @@ speed limits). It takes three genuinely different ways into Manhattan:
 At 3 a.m. they take 26, 33 and 38 min.
 
 **The traffic** is a toy model with made-up capacities and the BPR congestion curve. At its rush hour
-all three show 50 min: Wardrop's user equilibrium. The video also covers how drivers might find it day by
-day, the app's selection effect, the system optimum and price of anarchy, and Braess's paradox
-(65 → 80 min). The same pipeline also runs on a Calgary trip (`TRAFFIC_CITY=calgary`).
+all three show 50 min: Wardrop's user equilibrium. The video also covers why the gap closes (a Nash
+equilibrium nobody plans), the fine print of "the same ETA", how drivers might find it day by day, the
+app's selection effect, the system optimum and price of anarchy. It ends with Braess's paradox on the same
+map: a mythical 3-minute tunnel that makes every trip slower (38 → 52 min). The same pipeline also runs on
+a Calgary trip (`TRAFFIC_CITY=calgary`).
 
 ```bash
 cd traffic
-python -m pytest -q test_model.py                                  # the model (35 tests)
+python -m pytest -q test_model.py                                  # the model (36 tests)
 python city_routes.py fetch && python city_routes.py build         # roads -> graph -> routes
 python scenario.py                                                 # every number in the video
 python assemble.py render && python thumbs.py                      # -> out/three_routes_one_eta.mp4, thumbnails
-cd lab && npm install && npm run dev                               # the lab; npm run build -> docs/traffic/
+cd lab && npm install && npm run dev                               # optional lab; npm run build -> docs/traffic/
 ```
 
-* **The lab** has four tabs: three competing routes (UE vs SO), drivers learning day by day, Braess's
-  paradox, and what the app shows. It is built to `docs/traffic/` for GitHub Pages.
+* **An interactive lab** (`lab/`, not linked from the video) has four tabs: three competing routes
+  (UE vs SO), drivers learning day by day, Braess's paradox, and what the app shows. It builds to
+  `docs/traffic/`.
 * **Sources and methods:** [traffic/ACCURACY.md](traffic/ACCURACY.md); how to change the scenarios:
   [traffic/README.md](traffic/README.md).
 * **Deliverables:** master, thumbnails and YouTube copy are in `media/traffic/`.

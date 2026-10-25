@@ -6,11 +6,12 @@ holds three things:
 * **A tested model** (`model.py`) of route choice:
   * Wardrop user equilibrium (UE) and system optimum (SO) on parallel routes with the BPR congestion curve;
   * a seeded day-to-day learning process;
-  * user equilibrium on a small network (Braess's paradox);
+  * user equilibrium on a small network with linear or BPR links (Braess's paradox, including the video's
+    mythical tunnel);
   * the selection effect of an app that lists only the fastest few routes.
-* **An interactive lab** (`lab/`, Vite + React + TypeScript) with four tabs. Live copy:
-  `docs/traffic/` on GitHub Pages (https://drburke-droid.github.io/nhl-sog-predictor/traffic/).
-* **A caption-only video** (5:30, 1920×1080), framed by the title *You're not the only one who constantly
+* **An interactive lab** (`lab/`, Vite + React + TypeScript) with four tabs. It is an optional companion
+  that the video does not link to, and builds to `docs/traffic/`.
+* **A caption-only video** (6:50, 1920×1080), framed by the title *You're not the only one who constantly
   gets 3 or more completely different routes to your destination with the same ETA*. It is set on real
   New York roads (JFK Airport to Times Square), in the look of the light-speed film. Master, thumbnails
   and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
@@ -31,7 +32,7 @@ Units are minutes, and vehicles per hour over one steady peak hour.
 | `price_of_anarchy(ue, so)` | Total time at UE ÷ total time at SO (NaN without demand) |
 | `joins_at(...)`, `presets(...)` | The demand at which each route starts to carry traffic, and the lab's Low / Moderate / Near-converged / Heavy presets, computed rather than hard-coded |
 | `learning(...)` | Day-to-day route choice. Each day a share `replan` reconsiders, using times from `delay` days ago. Optional extras: a switching threshold `theta` (min), logit perception spread `sigma` (min), and seeded day-to-day noise. Vehicles are conserved. |
-| `network_ue(net)` | UE over every simple path by pairwise path equilibration; `braess_network(...)` builds the classic example |
+| `network_ue(net)` | UE over every simple path by pairwise path equilibration. Links are linear `(u, v, a, b)` tuples or BPR dicts `{from, to, t0, cap, plus}` (`cap=None`: fixed time). `braess_network(...)` builds the classic example; `scenario.myth_network` builds the mythical tunnel. |
 | `app_shown(times, k, max_detour)` | The routes a stylized app would list |
 
 The lab's `lab/src/model/*.ts` mirrors these line for line. `lab/src/model/model.test.ts` checks the
@@ -41,7 +42,7 @@ acceptance cases and compares against Python fixtures (`lab/scripts/fixtures.py`
 ## Run
 
 ```bash
-# model tests (35)
+# model tests (36)
 python -m pytest -q test_model.py
 
 # the lab
@@ -59,7 +60,7 @@ python assemble.py render                                          # all section
 python thumbs.py
 ```
 
-The full render takes about 20 minutes on 4 cores.
+The full render takes about 25 minutes on 4 cores.
 
 ## The lab
 
@@ -89,7 +90,8 @@ Settings are saved in the browser's localStorage only. *Reset everything* clears
   * shared route sets and demand: `lab/src/scenarios.ts`;
   * each tab's defaults: the `DEFAULT_*` constant at the top of `lab/src/modes/Mode*.tsx`.
 * **The video's traffic** (capacities, rush-hour demand, the learning runs): constants at the top of
-  `scenario.py`. Re-run it, then `assemble.py render`.
+  `scenario.py`. The mythical tunnel (which bottlenecks it joins, its minutes, their capacities and the
+  demand) is the `myth` entry in `cities.py`. Re-run `scenario.py`, then `assemble.py render`.
 * **The trip and the city:** one entry per city in `cities.py`:
   * the fetch box, projection centre and the trip's two ends;
   * default speeds;

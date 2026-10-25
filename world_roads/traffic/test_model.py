@@ -102,6 +102,16 @@ def test_braess_only_in_a_band(D, paradox):
     assert o >= c - 1e-6 or D < 3000                          # below 3,000 the connector helps
 
 
+def test_bpr_network_matches_parallel_routes():
+    # two parallel BPR roads as a network give the same equilibrium as the parallel-route solver
+    net = dict(links=[{"from": "S", "to": "T", "t0": 12.0, "cap": 2000.0}, {"from": "S", "to": "M", "t0": 17.0, "cap": 1500.0},
+                      {"from": "M", "to": "T", "t0": 0.0, "cap": None}], origin="S", dest="T", demand=4000)
+    r = M.network_ue(net)
+    ue = M.parallel_ue([12.0, 17.0], [2000.0, 1500.0], 4000)
+    assert r["path_flows"] == pytest.approx(ue["flows"], abs=1e-3)
+    assert max(r["path_times"]) - min(r["path_times"]) < 1e-6
+
+
 @pytest.mark.parametrize("kw", [dict(replan=1.0), dict(replan=0.1, delay=3), dict(replan=0.5, sigma=2, noise=0.2, seed=9),
                                 dict(replan=0.3, theta=2.0)])
 def test_learning_conserves_vehicles(kw):
