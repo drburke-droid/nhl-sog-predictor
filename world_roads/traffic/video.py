@@ -830,6 +830,8 @@ class Neck:
             cars = [c for c in cars if c["x"] < self.X1 + 20]
             self.frames.append([(c["x"], self.y(c), 1.0 - min(1.0, c["v"] / self.V), not c["out"]) for c in cars])
             t += dt
+        waits = [any(q and s > 0.6 for _, _, s, q in fr) for fr in self.frames]
+        self.queue_at = next((t0 - 4.0 + k * dt for k, w in enumerate(waits) if w and t0 - 4.0 + k * dt > heavy0), t1)
 
     def y(self, c):
         y0 = self.CY + (c["lane"] - 1.5) * self.LW
@@ -878,7 +880,7 @@ class Neck:
 
 class Myth(L.Section):
     name, dur = "myth", bars(40)
-    NECK0, HEAVY0, NECK1 = 6.0, 16.5, 26.0                     # the lane-drop diagram: in, traffic gets heavy, out
+    NECK0, HEAVY0, NECK1 = 6.0, 14.8, 26.0                     # the lane-drop diagram: in, traffic gets heavy, out
     HI0, OPEN0, NIGHT0, FIRST0, SW0, SW1, CHART0 = 26.0, 41.0, 48.0, 54.0, 60.0, 70.0, 92.0
     PER = 15.0                                                  # vehicles per dot
 
@@ -974,7 +976,7 @@ class Myth(L.Section):
             text(d, (mx, my + 38), lab, 24, GOLDISH, opened, "Bold", "mm")
         # the bottleneck diagram, then the board
         an = smooth((t - self.NECK0) / 0.6) * (1 - smooth((t - self.NECK1) / 0.6))
-        self.neck.draw(d, t, an, t >= self.HEAVY0 + 0.5)
+        self.neck.draw(d, t, an, t >= self.neck.queue_at - 0.3)          # "heavy" once the queue starts
         x, a0 = 70, smooth(t / 0.6)
         ab0 = smooth((t - self.NECK1 - 0.3) / 0.6)
         text(d, (x, 96), "Can a new road make", 52, INK, a0, "Bold")
