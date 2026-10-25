@@ -16,7 +16,9 @@ sweet spot in the traffic."* The worked example is the same drive home in a toy 
 river (14.9 mi) or north through the Bronx and over the Throgs Neck Bridge (17.7 mi), 29 minutes either way. The
 rest of the video explains why, and why it's often two routes rather than three.
 
-**A/B/C test.** The thumbnails carry the hook. The titles are under 100 characters, and the first ~70 show
+**A/B test.** YouTube's Test & Compare takes up to three thumbnails at once; good first sets are D, E, G (the
+real screenshot, the bottleneck, the real numbers) or A, E, F. F leads with the tunnel paradox rather than the
+same-ETA question, so pair it with its own title. The thumbnails carry the hook. The titles are under 100 characters, and the first ~70 show
 in search. D is the strongest click: it is your real screenshot.
 
 | | Thumbnail | Title |
@@ -25,6 +27,9 @@ in search. D is the strongest click: it is your real screenshot.
 | B | `thumb_B.png`: NOT A / COINCIDENCE over two travel-time curves merging into one | Your Commute Has 2 Routes With the Same ETA. It's Not a Coincidence |
 | C | `thumb_C.png`: 3 A.M. 21 / 26 min vs RUSH HOUR 29 / 29 min | Two Ways Home, Same ETA: Why Traffic Does This |
 | D | `thumb_D.png`: your Apple Maps screenshot (59 min, 1 hr, 1 hr 1 min, ringed in gold) beside 3 ROUTES. / SAME ETA. / WHY? | Why Does My Maps App Give Me 3 Routes Home With the Same ETA? |
+| E | `thumb_E.png`: SAME ETA? / THIS IS WHY. over a glowing lane drop, 4 lanes into 2, with a red queue backed up behind the bottleneck | Why Your Two Routes Home Always Have the Same ETA |
+| F | `thumb_F.png`: NEW ROAD. / EVERYONE / SLOWER. and +7 MIN beside the map with the mythical tunnel | Why a New Road Can Make Everyone's Drive Home Slower |
+| G | `thumb_G.png`: 59 · 60 · 61 MIN in huge gold numerals over your blurred Apple Maps screenshot: 3 WAYS HOME / COINCIDENCE? | 59, 60, 61 Minutes: Why 3 Different Routes Home Have the Same ETA |
 
 **Thumbnail D and the opening use your screenshot** (`maps_screenshot.png`, Apple Maps, Times Square to
 Bayside, leave 6:01 p.m.). It is cropped and scaled, never edited; the gold rings and the caption are drawn

@@ -8,11 +8,13 @@ layout preview with an empty placeholder phone (out/thumb_D_layout.png).
 """
 import os, sys
 import numpy as np
+import cv2
 from PIL import Image, ImageDraw
 
 import look as L
 import video as V
-from look import INK, INK2, GOLD, text
+from look import INK, INK2, GOLD, text, lerp
+from video import GOLDISH
 import style as ST
 
 N = V.N
@@ -20,6 +22,7 @@ OUT = L.OUT
 
 
 USED = V.USED                     # the routes in use at rush hour: the ones with the same ETA
+W_, H_ = 1920, 1080
 
 
 def map_frame(view, width=7, glow_scale=1.0, dim=1.0, which=(0, 1, 2)):
@@ -133,10 +136,126 @@ def thumb_d():
         text(d, (70, 1010), "LAYOUT PREVIEW: add media/traffic/maps_screenshot.png, then run thumbs.py D", 30, (255, 120, 110), 1.0, "Bold")
     return im.convert("RGB"), have
 
+# ------------------------------------------------------------------ the bottleneck, the tunnel, the real times
+RED = (255, 60, 48)
+
+
+def bloom(img, em, small=10, big=34, k=(1.0, 0.8, 0.55)):
+    """add a glowing layer: the layer itself, a tight blur and a wide blur"""
+    e = np.asarray(em, np.float32)
+    out = np.asarray(img, np.float32) + k[0] * e + k[1] * cv2.GaussianBlur(e, (0, 0), small) + k[2] * cv2.GaussianBlur(e, (0, 0), big)
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+
+
+def heavy_text(d, xy, s, size, col, anchor="la"):
+    w = "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold"
+    for dy in (7, 3):                                   # a drop shadow so the words read over anything
+        text(d, (xy[0], xy[1] + dy), s, size, (0, 0, 0), 0.6, w, anchor)
+    text(d, xy, s, size, col, 1.0, w, anchor)
+
+
+def thumb_e():
+    """the bottleneck: four lanes squeeze into two and a long red queue backs up behind it"""
+    class Long(V.Neck):                                 # the video's toy queue, on a longer road, left to fill up
+        X0, XM, XT, X1 = -300, 520, 610, 960
+    nk = Long(6.0, 31.0, 7.0)
+    cars = nk.frames[-1]
+    s, cy = 2000 / (Long.X1 - Long.X0), 700
+    X = lambda x: (x - Long.X0) * s - 40
+    Y = lambda y: cy + (y - Long.CY) * s
+    view = L.MapView.fit((200, 100, 1800, 980), "thumbE", which=tuple(USED))
+    base = V.Scene(view).base * 0.32
+    img = Image.fromarray(base.astype(np.uint8))
+    d = ImageDraw.Draw(img, "RGBA")
+    xs = [Long.X0 - 60, Long.XM, Long.XT, Long.X1 + 60]
+    top = [(X(x), Y(Long.CY - nk.half(x))) for x in xs]
+    bot = [(X(x), Y(Long.CY + nk.half(x))) for x in xs[::-1]]
+    d.polygon(top + bot, fill=(30, 36, 50, 255))
+    em = Image.new("RGB", img.size, (0, 0, 0))
+    de = ImageDraw.Draw(em)
+    for P in (top, [(X(x), Y(Long.CY + nk.half(x))) for x in xs]):
+        de.line(P, fill=(150, 200, 255), width=5)
+    for off in (-1, 1):                                  # the lanes that end
+        L.dashed(de, [(X(xs[0]), Y(Long.CY + off * Long.LW)), (X(Long.XM), Y(Long.CY + off * Long.LW))], (110, 140, 180), 4, (26, 20), 1.0)
+    L.dashed(de, [(X(xs[0]), Y(Long.CY)), (X(xs[-1]), Y(Long.CY))], (110, 140, 180), 4, (26, 20), 1.0)
+    cw, ch = Long.CW * s, Long.CH * s
+    for x, y, stop, queued in cars:
+        jam = min(1.0, stop * 4.0) if queued else 0.0      # anything crawling in the queue shows its brake lights
+        col = tuple(int(lerp(c0, c1, jam)) for c0, c1 in zip((235, 242, 255), RED))
+        de.rounded_rectangle([X(x) - cw / 2, Y(y) - ch / 2, X(x) + cw / 2, Y(y) + ch / 2], 6, fill=col)
+    img = bloom(img, em, k=(1.0, 0.7, 0.45))
+    d = ImageDraw.Draw(img, "RGBA")
+    bx = (X(Long.XM) + X(Long.XT)) / 2
+    yb = Y(Long.CY + 2 * Long.LW) + 26
+    d.polygon([(bx, yb), (bx - 22, yb + 36), (bx + 22, yb + 36)], fill=GOLD + (255,))
+    heavy_text(d, (bx, yb + 52), "BOTTLENECK", 54, GOLD, "ma")
+    text(d, (X(-60), Y(Long.CY - 2 * Long.LW) - 30), "4 LANES", 44, INK, 1.0, "Bold", "ms")
+    text(d, ((X(Long.XT) + X(Long.X1)) / 2, Y(Long.CY - Long.LW) - 30), "2 LANES", 44, INK, 1.0, "Bold", "ms")
+    heavy_text(d, (70, 70), "SAME ETA?", 170, INK)
+    heavy_text(d, (78, 270), "THIS IS WHY.", 120, GOLD)
+    return img
+
+
+def thumb_f():
+    """Braess on the map: the mythical tunnel that makes everyone slower"""
+    keep = V.RIGHT
+    V.RIGHT = L.MapView.fit((860, 70, 1880, 1010), "thumbF", which=tuple(USED))
+    try:
+        m = V.Myth()
+    finally:
+        V.RIGHT = keep
+    sc, g = m.sc, m.sc.glow
+    g.clear()
+    sc.route(m.X, 9, 1.0)
+    sc.route(m.Y, 9, 1.0)
+    for P in m.bn:
+        g.line(P, (255, 246, 230), 18, 1.0)
+    for seg in m.dash:
+        g.line(seg, GOLDISH, 14, 1.0)
+    img = Image.fromarray(sc.compose(dim=0.75))
+    d = ImageDraw.Draw(img, "RGBA")
+    sc.badges(d, which=(m.X, m.Y))
+    mx, my = m.bore[len(m.bore) // 2]
+    lab = "MYTHICAL TUNNEL"
+    tw = d.textlength(lab, font=ST.font(34, "Bold"))
+    d.rounded_rectangle([mx - tw / 2 - 18, my - 30, mx + tw / 2 + 18, my + 30], 18, fill=ST.PANEL + (235,), outline=GOLDISH + (255,), width=3)
+    text(d, (mx, my), lab, 34, GOLDISH, 1.0, "Bold", "mm")
+    heavy_text(d, (70, 70), "NEW ROAD.", 150, INK)
+    heavy_text(d, (70, 250), "EVERYONE", 150, INK)
+    heavy_text(d, (70, 430), "SLOWER.", 150, RED)
+    gain = round(m.m["opened"]["avg"] - m.m["closed"]["avg"])
+    d.rounded_rectangle([80, 680, 520, 860], 40, fill=(120, 20, 24, 235), outline=RED + (255,), width=5)
+    text(d, (300, 770), f"+{gain} MIN", 104, INK, 1.0, "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold", "mm")
+    return img
+
+
+def thumb_g():
+    """the real screenshot's three times, as big as they go: 59, 60, 61"""
+    marks = L.shot_marks()
+    shot = Image.open(SHOT).convert("RGB").crop(tuple(marks["crop"]))
+    s = max(W_ / shot.width, H_ / shot.height)
+    bg = shot.resize((int(shot.width * s), int(shot.height * s)), Image.LANCZOS)
+    bg = bg.crop(((bg.width - W_) // 2, (bg.height - H_) // 2, (bg.width - W_) // 2 + W_, (bg.height - H_) // 2 + H_))
+    a = cv2.GaussianBlur(np.asarray(bg, np.float32), (0, 0), 7) * 0.3
+    yy, xx = np.mgrid[0:H_, 0:W_].astype(np.float32)
+    a *= np.clip(1.25 - 0.9 * (((xx - W_ / 2) / W_) ** 2 + ((yy - H_ / 2) / H_) ** 2) * 2.2, 0.35, 1)[..., None]
+    img = Image.fromarray(a.astype(np.uint8))
+    d = ImageDraw.Draw(img, "RGBA")
+    heavy_text(d, (W_ / 2, 60), "3 WAYS HOME", 120, INK, "ma")
+    nums = ["59", "60", "61"]
+    for k, n in enumerate(nums):
+        cx = W_ / 2 + (k - 1) * 560
+        heavy_text(d, (cx, 560), n, 330, GOLD, "mm")
+        text(d, (cx, 760), "MIN", 64, INK, 1.0, "Bold", "mm")
+    heavy_text(d, (W_ / 2, 870), "COINCIDENCE?", 120, INK, "ma")
+    text(d, (W_ - 40, H_ - 30), f"{marks.get('source', '')} · {marks.get('trip', '')}", 26, INK2, 1.0, "SemiBold", "rs")
+    return img
+
+
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
-    want = sys.argv[1:] or ["A", "B", "C", "D"]
-    for k, f in (("A", thumb_a), ("B", thumb_b), ("C", thumb_c)):
+    want = sys.argv[1:] or ["A", "B", "C", "D", "E", "F", "G"]
+    for k, f in (("A", thumb_a), ("B", thumb_b), ("C", thumb_c), ("E", thumb_e), ("F", thumb_f), ("G", thumb_g)):
         if k in want:
             f().convert("RGB").resize((1280, 720), Image.LANCZOS).save(os.path.join(OUT, f"thumb_{k}.png"), optimize=True)
             print("wrote", f"thumb_{k}.png")
