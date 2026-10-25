@@ -1,4 +1,7 @@
 {
+ "city": "calgary",
+ "city_name": "Calgary",
+ "trip": "Rocky Ridge to Seton",
  "names": [
   "Stoney Trail",
   "Crowchild & Deerfoot",
@@ -8,6 +11,11 @@
   "around the west",
   "through the middle",
   "up the east side"
+ ],
+ "crossings": [
+  null,
+  null,
+  null
  ],
  "t0": [
   32.98,
@@ -940,6 +948,11 @@
   46,
   47,
   47
+ ],
+ "eta_final_exact": [
+  46.12467319258191,
+  46.74246931194953,
+  46.5439795869568
  ],
  "braess": {
   "closed": {

@@ -12,8 +12,9 @@ holds three things:
   `docs/traffic/` on GitHub Pages (https://drburke-droid.github.io/nhl-sog-predictor/traffic/).
 * **A caption-only video** (5:30, 1920×1080), framed by the title *You're not the only one who constantly
   gets 3 or more completely different routes to your destination with the same ETA*. It is set on real
-  Calgary roads, in the look of the light-speed film. Master, thumbnails and YouTube copy are in
-  `../media/traffic/`.
+  New York roads (JFK Airport to Times Square), in the look of the light-speed film. Master, thumbnails
+  and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
+  (`TRAFFIC_CITY=calgary`).
 
 What is real and what is a toy model: [ACCURACY.md](ACCURACY.md). In short, the road geometry and the
 free-flow times are real; capacities, demand and every traffic number are illustrative.
@@ -51,7 +52,7 @@ npm test             # 26 tests, including parity with model.py
 npm run build        # -> ../../../docs/traffic (static, works from any folder)
 
 # the video
-python calgary_routes.py fetch && python calgary_routes.py build   # Overture roads -> graph -> routes
+python city_routes.py fetch && python city_routes.py build         # Overture roads -> graph -> routes (TRAFFIC_CITY=nyc|calgary)
 python scenario.py                                                 # every number in the video
 python video.py fill 20 41                                         # stills of one section at 20 s and 41 s
 python assemble.py render                                          # all sections (4 at a time) + score
@@ -64,10 +65,10 @@ The full render takes about 20 minutes on 4 cores.
 
 | Tab | What you can do |
 |---|---|
-| **A · Three competing routes** | Set demand, each route's free-flow time and capacity, and α, β. See the UE split, which routes are used, the most anyone could save by switching (0 at UE), UE vs SO flows and times, total vehicle-minutes and the price of anarchy. A demand curve marks where each route joins. Presets: Textbook (12/17/22 min), Calgary cross-town (the real free-flow times), Identical routes. |
+| **A · Three competing routes** | Set demand, each route's free-flow time and capacity, and α, β. See the UE split, which routes are used, the most anyone could save by switching (0 at UE), UE vs SO flows and times, total vehicle-minutes and the price of anarchy. A demand curve marks where each route joins. Presets: Textbook (12/17/22 min), New York: JFK → Times Square and Calgary cross-town (the real free-flow times), Identical routes. |
 | **B · Watch drivers find equilibrium** | Start, pause, step, reset and speed controls. Set the share who re-plan, reaction delay, switching threshold, perception spread, noise and seed. Presets cover "Settles", "Keeps wobbling", "Everyone chases yesterday's winner", "Ignore under 2 min", "Fuzzy perceptions + noise" and "Stale information". The exact UE is drawn as a dashed target. |
 | **C · Braess's paradox** | A big connector toggle and the number of drivers; advanced link costs. A path table shows used and unused paths. A chart of average trip vs demand shades the band where the connector hurts (3,000–9,000 drivers with the classic numbers). |
-| **D · What the app shows** | Many candidate routes with no traffic at all (random, or the 400 Calgary routes at 3 a.m.). Choose how many the app lists, a detour limit and rounding. Compares the spread of the listed ETAs with the spread of all routes, over 1,000 seeded random cities. |
+| **D · What the app shows** | Many candidate routes with no traffic at all (random, or 400 real routes at 3 a.m. in New York or Calgary). Choose how many the app lists, a detour limit and rounding. Compares the spread of the listed ETAs with the spread of all routes, over 1,000 seeded random cities. |
 
 Settings are saved in the browser's localStorage only. *Reset everything* clears them.
 
@@ -89,10 +90,17 @@ Settings are saved in the browser's localStorage only. *Reset everything* clears
   * each tab's defaults: the `DEFAULT_*` constant at the top of `lab/src/modes/Mode*.tsx`.
 * **The video's traffic** (capacities, rush-hour demand, the learning runs): constants at the top of
   `scenario.py`. Re-run it, then `assemble.py render`.
-* **The trip:** `ORIGIN` / `DEST` in `calgary_routes.py`. `build` re-picks the three least-overlapping
-  routes within 15% of the fastest.
-* **Another city:** change `BBOX`, `CENTRE`, `ORIGIN` and `DEST` in `calgary_routes.py`, and the default
-  speeds if the local defaults differ.
+* **The trip and the city:** one entry per city in `cities.py`:
+  * the fetch box, projection centre and the trip's two ends;
+  * default speeds;
+  * rush-hour demand and the settling learning run;
+  * the words the video uses for the three routes.
+
+  `TRAFFIC_CITY` picks the city (default `nyc`). How `build` chooses the three routes depends on the
+  entry. With `crossings`, it takes the fastest route through each named bridge or tunnel (New York).
+  Otherwise it takes the three least-overlapping routes within 15% of the fastest (Calgary).
+* **Another city:** add an entry to `cities.py`, then run `city_routes.py fetch` and `build`,
+  `scenario.py` and `assemble.py render`. The map views fit the new routes automatically.
 
 ## Next directions (not built yet)
 

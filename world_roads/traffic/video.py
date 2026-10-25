@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw
 
 import look as L
 from look import W, H, FPS, INK, INK2, MUTED, GOLD, ROUTE, smooth, lerp, text
+from cities import C as CITY_C
 import model as M
 import style as ST
 
@@ -26,6 +27,44 @@ FILM = os.path.join(L.ROOT, "media", "world_roads_light_speed.mp4")
 
 def bars(n):
     return n * BAR + XF
+
+
+IN = CITY_C["names_in"]                                    # route names as they read mid-sentence
+SIDES = N["sides"]
+WORDS = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen".split()
+Y0 = int(5 * np.floor((min(T0) - 3) / 5))                   # chart floors and ceilings that fit this city's times
+Y1 = int(5 * np.ceil((N["ue"]["level"] + 3) / 5))
+DMAX = int(1000 * np.ceil((N["d_rush"] + 400) / 1000))
+
+
+ONE_IN = round(1 / N["learn"]["calm"]["params"]["replan"])
+
+
+def final_cap():
+    """the learning run's last word: close but not identical, or all the same once rounded to the minute"""
+    ex, r = N["eta_final_exact"], N["eta_final"]
+    if len(set(r)) == 1:
+        return [cap(f"Not exactly equal ({ex[0]:.1f}, {ex[1]:.1f} and {ex[2]:.1f} min),", 36),
+                cap(f"but rounded to the minute, all three say {r[0]} min.", 40, GOLD)]
+    return [cap(f"Close, not identical: {r[0]}, {r[1]} and {r[2]} minutes.", 40, GOLD)]
+
+
+def cap1(s):
+    return s[:1].upper() + s[1:]
+
+
+def wrap(s, size, width, weight="Medium"):
+    """split text into lines no wider than `width` pixels"""
+    f = ST.font(size, weight)
+    out, cur = [], ""
+    for w in s.split():
+        t = (cur + " " + w).strip()
+        if f.getlength(t) > width and cur:
+            out.append(cur)
+            cur = w
+        else:
+            cur = t
+    return out + ([cur] if cur else [])
 
 
 def fmt_int(v):
@@ -59,9 +98,9 @@ def note(d, s, a=1.0, x=70, y=H - 40, anchor="ls", size=19):
 
 
 # ------------------------------------------------------------------ the map scene
-RIGHT = L.MapView(1360, 495, 26.0, name="right")
-LEFT = L.MapView(560, 505, 24.0, name="left")
-CENTER = L.MapView(960, 520, 28.0, name="center")
+RIGHT = L.MapView.fit((950, 60, 1860, 900), "right")      # beside a text column, clear of the bottom captions
+LEFT = L.MapView.fit((150, 120, 1000, 880), "left")        # beside a chart
+CENTER = L.MapView.fit((300, 80, 1620, 1000), "center")
 BADGE_AT = [0.42, 0.47, 0.40]                     # where each route's letter sits along it
 
 
@@ -121,11 +160,13 @@ class Scene:
             d.ellipse([x - 5, y - 5, x + 5, y + 5], fill=(240, 244, 250, int(255 * a)))
             if labels:
                 lab = f"{nm} (start)" if k == 0 else f"{nm} (destination)"
-                tx, anc = (x - 24, "rm") if k == 0 else (x + 24, "lm")
                 tw = d.textlength(lab, font=ST.font(24, "SemiBold"))
-                bx0 = tx - tw - 12 if anc == "rm" else tx - 12
-                d.rounded_rectangle([bx0, y - 20, bx0 + tw + 24, y + 20], 12, fill=ST.PANEL + (int(190 * a),))
-                text(d, (tx, y), lab, 24, INK, a, "SemiBold", anc)
+                side = CITY_C["pin_labels"][k]                # l / r / t / b of the pin
+                cx = {"l": x - 36 - tw / 2, "r": x + 36 + tw / 2}.get(side, x)
+                cy = {"t": y - 44, "b": y + 44}.get(side, y)
+                cx = min(max(cx, tw / 2 + 24), W - tw / 2 - 24)           # keep the label on screen
+                d.rounded_rectangle([cx - tw / 2 - 12, cy - 20, cx + tw / 2 + 12, cy + 20], 12, fill=ST.PANEL + (int(190 * a),))
+                text(d, (cx, cy), lab, 24, INK, a, "SemiBold", "mm")
 
     def badges(self, d, a=1.0, which=(0, 1, 2)):
         for i in which:
@@ -217,15 +258,15 @@ class Hook(L.Section):
         text(d, (x, 560), "RUSH HOUR", 22, MUTED, ab, "SemiBold")
         eta_rows(d, x, 628, [(i, f"{N['eta_final'][i]} min", NAMES[i]) for i in range(3)], a=ab, size=32)
         a2 = ST.fade(t, 12.8, 18.6, 0.5, 0.6)
-        text(d, (x, 860), "Rocky Ridge to Seton: around the west, through", 28, INK2, a2, "Medium")
-        text(d, (x, 898), "the middle, or up the east side. All within a minute.", 28, INK2, a2, "Medium")
+        for k, s_ in enumerate(wrap(f"{N['trip']}: {SIDES[0]}, {SIDES[1]}, or {SIDES[2]}. All within a minute.", 28, 780)):
+            text(d, (x, 860 + 38 * k), s_, 28, INK2, a2, "Medium")
         a3 = ST.fade(t, 19.2, 1e9, 0.5, 0.5)
         text(d, (x, 150), "Coincidence?", 76, INK, a3, "Bold")
         a4 = ST.fade(t, 20.6, 1e9, 0.5, 0.5)
         text(d, (x, 270), "Not really. Thousands of drivers,", 38, INK2, a4, "SemiBold")
         text(d, (x, 322), "each taking the fastest route they know,", 38, INK2, a4, "SemiBold")
         text(d, (x, 374), "push those times together.", 38, GOLD, a4, "SemiBold")
-        note(d, "Rush-hour times: a toy traffic model on real Calgary roads (details in the description)", smooth((t - 5.5) / 0.8))
+        note(d, f"Rush-hour times: a toy traffic model on real {N['city_name']} roads (details in the description)", smooth((t - 5.5) / 0.8))
         return np.asarray(im)
 
 
@@ -311,7 +352,7 @@ class Empty(L.Section):
                 text(d, (800, y), f"{T0[i]:.0f} min", 40, INK, a, "Bold", "rm")
         caps(d, t, [(0.3, 5.6, [cap("At 3 a.m., the same trip on the same three routes.")]),
                     (6.0, 12.6, [cap("No traffic, no red lights: real roads at the posted speed limits.")]),
-                    (16.4, 20.8, [cap("Stoney Trail wins by four minutes.")]),
+                    (16.4, 20.8, [cap(f"{cap1(IN[0])} wins by {WORDS[round(T0[1] - T0[0])]} minutes.")]),
                     (21.2, 25.6, [cap("So why do the three tie at rush hour?", 40, GOLD)])])
         note(d, "Road data © OpenStreetMap contributors, via Overture Maps · speed limits from OpenStreetMap, typical limits where unmapped")
         return np.asarray(im)
@@ -322,7 +363,7 @@ class Curve(L.Section):
     name, dur = "curve", bars(8)
 
     def __init__(self):
-        self.ax = L.Axes((190, 190, 1080, 840), (0, 3000), (30, 80))
+        self.ax = L.Axes((190, 190, 1080, 840), (0, 3000), (Y0, Y0 + 50))
         self.f = np.linspace(0, 3000, 301)
         self.T = [np.array([M.bpr(T0[i], CAP[i], x) for x in self.f]) for i in range(3)]
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
@@ -334,7 +375,7 @@ class Curve(L.Section):
         d = ImageDraw.Draw(im, "RGBA")
         ax = self.ax
         a0 = smooth(t / 0.8)
-        ax.draw(d, range(0, 3001, 500), range(30, 81, 10), lambda v: f"{v:,}", lambda v: f"{v}", "Cars per hour on the route", "Trip time (minutes)", a0)
+        ax.draw(d, range(0, 3001, 500), range(Y0, Y0 + 51, 10), lambda v: f"{v:,}", lambda v: f"{v}", "Cars per hour on the route", "Trip time (minutes)", a0)
         u = smooth((t - 1.2) / 7.0)
         k = int(u * 300)
         ax.series(d, self.f[:k + 1], self.T[0][:k + 1], i=0, width=5, a=a0)
@@ -348,7 +389,7 @@ class Curve(L.Section):
             ax.series(d, self.f, self.T[i], i=i, width=4, a=ab, clip=True)
         for i in range(3):
             a = 1.0 if i == 0 else ab
-            j = int(np.nonzero(self.T[i] <= 80)[0][-1])
+            j = int(np.nonzero(self.T[i] <= Y0 + 50)[0][-1])
             bx, by = float(ax.X(self.f[j])), float(ax.Y(self.T[i][j]))
             if i == 0:
                 bx, by = ax.x1 + 30, by
@@ -361,7 +402,7 @@ class Curve(L.Section):
         text(d, (x0, 392), "A little at first.", 42, INK2, ST.fade(t, 5.0, 1e9), "SemiBold")
         text(d, (x0, 446), "Then a lot.", 42, GOLD, ST.fade(t, 7.0, 1e9), "SemiBold")
         af = ST.fade(t, 9.0, 1e9)
-        text(d, (x0, 560), "trip time = 33 min × (1 + 0.15 × (cars ÷ 2,000)⁴)", 27, INK, af, "Medium")
+        text(d, (x0, 560), f"trip time = {T0[0]:.0f} min × (1 + 0.15 × (cars ÷ {CAP[0]:,.0f})⁴)", 27, INK, af, "Medium")
         text(d, (x0, 606), "The BPR curve (US Bureau of Public Roads, 1964):", 22, MUTED, af, "Regular")
         text(d, (x0, 636), "a standard simplification in traffic planning.", 22, MUTED, af, "Regular")
         text(d, (x0, 666), "Our capacities (cars per hour) are made up.", 22, MUTED, af, "Regular")
@@ -387,11 +428,11 @@ class Fill(L.Section):
 
     def __init__(self):
         self.sc = Scene(LEFT)
-        self.dg = np.linspace(0, 6000, 601)
+        self.dg = np.linspace(0, DMAX, 601)
         self.ue = [M.parallel_ue(T0, CAP, x) for x in self.dg]
         self.Tg = np.array([u["times"] for u in self.ue])
         self.cars = Cars(self.sc, self.state, self.dur)
-        self.ax = L.Axes((1170, 440, 1830, 770), (0, 6000), (30, 50))
+        self.ax = L.Axes((1170, 440, 1830, 770), (0, DMAX), (Y0, Y1))
 
     def state(self, t):
         D = demand_at(t)
@@ -417,7 +458,7 @@ class Fill(L.Section):
                                for i in range(3)], size=30, gap=64)
         header(d, "Rush hour builds", "toy traffic model · each dot ≈ 25 cars on the road")
         ax = self.ax
-        ax.draw(d, range(0, 6001, 1000), range(30, 51, 5), lambda v: f"{v:,}", str, "Drivers making this trip (per hour)", "Trip time on each route (min)")
+        ax.draw(d, range(0, DMAX + 1, 1000), range(Y0, Y1 + 1, 5), lambda v: f"{v:,}", str, "Drivers making this trip (per hour)", "Trip time on each route (min)")
         k = int(np.searchsorted(self.dg, D))
         for i in range(3):
             j = N["joins"][i]
@@ -434,10 +475,10 @@ class Fill(L.Section):
             x, y = float(ax.X(N["joins"][i])), float(ax.Y(T0[i]))
             text(d, (x + 14, y + 20) if i == 1 else (x - 14, y - 26), f"{LET(i)} joins at {fmt_int(N['joins'][i])}", 22, INK2, a, "Medium", "la" if i == 1 else "rs")
         text(d, (1830, 372), f"{fmt_int(D)} drivers per hour", 32, GOLD, 1.0, "Bold", "rs")
-        caps(d, t, [(3.0, 12.4, [cap("As more people make the trip, they all take Stoney Trail at first. It slows down.", 34)]),
-                    (13.0, 17.8, [cap(f"At {fmt_int(N['joins'][1])} drivers an hour, Stoney Trail is as slow as Crowchild & Deerfoot is empty.", 34),
+        caps(d, t, [(3.0, 12.4, [cap(f"As more people make the trip, they all take {IN[0]} at first. It slows down.", 34)]),
+                    (13.0, 17.8, [cap(f"At {fmt_int(N['joins'][1])} drivers an hour, {IN[0]} is as slow as {IN[1]} is when empty.", 34),
                                   cap("Now drivers start taking that route too.", 34, INK2)]),
-                    (25.0, 29.8, [cap(f"At {fmt_int(N['joins'][2])}, the east side is just as quick. It fills up too.", 34)]),
+                    (25.0, 29.8, [cap(f"At {fmt_int(N['joins'][2])}, {IN[2]} is just as quick. It fills up too.", 34)]),
                     (30.4, 40.4, [cap("From here on, all three slow down together.", 34)]),
                     (41.2, 50.6, [cap("Three completely different routes. One ETA.", 44, GOLD, "Bold")])], )
         return np.asarray(im)
@@ -517,13 +558,13 @@ class Learn(L.Section):
         sc.pins(d, 1.0, labels=False)
         sc.badges(d)
         eta_rows(d, 1110, 150, [(i, f"{T[i]:.0f} min" if T[i] <= 120 else "2 h+", f"{NAMES[i]} · {cars_h(f[i])}") for i in range(3)], size=30, gap=64)
-        sub = ["half of all drivers switch to yesterday's quickest route", "1 in 20 rethink each day; nobody switches to save under a minute"][r]
+        sub = ["half of all drivers switch to yesterday's quickest route", f"1 in {ONE_IN} rethink each day; nobody switches to save under a minute"][r]
         header(d, f"Day {int(day) + 1}", sub)
         run = self.runs[r]
         days = 21 if r == 0 else 31
-        ax = L.Axes((1170, 440, 1830, 770), (1, days), (30, 120))
+        ax = L.Axes((1170, 440, 1830, 770), (1, days), (Y0, 120))
         a_ax = 1 - smooth((t - (self.R2 - 1.2)) / 0.5) if r == 0 else smooth((t - (self.R2 - 0.6)) / 0.5)
-        ax.draw(d, range(1, days + 1, 5 if r == 0 else 5), range(30, 121, 15), str, str, "Day", "Trip time on each route (min)", a_ax)
+        ax.draw(d, range(1, days + 1, 5), range(Y0, 121, 20 if Y0 % 20 == 0 else 15), str, str, "Day", "Trip time on each route (min)", a_ax)
         k = min(int(day), len(run["times"]) - 1)
         xs = np.arange(1, k + 2)
         for i in range(3):
@@ -537,9 +578,9 @@ class Learn(L.Section):
         caps(d, t, [(0.3, 4.6, [cap("Nobody solves this equation. Drivers find it by trial and error.", 36)]),
                     (5.4, 11.4, [cap("If half of all drivers jump to yesterday's quickest route every morning...", 36)]),
                     (11.8, 19.8, [cap("...the jam just moves from road to road.", 36)]),
-                    (21.6, 28.2, [cap("If 1 driver in 20 rethinks each day, and nobody switches to save under a minute...", 34)]),
+                    (21.6, 28.2, [cap(f"If 1 driver in {ONE_IN} rethinks each day, and nobody switches to save under a minute...", 34)]),
                     (28.6, 35.6, [cap(f"...the times settle within a minute of each other in about {N['learn']['calm']['settle_day'] + 1} days.", 36)]),
-                    (36.0, 45.6, [cap(f"Close, not identical: {N['eta_final'][0]}, {N['eta_final'][1]} and {N['eta_final'][2]} minutes.", 40, GOLD)])])
+                    (36.0, 45.6, final_cap())])
         note(d, "A toy model of day-to-day learning; real drivers are more varied, and many never switch.")
         return np.asarray(im)
 
@@ -558,10 +599,12 @@ class App(L.Section):
         self.top = sorted(range(len(R["routes"])), key=lambda k: R["routes"][k]["minutes"])[:3]
         self.topP = [v.pts(R["routes"][k]["xy"]) for k in self.top]
         self.topT = [R["routes"][k]["minutes"] for k in self.top]
-        self.ax = L.Axes((110, 290, 880, 720), (32, 56), (0, 60))
-        self.acc, self.acc_n = np.zeros((H, W), np.float32), 0
-        self.bins = np.arange(32, 57)
+        lo, hi = int(np.floor(self.vt.min())) - 1, int(np.ceil(self.vt.max())) + 1
+        self.bins = np.arange(lo, hi + 1)
         self.cnt = np.histogram(self.vt, self.bins)[0]
+        self.ymax = int(np.ceil(self.cnt.max() / 20) * 20)
+        self.ax = L.Axes((110, 290, 880, 720), (lo, hi), (0, self.ymax))
+        self.acc, self.acc_n = np.zeros((H, W), np.float32), 0
 
     def frame(self, t):
         sc = self.sc
@@ -590,13 +633,15 @@ class App(L.Section):
         ax = self.ax
         shown = self.vt[:n]
         cnt = np.histogram(shown, self.bins)[0] if n else np.zeros(len(self.bins) - 1)
-        ax.draw(d, range(35, 56, 5), range(0, 61, 20), lambda v: f"{v} min", str, "Trip time at 3 a.m.", "Number of routes")
+        step = 10 if self.bins[-1] - self.bins[0] > 30 else 5
+        ax.draw(d, range(int(np.ceil(self.bins[0] / step) * step), int(self.bins[-1]) + 1, step), range(0, self.ymax + 1, 20),
+                lambda v: f"{v} min", str, "Trip time at 3 a.m.", "Number of routes")
         bw = (ax.x1 - ax.x0) / (len(self.bins) - 1)
         for j, c in enumerate(cnt):
             if c <= 0:
                 continue
             x0 = ax.x0 + j * bw + 2
-            y = float(ax.Y(min(c, 60)))
+            y = float(ax.Y(min(c, self.ymax)))
             d.rounded_rectangle([x0, y, x0 + bw - 4, ax.y1], 4, fill=(110, 170, 230, int(230 * (1 - 0.5 * hi))))
         for k in range(3):
             x = float(ax.X(self.topT[k]))
@@ -612,7 +657,7 @@ class App(L.Section):
             d.rounded_rectangle([bx, y - 24, bx + tw + 28, y + 24], 24, fill=ST.PANEL + (int(220 * hi),), outline=(255, 240, 210, int(200 * hi)), width=2)
             text(d, (bx + 14, y), lab, 30, INK, hi, "Bold", "lm")
         caps(d, t, [(0.3, 3.8, [cap("There's a second reason the ETAs match.")]),
-                    (4.2, 12.6, [cap(f"There are hundreds of ways across Calgary. At 3 a.m. they take {N['app']['via_min']:.0f} to {N['app']['via_max']:.0f} minutes.", 36)]),
+                    (4.2, 12.6, [cap(f"There are hundreds of ways from {N['origin']} to {N['dest']}. At 3 a.m. they take {N['app']['via_min']:.0f} to {N['app']['via_max']:.0f} minutes.", 34)]),
                     (15.2, 23.4, [cap("Your app shows you only the fastest few. Those are close together by definition,", 34),
                                   cap(f"even on empty roads: {round(self.topT[0])}, {round(self.topT[1])} and {round(self.topT[2])} minutes.", 34, GOLDISH)]),
                     (24.0, 35.6, [cap("Traffic pulls the routes people use together. The app hides the rest.", 36),
@@ -631,8 +676,9 @@ class Optimum(L.Section):
 
     def panel(self, d, x0, title, flows, times, a, avg):
         text(d, (x0 + 330, 200), title, 38, INK, a, "Bold", "ma")
-        ax = L.Axes((x0 + 60, 300, x0 + 600, 700), (0, 3), (0, 3000))
-        for v in range(0, 3001, 1000):
+        top = int(1000 * np.ceil(max(N["ue"]["flows"] + N["so"]["flows"]) * 1.08 / 1000))
+        ax = L.Axes((x0 + 60, 300, x0 + 600, 700), (0, 3), (0, top))
+        for v in range(0, top + 1, 1000):
             y = float(ax.Y(v))
             d.line([(ax.x0, y), (ax.x1, y)], fill=(40, 52, 72, int(255 * a)), width=1)
             text(d, (ax.x0 - 10, y), f"{v:,}", 20, MUTED, a, "Medium", "rm")
@@ -800,7 +846,7 @@ class Outro(L.Section):
         text(d, (x, 820), "Try it yourself: the traffic lab is linked below.", 32, INK, a4, "SemiBold")
         a5 = ST.fade(t, 19.0, 1e9)
         for k, s in enumerate(["Roads © OpenStreetMap contributors, via Overture Maps. Free-flow times: real roads at the speed limit.",
-                               "Traffic: a toy model with made-up capacities, not Calgary traffic data. Music: original, synthesized for this video."]):
+                               f"Traffic: a toy model with made-up capacities, not {N['city_name']} traffic data. Music: original, synthesized for this video."]):
             text(d, (x, 990 + 30 * k), s, 20, MUTED, a5, "Regular")
         return np.asarray(im)
 

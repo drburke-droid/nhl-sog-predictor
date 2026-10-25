@@ -4,7 +4,7 @@ import { LineChart, Series } from "../components/LineChart";
 import { Bars } from "../components/Bars";
 import { RouteSchematic } from "../components/RouteSchematic";
 import { LETTERS, ROUTE_DASH, ROUTE_VAR, RouteKey, Slider, Term, Tile, fmt, fmtInt } from "../components/ui";
-import { CALGARY, SYMMETRIC, Shared, TEXTBOOK, demandMax } from "../scenarios";
+import { CALGARY, NYC, SYMMETRIC, Shared, TEXTBOOK, demandMax, trips } from "../scenarios";
 
 export function RouteControls({ s, set, showDemand = true }: { s: Shared; set: (p: Partial<Shared>) => void; showDemand?: boolean }) {
   const pre = presets(s.routes, s.alpha, s.beta);
@@ -28,7 +28,8 @@ export function RouteControls({ s, set, showDemand = true }: { s: Shared; set: (
       <h3>Routes</h3>
       <div className="btnrow" role="group" aria-label="Route scenarios">
         <button className="btn" onClick={() => set({ routes: TEXTBOOK })}>Textbook</button>
-        <button className="btn" onClick={() => set({ routes: CALGARY, demand: 5500 })} title="Free-flow times from real Calgary roads at the speed limit; capacities illustrative">Calgary cross-town</button>
+        <button className="btn" onClick={() => set({ routes: NYC, demand: trips.nyc.d_rush })} title="JFK Airport to Times Square: free-flow times from real New York roads at the speed limit; capacities illustrative">New York: JFK → Times Square</button>
+        <button className="btn" onClick={() => set({ routes: CALGARY, demand: trips.calgary.d_rush })} title="Rocky Ridge to Seton: free-flow times from real Calgary roads at the speed limit; capacities illustrative">Calgary cross-town</button>
         <button className="btn" onClick={() => set({ routes: SYMMETRIC, demand: 3000 })}>Identical routes</button>
       </div>
       {s.routes.map((r, i) => (
@@ -182,7 +183,7 @@ export function ModeA({ s, set }: { s: Shared; set: (p: Partial<Shared>) => void
             legend={<div className="legend"><span><svg width="22" height="6"><line x1="0" x2="22" y1="3" y2="3" stroke="var(--ink)" strokeWidth="2" /></svg>user equilibrium</span><span><svg width="22" height="6"><line x1="0" x2="22" y1="3" y2="3" stroke="var(--ink-2)" strokeWidth="2" strokeDasharray="6 4" /></svg>system optimum</span></div>}
             series={curves.avg} xDomain={[0, dmax]} xLabel="Total demand (veh/h)" yLabel="Average trip (min)" xFormat={fmtInt} yFormat={(v) => fmt(v, 0)} cursorX={s.demand} height={210} />
         </div>
-        <p className="note">Toy model: independent parallel routes (real routes often share roads, which couples their times), one steady peak hour, the BPR congestion curve. Values are illustrative, not measurements of Calgary or any city.</p>
+        <p className="note">Toy model: independent parallel routes (real routes often share roads, which couples their times), one steady peak hour, the BPR congestion curve. Values are illustrative, not measurements of New York, Calgary or any city.</p>
       </section>
     </div>
   );

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { appShown, randomRoutes, selectionStats } from "../model/app";
 import { Slider, Tile, fmt } from "../components/ui";
-import { calgary } from "../scenarios";
+import { trips } from "../scenarios";
 
 export interface DParams {
-  source: "random" | "calgary";
+  source: "random" | "nyc" | "calgary";
   n: number;
   spread: number;
   seed: number;
@@ -72,7 +72,8 @@ function Strip({ times, shown, round }: { times: number[]; shown: number[]; roun
 }
 
 export function ModeD({ d, setD }: { d: DParams; setD: (p: Partial<DParams>) => void }) {
-  const times = useMemo(() => (d.source === "calgary" ? calgary.via_sample : randomRoutes(d.n, 24, d.spread, d.seed)), [d.source, d.n, d.spread, d.seed]);
+  const trip = d.source === "random" ? null : trips[d.source];
+  const times = useMemo(() => (trip ? trip.via_sample : randomRoutes(d.n, 24, d.spread, d.seed)), [trip, d.n, d.spread, d.seed]);
   const shown = appShown(times, d.k, d.detour > 0 ? d.detour / 100 : null);
   const disp = shown.map((i) => (d.round ? Math.round(times[i]) : times[i]));
   const spreadShown = disp.length ? Math.max(...disp) - Math.min(...disp) : 0;
@@ -85,9 +86,10 @@ export function ModeD({ d, setD }: { d: DParams; setD: (p: Partial<DParams>) => 
         <p className="note">A second, separate reason ETAs look alike: an app lists only a few of the quickest routes. This tab has no traffic model at all.</p>
         <div className="btnrow" role="group" aria-label="Candidate routes">
           <button className="btn" aria-pressed={d.source === "random"} onClick={() => setD({ source: "random" })}>Random city</button>
+          <button className="btn" aria-pressed={d.source === "nyc"} onClick={() => setD({ source: "nyc" })}>New York at 3 a.m.</button>
           <button className="btn" aria-pressed={d.source === "calgary"} onClick={() => setD({ source: "calgary" })}>Calgary at 3 a.m.</button>
         </div>
-        {d.source === "random" ? (
+        {!trip ? (
           <>
             <Slider label="Possible routes" value={d.n} min={3} max={100} step={1} onChange={(v) => setD({ n: v })} format={String} />
             <Slider label="How much slower the worst is" value={d.spread} min={0.05} max={2} step={0.05} onChange={(v) => setD({ spread: v })} format={(v) => `up to +${fmt(100 * v, 0)} %`}
@@ -95,7 +97,7 @@ export function ModeD({ d, setD }: { d: DParams; setD: (p: Partial<DParams>) => 
             <Slider label="Random seed" value={d.seed} min={1} max={50} step={1} onChange={(v) => setD({ seed: v })} format={String} />
           </>
         ) : (
-          <p className="note">{calgary.via_sample.length} routes from {calgary.origin} to {calgary.dest}, each forced through a different random junction on a major road: the fastest way to the junction, then the fastest way on. Free-flow times at the speed limit (no traffic, no lights), from OpenStreetMap data.</p>
+          <p className="note">{trip.via_sample.length} routes from {trip.origin} to {trip.dest} ({trip.name}), each forced through a different random junction on a major road: the fastest way to the junction, then the fastest way on. Free-flow times at the speed limit (no traffic, no lights), from OpenStreetMap data.</p>
         )}
         <h3>The app</h3>
         <Slider label="Routes it lists" value={d.k} min={1} max={5} step={1} onChange={(v) => setD({ k: v })} format={String} />

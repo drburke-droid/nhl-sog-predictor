@@ -5,57 +5,76 @@ answers with two separate effects. The first is traffic: drivers crowd the quick
 by switching (Wardrop's user equilibrium). The second is selection: the app lists only the quickest few
 routes. The video then covers the system optimum, the price of anarchy and Braess's paradox.
 
+The trip is **JFK Airport to Times Square**.
+
 **What is real, and what is a toy model:**
 * **Real:** the road geometry, the three routes and their free-flow times.
-* **Toy model:** everything about traffic. There are no Calgary traffic counts, no real app ETAs and no
+* **Toy model:** everything about traffic. There are no New York traffic counts, no real app ETAs and no
   measured capacities anywhere in it.
 
-Every number on screen comes from `scenario.py` (written to `media/traffic/video_numbers.json`), using the
+Every number on screen comes from `scenario.py` (written to `media/traffic/video_numbers_nyc.json`), using the
 tested functions in `model.py`.
+
+The same pipeline also runs on a Calgary trip, Rocky Ridge to Seton (`TRAFFIC_CITY=calgary`). Its routes
+are in `media/traffic/routes_calgary.json`, and the lab offers both trips.
 
 ## 1. The roads and the three routes (real data, idealized driving)
 
 **Data.** Overture Maps Foundation transportation segments (release 2026-09-23.1, derived from
-OpenStreetMap). They are fetched for a box around Calgary that includes the whole Stoney Trail ring road
-(`calgary_routes.py fetch`), with 173,282 segments. The routable street network covers motorway down to
-residential and living streets, with no service roads, tracks or paths: 264,311 nodes and 9,635 km of
-road.
+OpenStreetMap). They are fetched for a box that covers Queens, Brooklyn, Manhattan, the south Bronx and the
+Hudson shore (`city_routes.py fetch`), with 330,709 segments. The routable street network covers motorway
+down to residential and living streets, with no service roads, tracks or paths: 413,953 nodes and
+12,932 km of road. City settings are in `cities.py`.
 
 **Directions.** One-way rules are honoured. Overture's `access_restrictions` with `heading` give the
-direction of travel. Segments closed to cars are dropped. Turn restrictions are *not* modelled.
+direction of travel. Segments closed to cars are dropped. Turn restrictions (Manhattan has many) are *not*
+modelled.
 
 **Speed.** Each road is timed at its speed limit.
-* **Mapped limits:** OpenStreetMap's `maxspeed` where it is mapped (34% of all road length, but 55–83% of
-  motorway, trunk, primary and secondary length).
+* **Mapped limits:** OpenStreetMap's `maxspeed` where it is mapped. That is 33% of all road length, but
+  47–63% of motorway, primary and secondary length, and 64–74% of the three routes.
 * **Defaults elsewhere:**
-  * motorway 100 km/h, trunk 80, primary 60, secondary and tertiary 50, ramps 60;
-  * residential 40 km/h, Calgary's default for residential streets since 2021;
-  * living streets 20.
+  * New York's 25 mph default for city streets;
+  * 50 mph on expressways, 40 mph on other limited-access roads, 30 mph on ramps.
 
-**Free-flow time = length ÷ speed limit.** There is no traffic, no traffic-light or stop-sign delay and
-no time for turns or acceleration: the time an ideal driver could make at 3 a.m. Real trips take longer.
+**Free-flow time = length ÷ speed limit.** There is no traffic, no traffic-light delay and no time for
+turns. The tolls on the RFK Bridge and both tunnels are ignored too, and so is Manhattan's congestion
+charge. Real drivers weigh tolls as well as time, one more reason real ETAs differ. This gives the time
+an ideal driver could make at 3 a.m.; real trips take longer.
 
-**The trip.** From Rocky Ridge (51.1440° N, 114.2265° W, far northwest Calgary) to Seton (50.8810° N,
-113.9535° W, near the South Health Campus).
+**The trip.**
+* **Start:** the road network nearest JFK's central terminal area (40.6447° N, 73.7812° W).
+* **Finish:** the nearest street junction to Times Square (40.7570° N, 73.9866° W).
 
 **Finding alternatives.** We used the via-node method used by route planners:
-1. Run a Dijkstra search forward from the origin and backward from the destination.
+1. Run a Dijkstra search forward from the start and backward from the finish.
 2. Every junction *v* then defines a candidate route: fastest to *v*, fastest from *v*.
 3. Reject candidates that double back on themselves.
-4. Reject candidates whose stretch around *v* is not itself close to optimal (a local-optimality test in
-   the spirit of Abraham et al., "Alternative routes in road networks", 2013).
-5. Keep the quickest 20 that share at most 80% of their length with each other.
+4. Reject candidates whose stretch around *v* is not itself close to optimal (in the spirit of Abraham et
+   al., "Alternative routes in road networks", 2013).
+5. Keep the quickest 20 that share at most 80% of their road with each other.
 
-The three routes in the video are the three of those within 15% of the fastest that share the least road:
+All of these leave JFK on the Van Wyck Expressway, and most also share the Long Island Expressway. So
+they are variations of one route rather than completely different ones.
 
-| Route | Free-flow time | Length | Main roads |
+**The three in the video** are therefore the fastest route through each of three river crossings into
+Manhattan, one in the north, one in the middle and one in the south. Only nodes inside the bridge or
+tunnel count, so each route has to actually cross it.
+
+| Route | Free-flow time | Length | Roads (km on each) |
 |---|---:|---:|---|
-| A, around the west | 33.0 min | 48.8 km | Stoney Trail NW, Tsuut'ina Trail, Stoney Trail SW |
-| B, through the middle | 37.1 min | 45.4 km | Crowchild Trail NW/SW, Deerfoot Trail SE |
-| C, up the east side | 37.8 min | 46.7 km | Deerfoot Trail NE, Barlow Trail SE, 52 Street SE |
+| A, Midtown Tunnel, straight through Queens | 26.2 min | 29.0 km | Van Wyck Expressway 13.6, Long Island Expressway 7.5, Queens-Midtown Tunnel 2.1 |
+| B, RFK Bridge, around the north | 33.1 min | 36.0 km | Van Wyck 9.8, Grand Central Parkway 11.7, Robert F. Kennedy Bridge 3.1, FDR Drive 6.0 |
+| C, Battery Tunnel, around Brooklyn | 38.0 min | 34.7 km | JFK Expressway 2.1, Belt Parkway 3.0, Linden Boulevard 9.4, Prospect and Gowanus Expressways 2.8, Brooklyn-Battery Tunnel 3.0, West Street 3.2, 8th Avenue 2.8 |
 
-They overlap by 4–11% of their length, mostly at the two ends. The video calls B "Crowchild & Deerfoot"
-and C "Barlow & 52 St" for short.
+**How much they share:**
+* A and B share 36%, almost all of it the Van Wyck out of JFK.
+* C shares about 1% with either.
+* The Queensboro Bridge (27.7 min) and Williamsburg Bridge (32.1 min) routes were left out because they
+  share 70–76% of their road with route A.
+
+The Brooklyn-Battery Tunnel is officially the Hugh L. Carey Tunnel; the video uses the older name, which
+OpenStreetMap carries.
 
 ## 2. The congestion curve (a standard simplification)
 
@@ -68,9 +87,9 @@ T(f) = T₀ · (1 + 0.15 · (f / c)⁴)
 * **What it is:** a smooth planning curve. It is not a physical traffic model. It has no queues, no
   spillback, no stop-and-go waves and no gridlock. It keeps rising past capacity (f/c > 1) instead of
   breaking down.
-* **Capacities: made up.** 2,000, 1,500 and 1,100 vehicles per hour for A, B and C. These are not
-  measurements of Stoney Trail, Crowchild/Deerfoot or Barlow/52 St.
-* **Demand: also made up.** Rush hour is 5,500 drivers per hour making this kind of trip.
+* **Capacities: made up.** 2,000, 1,500 and 1,100 vehicles per hour for A, B and C. They are not
+  measurements of these roads.
+* **Demand: also made up.** Rush hour is 6,500 drivers per hour making this kind of trip.
 
 **The routes are treated as independent** (Mode A of the lab). Real routes share roads with each other
 and with every other trip in the city, which couples their times.
@@ -88,8 +107,8 @@ and with every other trip in the city, which couples their times.
 
   We find the λ at which the flows add up to the demand, by bisection.
 * **Numbers in the video:**
-  * Route B starts carrying traffic at **1,914** drivers per hour and C at **2,860**.
-  * At 5,500 per hour all three take **46.5 min**, with flows of 2,569, 1,707 and 1,224 per hour.
+  * Route B starts carrying traffic at **2,303** drivers per hour and C at **4,121**.
+  * At 6,500 per hour all three take **50.0 min**, with flows of 3,137, 2,037 and 1,326 per hour.
 
 ## 4. How drivers might find it (a behavioural sketch)
 
@@ -100,25 +119,25 @@ The day-to-day sequence is a model of learning, not a solver and not a model of 
 2. A reconsidering driver switches to the quickest route only if it saves more than a threshold.
 3. Drivers move between routes, so no vehicles are created or lost and no flow goes negative.
 
-**Day 1:** 60% of drivers try Stoney Trail, 20% each try the other two.
+**Day 1:** 60% of drivers try the Midtown Tunnel, 20% each try the other two.
 
 | Run | Who switches | Result |
 |---|---|---|
-| "The jam moves" | Half of all drivers jump to yesterday's quickest route, whatever the saving | Never settles. The BPR curve makes the overloaded route absurdly slow, so the chart is cut off at 120 min. |
-| "Settles" | 1 in 20 reconsider each day, and nobody switches to save a minute or less | All three times are within 1 minute of each other from day 7. After 40 days they are 46.1, 46.7 and 46.5 min. |
+| "The jam moves" | Half of all drivers jump to yesterday's quickest route, whatever the saving | Never settles. The BPR curve makes the overloaded route absurdly slow, so the chart is cut off at 120 min and anything slower shows as "2 h+". |
+| "Settles" | 1 in 50 reconsider each day, and nobody switches to save a minute or less | All three times are within 1 minute of each other from day 13. After 40 days they are 49.6, 50.2 and 50.4 min. |
 
-The "settles" run's final times, rounded, are the **46, 47 and 47 min** shown in the opening and at the
-end. They are close but not identical, because nobody bothers to switch for less than a minute.
+Rounded to the minute, the "settles" run's final times all show **50 min**: that is the opening and closing
+display. They are not exactly equal; rounding makes them look it.
 
 Real drivers differ far more than this. Many never switch. Some follow live directions. Times change
 through the day. Trips with different origins and destinations share the roads.
 
 ## 5. What the app shows (selection, no traffic at all)
 
-* **The 400 routes:** each one is forced through a different random junction on a major road within
-  22 km of downtown (seeded). At 3 a.m. they take **33 to 55 min**, with a median of 37.7.
-* **The app's three:** the three quickest of the 20 alternatives in section 1, at **33.0, 33.8 and
-  34.1 min**. That is within about a minute, with no traffic.
+* **The 400 routes:** each one is forced through a different random junction on a major road within 18 km
+  of the map centre (seeded). At 3 a.m. they take **26 to 61 min**, with a median of 37.6.
+* **The app's three:** the three quickest of the 22 alternatives in section 1, at **26.2, 27.7 and
+  28.0 min**. That is within 2 minutes, with no traffic.
 * **The point:** this is a pure selection effect. Picking the quickest few from many always picks routes
   close to each other.
 * **The filter is stylized:** "show the fastest few distinct routes". It is not any real app's
@@ -133,12 +152,13 @@ through the day. Trips with different origins and destinations share the roads.
 
   | | A | B | C | Average |
   |---|---:|---:|---:|---:|
-  | Flow (veh/h) | 2,461 | 1,759 | 1,280 | |
-  | Trip time (min) | 44.3 | 47.6 | 48.2 | 46.3 |
+  | Flow (veh/h) | 2,982 | 2,071 | 1,447 | |
+  | Trip time (min) | 45.6 | 51.2 | 55.1 | 49.5 |
 
-  The average compares with 46.5 at equilibrium, so the price of anarchy (total time at user
-  equilibrium ÷ total at system optimum) is **1.004**.
-* **In lighter traffic** it peaks at **1.06**, around 1,950 drivers per hour.
+  The average compares with 50.0 at equilibrium, so the price of anarchy (total time at user
+  equilibrium ÷ total at system optimum) is **1.010**.
+* **In lighter traffic** it peaks at **1.12**, around 2,300 drivers per hour, just as route B starts to
+  fill.
 * **These are toy-model values.** Gaps like this depend entirely on the curves and capacities. For
   linear costs the price of anarchy can never exceed 4/3 (Roughgarden and Tardos, "How bad is selfish
   routing?", *J. ACM* 2002). The Braess example below has 80/65 = 1.23.
@@ -174,7 +194,7 @@ through the day. Trips with different origins and destinations share the roads.
 
 ```bash
 cd traffic
-python calgary_routes.py fetch && python calgary_routes.py build   # roads -> graph -> routes (~2 min)
+python city_routes.py fetch && python city_routes.py build         # roads -> graph -> routes (~3 min); TRAFFIC_CITY=calgary for the other trip
 python scenario.py                                                 # every number in the video
 python -m pytest -q test_model.py                                  # 35 model tests
 python assemble.py render                                          # sections (4 at a time) + score -> out/three_routes_one_eta.mp4

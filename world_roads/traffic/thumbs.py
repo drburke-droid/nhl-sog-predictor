@@ -26,7 +26,7 @@ def big_pill(d, x, y, i, s, size=64):
 
 def thumb_a():
     """the map and three identical-looking ETAs: 3 ROUTES. 1 ETA."""
-    view = L.MapView(1420, 520, 26.0, name="thumbA")
+    view = L.MapView.fit((900, 40, 1890, 1040), "thumbA")
     sc, fr = map_frame(view, 8)
     im = Image.fromarray(fr)
     d = ImageDraw.Draw(im, "RGBA")
@@ -40,7 +40,7 @@ def thumb_a():
 
 def thumb_b():
     """not a coincidence: the three times meeting on the chart"""
-    view = L.MapView(1500, 540, 24.0, name="thumbB")
+    view = L.MapView.fit((1040, 60, 1890, 1020), "thumbB")
     sc, fr = map_frame(view, 7, dim=0.7)
     im = Image.fromarray(fr)
     d = ImageDraw.Draw(im, "RGBA")
@@ -54,7 +54,7 @@ def thumb_b():
         L.badge(d, float(ax.X(j)) - (0 if i == 0 else 0), float(ax.Y(N["t0"][i])) - 44, i, r=28)
     x, y = float(ax.X(N["d_rush"])), float(ax.Y(Tg[-1, 0]))
     lo, hi = min(N["eta_final"]), max(N["eta_final"])
-    text(d, (x + 20, y + 4), f"all {lo}–{hi} min", 58, GOLD, 1.0, "ExtraBold", "lm")
+    text(d, (x, y + 80), f"all three: {lo} min" if lo == hi else f"all {lo}–{hi} min", 58, GOLD, 1.0, "ExtraBold", "rm")
     text(d, (100, 70), "NOT A", 130, INK, 1.0, "ExtraBold")
     text(d, (100, 210), "COINCIDENCE", 130, GOLD, 1.0, "ExtraBold")
     return im
@@ -62,7 +62,7 @@ def thumb_b():
 
 def thumb_c():
     """3 a.m. vs rush hour"""
-    view = L.MapView(1460, 540, 25.0, name="thumbC")
+    view = L.MapView.fit((800, 40, 1890, 1040), "thumbC")
     sc, fr = map_frame(view, 8)
     im = Image.fromarray(fr)
     d = ImageDraw.Draw(im, "RGBA")

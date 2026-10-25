@@ -1,5 +1,5 @@
 """Shared look for the traffic-equilibrium video (1920x1080, 30 fps), in the style of the light-speed film:
-Calgary's real streets as a glowing cyan network on near-black, routes as bright lines with bloom, Inter type.
+the city's real streets as a glowing cyan network on near-black, routes as bright lines with bloom, Inter type.
 
     MapView      km -> pixel projection, the street network raster for that view (cached), route polylines
     Glow         an additive emission buffer with two-scale bloom
@@ -15,6 +15,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "signal"))
 import style as ST                                            # fonts, captions, translucent-text fix  # noqa: E402
+sys.path.insert(0, HERE)
+from cities import C as CITYCONF, CITY                        # noqa: E402
 
 DATA, OUT = os.path.join(HERE, "data"), os.path.join(HERE, "out")
 MEDIA = os.path.join(ROOT, "media", "traffic")
@@ -41,23 +43,34 @@ def lerp(a, b, u):
 
 
 def numbers():
-    return json.load(open(os.path.join(MEDIA, "video_numbers.json")))
+    return json.load(open(os.path.join(MEDIA, f"video_numbers_{CITY}.json")))
 
 
 def routes_json():
-    return json.load(open(os.path.join(MEDIA, "calgary_routes.json")))
+    return json.load(open(os.path.join(MEDIA, f"routes_{CITY}.json")))
 
 
 def graph():
-    return dict(np.load(os.path.join(DATA, "graph.npz")))
+    return dict(np.load(os.path.join(DATA, CITY, "graph.npz")))
 
 
 # ------------------------------------------------------------------ map
 class MapView:
-    """x_km, y_km (east, north of downtown) -> screen pixels: centre (ox, oy) shows km point (kx, ky) at s px/km"""
+    """x_km, y_km (east, north of the city's projection centre) -> screen pixels: centre (ox, oy) shows km point
+    (kx, ky) at s px/km"""
 
-    def __init__(self, ox, oy, s, kx=-1.2, ky=-3.6, name="full"):
+    def __init__(self, ox, oy, s, kx=0.0, ky=0.0, name="full"):
         self.ox, self.oy, self.s, self.kx, self.ky, self.name = ox, oy, s, kx, ky, name
+
+    @classmethod
+    def fit(cls, box, name, fill=0.92):
+        """the view that fits the three routes (and both trip ends) into the screen box (x0, y0, x1, y1)"""
+        R = routes_json()
+        P = np.vstack([np.asarray(R["routes"][i]["detail"]["xy"]) for i in R["main"]])
+        x0, y0 = P.min(0)
+        x1, y1 = P.max(0)
+        s = fill * min((box[2] - box[0]) / (x1 - x0), (box[3] - box[1]) / (y1 - y0))
+        return cls((box[0] + box[2]) / 2, (box[1] + box[3]) / 2, round(float(s), 3), (x0 + x1) / 2, (y0 + y1) / 2, name)
 
     def px(self, x, y):
         return self.ox + (np.asarray(x) - self.kx) * self.s, self.oy - (np.asarray(y) - self.ky) * self.s
@@ -70,7 +83,7 @@ class MapView:
     def base(self):
         """the street network for this view, float32 HxWx3 on the 0..255 scale (cached)"""
         os.makedirs(DATA, exist_ok=True)
-        path = os.path.join(DATA, f"base_{self.name}_{self.ox}_{self.oy}_{self.s}.npy")
+        path = os.path.join(DATA, CITY, f"base_{self.name}_{self.ox:.0f}_{self.oy:.0f}_{self.s}_{self.kx:.3f}_{self.ky:.3f}.npy")
         if os.path.exists(path):
             return np.load(path)
         g = graph()

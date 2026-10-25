@@ -79,7 +79,7 @@ export default function App() {
       <footer className="foot">
         Models: Wardrop user equilibrium and system optimum on independent parallel routes with the BPR curve (exact, by bisection);
         a seeded day-to-day learning process; user equilibrium on the Braess network by path equilibration. Units: minutes, and vehicles per hour over one steady peak hour.
-        Calgary free-flow times come from OpenStreetMap road data via Overture Maps (© OpenStreetMap contributors, ODbL) at the speed limit, with no traffic; everything else is illustrative.
+        The New York and Calgary free-flow times come from OpenStreetMap road data via Overture Maps (© OpenStreetMap contributors, ODbL) at the speed limit, with no traffic; everything else is illustrative.
         {" "}Settings are saved in this browser only. <button className="btn" onClick={() => { try { localStorage.removeItem(KEY); } catch { /* ignore */ } location.reload(); }}>Reset everything</button>
       </footer>
     </div>
