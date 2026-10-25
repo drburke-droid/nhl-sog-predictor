@@ -314,7 +314,7 @@ python thumbs.py                                                             # t
 ## Three routes, one ETA (`traffic/`)
 
 *You're not the only one who constantly gets 3 or more completely different routes to your destination
-with the same ETA.* A caption-only video (6:50) on why that happens.
+with the same ETA.* A caption-only video (7:18) on why that happens.
 
 **The trip.** JFK Airport to Times Square, on real New York roads (Overture/OpenStreetMap, one-way rules,
 speed limits). It takes three genuinely different ways into Manhattan:
@@ -336,7 +336,7 @@ cd traffic
 python -m pytest -q test_model.py                                  # the model (36 tests)
 python city_routes.py fetch && python city_routes.py build         # roads -> graph -> routes
 python scenario.py                                                 # every number in the video
-python assemble.py render && python thumbs.py                      # -> out/three_routes_one_eta.mp4, thumbnails
+python assemble.py render && python thumbs.py                      # -> out/three_routes_one_eta.mp4, thumbnails (D needs a screenshot)
 cd lab && npm install && npm run dev                               # optional lab; npm run build -> docs/traffic/
 ```
 

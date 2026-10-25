@@ -581,8 +581,9 @@ class Fine(L.Section):
 
 # ================================================================== 7. drivers learning, day by day
 class Learn(L.Section):
-    name, dur = "learn", bars(18)
-    R1, R2, SPD = 5.0, 21.5, 0.7                     # run starts; seconds of video per day
+    name, dur = "learn", bars(20)
+    R1, D2, D3, SPD1 = 5.0, 11.0, 17.0, 0.4          # the chasing run: day 1 held, day 2 held, then 0.4 s a day
+    R2, SPD = 25.5, 0.55                             # the calm run: start, seconds of video per day
 
     def __init__(self):
         self.sc = Scene(LEFT)
@@ -591,7 +592,8 @@ class Learn(L.Section):
 
     def run_day(self, t):
         if t < self.R2 - 0.6:
-            return 0, min(20.0, max(0.0, (t - self.R1) / self.SPD))
+            day = 0.0 if t < self.D2 else min(1.0, (t - self.D2) / 0.6) if t < self.D3 else 1.0 + (t - self.D3) / self.SPD1
+            return 0, min(20.0, day)
         return 1, min(30.0, max(0.0, (t - self.R2) / self.SPD))
 
     def state(self, t):
@@ -620,9 +622,16 @@ class Learn(L.Section):
         sc.pins(d, 1.0, labels=False)
         sc.badges(d)
         eta_rows(d, 1110, 150, [(i, f"{T[i]:.0f} min" if T[i] <= 120 else "2 h+", f"{NAMES[i]} · {cars_h(f[i])}") for i in range(3)], size=30, gap=64)
-        sub = ["half of all drivers switch to yesterday's quickest route", f"1 in {ONE_IN} rethink each day; nobody switches to save under a minute"][r]
-        header(d, f"Day {int(day) + 1}", sub)
+        sub = ["half of everyone switches to yesterday's quickest route", f"1 in {ONE_IN} try another route each day; nobody switches to save under a minute"][r]
+        n = int(day) + 1
+        header(d, f"Day {n}" + (f" · {('Monday', 'Tuesday')[n - 1]}" if r == 0 and n <= 2 else ""), sub)
         run = self.runs[r]
+        if r == 0:                                       # where the crowd goes next, and where it just went
+            k0 = int(day)
+            yq = int(np.argmin(run["times"][max(0, k0 - 1)]))
+            lab = "quickest today" if k0 == 0 else "yesterday's quickest"
+            at = ST.fade(t, self.R1 + 1.0, self.R2 - 1.2)
+            text(d, (1600, 150 + 64 * yq), "← " + lab, 22, GOLDISH, at, "SemiBold", "lm")
         days = 21 if r == 0 else 31
         ax = L.Axes((1170, 440, 1830, 770), (1, days), (Y0, 120))
         a_ax = 1 - smooth((t - (self.R2 - 1.2)) / 0.5) if r == 0 else smooth((t - (self.R2 - 0.6)) / 0.5)
@@ -637,19 +646,27 @@ class Learn(L.Section):
         L.dashed(d, [(ax.x0, y), (ax.x1, y)], INK2, 2, (8, 6), a_ax)
         text(d, (ax.x1, y - 10), f"equilibrium {ue:.1f} min", 22, INK2, a_ax, "Medium", "rs")
         text(d, (ax.x1, ax.y0 - 40), "lines above 120 min are cut off", 19, MUTED, a_ax if r == 0 else 0, "Regular", "rs")
-        caps(d, t, [(0.3, 4.6, [cap("Nobody solves this equation. Drivers find it by trial and error.", 36)]),
-                    (5.4, 11.4, [cap("If half of all drivers jump to yesterday's quickest route every morning...", 36)]),
-                    (11.8, 19.8, [cap("...the jam just moves from road to road.", 36)]),
-                    (21.6, 28.2, [cap(f"If 1 driver in {ONE_IN} rethinks each day, and nobody switches to save under a minute...", 34)]),
-                    (28.6, 35.6, [cap(f"...the times settle within a minute of each other in about {N['learn']['calm']['settle_day'] + 1} days.", 36)]),
-                    (36.0, 45.6, final_cap())])
+        c0 = [round(v) for v in self.runs[0]["times"][0]]
+        caps(d, t, [(0.3, 4.6, [cap("Nobody works this balance out. So how do drivers find it?", 36),
+                                cap("Imagine a week when it hasn't settled yet.", 36, INK2)]),
+                    (5.0, 10.6, [cap(f"Say on Monday most drivers take {IN[0]}: it's the quickest on empty roads.", 34),
+                                 cap(f"So it jams: {c0[0]} minutes, while {IN[1]} takes {c0[1]}.", 34, INK2)]),
+                    (11.0, 16.6, [cap("Drivers find out their route wasn't the quickest. If half of everyone", 34),
+                                  cap(f"switches to {IN[1]} on Tuesday, it jams instead.", 34, INK2)]),
+                    (17.0, 24.6, [cap("Day after day, the crowd chases yesterday's quickest route,", 34),
+                                  cap("and the jam just moves from road to road.", 34, INK2)]),
+                    (25.5, 32.6, [cap(f"Real drivers are calmer. Say only 1 in {ONE_IN} tries another route each day,", 34),
+                                  cap("and nobody switches to save under a minute...", 34, INK2)]),
+                    (33.0, 41.6, [cap(f"...then the times creep together, and settle within a minute in about {N['learn']['calm']['settle_day'] + 1} days.", 34)]),
+                    (42.0, 50.4, final_cap())])
         note(d, "A toy model of day-to-day learning; real drivers are more varied, and many never switch.")
         return np.asarray(im)
 
 
 # ================================================================== 8. what the app shows
 class App(L.Section):
-    name, dur = "app", bars(14)
+    name, dur = "app", bars(15)
+    HI0 = 13.5                                        # the spaghetti dims and our three routes come back
 
     def __init__(self):
         self.sc = Scene(RIGHT)
@@ -658,9 +675,6 @@ class App(L.Section):
         order = np.argsort([-x["minutes"] for x in vs])             # slowest drawn first, fastest on top
         self.via = [(vs[k]["minutes"], v.pts(vs[k]["xy"])) for k in order]
         self.vt = np.array([x[0] for x in self.via])
-        self.top = sorted(range(len(R["routes"])), key=lambda k: R["routes"][k]["minutes"])[:3]
-        self.topP = [v.pts(R["routes"][k]["xy"]) for k in self.top]
-        self.topT = [R["routes"][k]["minutes"] for k in self.top]
         lo, hi = int(np.floor(self.vt.min())) - 1, int(np.ceil(self.vt.max())) + 1
         self.bins = np.arange(lo, hi + 1)
         self.cnt = np.histogram(self.vt, self.bins)[0]
@@ -672,7 +686,7 @@ class App(L.Section):
         sc = self.sc
         sc.glow.clear()
         n = int(len(self.via) * smooth((t - 3.0) / 10.0))
-        hi = smooth((t - 15.0) / 1.0)
+        hi = smooth((t - self.HI0) / 1.0)
         if n < self.acc_n:
             self.acc[:], self.acc_n = 0, 0
         for k in range(self.acc_n, n):                     # density: how many routes pass through each pixel
@@ -684,13 +698,14 @@ class App(L.Section):
             cv2.polylines(tmp, [p], False, 1.0, 2, cv2.LINE_AA, shift=4)
             self.acc[y0:y1, x0:x1] += tmp
         self.acc_n = n
-        heat = (1 - np.exp(-self.acc / 6.0))[..., None] * np.array([255, 236, 205], np.float32) * (0.85 - 0.55 * hi)
+        heat = (1 - np.exp(-self.acc / 6.0))[..., None] * np.array([255, 236, 205], np.float32) * (0.85 - 0.6 * hi)
         sc.glow.e += heat
-        for k in range(3):
-            sc.glow.line(self.topP[k], (255, 240, 210), 4, hi)
+        for i in range(3):                                 # our three, the same routes as all along
+            sc.route(i, 5, 0.95 * hi)
         im = Image.fromarray(sc.compose(dim=1.0 - 0.35 * hi))
         d = ImageDraw.Draw(im, "RGBA")
         sc.pins(d, 1.0, labels=False)
+        sc.badges(d, a=hi)
         header(d, "Every way across town", f"{len(self.via)} routes, each through a different junction · 3 a.m. times")
         ax = self.ax
         shown = self.vt[:n]
@@ -704,25 +719,20 @@ class App(L.Section):
                 continue
             x0 = ax.x0 + j * bw + 2
             y = float(ax.Y(min(c, self.ymax)))
-            d.rounded_rectangle([x0, y, x0 + bw - 4, ax.y1], 4, fill=(110, 170, 230, int(230 * (1 - 0.5 * hi))))
-        for k in range(3):
-            x = float(ax.X(self.topT[k]))
-            a = hi
-            d.line([(x, ax.y0 + 40), (x, ax.y1)], fill=(255, 240, 210, int(255 * a)), width=3)
-        text(d, (float(ax.X(self.topT[0])) + 10, ax.y0 + 30), "the app's three", 24, GOLDISH, hi, "SemiBold", "ls")
-        for k in range(3):
-            P = self.topP[k]
-            x, y = L.at(P, L.polyline_cum(P), (0.30 + 0.17 * k) * L.polyline_cum(P)[-1])
-            lab = f"{round(self.topT[k]):.0f} min"
-            tw = d.textlength(lab, font=ST.font(30, "Bold"))
-            bx = x + 30 if k else x - 30 - tw - 28
-            d.rounded_rectangle([bx, y - 24, bx + tw + 28, y + 24], 24, fill=ST.PANEL + (int(220 * hi),), outline=(255, 240, 210, int(200 * hi)), width=2)
-            text(d, (bx + 14, y), lab, 30, INK, hi, "Bold", "lm")
+            d.rounded_rectangle([x0, y, x0 + bw - 4, ax.y1], 4, fill=(110, 170, 230, int(230 * (1 - 0.55 * hi))))
+        for i in range(3):                                 # where our three sit among them
+            x = float(ax.X(T0[i]))
+            yb = ax.y0 + (32, 80, 32)[i]                   # staggered so close times don't collide
+            d.line([(x, yb + 18), (x, ax.y1)], fill=tuple(ROUTE[i]) + (int(255 * hi),), width=4)
+            L.badge(d, x, yb, i, r=17, a=hi)
+            text(d, (x + (-24 if i == 1 else 24), yb + 1), f"{T0[i]:.0f} min", 22, INK, hi, "Bold", "rm" if i == 1 else "lm")
         caps(d, t, [(0.3, 3.8, [cap("There's a second reason the ETAs match.")]),
                     (4.2, 12.6, [cap(f"There are hundreds of ways from {N['origin']} to {N['dest']}. At 3 a.m. they take {N['app']['via_min']:.0f} to {N['app']['via_max']:.0f} minutes.", 34)]),
-                    (15.2, 23.4, [cap("Your app shows you only the fastest few. Those are close together by definition,", 34),
-                                  cap(f"even on empty roads: {round(self.topT[0])}, {round(self.topT[1])} and {round(self.topT[2])} minutes.", 34, GOLDISH)]),
-                    (24.0, 35.6, [cap("Traffic pulls the routes people use together. The app hides the rest.", 36),
+                    (13.0, 20.6, [cap("Your app never shows you hundreds. It offers a few that are quick and", 34),
+                                  cap("genuinely different, like our three: the quickest through each crossing.", 34, INK2)]),
+                    (21.0, 28.6, [cap("The slow ones, and near-copies of quicker ones, never make the list.", 34),
+                                  cap("So the routes you see are already the close calls.", 34, INK2)]),
+                    (29.0, 37.6, [cap("Traffic pulls the routes people use together. The app hides the rest.", 36),
                                   cap("Both make the ETAs on your screen match.", 36, GOLD)])])
         return np.asarray(im)
 
@@ -776,9 +786,100 @@ def piece(P, cum, L0, L1):
     return np.vstack([L.at(P, cum, L0)] + [P[k] for k in range(i0, i1)] + [L.at(P, cum, L1)])
 
 
+class Neck:
+    """the lane-drop diagram: 4 lanes squeeze into 2. A toy queue, simulated once for every frame: cars stop
+    behind the car ahead, and the merge lets one car through every 1/MU seconds, whichever has waited longest"""
+    X0, XM, XT, X1, CY, LW = 110, 470, 560, 860, 500, 34
+    V, GAP, MU, CW, CH = 220.0, 27.0, 5.0, 22, 13
+    RED = (255, 96, 86)
+
+    def __init__(self, t0, t1, heavy0, lo=3.0, hi=9.0):
+        self.t0 = t0
+        dt, t = 1.0 / FPS, t0 - 4.0                       # start early so the road is busy when it fades in
+        cars, self.frames, nxt, acc, k = [], [], -1e9, 0.0, 0
+        while t < t1 + dt:
+            acc += lerp(lo, hi, smooth((t - heavy0) / 1.0)) * dt
+            while acc >= 1.0:
+                ln = (0, 2, 1, 3)[k % 4]
+                last = [c for c in cars if c["lane"] == ln and not c["out"]]
+                if last and min(c["x"] for c in last) < self.X0 - 20 + self.GAP:
+                    break                                 # the queue has backed up to the start
+                cars.append(dict(lane=ln, x=self.X0 - 20.0, out=False, v=self.V, wait=None))
+                acc -= 1.0
+                k += 1
+            fronts = []
+            for ln in range(4):
+                q = sorted((c for c in cars if c["lane"] == ln and not c["out"]), key=lambda c: -c["x"])
+                for j, c in enumerate(q):
+                    lim = q[j - 1]["x"] - self.GAP if j else self.XM
+                    x1 = min(c["x"] + self.V * dt, lim)
+                    if not j and c["x"] + self.V * dt >= self.XM:
+                        c["wait"] = t if c["wait"] is None else c["wait"]
+                        fronts.append(c)
+                    c["v"], c["x"] = (x1 - c["x"]) / dt, max(c["x"], x1)
+            if fronts and t >= nxt:
+                c = min(fronts, key=lambda c: c["wait"])
+                c["out"], nxt = True, t + 1.0 / self.MU
+            for side in (0, 1):
+                q = sorted((c for c in cars if c["out"] and (c["lane"] >= 2) == side), key=lambda c: -c["x"])
+                for j, c in enumerate(q):
+                    x1 = c["x"] + self.V * dt
+                    if j:
+                        x1 = min(x1, q[j - 1]["x"] - self.GAP)
+                    c["v"], c["x"] = (x1 - c["x"]) / dt, max(c["x"], x1)
+            cars = [c for c in cars if c["x"] < self.X1 + 20]
+            self.frames.append([(c["x"], self.y(c), 1.0 - min(1.0, c["v"] / self.V), not c["out"]) for c in cars])
+            t += dt
+
+    def y(self, c):
+        y0 = self.CY + (c["lane"] - 1.5) * self.LW
+        y1 = self.CY + (0.5 if c["lane"] >= 2 else -0.5) * self.LW
+        return lerp(y0, y1, smooth((c["x"] - self.XM) / (self.XT - self.XM)))
+
+    def half(self, x):
+        return lerp(2 * self.LW, self.LW, min(1.0, max(0.0, (x - self.XM) / (self.XT - self.XM))))
+
+    def draw(self, d, t, a, heavy):
+        if a <= 0:
+            return
+        cy = self.CY
+        d.rounded_rectangle([70, 300, 900, 800], 22, fill=ST.PANEL + (int(215 * a),))
+        text(d, (100, 336), "WHAT'S A BOTTLENECK?", 22, MUTED, a, "SemiBold")
+        xs = [self.X0 - 30, self.XM, self.XT, self.X1 + 30]
+        top = [(x, cy - self.half(x)) for x in xs]
+        bot = [(x, cy + self.half(x)) for x in xs[::-1]]
+        d.polygon(top + bot, fill=(36, 42, 56, int(255 * a)))
+        for P in (top, [(x, cy + self.half(x)) for x in xs]):
+            d.line(P, fill=(190, 198, 214, int(230 * a)), width=3)
+        for off in (-1, 1):                                       # the lanes that end
+            L.dashed(d, [(self.X0 - 30, cy + off * self.LW), (self.XM, cy + off * self.LW)], (150, 160, 180), 2, (12, 10), a)
+        L.dashed(d, [(self.X0 - 30, cy), (self.X1 + 30, cy)], (150, 160, 180), 2, (12, 10), a)
+        text(d, ((self.X0 + self.XM) / 2, cy - 2 * self.LW - 24), "4 LANES", 22, INK2, a, "SemiBold", "mm")
+        text(d, ((self.XT + self.X1) / 2, cy - self.LW - 24), "2 LANES", 22, INK2, a, "SemiBold", "mm")
+        bxm = (self.XM + self.XT) / 2
+        d.polygon([(bxm, cy + 2 * self.LW + 10), (bxm - 9, cy + 2 * self.LW + 24), (bxm + 9, cy + 2 * self.LW + 24)], fill=GOLDISH + (int(255 * a),))
+        text(d, (bxm, cy + 2 * self.LW + 40), "THE BOTTLENECK", 20, GOLDISH, a, "Bold", "mm")
+        k = max(0, min(len(self.frames) - 1, int(round((t - self.t0 + 4.0) * FPS))))
+        waiting = 0
+        for x, y, stop, queued in self.frames[k]:
+            ca = a * min(1.0, max(0.0, (x - self.X0 + 30) / 30.0)) * min(1.0, max(0.0, (self.X1 + 30 - x) / 30.0))
+            col = tuple(int(lerp(c0, c1, stop)) for c0, c1 in zip((236, 242, 252), self.RED))
+            d.rounded_rectangle([x - self.CW / 2, y - self.CH / 2, x + self.CW / 2, y + self.CH / 2], 4, fill=col + (int(255 * ca),))
+            waiting += queued and stop > 0.6
+        lab, col, body = (("HEAVY TRAFFIC", self.RED, "More cars arrive than 2 lanes can pass. The queue grows.") if heavy else
+                          ("LIGHT TRAFFIC", (130, 226, 170), "Fewer cars arrive than 2 lanes can pass. No waiting."))
+        text(d, (100, 662), lab, 26, col, a, "Bold", "lm")
+        text(d, (100, 704), body, 26, INK, a, "Medium", "lm")
+        text(d, (100, 754), "Cars waiting", 24, INK2, a, "Medium", "lm")
+        bw = min(560, waiting * 14)
+        d.rounded_rectangle([260, 742, 260 + max(bw, 6), 766], 8, fill=self.RED + (int(230 * a * (waiting > 0)),))
+        text(d, (280 + bw, 754), str(waiting), 24, INK, a, "Bold", "lm")
+
+
 class Myth(L.Section):
-    name, dur = "myth", bars(32)
-    HI0, OPEN0, NIGHT0, FIRST0, SW0, SW1, CHART0 = 6.0, 22.0, 29.0, 35.0, 41.0, 51.0, 72.0
+    name, dur = "myth", bars(40)
+    NECK0, HEAVY0, NECK1 = 6.0, 16.5, 26.0                     # the lane-drop diagram: in, traffic gets heavy, out
+    HI0, OPEN0, NIGHT0, FIRST0, SW0, SW1, CHART0 = 26.0, 41.0, 48.0, 54.0, 60.0, 70.0, 92.0
     PER = 15.0                                                  # vehicles per dot
 
     def __init__(self):
@@ -799,6 +900,9 @@ class Myth(L.Section):
         self.pcum = [L.polyline_cum(p) for p in self.paths]
         self.cols = [ROUTE[X], GOLDISH, ROUTE[Y]]
         self.dash = dash_polys(bore, self.bore_cum, 14, 10)
+        self.bt0 = [bx[2] - bx[1], by[2] - by[1]]                # each bottleneck's time when empty
+        self.bcap = [cfg["cap_from"], cfg["cap_to"]]
+        self.neck = Neck(self.NECK0, self.NECK1 + 1.0, self.HEAVY0)
         ts = np.arange(0, self.dur + 2 / FPS, 1 / FPS)
         sp = np.array([[1.0 / max(1e-6, T * 0.25) for T in self.state(t)[1]] for t in ts])
         self.u = np.cumsum(sp, axis=0) / FPS
@@ -812,6 +916,11 @@ class Myth(L.Section):
         f = [lerp(a, b, w) for a, b in zip(st[k]["flows"], st[k + 1]["flows"])]
         T = [lerp(a, b, w) for a, b in zip(st[k]["times"], st[k + 1]["times"])]
         return f, T
+
+    def bottleneck_times(self, f):
+        """minutes to get through each bottleneck: the first carries old route X and the tunnel route, the second
+        the tunnel route and old route Y"""
+        return [M.bpr(self.bt0[0], self.bcap[0], f[0] + f[1]), M.bpr(self.bt0[1], self.bcap[1], f[1] + f[2])]
 
     def frame(self, t):
         sc, m = self.sc, self.m
@@ -848,10 +957,10 @@ class Myth(L.Section):
         d = ImageDraw.Draw(im, "RGBA")
         sc.pins(d, 1.0)
         sc.badges(d, which=(self.X, self.Y))
-        # labels on the map
-        for P, nm, side in zip(self.bn, self.bn_names, (1, -1)):
+        # labels on the map, with the time it takes to get through each bottleneck
+        for P, nm, side, tb in zip(self.bn, self.bn_names, (1, -1), self.bottleneck_times(f)):
             x, y = P[len(P) // 2]
-            lab = f"BOTTLENECK · {nm}"
+            lab = f"BOTTLENECK · {nm} · {tb:.0f} min"
             tw = d.textlength(lab, font=ST.font(22, "SemiBold"))
             bx = x + 30 if side > 0 else x - 30 - tw - 24
             bx = min(max(bx, 960), W - tw - 40)
@@ -863,8 +972,11 @@ class Myth(L.Section):
             tw = d.textlength(lab, font=ST.font(24, "Bold"))
             d.rounded_rectangle([mx - tw / 2 - 14, my + 18, mx + tw / 2 + 14, my + 58], 14, fill=ST.PANEL + (int(225 * opened),), outline=GOLDISH + (int(220 * opened),), width=2)
             text(d, (mx, my + 38), lab, 24, GOLDISH, opened, "Bold", "mm")
-        # the board
+        # the bottleneck diagram, then the board
+        an = smooth((t - self.NECK0) / 0.6) * (1 - smooth((t - self.NECK1) / 0.6))
+        self.neck.draw(d, t, an, t >= self.HEAVY0 + 0.5)
         x, a0 = 70, smooth(t / 0.6)
+        ab0 = smooth((t - self.NECK1 - 0.3) / 0.6)
         text(d, (x, 96), "Can a new road make", 52, INK, a0, "Bold")
         text(d, (x, 158), "everyone slower?", 52, INK, a0, "Bold")
         text(d, (x, 262), f"THOUGHT EXPERIMENT · {fmt_int(m['cfg']['demand'])} DRIVERS AN HOUR", 22, MUTED, a0, "SemiBold")
@@ -885,10 +997,10 @@ class Myth(L.Section):
                     main, sub, a = f"{tm:.0f} min", f"via the tunnel · {cars_h(fl)}", 1.0
                 L.pill(d, x, y, 0, main, sub, a=a, size=30, anchor="lm", col=GOLDISH, letter="T")
             else:
-                L.pill(d, x, y, i, f"{tm:.0f} min", f"{NAMES[i]} route · {cars_h(fl)}", a=a0, size=30, anchor="lm")
+                L.pill(d, x, y, i, f"{tm:.0f} min", f"{NAMES[i]} route · {cars_h(fl)}", a=ab0, size=30, anchor="lm")
             y += 66
         avg = sum(a_ * b_ for a_, b_ in zip(f, T)) / max(1.0, sum(f))
-        ab = a0 * (1 - smooth((t - self.CHART0) / 0.6))
+        ab = ab0 * (1 - smooth((t - self.CHART0) / 0.6))
         text(d, (x, 560), "AVERAGE TRIP", 22, MUTED, ab, "SemiBold")
         text(d, (x, 590), f"{avg:.0f} min", 80, GOLD, ab, "Bold")
         if t > self.SW1:
@@ -912,26 +1024,34 @@ class Myth(L.Section):
             xx = float(ax.X(m["cfg"]["demand"]))
             d.line([(xx, ax.y0), (xx, ax.y1)], fill=(240, 244, 250, int(200 * ac)), width=2)
         before, after = m["closed"]["avg"], m["opened"]["avg"]
+        bn0, bn1 = self.bn_names
+        bc = [round(v) for v in self.bottleneck_times(m["closed"]["flows"])]
+        bo = [round(v) for v in self.bottleneck_times(m["opened"]["flows"])]
         caps(d, t, [(0.3, 5.6, [cap("Can a new road make everyone slower? Here's a thought experiment on the same map.", 34)]),
-                    (6.0, 14.6, [cap("Keep two routes, each with one bottleneck that slows down as traffic grows:", 32),
-                                 cap(f"the {self.bn_names[0]} and the {self.bn_names[1]}. Say the rest never jams.", 32, INK2)]),
-                    (15.0, 21.6, [cap(f"With {fmt_int(m['cfg']['demand'])} drivers an hour, they split so both routes take {before:.0f} minutes.", 34)]),
-                    (22.0, 28.6, [cap(f"Now dig a mythical tunnel from the end of the {self.bn_names[0]}", 34),
-                                  cap(f"straight to the {self.bn_names[1]}: {m['cfg']['minutes']:.0f} minutes, never any traffic.", 34, GOLDISH)]),
-                    (29.0, 34.6, [cap(f"At 3 a.m. it's a real shortcut: {m['night'][1]:.0f} minutes instead of {m['night'][2]:.0f}.", 34)]),
-                    (35.0, 40.6, [cap(f"At rush hour, the first driver to try it arrives in {m['lone']:.0f} minutes, not {before:.0f}.", 34),
+                    (6.0, 11.6, [cap("First, what's a bottleneck? A place where the road narrows:", 34),
+                                 cap("say, 4 lanes squeeze into 2.", 34, INK2)]),
+                    (12.0, 16.6, [cap("In light traffic, 2 lanes cope: cars get through at full speed.", 34)]),
+                    (17.0, 25.6, [cap("In heavy traffic, more cars arrive than 2 lanes can pass.", 34),
+                                  cap("A queue builds, and the wait keeps growing.", 34, INK2)]),
+                    (26.0, 33.6, [cap("Our thought experiment gives each route one bottleneck like that:", 34),
+                                  cap(f"the {bn0} and the {bn1}. Say the rest never jams.", 32, INK2)]),
+                    (34.0, 40.6, [cap(f"With {fmt_int(m['cfg']['demand'])} drivers an hour, they split so both routes take {before:.0f} minutes.", 34)]),
+                    (41.0, 47.6, [cap(f"Now dig a mythical tunnel from the end of the {bn0}", 34),
+                                  cap(f"straight to the {bn1}: {m['cfg']['minutes']:.0f} minutes, never any traffic.", 34, GOLDISH)]),
+                    (48.0, 53.6, [cap(f"At 3 a.m. it's a real shortcut: {m['night'][1]:.0f} minutes instead of {m['night'][2]:.0f}.", 34)]),
+                    (54.0, 59.6, [cap(f"At rush hour, the first driver to try it arrives in {m['lone']:.0f} minutes, not {before:.0f}.", 34),
                                   cap("So others follow...", 34, INK2)]),
-                    (41.0, 50.6, [cap("...and every one of them squeezes through both bottlenecks.", 34),
-                                  cap(f"The {self.bn_names[0]} and the {self.bn_names[1]} fill up.", 32, INK2)]),
-                    (51.0, 57.6, [cap(f"When the switching stops, every route takes {after:.0f} minutes:", 34),
+                    (60.0, 69.6, [cap("...and every one of them goes through both bottlenecks, so both queues grow.", 32),
+                                  cap(f"{bn0}: {bc[0]} → {bo[0]} min. {bn1}: {bc[1]} → {bo[1]} min.", 32, INK2)]),
+                    (71.0, 77.6, [cap(f"When the switching stops, every route takes {after:.0f} minutes:", 34),
                                   cap(f"{after - before:.0f} minutes longer than before the tunnel, for everyone.", 34, GOLD)]),
-                    (58.0, 64.6, [cap("And nobody can do better by going back: both old routes now share", 34),
+                    (78.0, 84.6, [cap("And nobody can do better by going back: both old routes now share", 34),
                                   cap("a jammed bottleneck with the tunnel route.", 34, INK2)]),
-                    (65.0, 71.6, [cap("Each driver who switched saved time, but slowed everyone in two bottlenecks.", 32),
+                    (85.0, 91.6, [cap("Each driver who switched saved time, but slowed everyone in two bottlenecks.", 32),
                                   cap(f"Close the tunnel, and everyone arrives {after - before:.0f} minutes sooner.", 32, INK2)]),
-                    (72.0, 80.6, [cap("This is Braess's paradox (Dietrich Braess, 1968). It isn't the rule:", 34),
+                    (92.0, 99.8, [cap("This is Braess's paradox (Dietrich Braess, 1968). It isn't the rule:", 34),
                                   cap("with fewer drivers the same tunnel helps. It depends on the bottlenecks.", 32, INK2)])])
-        note(d, "Thought experiment: the tunnel is imaginary, and the bottleneck capacities and driver numbers are made up.", a0)
+        note(d, "Thought experiment: the tunnel is imaginary, and the bottlenecks, their capacities and the driver numbers are made up.", a0)
         return np.asarray(im)
 
 

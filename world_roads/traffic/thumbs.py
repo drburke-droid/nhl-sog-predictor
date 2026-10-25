@@ -1,7 +1,15 @@
-"""Three thumbnails for A/B/C testing (1280x720):  python thumbs.py -> out/thumb_A.png, thumb_B.png, thumb_C.png"""
-import os
+"""Thumbnails for A/B/C testing (1280x720):  python thumbs.py [A B C D] -> out/thumb_<k>.png
+
+D is built around a real Google Maps screenshot: put it at media/traffic/gmaps_screenshot.png (a phone screenshot
+of three routes showing the same ETA). An optional gmaps_screenshot.json next to it can crop it and ring the ETAs,
+in the screenshot's own pixels: {"crop": [x0, y0, x1, y1], "circles": [[x, y, r], ...]}. The screenshot is placed
+as it is (never edited), so keep Google's logo and map-data attribution in the crop. Without a screenshot, D is a
+layout preview with an empty placeholder phone (out/thumb_D_layout.png).
+"""
+import os, sys, json
 import numpy as np
-from PIL import Image, ImageDraw
+import cv2
+from PIL import Image, ImageDraw, ImageFilter
 
 import look as L
 import video as V
@@ -76,8 +84,84 @@ def thumb_c():
     return im
 
 
+SHOT = os.environ.get("GMAPS_SHOT", os.path.join(L.MEDIA, "gmaps_screenshot.png"))      # GMAPS_SHOT=... to try another
+
+
+def phone(shot, box=(720, 930), marks=None, tilt=-3.0):
+    """the screenshot, fitted into box, in a phone-like frame (rounded, dark bezel, soft shadow), rings on the
+    ETAs, a slight tilt"""
+    marks = marks or {}
+    if "crop" in marks:
+        shot = shot.crop(tuple(marks["crop"]))
+    s = min(box[0] / shot.width, box[1] / shot.height)
+    w, h = int(round(shot.width * s)), int(round(shot.height * s))
+    scr = shot.convert("RGB").resize((w, h), Image.LANCZOS)
+    dd = ImageDraw.Draw(scr, "RGBA")
+    ox, oy = marks.get("crop", (0, 0))[:2]
+    for x, y, r in marks.get("circles", []):
+        cx, cy, rr = (x - ox) * s, (y - oy) * s, r * s
+        for wdt, al in ((16, 70), (9, 255)):
+            dd.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], outline=GOLD + (al,), width=wdt)
+    bz, rad = 16, 52
+    W, H = w + 2 * bz, h + 2 * bz
+    body = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    db = ImageDraw.Draw(body)
+    db.rounded_rectangle([0, 0, W - 1, H - 1], rad + bz, fill=(18, 20, 26, 255), outline=(120, 128, 142, 255), width=3)
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=255)
+    body.paste(scr, (bz, bz), mask)
+    pad = 60
+    lay = Image.new("RGBA", (W + 2 * pad, H + 2 * pad), (0, 0, 0, 0))
+    sh = Image.new("L", lay.size, 0)
+    ImageDraw.Draw(sh).rounded_rectangle([pad + 10, pad + 24, pad + W + 10, pad + H + 24], rad + bz, fill=200)
+    sh = sh.filter(ImageFilter.GaussianBlur(24))
+    lay.paste(Image.new("RGBA", lay.size, (0, 0, 0, 255)), (0, 0), sh)
+    lay.alpha_composite(body, (pad, pad))
+    return lay.rotate(tilt, resample=Image.BICUBIC, expand=True)
+
+
+def placeholder(h=930):
+    """an empty phone for the layout preview: no imitation of anyone's app"""
+    w = int(h * 0.462)
+    im = Image.new("RGB", (w, h), (28, 32, 42))
+    d = ImageDraw.Draw(im, "RGBA")
+    for k, s in enumerate(["YOUR GOOGLE MAPS", "SCREENSHOT HERE", "", "three routes,", "the same ETA", "", "gmaps_screenshot.png"]):
+        text(d, (w / 2, h * 0.36 + k * 46), s, 34 if k < 2 else 28, INK if k < 2 else INK2, 1.0, "Bold" if k < 2 else "Medium", "mm")
+    return im
+
+
+def thumb_d():
+    """a real Google Maps screenshot with three equal ETAs, beside the hook"""
+    view = L.MapView.fit((60, 60, 1100, 1040), "thumbD")
+    sc, fr = map_frame(view, 7, dim=0.55)
+    im = Image.fromarray(fr).convert("RGBA")
+    have = os.path.exists(SHOT)
+    shot = Image.open(SHOT) if have else placeholder()
+    mp = os.path.splitext(SHOT)[0] + ".json"
+    marks = json.load(open(mp)) if have and os.path.exists(mp) else None
+    ph = phone(shot, (720, 930) if shot.height >= shot.width else (860, 800), marks=marks)
+    im.alpha_composite(ph, (int(1460 - ph.width / 2), int(540 - ph.height / 2)))
+    d = ImageDraw.Draw(im, "RGBA")
+    heavy = "Black" if os.path.exists(os.path.join(ST.FD, "Inter-Black.otf")) else "ExtraBold"
+    for k, (s, col) in enumerate((("3 ROUTES.", INK), ("SAME ETA.", GOLD), ("WHY?", INK))):
+        x, y = 70, 120 + k * 200
+        for dx, dy in ((0, 6), (0, 3)):                # a drop shadow so the words read over the map
+            text(d, (x + dx, y + dy), s, 160, (0, 0, 0), 0.55, heavy)
+        text(d, (x, y), s, 160, col, 1.0, heavy)
+    if not have:
+        text(d, (70, 1010), "LAYOUT PREVIEW: add media/traffic/gmaps_screenshot.png, then run thumbs.py D", 30, (255, 120, 110), 1.0, "Bold")
+    return im.convert("RGB"), have
+
+
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
+    want = sys.argv[1:] or ["A", "B", "C", "D"]
     for k, f in (("A", thumb_a), ("B", thumb_b), ("C", thumb_c)):
-        f().convert("RGB").resize((1280, 720), Image.LANCZOS).save(os.path.join(OUT, f"thumb_{k}.png"), optimize=True)
-        print("wrote", f"thumb_{k}.png")
+        if k in want:
+            f().convert("RGB").resize((1280, 720), Image.LANCZOS).save(os.path.join(OUT, f"thumb_{k}.png"), optimize=True)
+            print("wrote", f"thumb_{k}.png")
+    if "D" in want:
+        im, have = thumb_d()
+        name = "thumb_D.png" if have else "thumb_D_layout.png"
+        im.resize((1280, 720), Image.LANCZOS).save(os.path.join(OUT, name), optimize=True)
+        print("wrote", name, "" if have else "(no screenshot yet: a layout preview)")

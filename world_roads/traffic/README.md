@@ -11,7 +11,7 @@ holds three things:
   * the selection effect of an app that lists only the fastest few routes.
 * **An interactive lab** (`lab/`, Vite + React + TypeScript) with four tabs. It is an optional companion
   that the video does not link to, and builds to `docs/traffic/`.
-* **A caption-only video** (6:50, 1920×1080), framed by the title *You're not the only one who constantly
+* **A caption-only video** (7:18, 1920×1080), framed by the title *You're not the only one who constantly
   gets 3 or more completely different routes to your destination with the same ETA*. It is set on real
   New York roads (JFK Airport to Times Square), in the look of the light-speed film. Master, thumbnails
   and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
@@ -57,7 +57,7 @@ python city_routes.py fetch && python city_routes.py build         # Overture ro
 python scenario.py                                                 # every number in the video
 python video.py fill 20 41                                         # stills of one section at 20 s and 41 s
 python assemble.py render                                          # all sections (4 at a time) + score
-python thumbs.py
+python thumbs.py          # A, B, C; D wraps your own Google Maps screenshot (media/traffic/gmaps_screenshot.png)
 ```
 
 The full render takes about 25 minutes on 4 cores.

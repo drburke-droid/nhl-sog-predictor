@@ -139,11 +139,13 @@ The day-to-day sequence is a model of learning, not a solver and not a model of 
 2. A reconsidering driver switches to the quickest route only if it saves more than a threshold.
 3. Drivers move between routes, so no vehicles are created or lost and no flow goes negative.
 
-**Day 1:** 60% of drivers try the Midtown Tunnel, 20% each try the other two.
+**Day 1** (the video's "Monday"): 60% of drivers try the Midtown Tunnel, 20% each try the other two. That
+gives 83, 36 and 49 min. The video frames both runs as "what if it hadn't settled yet?": a start that is
+deliberately far from equilibrium, to show how drivers could find it.
 
 | Run | Who switches | Result |
 |---|---|---|
-| "The jam moves" | Half of all drivers jump to yesterday's quickest route, whatever the saving | Never settles. The BPR curve makes the overloaded route absurdly slow, so the chart is cut off at 120 min and anything slower shows as "2 h+". |
+| "The jam moves" | Half of all drivers jump to yesterday's quickest route, whatever the saving | Day 2 ("Tuesday"): half of everyone moves to the RFK Bridge, which jams (over 2 hours in this model). It never settles. The BPR curve makes the overloaded route absurdly slow, so the chart is cut off at 120 min and anything slower shows as "2 h+". |
 | "Settles" | 1 in 50 reconsider each day, and nobody switches to save a minute or less | All three times are within 1 minute of each other from day 13. After 40 days they are 49.6, 50.2 and 50.4 min. |
 
 Rounded to the minute, the "settles" run's final times all show **50 min**: that is the opening and closing
@@ -156,12 +158,18 @@ through the day. Trips with different origins and destinations share the roads.
 
 * **The 400 routes:** each one is forced through a different random junction on a major road within 18 km
   of the map centre (seeded). At 3 a.m. they take **26 to 61 min**, with a median of 37.6.
-* **The app's three:** the three quickest of the 22 alternatives in section 1, at **26.2, 27.7 and
-  28.0 min**. That is within 2 minutes, with no traffic.
-* **The point:** this is a pure selection effect. Picking the quickest few from many always picks routes
-  close to each other.
-* **The filter is stylized:** "show the fastest few distinct routes". It is not any real app's
-  algorithm, and real ETAs are predictions with error.
+* **Our three on the histogram:** A, B and C (26.2, 33.1 and 38.0 min) are marked among the 400. They are
+  the quickest route through each of three river crossings, which is the kind of choice an app makes: a
+  few routes that are quick *and* genuinely different.
+* **The point:** a selection effect. The app never lists the slow routes (up to 61 min here), or
+  near-copies of a quicker route, so the routes you see are already the close calls. At rush hour traffic
+  then evens out the ones people use.
+* **Why "genuinely different" matters:** the three quickest of all 22 alternatives in section 1 take 26.2,
+  27.7 and 28.0 min, within 2 minutes with no traffic. But they are route A and two small variations of
+  it (all on the Van Wyck and the LIE). An earlier cut showed those three, and they were confusing beside
+  A, B and C, so the video now uses only A, B and C.
+* **The filter is stylized:** "show a few quick, distinct routes". It is not any real app's algorithm,
+  and real ETAs are predictions with error.
 
 ## 6. System optimum and the price of anarchy
 
@@ -193,6 +201,16 @@ through the day. Trips with different origins and destinations share the roads.
   1968. English translation: Braess, Nagurney and Wakolbinger, *Transportation Science* 39, 2005.
 * **The tunnel is imaginary.** There is no road like it. It would run about 16 km in a straight line, so
   3 minutes means over 300 km/h. It exists to show the paradox on familiar geometry.
+* **What a bottleneck is (the lane-drop diagram):** a road narrowing from 4 lanes to 2. In light traffic
+  fewer cars arrive than 2 lanes can pass, and nobody waits. In heavy traffic more arrive than it can pass,
+  so a queue builds and the wait grows. The diagram is a schematic queue, not to scale (`video.py: Neck`).
+  Cars follow the car ahead, and the merge lets one car through every 0.2 s, whichever has waited longest.
+  Arrivals are 3 cars a second in light traffic and 9 in heavy. The lane counts are an illustration: in
+  the model each bottleneck is a BPR link with a made-up capacity for this trip's drivers, which stands for
+  what is left of a road's capacity after all other traffic. No real lane counts are claimed.
+* **On the map**, each bottleneck's label shows the minutes it takes to get through, from its BPR time at
+  the current flow. The JFK Expressway's goes from 2 to 16 min as drivers switch to the tunnel, and the
+  Queens-Midtown Tunnel's from 15 to 29.
 * **The network** (`scenario.py: myth_network`, settings in `cities.py`): routes A and C only, with B
   ignored. Each is cut into one bottleneck and stretches that are assumed never to slow down.
   * **Route C** (around Brooklyn, 38.0 min empty): the JFK Expressway, minutes 1.1–3.0 of the route, is a
