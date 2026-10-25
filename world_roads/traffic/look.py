@@ -9,7 +9,7 @@ the city's real streets as a glowing cyan network on near-black, routes as brigh
 import os, sys, json, math, time, subprocess
 import numpy as np
 import cv2
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -383,3 +383,54 @@ class Section:
             os.remove(q)
             os.remove(q + ".ok")
         print("wrote", path, flush=True)
+
+
+# ------------------------------------------------------------------ a real screenshot, framed
+SHOT = os.environ.get("MAPS_SHOT", os.path.join(MEDIA, "maps_screenshot.png"))   # the creator's own maps-app screenshot
+
+
+def shot_marks(path=None):
+    """the screenshot's sidecar JSON (crop, rings, labels), or {}"""
+    p = os.path.splitext(path or SHOT)[0] + ".json"
+    return json.load(open(p)) if os.path.exists(p) else {}
+
+
+def ring(d, cx, cy, rx, ry, a=1.0, col=GOLD):
+    """a gold ring around a spot: a soft halo and a solid line"""
+    if a <= 0:
+        return
+    for wdt, al in ((16, 70), (9, 255)):
+        d.ellipse([cx - rx, cy - ry, cx + rx, cy + ry], outline=tuple(col) + (int(al * a),), width=wdt)
+
+
+def shot_card(shot, box, marks=None, rings=True, tilt=0.0, bz=16, rad=40, pad=60):
+    """the screenshot (cropped as marks says), fitted into box, in a phone-like frame: rounded, dark bezel, soft
+    shadow, optional gold rings and tilt. The screenshot itself is only scaled, never edited. Returns the RGBA card
+    and a function from screenshot pixels to card pixels (valid without tilt)."""
+    marks = marks or {}
+    ox, oy = marks.get("crop", (0, 0))[:2]
+    if "crop" in marks:
+        shot = shot.crop(tuple(marks["crop"]))
+    s = min(box[0] / shot.width, box[1] / shot.height)
+    w, h = int(round(shot.width * s)), int(round(shot.height * s))
+    scr = shot.convert("RGB").resize((w, h), Image.LANCZOS)
+    spots = [tuple(r) for r in marks.get("rings", [])] + [(x, y, r, r) for x, y, r in marks.get("circles", [])]
+    if rings:
+        dd = ImageDraw.Draw(scr, "RGBA")
+        for x, y, rx, ry in spots:
+            ring(dd, (x - ox) * s, (y - oy) * s, rx * s, ry * s)
+    W_, H_ = w + 2 * bz, h + 2 * bz
+    body = Image.new("RGBA", (W_, H_), (0, 0, 0, 0))
+    ImageDraw.Draw(body).rounded_rectangle([0, 0, W_ - 1, H_ - 1], rad + bz, fill=(18, 20, 26, 255), outline=(120, 128, 142, 255), width=3)
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=255)
+    body.paste(scr, (bz, bz), mask)
+    lay = Image.new("RGBA", (W_ + 2 * pad, H_ + 2 * pad), (0, 0, 0, 0))
+    sh = Image.new("L", lay.size, 0)
+    ImageDraw.Draw(sh).rounded_rectangle([pad + 10, pad + 24, pad + W_ + 10, pad + H_ + 24], rad + bz, fill=200)
+    lay.paste(Image.new("RGBA", lay.size, (0, 0, 0, 255)), (0, 0), sh.filter(ImageFilter.GaussianBlur(24)))
+    lay.alpha_composite(body, (pad, pad))
+    if tilt:
+        lay = lay.rotate(tilt, resample=Image.BICUBIC, expand=True)
+    return lay, (lambda x, y: (pad + bz + (x - ox) * s, pad + bz + (y - oy) * s)), s
+

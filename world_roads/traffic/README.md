@@ -11,11 +11,12 @@ holds three things:
   * the selection effect of an app that lists only the fastest few routes.
 * **An interactive lab** (`lab/`, Vite + React + TypeScript) with four tabs. It is an optional companion
   that the video does not link to, and builds to `docs/traffic/`.
-* **A caption-only video** (7:18, 1920×1080), framed by the question *Ever noticed your drive home has two
-  routes with almost the exact same ETA, heading completely different ways?* (*You're not unique, and your
-  house isn't magically placed at some sweet spot in the traffic.*) It is set on real New York roads, an
-  evening drive home from Times Square to Bayside, Queens, in the look of the light-speed film. Master,
-  thumbnails and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
+* **A captioned video** (7:40, 1920×1080), with a narration script for an optional voiceover. It opens on
+  *Ever wonder why your maps app always offers two or more completely different routes home, with pretty much
+  the exact same time?*, shows a real Apple Maps screenshot of exactly that (Times Square to Bayside: 59 min,
+  1 hr, 1 hr 1 min), and answers *You're not alone, and your house isn't magically placed at some sweet spot in
+  the traffic.* It is set on real New York roads, the same evening drive home, in the look of the light-speed
+  film. Master, thumbnails and YouTube copy are in `../media/traffic/`. The same pipeline runs on a Calgary trip
   (`TRAFFIC_CITY=calgary`).
 
 What is real and what is a toy model: [ACCURACY.md](ACCURACY.md). In short, the road geometry and the
@@ -58,7 +59,8 @@ python city_routes.py fetch && python city_routes.py build         # Overture ro
 python scenario.py                                                 # every number in the video
 python video.py fill 20 41                                         # stills of one section at 20 s and 41 s
 python assemble.py render                                          # all sections (4 at a time) + score
-python thumbs.py          # A, B, C; D wraps your own Google Maps screenshot (media/traffic/gmaps_screenshot.png)
+python thumbs.py          # A, B, C; D wraps the maps-app screenshot (media/traffic/maps_screenshot.png)
+python voiceover.py       # the narration script -> ../media/traffic/VOICEOVER.md; recorded clips in ../media/traffic/voice/ are mixed in by assemble.py
 ```
 
 The full render takes about 25 minutes on 4 cores.

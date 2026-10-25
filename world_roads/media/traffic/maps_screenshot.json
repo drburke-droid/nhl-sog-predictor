@@ -1,0 +1,8 @@
+{
+  "source": "Apple Maps",
+  "trip": "Times Square to Bayside, leaving at 6:01 p.m.",
+  "crop": [0, 800, 1179, 1580],
+  "rings": [[916, 1456, 258, 90], [512, 1246, 116, 66], [347, 914, 176, 64]],
+  "times": [["59 min", "east, along the LIE"], ["1 hr", "past LaGuardia"], ["1 hr 1 min", "north, through the Bronx"]],
+  "words": ["3 ROUTES.", "SAME ETA.", "WHY?"]
+}

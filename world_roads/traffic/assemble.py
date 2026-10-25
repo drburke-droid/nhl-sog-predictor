@@ -64,7 +64,8 @@ def main():
              "-tune", "animation", "-pix_fmt", "yuv420p", "-r", "30", vid]
     subprocess.run(args, check=True)
     wav = os.path.join(OUT, "score.wav")
-    SC.write(music.main_track(O, total), wav)
+    import voice
+    SC.write(voice.mix(music.main_track(O, total), O, total, SC.SR), wav)     # narration, if any is recorded
     final = os.path.join(OUT, "two_routes_one_eta.mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", vid, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
                     "-af", AF, "-c:a", "aac", "-b:a", "320k", "-shortest", "-movflags", "+faststart", final], check=True)

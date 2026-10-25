@@ -313,9 +313,10 @@ python thumbs.py                                                             # t
 
 ## Two routes home, one ETA (`traffic/`)
 
-*Ever noticed your drive home has two routes with almost the exact same ETA, heading completely different
-ways? You're not unique, and your house isn't magically placed at some sweet spot in the traffic.* A
-caption-only video (7:18) on why that happens.
+*Ever wonder why your maps app always offers two or more completely different routes home, with pretty much
+the exact same time? You're not alone, and your house isn't magically placed at some sweet spot in the
+traffic.* A captioned video (7:40) on why that happens, opening on a real Apple Maps screenshot of the trip
+(59 min, 1 hr, 1 hr 1 min), with a narration script for an optional voiceover.
 
 **The trip.** An evening drive home from Times Square to Bayside, Queens, on real New York roads
 (Overture/OpenStreetMap, one-way rules, speed limits). It compares three ways out of Manhattan:
@@ -338,7 +339,8 @@ cd traffic
 python -m pytest -q test_model.py                                  # the model (36 tests)
 python city_routes.py fetch && python city_routes.py build         # roads -> graph -> routes
 python scenario.py                                                 # every number in the video
-python assemble.py render && python thumbs.py                      # -> out/two_routes_one_eta.mp4, thumbnails (D needs a screenshot)
+python assemble.py render && python thumbs.py                      # -> out/two_routes_one_eta.mp4, thumbnails
+python voiceover.py                                                # narration script (Lily voice) -> media/traffic/VOICEOVER.md
 cd lab && npm install && npm run dev                               # optional lab; npm run build -> docs/traffic/
 ```
 

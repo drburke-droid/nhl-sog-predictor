@@ -238,8 +238,10 @@ def flow_width(f):
 
 # ================================================================== 1. the hook
 class Hook(L.Section):
-    name, dur = "hook", bars(12)
-    Q0, UNIQUE = 6.6, 18.4                            # the question; "you're not unique"
+    name, dur = "hook", bars(20)
+    Q0, NB = 0.8, 14.8                                # the question; "why isn't there one no-brainer route?"
+    SHOT0, TIMES, SHOT1 = 20.0, (25.4, 26.8, 28.2), 34.4   # a real maps-app screenshot: in, its three times, out
+    UNIQUE, HERE = 40.8, 46.2                         # "you're not alone"; "here's why"
 
     def __init__(self):
         self.sc = Scene(TWO)
@@ -247,6 +249,10 @@ class Hook(L.Section):
         self.two = USED[:2]                               # the routes in use at rush hour
         self.cars = Cars(self.sc, lambda t: (ue["flows"], N["learn"]["calm"]["times"][-1]), self.dur)
         self.spr = [L.sprite(c) for c in ROUTE]
+        self.marks = L.shot_marks()
+        card, to, k = L.shot_card(Image.open(L.SHOT), (900, 820), self.marks, rings=False)
+        self.card, self.to, self.k = card, to, k
+        self.cpos = (int(1420 - card.width / 2), int(520 - card.height / 2))
 
     def frame(self, t):
         sc = self.sc
@@ -256,39 +262,67 @@ class Hook(L.Section):
             sc.route(i, 4, 0.95, upto=grow * sc.cum[i][-1])
         if t > 5.0:
             self.cars.draw(t, a=smooth((t - 5.0) / 1.5))
-        fade = smooth(t / 1.4)
-        img = sc.compose(dim=fade).astype(np.float32)
+        ac = smooth((t - self.SHOT0) / 0.8) * (1 - smooth((t - self.SHOT1) / 0.6))
+        img = sc.compose(dim=smooth(t / 1.4) * (1 - 0.65 * ac)).astype(np.float32)
         if 1.4 < t < 5.4:
             for i in self.two:
                 x, y = L.at(sc.P[i], sc.cum[i], grow * sc.cum[i][-1])
                 L.blit_add(img, self.spr[i], x, y, 1.0 - smooth((t - 4.6) / 0.8))
         im = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8))
         d = ImageDraw.Draw(im, "RGBA")
-        sc.pins(d, smooth((t - 0.6) / 0.6))
-        ab = smooth((t - 5.0) / 0.6)
-        sc.badges(d, ab, which=self.two)
+        sc.pins(d, smooth((t - 0.6) / 0.6) * (1 - ac))
         x = 70
-        lines = [("Ever noticed your drive home", INK), ("has two routes with almost", INK), ("the exact same ETA, heading", INK),
-                 ("completely different ways?", GOLD)]
-        for k, (s, col) in enumerate(lines):
-            a = smooth((t - self.Q0 - 0.9 * k) / 0.5) * (1 - smooth((t - self.UNIQUE + 0.6) / 0.6))
-            text(d, (x, 120 + k * 76), s, 58, col, a, "Bold")
-        text(d, (x, 560), "EVENING RUSH", 22, MUTED, ab, "SemiBold")
+        # the question
+        aq = 1 - smooth((t - self.SHOT0 + 0.6) / 0.6)
+        for k, (s, col) in enumerate([("Ever wonder why your maps app", INK), ("always offers two or more", INK),
+                                      ("completely different routes", INK), ("home, with pretty much", INK),
+                                      ("the exact same time?", GOLD)]):
+            text(d, (x, 110 + k * 74), s, 56, col, smooth((t - self.Q0 - 0.9 * k) / 0.5) * aq, "Bold")
+        an = smooth((t - self.NB) / 0.5) * aq
+        text(d, (x, 520), "Why isn't there just one", 42, INK2, an, "SemiBold")
+        text(d, (x, 574), "no-brainer route?", 42, INK2, an, "SemiBold")
+        # a real one: the creator's screenshot, scaled but not edited
+        if ac > 0:
+            card = self.card.copy()
+            card.putalpha(card.getchannel("A").point(lambda v: int(v * ac)))
+            dy = int((1 - smooth((t - self.SHOT0) / 0.8)) * 30)
+            base = im.convert("RGBA")
+            base.alpha_composite(card, (self.cpos[0], self.cpos[1] + dy))
+            im = base.convert("RGB")
+            d = ImageDraw.Draw(im, "RGBA")
+            m = self.marks
+            text(d, (x, 150), "A REAL ONE", 24, MUTED, ac, "SemiBold")
+            text(d, (x, 188), m.get("source", "Your maps app"), 60, INK, ac, "Bold")
+            for k_, s_ in enumerate(wrap(m.get("trip", ""), 32, 800)):
+                text(d, (x, 272 + 40 * k_), s_, 32, INK2, ac, "Medium")
+            for k_, ((tm, sub), r_) in enumerate(zip(m.get("times", []), m.get("rings", []))):
+                a_ = ac * smooth((t - self.TIMES[k_]) / 0.4)
+                y = 400 + k_ * 104
+                text(d, (x, y), tm, 60, GOLD, a_, "Bold")
+                text(d, (x, y + 66), sub, 26, INK2, a_, "Medium")
+                cx, cy = self.to(r_[0], r_[1])
+                L.ring(d, self.cpos[0] + cx, self.cpos[1] + dy + cy, r_[2] * self.k, r_[3] * self.k, a_)
+        caps(d, t, [(29.8, 34.0, [cap("Three completely different ways home, all within two minutes.", 36)])])
+        # our toy model does the same
+        ab = smooth((t - self.SHOT1) / 0.6)
+        sc.badges(d, ab, which=self.two)
+        text(d, (x, 560), "EVENING RUSH · OUR TOY MODEL", 22, MUTED, ab, "SemiBold")
         eta_rows(d, x, 628, [(i, f"{N['eta_final'][i]} min", f"{NAMES[i]} · {dist(i)}") for i in self.two], a=ab, size=32)
-        a2 = ST.fade(t, 11.8, self.UNIQUE - 0.6, 0.5, 0.6)
         i0, i1 = self.two
-        for k, s_ in enumerate(wrap(f"{N['trip']}: {SIDES[i0]} ({dist(i0)}), or {SIDES[i1]} ({dist(i1)}). "
-                                    "Within a minute of each other.", 28, 780)):
-            text(d, (x, 800 + 38 * k), s_, 28, INK2, a2, "Medium")
+        a2 = ST.fade(t, self.SHOT1 + 0.4, self.HERE - 0.4, 0.5, 0.6)
+        for k_, s_ in enumerate(wrap(f"Our simple traffic model does the same thing: {SIDES[i0]} ({dist(i0)}) or {SIDES[i1]} "
+                                     f"({dist(i1)}), {N['eta_final'][i0]} minutes either way.", 28, 780)):
+            text(d, (x, 790 + 38 * k_), s_, 28, INK2, a2, "Medium")
         a3 = ST.fade(t, self.UNIQUE, 1e9, 0.5, 0.5)
-        text(d, (x, 150), "You're not unique.", 76, INK, a3, "Bold")
+        text(d, (x, 150), "You're not alone.", 76, INK, a3, "Bold")
         a4 = ST.fade(t, self.UNIQUE + 1.6, 1e9, 0.5, 0.5)
         text(d, (x, 270), "And your house isn't magically placed", 38, INK2, a4, "SemiBold")
         text(d, (x, 322), "at some sweet spot in the traffic.", 38, INK2, a4, "SemiBold")
-        a5 = ST.fade(t, self.UNIQUE + 4.2, 1e9, 0.5, 0.5)
+        a5 = ST.fade(t, self.HERE, 1e9, 0.5, 0.5)
         text(d, (x, 404), "It happens on almost every busy trip.", 38, GOLD, a5, "SemiBold")
         text(d, (x, 456), "Here's why.", 38, GOLD, a5, "SemiBold")
-        note(d, f"Rush-hour times: a toy traffic model on real {N['city_name']} roads (details in the description)", smooth((t - 5.5) / 0.8))
+        note(d, f"Screenshot: {self.marks.get('source', 'a maps app')}, as captured. Rush-hour times elsewhere: a toy traffic model on real "
+                f"{N['city_name']} roads (details in the description)", smooth((t - 5.5) / 0.8))
         return np.asarray(im)
 
 
@@ -517,7 +551,7 @@ def LET(i):
 # ================================================================== 6. why the times end up equal
 class Why(L.Section):
     name, dur = "why", bars(12)
-    MOVE0, MOVE1 = 5.0, 12.5                         # drivers switching from the unbalanced start to the equilibrium
+    MOVE0, MOVE1, WARDROP = 5.4, 13.0, 19.6           # drivers switching to the equilibrium; Wardrop's principle
 
     def __init__(self):
         self.sc = Scene(RIGHT)
@@ -551,10 +585,10 @@ class Why(L.Section):
             y = 336 + i * 66
             L.pill(d, x, y, i, f"{T[i]:.0f} min", f"{NAMES[i]} · {cars_h(f[i]) if f[i] > 1 else 'nobody'}", a=a0, size=30, anchor="lm")
             dlt = f[i] - self.f0[i]
-            if abs(dlt) > 20 and t < 17.0:
+            if abs(dlt) > 20 and t < self.WARDROP:
                 text(d, (x + 560, y), f"{'+' if dlt > 0 else '−'}{fmt_int(abs(dlt))} cars/h", 24, GOLDISH if dlt > 0 else INK2,
-                     smooth((t - self.MOVE0) / 1.0) * (1 - smooth((t - 16.4) / 0.6)), "SemiBold", "lm")
-        aw = ST.fade(t, 17.0, 1e9)
+                     smooth((t - self.MOVE0) / 1.0) * (1 - smooth((t - self.WARDROP + 0.6) / 0.6)), "SemiBold", "lm")
+        aw = ST.fade(t, self.WARDROP, 1e9)
         d.rounded_rectangle([x - 10, 530, x + 830, 810], 22, fill=ST.PANEL + (int(210 * aw),))
         text(d, (x + 20, 562), "WARDROP'S PRINCIPLE (1952)", 22, MUTED, aw, "SemiBold")
         text(d, (x + 20, 602), "Traffic settles where no driver can get", 34, INK, aw, "Bold")
@@ -565,19 +599,20 @@ class Why(L.Section):
         text(d, (x + 20, 772), "Routes nobody uses" + (f" (like {LET(idle[0])})" if idle else ""), 30, INK, aw, "SemiBold", "lm")
         text(d, (x + 800, 772), "slower", 30, INK2, aw, "Bold", "rm")
         ts = N["why_start"]["times"]
-        caps(d, t, [(0.4, 4.8, [cap(f"Suppose {IN[0]} showed {ts[0]:.0f} minutes, and {IN[1]} {ts[1]:.0f}.", 36)]),
-                    (5.2, 11.8, [cap("Drivers leave the slower routes for the quicker one.", 34),
-                                 cap("It slows down as they arrive, and the others speed up.", 34, INK2)]),
-                    (12.2, 16.6, [cap("They meet in the middle. Any gap left over would tempt more drivers to switch, so it closes.", 32)]),
-                    (17.0, 23.6, [cap("That's Wardrop's principle: a state no driver can improve on by switching alone.", 34)]),
-                    (24.0, 30.6, [cap("Game theorists call it a Nash equilibrium. Nobody plans it: it's what's left", 34),
+        one = len(USED) == 2
+        caps(d, t, [(0.4, 5.0, [cap(f"Suppose {IN[0]} showed {ts[0]:.0f} minutes, and {IN[1]} {ts[1]:.0f}.", 36)]),
+                    (5.4, 12.8, [cap("Drivers leave the slower route for the quicker one." if one else "Drivers leave the slower routes for the quicker one.", 34),
+                                 cap("It slows down as they arrive, and the other speeds up." if one else "It slows down as they arrive, and the others speed up.", 34, INK2)]),
+                    (13.2, 19.2, [cap("They meet in the middle. Any gap left over would tempt more drivers to switch, so it closes.", 32)]),
+                    (self.WARDROP, 24.0, [cap("That's Wardrop's principle: a state no driver can improve on by switching alone.", 34)]),
+                    (24.4, 30.6, [cap("Game theorists call it a Nash equilibrium. Nobody plans it: it's what's left", 34),
                                   cap("once everyone has picked the quickest route they know.", 34, INK2)])])
         return np.asarray(im)
 
 
 class Fine(L.Section):
     name, dur = "fine", bars(12)
-    AT = [1.0, 7.5, 14.0, 20.5]
+    AT = [1.0, 8.8, 15.4, 22.4]                       # each point appears as the narration reaches it
 
     def __init__(self):
         sc = Scene(CENTER)
@@ -612,9 +647,9 @@ class Fine(L.Section):
 
 # ================================================================== 7. drivers learning, day by day
 class Learn(L.Section):
-    name, dur = "learn", bars(20)
-    R1, D2, D3, SPD1 = 5.0, 11.0, 17.0, 0.4          # the chasing run: day 1 held, day 2 held, then 0.4 s a day
-    R2, SPD = 25.5, 0.55                             # the calm run: start, seconds of video per day
+    name, dur = "learn", bars(21)
+    R1, D2, D3, SPD1 = 5.0, 14.6, 23.2, 0.35         # the chasing run: day 1 held, day 2 held, then 0.35 s a day
+    R2, SPD = 31.0, 0.5                              # the calm run: start, seconds of video per day
 
     def __init__(self):
         self.sc = Scene(LEFT)
@@ -680,18 +715,18 @@ class Learn(L.Section):
         if LCUT:
             text(d, (ax.x1, ax.y0 - 40), f"lines above {LTOP} min are cut off", 19, MUTED, a_ax if r == 0 else 0, "Regular", "rs")
         c0 = [round(v) for v in self.runs[0]["times"][0]]
-        caps(d, t, [(0.3, 4.6, [cap("Nobody works this balance out. So how do drivers find it?", 36),
-                                cap("Imagine a week when it hasn't settled yet.", 36, INK2)]),
-                    (5.0, 10.6, [cap(f"Say on Monday most drivers take {IN[0]}: it's the quickest on empty roads.", 34),
+        caps(d, t, [(0.3, 5.0, [cap("So how do drivers find this balance?", 36),
+                                cap("Imagine it hadn't settled yet.", 36, INK2)]),
+                    (5.2, 14.2, [cap(f"Say on Monday most drivers take {IN[0]}: it's the quickest on empty roads.", 34),
                                  cap(f"So it jams: {c0[0]} minutes, while {IN[1]} takes {c0[1]}.", 34, INK2)]),
-                    (11.0, 16.6, [cap("Drivers find out their route wasn't the quickest. If half of everyone", 34),
-                                  cap(f"switches to {IN[1]} on Tuesday, it jams instead.", 34, INK2)]),
-                    (17.0, 24.6, [cap("Day after day, the crowd chases yesterday's quickest route,", 34),
-                                  cap("and the jam just moves from road to road.", 34, INK2)]),
-                    (25.5, 32.6, [cap(f"Real drivers are calmer. Say only 1 in {ONE_IN} tries another route each day,", 34),
-                                  cap("and nobody switches to save under a minute...", 34, INK2)]),
-                    (33.0, 41.6, [cap(f"...then the times creep together, and settle within a minute in about {N['learn']['calm']['settle_day'] + 1} days.", 34)]),
-                    (42.0, 50.4, final_cap())])
+                    (self.D2, 22.8, [cap("Drivers find out their route wasn't the quickest. If half of everyone", 34),
+                                     cap(f"switches to {IN[1]} on Tuesday, it jams instead.", 34, INK2)]),
+                    (self.D3, 30.6, [cap("Day after day, the crowd chases yesterday's quickest route,", 34),
+                                     cap("and the jam just moves from road to road.", 34, INK2)]),
+                    (self.R2, 39.2, [cap(f"Real drivers are calmer. Say only 1 in {ONE_IN} tries another route each day,", 34),
+                                     cap("and nobody switches to save under a minute...", 34, INK2)]),
+                    (39.6, 45.2, [cap(f"...then the times creep together, and settle within a minute in about {N['learn']['calm']['settle_day'] + 1} days.", 34)]),
+                    (45.6, 52.8, final_cap())])
         note(d, "A toy model of day-to-day learning; real drivers are more varied, and many never switch.")
         return np.asarray(im)
 
@@ -810,8 +845,8 @@ class Optimum(L.Section):
         caps(d, t, [(0.4, 5.4, [cap("Is everyone choosing for themselves the best for everyone?", 36)]),
                     (5.8, 12.6, [cap("Not quite. A controller would send some drivers the slow way, so the rest save more.", 32)]),
                     (13.0, 19.6, [cap("Why? Joining a busy road slows everyone behind you, and nobody counts that cost.", 34)]),
-                    (20.0, 25.4, [cap(f"Here the gap is {ue['avg']:.1f} → {so['avg']:.1f} minutes on average: {100 * (N['poa'] - 1):.1f}%.", 34)]),
-                    (25.8, 30.6, [cap("Economists call it the price of anarchy. A new road can make it much bigger.", 34, GOLD)])],)
+                    (20.0, 23.0, [cap(f"Here the gap is {ue['avg']:.1f} → {so['avg']:.1f} minutes on average: {100 * (N['poa'] - 1):.1f}%.", 34)]),
+                    (23.4, 30.6, [cap("Economists call it the price of anarchy. A new road can make it much bigger.", 34, GOLD)])],)
         pk = N["poa_max"]
         note(d, f"Toy model at rush hour ({fmt_int(N['d_rush'])} drivers per hour). The gap peaks at {100 * (pk['value'] - 1):.0f}%,"
                 f" at about {fmt_int(round(pk['demand'], -2))} drivers per hour.")
@@ -1085,7 +1120,7 @@ class Myth(L.Section):
                     (34.0, 40.6, [cap(f"With {fmt_int(m['cfg']['demand'])} drivers an hour, they split so both routes take {before:.0f} minutes.", 34)]),
                     (41.0, 47.6, [cap(f"Now dig a mythical tunnel from the end of the {bn0}", 34),
                                   cap(f"straight to the {bn1}: {m['cfg']['minutes']:.0f} minutes, never any traffic.", 34, GOLDISH)]),
-                    (48.0, 53.6, [cap(f"At 3 a.m. it's a real shortcut: {m['night'][1]:.0f} minutes instead of {m['night'][2]:.0f}.", 34)]),
+                    (48.0, 53.6, [cap(f"At 3 a.m. it's a real shortcut: {m['night'][1]:.0f} minutes instead of {min(m['night'][0], m['night'][2]):.0f}.", 34)]),
                     (54.0, 59.6, [cap(f"At rush hour, the first driver to try it arrives in {m['lone']:.0f} minutes, not {before:.0f}.", 34),
                                   cap("So others follow...", 34, INK2)]),
                     (60.0, 69.6, [cap("...and every one of them goes through both bottlenecks, so both queues grow.", 32),
@@ -1127,15 +1162,15 @@ class Outro(L.Section):
         text(d, (x, 178), "two completely different", 52, INK, a1, "Bold")
         text(d, (x, 246), "routes with the same ETA:", 52, INK, a1, "Bold")
         eta_rows(d, x, 360, [(i, f"{N['eta_final'][i]} min", f"{NAMES[i]} · {dist(i)}") for i in USED], a=a1, size=28)
-        a2 = ST.fade(t, 5.5, 1e9)
-        text(d, (x, 500), "you're not unique.", 52, GOLD, a2, "Bold")
-        a3 = ST.fade(t, 9.0, 1e9)
+        a2 = ST.fade(t, 6.8, 1e9)
+        text(d, (x, 500), "you're not alone.", 52, GOLD, a2, "Bold")
+        a3 = ST.fade(t, 8.6, 1e9)
         for k, s in enumerate(["Your house isn't in a magic spot. Thousands of", "drivers, each taking the fastest way they know,",
                                "pushed those times together. And the app only", "showed you the close calls."]):
             text(d, (x, 600 + 44 * k), s, 32, INK2, a3, "Medium")
-        a4 = ST.fade(t, 15.5, 1e9)
+        a4 = ST.fade(t, 20.6, 1e9)
         text(d, (x, 820), "And beware the shortcut that everyone takes.", 32, INK, a4, "SemiBold")
-        a5 = ST.fade(t, 19.0, 1e9)
+        a5 = ST.fade(t, 23.4, 1e9)
         for k, s in enumerate(["Roads © OpenStreetMap contributors, via Overture Maps. Free-flow times: real roads at the speed limit.",
                                f"Traffic: a toy model with made-up capacities, not {N['city_name']} traffic data. Music: original, synthesized for this video."]):
             text(d, (x, 990 + 30 * k), s, 20, MUTED, a5, "Regular")
