@@ -316,7 +316,7 @@ python thumbs.py                                                             # t
 *Ever wonder why your maps app always offers two or more completely different routes home, with pretty much
 the exact same time? You're not alone, and your house isn't magically placed at some sweet spot in the
 traffic.* A captioned video (7:40) on why that happens, opening on a real Apple Maps screenshot of the trip
-(59 min, 1 hr, 1 hr 1 min), with a narration script for an optional voiceover.
+(59 min, 1 hr, 1 hr 1 min), narrated by an AI voice (ElevenLabs' Lily).
 
 **The trip.** An evening drive home from Times Square to Bayside, Queens, on real New York roads
 (Overture/OpenStreetMap, one-way rules, speed limits). It compares three ways out of Manhattan:

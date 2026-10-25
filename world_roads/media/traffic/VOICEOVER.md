@@ -17,7 +17,7 @@ the music ducks under the voice. For exact timing, record one clip per line inst
 `hook_02.mp3`, …) and each line starts on its own cue. The captions stay on screen either way, so the
 video still works with the sound off.
 
-Total: 952 words, about 6.6 minutes of speech in a 7.7-minute video.
+Total: 948 words, about 6.6 minutes of speech in a 7.7-minute video.
 
 ## hook: 0:00.0–0:50.5 (50.5 s)
 
@@ -253,7 +253,7 @@ Economists call it the price of anarchy. And a new road can make it much bigger.
 |---:|---:|---|---:|
 | 1 | 5:35.3 | Can a new road make everyone slower? Here's a thought experiment. | 4.7 |
 | 2 | 5:41.0 | First: a bottleneck is where the road narrows, say from four lanes to two. | 5.9 |
-| 3 | 5:47.0 | In light traffic, two lanes cope, and cars get through at full speed. | 5.2 |
+| 3 | 5:47.0 | In light traffic, two lanes cope, and nobody waits. | 3.7 |
 | 4 | 5:52.0 | In heavy traffic, more cars arrive than two lanes can pass. A queue builds, and the wait keeps growing. | 7.8 |
 | 5 | 6:01.0 | Give each route one like that: the Queens-Midtown Tunnel and the Throgs Neck Bridge. The rest never jams. | 7.7 |
 | 6 | 6:09.0 | With twenty-five hundred drivers an hour, they split so both routes take twenty-seven minutes. | 5.6 |
@@ -272,7 +272,8 @@ Paste into ElevenLabs:
 Can a new road make everyone slower? Here's a thought experiment.
 <break time="1.0s" />
 First: a bottleneck is where the road narrows, say from four lanes to two.
-In light traffic, two lanes cope, and cars get through at full speed.
+In light traffic, two lanes cope, and nobody waits.
+<break time="1.3s" />
 In heavy traffic, more cars arrive than two lanes can pass. A queue builds, and the wait keeps growing.
 <break time="1.2s" />
 Give each route one like that: the Queens-Midtown Tunnel and the Throgs Neck Bridge. The rest never jams.

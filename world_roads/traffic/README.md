@@ -11,7 +11,7 @@ holds three things:
   * the selection effect of an app that lists only the fastest few routes.
 * **An interactive lab** (`lab/`, Vite + React + TypeScript) with four tabs. It is an optional companion
   that the video does not link to, and builds to `docs/traffic/`.
-* **A captioned video** (7:40, 1920×1080), with a narration script for an optional voiceover. It opens on
+* **A captioned video** (7:40, 1920×1080), narrated by an AI voice (ElevenLabs' Lily). It opens on
   *Ever wonder why your maps app always offers two or more completely different routes home, with pretty much
   the exact same time?*, shows a real Apple Maps screenshot of exactly that (Times Square to Bayside: 59 min,
   1 hr, 1 hr 1 min), and answers *You're not alone, and your house isn't magically placed at some sweet spot in

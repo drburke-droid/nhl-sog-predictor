@@ -11,8 +11,9 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 DIR = os.environ.get("VOICE_DIR", os.path.join(os.path.dirname(HERE), "media", "traffic", "voice"))
 EXT = (".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg")
-DUCK_DB = -11.0              # music under the voice
-VOICE_RMS = 0.16             # the voice's level while speaking (the score peaks at 0.89)
+BED_DB = -5.0                # the whole score, once there is narration: a bed under the voice
+DUCK_DB = -10.0              # and further down while the voice speaks
+VOICE_RMS = 0.2              # the voice's level while speaking (the score peaks at 0.89)
 
 
 def decode(path, sr):
@@ -73,6 +74,6 @@ def mix(music, O, total, sr):
         a = 0.12 if on[k] > g[k - 1] else 0.016
         g[k] = g[k - 1] + a * (on[k] - g[k - 1])
     duck = 1 - (1 - 10 ** (DUCK_DB / 20)) * np.interp(np.arange(n) / hop, np.arange(len(g)), g)
-    out = music * duck + v[None, :]
+    out = music * (10 ** (BED_DB / 20)) * duck + v[None, :]
     peak = np.abs(out).max()
     return out * (0.89 / peak) if peak > 0.89 else out

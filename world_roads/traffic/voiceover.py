@@ -85,7 +85,7 @@ LINES = [
 
     ("myth", 0.3, "Can a new road make everyone slower? Here's a thought experiment."),
     ("myth", 6.0, "First: a bottleneck is where the road narrows, say from four lanes to two."),
-    ("myth", 12.0, "In light traffic, two lanes cope, and cars get through at full speed."),
+    ("myth", 12.0, "In light traffic, two lanes cope, and nobody waits."),
     ("myth", 17.0, "In heavy traffic, more cars arrive than two lanes can pass. A queue builds, and the wait keeps growing."),
     ("myth", 26.0, "Give each route one like that: the Queens-Midtown Tunnel and the Throgs Neck Bridge. The rest never jams."),
     ("myth", 34.0, "With twenty-five hundred drivers an hour, they split so both routes take twenty-seven minutes."),

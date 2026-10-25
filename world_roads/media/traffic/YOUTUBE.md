@@ -1,11 +1,12 @@
 # YouTube copy: two routes home, one ETA
 
-Upload `two_routes_one_eta.mp4` (7:40, 1920×1080, 30 fps, captions and original music).
+Upload `two_routes_one_eta.mp4` (7:40, 1920×1080, 30 fps): narrated by ElevenLabs' Lily voice, with
+captions and original music.
 
-**Narration (optional).** `VOICEOVER.md` is the script, written for ElevenLabs' Lily voice and timed to the
-video. Save the audio in `media/traffic/voice/` (one file per section, or per line), run `python assemble.py`
-in `traffic/`, and the master is rebuilt with the voice in and the music ducked under it. The captions stay,
-so it still works with the sound off. If you use an AI voice, say so in the description (a line is below).
+**Narration.** `VOICEOVER.md` is the script; `traffic/lily.py` recorded it line by line with the Lily voice
+(`media/traffic/voice/`), and `assemble.py` mixes each line in on its cue, with the music lowered under it. The
+captions stay, so it still works with the sound off. The description credits the AI voice; also tick YouTube's
+altered-content setting if it applies to you when you upload.
 
 **The framing.** The video opens on the question *"Ever wonder why your maps app always offers two or more
 completely different routes home, with pretty much the exact same time? Why isn't there just one no-brainer
@@ -77,11 +78,9 @@ How it's made: road data from Overture Maps Foundation, which includes OpenStree
 Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/traffic/ACCURACY.md
 
 Screenshot in the opening and thumbnail: Apple Maps, captured by the creator.
+Narration: AI voice (ElevenLabs, "Lily").
 Music: an original score, synthesized for this video (no samples).
 ```
-
-If you add the Lily narration, add a line such as `Narration: AI voice (ElevenLabs).` and check YouTube's
-altered-content setting when you upload.
 
 **Chapters**
 
