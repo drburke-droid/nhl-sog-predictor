@@ -1,0 +1,451 @@
+{
+ "source": "GeoNames cities5000 (CC BY 4.0), https://www.geonames.org",
+ "ring_km": [
+  18.0,
+  35.0
+ ],
+ "min_population": 25000,
+ "seed": 20261117,
+ "metros": [
+  {
+   "rank": 1,
+   "metro": "Mexico City",
+   "tz": "America/Mexico_City",
+   "office": {
+    "name": "Ángel de la Independencia, Paseo de la Reforma",
+    "lat": 19.42697,
+    "lon": -99.16771
+   },
+   "home": {
+    "geonameid": 8858099,
+    "name": "Emiliano Zapata",
+    "lat": 19.34361,
+    "lon": -98.97472,
+    "country": "MX",
+    "admin1": "15",
+    "feature": "PPL",
+    "population": 25309,
+    "km": 22.3
+   },
+   "candidates": 32
+  },
+  {
+   "rank": 2,
+   "metro": "New York",
+   "tz": "America/New_York",
+   "office": {
+    "name": "Grand Central Terminal, Midtown Manhattan",
+    "lat": 40.75274,
+    "lon": -73.97723
+   },
+   "home": {
+    "geonameid": 5129603,
+    "name": "Oceanside",
+    "lat": 40.63871,
+    "lon": -73.64013,
+    "country": "US",
+    "admin1": "NY",
+    "feature": "PPL",
+    "population": 32109,
+    "km": 31.1
+   },
+   "candidates": 35
+  },
+  {
+   "rank": 3,
+   "metro": "Los Angeles",
+   "tz": "America/Los_Angeles",
+   "office": {
+    "name": "Pershing Square, Downtown LA",
+    "lat": 34.04848,
+    "lon": -118.2527
+   },
+   "home": {
+    "geonameid": 5374175,
+    "name": "Monrovia",
+    "lat": 34.14806,
+    "lon": -117.99895,
+    "country": "US",
+    "admin1": "CA",
+    "feature": "PPL",
+    "population": 37463,
+    "km": 25.9
+   },
+   "candidates": 32
+  },
+  {
+   "rank": 4,
+   "metro": "Chicago",
+   "tz": "America/Chicago",
+   "office": {
+    "name": "Willis Tower, the Loop",
+    "lat": 41.87886,
+    "lon": -87.63591
+   },
+   "home": {
+    "geonameid": 4889772,
+    "name": "Des Plaines",
+    "lat": 42.03336,
+    "lon": -87.8834,
+    "country": "US",
+    "admin1": "IL",
+    "feature": "PPL",
+    "population": 58677,
+    "km": 26.7
+   },
+   "candidates": 23
+  },
+  {
+   "rank": 5,
+   "metro": "Dallas–Fort Worth",
+   "tz": "America/Chicago",
+   "office": {
+    "name": "Main Street District, Downtown Dallas",
+    "lat": 32.7807,
+    "lon": -96.799
+   },
+   "home": {
+    "geonameid": 4706057,
+    "name": "Lewisville",
+    "lat": 33.04623,
+    "lon": -96.99417,
+    "country": "US",
+    "admin1": "TX",
+    "feature": "PPL",
+    "population": 104039,
+    "km": 34.7
+   },
+   "candidates": 17
+  },
+  {
+   "rank": 6,
+   "metro": "Houston",
+   "tz": "America/Chicago",
+   "office": {
+    "name": "City Hall, Downtown Houston",
+    "lat": 29.76026,
+    "lon": -95.36925
+   },
+   "home": {
+    "geonameid": 4718097,
+    "name": "Pearland",
+    "lat": 29.56357,
+    "lon": -95.28605,
+    "country": "US",
+    "admin1": "TX",
+    "feature": "PPL",
+    "population": 108821,
+    "km": 23.3
+   },
+   "candidates": 7
+  },
+  {
+   "rank": 7,
+   "metro": "Toronto",
+   "tz": "America/Toronto",
+   "office": {
+    "name": "King and Bay, Financial District",
+    "lat": 43.6486,
+    "lon": -79.3811
+   },
+   "home": {
+    "geonameid": 6122091,
+    "name": "Richmond Hill",
+    "lat": 43.87111,
+    "lon": -79.43725,
+    "country": "CA",
+    "admin1": "08",
+    "feature": "PPL",
+    "population": 202022,
+    "km": 25.1
+   },
+   "candidates": 8
+  },
+  {
+   "rank": 8,
+   "metro": "Atlanta",
+   "tz": "America/New_York",
+   "office": {
+    "name": "Five Points, Downtown Atlanta",
+    "lat": 33.75387,
+    "lon": -84.39138
+   },
+   "home": {
+    "geonameid": 4221333,
+    "name": "Sandy Springs",
+    "lat": 33.92427,
+    "lon": -84.37854,
+    "country": "US",
+    "admin1": "GA",
+    "feature": "PPL",
+    "population": 105330,
+    "km": 19.0
+   },
+   "candidates": 13
+  },
+  {
+   "rank": 9,
+   "metro": "Washington",
+   "tz": "America/New_York",
+   "office": {
+    "name": "Farragut Square, Downtown DC",
+    "lat": 38.90195,
+    "lon": -77.03911
+   },
+   "home": {
+    "geonameid": 4347553,
+    "name": "Aspen Hill",
+    "lat": 39.07955,
+    "lon": -77.07303,
+    "country": "US",
+    "admin1": "MD",
+    "feature": "PPL",
+    "population": 48759,
+    "km": 20.0
+   },
+   "candidates": 20
+  },
+  {
+   "rank": 10,
+   "metro": "Miami",
+   "tz": "America/New_York",
+   "office": {
+    "name": "Brickell City Centre",
+    "lat": 25.7668,
+    "lon": -80.193
+   },
+   "home": {
+    "geonameid": 4174744,
+    "name": "Tamiami",
+    "lat": 25.75871,
+    "lon": -80.39839,
+    "country": "US",
+    "admin1": "FL",
+    "feature": "PPL",
+    "population": 55271,
+    "km": 20.6
+   },
+   "candidates": 22
+  },
+  {
+   "rank": 11,
+   "metro": "Philadelphia",
+   "tz": "America/New_York",
+   "office": {
+    "name": "City Hall, Center City",
+    "lat": 39.95238,
+    "lon": -75.16362
+   },
+   "home": {
+    "geonameid": 4504048,
+    "name": "Sewell",
+    "lat": 39.7665,
+    "lon": -75.14434,
+    "country": "US",
+    "admin1": "NJ",
+    "feature": "PPL",
+    "population": 37433,
+    "km": 20.7
+   },
+   "candidates": 10
+  },
+  {
+   "rank": 12,
+   "metro": "Monterrey",
+   "tz": "America/Monterrey",
+   "office": {
+    "name": "Macroplaza, Centro",
+    "lat": 25.66905,
+    "lon": -100.3095
+   },
+   "home": {
+    "geonameid": 4003757,
+    "name": "Ciudad Benito Juárez",
+    "lat": 25.6466,
+    "lon": -100.09142,
+    "country": "MX",
+    "admin1": "19",
+    "feature": "PPL",
+    "population": 308285,
+    "km": 22.0
+   },
+   "candidates": 6
+  },
+  {
+   "rank": 13,
+   "metro": "Guadalajara",
+   "tz": "America/Mexico_City",
+   "office": {
+    "name": "Catedral, Centro",
+    "lat": 20.6768,
+    "lon": -103.3472
+   },
+   "home": {
+    "geonameid": 3986165,
+    "name": "San José del Castillo",
+    "lat": 20.51167,
+    "lon": -103.23689,
+    "country": "MX",
+    "admin1": "14",
+    "feature": "PPL",
+    "population": 39246,
+    "km": 21.7
+   },
+   "candidates": 3
+  },
+  {
+   "rank": 14,
+   "metro": "Phoenix",
+   "tz": "America/Phoenix",
+   "office": {
+    "name": "Washington and Central, Downtown Phoenix",
+    "lat": 33.44838,
+    "lon": -112.07404
+   },
+   "home": {
+    "geonameid": 5296266,
+    "name": "Goodyear",
+    "lat": 33.43532,
+    "lon": -112.35821,
+    "country": "US",
+    "admin1": "AZ",
+    "feature": "PPL",
+    "population": 79003,
+    "km": 26.4
+   },
+   "candidates": 9
+  },
+  {
+   "rank": 15,
+   "metro": "Boston",
+   "tz": "America/New_York",
+   "office": {
+    "name": "Post Office Square, Financial District",
+    "lat": 42.3563,
+    "lon": -71.0556
+   },
+   "home": {
+    "geonameid": 4950065,
+    "name": "Salem",
+    "lat": 42.51977,
+    "lon": -70.89552,
+    "country": "US",
+    "admin1": "MA",
+    "feature": "PPL",
+    "population": 42869,
+    "km": 22.4
+   },
+   "candidates": 16
+  },
+  {
+   "rank": 16,
+   "metro": "Inland Empire",
+   "tz": "America/Los_Angeles",
+   "office": {
+    "name": "City Hall, Downtown Riverside",
+    "lat": 33.9806,
+    "lon": -117.3755
+   },
+   "home": {
+    "geonameid": 5404915,
+    "name": "Upland",
+    "lat": 34.09751,
+    "lon": -117.64839,
+    "country": "US",
+    "admin1": "CA",
+    "feature": "PPL",
+    "population": 76443,
+    "km": 28.3
+   },
+   "candidates": 11
+  },
+  {
+   "rank": 17,
+   "metro": "San Francisco Bay Area",
+   "tz": "America/Los_Angeles",
+   "office": {
+    "name": "Montgomery and Market, Financial District",
+    "lat": 37.7894,
+    "lon": -122.4013
+   },
+   "home": {
+    "geonameid": 5391760,
+    "name": "San Carlos",
+    "lat": 37.50716,
+    "lon": -122.26052,
+    "country": "US",
+    "admin1": "CA",
+    "feature": "PPL",
+    "population": 29931,
+    "km": 33.7
+   },
+   "candidates": 16
+  },
+  {
+   "rank": 18,
+   "metro": "Montreal",
+   "tz": "America/Toronto",
+   "office": {
+    "name": "Place Ville Marie, Downtown",
+    "lat": 45.5017,
+    "lon": -73.5694
+   },
+   "home": {
+    "geonameid": 5920433,
+    "name": "Châteauguay",
+    "lat": 45.38338,
+    "lon": -73.74919,
+    "country": "CA",
+    "admin1": "10",
+    "feature": "PPL",
+    "population": 42786,
+    "km": 19.2
+   },
+   "candidates": 15
+  },
+  {
+   "rank": 19,
+   "metro": "Detroit",
+   "tz": "America/Detroit",
+   "office": {
+    "name": "Campus Martius, Downtown",
+    "lat": 42.3314,
+    "lon": -83.0466
+   },
+   "home": {
+    "geonameid": 5011908,
+    "name": "Taylor",
+    "lat": 42.24087,
+    "lon": -83.26965,
+    "country": "US",
+    "admin1": "MI",
+    "feature": "PPL",
+    "population": 61568,
+    "km": 20.9
+   },
+   "candidates": 15
+  },
+  {
+   "rank": 20,
+   "metro": "Santo Domingo",
+   "tz": "America/Santo_Domingo",
+   "office": {
+    "name": "Piantini business district",
+    "lat": 18.4723,
+    "lon": -69.9398
+   },
+   "home": {
+    "geonameid": 3511540,
+    "name": "San Cristóbal",
+    "lat": 18.41713,
+    "lon": -70.10682,
+    "country": "DO",
+    "admin1": "33",
+    "feature": "PPLA",
+    "population": 154040,
+    "km": 18.7
+   },
+   "candidates": 2
+  }
+ ]
+}
