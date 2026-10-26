@@ -31,9 +31,16 @@ teams in free agency and lost to them. Payroll as a share of the league's averag
 * champions: each champion's standing among that season's teams (0.5 typical) in stars traded, net, over seasons t-10
   to t-3; in stars traded and signed, net, over t-2 to t; and in payroll (every title season with payroll); p from a
   sign test.
+
+By time horizon (horizon.py; NBA, NHL, MLB), the same questions with trades valued by when their value arrives and
+how long the team kept it, salary set apart: a season or window that gave up present value (projected over the season
+and the next) and came out ahead in future value (the four after) tore down; one that gave up as much with nothing
+back while shedding salary dumped; one that added present value paying in future value went for it. Who does each
+(per franchise), what rich and poor teams do after a bad year, what came of each from mediocrity, how the champions
+traded before their titles, and how the first classification's sellers and buyers sort under this one.
 """
 import os, csv, json
-from collections import defaultdict
+from collections import defaultdict, Counter
 import numpy as np
 from scipy.stats import spearmanr, rankdata
 
@@ -402,6 +409,204 @@ def champions(T, look=10):
     return out
 
 
+# ---------------------------------------------------------------- by time horizon (horizon.py): NBA, NHL, MLB
+
+HL = ["nhl", "nba", "mlb"]
+DUMP = 0.10                             # a salary dump: a tenth of the league's average payroll shed, net, in trades
+
+
+def h_rows(T):
+    """each team-season's moves by horizon (stars): traded and signed, net, now and later; salary traded, net"""
+    th = {(r["league"], int(r["season"]), r["team"]): r for r in load("team_horizon.csv")}
+    for (lg, team), S in T.items():
+        for r in S:
+            h = th.get((lg, r["season"], team), {})
+            g = lambda k: F(h.get(k, ""))
+            tn = g("trade_now_in") - g("trade_now_out") if h.get("trade_now_in", "") != "" else np.nan
+            tl = g("trade_later_in") - g("trade_later_out") if h.get("trade_now_in", "") != "" else np.nan
+            fn = g("fa_now_in") - g("fa_now_out") if h.get("fa_now_in", "") != "" else 0.0
+            fl = g("fa_later_in") - g("fa_later_out") if h.get("fa_now_in", "") != "" else 0.0
+            r.update(h_trade_now=tn, h_trade_later=tl, h_now=tn + fn, h_later=tl + fl,
+                     h_salary=g("salary_in") - g("salary_out") if h.get("salary_in", "") != "" else np.nan)
+    for lg in HL:                       # a season traded present for future (or the reverse): the league's fifth
+        R = [r for (l, _), S in T.items() if l == lg for r in S if not np.isnan(r["h_now"])]
+        lo, hi = np.quantile([r["h_now"] for r in R], [Q, 1 - Q])
+        for r in R:
+            r["pf"] = float(r["h_now"] <= min(lo, 0) and r["h_later"] > 0)
+            r["fp"] = float(r["h_now"] >= max(hi, 0) and r["h_later"] < 0)
+    for (lg, _), S in T.items():
+        for r in S:
+            r.setdefault("pf", np.nan)
+            r.setdefault("fp", np.nan)
+    return T
+
+
+def h_events(T, horizon=HORIZON, mid=MID, q=Q):
+    """windows from mediocrity, by what the next two seasons did to the present and the future (within league):
+    tore_down: the fifth that gave up the most present value, net, and came out ahead in future value;
+    dumped / shed: gave up as much present value with no future back, shedding a tenth of an average payroll or more
+    in salary (dumped) or not (shed: stars walking, deals for nothing); went_for_it: the fifth that added the most
+    present value, paying for it in future value; added: added as much and lost no future; neither: the middle
+    (30-70 %) of both"""
+    ev = []
+    for (lg, team), S in T.items():
+        if lg not in HL:
+            continue
+        for i in range(len(S) - horizon):
+            s = S[i]
+            if not (mid[0] <= s["rank"] <= mid[1]):
+                continue
+            nx, win = S[i + 1:i + 1 + AFTER], S[i + 1:i + 1 + horizon]
+            if any(np.isnan(r["h_trade_now"]) for r in nx) or win[-1]["season"] - s["season"] > horizon + 1:
+                continue
+            sal = [r["h_salary"] for r in nx]
+            later = win[AFTER:]
+            ev.append(dict(league=lg, team=team, season=s["season"], start=s["rank"], age_z=s["age_z"],
+                           trend=s["rank"] - S[i - 2]["rank"] if i >= 2 else np.nan,
+                           now=sum(r["h_now"] for r in nx), fut=sum(r["h_later"] for r in nx),
+                           salary=np.nan if any(np.isnan(x) for x in sal) else sum(sal),
+                           peak=max(r["rank"] for r in later), top3=int(any(r["top3"] for r in later)),
+                           title=int(any(r["champion"] for r in later)), low=min(r["rank"] for r in win),
+                           mean=float(np.mean([r["rank"] for r in win]))))
+    for lg in HL:
+        E = [e for e in ev if e["league"] == lg]
+        now, fut = np.array([e["now"] for e in E]), np.array([e["fut"] for e in E])
+        lo, hi, n1, n2 = np.quantile(now, [q, 1 - q, 0.3, 0.7])
+        f1, f2 = np.quantile(fut, [0.3, 0.7])
+        for e in E:
+            if e["now"] <= min(lo, 0):
+                e["hpath"] = ("tore_down" if e["fut"] > 0 else
+                              "dumped" if not np.isnan(e["salary"]) and e["salary"] <= -DUMP else "shed")
+            elif e["now"] >= max(hi, 0):
+                e["hpath"] = "went_for_it" if e["fut"] < 0 else "added"
+            else:
+                e["hpath"] = "neither" if n1 <= e["now"] <= n2 and f1 <= e["fut"] <= f2 else "other"
+    return ev
+
+
+def h_teardown(T):
+    ev = h_events(T)
+    pairs = (("tore_down", "neither"), ("went_for_it", "neither"), ("tore_down", "went_for_it"), ("dumped", "neither"),
+             ("shed", "neither"), ("added", "neither"))
+    res = {"main": {lg or "all": {f"{a}_vs_{b}": compare(ev, a, b, lg, key="hpath") for a, b in pairs}
+                    for lg in HL + [None]}}
+    for lg in HL + [None]:
+        res["main"][lg or "all"]["adjusted"] = {f"{a}_vs_{b}": adjusted(ev, a, b, lg, key="hpath")
+                                                for a, b in pairs[:3]}
+    res["counts"] = {lg: dict(Counter(e["hpath"] for e in ev if e["league"] == lg)) for lg in HL}
+    grid = []
+    for q in (0.2, 1 / 3):
+        for hz in (8, 10):
+            e = h_events(T, hz, q=q)
+            for lg in HL + [None]:
+                for a, b in pairs[:3]:
+                    c = compare(e, a, b, lg, n=500, key="hpath")
+                    grid.append(dict(groups=round(q, 3), horizon=hz, league=lg or "all", comparison=f"{a}_vs_{b}",
+                                     n_a=c.get(f"n_{a}"), n_b=c.get(f"n_{b}"),
+                                     **{k: c[k]["diff"]["est"] for k in ("peak", "title", "low", "mean") if k in c},
+                                     **{k + "_ci": c[k]["diff"]["ci95"] for k in ("peak", "title") if k in c}))
+    res["grid"] = grid
+    return res, ev
+
+
+def h_who(T, M):
+    """per franchise (current market, at least eight seasons): how often it traded present for future (pf) and future
+    for present (fp), and salary traded, net, per season (a share of the league's average payroll)"""
+    rows_ = []
+    for m in M:
+        if m["league"] not in HL:
+            continue
+        t = next(t for t in load_teams() if t["league"] == m["league"] and t["team"] == m["team"])
+        S = [r for r in T[(m["league"], m["team"])] if not t["moved"] or r["season"] >= int(t["moved"])]
+        S = [r for r in S if not np.isnan(r["h_trade_now"])]
+        sal = [r["h_salary"] for r in S if not np.isnan(r["h_salary"])]
+        enough = len(S) >= 8
+        rows_.append(dict(m, pf_rate=float(np.mean([r["pf"] for r in S])) if enough else np.nan,
+                          fp_rate=float(np.mean([r["fp"] for r in S])) if enough else np.nan,
+                          salary_traded=float(np.mean(sal)) if len(sal) >= 8 else np.nan))
+    out = {}
+    for lg in HL:
+        R = [r for r in rows_ if r["league"] == lg]
+        out[lg] = {f"{x}~{y}": dict(raw=corr_test(R, x, y), at_equal_rank=corr_test(R, x, y, "mean_rank"))
+                   for x in ("value", "market", "premium") for y in ("pf_rate", "fp_rate", "salary_traded")}
+    return out
+
+
+_TEAMS = []
+
+
+def load_teams():
+    if not _TEAMS:
+        _TEAMS.extend(load("teams.csv"))
+    return _TEAMS
+
+
+def h_bad_years(T, M):
+    """after a bottom-third season, the next two: present traded for future, future for present, present and future
+    value moved (stars), salary traded; rich (top third of the league by value) against poor (bottom third)"""
+    tier = {}
+    for lg in HL:
+        R = sorted([r for r in M if r["league"] == lg], key=lambda r: r["value"])
+        for i, r in enumerate(R):
+            tier[(lg, r["team"])] = "poor" if i < len(R) / 3 else "rich" if i >= len(R) - len(R) / 3 else "middle"
+    out = {}
+    for lg in HL:
+        E = []
+        for (l, team), S in T.items():
+            if l != lg:
+                continue
+            moved = next((r["moved"] for r in S if r["moved"]), "")
+            for i in range(1, len(S) - 2):
+                if S[i - 1]["rank"] > 1 / 3 or (moved and S[i - 1]["season"] < int(moved)):
+                    continue
+                nx = S[i:i + 2]
+                if any(np.isnan(r["h_trade_now"]) for r in nx):
+                    continue
+                sal = [r["h_salary"] for r in nx]
+                E.append(dict(league=lg, team=team, tier=tier[(lg, team)], pf=max(r["pf"] for r in nx), fp=max(r["fp"] for r in nx),
+                              now=sum(r["h_now"] for r in nx), fut=sum(r["h_later"] for r in nx),
+                              salary=np.nan if any(np.isnan(x) for x in sal) else sum(sal)))
+        res = {}
+        for k in ("pf", "fp", "now", "fut", "salary"):
+            ok = [e for e in E if not np.isnan(e[k]) and e["tier"] != "middle"]
+            if len(ok) < 20 or not any(e["tier"] == "rich" for e in ok) or not any(e["tier"] == "poor" for e in ok):
+                continue
+            res[k] = dict(rich=round(float(np.mean([e[k] for e in ok if e["tier"] == "rich"])), 3),
+                          poor=round(float(np.mean([e[k] for e in ok if e["tier"] == "poor"])), 3),
+                          diff=boot(ok, lambda R, k=k: np.mean([e[k] for e in R if e["tier"] == "rich"]) - np.mean([e[k] for e in R if e["tier"] == "poor"])
+                                    if any(e["tier"] == "rich" for e in R) and any(e["tier"] == "poor" for e in R) else np.nan))
+        res["n"] = dict(rich=sum(e["tier"] == "rich" for e in E), poor=sum(e["tier"] == "poor" for e in E))
+        out[lg] = res
+    return out
+
+
+def h_champions(T, look=10):
+    """each champion's standing among that season's teams in present and future value moved, net, over t-10 to t-3
+    and over t-2 to t (0 the least, 1 the most)"""
+    out = {}
+    from scipy.stats import binomtest
+    for lg in HL:
+        champs, base = [], []
+        for (l, team), Ss in T.items():
+            if l != lg:
+                continue
+            for i, r in enumerate(Ss):
+                early = [x for x in Ss[max(0, i - look):max(0, i - 2)] if not np.isnan(x["h_trade_now"])]
+                late = [x for x in Ss[max(0, i - 2):i + 1] if not np.isnan(x["h_trade_now"])]
+                if len(early) < look - 3 or len(late) < 3:
+                    continue
+                rec = dict(season=r["season"], early_now=sum(x["h_now"] for x in early), early_fut=sum(x["h_later"] for x in early),
+                           late_now=sum(x["h_now"] for x in late), late_fut=sum(x["h_later"] for x in late))
+                (champs if r["champion"] else base).append(rec)
+        res = dict(n=len(champs))
+        for k in ("early_now", "early_fut", "late_now", "late_fut"):
+            pct = [float(np.mean([b[k] < c[k] for b in base if b["season"] == c["season"]])) for c in champs]
+            above = sum(p > 0.5 for p in pct)
+            res[k] = dict(percentile=round(float(np.mean(pct)), 3), above_half=above, p=round(float(binomtest(above, len(pct)).pvalue), 4))
+        out[lg] = res
+    return out
+
+
 def clean(o):
     if isinstance(o, dict):
         return {k: clean(v) for k, v in o.items()}
@@ -428,6 +633,24 @@ def main():
     print("teardown", flush=True)
     res["teardown"], ev = teardown(T)
     res["champions"] = champions(T)
+    print("by horizon", flush=True)
+    h_rows(T)
+    res["horizon"] = dict(definitions=dict(
+        present_for_future=f"a season in the league's bottom {Q:.0%} of present value moved (stars traded and signed, net, "
+                           "projected over the season and the next) that came out ahead in future value (the four after)",
+        future_for_present=f"the top {Q:.0%} of present value moved, paid for with future value",
+        dumped=f"a window that gave up as much present value with no future back and shed {DUMP:.0%} of an average payroll"))
+    res["horizon"]["teardown"], hev = h_teardown(T)
+    res["horizon"]["who"] = h_who(T, M)
+    res["horizon"]["bad_years"] = h_bad_years(T, M)
+    res["horizon"]["champions"] = h_champions(T)
+    old = {(e["league"], e["team"], e["season"]): e["path"] for e in ev}       # the first classification, by stars last season
+    res["horizon"]["reclassified"] = {lg: {p: dict(Counter(e["hpath"] for e in hev if e["league"] == lg and old.get((lg, e["team"], e["season"])) == p))
+                                           for p in ("sold", "bought")} for lg in HL}
+    with open(os.path.join(OUT, "horizon_events.csv"), "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(hev[0]))
+        w.writeheader()
+        w.writerows(hev)
     json.dump(clean(res), open(os.path.join(OUT, "levers.json"), "w"), indent=1)
     with open(os.path.join(OUT, "lever_events.csv"), "w", newline="") as f:
         cols = list(dict.fromkeys(k for e in ev for k in e if k != "curve"))

@@ -4751,5 +4751,3643 @@
     "p": 0.0018
    }
   }
+ },
+ "horizon": {
+  "definitions": {
+   "present_for_future": "a season in the league's bottom 20% of present value moved (stars traded and signed, net, projected over the season and the next) that came out ahead in future value (the four after)",
+   "future_for_present": "the top 20% of present value moved, paid for with future value",
+   "dumped": "a window that gave up as much present value with no future back and shed 10% of an average payroll"
+  },
+  "teardown": {
+   "main": {
+    "nhl": {
+     "tore_down_vs_neither": {
+      "n_tore_down": 11,
+      "n_neither": 30,
+      "peak": {
+       "tore_down": 0.728,
+       "neither": 0.862,
+       "diff": {
+        "est": -0.135,
+        "ci95": [
+         -0.336,
+         0.089
+        ],
+        "n": 41
+       }
+      },
+      "top3": {
+       "tore_down": 0.455,
+       "neither": 0.6,
+       "diff": {
+        "est": -0.145,
+        "ci95": [
+         -0.429,
+         0.211
+        ],
+        "n": 41
+       }
+      },
+      "title": {
+       "tore_down": 0.091,
+       "neither": 0.167,
+       "diff": {
+        "est": -0.076,
+        "ci95": [
+         -0.31,
+         0.221
+        ],
+        "n": 41
+       }
+      },
+      "low": {
+       "tore_down": 0.047,
+       "neither": 0.134,
+       "diff": {
+        "est": -0.087,
+        "ci95": [
+         -0.156,
+         -0.01
+        ],
+        "n": 41
+       }
+      },
+      "mean": {
+       "tore_down": 0.395,
+       "neither": 0.497,
+       "diff": {
+        "est": -0.102,
+        "ci95": [
+         -0.222,
+         0.067
+        ],
+        "n": 41
+       }
+      }
+     },
+     "went_for_it_vs_neither": {
+      "n_went_for_it": 9,
+      "n_neither": 30,
+      "peak": {
+       "went_for_it": 0.824,
+       "neither": 0.862,
+       "diff": {
+        "est": -0.038,
+        "ci95": [
+         -0.169,
+         0.082
+        ],
+        "n": 39
+       }
+      },
+      "top3": {
+       "went_for_it": 0.444,
+       "neither": 0.6,
+       "diff": {
+        "est": -0.156,
+        "ci95": [
+         -0.52,
+         0.222
+        ],
+        "n": 39
+       }
+      },
+      "title": {
+       "went_for_it": 0.111,
+       "neither": 0.167,
+       "diff": {
+        "est": -0.056,
+        "ci95": [
+         -0.297,
+         0.233
+        ],
+        "n": 39
+       }
+      },
+      "low": {
+       "went_for_it": 0.096,
+       "neither": 0.134,
+       "diff": {
+        "est": -0.038,
+        "ci95": [
+         -0.131,
+         0.044
+        ],
+        "n": 39
+       }
+      },
+      "mean": {
+       "went_for_it": 0.441,
+       "neither": 0.497,
+       "diff": {
+        "est": -0.056,
+        "ci95": [
+         -0.166,
+         0.047
+        ],
+        "n": 39
+       }
+      }
+     },
+     "tore_down_vs_went_for_it": {
+      "n_tore_down": 11,
+      "n_went_for_it": 9,
+      "peak": {
+       "tore_down": 0.728,
+       "went_for_it": 0.824,
+       "diff": {
+        "est": -0.096,
+        "ci95": [
+         -0.311,
+         0.165
+        ],
+        "n": 20
+       }
+      },
+      "top3": {
+       "tore_down": 0.455,
+       "went_for_it": 0.444,
+       "diff": {
+        "est": 0.01,
+        "ci95": [
+         -0.4,
+         0.5
+        ],
+        "n": 20
+       }
+      },
+      "title": {
+       "tore_down": 0.091,
+       "went_for_it": 0.111,
+       "diff": {
+        "est": -0.02,
+        "ci95": [
+         -0.333,
+         0.273
+        ],
+        "n": 20
+       }
+      },
+      "low": {
+       "tore_down": 0.047,
+       "went_for_it": 0.096,
+       "diff": {
+        "est": -0.049,
+        "ci95": [
+         -0.124,
+         0.037
+        ],
+        "n": 20
+       }
+      },
+      "mean": {
+       "tore_down": 0.395,
+       "went_for_it": 0.441,
+       "diff": {
+        "est": -0.046,
+        "ci95": [
+         -0.206,
+         0.155
+        ],
+        "n": 20
+       }
+      }
+     },
+     "dumped_vs_neither": {
+      "n_dumped": 1,
+      "n_neither": 30
+     },
+     "shed_vs_neither": {
+      "n_shed": 21,
+      "n_neither": 30,
+      "peak": {
+       "shed": 0.859,
+       "neither": 0.862,
+       "diff": {
+        "est": -0.004,
+        "ci95": [
+         -0.107,
+         0.094
+        ],
+        "n": 51
+       }
+      },
+      "top3": {
+       "shed": 0.619,
+       "neither": 0.6,
+       "diff": {
+        "est": 0.019,
+        "ci95": [
+         -0.292,
+         0.325
+        ],
+        "n": 51
+       }
+      },
+      "title": {
+       "shed": 0.286,
+       "neither": 0.167,
+       "diff": {
+        "est": 0.119,
+        "ci95": [
+         -0.086,
+         0.377
+        ],
+        "n": 51
+       }
+      },
+      "low": {
+       "shed": 0.126,
+       "neither": 0.134,
+       "diff": {
+        "est": -0.008,
+        "ci95": [
+         -0.071,
+         0.065
+        ],
+        "n": 51
+       }
+      },
+      "mean": {
+       "shed": 0.512,
+       "neither": 0.497,
+       "diff": {
+        "est": 0.015,
+        "ci95": [
+         -0.065,
+         0.091
+        ],
+        "n": 51
+       }
+      }
+     },
+     "added_vs_neither": {
+      "n_added": 24,
+      "n_neither": 30,
+      "peak": {
+       "added": 0.873,
+       "neither": 0.862,
+       "diff": {
+        "est": 0.01,
+        "ci95": [
+         -0.061,
+         0.084
+        ],
+        "n": 54
+       }
+      },
+      "top3": {
+       "added": 0.583,
+       "neither": 0.6,
+       "diff": {
+        "est": -0.017,
+        "ci95": [
+         -0.258,
+         0.218
+        ],
+        "n": 54
+       }
+      },
+      "title": {
+       "added": 0.167,
+       "neither": 0.167,
+       "diff": {
+        "est": 0.0,
+        "ci95": [
+         -0.231,
+         0.183
+        ],
+        "n": 54
+       }
+      },
+      "low": {
+       "added": 0.144,
+       "neither": 0.134,
+       "diff": {
+        "est": 0.01,
+        "ci95": [
+         -0.043,
+         0.065
+        ],
+        "n": 54
+       }
+      },
+      "mean": {
+       "added": 0.492,
+       "neither": 0.497,
+       "diff": {
+        "est": -0.005,
+        "ci95": [
+         -0.085,
+         0.075
+        ],
+        "n": 54
+       }
+      }
+     },
+     "adjusted": {
+      "tore_down_vs_neither": {
+       "peak": {
+        "est": -0.072,
+        "ci95": [
+         -0.29,
+         0.315
+        ],
+        "n": 35
+       },
+       "title": {
+        "est": 0.025,
+        "ci95": [
+         -0.252,
+         0.208
+        ],
+        "n": 35
+       },
+       "low": {
+        "est": -0.032,
+        "ci95": [
+         -0.103,
+         0.054
+        ],
+        "n": 35
+       },
+       "mean": {
+        "est": -0.002,
+        "ci95": [
+         -0.142,
+         0.224
+        ],
+        "n": 35
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.48,
+         "trend": 0.0,
+         "age_z": 0.365
+        },
+        "neither": {
+         "start": 0.528,
+         "trend": 0.034,
+         "age_z": -0.254
+        }
+       }
+      },
+      "went_for_it_vs_neither": {
+       "peak": {
+        "est": 0.01,
+        "ci95": [
+         -0.163,
+         0.321
+        ],
+        "n": 32
+       },
+       "title": {
+        "est": 0.03,
+        "ci95": [
+         -0.393,
+         0.398
+        ],
+        "n": 32
+       },
+       "low": {
+        "est": -0.033,
+        "ci95": [
+         -0.193,
+         0.077
+        ],
+        "n": 32
+       },
+       "mean": {
+        "est": 0.009,
+        "ci95": [
+         -0.168,
+         0.179
+        ],
+        "n": 32
+       },
+       "groups": {
+        "went_for_it": {
+         "start": 0.485,
+         "trend": 0.08,
+         "age_z": 0.359
+        },
+        "neither": {
+         "start": 0.528,
+         "trend": 0.034,
+         "age_z": -0.254
+        }
+       }
+      },
+      "tore_down_vs_went_for_it": {
+       "peak": {
+        "est": -0.07,
+        "ci95": [
+         -0.381,
+         0.181
+        ],
+        "n": 19
+       },
+       "title": {
+        "est": -0.036,
+        "ci95": [
+         -0.454,
+         0.365
+        ],
+        "n": 19
+       },
+       "low": {
+        "est": -0.038,
+        "ci95": [
+         -0.132,
+         0.081
+        ],
+        "n": 19
+       },
+       "mean": {
+        "est": -0.035,
+        "ci95": [
+         -0.258,
+         0.179
+        ],
+        "n": 19
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.48,
+         "trend": 0.0,
+         "age_z": 0.365
+        },
+        "went_for_it": {
+         "start": 0.485,
+         "trend": 0.08,
+         "age_z": 0.359
+        }
+       }
+      }
+     }
+    },
+    "nba": {
+     "tore_down_vs_neither": {
+      "n_tore_down": 14,
+      "n_neither": 33,
+      "peak": {
+       "tore_down": 0.889,
+       "neither": 0.795,
+       "diff": {
+        "est": 0.094,
+        "ci95": [
+         -0.021,
+         0.197
+        ],
+        "n": 47
+       }
+      },
+      "top3": {
+       "tore_down": 0.714,
+       "neither": 0.333,
+       "diff": {
+        "est": 0.381,
+        "ci95": [
+         0.018,
+         0.678
+        ],
+        "n": 47
+       }
+      },
+      "title": {
+       "tore_down": 0.143,
+       "neither": 0.121,
+       "diff": {
+        "est": 0.022,
+        "ci95": [
+         -0.13,
+         0.206
+        ],
+        "n": 47
+       }
+      },
+      "low": {
+       "tore_down": 0.03,
+       "neither": 0.077,
+       "diff": {
+        "est": -0.047,
+        "ci95": [
+         -0.096,
+         -0.007
+        ],
+        "n": 47
+       }
+      },
+      "mean": {
+       "tore_down": 0.478,
+       "neither": 0.454,
+       "diff": {
+        "est": 0.024,
+        "ci95": [
+         -0.078,
+         0.117
+        ],
+        "n": 47
+       }
+      }
+     },
+     "went_for_it_vs_neither": {
+      "n_went_for_it": 8,
+      "n_neither": 33,
+      "peak": {
+       "went_for_it": 0.825,
+       "neither": 0.795,
+       "diff": {
+        "est": 0.031,
+        "ci95": [
+         -0.091,
+         0.186
+        ],
+        "n": 41
+       }
+      },
+      "top3": {
+       "went_for_it": 0.5,
+       "neither": 0.333,
+       "diff": {
+        "est": 0.167,
+        "ci95": [
+         -0.191,
+         0.64
+        ],
+        "n": 41
+       }
+      },
+      "title": {
+       "went_for_it": 0.375,
+       "neither": 0.121,
+       "diff": {
+        "est": 0.254,
+        "ci95": [
+         -0.097,
+         0.719
+        ],
+        "n": 41
+       }
+      },
+      "low": {
+       "went_for_it": 0.095,
+       "neither": 0.077,
+       "diff": {
+        "est": 0.018,
+        "ci95": [
+         -0.078,
+         0.153
+        ],
+        "n": 41
+       }
+      },
+      "mean": {
+       "went_for_it": 0.496,
+       "neither": 0.454,
+       "diff": {
+        "est": 0.041,
+        "ci95": [
+         -0.09,
+         0.205
+        ],
+        "n": 41
+       }
+      }
+     },
+     "tore_down_vs_went_for_it": {
+      "n_tore_down": 14,
+      "n_went_for_it": 8,
+      "peak": {
+       "tore_down": 0.889,
+       "went_for_it": 0.825,
+       "diff": {
+        "est": 0.064,
+        "ci95": [
+         -0.113,
+         0.221
+        ],
+        "n": 22
+       }
+      },
+      "top3": {
+       "tore_down": 0.714,
+       "went_for_it": 0.5,
+       "diff": {
+        "est": 0.214,
+        "ci95": [
+         -0.316,
+         0.648
+        ],
+        "n": 22
+       }
+      },
+      "title": {
+       "tore_down": 0.143,
+       "went_for_it": 0.375,
+       "diff": {
+        "est": -0.232,
+        "ci95": [
+         -0.738,
+         0.167
+        ],
+        "n": 22
+       }
+      },
+      "low": {
+       "tore_down": 0.03,
+       "went_for_it": 0.095,
+       "diff": {
+        "est": -0.065,
+        "ci95": [
+         -0.202,
+         0.022
+        ],
+        "n": 22
+       }
+      },
+      "mean": {
+       "tore_down": 0.478,
+       "went_for_it": 0.496,
+       "diff": {
+        "est": -0.018,
+        "ci95": [
+         -0.201,
+         0.132
+        ],
+        "n": 22
+       }
+      }
+     },
+     "dumped_vs_neither": {
+      "n_dumped": 4,
+      "n_neither": 33
+     },
+     "shed_vs_neither": {
+      "n_shed": 18,
+      "n_neither": 33,
+      "peak": {
+       "shed": 0.824,
+       "neither": 0.795,
+       "diff": {
+        "est": 0.029,
+        "ci95": [
+         -0.051,
+         0.123
+        ],
+        "n": 51
+       }
+      },
+      "top3": {
+       "shed": 0.389,
+       "neither": 0.333,
+       "diff": {
+        "est": 0.056,
+        "ci95": [
+         -0.281,
+         0.338
+        ],
+        "n": 51
+       }
+      },
+      "title": {
+       "shed": 0.167,
+       "neither": 0.121,
+       "diff": {
+        "est": 0.045,
+        "ci95": [
+         -0.125,
+         0.242
+        ],
+        "n": 51
+       }
+      },
+      "low": {
+       "shed": 0.08,
+       "neither": 0.077,
+       "diff": {
+        "est": 0.004,
+        "ci95": [
+         -0.037,
+         0.048
+        ],
+        "n": 51
+       }
+      },
+      "mean": {
+       "shed": 0.459,
+       "neither": 0.454,
+       "diff": {
+        "est": 0.005,
+        "ci95": [
+         -0.067,
+         0.081
+        ],
+        "n": 51
+       }
+      }
+     },
+     "added_vs_neither": {
+      "n_added": 28,
+      "n_neither": 33,
+      "peak": {
+       "added": 0.845,
+       "neither": 0.795,
+       "diff": {
+        "est": 0.05,
+        "ci95": [
+         -0.021,
+         0.124
+        ],
+        "n": 61
+       }
+      },
+      "top3": {
+       "added": 0.357,
+       "neither": 0.333,
+       "diff": {
+        "est": 0.024,
+        "ci95": [
+         -0.203,
+         0.23
+        ],
+        "n": 61
+       }
+      },
+      "title": {
+       "added": 0.25,
+       "neither": 0.121,
+       "diff": {
+        "est": 0.129,
+        "ci95": [
+         -0.028,
+         0.344
+        ],
+        "n": 61
+       }
+      },
+      "low": {
+       "added": 0.117,
+       "neither": 0.077,
+       "diff": {
+        "est": 0.04,
+        "ci95": [
+         -0.002,
+         0.088
+        ],
+        "n": 61
+       }
+      },
+      "mean": {
+       "added": 0.536,
+       "neither": 0.454,
+       "diff": {
+        "est": 0.081,
+        "ci95": [
+         0.013,
+         0.155
+        ],
+        "n": 61
+       }
+      }
+     },
+     "adjusted": {
+      "tore_down_vs_neither": {
+       "peak": {
+        "est": 0.115,
+        "ci95": [
+         0.015,
+         0.199
+        ],
+        "n": 45
+       },
+       "title": {
+        "est": 0.06,
+        "ci95": [
+         -0.128,
+         0.247
+        ],
+        "n": 45
+       },
+       "low": {
+        "est": -0.055,
+        "ci95": [
+         -0.108,
+         -0.005
+        ],
+        "n": 45
+       },
+       "mean": {
+        "est": 0.037,
+        "ci95": [
+         -0.053,
+         0.113
+        ],
+        "n": 45
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.465,
+         "trend": -0.136,
+         "age_z": 0.108
+        },
+        "neither": {
+         "start": 0.475,
+         "trend": 0.004,
+         "age_z": -0.064
+        }
+       }
+      },
+      "went_for_it_vs_neither": {
+       "peak": {
+        "est": 0.056,
+        "ci95": [
+         -0.123,
+         0.251
+        ],
+        "n": 38
+       },
+       "title": {
+        "est": 0.358,
+        "ci95": [
+         -0.061,
+         0.876
+        ],
+        "n": 38
+       },
+       "low": {
+        "est": 0.031,
+        "ci95": [
+         -0.092,
+         0.168
+        ],
+        "n": 38
+       },
+       "mean": {
+        "est": 0.083,
+        "ci95": [
+         -0.096,
+         0.263
+        ],
+        "n": 38
+       },
+       "groups": {
+        "went_for_it": {
+         "start": 0.518,
+         "trend": 0.186,
+         "age_z": -0.233
+        },
+        "neither": {
+         "start": 0.475,
+         "trend": 0.004,
+         "age_z": -0.064
+        }
+       }
+      },
+      "tore_down_vs_went_for_it": {
+       "peak": {
+        "est": 0.1,
+        "ci95": [
+         -0.13,
+         0.34
+        ],
+        "n": 21
+       },
+       "title": {
+        "est": -0.348,
+        "ci95": [
+         -0.995,
+         0.438
+        ],
+        "n": 21
+       },
+       "low": {
+        "est": -0.09,
+        "ci95": [
+         -0.318,
+         0.055
+        ],
+        "n": 21
+       },
+       "mean": {
+        "est": -0.023,
+        "ci95": [
+         -0.237,
+         0.203
+        ],
+        "n": 21
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.465,
+         "trend": -0.136,
+         "age_z": 0.108
+        },
+        "went_for_it": {
+         "start": 0.518,
+         "trend": 0.186,
+         "age_z": -0.233
+        }
+       }
+      }
+     }
+    },
+    "mlb": {
+     "tore_down_vs_neither": {
+      "n_tore_down": 9,
+      "n_neither": 35,
+      "peak": {
+       "tore_down": 0.795,
+       "neither": 0.848,
+       "diff": {
+        "est": -0.053,
+        "ci95": [
+         -0.184,
+         0.039
+        ],
+        "n": 44
+       }
+      },
+      "top3": {
+       "tore_down": 0.111,
+       "neither": 0.457,
+       "diff": {
+        "est": -0.346,
+        "ci95": [
+         -0.588,
+         -0.083
+        ],
+        "n": 44
+       }
+      },
+      "title": {
+       "tore_down": 0.111,
+       "neither": 0.2,
+       "diff": {
+        "est": -0.089,
+        "ci95": [
+         -0.324,
+         0.233
+        ],
+        "n": 44
+       }
+      },
+      "low": {
+       "tore_down": 0.088,
+       "neither": 0.125,
+       "diff": {
+        "est": -0.037,
+        "ci95": [
+         -0.129,
+         0.029
+        ],
+        "n": 44
+       }
+      },
+      "mean": {
+       "tore_down": 0.443,
+       "neither": 0.475,
+       "diff": {
+        "est": -0.032,
+        "ci95": [
+         -0.147,
+         0.07
+        ],
+        "n": 44
+       }
+      }
+     },
+     "went_for_it_vs_neither": {
+      "n_went_for_it": 9,
+      "n_neither": 35,
+      "peak": {
+       "went_for_it": 0.927,
+       "neither": 0.848,
+       "diff": {
+        "est": 0.079,
+        "ci95": [
+         0.01,
+         0.156
+        ],
+        "n": 44
+       }
+      },
+      "top3": {
+       "went_for_it": 0.667,
+       "neither": 0.457,
+       "diff": {
+        "est": 0.21,
+        "ci95": [
+         -0.1,
+         0.532
+        ],
+        "n": 44
+       }
+      },
+      "title": {
+       "went_for_it": 0.222,
+       "neither": 0.2,
+       "diff": {
+        "est": 0.022,
+        "ci95": [
+         -0.308,
+         0.483
+        ],
+        "n": 44
+       }
+      },
+      "low": {
+       "went_for_it": 0.238,
+       "neither": 0.125,
+       "diff": {
+        "est": 0.112,
+        "ci95": [
+         -0.058,
+         0.275
+        ],
+        "n": 44
+       }
+      },
+      "mean": {
+       "went_for_it": 0.611,
+       "neither": 0.475,
+       "diff": {
+        "est": 0.136,
+        "ci95": [
+         0.009,
+         0.256
+        ],
+        "n": 44
+       }
+      }
+     },
+     "tore_down_vs_went_for_it": {
+      "n_tore_down": 9,
+      "n_went_for_it": 9,
+      "peak": {
+       "tore_down": 0.795,
+       "went_for_it": 0.927,
+       "diff": {
+        "est": -0.132,
+        "ci95": [
+         -0.288,
+         -0.023
+        ],
+        "n": 18
+       }
+      },
+      "top3": {
+       "tore_down": 0.111,
+       "went_for_it": 0.667,
+       "diff": {
+        "est": -0.556,
+        "ci95": [
+         -0.875,
+         -0.206
+        ],
+        "n": 18
+       }
+      },
+      "title": {
+       "tore_down": 0.111,
+       "went_for_it": 0.222,
+       "diff": {
+        "est": -0.111,
+        "ci95": [
+         -0.571,
+         0.273
+        ],
+        "n": 18
+       }
+      },
+      "low": {
+       "tore_down": 0.088,
+       "went_for_it": 0.238,
+       "diff": {
+        "est": -0.149,
+        "ci95": [
+         -0.31,
+         0.003
+        ],
+        "n": 18
+       }
+      },
+      "mean": {
+       "tore_down": 0.443,
+       "went_for_it": 0.611,
+       "diff": {
+        "est": -0.168,
+        "ci95": [
+         -0.332,
+         -0.032
+        ],
+        "n": 18
+       }
+      }
+     },
+     "dumped_vs_neither": {
+      "n_dumped": 12,
+      "n_neither": 35,
+      "peak": {
+       "dumped": 0.81,
+       "neither": 0.848,
+       "diff": {
+        "est": -0.037,
+        "ci95": [
+         -0.1,
+         0.041
+        ],
+        "n": 47
+       }
+      },
+      "top3": {
+       "dumped": 0.25,
+       "neither": 0.457,
+       "diff": {
+        "est": -0.207,
+        "ci95": [
+         -0.469,
+         0.071
+        ],
+        "n": 47
+       }
+      },
+      "title": {
+       "dumped": 0.0,
+       "neither": 0.2,
+       "diff": {
+        "est": -0.2,
+        "ci95": [
+         -0.353,
+         -0.081
+        ],
+        "n": 47
+       }
+      },
+      "low": {
+       "dumped": 0.075,
+       "neither": 0.125,
+       "diff": {
+        "est": -0.05,
+        "ci95": [
+         -0.132,
+         0.009
+        ],
+        "n": 47
+       }
+      },
+      "mean": {
+       "dumped": 0.403,
+       "neither": 0.475,
+       "diff": {
+        "est": -0.073,
+        "ci95": [
+         -0.145,
+         -0.015
+        ],
+        "n": 47
+       }
+      }
+     },
+     "shed_vs_neither": {
+      "n_shed": 14,
+      "n_neither": 35,
+      "peak": {
+       "shed": 0.867,
+       "neither": 0.848,
+       "diff": {
+        "est": 0.019,
+        "ci95": [
+         -0.054,
+         0.08
+        ],
+        "n": 49
+       }
+      },
+      "top3": {
+       "shed": 0.429,
+       "neither": 0.457,
+       "diff": {
+        "est": -0.029,
+        "ci95": [
+         -0.311,
+         0.249
+        ],
+        "n": 49
+       }
+      },
+      "title": {
+       "shed": 0.071,
+       "neither": 0.2,
+       "diff": {
+        "est": -0.129,
+        "ci95": [
+         -0.308,
+         0.088
+        ],
+        "n": 49
+       }
+      },
+      "low": {
+       "shed": 0.164,
+       "neither": 0.125,
+       "diff": {
+        "est": 0.039,
+        "ci95": [
+         -0.049,
+         0.149
+        ],
+        "n": 49
+       }
+      },
+      "mean": {
+       "shed": 0.541,
+       "neither": 0.475,
+       "diff": {
+        "est": 0.066,
+        "ci95": [
+         -0.027,
+         0.16
+        ],
+        "n": 49
+       }
+      }
+     },
+     "added_vs_neither": {
+      "n_added": 26,
+      "n_neither": 35,
+      "peak": {
+       "added": 0.897,
+       "neither": 0.848,
+       "diff": {
+        "est": 0.049,
+        "ci95": [
+         0.0,
+         0.1
+        ],
+        "n": 61
+       }
+      },
+      "top3": {
+       "added": 0.615,
+       "neither": 0.457,
+       "diff": {
+        "est": 0.158,
+        "ci95": [
+         -0.082,
+         0.395
+        ],
+        "n": 61
+       }
+      },
+      "title": {
+       "added": 0.192,
+       "neither": 0.2,
+       "diff": {
+        "est": -0.008,
+        "ci95": [
+         -0.19,
+         0.207
+        ],
+        "n": 61
+       }
+      },
+      "low": {
+       "added": 0.168,
+       "neither": 0.125,
+       "diff": {
+        "est": 0.043,
+        "ci95": [
+         -0.017,
+         0.096
+        ],
+        "n": 61
+       }
+      },
+      "mean": {
+       "added": 0.551,
+       "neither": 0.475,
+       "diff": {
+        "est": 0.076,
+        "ci95": [
+         0.019,
+         0.134
+        ],
+        "n": 61
+       }
+      }
+     },
+     "adjusted": {
+      "tore_down_vs_neither": {
+       "peak": {
+        "est": -0.05,
+        "ci95": [
+         -0.164,
+         0.051
+        ],
+        "n": 40
+       },
+       "title": {
+        "est": -0.116,
+        "ci95": [
+         -0.374,
+         0.216
+        ],
+        "n": 40
+       },
+       "low": {
+        "est": -0.028,
+        "ci95": [
+         -0.103,
+         0.031
+        ],
+        "n": 40
+       },
+       "mean": {
+        "est": -0.029,
+        "ci95": [
+         -0.118,
+         0.102
+        ],
+        "n": 40
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.504,
+         "trend": -0.002,
+         "age_z": -0.183
+        },
+        "neither": {
+         "start": 0.48,
+         "trend": 0.007,
+         "age_z": -0.136
+        }
+       }
+      },
+      "went_for_it_vs_neither": {
+       "peak": {
+        "est": 0.075,
+        "ci95": [
+         0.003,
+         0.18
+        ],
+        "n": 38
+       },
+       "title": {
+        "est": -0.161,
+        "ci95": [
+         -0.336,
+         0.049
+        ],
+        "n": 38
+       },
+       "low": {
+        "est": 0.064,
+        "ci95": [
+         -0.08,
+         0.222
+        ],
+        "n": 38
+       },
+       "mean": {
+        "est": 0.124,
+        "ci95": [
+         -0.016,
+         0.29
+        ],
+        "n": 38
+       },
+       "groups": {
+        "went_for_it": {
+         "start": 0.478,
+         "trend": 0.059,
+         "age_z": -0.355
+        },
+        "neither": {
+         "start": 0.48,
+         "trend": 0.007,
+         "age_z": -0.136
+        }
+       }
+      },
+      "tore_down_vs_went_for_it": {
+       "peak": {
+        "est": -0.133,
+        "ci95": [
+         -0.277,
+         0.017
+        ],
+        "n": 16
+       },
+       "title": {
+        "est": 0.1,
+        "ci95": [
+         -0.096,
+         0.411
+        ],
+        "n": 16
+       },
+       "low": {
+        "est": -0.097,
+        "ci95": [
+         -0.234,
+         0.035
+        ],
+        "n": 16
+       },
+       "mean": {
+        "est": -0.16,
+        "ci95": [
+         -0.318,
+         -0.024
+        ],
+        "n": 16
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.504,
+         "trend": -0.002,
+         "age_z": -0.183
+        },
+        "went_for_it": {
+         "start": 0.478,
+         "trend": 0.059,
+         "age_z": -0.355
+        }
+       }
+      }
+     }
+    },
+    "all": {
+     "tore_down_vs_neither": {
+      "n_tore_down": 34,
+      "n_neither": 98,
+      "peak": {
+       "tore_down": 0.812,
+       "neither": 0.834,
+       "diff": {
+        "est": -0.022,
+        "ci95": [
+         -0.116,
+         0.059
+        ],
+        "n": 132
+       }
+      },
+      "top3": {
+       "tore_down": 0.471,
+       "neither": 0.459,
+       "diff": {
+        "est": 0.011,
+        "ci95": [
+         -0.189,
+         0.217
+        ],
+        "n": 132
+       }
+      },
+      "title": {
+       "tore_down": 0.118,
+       "neither": 0.163,
+       "diff": {
+        "est": -0.046,
+        "ci95": [
+         -0.17,
+         0.089
+        ],
+        "n": 132
+       }
+      },
+      "low": {
+       "tore_down": 0.051,
+       "neither": 0.111,
+       "diff": {
+        "est": -0.061,
+        "ci95": [
+         -0.103,
+         -0.025
+        ],
+        "n": 132
+       }
+      },
+      "mean": {
+       "tore_down": 0.442,
+       "neither": 0.475,
+       "diff": {
+        "est": -0.033,
+        "ci95": [
+         -0.103,
+         0.037
+        ],
+        "n": 132
+       }
+      }
+     },
+     "went_for_it_vs_neither": {
+      "n_went_for_it": 26,
+      "n_neither": 98,
+      "peak": {
+       "went_for_it": 0.86,
+       "neither": 0.834,
+       "diff": {
+        "est": 0.026,
+        "ci95": [
+         -0.041,
+         0.086
+        ],
+        "n": 124
+       }
+      },
+      "top3": {
+       "went_for_it": 0.538,
+       "neither": 0.459,
+       "diff": {
+        "est": 0.079,
+        "ci95": [
+         -0.139,
+         0.286
+        ],
+        "n": 124
+       }
+      },
+      "title": {
+       "went_for_it": 0.231,
+       "neither": 0.163,
+       "diff": {
+        "est": 0.068,
+        "ci95": [
+         -0.12,
+         0.275
+        ],
+        "n": 124
+       }
+      },
+      "low": {
+       "went_for_it": 0.145,
+       "neither": 0.111,
+       "diff": {
+        "est": 0.033,
+        "ci95": [
+         -0.05,
+         0.118
+        ],
+        "n": 124
+       }
+      },
+      "mean": {
+       "went_for_it": 0.517,
+       "neither": 0.475,
+       "diff": {
+        "est": 0.042,
+        "ci95": [
+         -0.033,
+         0.119
+        ],
+        "n": 124
+       }
+      }
+     },
+     "tore_down_vs_went_for_it": {
+      "n_tore_down": 34,
+      "n_went_for_it": 26,
+      "peak": {
+       "tore_down": 0.812,
+       "went_for_it": 0.86,
+       "diff": {
+        "est": -0.048,
+        "ci95": [
+         -0.158,
+         0.062
+        ],
+        "n": 60
+       }
+      },
+      "top3": {
+       "tore_down": 0.471,
+       "went_for_it": 0.538,
+       "diff": {
+        "est": -0.068,
+        "ci95": [
+         -0.324,
+         0.193
+        ],
+        "n": 60
+       }
+      },
+      "title": {
+       "tore_down": 0.118,
+       "went_for_it": 0.231,
+       "diff": {
+        "est": -0.113,
+        "ci95": [
+         -0.337,
+         0.1
+        ],
+        "n": 60
+       }
+      },
+      "low": {
+       "tore_down": 0.051,
+       "went_for_it": 0.145,
+       "diff": {
+        "est": -0.094,
+        "ci95": [
+         -0.171,
+         -0.022
+        ],
+        "n": 60
+       }
+      },
+      "mean": {
+       "tore_down": 0.442,
+       "went_for_it": 0.517,
+       "diff": {
+        "est": -0.075,
+        "ci95": [
+         -0.171,
+         0.026
+        ],
+        "n": 60
+       }
+      }
+     },
+     "dumped_vs_neither": {
+      "n_dumped": 17,
+      "n_neither": 98,
+      "peak": {
+       "dumped": 0.824,
+       "neither": 0.834,
+       "diff": {
+        "est": -0.011,
+        "ci95": [
+         -0.076,
+         0.061
+        ],
+        "n": 115
+       }
+      },
+      "top3": {
+       "dumped": 0.294,
+       "neither": 0.459,
+       "diff": {
+        "est": -0.165,
+        "ci95": [
+         -0.4,
+         0.104
+        ],
+        "n": 115
+       }
+      },
+      "title": {
+       "dumped": 0.118,
+       "neither": 0.163,
+       "diff": {
+        "est": -0.046,
+        "ci95": [
+         -0.198,
+         0.131
+        ],
+        "n": 115
+       }
+      },
+      "low": {
+       "dumped": 0.067,
+       "neither": 0.111,
+       "diff": {
+        "est": -0.045,
+        "ci95": [
+         -0.089,
+         -0.005
+        ],
+        "n": 115
+       }
+      },
+      "mean": {
+       "dumped": 0.42,
+       "neither": 0.475,
+       "diff": {
+        "est": -0.055,
+        "ci95": [
+         -0.11,
+         -0.002
+        ],
+        "n": 115
+       }
+      }
+     },
+     "shed_vs_neither": {
+      "n_shed": 53,
+      "n_neither": 98,
+      "peak": {
+       "shed": 0.849,
+       "neither": 0.834,
+       "diff": {
+        "est": 0.015,
+        "ci95": [
+         -0.035,
+         0.066
+        ],
+        "n": 151
+       }
+      },
+      "top3": {
+       "shed": 0.491,
+       "neither": 0.459,
+       "diff": {
+        "est": 0.031,
+        "ci95": [
+         -0.135,
+         0.196
+        ],
+        "n": 151
+       }
+      },
+      "title": {
+       "shed": 0.189,
+       "neither": 0.163,
+       "diff": {
+        "est": 0.025,
+        "ci95": [
+         -0.088,
+         0.152
+        ],
+        "n": 151
+       }
+      },
+      "low": {
+       "shed": 0.121,
+       "neither": 0.111,
+       "diff": {
+        "est": 0.009,
+        "ci95": [
+         -0.028,
+         0.051
+        ],
+        "n": 151
+       }
+      },
+      "mean": {
+       "shed": 0.502,
+       "neither": 0.475,
+       "diff": {
+        "est": 0.027,
+        "ci95": [
+         -0.017,
+         0.074
+        ],
+        "n": 151
+       }
+      }
+     },
+     "added_vs_neither": {
+      "n_added": 78,
+      "n_neither": 98,
+      "peak": {
+       "added": 0.871,
+       "neither": 0.834,
+       "diff": {
+        "est": 0.036,
+        "ci95": [
+         -0.002,
+         0.076
+        ],
+        "n": 176
+       }
+      },
+      "top3": {
+       "added": 0.513,
+       "neither": 0.459,
+       "diff": {
+        "est": 0.054,
+        "ci95": [
+         -0.075,
+         0.186
+        ],
+        "n": 176
+       }
+      },
+      "title": {
+       "added": 0.205,
+       "neither": 0.163,
+       "diff": {
+        "est": 0.042,
+        "ci95": [
+         -0.065,
+         0.157
+        ],
+        "n": 176
+       }
+      },
+      "low": {
+       "added": 0.142,
+       "neither": 0.111,
+       "diff": {
+        "est": 0.031,
+        "ci95": [
+         0.002,
+         0.059
+        ],
+        "n": 176
+       }
+      },
+      "mean": {
+       "added": 0.527,
+       "neither": 0.475,
+       "diff": {
+        "est": 0.053,
+        "ci95": [
+         0.012,
+         0.091
+        ],
+        "n": 176
+       }
+      }
+     },
+     "adjusted": {
+      "tore_down_vs_neither": {
+       "peak": {
+        "est": -0.0,
+        "ci95": [
+         -0.092,
+         0.083
+        ],
+        "n": 120
+       },
+       "title": {
+        "est": -0.007,
+        "ci95": [
+         -0.124,
+         0.128
+        ],
+        "n": 120
+       },
+       "low": {
+        "est": -0.053,
+        "ci95": [
+         -0.095,
+         -0.009
+        ],
+        "n": 120
+       },
+       "mean": {
+        "est": -0.01,
+        "ci95": [
+         -0.077,
+         0.063
+        ],
+        "n": 120
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.48,
+         "trend": -0.057,
+         "age_z": 0.114
+        },
+        "neither": {
+         "start": 0.492,
+         "trend": 0.013,
+         "age_z": -0.143
+        }
+       }
+      },
+      "went_for_it_vs_neither": {
+       "peak": {
+        "est": 0.025,
+        "ci95": [
+         -0.048,
+         0.106
+        ],
+        "n": 108
+       },
+       "title": {
+        "est": 0.057,
+        "ci95": [
+         -0.148,
+         0.29
+        ],
+        "n": 108
+       },
+       "low": {
+        "est": 0.006,
+        "ci95": [
+         -0.07,
+         0.082
+        ],
+        "n": 108
+       },
+       "mean": {
+        "est": 0.046,
+        "ci95": [
+         -0.035,
+         0.13
+        ],
+        "n": 108
+       },
+       "groups": {
+        "went_for_it": {
+         "start": 0.493,
+         "trend": 0.107,
+         "age_z": -0.056
+        },
+        "neither": {
+         "start": 0.492,
+         "trend": 0.013,
+         "age_z": -0.143
+        }
+       }
+      },
+      "tore_down_vs_went_for_it": {
+       "peak": {
+        "est": -0.043,
+        "ci95": [
+         -0.155,
+         0.075
+        ],
+        "n": 56
+       },
+       "title": {
+        "est": -0.104,
+        "ci95": [
+         -0.363,
+         0.11
+        ],
+        "n": 56
+       },
+       "low": {
+        "est": -0.064,
+        "ci95": [
+         -0.133,
+         0.0
+        ],
+        "n": 56
+       },
+       "mean": {
+        "est": -0.07,
+        "ci95": [
+         -0.165,
+         0.024
+        ],
+        "n": 56
+       },
+       "groups": {
+        "tore_down": {
+         "start": 0.48,
+         "trend": -0.057,
+         "age_z": 0.114
+        },
+        "went_for_it": {
+         "start": 0.493,
+         "trend": 0.107,
+         "age_z": -0.056
+        }
+       }
+      }
+     }
+    }
+   },
+   "counts": {
+    "nhl": {
+     "neither": 30,
+     "added": 24,
+     "other": 67,
+     "dumped": 1,
+     "shed": 21,
+     "went_for_it": 9,
+     "tore_down": 11
+    },
+    "nba": {
+     "other": 73,
+     "neither": 33,
+     "added": 28,
+     "dumped": 4,
+     "tore_down": 14,
+     "shed": 18,
+     "went_for_it": 8
+    },
+    "mlb": {
+     "neither": 35,
+     "added": 26,
+     "other": 66,
+     "dumped": 12,
+     "tore_down": 9,
+     "shed": 14,
+     "went_for_it": 9
+    }
+   },
+   "grid": [
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "nhl",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 12,
+     "n_b": 35,
+     "peak": -0.112,
+     "title": -0.002,
+     "low": -0.066,
+     "mean": -0.124,
+     "peak_ci": [
+      -0.262,
+      0.066
+     ],
+     "title_ci": [
+      -0.153,
+      0.244
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "nhl",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 12,
+     "n_b": 35,
+     "peak": -0.097,
+     "title": 0.081,
+     "low": -0.005,
+     "mean": -0.032,
+     "peak_ci": [
+      -0.228,
+      0.041
+     ],
+     "title_ci": [
+      -0.086,
+      0.352
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "nhl",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 12,
+     "n_b": 12,
+     "peak": -0.015,
+     "title": -0.083,
+     "low": -0.061,
+     "mean": -0.092,
+     "peak_ci": [
+      -0.203,
+      0.218
+     ],
+     "title_ci": [
+      -0.365,
+      0.194
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "nba",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 16,
+     "n_b": 36,
+     "peak": 0.057,
+     "title": 0.069,
+     "low": -0.036,
+     "mean": -0.018,
+     "peak_ci": [
+      -0.059,
+      0.173
+     ],
+     "title_ci": [
+      -0.054,
+      0.233
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "nba",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 9,
+     "n_b": 36,
+     "peak": 0.021,
+     "title": 0.278,
+     "low": 0.039,
+     "mean": 0.054,
+     "peak_ci": [
+      -0.097,
+      0.153
+     ],
+     "title_ci": [
+      -0.029,
+      0.634
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "nba",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 16,
+     "n_b": 9,
+     "peak": 0.036,
+     "title": -0.208,
+     "low": -0.074,
+     "mean": -0.072,
+     "peak_ci": [
+      -0.127,
+      0.167
+     ],
+     "title_ci": [
+      -0.548,
+      0.078
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "mlb",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 10,
+     "n_b": 38,
+     "peak": -0.06,
+     "title": -0.032,
+     "low": -0.02,
+     "mean": -0.045,
+     "peak_ci": [
+      -0.203,
+      0.047
+     ],
+     "title_ci": [
+      -0.216,
+      0.216
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "mlb",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 10,
+     "n_b": 38,
+     "peak": 0.093,
+     "title": 0.068,
+     "low": 0.136,
+     "mean": 0.136,
+     "peak_ci": [
+      0.019,
+      0.166
+     ],
+     "title_ci": [
+      -0.218,
+      0.347
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "mlb",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 10,
+     "n_b": 10,
+     "peak": -0.153,
+     "title": -0.1,
+     "low": -0.157,
+     "mean": -0.18,
+     "peak_ci": [
+      -0.305,
+      -0.027
+     ],
+     "title_ci": [
+      -0.416,
+      0.28
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "all",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 38,
+     "n_b": 109,
+     "peak": -0.033,
+     "title": 0.014,
+     "low": -0.044,
+     "mean": -0.06,
+     "peak_ci": [
+      -0.109,
+      0.037
+     ],
+     "title_ci": [
+      -0.089,
+      0.128
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "all",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 31,
+     "n_b": 109,
+     "peak": 0.002,
+     "title": 0.134,
+     "low": 0.058,
+     "mean": 0.051,
+     "peak_ci": [
+      -0.072,
+      0.079
+     ],
+     "title_ci": [
+      -0.027,
+      0.283
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 8,
+     "league": "all",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 38,
+     "n_b": 31,
+     "peak": -0.035,
+     "title": -0.121,
+     "low": -0.102,
+     "mean": -0.111,
+     "peak_ci": [
+      -0.131,
+      0.067
+     ],
+     "title_ci": [
+      -0.307,
+      0.064
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "nhl",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 11,
+     "n_b": 30,
+     "peak": -0.135,
+     "title": -0.076,
+     "low": -0.087,
+     "mean": -0.102,
+     "peak_ci": [
+      -0.311,
+      0.077
+     ],
+     "title_ci": [
+      -0.318,
+      0.275
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "nhl",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 9,
+     "n_b": 30,
+     "peak": -0.038,
+     "title": -0.056,
+     "low": -0.038,
+     "mean": -0.056,
+     "peak_ci": [
+      -0.161,
+      0.085
+     ],
+     "title_ci": [
+      -0.31,
+      0.224
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "nhl",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 11,
+     "n_b": 9,
+     "peak": -0.096,
+     "title": -0.02,
+     "low": -0.049,
+     "mean": -0.046,
+     "peak_ci": [
+      -0.308,
+      0.145
+     ],
+     "title_ci": [
+      -0.295,
+      0.231
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "nba",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 14,
+     "n_b": 33,
+     "peak": 0.094,
+     "title": 0.022,
+     "low": -0.047,
+     "mean": 0.024,
+     "peak_ci": [
+      -0.022,
+      0.193
+     ],
+     "title_ci": [
+      -0.117,
+      0.18
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "nba",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 8,
+     "n_b": 33,
+     "peak": 0.031,
+     "title": 0.254,
+     "low": 0.018,
+     "mean": 0.041,
+     "peak_ci": [
+      -0.094,
+      0.189
+     ],
+     "title_ci": [
+      -0.108,
+      0.764
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "nba",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 14,
+     "n_b": 8,
+     "peak": 0.064,
+     "title": -0.232,
+     "low": -0.065,
+     "mean": -0.018,
+     "peak_ci": [
+      -0.1,
+      0.208
+     ],
+     "title_ci": [
+      -0.7,
+      0.167
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "mlb",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 9,
+     "n_b": 35,
+     "peak": -0.053,
+     "title": -0.089,
+     "low": -0.037,
+     "mean": -0.032,
+     "peak_ci": [
+      -0.204,
+      0.034
+     ],
+     "title_ci": [
+      -0.312,
+      0.211
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "mlb",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 9,
+     "n_b": 35,
+     "peak": 0.079,
+     "title": 0.022,
+     "low": 0.112,
+     "mean": 0.136,
+     "peak_ci": [
+      0.002,
+      0.148
+     ],
+     "title_ci": [
+      -0.305,
+      0.49
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "mlb",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 9,
+     "n_b": 9,
+     "peak": -0.132,
+     "title": -0.111,
+     "low": -0.149,
+     "mean": -0.168,
+     "peak_ci": [
+      -0.279,
+      -0.037
+     ],
+     "title_ci": [
+      -0.525,
+      0.3
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "all",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 34,
+     "n_b": 98,
+     "peak": -0.022,
+     "title": -0.046,
+     "low": -0.061,
+     "mean": -0.033,
+     "peak_ci": [
+      -0.114,
+      0.063
+     ],
+     "title_ci": [
+      -0.169,
+      0.091
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "all",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 26,
+     "n_b": 98,
+     "peak": 0.026,
+     "title": 0.068,
+     "low": 0.033,
+     "mean": 0.042,
+     "peak_ci": [
+      -0.041,
+      0.091
+     ],
+     "title_ci": [
+      -0.133,
+      0.27
+     ]
+    },
+    {
+     "groups": 0.2,
+     "horizon": 10,
+     "league": "all",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 34,
+     "n_b": 26,
+     "peak": -0.048,
+     "title": -0.113,
+     "low": -0.094,
+     "mean": -0.075,
+     "peak_ci": [
+      -0.153,
+      0.05
+     ],
+     "title_ci": [
+      -0.342,
+      0.088
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "nhl",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 23,
+     "n_b": 30,
+     "peak": -0.129,
+     "title": -0.013,
+     "low": -0.089,
+     "mean": -0.111,
+     "peak_ci": [
+      -0.242,
+      -0.039
+     ],
+     "title_ci": [
+      -0.199,
+      0.202
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "nhl",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 19,
+     "n_b": 30,
+     "peak": -0.101,
+     "title": 0.058,
+     "low": -0.035,
+     "mean": -0.044,
+     "peak_ci": [
+      -0.217,
+      0.02
+     ],
+     "title_ci": [
+      -0.132,
+      0.236
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "nhl",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 23,
+     "n_b": 19,
+     "peak": -0.028,
+     "title": -0.071,
+     "low": -0.054,
+     "mean": -0.067,
+     "peak_ci": [
+      -0.2,
+      0.126
+     ],
+     "title_ci": [
+      -0.305,
+      0.203
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "nba",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 26,
+     "n_b": 30,
+     "peak": 0.056,
+     "title": 0.087,
+     "low": -0.019,
+     "mean": 0.022,
+     "peak_ci": [
+      -0.05,
+      0.152
+     ],
+     "title_ci": [
+      -0.058,
+      0.269
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "nba",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 19,
+     "n_b": 30,
+     "peak": 0.079,
+     "title": 0.144,
+     "low": 0.055,
+     "mean": 0.094,
+     "peak_ci": [
+      -0.008,
+      0.19
+     ],
+     "title_ci": [
+      -0.051,
+      0.38
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "nba",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 26,
+     "n_b": 19,
+     "peak": -0.024,
+     "title": -0.057,
+     "low": -0.074,
+     "mean": -0.072,
+     "peak_ci": [
+      -0.138,
+      0.067
+     ],
+     "title_ci": [
+      -0.276,
+      0.162
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "mlb",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 16,
+     "n_b": 30,
+     "peak": -0.023,
+     "title": -0.042,
+     "low": 0.007,
+     "mean": -0.025,
+     "peak_ci": [
+      -0.126,
+      0.067
+     ],
+     "title_ci": [
+      -0.241,
+      0.165
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "mlb",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 22,
+     "n_b": 30,
+     "peak": 0.047,
+     "title": 0.015,
+     "low": 0.105,
+     "mean": 0.112,
+     "peak_ci": [
+      -0.042,
+      0.137
+     ],
+     "title_ci": [
+      -0.208,
+      0.241
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "mlb",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 16,
+     "n_b": 22,
+     "peak": -0.07,
+     "title": -0.057,
+     "low": -0.098,
+     "mean": -0.137,
+     "peak_ci": [
+      -0.183,
+      0.029
+     ],
+     "title_ci": [
+      -0.318,
+      0.168
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "all",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 65,
+     "n_b": 90,
+     "peak": -0.03,
+     "title": 0.012,
+     "low": -0.038,
+     "mean": -0.037,
+     "peak_ci": [
+      -0.089,
+      0.031
+     ],
+     "title_ci": [
+      -0.087,
+      0.129
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "all",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 60,
+     "n_b": 90,
+     "peak": 0.01,
+     "title": 0.072,
+     "low": 0.044,
+     "mean": 0.056,
+     "peak_ci": [
+      -0.052,
+      0.071
+     ],
+     "title_ci": [
+      -0.038,
+      0.18
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 8,
+     "league": "all",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 65,
+     "n_b": 60,
+     "peak": -0.04,
+     "title": -0.06,
+     "low": -0.083,
+     "mean": -0.093,
+     "peak_ci": [
+      -0.114,
+      0.029
+     ],
+     "title_ci": [
+      -0.209,
+      0.095
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "nhl",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 20,
+     "n_b": 26,
+     "peak": -0.094,
+     "title": -0.092,
+     "low": -0.057,
+     "mean": -0.046,
+     "peak_ci": [
+      -0.235,
+      0.02
+     ],
+     "title_ci": [
+      -0.345,
+      0.181
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "nhl",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 14,
+     "n_b": 26,
+     "peak": -0.023,
+     "title": -0.049,
+     "low": -0.017,
+     "mean": -0.02,
+     "peak_ci": [
+      -0.144,
+      0.097
+     ],
+     "title_ci": [
+      -0.347,
+      0.286
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "nhl",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 20,
+     "n_b": 14,
+     "peak": -0.072,
+     "title": -0.043,
+     "low": -0.04,
+     "mean": -0.026,
+     "peak_ci": [
+      -0.257,
+      0.092
+     ],
+     "title_ci": [
+      -0.364,
+      0.27
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "nba",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 24,
+     "n_b": 28,
+     "peak": 0.058,
+     "title": 0.065,
+     "low": -0.016,
+     "mean": 0.037,
+     "peak_ci": [
+      -0.044,
+      0.148
+     ],
+     "title_ci": [
+      -0.131,
+      0.249
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "nba",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 17,
+     "n_b": 28,
+     "peak": 0.074,
+     "title": 0.092,
+     "low": 0.06,
+     "mean": 0.085,
+     "peak_ci": [
+      -0.009,
+      0.159
+     ],
+     "title_ci": [
+      -0.098,
+      0.269
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "nba",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 24,
+     "n_b": 17,
+     "peak": -0.016,
+     "title": -0.027,
+     "low": -0.076,
+     "mean": -0.049,
+     "peak_ci": [
+      -0.132,
+      0.075
+     ],
+     "title_ci": [
+      -0.256,
+      0.174
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "mlb",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 15,
+     "n_b": 30,
+     "peak": -0.057,
+     "title": -0.167,
+     "low": -0.032,
+     "mean": -0.043,
+     "peak_ci": [
+      -0.164,
+      0.042
+     ],
+     "title_ci": [
+      -0.357,
+      0.039
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "mlb",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 19,
+     "n_b": 30,
+     "peak": 0.039,
+     "title": -0.075,
+     "low": 0.076,
+     "mean": 0.1,
+     "peak_ci": [
+      -0.063,
+      0.13
+     ],
+     "title_ci": [
+      -0.293,
+      0.125
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "mlb",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 15,
+     "n_b": 19,
+     "peak": -0.096,
+     "title": -0.091,
+     "low": -0.108,
+     "mean": -0.143,
+     "peak_ci": [
+      -0.231,
+      0.03
+     ],
+     "title_ci": [
+      -0.365,
+      0.131
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "all",
+     "comparison": "tore_down_vs_neither",
+     "n_a": 59,
+     "n_b": 84,
+     "peak": -0.026,
+     "title": -0.055,
+     "low": -0.038,
+     "mean": -0.013,
+     "peak_ci": [
+      -0.085,
+      0.029
+     ],
+     "title_ci": [
+      -0.178,
+      0.083
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "all",
+     "comparison": "went_for_it_vs_neither",
+     "n_a": 50,
+     "n_b": 84,
+     "peak": 0.033,
+     "title": -0.01,
+     "low": 0.044,
+     "mean": 0.061,
+     "peak_ci": [
+      -0.029,
+      0.088
+     ],
+     "title_ci": [
+      -0.147,
+      0.135
+     ]
+    },
+    {
+     "groups": 0.333,
+     "horizon": 10,
+     "league": "all",
+     "comparison": "tore_down_vs_went_for_it",
+     "n_a": 59,
+     "n_b": 50,
+     "peak": -0.059,
+     "title": -0.044,
+     "low": -0.082,
+     "mean": -0.074,
+     "peak_ci": [
+      -0.14,
+      0.016
+     ],
+     "title_ci": [
+      -0.198,
+      0.094
+     ]
+    }
+   ]
+  },
+  "who": {
+   "nhl": {
+    "value~pf_rate": {
+     "raw": {
+      "rho": -0.273,
+      "p": 0.1545,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.27,
+      "p": 0.1524,
+      "n": 30
+     }
+    },
+    "value~fp_rate": {
+     "raw": {
+      "rho": 0.045,
+      "p": 0.8057,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.065,
+      "p": 0.732,
+      "n": 30
+     }
+    },
+    "value~salary_traded": {
+     "raw": {
+      "rho": 0.226,
+      "p": 0.2299,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.2,
+      "p": 0.2931,
+      "n": 30
+     }
+    },
+    "market~pf_rate": {
+     "raw": {
+      "rho": 0.097,
+      "p": 0.6177,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.1,
+      "p": 0.5932,
+      "n": 30
+     }
+    },
+    "market~fp_rate": {
+     "raw": {
+      "rho": -0.011,
+      "p": 0.9552,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.003,
+      "p": 0.9887,
+      "n": 30
+     }
+    },
+    "market~salary_traded": {
+     "raw": {
+      "rho": 0.306,
+      "p": 0.1033,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.299,
+      "p": 0.1063,
+      "n": 30
+     }
+    },
+    "premium~pf_rate": {
+     "raw": {
+      "rho": -0.406,
+      "p": 0.0273,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.407,
+      "p": 0.0259,
+      "n": 30
+     }
+    },
+    "premium~fp_rate": {
+     "raw": {
+      "rho": 0.074,
+      "p": 0.7114,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.104,
+      "p": 0.573,
+      "n": 30
+     }
+    },
+    "premium~salary_traded": {
+     "raw": {
+      "rho": 0.123,
+      "p": 0.5129,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.079,
+      "p": 0.6706,
+      "n": 30
+     }
+    }
+   },
+   "nba": {
+    "value~pf_rate": {
+     "raw": {
+      "rho": -0.128,
+      "p": 0.4949,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.137,
+      "p": 0.4646,
+      "n": 30
+     }
+    },
+    "value~fp_rate": {
+     "raw": {
+      "rho": 0.053,
+      "p": 0.7776,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.046,
+      "p": 0.809,
+      "n": 30
+     }
+    },
+    "value~salary_traded": {
+     "raw": {
+      "rho": -0.434,
+      "p": 0.0186,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.404,
+      "p": 0.0264,
+      "n": 30
+     }
+    },
+    "market~pf_rate": {
+     "raw": {
+      "rho": -0.32,
+      "p": 0.0837,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.32,
+      "p": 0.0869,
+      "n": 30
+     }
+    },
+    "market~fp_rate": {
+     "raw": {
+      "rho": 0.008,
+      "p": 0.9658,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.01,
+      "p": 0.9559,
+      "n": 30
+     }
+    },
+    "market~salary_traded": {
+     "raw": {
+      "rho": -0.144,
+      "p": 0.4402,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.161,
+      "p": 0.4,
+      "n": 30
+     }
+    },
+    "premium~pf_rate": {
+     "raw": {
+      "rho": 0.109,
+      "p": 0.56,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.114,
+      "p": 0.5521,
+      "n": 30
+     }
+    },
+    "premium~fp_rate": {
+     "raw": {
+      "rho": 0.158,
+      "p": 0.4055,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.158,
+      "p": 0.4096,
+      "n": 30
+     }
+    },
+    "premium~salary_traded": {
+     "raw": {
+      "rho": -0.373,
+      "p": 0.0482,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.326,
+      "p": 0.0808,
+      "n": 30
+     }
+    }
+   },
+   "mlb": {
+    "value~pf_rate": {
+     "raw": {
+      "rho": -0.227,
+      "p": 0.2218,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.074,
+      "p": 0.6943,
+      "n": 30
+     }
+    },
+    "value~fp_rate": {
+     "raw": {
+      "rho": -0.006,
+      "p": 0.9766,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.03,
+      "p": 0.8689,
+      "n": 30
+     }
+    },
+    "value~salary_traded": {
+     "raw": {
+      "rho": 0.575,
+      "p": 0.0009,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.46,
+      "p": 0.0086,
+      "n": 30
+     }
+    },
+    "market~pf_rate": {
+     "raw": {
+      "rho": -0.122,
+      "p": 0.5147,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.033,
+      "p": 0.864,
+      "n": 30
+     }
+    },
+    "market~fp_rate": {
+     "raw": {
+      "rho": 0.076,
+      "p": 0.6819,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.073,
+      "p": 0.6984,
+      "n": 30
+     }
+    },
+    "market~salary_traded": {
+     "raw": {
+      "rho": 0.317,
+      "p": 0.0841,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.201,
+      "p": 0.2847,
+      "n": 30
+     }
+    },
+    "premium~pf_rate": {
+     "raw": {
+      "rho": -0.109,
+      "p": 0.5749,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.025,
+      "p": 0.8961,
+      "n": 30
+     }
+    },
+    "premium~fp_rate": {
+     "raw": {
+      "rho": -0.06,
+      "p": 0.7542,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": -0.084,
+      "p": 0.6605,
+      "n": 30
+     }
+    },
+    "premium~salary_traded": {
+     "raw": {
+      "rho": 0.356,
+      "p": 0.059,
+      "n": 30
+     },
+     "at_equal_rank": {
+      "rho": 0.194,
+      "p": 0.2967,
+      "n": 30
+     }
+    }
+   }
+  },
+  "bad_years": {
+   "nhl": {
+    "pf": {
+     "rich": 0.033,
+     "poor": 0.129,
+     "diff": {
+      "est": -0.096,
+      "ci95": [
+       -0.223,
+       0.025
+      ],
+      "n": 131
+     }
+    },
+    "fp": {
+     "rich": 0.148,
+     "poor": 0.171,
+     "diff": {
+      "est": -0.024,
+      "ci95": [
+       -0.203,
+       0.167
+      ],
+      "n": 131
+     }
+    },
+    "now": {
+     "rich": 1.163,
+     "poor": 0.39,
+     "diff": {
+      "est": 0.773,
+      "ci95": [
+       -0.241,
+       1.789
+      ],
+      "n": 131
+     }
+    },
+    "fut": {
+     "rich": 0.72,
+     "poor": 0.073,
+     "diff": {
+      "est": 0.646,
+      "ci95": [
+       -0.63,
+       2.111
+      ],
+      "n": 131
+     }
+    },
+    "salary": {
+     "rich": -0.047,
+     "poor": -0.04,
+     "diff": {
+      "est": -0.007,
+      "ci95": [
+       -0.06,
+       0.06
+      ],
+      "n": 84
+     }
+    },
+    "n": {
+     "rich": 61,
+     "poor": 70
+    }
+   },
+   "nba": {
+    "pf": {
+     "rich": 0.082,
+     "poor": 0.11,
+     "diff": {
+      "est": -0.027,
+      "ci95": [
+       -0.173,
+       0.087
+      ],
+      "n": 146
+     }
+    },
+    "fp": {
+     "rich": 0.247,
+     "poor": 0.205,
+     "diff": {
+      "est": 0.041,
+      "ci95": [
+       -0.076,
+       0.165
+      ],
+      "n": 146
+     }
+    },
+    "now": {
+     "rich": 0.509,
+     "poor": 0.307,
+     "diff": {
+      "est": 0.202,
+      "ci95": [
+       -0.48,
+       0.915
+      ],
+      "n": 146
+     }
+    },
+    "fut": {
+     "rich": 0.184,
+     "poor": -0.023,
+     "diff": {
+      "est": 0.208,
+      "ci95": [
+       -0.842,
+       1.142
+      ],
+      "n": 146
+     }
+    },
+    "salary": {
+     "rich": 0.084,
+     "poor": 0.061,
+     "diff": {
+      "est": 0.022,
+      "ci95": [
+       -0.049,
+       0.089
+      ],
+      "n": 146
+     }
+    },
+    "n": {
+     "rich": 73,
+     "poor": 73
+    }
+   },
+   "mlb": {
+    "pf": {
+     "rich": 0.146,
+     "poor": 0.135,
+     "diff": {
+      "est": 0.011,
+      "ci95": [
+       -0.145,
+       0.153
+      ],
+      "n": 137
+     }
+    },
+    "fp": {
+     "rich": 0.083,
+     "poor": 0.09,
+     "diff": {
+      "est": -0.007,
+      "ci95": [
+       -0.11,
+       0.115
+      ],
+      "n": 137
+     }
+    },
+    "now": {
+     "rich": 1.194,
+     "poor": 0.377,
+     "diff": {
+      "est": 0.817,
+      "ci95": [
+       -0.057,
+       1.818
+      ],
+      "n": 137
+     }
+    },
+    "fut": {
+     "rich": 0.72,
+     "poor": 0.536,
+     "diff": {
+      "est": 0.184,
+      "ci95": [
+       -0.52,
+       0.879
+      ],
+      "n": 137
+     }
+    },
+    "salary": {
+     "rich": -0.086,
+     "poor": -0.059,
+     "diff": {
+      "est": -0.028,
+      "ci95": [
+       -0.161,
+       0.098
+      ],
+      "n": 102
+     }
+    },
+    "n": {
+     "rich": 48,
+     "poor": 89
+    }
+   }
+  },
+  "champions": {
+   "nhl": {
+    "n": 14,
+    "early_now": {
+     "percentile": 0.527,
+     "above_half": 8,
+     "p": 0.7905
+    },
+    "early_fut": {
+     "percentile": 0.517,
+     "above_half": 8,
+     "p": 0.7905
+    },
+    "late_now": {
+     "percentile": 0.303,
+     "above_half": 4,
+     "p": 0.1796
+    },
+    "late_fut": {
+     "percentile": 0.254,
+     "above_half": 1,
+     "p": 0.0018
+    }
+   },
+   "nba": {
+    "n": 16,
+    "early_now": {
+     "percentile": 0.461,
+     "above_half": 7,
+     "p": 0.8036
+    },
+    "early_fut": {
+     "percentile": 0.556,
+     "above_half": 8,
+     "p": 1.0
+    },
+    "late_now": {
+     "percentile": 0.628,
+     "above_half": 10,
+     "p": 0.4545
+    },
+    "late_fut": {
+     "percentile": 0.452,
+     "above_half": 9,
+     "p": 0.8036
+    }
+   },
+   "mlb": {
+    "n": 12,
+    "early_now": {
+     "percentile": 0.569,
+     "above_half": 7,
+     "p": 0.7744
+    },
+    "early_fut": {
+     "percentile": 0.603,
+     "above_half": 9,
+     "p": 0.146
+    },
+    "late_now": {
+     "percentile": 0.77,
+     "above_half": 11,
+     "p": 0.0063
+    },
+    "late_fut": {
+     "percentile": 0.572,
+     "above_half": 6,
+     "p": 1.0
+    }
+   }
+  },
+  "reclassified": {
+   "nhl": {
+    "sold": {
+     "other": 14,
+     "dumped": 1,
+     "added": 3,
+     "neither": 2,
+     "tore_down": 6,
+     "shed": 6
+    },
+    "bought": {
+     "added": 10,
+     "other": 10,
+     "neither": 6,
+     "went_for_it": 7
+    }
+   },
+   "nba": {
+    "sold": {
+     "dumped": 2,
+     "shed": 4,
+     "other": 7,
+     "tore_down": 6,
+     "neither": 1,
+     "added": 2
+    },
+    "bought": {
+     "added": 14,
+     "other": 14,
+     "went_for_it": 4,
+     "neither": 3
+    }
+   },
+   "mlb": {
+    "sold": {
+     "dumped": 8,
+     "neither": 6,
+     "tore_down": 6,
+     "other": 12,
+     "shed": 1
+    },
+    "bought": {
+     "added": 14,
+     "neither": 3,
+     "other": 13,
+     "went_for_it": 5
+    }
+   }
+  }
  }
 }

@@ -12,7 +12,8 @@ python fetch.py      # Sports Reference pages (NHL, NBA, MLB) and nflverse files
 python build.py      # -> ../media/rebuild/seasons.csv, drafts.csv, nfl_trades.csv, teams.csv
 python analyse.py    # -> ../media/rebuild/results.json, team_level.csv, events.csv (~2 min)
 python moves.py      # -> players.csv, moves.csv, payroll.csv, team_moves.csv (the second pass; fetch.py ~65 min more)
-python levers.py     # -> levers.json, lever_events.csv (~2 min)
+python horizon.py    # -> trade_horizon.csv, team_horizon.csv (trades by time horizon and control)
+python levers.py     # -> levers.json, lever_events.csv, horizon_events.csv (~3 min)
 ```
 
 Valuations, metro populations and World Series winners come from Wikipedia pages saved in `data/val/`,
@@ -48,7 +49,35 @@ statistical areas, 2025 estimates; Canadian census metropolitan areas, 2021 cens
   the NFL, with under a quarter-star of track record, or a minor leaguer never in the majors) 0.5.
 * **Payroll** as a share of the league's average that season.
 * A **sell** season: half a star or more traded away, net, and half a future asset or more back; a **buy** season the
-  reverse.
+  reverse. This first classification is kept in `levers.json`, but the trade findings below use the next one.
+
+### Trades by time horizon (`horizon.py`)
+
+Trading away a big salary is not selling: teams dump salary, or send it out to make a trade work under the rules. And a
+team like the Rays trades cheap, cost-controlled stars before they get expensive, often for players on short-term
+salaries packaged with young prospects. So every trade is valued again by when its value arrives and how long the team
+keeps it (NBA, NHL, MLB; the NFL has no production measure here and stays on the first classification):
+
+* **Production, not pay.** A player's projected stars: his last three seasons weighted 5-4-3 (a shortened season
+  scaled to a full one), carried forward by his league's aging curve (fitted on every player and season, 0 for a
+  player out of the league). A salary filler who doesn't produce counts for nothing, whatever he earns.
+* **Control.** A veteran counts only while he stayed with the team that got him: a rental for the rest of the season,
+  a player with four years of control for four. The realized tenure stands in for the contract.
+* **Prospects and picks.** What traded prospects of that age (busts included) and picks in that round went on to give,
+  season by season.
+* **Now and later.** Now: the season of the move (what is left of it) and the next; later: the four after that.
+* **Salary**, as a share of the league's average payroll (NBA 2001-2025, NHL cap hits 2010-2025, MLB 2001-2016), to
+  tell a dump from a sale.
+* A window from mediocrity (the next two seasons, ranked within the league): **tore down**, the fifth that gave up the
+  most present value and came out ahead in future value; **dumped**, gave up as much with no future back and shed a
+  tenth of an average payroll; **shed**, the same without the salary (stars walking, deals for little); **went for
+  it**, the fifth that added the most present value and paid in future value; **added**, added as much without losing
+  future value (mostly free agents); **neither**, the middle of both.
+
+Checks: the Rays' 2014 David Price deal, a sale by stars last season, reads as a gain now and later (+0.6 stars now,
++1.3 later: Smyly, Franklin and Adames under control against a season and a half of Price); their 2012 Shields and
+Davis deal as present for future (-1.0 now, +0.6 later); Chicago's 2017 Jimmy Butler deal the same (-1.4, +1.4);
+Brooklyn's 2013 Garnett and Pierce deal as paying the future (-2.2 later, three first-round picks).
 
 ## Findings
 
@@ -81,41 +110,47 @@ tax, hockey and football hard caps.
   than the one before in every league (MLB 0.35, NFL 0.24, NHL 0.21, NBA 0.13); stars traded in over the summer, net,
   a little in the NBA (0.15), MLB (0.10) and NHL (0.08), not in the NFL.
 * **Who pulls the levers: in baseball, money; in basketball, the market.** In MLB a franchise's value goes with its
-  payroll (+0.88; +0.79 at equal average rank), with buying (+0.74; +0.51), with signing stars (+0.71; +0.45) and
-  against selling (-0.65; -0.52), all p < 0.02, 30 teams. In the NBA it is the big markets that sign the stars (market
-  +0.58 at equal rank, value +0.66, both p < 0.001), sell less (market -0.41, p 0.03) and trade away more first-round
-  picks (value +0.38, p 0.04); payroll follows value (+0.45, p 0.01). In the NHL valuable teams buy more at the
-  deadline and over the summer (+0.52, p 0.003) but spend, sign and sell about like everyone else. In the NFL valuable
-  teams trade away more first-round picks (+0.47, p 0.008) and trade for more expensive players (+0.55, p 0.002).
+  payroll (+0.88; +0.79 at equal average rank) and with signing stars (+0.71; +0.45), and in trades the valuable clubs
+  take on salary while the poorer ones shed it (+0.58; +0.46 at equal rank, p 0.009). Counted by stars last season,
+  rich MLB clubs also seemed to sell less and buy more; counted by horizon and control they trade present for future
+  about as often as anyone (-0.07 at equal rank): that gap was salary. In the NBA the big markets sign the stars
+  (market +0.58 at equal rank, value +0.66, both p < 0.001) and trade away more first-round picks (value +0.38, p
+  0.04); payroll follows value (+0.45, p 0.01), and the valuable teams send out more salary than they take back in
+  trades (-0.40, p 0.03), the luxury tax at work. In the NHL, teams with a fan premium tear down less often (-0.41, p
+  0.03); otherwise valuable teams spend, sign and trade like everyone else. In the NFL valuable teams trade away more
+  first-round picks (+0.47, p 0.008) and trade for more expensive players (+0.55, p 0.002; pay, not play).
 * **After a bad season (bottom third), the next two: rich against poor (each league's top and bottom third by
-  value).** MLB: the rich sold 38 % of the time against 60 % (-22 points, 95 % CI -43 to -2), bought 46 % against 28 %
-  (+18, CI +4 to +34), and signed 1.1 stars' worth of free agents against none (-0.1: the poor sign players who were
-  below replacement). NBA: the rich signed more (1.7 stars against 1.3, CI +0.1 to +0.8), sold about as often. NHL: no
-  difference in selling or buying. NFL: the rich sold slightly more (14 % against 5 %, CI +1 to +17 points). This is
-  the theory's first half, and it is baseball's: the rich, uncapped clubs answer a bad year by buying.
-* **Selling stars does not buy a higher peak, in any league.** From mediocrity, the fifth of teams that traded away the
-  most talent over the next two seasons and took picks and prospects back, against the middle, over ten seasons: NHL a
-  lower peak (best rank 0.73 against 0.84, CI -0.19 to -0.02; -0.19 with the starting rank, the slide into it and
-  roster age held fixed), a lower low and average, titles 9 % against 13 %; NBA the same peak (0.80 against 0.86, not
-  significant) and fewer titles (9 % against 25 %; -20 points adjusted, CI -41 to -1); MLB exactly the same peak (0.86
-  against 0.86) with a lower low (0.07 against 0.14) and titles 9 % against 17 %; NFL no difference. Over four
-  definitions (fifths or thirds, eight or ten seasons), the sellers' peak is never significantly above the middle's in
-  any league. The buyers, the fifth that added the most by trade and free agency: a higher low and average (all
-  leagues +0.04, MLB +0.09 low), the same peak, titles 23 % against 18 % (not significant). Cutting payroll the most
-  (NBA, MLB) changes nothing but a slightly lower NBA low.
-* **Champions pay.** 24 of the 25 MLB champions since 2001 had a payroll above the season's median (the exception: the
-  2003 Marlins, at 72 % of the league average; average standing 0.77, 0 the cheapest team and 1 the dearest; p <
-  0.0001); NBA champions 18 of 25 (0.70, p 0.04); in the capped leagues, about half: NHL 7 of 12 since 2014 (0.66),
-  NFL 7 of 12 since 2013 (0.59). Champions since 2010 had not sold more than other teams in the seasons t-10 to t-3
-  (standing 0.51-0.60 in stars traded, net, in the NHL, NBA and MLB; NFL 0.31, not significant); in the three seasons
-  up to the title, NFL champions added less than almost everyone (13 of 14 at or below the median, p 0.002), MLB
-  (0.65) and NBA (0.60) champions somewhat more.
-* **So, league by league.** MLB is where the theory's first half holds: valuable, big-market clubs spend, buy and sign,
-  and after a bad year buy rather than sell; and spending wins (24 of 25 champions paid above the median). The NBA's
-  market teams buy through free agency and trade picks away; tanking to the bottom pays in titles (the first pass) but
-  selling stars does not. The NHL and NFL caps squeeze payrolls to within a tenth of each other: the valuable clubs
-  spend no more than anyone (NHL +0.33, NFL -0.12, neither significant) and buy a little more at most. Nowhere does
-  selling stars for prospects lift the peak; it deepens the trough.
+  value).** MLB: the rich signed 1.1 stars' worth of free agents against none (-0.1: the poor sign players who were
+  below replacement; CI +0.6 to +2.0) and added more present value in all (1.2 stars against 0.4, CI -0.1 to +1.8),
+  but tore down about as often (15 % against 14 %). Counted by stars last season, the poor seemed to sell far more (60 against 38 %); much of that was salary. NBA: the rich signed more (1.7 stars against 1.3, CI +0.1 to +0.8). NHL:
+  the rich tore down less (3 % against 13 %, CI -22 to +3 points). The rich answer a bad year by signing, in baseball
+  and basketball, rather than by refusing to sell.
+* **Tearing down, counted by horizon: a higher peak in the NBA, not elsewhere.** Few of the windows the first
+  classification called selling were teardowns: in MLB 6 of 33 (8 were salary dumps), the NBA 6 of 22, the NHL 6 of
+  32. From mediocrity, against the middle, over the ten seasons after: NBA teardowns reached a higher peak (best rank
+  0.89 against 0.80; +0.12 with the starting rank, the slide into it and roster age held fixed, CI +0.02 to +0.20) at
+  the cost of a lower low (0.03 against 0.08), titles 14 % against 12 %. That is the theory's shape, in the league
+  where one player changes a team; over four definitions (fifths or thirds, eight or ten seasons) the peak gap stays
+  +0.06 to +0.09, though not significant on its own in any. NHL teardowns: a lower peak (0.73 against 0.86; -0.09 to
+  -0.14 over the four, significant in one) and a lower low. MLB: a slightly lower peak (-0.02 to -0.06, not
+  significant) and titles 11 % against 20 %, while going for it (adding the most present value, paying in future
+  value) reached a higher peak (0.93 against 0.85, CI +0.01 to +0.16; +0.04 to +0.09 over the four, significant in
+  two) and average; salary dumps won no title in 12 windows against 20 % for the middle (CI -35 to -8 points). The
+  groups are small: 8-14 teams each in the main definition, 14-26 in thirds.
+* **Champions pay, and buy at the end.** 24 of the 25 MLB champions since 2001 had a payroll above the season's median
+  (the exception: the 2003 Marlins, at 72 % of the league average; average standing 0.77, 0 the cheapest team and 1
+  the dearest; p < 0.0001); NBA champions 18 of 25 (0.70, p 0.04); in the capped leagues, about half: NHL 7 of 12
+  since 2014 (0.66), NFL 7 of 12 since 2013 (0.59). In the three seasons up to the title, MLB champions added more
+  present value than almost every other team (11 of 12 above the season's median, p 0.006) and NHL champions gave up
+  more future value than almost everyone (13 of 14 at or below the median, p 0.002: picks and prospects spent at the
+  deadline); NBA champions neither. In the seasons t-10 to t-3 champions had not torn down more than anyone (standing
+  0.46-0.57 in present value moved).
+* **So, league by league.** MLB: the rich spend, sign and absorb salary while the poor shed it; spending wins (24 of
+  25 champions paid above the median), going for it lifts the peak, and tearing down does not. NBA: the market teams
+  sign the stars, and a genuine teardown (present value given up for future, not a dump) is the one path in any league
+  with a higher peak, as bottoming out was in the first pass, at the price of a lower low. NHL and NFL: the caps
+  squeeze payrolls to within a tenth of each other and valuable clubs spend no more than anyone (NHL +0.33, NFL -0.12,
+  neither significant); NHL teardowns peak lower, and NHL champions spend their future at the deadline.
 
 ## Caveats
 
@@ -124,19 +159,21 @@ tax, hockey and football hard caps.
 * The premium measures value beyond market size, which is more than fan passion (stadium deals, ownership, brand).
 * MLB picks could not be traded before 2012 and prospects traded are not measured, so MLB's win-now signs rest on age.
   (The second pass measures them: prospects in Retrosheet's trades, by age and track record.)
-* Second pass: a player's track record is his last season, so a star coming back from injury is undervalued and a
-  one-year wonder overvalued. NFL value is pay, not play (no season-by-season production measure was reachable): a
-  traded player's cap share, a free agent's new deal. NHL free agents (2010 on) and payroll (2014 on) are shorter
-  series, so the NHL teardown windows rest on trades alone; MLB's moves stop in 2021 (Retrosheet), its payroll does
-  not. A team that sells is often one already sliding with an aging roster (NHL sellers were 0.6 standard deviations
-  older); the adjusted gaps hold the starting rank, the slide into it and roster age fixed, not everything. The
-  groups are small (22-75 teams per group and league), so a gap of 10 points in titles is within chance in most
-  leagues.
+* Second pass: the first classification judged a player by his last season, so a star back from injury was undervalued
+  and a one-year wonder overvalued, and it ignored age, control and salary (hence the second). NFL value is pay, not
+  play (no season-by-season production measure was reachable): a traded player's cap share, a free agent's new deal.
+  NHL free agents (2010 on) and payroll (2014 on) are shorter series, so early NHL windows rest on trades alone; MLB's
+  moves stop in 2021 (Retrosheet), its payroll does not, and its player salaries stop in 2016, so later MLB dumps are
+  not flagged.
+* By horizon: a veteran's tenure with the team that got him is known only afterwards; it stands in for his contract,
+  but a team that flips him again cuts it short. The prospect and pick averages come from the same seasons they are
+  used on. Value is production, not production net of cost, so the method says what a trade did to a team's present
+  and future, not who won it. A team that tears down is often one already sliding with an aging roster; the adjusted
+  gaps hold the starting rank, the slide into it and roster age fixed, not everything.
 
 ## The video
 
 The video tells the first pass (it predates payroll, free agents and trades).
-
 
 `../media/rebuild/win_now_or_tear_it_down.mp4` (1920x1080, 30 fps, 3 min 25.5 s, 6,165 frames, captions and an original score):
 the light-speed film's look, every number read from `results.json` and the tables beside it.

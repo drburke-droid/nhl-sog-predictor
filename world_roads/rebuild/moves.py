@@ -1,10 +1,11 @@
 """Payroll, free agents and trades, per franchise and season:  python moves.py
 -> ../media/rebuild/players.csv, moves.csv, payroll.csv, team_moves.csv
 
-* players.csv: every player's value each season, in his league's own currency (NBA win shares, NHL point shares,
-  goalies scaled to skaters by each group's star line; MLB wins above replacement; NFL: his cap hit as a share of the
-  salary cap, the only measure on hand), and in *stars*: that value over the league's star line, the top 5 % of all
-  player-seasons 2001-2025 (1.0 = an all-star season).
+* players.csv: every player's value each season (with the teams he played for, and his salary where known: NBA
+  2001-2025, NHL 2010-2025 cap hits, MLB 2001-2016, NFL cap hits), in his league's own currency (NBA win shares, NHL
+  point shares, goalies scaled to skaters by each group's star line; MLB wins above replacement; NFL: his cap hit as
+  a share of the salary cap, the only measure on hand), and in *stars*: that value over the league's star line, the
+  top 5 % of all player-seasons 2001-2025 (1.0 = an all-star season).
 * moves.csv: every player and pick traded (NBA 2001-2025, NHL 2001-2025, MLB 2001-2021, NFL 2002-2024) and every
   free agent signed from another team (NBA 2001-2025, NHL 2010-2025, MLB 2001-2021, NFL 2013-2024), with the player's
   track record (his value the season before, in stars; an NFL free agent's new deal as a share of the cap) and age.
@@ -272,18 +273,23 @@ def nba_trade_parts(p):
 
 
 def nba_payroll():
+    """each roster's payroll, and each player's salary (the team pages' salary tables)"""
     cm = code_map("nba")
-    out = {}
+    out, sal = {}, defaultdict(float)
     for y in YEARS:
         for f in os.listdir(os.path.join(DATA, "sr", "nba")):
             m = re.fullmatch(rf"team_([A-Z]{{3}})_{y}\.html", f)
             if not m or m.group(1) not in cm:
                 continue
             h = page("sr", "nba", f).replace("<!--", "").replace("-->", "")
-            tot = sum(num(r.get("salary", "")) for r in table(h, "salaries2") if "salary" in r and "$" in r["salary"])
+            rows = [r for r in table(h, "salaries2") if "salary" in r and "$" in r["salary"]]
+            for r in rows:
+                if pid_of(r.get("player", "")):
+                    sal[(pid_of(r["player"]), y)] += num(r["salary"]) / 1e6
+            tot = sum(num(r["salary"]) for r in rows)
             if tot:
                 out[(y, cm[m.group(1)])] = tot / 1e6
-    return out
+    return out, dict(sal)
 
 
 # ---------------------------------------------------------------- NHL
@@ -378,7 +384,7 @@ def nhl_fa_payroll(P):
             if prev and prev != team:
                 fas.append(dict(season=s, date=f"{yy}-{mo:02d}-{dd:02d}", phase=phase_of("nhl", mo), to_team=team, pid=pid))
     # a contract runs until the next one starts; each season's cap hit goes to the teams he played for, by games
-    pay = defaultdict(float)
+    pay, sal = defaultdict(float), {}
     for pid, cs in contracts.items():
         cs.sort(key=lambda c: c[4])
         runs = []                             # [start, end, cap]
@@ -391,12 +397,13 @@ def nhl_fa_payroll(P):
             runs.append([start, start + n - 1, cap])
         for start, end, cap in runs:
             for s in range(start, end + 1):
+                sal[(pid, s)] = cap
                 st = P.stints.get((pid, s), [])
                 g = sum(x[1] for x in st)
                 for t, gm, _ in st:
                     pay[(s, t)] += cap * (gm / g if g else 1 / len(st))
     print(f"  nhl: {miss} signings not matched to a player")
-    return fas, dict(pay)
+    return fas, dict(pay), sal
 
 
 # ---------------------------------------------------------------- MLB
@@ -456,6 +463,16 @@ def mlb_payroll():
     return out
 
 
+def mlb_salaries():
+    """each player's salary, 2001-2016 (the Lahman database; Baseball Reference no longer lists them)"""
+    bb = {r.playerID: r.bbrefID for r in lahman("People").itertuples() if isinstance(r.bbrefID, str)}
+    out = defaultdict(float)
+    for r in lahman("Salaries").itertuples():
+        if 2001 <= r.yearID <= 2016 and r.playerID in bb:
+            out[(bb[r.playerID], r.yearID)] += r.salary / 1e6
+    return dict(out)
+
+
 def lahman_payroll():
     """the Lahman database's salaries (to 2016), to check the one above"""
     cm = code_map("mlb")
@@ -493,7 +510,7 @@ def nfl_all():
         if r["otc_id"] and r["birth_date"][:4].isdigit():
             born[r["otc_id"]] = int(r["birth_date"][:4])
     P = Players("nfl")
-    pay, caps, fas = defaultdict(float), defaultdict(list), []
+    pay, caps, fas, sal = defaultdict(float), defaultdict(list), [], defaultdict(float)
     for oid, c in best.items():
         pid = str(oid)
         dob = re.search(r"(\d{4})$", c.get("date_of_birth") or "")
@@ -509,6 +526,7 @@ def nfl_all():
             hist[y] = t
             if 2001 <= y <= 2025:
                 P.add(pid, c["player"], y, (y - dob) if dob else None, t, 1, pct)
+                sal[(pid, y)] += s.get("cap_number") or 0
                 if COVER["payroll"]["nfl"][0] <= y <= COVER["payroll"]["nfl"][1]:
                     pay[(y, t)] += s.get("cap_number") or 0
         for ch in c["contract_history"] or []:
@@ -536,7 +554,7 @@ def nfl_all():
             trades.append(dict(base, asset="pick", pick_year=int(r["pick_season"]), pick_round=int(r["pick_round"] or 7)))
         elif r["pfr_id"]:
             trades.append(dict(base, asset="player", pid=pid_by_pfr.get(r["pfr_id"]), name=r["pfr_name"]))
-    return P, trades, fas, dict(pay)
+    return P, trades, fas, dict(pay), dict(sal)
 
 
 # ---------------------------------------------------------------- together
@@ -587,18 +605,18 @@ def main():
         print(lg, flush=True)
         born = None
         if lg == "nfl":
-            P, trades, fas, pay = nfl_all()
+            P, trades, fas, pay, sal = nfl_all()
         else:
             P = sr_players(lg, dict(code_map(lg), **({"VGK": "VEG"} if lg == "nhl" else {})))
             if lg == "nba":
                 trades, fas = nba_moves(P)
-                pay = nba_payroll()
+                pay, sal = nba_payroll()
             elif lg == "nhl":
                 trades = nhl_trades(P)
-                fas, pay = nhl_fa_payroll(P)
+                fas, pay, sal = nhl_fa_payroll(P)
             else:
                 trades, fas, born = mlb_moves(P)
-                pay = mlb_payroll()
+                pay, sal = mlb_payroll(), mlb_salaries()
         lo, hi = COVER["payroll"][lg]
         payroll[lg] = {k: v for k, v in pay.items() if lo <= k[0] <= hi}
         lo, hi = COVER["trades"][lg]
@@ -610,7 +628,9 @@ def main():
               f"{len(payroll[lg])} payrolls", flush=True)
         for (pid, s), v in P.value.items():
             players.append(dict(league=lg, season=s, pid=pid, name=P.name.get(pid, ""), age=P.age.get((pid, s)),
-                                team=P.last_team(pid, s), value=round(v, 3), stars=round(v / P.star, 3)))
+                                team=P.last_team(pid, s), value=round(v, 3), stars=round(v / P.star, 3),
+                                teams="|".join(t for t, _, _ in P.stints.get((pid, s), [])),
+                                salary_musd=round(sal[(pid, s)], 4) if (pid, s) in sal else ""))
         moves += tr + fa
     cols = ["league", "season", "date", "phase", "kind", "trade_id", "from_team", "to_team", "asset", "pid", "name", "age",
             "stars", "future", "pick_year", "pick_round"]
