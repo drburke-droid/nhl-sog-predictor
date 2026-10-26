@@ -33,7 +33,6 @@ from plan import MORE_DAY, MORE_STEP
 MX = {1, 12, 13}                                        # the Mexican metros, set apart in the fits
 MIDWEEK = ["TUESDAY", "WEDNESDAY", "THURSDAY"]
 WEEK = ["MONDAY"] + MIDWEEK + ["FRIDAY", "SATURDAY", "SUNDAY"]
-SHOW = 101                                              # the metro whose routes are named on the trip-length chart
 
 
 def minute(hhmm):
@@ -157,7 +156,7 @@ def routes_chart(rows, routed, dst):
     rows = sorted(rows, key=lambda r: r["pm"])
     fig, axes = plt.subplots(1, 2, figsize=(14, 9), dpi=160, sharey=True)
     for ax, direction, peak_key, (lo, hi), title in zip(axes, ("evening", "morning"), ("pm", "am"),
-                                                       ((15 * 60, 19 * 60 + 30), (6 * 60 + 30, 9 * 60 + 30)),
+                                                       ((15 * 60, 19 * 60), (6 * 60 + 30, 9 * 60 + 30)),
                                                        ("Leave work (evening)", "Leave home (morning)")):
         for i, r in enumerate(rows):
             R = [x for x in routed if x["rank"] == r["rank"] and x["direction"] == direction]
@@ -184,7 +183,7 @@ def routes_chart(rows, routed, dst):
     fig.suptitle("Rush hour by route: up to four suburbs per metro", x=0.05, ha="left", fontsize=16, fontweight="bold")
     fig.text(0.05, 0.93, "Office downtown to a suburb in each compass direction, Wednesday 18 Nov, every 10 minutes. "
              "TomTom Routing API; city-wide peak from the TomTom Traffic Index.", color=INK2, fontsize=10)
-    fig.subplots_adjust(left=0.16, right=0.98, top=0.85, bottom=0.05, wspace=0.08)
+    fig.subplots_adjust(left=0.16, right=0.98, top=0.85, bottom=0.05, wspace=0.12)
     fig.savefig(dst, facecolor=SURFACE)
     plt.close(fig)
 
@@ -201,10 +200,6 @@ def trip_chart(routed, fits, dst):
         us = [r["drive"] for r in R if r["rank"] not in MX]
         x = np.array([min(us), max(us)])
         ax.plot(x, f["intercept"] + f["slope"] * x, color=INK2, lw=1, ls=(0, (4, 3)), zorder=2)
-        S = sorted((r for r in R if r["rank"] == SHOW), key=lambda r: r["drive"])
-        ax.plot([r["drive"] for r in S], [r["worst"] for r in S], color=INK, lw=0.8, zorder=2)
-        for r in S:
-            ax.annotate(r["home"], (r["drive"], r["worst"]), xytext=(5, 4), textcoords="offset points", fontsize=8.5, color=INK)
         ax.text(0.98, 0.96, f"US and Canada, {f['n']} routes: {abs(f['slope']) * 10:.0f} min earlier for each\n10 min more "
                 f"driving (r = {f['r']:.2f}); within each metro, {abs(w['slope']) * 10:.0f} min (r = {w['r']:.2f})",
                 transform=ax.transAxes, ha="right", va="top", fontsize=9.5, color=INK)
@@ -220,8 +215,8 @@ def trip_chart(routed, fits, dst):
     axes[0].set_ylabel("worst time to leave")
     axes[1].legend(loc="lower left", frameon=False, fontsize=9.5)
     fig.suptitle("The longer the drive, the earlier the worst time to leave", x=0.05, ha="left", fontsize=16, fontweight="bold")
-    fig.text(0.05, 0.9, f"Office downtown to up to four suburbs per metro, Wednesday 18 Nov; the line joins "
-             f"{next(r['metro'] for r in routed if r['rank'] == SHOW)}'s routes. TomTom Routing API.", color=INK2, fontsize=10)
+    fig.text(0.05, 0.9, "Office downtown to up to four suburbs per metro, one dot per route, Wednesday 18 Nov. "
+             "TomTom Routing API.", color=INK2, fontsize=10)
     fig.subplots_adjust(left=0.07, right=0.98, top=0.83, bottom=0.1, wspace=0.18)
     fig.savefig(dst, facecolor=SURFACE)
     plt.close(fig)

@@ -54,8 +54,10 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
 |---|---|---|
 | The 23 metros and their downtown office points | `metros.py` | |
 | A random suburb for each: GeoNames towns of 25,000+ people, 18-35 km from the office, seeded per metro | `homes.py` | `../media/commute/homes.json` |
+| Up to three more, one per other compass direction: towns of 10,000+, 15-40 km, no ferry or detour round water (OSRM) | `homes.py --more` | `../media/commute/homes_more.json` |
 | The departures to ask about, both commutes | `plan.py` | |
 | Predicted drive for each departure, on the quickest route for it | `tomtom_routes.py` (or `fetch.py`) | `data/` (cache), `../media/commute/drive_times_<router>.json` |
+| The same for the extra suburbs: Wed 18 Nov only, every 10 minutes (3,304 requests) | `tomtom_routes.py --more` | `../media/commute/drive_times_tomtom_more.json` |
 | Findings per metro and commute, with checks | `analyse.py` | `../media/commute/curves_<router>.json` |
 | Charts | `findings.py` | `../media/commute/findings_<router>_*.png` |
 | When rush hour is in each metro, and why it differs (with the Traffic Index) | `rush.py` | `../media/commute/rush.json`, `rush_*.png` |
@@ -108,15 +110,26 @@ City-wide from the Traffic Index (2025, metro area), and on each routed commute:
 * **The week:** Friday's evening peak comes 44 min earlier on average (all 20 US and Canadian metros; Boston 82
   min); Monday's morning peak is lower than Tue-Thu's in all 23 (16% on average). Mexico City's worst hour of the
   week is Friday 3-4 p.m. (+104%).
-* **Trip length:** on one route the worst time to leave comes earlier the longer the drive, about 7 min (evening)
-  and 6 min (morning) per 10 min of driving (r = -0.67, -0.77, US and Canada): New York's 99-min evening drive is
-  worst leaving at 4:10, Detroit's 27-min one at 4:45, while both cities peak around 5 p.m.
+* **Trip length:** the worst time to leave comes earlier the longer the drive: over 71 US and Canadian routes
+  (up to four per metro, Wed 18 Nov), 7 min (evening) and 5 min (morning) per 10 min of driving (r = -0.65,
+  -0.68), and within each metro 6 and 7 min (r = -0.56, -0.73). New York's 100-min evening drive is worst leaving
+  at 4:05, Detroit's 25-33-min ones at 4:46-4:53, while both cities peak around 5 p.m.
+* **Rush hour by route:** at the worst departure the middle of the trip is close to the city-wide peak (median of
+  metros 6 min before it in the evening, 14 in the morning), so the worst time to leave is about half an hour
+  before the peak (29 min evening, 39 morning). Routes in one metro can differ by 40 minutes (Washington 4:28-5:11
+  p.m., Montreal 4:08-4:45); Calgary's four agree within 15 (4:34-4:49 p.m., 7:38-7:50 a.m.). Vancouver's two
+  (south and east, across the Fraser; north and west are water) are near their worst from about 3:10 to 4:30 p.m.
+  and 7:10 to 8:00 a.m., some 50 minutes before its city-wide peaks.
+* **TomTom's historic traffic is one profile per weekday:** the same routes on Wed 15 Sep 2027 (daylight time, when
+  TomTom's time zones and the real ones agree) give exactly the drives of Wed 18 Nov 2026 as fetched, for Vancouver,
+  Calgary and Seattle. So the drives are a typical weekday, not November's, and the BC and Alberta offset is right.
 * **The costliest half hour:** leaving home in Mexico City at 6:50 instead of 6:20 a.m. gets you in 50 min later.
 
 ## Next
 
 - [x] A TomTom key in the environment, then the run above (26 Oct 2026)
 - [x] Toronto 4:50 p.m. against Google Maps: 75 min, inside its 1 h to 2 h
-- [ ] More Google Maps spot checks, the three added Canadian metros among them
+- [x] Up to four suburbs per metro (82 routes), 26 Oct 2026
+- [ ] More Google Maps spot checks, the three added Canadian metros among them (Vancouver's early peaks above all)
 - [ ] Findings for both commutes, then the video: reuse `../traffic/look.py` and `../traffic/voice.py`;
       narration with `../traffic/lily.py`-style recording (needs `ELEVENLABS_API_KEY` in the environment)
