@@ -33,3 +33,32 @@ METROS = [
     (101, "Calgary", "CA", "America/Edmonton", ("Bankers Hall, Stephen Avenue, Downtown", 51.04524, -114.06911), "calgary"),
     (102, "Edmonton", "CA", "America/Edmonton", ("Sir Winston Churchill Square, Downtown", 53.54404, -113.48977), "edmonton"),
 ]
+
+# More metros for the rush-hour map only (rush_map.py; tomtom.py fetches their Traffic Index pages, nothing is routed):
+# the rest of the same list's top 50 that the Traffic Index covers and the map shows. Not there: San José (Costa Rica),
+# Guatemala City, Port-au-Prince, San Salvador and Havana (no Traffic Index page; all but Havana outside the map), and
+# Toluca (no page). The point is the Traffic Index's own for the city (its ranking page, 26 Oct 2026).
+MAP_ONLY = [
+    (22, "Minneapolis–St. Paul", "US", "America/Chicago", ("Minneapolis, MN", 44.9775, -93.2644), "minneapolis-mn"),
+    (23, "Tampa Bay Area", "US", "America/New_York", ("Tampa, FL", 27.9474, -82.4588), "tampa-fl"),
+    (24, "San Diego", "US", "America/Los_Angeles", ("San Diego, CA", 32.7158, -117.1638), "san-diego-ca"),
+    (25, "Puebla", "MX", "America/Mexico_City", ("Puebla", 19.0437, -98.1990), "puebla"),
+    (29, "Denver", "US", "America/Denver", ("Denver, CO", 39.7385, -104.9849), "denver-co"),
+    (30, "Orlando", "US", "America/New_York", ("Orlando, FL", 28.5383, -81.3789), "orlando-fl"),
+    (31, "Charlotte", "US", "America/New_York", ("Charlotte, NC", 35.2238, -80.8411), "charlotte-nc"),
+    (32, "Baltimore", "US", "America/New_York", ("Baltimore, MD", 39.2904, -76.6123), "baltimore-md"),
+    (33, "St. Louis", "US", "America/Chicago", ("Saint Louis, MO", 38.6354, -90.2010), "saint-louis-mo"),
+    (34, "San Antonio", "US", "America/Chicago", ("San Antonio, TX", 29.4252, -98.4946), "san-antonio-tx"),
+    (36, "Austin", "US", "America/Chicago", ("Austin, TX", 30.2650, -97.7466), "austin-tx"),
+    (37, "Portland", "US", "America/Los_Angeles", ("Portland, OR", 45.5160, -122.6814), "portland-or"),
+    (38, "Sacramento", "US", "America/Los_Angeles", ("Sacramento, CA", 38.5769, -121.4950), "sacramento-ca"),
+    (39, "Pittsburgh", "US", "America/New_York", ("Pittsburgh, PA", 40.4422, -79.9950), "pittsburgh-pa"),
+    (41, "Las Vegas", "US", "America/Los_Angeles", ("Las Vegas, NV", 36.1691, -115.1406), "las-vegas-nv"),
+    (43, "Cincinnati", "US", "America/New_York", ("Cincinnati, OH", 39.1037, -84.5136), "cincinnati-oh"),
+    (44, "Kansas City", "US", "America/Chicago", ("Kansas City, MO", 39.0998, -94.5786), "kansas-city-mo"),
+    (45, "Columbus", "US", "America/New_York", ("Columbus, OH", 39.9628, -82.9963), "columbus-oh"),
+    (46, "Indianapolis", "US", "America/Indiana/Indianapolis", ("Indianapolis, IN", 39.7685, -86.1562), "indianapolis-in"),
+    (47, "Cleveland", "US", "America/New_York", ("Cleveland, OH", 41.5051, -81.6915), "cleveland-oh"),
+    (48, "Tijuana", "MX", "America/Tijuana", ("Tijuana", 32.5287, -116.9664), "tijuana"),
+    (49, "Nashville", "US", "America/Chicago", ("Nashville, TN", 36.1663, -86.7791), "nashville-tn"),
+]

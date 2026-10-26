@@ -4,10 +4,11 @@
 Each city page of the Traffic Index (tomtom.com/traffic-index, public; robots.txt allows agents) carries, for
 the metro area and for the city centre, 168 values, one per weekday and hour: the average speed v and the
 free-flow speed fv (km/h) and the congestion level c (% extra travel time, = fv / v - 1). They are averages over
-the index's measurement year. This script fetches the 20 pages once, slowly, and keeps only those series.
+the index's measurement year. This script fetches the pages once, slowly (the routed metros and the map's
+extra ones, metros.MAP_ONLY), and keeps only those series.
 """
 import os, re, json, time, html, urllib.request
-from metros import METROS
+from metros import METROS, MAP_ONLY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data", "tomtom")
@@ -64,7 +65,7 @@ def year(raw):
 
 def main():
     out = {}
-    for rank, name, cc, tz, office, key in METROS:
+    for rank, name, cc, tz, office, key in METROS + MAP_ONLY:
         raw = page(key)
         s = series(raw)
         out[key] = dict(rank=rank, name=name, index_year=year(raw), areas={a: {k: list(v) for k, v in s[a].items()} for a in s})

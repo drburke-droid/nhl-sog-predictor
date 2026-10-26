@@ -5,7 +5,9 @@ The clock runs from 5 a.m. to midnight, 4 s an hour, and it is the same local ti
 America had one time zone. Each metro's highways glow by its city-wide congestion at that local time: cyan while the
 roads are free, gold as they fill, white-hot at the worst. Congestion is the TomTom Traffic Index's extra travel time
 over empty roads, metro area, Tue-Thu averages of 2025 (tomtom_weekhour.json, tomtom.py). Each hourly value sits at
-the middle of its hour, joined by a monotone cubic (PCHIP), so the light never overshoots the data.
+the middle of its hour, joined by a monotone cubic (PCHIP), so the light never overshoots the data. The metros are
+the routed ones (metros.METROS) and the map's extra ones (metros.MAP_ONLY), 45 in all; the day's average line leaves
+out the five Mexican metros, whose evenings run about an hour and a half later.
 
 Base map: Natural Earth 10 m land, lakes, borders and roads (../data/ne, as ../run_all.sh fetches), in a Lambert
 conformal conic projection centred on the metros. Look: the palette, background, bloom and tone curve of ../render.py
@@ -22,7 +24,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(1, ROOT)
 from render import CYAN, GOLD, HOT, FPS, ffmpeg_proc_size
-from metros import METROS
+from metros import METROS, MAP_ONLY
 
 NE = os.path.join(ROOT, "data", "ne")
 MEDIA = os.path.join(ROOT, "media", "commute")
@@ -34,16 +36,24 @@ NFRAMES = int(round((HOLD0 + (H1 - H0) * SEC_PER_HOUR + HOLD1) * FPS))
 OCEAN = np.array([0.008, 0.016, 0.035], np.float32)     # ../render.py's background
 LANDC = np.array([0.030, 0.050, 0.088], np.float32)
 ROAD_W = {"Major Highway": 1.0, "Beltway": 1.0, "Bypass": 0.9, "Secondary Highway": 0.72, "Road": 0.5}
-SIG_ROAD = 30.0                                         # px (about 140 km): how far out a metro's highways light up
+SIG_ROAD = 24.0                                         # px (about 110 km): how far out a metro's highways light up
 MIDWEEK = ["TUESDAY", "WEDNESDAY", "THURSDAY"]
-# label placement, (dx, dy, anchor) from the office; crowded places set by hand
-LABEL = {"Los Angeles": (-16, 0, "rm"), "Inland Empire": (6, 22, "mt"), "San Francisco Bay Area": (-16, 0, "rm"),
-         "Seattle": (-16, 4, "rm"), "Vancouver": (-16, -4, "rm"), "Philadelphia": (14, 8, "lm"), "New York": (14, -2, "lm"),
-         "Boston": (14, 0, "lm"), "Washington": (12, 14, "lm"), "Montreal": (12, -8, "lm"), "Toronto": (-10, -14, "rm"),
-         "Detroit": (0, 16, "mt"), "Chicago": (-16, 0, "rm"), "Houston": (14, 4, "lm"), "Dallas–Fort Worth": (-16, 0, "rm"),
-         "Monterrey": (16, 0, "lm"), "Guadalajara": (-16, 0, "rm"), "Mexico City": (16, 6, "lm"), "Miami": (14, 0, "lm"),
-         "Atlanta": (16, 0, "lm"), "Phoenix": (14, 0, "lm"), "Calgary": (-14, 0, "rm"), "Edmonton": (14, 0, "lm")}
-SHORT = {"San Francisco Bay Area": "Bay Area"}
+ALL = METROS + MAP_ONLY
+# label placement, (dx, dy, anchor) from the metro's point; crowded places set by hand
+LABEL = {"Los Angeles": (-16, 0, "rm"), "Inland Empire": (14, -4, "lm"), "San Diego": (-14, 6, "rm"), "Tijuana": (4, 14, "mt"),
+         "San Francisco Bay Area": (-16, 0, "rm"), "Sacramento": (12, -6, "lm"), "Portland": (-14, 4, "rm"),
+         "Seattle": (-16, 4, "rm"), "Vancouver": (-16, -4, "rm"), "Calgary": (-14, 0, "rm"), "Edmonton": (14, 0, "lm"),
+         "Las Vegas": (12, 0, "lm"), "Phoenix": (14, 0, "lm"), "Denver": (12, 0, "lm"),
+         "Dallas–Fort Worth": (-16, 0, "rm"), "Austin": (-12, -6, "rm"), "San Antonio": (-12, 8, "rm"), "Houston": (14, 4, "lm"),
+         "Monterrey": (16, 0, "lm"), "Guadalajara": (-16, 0, "rm"), "Mexico City": (-14, 10, "rm"), "Puebla": (14, 4, "lm"),
+         "Minneapolis–St. Paul": (12, 0, "lm"), "Kansas City": (-12, 0, "rm"), "St. Louis": (0, 12, "mt"),
+         "Chicago": (-16, 0, "rm"), "Indianapolis": (-12, 4, "rm"), "Nashville": (12, 0, "lm"), "Cincinnati": (0, 12, "mt"),
+         "Columbus": (0, 12, "mt"), "Detroit": (-6, -6, "rb"), "Cleveland": (10, -4, "lm"), "Pittsburgh": (0, 12, "mt"),
+         "Toronto": (-10, -14, "rm"), "Montreal": (12, -8, "lm"), "Boston": (14, 0, "lm"), "New York": (14, -8, "lm"),
+         "Philadelphia": (14, -6, "lm"), "Baltimore": (12, -2, "lm"), "Washington": (12, 14, "lm"),
+         "Atlanta": (16, 0, "lm"), "Charlotte": (12, 0, "lm"), "Tampa Bay Area": (-12, 4, "rm"), "Orlando": (12, -4, "lm"),
+         "Miami": (14, 0, "lm")}
+SHORT = {"San Francisco Bay Area": "Bay Area", "Minneapolis–St. Paul": "Minneapolis", "Tampa Bay Area": "Tampa"}
 
 
 # ------------------------------------------------------------------ projection: Lambert conformal conic
@@ -138,7 +148,7 @@ def congestion():
     """{rank: f(hour) -> % extra travel time}, Tue-Thu, from the hourly values at the middle of each hour"""
     W = json.load(open(os.path.join(MEDIA, "tomtom_weekhour.json")))["cities"]
     out = {}
-    for rank, name, cc, tz, office, key in METROS:
+    for rank, name, cc, tz, office, key in ALL:
         s = W[key]["areas"]["metro"]
         p = np.array([np.mean([s[f"{d}-{h}"][2] for d in MIDWEEK]) for h in range(24)])
         x = np.arange(-3, 27) + 0.5
@@ -187,17 +197,19 @@ class Map:
         self.cong = congestion()
         self.cities = []
         r = int(3 * SIG_ROAD)
-        for rank, name, cc, tz, (o, lat, lon), key in METROS:
+        for rank, name, cc, tz, (o, lat, lon), key in ALL:
             x, y = px(lon, lat)
             xi, yi = int(round(x)), int(round(y))
             y0, y1, x0, x1 = max(yi - r, 0), min(yi + r + 1, OH), max(xi - r, 0), min(xi + r + 1, OW)
             gy, gx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
             d2 = (gx - x) ** 2 + (gy - y) ** 2
-            self.cities.append(dict(rank=rank, name=name, x=x, y=y, box=(y0, y1, x0, x1), d2=d2,
+            self.cities.append(dict(rank=rank, name=name, cc=cc, x=x, y=y, box=(y0, y1, x0, x1), d2=d2,
                                     road=roads[y0:y1, x0:x1] * np.exp(-d2 / (2 * SIG_ROAD ** 2))))
         hours = np.linspace(H0, H1, 400)
         self.avg_h = hours
-        self.avg = np.mean([self.cong[c["rank"]](hours) for c in self.cities], axis=0)
+        us_ca = [c for c in self.cities if c["cc"] != "MX"]
+        self.avg = np.mean([self.cong[c["rank"]](hours) for c in us_ca], axis=0)
+        self.avg_label = f"AVERAGE OF THE {len(us_ca)} US AND CANADIAN METROS"
         self.F = dict(title=font("Inter-SemiBold.otf", 46), sub=font("Inter-Regular.otf", 25), small=font("Inter-Medium.otf", 15),
                       clock=font("InterDisplay-Medium.otf", 66), note=font("Inter-Regular.otf", 17), foot=font("Inter-Regular.otf", 14),
                       label=font("Inter-Medium.otf", 15), row=font("Inter-Medium.otf", 21), val=font("InterDisplay-Medium.otf", 21),
@@ -236,7 +248,7 @@ class Map:
             d.text((c["x"] + dx, c["y"] + dy), SHORT.get(c["name"], c["name"]), font=F["label"], anchor=anchor,
                    fill=(206, 218, 236, al), stroke_width=3, stroke_fill=(2, 5, 12, int(al * 0.8)))
         d.text((58, 40), "Rush hour across North America", font=F["title"], fill=(236, 242, 250, 255))
-        d.text((60, 100), "A typical Tuesday to Thursday in 23 metros, each on its own local clock", font=F["sub"],
+        d.text((60, 100), f"A typical Tuesday to Thursday in {len(self.cities)} metros, each on its own local clock", font=F["sub"],
                fill=(150, 176, 205, 255))
         # worst traffic now
         x0, y0 = 1560, 560
@@ -267,7 +279,7 @@ class Map:
             d.text((x, ty1 + 6), lab, font=F["tick"], fill=(120, 140, 165, 255), anchor="ma")
         px_, py_ = tx0 + (h - H0) / (H1 - H0) * (tx1 - tx0), ty1 - float(np.interp(h, self.avg_h, self.avg)) / 80 * (ty1 - ty0)
         d.ellipse((px_ - 5, py_ - 5, px_ + 5, py_ + 5), fill=(255, 240, 215, 255))
-        d.text((tx0, ty0 - 22), "AVERAGE OF THE 23 METROS", font=F["small"], fill=(130, 150, 175, 255))
+        d.text((tx0, ty0 - 22), self.avg_label, font=F["small"], fill=(130, 150, 175, 255))
         d.text((60, 1046), "Congestion: TomTom Traffic Index, extra travel time over empty roads, metro areas, Tue-Thu "
                "averages of 2025 · Map: Natural Earth", font=F["foot"], fill=(120, 140, 165, 255))
         im.paste(ov, (0, 0), ov)
