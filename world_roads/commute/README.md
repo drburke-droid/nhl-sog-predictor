@@ -140,6 +140,33 @@ their evening peaks run about an hour and a half later). Base map: Natural Earth
 Lambert conformal conic projection. `python rush_map.py still 8.5 17.25` renders stills
 (`rush_map_<hour>.png`).
 
+## Traffic shapes (`shapes.py`)
+
+Which metros have the same weekday traffic shape, apart from how bad it gets: each of the 45 metros' Tue-Thu
+congestion by hour (Traffic Index, 2025), 4 a.m. to midnight, scaled to its own peak, and grouped with Ward's method.
+Output: `../media/commute/shapes.json`, `shapes_buckets.png` (each group's shape and members), `shapes_axes.png` (the
+ways shapes differ) and `shapes_map.png` (the map, metros by group).
+* **Two clear groups:** the four big Mexican metros (Mexico City, Monterrey, Guadalajara, Puebla) and everyone else;
+  Tijuana's day is US-shaped. Silhouette 0.53 (0.2-0.3 for any finer split); the same split with z-scored shapes,
+  with average linkage, and on Monday, Tuesday, Wednesday or Thursday alone (not Friday, when Mexico City's worst
+  hour moves to 3 p.m.).
+* **Five shapes:** the split that each single day repeats best (86 % of metros, against 76-84 % for three, four or six
+  groups); a metro stays in its group if at least two of the three days agree (41 of 45):
+  * *Two sharp peaks* (quiet middays, weaker mornings; Texas and the Sun Belt): Dallas-Fort Worth, Houston, Austin, San
+    Antonio, Atlanta, Charlotte, Tampa, Minneapolis-St. Paul, Indianapolis, Columbus;
+  * *Early finishers* (evening peak about 4:54 p.m., the earliest): Calgary, Edmonton, Portland, St. Louis, Kansas
+    City, Cincinnati;
+  * *Early starters* (the strongest 6-8 a.m. traffic and mornings): Los Angeles, Inland Empire, Phoenix, Tijuana,
+    Seattle, Chicago, Boston, Montreal, Washington, Baltimore, Miami;
+  * *Busy all day* (middays at 62 % of the peak, busy late evenings): New York, Philadelphia, Toronto, Detroit,
+    Cleveland, Pittsburgh, Vancouver, Bay Area, Las Vegas, Orlando;
+  * *Late and long*: the four Mexican metros; *in between*: San Diego, Denver, Nashville, Sacramento.
+* **How US-shaped days differ:** the first two principal components (52 % and 17 %) are midday traffic as a share of
+  the peak (r = 0.96) and early-morning minus late-evening traffic (r = -0.96); how busy the middle of the day stays is
+  unrelated to how congested a metro is. The early finishers stand apart on timing.
+* **Busier metros peak later:** the evening peak comes about 3 minutes later per 10 points of peak congestion
+  (r = 0.41, 41 US-shaped metros), as congestion spreads the peak.
+
 ## Next
 
 - [x] A TomTom key in the environment, then the run above (26 Oct 2026)
