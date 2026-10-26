@@ -58,6 +58,7 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
 | Predicted drive for each departure, on the quickest route for it | `tomtom_routes.py` (or `fetch.py`) | `data/` (cache), `../media/commute/drive_times_<router>.json` |
 | Findings per metro and commute, with checks | `analyse.py` | `../media/commute/curves_<router>.json` |
 | Charts | `findings.py` | `../media/commute/findings_<router>_*.png` |
+| When rush hour is in each metro, and why it differs (with the Traffic Index) | `rush.py` | `../media/commute/rush.json`, `rush_*.png` |
 
 * **Commutes:** evening, office to home, leaving every 5 minutes from 3:00 to 8:00 p.m.; morning, home to office,
   every 5 minutes from 6:00 to 10:00 a.m.; local time, on Tue-Thu 17-19 Nov 2026 (after the clocks change on
@@ -82,7 +83,7 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
   list stays one source). Vancouver (#28), Calgary and Edmonton are added on request; Calgary and Edmonton are
   not on the list (it stops at #50, Havana, 2.14 million), so their 101 and 102 in `metros.py` are ids, not ranks.
   Their offices are OpenStreetMap points (Burrard Station; Bankers Hall, Stephen Avenue; Churchill Square). The
-  city-average baseline below has the first 20 only.
+  city-average baseline below (`routes.py`, `model.py`) has the first 20 only; the Traffic Index file has all 23.
 * **Suburbs:** GeoNames (CC BY 4.0). One GeoNames entry is excluded with a reason in `homes.py`.
 
 ## The city-average baseline (not used for findings)
@@ -92,6 +93,25 @@ route on empty roads) and `model.py` (the route driven at the hourly average slo
 `../media/commute/curves.json`, evening only. Its shape is plausible (a worst departure around 4:30-5:00 p.m.,
 a discount window after it), but its drive times are too low on commuter corridors (Toronto above), and its
 hourly data smooths out sharp peaks. It stays as a comparison: how far a city's average is from its commutes.
+
+## Rush hour (`rush.py`)
+
+City-wide from the Traffic Index (2025, metro area), and on each routed commute:
+* **US and Canada run on one clock:** the Tue-Thu evening peak is between 4:36 (Phoenix) and 5:21 p.m. (Bay Area)
+  in all 20; the morning between 7:46 and 8:45. **Mexico's evenings are late:** 6:30-6:51 p.m. in Monterrey,
+  Guadalajara and Mexico City, with mornings at the same time as everyone else's, so 10 h between the two peaks
+  against 8 h 20 min-9 h 20 min. All three Mexican metros have a third peak at 2 p.m. (the time of the comida).
+* **Not the sun:** the clock time of solar noon (2025 average) does not predict the peaks in the US and Canada
+  (r = +0.12 evening, +0.23 morning); Mexico City and New York share a solar noon (12:37, 12:35) and their evening
+  peaks are 1 h 43 min apart.
+* **The evening is worse:** higher than the morning in all 23, and at least as long in 22 (Houston the exception).
+* **The week:** Friday's evening peak comes 44 min earlier on average (all 20 US and Canadian metros; Boston 82
+  min); Monday's morning peak is lower than Tue-Thu's in all 23 (16% on average). Mexico City's worst hour of the
+  week is Friday 3-4 p.m. (+104%).
+* **Trip length:** on one route the worst time to leave comes earlier the longer the drive, about 7 min (evening)
+  and 6 min (morning) per 10 min of driving (r = -0.67, -0.77, US and Canada): New York's 99-min evening drive is
+  worst leaving at 4:10, Detroit's 27-min one at 4:45, while both cities peak around 5 p.m.
+* **The costliest half hour:** leaving home in Mexico City at 6:50 instead of 6:20 a.m. gets you in 50 min later.
 
 ## Next
 
