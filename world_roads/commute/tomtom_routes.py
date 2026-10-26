@@ -1,6 +1,7 @@
-"""Drive times by departure time on each commute, from TomTom's Routing API:  python tomtom_routes.py [--dry-run] [--check] [rank ...]
+"""Drive times by departure time on each commute, from TomTom's Routing API:  python tomtom_routes.py [--dry-run] [--check] [--more] [rank ...]
 -> data/tomtom_routes/<rank>/<direction>_<date>_<HHMM>.json (one trimmed response per request),
    then ../media/commute/drive_times_tomtom.json
+   --more: the extra suburbs (plan.more_jobs) -> data/tomtom_routes/<rank>/<sector>/..., drive_times_tomtom_more.json
 
 For every departure in plan.py (both commutes, every 5 minutes, Tue-Thu 17-19 Nov 2026), TomTom's Calculate
 Route gives the quickest route for that departure and its drive time from TomTom's time-dependent historic
@@ -13,7 +14,7 @@ be stopped and resumed. --check sends just one request (Toronto, Tuesday, 4:50 p
 """
 import os, sys, json, time, hashlib, threading, urllib.request, urllib.error, urllib.parse
 from concurrent.futures import ThreadPoolExecutor
-from plan import jobs, DAYS, MEDIA, HERE
+from plan import jobs, more_jobs, DAYS, MEDIA, HERE
 
 DATA = os.path.join(HERE, "data", "tomtom_routes")
 API = "https://api.tomtom.com/routing/1/calculateRoute/{o[0]},{o[1]}:{d[0]},{d[1]}/json"
@@ -45,7 +46,7 @@ def url(j, key):
 
 
 def path(j):
-    return os.path.join(DATA, str(j["rank"]), f"{j['direction']}_{j['day']}_{j['local'].replace(':', '')}.json")
+    return os.path.join(DATA, str(j["rank"]), j.get("sector", ""), f"{j['direction']}_{j['day']}_{j['local'].replace(':', '')}.json")
 
 
 class Throttle:
@@ -85,7 +86,7 @@ def call(j, key, throttle):
             raise SystemExit(f"TomTom refused {j['metro']} {j['direction']} {j['day']} {j['local']} ({e.code}): {msg}")
 
 
-def collect(all_jobs):
+def collect(all_jobs, dst):
     out = {}
     for j in all_jobs:
         p = path(j)
@@ -97,6 +98,7 @@ def collect(all_jobs):
         m = out.setdefault(str(j["rank"]), dict(metro=j["metro"], rows=[]))
         historic = "historicTrafficTravelTimeInSeconds" in s
         m["rows"].append(dict(direction=j["direction"], day=j["day"], depart=j["local"],
+                              **{k: j[k] for k in ("sector", "home") if k in j},
                               minutes=round(s["historicTrafficTravelTimeInSeconds" if historic else "travelTimeInSeconds"] / 60, 2),
                               historic=historic,
                               planned_minutes=round(s["travelTimeInSeconds"] / 60, 2),
@@ -104,14 +106,16 @@ def collect(all_jobs):
                               km=round(s["lengthInMeters"] / 1000, 2), route=c["route"]))
     json.dump(dict(source="TomTom Routing API (Calculate Route, routeType fastest, traffic true, departAt; "
                           "historicTrafficTravelTimeInSeconds)",
-                   fetched=time.strftime("%Y-%m-%d"), days=[d.isoformat() for d in DAYS], metros=out),
-              open(os.path.join(MEDIA, "drive_times_tomtom.json"), "w"), indent=1, ensure_ascii=False)
+                   fetched=time.strftime("%Y-%m-%d"), days=sorted({j["day"] for j in all_jobs}), metros=out),
+              open(dst, "w"), indent=1, ensure_ascii=False)
     return sum(len(v["rows"]) for v in out.values())
 
 
 def main(args):
     only = {int(a) for a in args if a.isdigit()}
-    every = jobs(only)
+    plan = more_jobs if "--more" in args else jobs
+    dst = os.path.join(MEDIA, "drive_times_tomtom_more.json" if "--more" in args else "drive_times_tomtom.json")
+    every = plan(only)
     if "--check" in args:
         every = [j for j in jobs({7}) if j["direction"] == "evening" and j["day"] == "2026-11-17" and j["local"] == "16:50"]
     todo = [j for j in every if not os.path.exists(path(j))]
@@ -144,7 +148,7 @@ def main(args):
               f"(empty roads {s['noTrafficTravelTimeInSeconds'] / 60:.0f} min, {s['lengthInMeters'] / 1000:.1f} km), "
               f"home {s['arrivalTime']}")
         return
-    print("rows:", collect(jobs(only)), "->", os.path.join(MEDIA, "drive_times_tomtom.json"))
+    print("rows:", collect(plan(only), dst), "->", dst)
 
 
 if __name__ == "__main__":
