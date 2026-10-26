@@ -1,0 +1,4755 @@
+{
+ "definitions": {
+  "sell": "trade_net <= -0.5 stars and future_net >= 0.5",
+  "buy": "trade_net >= 0.5 and future_net <= -0.5",
+  "sold": "from rank (0.3, 0.7): the league's bottom 20% of stars traded, net, over the next 2 seasons, with future assets back",
+  "bought": "the top 20% of stars traded and signed, net",
+  "neither": "the middle 30-70 % of both"
+ },
+ "profiles": {
+  "nhl": {
+   "seasons": {
+    "payroll": [
+     2014,
+     2025
+    ],
+    "trades": [
+     2001,
+     2025
+    ],
+    "fa": [
+     2010,
+     2025
+    ]
+   },
+   "payroll_spread": 0.112,
+   "top_fifth_payroll_avg_rank": 0.587,
+   "sell_rate": 0.183,
+   "buy_rate": 0.199,
+   "stars_traded_per_season": 1.342,
+   "stars_signed_per_season": 0.882,
+   "payroll_vs_rank": {
+    "est": 0.265,
+    "ci95": [
+     0.152,
+     0.361
+    ],
+    "n": 372
+   },
+   "payroll_vs_rank_within": {
+    "est": 0.106,
+    "ci95": [
+     -0.01,
+     0.211
+    ],
+    "n": 372
+   },
+   "d_payroll_vs_d_rank": {
+    "est": -0.037,
+    "ci95": [
+     -0.154,
+     0.09
+    ],
+    "n": 340
+   },
+   "trade_net_vs_d_rank": {
+    "est": 0.081,
+    "ci95": [
+     0.009,
+     0.156
+    ],
+    "n": 700
+   },
+   "fa_net_vs_d_rank": {
+    "est": 0.214,
+    "ci95": [
+     0.134,
+     0.295
+    ],
+    "n": 490
+   },
+   "sell_next_rank": {
+    "est": -0.221,
+    "ci95": [
+     -0.274,
+     -0.171
+    ],
+    "n": 700
+   }
+  },
+  "nba": {
+   "seasons": {
+    "payroll": [
+     2001,
+     2025
+    ],
+    "trades": [
+     2001,
+     2025
+    ],
+    "fa": [
+     2001,
+     2025
+    ]
+   },
+   "payroll_spread": 0.138,
+   "top_fifth_payroll_avg_rank": 0.654,
+   "sell_rate": 0.079,
+   "buy_rate": 0.099,
+   "stars_traded_per_season": 0.992,
+   "stars_signed_per_season": 0.757,
+   "payroll_vs_rank": {
+    "est": 0.341,
+    "ci95": [
+     0.236,
+     0.435
+    ],
+    "n": 746
+   },
+   "payroll_vs_rank_within": {
+    "est": 0.317,
+    "ci95": [
+     0.215,
+     0.41
+    ],
+    "n": 746
+   },
+   "d_payroll_vs_d_rank": {
+    "est": 0.052,
+    "ci95": [
+     -0.047,
+     0.15
+    ],
+    "n": 716
+   },
+   "trade_net_vs_d_rank": {
+    "est": 0.146,
+    "ci95": [
+     0.071,
+     0.215
+    ],
+    "n": 716
+   },
+   "fa_net_vs_d_rank": {
+    "est": 0.126,
+    "ci95": [
+     0.062,
+     0.192
+    ],
+    "n": 716
+   },
+   "sell_next_rank": {
+    "est": -0.196,
+    "ci95": [
+     -0.26,
+     -0.133
+    ],
+    "n": 716
+   }
+  },
+  "mlb": {
+   "seasons": {
+    "payroll": [
+     2001,
+     2025
+    ],
+    "trades": [
+     2001,
+     2021
+    ],
+    "fa": [
+     2001,
+     2021
+    ]
+   },
+   "payroll_spread": 0.416,
+   "top_fifth_payroll_avg_rank": 0.692,
+   "sell_rate": 0.273,
+   "buy_rate": 0.313,
+   "stars_traded_per_season": 1.106,
+   "stars_signed_per_season": 0.281,
+   "payroll_vs_rank": {
+    "est": 0.429,
+    "ci95": [
+     0.307,
+     0.547
+    ],
+    "n": 750
+   },
+   "payroll_vs_rank_within": {
+    "est": 0.318,
+    "ci95": [
+     0.235,
+     0.396
+    ],
+    "n": 750
+   },
+   "d_payroll_vs_d_rank": {
+    "est": 0.077,
+    "ci95": [
+     0.004,
+     0.15
+    ],
+    "n": 720
+   },
+   "trade_net_vs_d_rank": {
+    "est": 0.099,
+    "ci95": [
+     0.008,
+     0.182
+    ],
+    "n": 600
+   },
+   "fa_net_vs_d_rank": {
+    "est": 0.346,
+    "ci95": [
+     0.278,
+     0.415
+    ],
+    "n": 600
+   },
+   "sell_next_rank": {
+    "est": -0.169,
+    "ci95": [
+     -0.21,
+     -0.134
+    ],
+    "n": 600
+   }
+  },
+  "nfl": {
+   "seasons": {
+    "payroll": [
+     2013,
+     2024
+    ],
+    "trades": [
+     2002,
+     2024
+    ],
+    "fa": [
+     2013,
+     2024
+    ]
+   },
+   "payroll_spread": 0.098,
+   "top_fifth_payroll_avg_rank": 0.602,
+   "sell_rate": 0.045,
+   "buy_rate": 0.042,
+   "stars_traded_per_season": 0.256,
+   "stars_signed_per_season": 2.341,
+   "payroll_vs_rank": {
+    "est": 0.299,
+    "ci95": [
+     0.212,
+     0.378
+    ],
+    "n": 384
+   },
+   "payroll_vs_rank_within": {
+    "est": 0.281,
+    "ci95": [
+     0.195,
+     0.356
+    ],
+    "n": 384
+   },
+   "d_payroll_vs_d_rank": {
+    "est": 0.224,
+    "ci95": [
+     0.118,
+     0.325
+    ],
+    "n": 352
+   },
+   "trade_net_vs_d_rank": {
+    "est": -0.027,
+    "ci95": [
+     -0.082,
+     0.027
+    ],
+    "n": 735
+   },
+   "fa_net_vs_d_rank": {
+    "est": 0.239,
+    "ci95": [
+     0.144,
+     0.329
+    ],
+    "n": 384
+   },
+   "sell_next_rank": {
+    "est": -0.015,
+    "ci95": [
+     -0.119,
+     0.101
+    ],
+    "n": 735
+   }
+  }
+ },
+ "who": {
+  "nhl": {
+   "value~payroll": {
+    "raw": {
+     "rho": 0.331,
+     "p": 0.0718,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.299,
+     "p": 0.1083,
+     "n": 30
+    }
+   },
+   "value~sell_rate": {
+    "raw": {
+     "rho": -0.169,
+     "p": 0.3641,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.136,
+     "p": 0.4678,
+     "n": 30
+    }
+   },
+   "value~buy_rate": {
+    "raw": {
+     "rho": 0.527,
+     "p": 0.0026,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.523,
+     "p": 0.0027,
+     "n": 30
+    }
+   },
+   "value~signed_stars": {
+    "raw": {
+     "rho": 0.17,
+     "p": 0.3576,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.187,
+     "p": 0.3105,
+     "n": 30
+    }
+   },
+   "value~firsts_out": {
+    "raw": {
+     "rho": 0.129,
+     "p": 0.4907,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.115,
+     "p": 0.5419,
+     "n": 30
+    }
+   },
+   "value~traded_stars_in": {
+    "raw": {
+     "rho": 0.219,
+     "p": 0.2561,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.23,
+     "p": 0.2224,
+     "n": 30
+    }
+   },
+   "market~payroll": {
+    "raw": {
+     "rho": 0.142,
+     "p": 0.4556,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.126,
+     "p": 0.4978,
+     "n": 30
+    }
+   },
+   "market~sell_rate": {
+    "raw": {
+     "rho": 0.143,
+     "p": 0.4521,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.166,
+     "p": 0.3855,
+     "n": 30
+    }
+   },
+   "market~buy_rate": {
+    "raw": {
+     "rho": 0.387,
+     "p": 0.0341,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.403,
+     "p": 0.0292,
+     "n": 30
+    }
+   },
+   "market~signed_stars": {
+    "raw": {
+     "rho": 0.03,
+     "p": 0.8805,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.036,
+     "p": 0.8495,
+     "n": 30
+    }
+   },
+   "market~firsts_out": {
+    "raw": {
+     "rho": 0.102,
+     "p": 0.5999,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.095,
+     "p": 0.6134,
+     "n": 30
+    }
+   },
+   "market~traded_stars_in": {
+    "raw": {
+     "rho": 0.17,
+     "p": 0.3686,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.174,
+     "p": 0.3534,
+     "n": 30
+    }
+   },
+   "premium~payroll": {
+    "raw": {
+     "rho": 0.293,
+     "p": 0.1183,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.22,
+     "p": 0.2426,
+     "n": 30
+    }
+   },
+   "premium~sell_rate": {
+    "raw": {
+     "rho": -0.279,
+     "p": 0.1402,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.235,
+     "p": 0.216,
+     "n": 30
+    }
+   },
+   "premium~buy_rate": {
+    "raw": {
+     "rho": 0.436,
+     "p": 0.0194,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.386,
+     "p": 0.0377,
+     "n": 30
+    }
+   },
+   "premium~signed_stars": {
+    "raw": {
+     "rho": 0.154,
+     "p": 0.417,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.179,
+     "p": 0.3466,
+     "n": 30
+    }
+   },
+   "premium~firsts_out": {
+    "raw": {
+     "rho": 0.035,
+     "p": 0.8556,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.011,
+     "p": 0.9539,
+     "n": 30
+    }
+   },
+   "premium~traded_stars_in": {
+    "raw": {
+     "rho": 0.262,
+     "p": 0.1595,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.282,
+     "p": 0.1331,
+     "n": 30
+    }
+   }
+  },
+  "nba": {
+   "value~payroll": {
+    "raw": {
+     "rho": 0.485,
+     "p": 0.0069,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.448,
+     "p": 0.0126,
+     "n": 30
+    }
+   },
+   "value~sell_rate": {
+    "raw": {
+     "rho": -0.402,
+     "p": 0.0271,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.388,
+     "p": 0.0373,
+     "n": 30
+    }
+   },
+   "value~buy_rate": {
+    "raw": {
+     "rho": 0.069,
+     "p": 0.7159,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.073,
+     "p": 0.7088,
+     "n": 30
+    }
+   },
+   "value~signed_stars": {
+    "raw": {
+     "rho": 0.661,
+     "p": 0.0,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.655,
+     "p": 0.0,
+     "n": 30
+    }
+   },
+   "value~firsts_out": {
+    "raw": {
+     "rho": 0.433,
+     "p": 0.0181,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.378,
+     "p": 0.0408,
+     "n": 30
+    }
+   },
+   "value~traded_stars_in": {
+    "raw": {
+     "rho": 0.28,
+     "p": 0.1333,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.309,
+     "p": 0.0926,
+     "n": 30
+    }
+   },
+   "market~payroll": {
+    "raw": {
+     "rho": 0.358,
+     "p": 0.0502,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.39,
+     "p": 0.0342,
+     "n": 30
+    }
+   },
+   "market~sell_rate": {
+    "raw": {
+     "rho": -0.394,
+     "p": 0.0297,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.406,
+     "p": 0.029,
+     "n": 30
+    }
+   },
+   "market~buy_rate": {
+    "raw": {
+     "rho": 0.013,
+     "p": 0.9436,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.013,
+     "p": 0.949,
+     "n": 30
+    }
+   },
+   "market~signed_stars": {
+    "raw": {
+     "rho": 0.569,
+     "p": 0.0011,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.584,
+     "p": 0.0007,
+     "n": 30
+    }
+   },
+   "market~firsts_out": {
+    "raw": {
+     "rho": 0.328,
+     "p": 0.0725,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.377,
+     "p": 0.0382,
+     "n": 30
+    }
+   },
+   "market~traded_stars_in": {
+    "raw": {
+     "rho": 0.316,
+     "p": 0.0976,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.312,
+     "p": 0.0945,
+     "n": 30
+    }
+   },
+   "premium~payroll": {
+    "raw": {
+     "rho": 0.264,
+     "p": 0.1584,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.176,
+     "p": 0.3465,
+     "n": 30
+    }
+   },
+   "premium~sell_rate": {
+    "raw": {
+     "rho": -0.104,
+     "p": 0.5822,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.06,
+     "p": 0.7495,
+     "n": 30
+    }
+   },
+   "premium~buy_rate": {
+    "raw": {
+     "rho": 0.158,
+     "p": 0.4062,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.177,
+     "p": 0.3491,
+     "n": 30
+    }
+   },
+   "premium~signed_stars": {
+    "raw": {
+     "rho": 0.284,
+     "p": 0.1215,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.256,
+     "p": 0.1756,
+     "n": 30
+    }
+   },
+   "premium~firsts_out": {
+    "raw": {
+     "rho": 0.37,
+     "p": 0.0447,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.26,
+     "p": 0.1631,
+     "n": 30
+    }
+   },
+   "premium~traded_stars_in": {
+    "raw": {
+     "rho": 0.092,
+     "p": 0.6292,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.135,
+     "p": 0.4803,
+     "n": 30
+    }
+   }
+  },
+  "mlb": {
+   "value~payroll": {
+    "raw": {
+     "rho": 0.878,
+     "p": 0.0,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.788,
+     "p": 0.0,
+     "n": 30
+    }
+   },
+   "value~sell_rate": {
+    "raw": {
+     "rho": -0.653,
+     "p": 0.0001,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.519,
+     "p": 0.0034,
+     "n": 30
+    }
+   },
+   "value~buy_rate": {
+    "raw": {
+     "rho": 0.74,
+     "p": 0.0,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.512,
+     "p": 0.005,
+     "n": 30
+    }
+   },
+   "value~signed_stars": {
+    "raw": {
+     "rho": 0.714,
+     "p": 0.0,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.454,
+     "p": 0.0127,
+     "n": 30
+    }
+   },
+   "value~firsts_out": {
+    "raw": null,
+    "at_equal_rank": null
+   },
+   "value~traded_stars_in": {
+    "raw": {
+     "rho": 0.729,
+     "p": 0.0,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.518,
+     "p": 0.0032,
+     "n": 30
+    }
+   },
+   "market~payroll": {
+    "raw": {
+     "rho": 0.682,
+     "p": 0.0001,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.62,
+     "p": 0.0001,
+     "n": 30
+    }
+   },
+   "market~sell_rate": {
+    "raw": {
+     "rho": -0.313,
+     "p": 0.0928,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.169,
+     "p": 0.3724,
+     "n": 30
+    }
+   },
+   "market~buy_rate": {
+    "raw": {
+     "rho": 0.51,
+     "p": 0.0044,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.377,
+     "p": 0.0428,
+     "n": 30
+    }
+   },
+   "market~signed_stars": {
+    "raw": {
+     "rho": 0.47,
+     "p": 0.0098,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.318,
+     "p": 0.0852,
+     "n": 30
+    }
+   },
+   "market~firsts_out": {
+    "raw": null,
+    "at_equal_rank": null
+   },
+   "market~traded_stars_in": {
+    "raw": {
+     "rho": 0.482,
+     "p": 0.0087,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.343,
+     "p": 0.0641,
+     "n": 30
+    }
+   },
+   "premium~payroll": {
+    "raw": {
+     "rho": 0.399,
+     "p": 0.0285,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.106,
+     "p": 0.5779,
+     "n": 30
+    }
+   },
+   "premium~sell_rate": {
+    "raw": {
+     "rho": -0.438,
+     "p": 0.0144,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.259,
+     "p": 0.1726,
+     "n": 30
+    }
+   },
+   "premium~buy_rate": {
+    "raw": {
+     "rho": 0.455,
+     "p": 0.0109,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.171,
+     "p": 0.3677,
+     "n": 30
+    }
+   },
+   "premium~signed_stars": {
+    "raw": {
+     "rho": 0.317,
+     "p": 0.0878,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": -0.053,
+     "p": 0.7778,
+     "n": 30
+    }
+   },
+   "premium~firsts_out": {
+    "raw": null,
+    "at_equal_rank": null
+   },
+   "premium~traded_stars_in": {
+    "raw": {
+     "rho": 0.448,
+     "p": 0.0131,
+     "n": 30
+    },
+    "at_equal_rank": {
+     "rho": 0.182,
+     "p": 0.3348,
+     "n": 30
+    }
+   }
+  },
+  "nfl": {
+   "value~payroll": {
+    "raw": {
+     "rho": -0.116,
+     "p": 0.5409,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": -0.209,
+     "p": 0.2591,
+     "n": 31
+    }
+   },
+   "value~sell_rate": {
+    "raw": {
+     "rho": 0.338,
+     "p": 0.0639,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.334,
+     "p": 0.0674,
+     "n": 31
+    }
+   },
+   "value~buy_rate": {
+    "raw": {
+     "rho": 0.132,
+     "p": 0.4801,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.169,
+     "p": 0.3538,
+     "n": 31
+    }
+   },
+   "value~signed_stars": {
+    "raw": {
+     "rho": 0.116,
+     "p": 0.5293,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.326,
+     "p": 0.0758,
+     "n": 31
+    }
+   },
+   "value~firsts_out": {
+    "raw": {
+     "rho": 0.497,
+     "p": 0.0047,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.472,
+     "p": 0.0079,
+     "n": 31
+    }
+   },
+   "value~traded_stars_in": {
+    "raw": {
+     "rho": 0.514,
+     "p": 0.0035,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.549,
+     "p": 0.0023,
+     "n": 31
+    }
+   },
+   "market~payroll": {
+    "raw": {
+     "rho": -0.204,
+     "p": 0.2683,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": -0.159,
+     "p": 0.3821,
+     "n": 31
+    }
+   },
+   "market~sell_rate": {
+    "raw": {
+     "rho": 0.123,
+     "p": 0.499,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.135,
+     "p": 0.4763,
+     "n": 31
+    }
+   },
+   "market~buy_rate": {
+    "raw": {
+     "rho": 0.292,
+     "p": 0.109,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.274,
+     "p": 0.1332,
+     "n": 31
+    }
+   },
+   "market~signed_stars": {
+    "raw": {
+     "rho": 0.139,
+     "p": 0.447,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.05,
+     "p": 0.7875,
+     "n": 31
+    }
+   },
+   "market~firsts_out": {
+    "raw": {
+     "rho": 0.052,
+     "p": 0.782,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.093,
+     "p": 0.6248,
+     "n": 31
+    }
+   },
+   "market~traded_stars_in": {
+    "raw": {
+     "rho": 0.507,
+     "p": 0.0039,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.5,
+     "p": 0.004,
+     "n": 31
+    }
+   },
+   "premium~payroll": {
+    "raw": {
+     "rho": -0.083,
+     "p": 0.6624,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": -0.259,
+     "p": 0.1576,
+     "n": 31
+    }
+   },
+   "premium~sell_rate": {
+    "raw": {
+     "rho": 0.19,
+     "p": 0.307,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.181,
+     "p": 0.3241,
+     "n": 31
+    }
+   },
+   "premium~buy_rate": {
+    "raw": {
+     "rho": -0.085,
+     "p": 0.6621,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": -0.028,
+     "p": 0.8864,
+     "n": 31
+    }
+   },
+   "premium~signed_stars": {
+    "raw": {
+     "rho": -0.045,
+     "p": 0.8101,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.278,
+     "p": 0.1253,
+     "n": 31
+    }
+   },
+   "premium~firsts_out": {
+    "raw": {
+     "rho": 0.561,
+     "p": 0.0011,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.526,
+     "p": 0.003,
+     "n": 31
+    }
+   },
+   "premium~traded_stars_in": {
+    "raw": {
+     "rho": 0.189,
+     "p": 0.3014,
+     "n": 31
+    },
+    "at_equal_rank": {
+     "rho": 0.248,
+     "p": 0.1834,
+     "n": 31
+    }
+   }
+  }
+ },
+ "bad_years": {
+  "nhl": {
+   "sold": {
+    "rich": 0.41,
+    "poor": 0.4,
+    "diff": {
+     "est": 0.01,
+     "ci95": [
+      -0.208,
+      0.246
+     ],
+     "n": 131
+    }
+   },
+   "bought": {
+    "rich": 0.279,
+    "poor": 0.257,
+    "diff": {
+     "est": 0.022,
+     "ci95": [
+      -0.168,
+      0.215
+     ],
+     "n": 131
+    }
+   },
+   "signed": {
+    "rich": 1.929,
+    "poor": 1.796,
+    "diff": {
+     "est": 0.133,
+     "ci95": [
+      -0.523,
+      0.81
+     ],
+     "n": 84
+    }
+   },
+   "net_stars": {
+    "rich": -0.47,
+    "poor": -0.128,
+    "diff": {
+     "est": -0.342,
+     "ci95": [
+      -1.097,
+      0.44
+     ],
+     "n": 131
+    }
+   },
+   "d_pay": {
+    "rich": -0.068,
+    "poor": 0.005,
+    "diff": {
+     "est": -0.074,
+     "ci95": [
+      -0.139,
+      -0.029
+     ],
+     "n": 60
+    }
+   },
+   "n": {
+    "rich": 61,
+    "poor": 70
+   }
+  },
+  "nba": {
+   "sold": {
+    "rich": 0.068,
+    "poor": 0.137,
+    "diff": {
+     "est": -0.068,
+     "ci95": [
+      -0.19,
+      0.059
+     ],
+     "n": 146
+    }
+   },
+   "bought": {
+    "rich": 0.219,
+    "poor": 0.247,
+    "diff": {
+     "est": -0.027,
+     "ci95": [
+      -0.186,
+      0.137
+     ],
+     "n": 146
+    }
+   },
+   "signed": {
+    "rich": 1.713,
+    "poor": 1.271,
+    "diff": {
+     "est": 0.441,
+     "ci95": [
+      0.095,
+      0.838
+     ],
+     "n": 146
+    }
+   },
+   "net_stars": {
+    "rich": 0.371,
+    "poor": 0.245,
+    "diff": {
+     "est": 0.126,
+     "ci95": [
+      -0.224,
+      0.534
+     ],
+     "n": 146
+    }
+   },
+   "d_pay": {
+    "rich": 0.009,
+    "poor": 0.015,
+    "diff": {
+     "est": -0.005,
+     "ci95": [
+      -0.079,
+      0.06
+     ],
+     "n": 146
+    }
+   },
+   "n": {
+    "rich": 73,
+    "poor": 73
+   }
+  },
+  "mlb": {
+   "sold": {
+    "rich": 0.38,
+    "poor": 0.602,
+    "diff": {
+     "est": -0.222,
+     "ci95": [
+      -0.426,
+      -0.017
+     ],
+     "n": 143
+    }
+   },
+   "bought": {
+    "rich": 0.46,
+    "poor": 0.28,
+    "diff": {
+     "est": 0.18,
+     "ci95": [
+      0.038,
+      0.335
+     ],
+     "n": 143
+    }
+   },
+   "signed": {
+    "rich": 1.14,
+    "poor": -0.099,
+    "diff": {
+     "est": 1.239,
+     "ci95": [
+      0.554,
+      2.012
+     ],
+     "n": 137
+    }
+   },
+   "net_stars": {
+    "rich": -0.134,
+    "poor": -0.819,
+    "diff": {
+     "est": 0.684,
+     "ci95": [
+      -0.063,
+      1.523
+     ],
+     "n": 137
+    }
+   },
+   "d_pay": {
+    "rich": -0.009,
+    "poor": -0.016,
+    "diff": {
+     "est": 0.008,
+     "ci95": [
+      -0.091,
+      0.133
+     ],
+     "n": 155
+    }
+   },
+   "n": {
+    "rich": 51,
+    "poor": 104
+   }
+  },
+  "nfl": {
+   "sold": {
+    "rich": 0.138,
+    "poor": 0.051,
+    "diff": {
+     "est": 0.087,
+     "ci95": [
+      0.012,
+      0.168
+     ],
+     "n": 137
+    }
+   },
+   "bought": {
+    "rich": 0.069,
+    "poor": 0.076,
+    "diff": {
+     "est": -0.007,
+     "ci95": [
+      -0.119,
+      0.111
+     ],
+     "n": 137
+    }
+   },
+   "signed": {
+    "rich": 6.145,
+    "poor": 6.201,
+    "diff": {
+     "est": -0.057,
+     "ci95": [
+      -2.227,
+      2.217
+     ],
+     "n": 68
+    }
+   },
+   "net_stars": {
+    "rich": 0.002,
+    "poor": -0.066,
+    "diff": {
+     "est": 0.068,
+     "ci95": [
+      -0.316,
+      0.334
+     ],
+     "n": 137
+    }
+   },
+   "d_pay": {
+    "rich": 0.037,
+    "poor": 0.073,
+    "diff": {
+     "est": -0.036,
+     "ci95": [
+      -0.088,
+      0.012
+     ],
+     "n": 61
+    }
+   },
+   "n": {
+    "rich": 62,
+    "poor": 81
+   }
+  }
+ },
+ "teardown": {
+  "main": {
+   "nhl": {
+    "sold_vs_neither": {
+     "n_sold": 32,
+     "n_neither": 47,
+     "peak": {
+      "sold": 0.728,
+      "neither": 0.838,
+      "diff": {
+       "est": -0.11,
+       "ci95": [
+        -0.193,
+        -0.023
+       ],
+       "n": 79
+      }
+     },
+     "top3": {
+      "sold": 0.375,
+      "neither": 0.532,
+      "diff": {
+       "est": -0.157,
+       "ci95": [
+        -0.373,
+        0.05
+       ],
+       "n": 79
+      }
+     },
+     "title": {
+      "sold": 0.094,
+      "neither": 0.128,
+      "diff": {
+       "est": -0.034,
+       "ci95": [
+        -0.145,
+        0.058
+       ],
+       "n": 79
+      }
+     },
+     "low": {
+      "sold": 0.063,
+      "neither": 0.11,
+      "diff": {
+       "est": -0.047,
+       "ci95": [
+        -0.09,
+        -0.009
+       ],
+       "n": 79
+      }
+     },
+     "mean": {
+      "sold": 0.364,
+      "neither": 0.465,
+      "diff": {
+       "est": -0.101,
+       "ci95": [
+        -0.158,
+        -0.044
+       ],
+       "n": 79
+      }
+     }
+    },
+    "bought_vs_neither": {
+     "n_bought": 33,
+     "n_neither": 47,
+     "peak": {
+      "bought": 0.866,
+      "neither": 0.838,
+      "diff": {
+       "est": 0.028,
+       "ci95": [
+        -0.038,
+        0.085
+       ],
+       "n": 80
+      }
+     },
+     "top3": {
+      "bought": 0.606,
+      "neither": 0.532,
+      "diff": {
+       "est": 0.074,
+       "ci95": [
+        -0.14,
+        0.279
+       ],
+       "n": 80
+      }
+     },
+     "title": {
+      "bought": 0.242,
+      "neither": 0.128,
+      "diff": {
+       "est": 0.115,
+       "ci95": [
+        -0.038,
+        0.296
+       ],
+       "n": 80
+      }
+     },
+     "low": {
+      "bought": 0.155,
+      "neither": 0.11,
+      "diff": {
+       "est": 0.046,
+       "ci95": [
+        -0.001,
+        0.082
+       ],
+       "n": 80
+      }
+     },
+     "mean": {
+      "bought": 0.542,
+      "neither": 0.465,
+      "diff": {
+       "est": 0.076,
+       "ci95": [
+        0.017,
+        0.131
+       ],
+       "n": 80
+      }
+     }
+    },
+    "sold_vs_bought": {
+     "n_sold": 32,
+     "n_bought": 33,
+     "peak": {
+      "sold": 0.728,
+      "bought": 0.866,
+      "diff": {
+       "est": -0.138,
+       "ci95": [
+        -0.207,
+        -0.056
+       ],
+       "n": 65
+      }
+     },
+     "top3": {
+      "sold": 0.375,
+      "bought": 0.606,
+      "diff": {
+       "est": -0.231,
+       "ci95": [
+        -0.394,
+        -0.03
+       ],
+       "n": 65
+      }
+     },
+     "title": {
+      "sold": 0.094,
+      "bought": 0.242,
+      "diff": {
+       "est": -0.149,
+       "ci95": [
+        -0.354,
+        0.027
+       ],
+       "n": 65
+      }
+     },
+     "low": {
+      "sold": 0.063,
+      "bought": 0.155,
+      "diff": {
+       "est": -0.093,
+       "ci95": [
+        -0.134,
+        -0.049
+       ],
+       "n": 65
+      }
+     },
+     "mean": {
+      "sold": 0.364,
+      "bought": 0.542,
+      "diff": {
+       "est": -0.177,
+       "ci95": [
+        -0.233,
+        -0.114
+       ],
+       "n": 65
+      }
+     }
+    },
+    "adjusted": {
+     "sold_vs_neither": {
+      "peak": {
+       "est": -0.188,
+       "ci95": [
+        -0.292,
+        -0.082
+       ],
+       "n": 67
+      },
+      "title": {
+       "est": -0.012,
+       "ci95": [
+        -0.127,
+        0.123
+       ],
+       "n": 67
+      },
+      "low": {
+       "est": -0.036,
+       "ci95": [
+        -0.088,
+        0.004
+       ],
+       "n": 67
+      },
+      "mean": {
+       "est": -0.121,
+       "ci95": [
+        -0.202,
+        -0.049
+       ],
+       "n": 67
+      },
+      "groups": {
+       "sold": {
+        "start": 0.489,
+        "trend": -0.032,
+        "age_z": 0.606
+       },
+       "neither": {
+        "start": 0.505,
+        "trend": -0.012,
+        "age_z": -0.229
+       }
+      }
+     },
+     "bought_vs_neither": {
+      "peak": {
+       "est": 0.019,
+       "ci95": [
+        -0.082,
+        0.116
+       ],
+       "n": 69
+      },
+      "title": {
+       "est": 0.114,
+       "ci95": [
+        -0.026,
+        0.338
+       ],
+       "n": 69
+      },
+      "low": {
+       "est": 0.048,
+       "ci95": [
+        -0.006,
+        0.092
+       ],
+       "n": 69
+      },
+      "mean": {
+       "est": 0.08,
+       "ci95": [
+        0.009,
+        0.139
+       ],
+       "n": 69
+      },
+      "groups": {
+       "bought": {
+        "start": 0.468,
+        "trend": 0.079,
+        "age_z": -0.12
+       },
+       "neither": {
+        "start": 0.505,
+        "trend": -0.012,
+        "age_z": -0.229
+       }
+      }
+     }
+    }
+   },
+   "nba": {
+    "sold_vs_neither": {
+     "n_sold": 22,
+     "n_neither": 32,
+     "peak": {
+      "sold": 0.802,
+      "neither": 0.858,
+      "diff": {
+       "est": -0.056,
+       "ci95": [
+        -0.144,
+        0.036
+       ],
+       "n": 54
+      }
+     },
+     "top3": {
+      "sold": 0.318,
+      "neither": 0.438,
+      "diff": {
+       "est": -0.119,
+       "ci95": [
+        -0.409,
+        0.145
+       ],
+       "n": 54
+      }
+     },
+     "title": {
+      "sold": 0.091,
+      "neither": 0.25,
+      "diff": {
+       "est": -0.159,
+       "ci95": [
+        -0.368,
+        0.008
+       ],
+       "n": 54
+      }
+     },
+     "low": {
+      "sold": 0.068,
+      "neither": 0.11,
+      "diff": {
+       "est": -0.042,
+       "ci95": [
+        -0.106,
+        0.021
+       ],
+       "n": 54
+      }
+     },
+     "mean": {
+      "sold": 0.446,
+      "neither": 0.495,
+      "diff": {
+       "est": -0.049,
+       "ci95": [
+        -0.136,
+        0.038
+       ],
+       "n": 54
+      }
+     }
+    },
+    "bought_vs_neither": {
+     "n_bought": 35,
+     "n_neither": 32,
+     "peak": {
+      "bought": 0.834,
+      "neither": 0.858,
+      "diff": {
+       "est": -0.024,
+       "ci95": [
+        -0.096,
+        0.047
+       ],
+       "n": 67
+      }
+     },
+     "top3": {
+      "bought": 0.371,
+      "neither": 0.438,
+      "diff": {
+       "est": -0.066,
+       "ci95": [
+        -0.335,
+        0.192
+       ],
+       "n": 67
+      }
+     },
+     "title": {
+      "bought": 0.171,
+      "neither": 0.25,
+      "diff": {
+       "est": -0.079,
+       "ci95": [
+        -0.34,
+        0.162
+       ],
+       "n": 67
+      }
+     },
+     "low": {
+      "bought": 0.101,
+      "neither": 0.11,
+      "diff": {
+       "est": -0.009,
+       "ci95": [
+        -0.06,
+        0.037
+       ],
+       "n": 67
+      }
+     },
+     "mean": {
+      "bought": 0.514,
+      "neither": 0.495,
+      "diff": {
+       "est": 0.019,
+       "ci95": [
+        -0.041,
+        0.078
+       ],
+       "n": 67
+      }
+     }
+    },
+    "sold_vs_bought": {
+     "n_sold": 22,
+     "n_bought": 35,
+     "peak": {
+      "sold": 0.802,
+      "bought": 0.834,
+      "diff": {
+       "est": -0.032,
+       "ci95": [
+        -0.134,
+        0.056
+       ],
+       "n": 57
+      }
+     },
+     "top3": {
+      "sold": 0.318,
+      "bought": 0.371,
+      "diff": {
+       "est": -0.053,
+       "ci95": [
+        -0.321,
+        0.21
+       ],
+       "n": 57
+      }
+     },
+     "title": {
+      "sold": 0.091,
+      "bought": 0.171,
+      "diff": {
+       "est": -0.081,
+       "ci95": [
+        -0.278,
+        0.097
+       ],
+       "n": 57
+      }
+     },
+     "low": {
+      "sold": 0.068,
+      "bought": 0.101,
+      "diff": {
+       "est": -0.033,
+       "ci95": [
+        -0.089,
+        0.034
+       ],
+       "n": 57
+      }
+     },
+     "mean": {
+      "sold": 0.446,
+      "bought": 0.514,
+      "diff": {
+       "est": -0.068,
+       "ci95": [
+        -0.147,
+        0.004
+       ],
+       "n": 57
+      }
+     }
+    },
+    "adjusted": {
+     "sold_vs_neither": {
+      "peak": {
+       "est": -0.031,
+       "ci95": [
+        -0.142,
+        0.078
+       ],
+       "n": 49
+      },
+      "title": {
+       "est": -0.199,
+       "ci95": [
+        -0.414,
+        -0.009
+       ],
+       "n": 49
+      },
+      "low": {
+       "est": -0.049,
+       "ci95": [
+        -0.112,
+        0.017
+       ],
+       "n": 49
+      },
+      "mean": {
+       "est": -0.044,
+       "ci95": [
+        -0.14,
+        0.033
+       ],
+       "n": 49
+      },
+      "groups": {
+       "sold": {
+        "start": 0.517,
+        "trend": -0.078,
+        "age_z": 0.144
+       },
+       "neither": {
+        "start": 0.531,
+        "trend": 0.048,
+        "age_z": 0.141
+       }
+      }
+     },
+     "bought_vs_neither": {
+      "peak": {
+       "est": -0.03,
+       "ci95": [
+        -0.1,
+        0.036
+       ],
+       "n": 59
+      },
+      "title": {
+       "est": -0.096,
+       "ci95": [
+        -0.404,
+        0.177
+       ],
+       "n": 59
+      },
+      "low": {
+       "est": -0.013,
+       "ci95": [
+        -0.071,
+        0.04
+       ],
+       "n": 59
+      },
+      "mean": {
+       "est": 0.012,
+       "ci95": [
+        -0.05,
+        0.087
+       ],
+       "n": 59
+      },
+      "groups": {
+       "bought": {
+        "start": 0.515,
+        "trend": 0.082,
+        "age_z": -0.155
+       },
+       "neither": {
+        "start": 0.531,
+        "trend": 0.048,
+        "age_z": 0.141
+       }
+      }
+     }
+    }
+   },
+   "mlb": {
+    "sold_vs_neither": {
+     "n_sold": 33,
+     "n_neither": 36,
+     "peak": {
+      "sold": 0.856,
+      "neither": 0.855,
+      "diff": {
+       "est": 0.001,
+       "ci95": [
+        -0.073,
+        0.08
+       ],
+       "n": 69
+      }
+     },
+     "top3": {
+      "sold": 0.485,
+      "neither": 0.472,
+      "diff": {
+       "est": 0.013,
+       "ci95": [
+        -0.25,
+        0.291
+       ],
+       "n": 69
+      }
+     },
+     "title": {
+      "sold": 0.091,
+      "neither": 0.167,
+      "diff": {
+       "est": -0.076,
+       "ci95": [
+        -0.233,
+        0.086
+       ],
+       "n": 69
+      }
+     },
+     "low": {
+      "sold": 0.069,
+      "neither": 0.137,
+      "diff": {
+       "est": -0.068,
+       "ci95": [
+        -0.127,
+        -0.019
+       ],
+       "n": 69
+      }
+     },
+     "mean": {
+      "sold": 0.409,
+      "neither": 0.507,
+      "diff": {
+       "est": -0.098,
+       "ci95": [
+        -0.152,
+        -0.041
+       ],
+       "n": 69
+      }
+     }
+    },
+    "bought_vs_neither": {
+     "n_bought": 35,
+     "n_neither": 36,
+     "peak": {
+      "bought": 0.899,
+      "neither": 0.855,
+      "diff": {
+       "est": 0.044,
+       "ci95": [
+        -0.008,
+        0.101
+       ],
+       "n": 71
+      }
+     },
+     "top3": {
+      "bought": 0.657,
+      "neither": 0.472,
+      "diff": {
+       "est": 0.185,
+       "ci95": [
+        -0.02,
+        0.375
+       ],
+       "n": 71
+      }
+     },
+     "title": {
+      "bought": 0.2,
+      "neither": 0.167,
+      "diff": {
+       "est": 0.033,
+       "ci95": [
+        -0.125,
+        0.179
+       ],
+       "n": 71
+      }
+     },
+     "low": {
+      "bought": 0.222,
+      "neither": 0.137,
+      "diff": {
+       "est": 0.086,
+       "ci95": [
+        0.027,
+        0.142
+       ],
+       "n": 71
+      }
+     },
+     "mean": {
+      "bought": 0.585,
+      "neither": 0.507,
+      "diff": {
+       "est": 0.078,
+       "ci95": [
+        0.031,
+        0.126
+       ],
+       "n": 71
+      }
+     }
+    },
+    "sold_vs_bought": {
+     "n_sold": 33,
+     "n_bought": 35,
+     "peak": {
+      "sold": 0.856,
+      "bought": 0.899,
+      "diff": {
+       "est": -0.043,
+       "ci95": [
+        -0.114,
+        0.028
+       ],
+       "n": 68
+      }
+     },
+     "top3": {
+      "sold": 0.485,
+      "bought": 0.657,
+      "diff": {
+       "est": -0.172,
+       "ci95": [
+        -0.417,
+        0.106
+       ],
+       "n": 68
+      }
+     },
+     "title": {
+      "sold": 0.091,
+      "bought": 0.2,
+      "diff": {
+       "est": -0.109,
+       "ci95": [
+        -0.301,
+        0.094
+       ],
+       "n": 68
+      }
+     },
+     "low": {
+      "sold": 0.069,
+      "bought": 0.222,
+      "diff": {
+       "est": -0.153,
+       "ci95": [
+        -0.241,
+        -0.075
+       ],
+       "n": 68
+      }
+     },
+     "mean": {
+      "sold": 0.409,
+      "bought": 0.585,
+      "diff": {
+       "est": -0.175,
+       "ci95": [
+        -0.251,
+        -0.104
+       ],
+       "n": 68
+      }
+     }
+    },
+    "adjusted": {
+     "sold_vs_neither": {
+      "peak": {
+       "est": -0.003,
+       "ci95": [
+        -0.085,
+        0.096
+       ],
+       "n": 65
+      },
+      "title": {
+       "est": -0.051,
+       "ci95": [
+        -0.184,
+        0.132
+       ],
+       "n": 65
+      },
+      "low": {
+       "est": -0.062,
+       "ci95": [
+        -0.118,
+        -0.018
+       ],
+       "n": 65
+      },
+      "mean": {
+       "est": -0.082,
+       "ci95": [
+        -0.136,
+        -0.017
+       ],
+       "n": 65
+      },
+      "groups": {
+       "sold": {
+        "start": 0.456,
+        "trend": -0.041,
+        "age_z": -0.085
+       },
+       "neither": {
+        "start": 0.508,
+        "trend": 0.004,
+        "age_z": 0.027
+       }
+      }
+     },
+     "bought_vs_neither": {
+      "peak": {
+       "est": 0.042,
+       "ci95": [
+        -0.007,
+        0.091
+       ],
+       "n": 63
+      },
+      "title": {
+       "est": -0.038,
+       "ci95": [
+        -0.206,
+        0.124
+       ],
+       "n": 63
+      },
+      "low": {
+       "est": 0.061,
+       "ci95": [
+        -0.007,
+        0.123
+       ],
+       "n": 63
+      },
+      "mean": {
+       "est": 0.078,
+       "ci95": [
+        0.026,
+        0.128
+       ],
+       "n": 63
+      },
+      "groups": {
+       "bought": {
+        "start": 0.49,
+        "trend": -0.032,
+        "age_z": 0.067
+       },
+       "neither": {
+        "start": 0.508,
+        "trend": 0.004,
+        "age_z": 0.027
+       }
+      }
+     }
+    }
+   },
+   "nfl": {
+    "sold_vs_neither": {
+     "n_sold": 26,
+     "n_neither": 75,
+     "peak": {
+      "sold": 0.867,
+      "neither": 0.849,
+      "diff": {
+       "est": 0.018,
+       "ci95": [
+        -0.046,
+        0.084
+       ],
+       "n": 101
+      }
+     },
+     "top3": {
+      "sold": 0.577,
+      "neither": 0.587,
+      "diff": {
+       "est": -0.01,
+       "ci95": [
+        -0.244,
+        0.252
+       ],
+       "n": 101
+      }
+     },
+     "title": {
+      "sold": 0.231,
+      "neither": 0.187,
+      "diff": {
+       "est": 0.044,
+       "ci95": [
+        -0.181,
+        0.306
+       ],
+       "n": 101
+      }
+     },
+     "low": {
+      "sold": 0.099,
+      "neither": 0.099,
+      "diff": {
+       "est": 0.001,
+       "ci95": [
+        -0.064,
+        0.071
+       ],
+       "n": 101
+      }
+     },
+     "mean": {
+      "sold": 0.471,
+      "neither": 0.501,
+      "diff": {
+       "est": -0.03,
+       "ci95": [
+        -0.093,
+        0.032
+       ],
+       "n": 101
+      }
+     }
+    },
+    "bought_vs_neither": {
+     "n_bought": 33,
+     "n_neither": 75,
+     "peak": {
+      "bought": 0.87,
+      "neither": 0.849,
+      "diff": {
+       "est": 0.021,
+       "ci95": [
+        -0.052,
+        0.096
+       ],
+       "n": 108
+      }
+     },
+     "top3": {
+      "bought": 0.667,
+      "neither": 0.587,
+      "diff": {
+       "est": 0.08,
+       "ci95": [
+        -0.158,
+        0.313
+       ],
+       "n": 108
+      }
+     },
+     "title": {
+      "bought": 0.303,
+      "neither": 0.187,
+      "diff": {
+       "est": 0.116,
+       "ci95": [
+        -0.112,
+        0.367
+       ],
+       "n": 108
+      }
+     },
+     "low": {
+      "bought": 0.113,
+      "neither": 0.099,
+      "diff": {
+       "est": 0.014,
+       "ci95": [
+        -0.045,
+        0.075
+       ],
+       "n": 108
+      }
+     },
+     "mean": {
+      "bought": 0.498,
+      "neither": 0.501,
+      "diff": {
+       "est": -0.003,
+       "ci95": [
+        -0.075,
+        0.074
+       ],
+       "n": 108
+      }
+     }
+    },
+    "sold_vs_bought": {
+     "n_sold": 26,
+     "n_bought": 33,
+     "peak": {
+      "sold": 0.867,
+      "bought": 0.87,
+      "diff": {
+       "est": -0.004,
+       "ci95": [
+        -0.086,
+        0.064
+       ],
+       "n": 59
+      }
+     },
+     "top3": {
+      "sold": 0.577,
+      "bought": 0.667,
+      "diff": {
+       "est": -0.09,
+       "ci95": [
+        -0.31,
+        0.134
+       ],
+       "n": 59
+      }
+     },
+     "title": {
+      "sold": 0.231,
+      "bought": 0.303,
+      "diff": {
+       "est": -0.072,
+       "ci95": [
+        -0.267,
+        0.105
+       ],
+       "n": 59
+      }
+     },
+     "low": {
+      "sold": 0.099,
+      "bought": 0.113,
+      "diff": {
+       "est": -0.014,
+       "ci95": [
+        -0.086,
+        0.059
+       ],
+       "n": 59
+      }
+     },
+     "mean": {
+      "sold": 0.471,
+      "bought": 0.498,
+      "diff": {
+       "est": -0.027,
+       "ci95": [
+        -0.102,
+        0.029
+       ],
+       "n": 59
+      }
+     }
+    },
+    "adjusted": {
+     "sold_vs_neither": {
+      "peak": {
+       "est": 0.028,
+       "ci95": [
+        -0.039,
+        0.095
+       ],
+       "n": 88
+      },
+      "title": {
+       "est": 0.078,
+       "ci95": [
+        -0.167,
+        0.315
+       ],
+       "n": 88
+      },
+      "low": {
+       "est": 0.003,
+       "ci95": [
+        -0.068,
+        0.073
+       ],
+       "n": 88
+      },
+      "mean": {
+       "est": -0.027,
+       "ci95": [
+        -0.09,
+        0.041
+       ],
+       "n": 88
+      },
+      "groups": {
+       "sold": {
+        "start": 0.489,
+        "trend": 0.054,
+        "age_z": null
+       },
+       "neither": {
+        "start": 0.522,
+        "trend": 0.022,
+        "age_z": null
+       }
+      }
+     },
+     "bought_vs_neither": {
+      "peak": {
+       "est": 0.02,
+       "ci95": [
+        -0.065,
+        0.096
+       ],
+       "n": 95
+      },
+      "title": {
+       "est": 0.114,
+       "ci95": [
+        -0.131,
+        0.34
+       ],
+       "n": 95
+      },
+      "low": {
+       "est": 0.008,
+       "ci95": [
+        -0.06,
+        0.075
+       ],
+       "n": 95
+      },
+      "mean": {
+       "est": -0.007,
+       "ci95": [
+        -0.094,
+        0.08
+       ],
+       "n": 95
+      },
+      "groups": {
+       "bought": {
+        "start": 0.508,
+        "trend": -0.046,
+        "age_z": null
+       },
+       "neither": {
+        "start": 0.522,
+        "trend": 0.022,
+        "age_z": null
+       }
+      }
+     }
+    }
+   },
+   "all": {
+    "sold_vs_neither": {
+     "n_sold": 113,
+     "n_neither": 190,
+     "peak": {
+      "sold": 0.812,
+      "neither": 0.849,
+      "diff": {
+       "est": -0.037,
+       "ci95": [
+        -0.082,
+        0.004
+       ],
+       "n": 303
+      }
+     },
+     "top3": {
+      "sold": 0.442,
+      "neither": 0.526,
+      "diff": {
+       "est": -0.084,
+       "ci95": [
+        -0.213,
+        0.046
+       ],
+       "n": 303
+      }
+     },
+     "title": {
+      "sold": 0.124,
+      "neither": 0.179,
+      "diff": {
+       "est": -0.055,
+       "ci95": [
+        -0.145,
+        0.036
+       ],
+       "n": 303
+      }
+     },
+     "low": {
+      "sold": 0.074,
+      "neither": 0.111,
+      "diff": {
+       "est": -0.037,
+       "ci95": [
+        -0.067,
+        -0.007
+       ],
+       "n": 303
+      }
+     },
+     "mean": {
+      "sold": 0.418,
+      "neither": 0.492,
+      "diff": {
+       "est": -0.074,
+       "ci95": [
+        -0.108,
+        -0.041
+       ],
+       "n": 303
+      }
+     }
+    },
+    "bought_vs_neither": {
+     "n_bought": 136,
+     "n_neither": 190,
+     "peak": {
+      "bought": 0.867,
+      "neither": 0.849,
+      "diff": {
+       "est": 0.018,
+       "ci95": [
+        -0.016,
+        0.052
+       ],
+       "n": 326
+      }
+     },
+     "top3": {
+      "bought": 0.574,
+      "neither": 0.526,
+      "diff": {
+       "est": 0.047,
+       "ci95": [
+        -0.07,
+        0.167
+       ],
+       "n": 326
+      }
+     },
+     "title": {
+      "bought": 0.228,
+      "neither": 0.179,
+      "diff": {
+       "est": 0.049,
+       "ci95": [
+        -0.05,
+        0.156
+       ],
+       "n": 326
+      }
+     },
+     "low": {
+      "bought": 0.148,
+      "neither": 0.111,
+      "diff": {
+       "est": 0.038,
+       "ci95": [
+        0.01,
+        0.064
+       ],
+       "n": 326
+      }
+     },
+     "mean": {
+      "bought": 0.535,
+      "neither": 0.492,
+      "diff": {
+       "est": 0.043,
+       "ci95": [
+        0.009,
+        0.078
+       ],
+       "n": 326
+      }
+     }
+    },
+    "sold_vs_bought": {
+     "n_sold": 113,
+     "n_bought": 136,
+     "peak": {
+      "sold": 0.812,
+      "bought": 0.867,
+      "diff": {
+       "est": -0.056,
+       "ci95": [
+        -0.097,
+        -0.013
+       ],
+       "n": 249
+      }
+     },
+     "top3": {
+      "sold": 0.442,
+      "bought": 0.574,
+      "diff": {
+       "est": -0.131,
+       "ci95": [
+        -0.245,
+        -0.014
+       ],
+       "n": 249
+      }
+     },
+     "title": {
+      "sold": 0.124,
+      "bought": 0.228,
+      "diff": {
+       "est": -0.104,
+       "ci95": [
+        -0.198,
+        -0.012
+       ],
+       "n": 249
+      }
+     },
+     "low": {
+      "sold": 0.074,
+      "bought": 0.148,
+      "diff": {
+       "est": -0.074,
+       "ci95": [
+        -0.109,
+        -0.04
+       ],
+       "n": 249
+      }
+     },
+     "mean": {
+      "sold": 0.418,
+      "bought": 0.535,
+      "diff": {
+       "est": -0.117,
+       "ci95": [
+        -0.154,
+        -0.08
+       ],
+       "n": 249
+      }
+     }
+    },
+    "adjusted": {
+     "sold_vs_neither": {
+      "peak": {
+       "est": -0.037,
+       "ci95": [
+        -0.08,
+        0.008
+       ],
+       "n": 269
+      },
+      "title": {
+       "est": -0.035,
+       "ci95": [
+        -0.142,
+        0.079
+       ],
+       "n": 269
+      },
+      "low": {
+       "est": -0.033,
+       "ci95": [
+        -0.065,
+        -0.0
+       ],
+       "n": 269
+      },
+      "mean": {
+       "est": -0.063,
+       "ci95": [
+        -0.099,
+        -0.027
+       ],
+       "n": 269
+      },
+      "groups": {
+       "sold": {
+        "start": 0.485,
+        "trend": -0.023,
+        "age_z": 0.206
+       },
+       "neither": {
+        "start": 0.516,
+        "trend": 0.014,
+        "age_z": -0.045
+       }
+      }
+     },
+     "bought_vs_neither": {
+      "peak": {
+       "est": 0.019,
+       "ci95": [
+        -0.019,
+        0.056
+       ],
+       "n": 286
+      },
+      "title": {
+       "est": 0.044,
+       "ci95": [
+        -0.07,
+        0.167
+       ],
+       "n": 286
+      },
+      "low": {
+       "est": 0.029,
+       "ci95": [
+        0.002,
+        0.059
+       ],
+       "n": 286
+      },
+      "mean": {
+       "est": 0.04,
+       "ci95": [
+        0.003,
+        0.076
+       ],
+       "n": 286
+      },
+      "groups": {
+       "bought": {
+        "start": 0.497,
+        "trend": 0.019,
+        "age_z": -0.072
+       },
+       "neither": {
+        "start": 0.516,
+        "trend": 0.014,
+        "age_z": -0.045
+       }
+      }
+     }
+    }
+   }
+  },
+  "payroll": {
+   "nba": {
+    "cut_vs_neither": {
+     "n_sold": 36,
+     "n_neither": 70,
+     "peak": {
+      "sold": 0.852,
+      "neither": 0.843,
+      "diff": {
+       "est": 0.009,
+       "ci95": [
+        -0.047,
+        0.074
+       ],
+       "n": 106
+      }
+     },
+     "top3": {
+      "sold": 0.361,
+      "neither": 0.457,
+      "diff": {
+       "est": -0.096,
+       "ci95": [
+        -0.246,
+        0.048
+       ],
+       "n": 106
+      }
+     },
+     "title": {
+      "sold": 0.194,
+      "neither": 0.214,
+      "diff": {
+       "est": -0.02,
+       "ci95": [
+        -0.172,
+        0.129
+       ],
+       "n": 106
+      }
+     },
+     "low": {
+      "sold": 0.069,
+      "neither": 0.108,
+      "diff": {
+       "est": -0.038,
+       "ci95": [
+        -0.076,
+        -0.004
+       ],
+       "n": 106
+      }
+     },
+     "mean": {
+      "sold": 0.502,
+      "neither": 0.499,
+      "diff": {
+       "est": 0.004,
+       "ci95": [
+        -0.049,
+        0.06
+       ],
+       "n": 106
+      }
+     }
+    },
+    "added_vs_neither": {
+     "n_bought": 36,
+     "n_neither": 70,
+     "peak": {
+      "bought": 0.839,
+      "neither": 0.843,
+      "diff": {
+       "est": -0.004,
+       "ci95": [
+        -0.069,
+        0.062
+       ],
+       "n": 106
+      }
+     },
+     "top3": {
+      "bought": 0.333,
+      "neither": 0.457,
+      "diff": {
+       "est": -0.124,
+       "ci95": [
+        -0.302,
+        0.076
+       ],
+       "n": 106
+      }
+     },
+     "title": {
+      "bought": 0.111,
+      "neither": 0.214,
+      "diff": {
+       "est": -0.103,
+       "ci95": [
+        -0.245,
+        0.026
+       ],
+       "n": 106
+      }
+     },
+     "low": {
+      "bought": 0.095,
+      "neither": 0.108,
+      "diff": {
+       "est": -0.013,
+       "ci95": [
+        -0.061,
+        0.034
+       ],
+       "n": 106
+      }
+     },
+     "mean": {
+      "bought": 0.497,
+      "neither": 0.499,
+      "diff": {
+       "est": -0.002,
+       "ci95": [
+        -0.065,
+        0.066
+       ],
+       "n": 106
+      }
+     }
+    },
+    "cut_vs_added": {
+     "n_sold": 36,
+     "n_bought": 36,
+     "peak": {
+      "sold": 0.852,
+      "bought": 0.839,
+      "diff": {
+       "est": 0.013,
+       "ci95": [
+        -0.058,
+        0.075
+       ],
+       "n": 72
+      }
+     },
+     "top3": {
+      "sold": 0.361,
+      "bought": 0.333,
+      "diff": {
+       "est": 0.028,
+       "ci95": [
+        -0.148,
+        0.176
+       ],
+       "n": 72
+      }
+     },
+     "title": {
+      "sold": 0.194,
+      "bought": 0.111,
+      "diff": {
+       "est": 0.083,
+       "ci95": [
+        -0.022,
+        0.217
+       ],
+       "n": 72
+      }
+     },
+     "low": {
+      "sold": 0.069,
+      "bought": 0.095,
+      "diff": {
+       "est": -0.025,
+       "ci95": [
+        -0.063,
+        0.016
+       ],
+       "n": 72
+      }
+     },
+     "mean": {
+      "sold": 0.502,
+      "bought": 0.497,
+      "diff": {
+       "est": 0.005,
+       "ci95": [
+        -0.054,
+        0.059
+       ],
+       "n": 72
+      }
+     }
+    }
+   },
+   "mlb": {
+    "cut_vs_neither": {
+     "n_sold": 35,
+     "n_neither": 68,
+     "peak": {
+      "sold": 0.862,
+      "neither": 0.876,
+      "diff": {
+       "est": -0.014,
+       "ci95": [
+        -0.059,
+        0.036
+       ],
+       "n": 103
+      }
+     },
+     "top3": {
+      "sold": 0.457,
+      "neither": 0.544,
+      "diff": {
+       "est": -0.087,
+       "ci95": [
+        -0.261,
+        0.13
+       ],
+       "n": 103
+      }
+     },
+     "title": {
+      "sold": 0.171,
+      "neither": 0.176,
+      "diff": {
+       "est": -0.005,
+       "ci95": [
+        -0.152,
+        0.145
+       ],
+       "n": 103
+      }
+     },
+     "low": {
+      "sold": 0.155,
+      "neither": 0.125,
+      "diff": {
+       "est": 0.03,
+       "ci95": [
+        -0.051,
+        0.113
+       ],
+       "n": 103
+      }
+     },
+     "mean": {
+      "sold": 0.502,
+      "neither": 0.491,
+      "diff": {
+       "est": 0.011,
+       "ci95": [
+        -0.051,
+        0.075
+       ],
+       "n": 103
+      }
+     }
+    },
+    "added_vs_neither": {
+     "n_bought": 35,
+     "n_neither": 68,
+     "peak": {
+      "bought": 0.857,
+      "neither": 0.876,
+      "diff": {
+       "est": -0.019,
+       "ci95": [
+        -0.087,
+        0.052
+       ],
+       "n": 103
+      }
+     },
+     "top3": {
+      "bought": 0.543,
+      "neither": 0.544,
+      "diff": {
+       "est": -0.001,
+       "ci95": [
+        -0.212,
+        0.2
+       ],
+       "n": 103
+      }
+     },
+     "title": {
+      "bought": 0.286,
+      "neither": 0.176,
+      "diff": {
+       "est": 0.109,
+       "ci95": [
+        -0.137,
+        0.376
+       ],
+       "n": 103
+      }
+     },
+     "low": {
+      "bought": 0.193,
+      "neither": 0.125,
+      "diff": {
+       "est": 0.068,
+       "ci95": [
+        -0.037,
+        0.175
+       ],
+       "n": 103
+      }
+     },
+     "mean": {
+      "bought": 0.552,
+      "neither": 0.491,
+      "diff": {
+       "est": 0.061,
+       "ci95": [
+        -0.02,
+        0.15
+       ],
+       "n": 103
+      }
+     }
+    },
+    "cut_vs_added": {
+     "n_sold": 35,
+     "n_bought": 35,
+     "peak": {
+      "sold": 0.862,
+      "bought": 0.857,
+      "diff": {
+       "est": 0.005,
+       "ci95": [
+        -0.055,
+        0.069
+       ],
+       "n": 70
+      }
+     },
+     "top3": {
+      "sold": 0.457,
+      "bought": 0.543,
+      "diff": {
+       "est": -0.086,
+       "ci95": [
+        -0.274,
+        0.115
+       ],
+       "n": 70
+      }
+     },
+     "title": {
+      "sold": 0.171,
+      "bought": 0.286,
+      "diff": {
+       "est": -0.114,
+       "ci95": [
+        -0.368,
+        0.128
+       ],
+       "n": 70
+      }
+     },
+     "low": {
+      "sold": 0.155,
+      "bought": 0.193,
+      "diff": {
+       "est": -0.038,
+       "ci95": [
+        -0.147,
+        0.061
+       ],
+       "n": 70
+      }
+     },
+     "mean": {
+      "sold": 0.502,
+      "bought": 0.552,
+      "diff": {
+       "est": -0.05,
+       "ci95": [
+        -0.127,
+        0.029
+       ],
+       "n": 70
+      }
+     }
+    }
+   },
+   "all": {
+    "cut_vs_neither": {
+     "n_sold": 71,
+     "n_neither": 138,
+     "peak": {
+      "sold": 0.857,
+      "neither": 0.859,
+      "diff": {
+       "est": -0.002,
+       "ci95": [
+        -0.038,
+        0.04
+       ],
+       "n": 209
+      }
+     },
+     "top3": {
+      "sold": 0.408,
+      "neither": 0.5,
+      "diff": {
+       "est": -0.092,
+       "ci95": [
+        -0.214,
+        0.035
+       ],
+       "n": 209
+      }
+     },
+     "title": {
+      "sold": 0.183,
+      "neither": 0.196,
+      "diff": {
+       "est": -0.013,
+       "ci95": [
+        -0.119,
+        0.094
+       ],
+       "n": 209
+      }
+     },
+     "low": {
+      "sold": 0.112,
+      "neither": 0.116,
+      "diff": {
+       "est": -0.005,
+       "ci95": [
+        -0.052,
+        0.042
+       ],
+       "n": 209
+      }
+     },
+     "mean": {
+      "sold": 0.502,
+      "neither": 0.495,
+      "diff": {
+       "est": 0.007,
+       "ci95": [
+        -0.034,
+        0.051
+       ],
+       "n": 209
+      }
+     }
+    },
+    "added_vs_neither": {
+     "n_bought": 71,
+     "n_neither": 138,
+     "peak": {
+      "bought": 0.848,
+      "neither": 0.859,
+      "diff": {
+       "est": -0.011,
+       "ci95": [
+        -0.058,
+        0.037
+       ],
+       "n": 209
+      }
+     },
+     "top3": {
+      "bought": 0.437,
+      "neither": 0.5,
+      "diff": {
+       "est": -0.063,
+       "ci95": [
+        -0.21,
+        0.085
+       ],
+       "n": 209
+      }
+     },
+     "title": {
+      "bought": 0.197,
+      "neither": 0.196,
+      "diff": {
+       "est": 0.002,
+       "ci95": [
+        -0.147,
+        0.145
+       ],
+       "n": 209
+      }
+     },
+     "low": {
+      "bought": 0.143,
+      "neither": 0.116,
+      "diff": {
+       "est": 0.027,
+       "ci95": [
+        -0.035,
+        0.09
+       ],
+       "n": 209
+      }
+     },
+     "mean": {
+      "bought": 0.524,
+      "neither": 0.495,
+      "diff": {
+       "est": 0.029,
+       "ci95": [
+        -0.026,
+        0.088
+       ],
+       "n": 209
+      }
+     }
+    },
+    "cut_vs_added": {
+     "n_sold": 71,
+     "n_bought": 71,
+     "peak": {
+      "sold": 0.857,
+      "bought": 0.848,
+      "diff": {
+       "est": 0.009,
+       "ci95": [
+        -0.037,
+        0.051
+       ],
+       "n": 142
+      }
+     },
+     "top3": {
+      "sold": 0.408,
+      "bought": 0.437,
+      "diff": {
+       "est": -0.028,
+       "ci95": [
+        -0.165,
+        0.099
+       ],
+       "n": 142
+      }
+     },
+     "title": {
+      "sold": 0.183,
+      "bought": 0.197,
+      "diff": {
+       "est": -0.014,
+       "ci95": [
+        -0.154,
+        0.119
+       ],
+       "n": 142
+      }
+     },
+     "low": {
+      "sold": 0.112,
+      "bought": 0.143,
+      "diff": {
+       "est": -0.032,
+       "ci95": [
+        -0.094,
+        0.026
+       ],
+       "n": 142
+      }
+     },
+     "mean": {
+      "sold": 0.502,
+      "bought": 0.524,
+      "diff": {
+       "est": -0.022,
+       "ci95": [
+        -0.073,
+        0.026
+       ],
+       "n": 142
+      }
+     }
+    }
+   }
+  },
+  "grid": [
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nhl",
+    "comparison": "sold_vs_neither",
+    "n_a": 34,
+    "n_b": 52,
+    "peak": -0.093,
+    "title": -0.008,
+    "low": -0.089,
+    "mean": -0.132,
+    "peak_ci": [
+     -0.188,
+     0.014
+    ],
+    "title_ci": [
+     -0.098,
+     0.074
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nhl",
+    "comparison": "bought_vs_neither",
+    "n_a": 38,
+    "n_b": 52,
+    "peak": 0.053,
+    "title": 0.009,
+    "low": 0.042,
+    "mean": 0.074,
+    "peak_ci": [
+     -0.029,
+     0.128
+    ],
+    "title_ci": [
+     -0.092,
+     0.097
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nhl",
+    "comparison": "sold_vs_bought",
+    "n_a": 34,
+    "n_b": 38,
+    "peak": -0.146,
+    "title": -0.017,
+    "low": -0.131,
+    "mean": -0.206,
+    "peak_ci": [
+     -0.219,
+     -0.066
+    ],
+    "title_ci": [
+     -0.131,
+     0.088
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nba",
+    "comparison": "sold_vs_neither",
+    "n_a": 24,
+    "n_b": 34,
+    "peak": -0.062,
+    "title": -0.135,
+    "low": -0.028,
+    "mean": -0.063,
+    "peak_ci": [
+     -0.16,
+     0.031
+    ],
+    "title_ci": [
+     -0.312,
+     0.004
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nba",
+    "comparison": "bought_vs_neither",
+    "n_a": 38,
+    "n_b": 34,
+    "peak": 0.001,
+    "title": 0.008,
+    "low": 0.009,
+    "mean": 0.036,
+    "peak_ci": [
+     -0.071,
+     0.081
+    ],
+    "title_ci": [
+     -0.232,
+     0.204
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nba",
+    "comparison": "sold_vs_bought",
+    "n_a": 24,
+    "n_b": 38,
+    "peak": -0.064,
+    "title": -0.143,
+    "low": -0.038,
+    "mean": -0.099,
+    "peak_ci": [
+     -0.168,
+     0.04
+    ],
+    "title_ci": [
+     -0.334,
+     0.024
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "mlb",
+    "comparison": "sold_vs_neither",
+    "n_a": 38,
+    "n_b": 42,
+    "peak": -0.036,
+    "title": -0.114,
+    "low": -0.1,
+    "mean": -0.124,
+    "peak_ci": [
+     -0.131,
+     0.073
+    ],
+    "title_ci": [
+     -0.268,
+     0.047
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "mlb",
+    "comparison": "bought_vs_neither",
+    "n_a": 39,
+    "n_b": 42,
+    "peak": 0.067,
+    "title": -0.013,
+    "low": 0.078,
+    "mean": 0.096,
+    "peak_ci": [
+     0.011,
+     0.134
+    ],
+    "title_ci": [
+     -0.143,
+     0.126
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "mlb",
+    "comparison": "sold_vs_bought",
+    "n_a": 38,
+    "n_b": 39,
+    "peak": -0.102,
+    "title": -0.101,
+    "low": -0.179,
+    "mean": -0.22,
+    "peak_ci": [
+     -0.193,
+     -0.015
+    ],
+    "title_ci": [
+     -0.278,
+     0.058
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nfl",
+    "comparison": "sold_vs_neither",
+    "n_a": 27,
+    "n_b": 75,
+    "peak": 0.019,
+    "title": 0.028,
+    "low": -0.023,
+    "mean": -0.043,
+    "peak_ci": [
+     -0.049,
+     0.088
+    ],
+    "title_ci": [
+     -0.175,
+     0.245
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nfl",
+    "comparison": "bought_vs_neither",
+    "n_a": 36,
+    "n_b": 75,
+    "peak": 0.015,
+    "title": 0.102,
+    "low": 0.02,
+    "mean": -0.001,
+    "peak_ci": [
+     -0.059,
+     0.086
+    ],
+    "title_ci": [
+     -0.098,
+     0.312
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "nfl",
+    "comparison": "sold_vs_bought",
+    "n_a": 27,
+    "n_b": 36,
+    "peak": 0.003,
+    "title": -0.074,
+    "low": -0.043,
+    "mean": -0.043,
+    "peak_ci": [
+     -0.084,
+     0.087
+    ],
+    "title_ci": [
+     -0.256,
+     0.064
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "all",
+    "comparison": "sold_vs_neither",
+    "n_a": 123,
+    "n_b": 203,
+    "peak": -0.047,
+    "title": -0.052,
+    "low": -0.058,
+    "mean": -0.096,
+    "peak_ci": [
+     -0.091,
+     -0.0
+    ],
+    "title_ci": [
+     -0.128,
+     0.018
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "all",
+    "comparison": "bought_vs_neither",
+    "n_a": 151,
+    "n_b": 203,
+    "peak": 0.033,
+    "title": 0.033,
+    "low": 0.043,
+    "mean": 0.053,
+    "peak_ci": [
+     -0.003,
+     0.067
+    ],
+    "title_ci": [
+     -0.055,
+     0.115
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 8,
+    "league": "all",
+    "comparison": "sold_vs_bought",
+    "n_a": 123,
+    "n_b": 151,
+    "peak": -0.079,
+    "title": -0.084,
+    "low": -0.101,
+    "mean": -0.149,
+    "peak_ci": [
+     -0.124,
+     -0.031
+    ],
+    "title_ci": [
+     -0.168,
+     -0.006
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nhl",
+    "comparison": "sold_vs_neither",
+    "n_a": 32,
+    "n_b": 47,
+    "peak": -0.11,
+    "title": -0.034,
+    "low": -0.047,
+    "mean": -0.101,
+    "peak_ci": [
+     -0.202,
+     -0.038
+    ],
+    "title_ci": [
+     -0.137,
+     0.066
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nhl",
+    "comparison": "bought_vs_neither",
+    "n_a": 33,
+    "n_b": 47,
+    "peak": 0.028,
+    "title": 0.115,
+    "low": 0.046,
+    "mean": 0.076,
+    "peak_ci": [
+     -0.036,
+     0.084
+    ],
+    "title_ci": [
+     -0.027,
+     0.299
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nhl",
+    "comparison": "sold_vs_bought",
+    "n_a": 32,
+    "n_b": 33,
+    "peak": -0.138,
+    "title": -0.149,
+    "low": -0.093,
+    "mean": -0.177,
+    "peak_ci": [
+     -0.207,
+     -0.067
+    ],
+    "title_ci": [
+     -0.365,
+     0.039
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nba",
+    "comparison": "sold_vs_neither",
+    "n_a": 22,
+    "n_b": 32,
+    "peak": -0.056,
+    "title": -0.159,
+    "low": -0.042,
+    "mean": -0.049,
+    "peak_ci": [
+     -0.146,
+     0.034
+    ],
+    "title_ci": [
+     -0.358,
+     0.012
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nba",
+    "comparison": "bought_vs_neither",
+    "n_a": 35,
+    "n_b": 32,
+    "peak": -0.024,
+    "title": -0.079,
+    "low": -0.009,
+    "mean": 0.019,
+    "peak_ci": [
+     -0.093,
+     0.049
+    ],
+    "title_ci": [
+     -0.325,
+     0.172
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nba",
+    "comparison": "sold_vs_bought",
+    "n_a": 22,
+    "n_b": 35,
+    "peak": -0.032,
+    "title": -0.081,
+    "low": -0.033,
+    "mean": -0.068,
+    "peak_ci": [
+     -0.138,
+     0.053
+    ],
+    "title_ci": [
+     -0.281,
+     0.079
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "mlb",
+    "comparison": "sold_vs_neither",
+    "n_a": 33,
+    "n_b": 36,
+    "peak": 0.001,
+    "title": -0.076,
+    "low": -0.068,
+    "mean": -0.098,
+    "peak_ci": [
+     -0.069,
+     0.087
+    ],
+    "title_ci": [
+     -0.214,
+     0.071
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "mlb",
+    "comparison": "bought_vs_neither",
+    "n_a": 35,
+    "n_b": 36,
+    "peak": 0.044,
+    "title": 0.033,
+    "low": 0.086,
+    "mean": 0.078,
+    "peak_ci": [
+     -0.005,
+     0.102
+    ],
+    "title_ci": [
+     -0.122,
+     0.179
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "mlb",
+    "comparison": "sold_vs_bought",
+    "n_a": 33,
+    "n_b": 35,
+    "peak": -0.043,
+    "title": -0.109,
+    "low": -0.153,
+    "mean": -0.175,
+    "peak_ci": [
+     -0.104,
+     0.023
+    ],
+    "title_ci": [
+     -0.335,
+     0.096
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nfl",
+    "comparison": "sold_vs_neither",
+    "n_a": 26,
+    "n_b": 75,
+    "peak": 0.018,
+    "title": 0.044,
+    "low": 0.001,
+    "mean": -0.03,
+    "peak_ci": [
+     -0.045,
+     0.081
+    ],
+    "title_ci": [
+     -0.198,
+     0.286
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nfl",
+    "comparison": "bought_vs_neither",
+    "n_a": 33,
+    "n_b": 75,
+    "peak": 0.021,
+    "title": 0.116,
+    "low": 0.014,
+    "mean": -0.003,
+    "peak_ci": [
+     -0.057,
+     0.098
+    ],
+    "title_ci": [
+     -0.106,
+     0.33
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "nfl",
+    "comparison": "sold_vs_bought",
+    "n_a": 26,
+    "n_b": 33,
+    "peak": -0.004,
+    "title": -0.072,
+    "low": -0.014,
+    "mean": -0.027,
+    "peak_ci": [
+     -0.082,
+     0.073
+    ],
+    "title_ci": [
+     -0.233,
+     0.125
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "all",
+    "comparison": "sold_vs_neither",
+    "n_a": 113,
+    "n_b": 190,
+    "peak": -0.037,
+    "title": -0.055,
+    "low": -0.037,
+    "mean": -0.074,
+    "peak_ci": [
+     -0.077,
+     0.008
+    ],
+    "title_ci": [
+     -0.139,
+     0.05
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "all",
+    "comparison": "bought_vs_neither",
+    "n_a": 136,
+    "n_b": 190,
+    "peak": 0.018,
+    "title": 0.049,
+    "low": 0.038,
+    "mean": 0.043,
+    "peak_ci": [
+     -0.014,
+     0.053
+    ],
+    "title_ci": [
+     -0.05,
+     0.149
+    ]
+   },
+   {
+    "groups": 0.2,
+    "horizon": 10,
+    "league": "all",
+    "comparison": "sold_vs_bought",
+    "n_a": 113,
+    "n_b": 136,
+    "peak": -0.056,
+    "title": -0.104,
+    "low": -0.074,
+    "mean": -0.117,
+    "peak_ci": [
+     -0.097,
+     -0.013
+    ],
+    "title_ci": [
+     -0.198,
+     -0.008
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nhl",
+    "comparison": "sold_vs_neither",
+    "n_a": 51,
+    "n_b": 47,
+    "peak": -0.026,
+    "title": 0.031,
+    "low": -0.061,
+    "mean": -0.071,
+    "peak_ci": [
+     -0.103,
+     0.067
+    ],
+    "title_ci": [
+     -0.101,
+     0.126
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nhl",
+    "comparison": "bought_vs_neither",
+    "n_a": 62,
+    "n_b": 47,
+    "peak": 0.057,
+    "title": 0.007,
+    "low": 0.031,
+    "mean": 0.073,
+    "peak_ci": [
+     -0.016,
+     0.129
+    ],
+    "title_ci": [
+     -0.086,
+     0.083
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nhl",
+    "comparison": "sold_vs_bought",
+    "n_a": 51,
+    "n_b": 62,
+    "peak": -0.083,
+    "title": 0.024,
+    "low": -0.092,
+    "mean": -0.144,
+    "peak_ci": [
+     -0.15,
+     -0.001
+    ],
+    "title_ci": [
+     -0.117,
+     0.183
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nba",
+    "comparison": "sold_vs_neither",
+    "n_a": 38,
+    "n_b": 32,
+    "peak": -0.023,
+    "title": -0.082,
+    "low": -0.039,
+    "mean": -0.041,
+    "peak_ci": [
+     -0.122,
+     0.078
+    ],
+    "title_ci": [
+     -0.291,
+     0.072
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nba",
+    "comparison": "bought_vs_neither",
+    "n_a": 62,
+    "n_b": 32,
+    "peak": 0.016,
+    "title": -0.042,
+    "low": 0.009,
+    "mean": 0.034,
+    "peak_ci": [
+     -0.069,
+     0.11
+    ],
+    "title_ci": [
+     -0.281,
+     0.152
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nba",
+    "comparison": "sold_vs_bought",
+    "n_a": 38,
+    "n_b": 62,
+    "peak": -0.039,
+    "title": -0.04,
+    "low": -0.047,
+    "mean": -0.075,
+    "peak_ci": [
+     -0.12,
+     0.059
+    ],
+    "title_ci": [
+     -0.167,
+     0.095
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "mlb",
+    "comparison": "sold_vs_neither",
+    "n_a": 59,
+    "n_b": 38,
+    "peak": -0.023,
+    "title": -0.047,
+    "low": -0.086,
+    "mean": -0.101,
+    "peak_ci": [
+     -0.107,
+     0.051
+    ],
+    "title_ci": [
+     -0.176,
+     0.079
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "mlb",
+    "comparison": "bought_vs_neither",
+    "n_a": 62,
+    "n_b": 38,
+    "peak": 0.022,
+    "title": 0.046,
+    "low": 0.049,
+    "mean": 0.061,
+    "peak_ci": [
+     -0.058,
+     0.086
+    ],
+    "title_ci": [
+     -0.102,
+     0.199
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "mlb",
+    "comparison": "sold_vs_bought",
+    "n_a": 59,
+    "n_b": 62,
+    "peak": -0.045,
+    "title": -0.093,
+    "low": -0.135,
+    "mean": -0.162,
+    "peak_ci": [
+     -0.115,
+     0.02
+    ],
+    "title_ci": [
+     -0.245,
+     0.038
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nfl",
+    "comparison": "sold_vs_neither",
+    "n_a": 34,
+    "n_b": 75,
+    "peak": -0.014,
+    "title": 0.027,
+    "low": -0.013,
+    "mean": -0.052,
+    "peak_ci": [
+     -0.064,
+     0.036
+    ],
+    "title_ci": [
+     -0.136,
+     0.215
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nfl",
+    "comparison": "bought_vs_neither",
+    "n_a": 60,
+    "n_b": 75,
+    "peak": 0.032,
+    "title": 0.097,
+    "low": -0.001,
+    "mean": 0.012,
+    "peak_ci": [
+     -0.029,
+     0.103
+    ],
+    "title_ci": [
+     -0.033,
+     0.236
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "nfl",
+    "comparison": "sold_vs_bought",
+    "n_a": 34,
+    "n_b": 60,
+    "peak": -0.046,
+    "title": -0.07,
+    "low": -0.012,
+    "mean": -0.063,
+    "peak_ci": [
+     -0.123,
+     0.023
+    ],
+    "title_ci": [
+     -0.18,
+     0.045
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "all",
+    "comparison": "sold_vs_neither",
+    "n_a": 182,
+    "n_b": 192,
+    "peak": -0.027,
+    "title": -0.015,
+    "low": -0.045,
+    "mean": -0.072,
+    "peak_ci": [
+     -0.067,
+     0.012
+    ],
+    "title_ci": [
+     -0.092,
+     0.052
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "all",
+    "comparison": "bought_vs_neither",
+    "n_a": 246,
+    "n_b": 192,
+    "peak": 0.028,
+    "title": 0.032,
+    "low": 0.028,
+    "mean": 0.044,
+    "peak_ci": [
+     -0.007,
+     0.067
+    ],
+    "title_ci": [
+     -0.036,
+     0.108
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 8,
+    "league": "all",
+    "comparison": "sold_vs_bought",
+    "n_a": 182,
+    "n_b": 246,
+    "peak": -0.055,
+    "title": -0.047,
+    "low": -0.073,
+    "mean": -0.116,
+    "peak_ci": [
+     -0.093,
+     -0.02
+    ],
+    "title_ci": [
+     -0.113,
+     0.019
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nhl",
+    "comparison": "sold_vs_neither",
+    "n_a": 47,
+    "n_b": 42,
+    "peak": -0.044,
+    "title": 0.006,
+    "low": -0.037,
+    "mean": -0.048,
+    "peak_ci": [
+     -0.106,
+     0.024
+    ],
+    "title_ci": [
+     -0.13,
+     0.138
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nhl",
+    "comparison": "bought_vs_neither",
+    "n_a": 54,
+    "n_b": 42,
+    "peak": 0.041,
+    "title": 0.098,
+    "low": 0.024,
+    "mean": 0.076,
+    "peak_ci": [
+     -0.019,
+     0.091
+    ],
+    "title_ci": [
+     -0.033,
+     0.228
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nhl",
+    "comparison": "sold_vs_bought",
+    "n_a": 47,
+    "n_b": 54,
+    "peak": -0.085,
+    "title": -0.092,
+    "low": -0.061,
+    "mean": -0.124,
+    "peak_ci": [
+     -0.152,
+     -0.014
+    ],
+    "title_ci": [
+     -0.282,
+     0.129
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nba",
+    "comparison": "sold_vs_neither",
+    "n_a": 35,
+    "n_b": 29,
+    "peak": -0.035,
+    "title": -0.07,
+    "low": -0.043,
+    "mean": -0.035,
+    "peak_ci": [
+     -0.134,
+     0.065
+    ],
+    "title_ci": [
+     -0.274,
+     0.159
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nba",
+    "comparison": "bought_vs_neither",
+    "n_a": 55,
+    "n_b": 29,
+    "peak": -0.016,
+    "title": -0.096,
+    "low": -0.021,
+    "mean": 0.011,
+    "peak_ci": [
+     -0.091,
+     0.06
+    ],
+    "title_ci": [
+     -0.319,
+     0.142
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nba",
+    "comparison": "sold_vs_bought",
+    "n_a": 35,
+    "n_b": 55,
+    "peak": -0.019,
+    "title": 0.026,
+    "low": -0.022,
+    "mean": -0.046,
+    "peak_ci": [
+     -0.112,
+     0.058
+    ],
+    "title_ci": [
+     -0.139,
+     0.205
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "mlb",
+    "comparison": "sold_vs_neither",
+    "n_a": 50,
+    "n_b": 32,
+    "peak": 0.018,
+    "title": -0.036,
+    "low": -0.068,
+    "mean": -0.08,
+    "peak_ci": [
+     -0.052,
+     0.095
+    ],
+    "title_ci": [
+     -0.177,
+     0.133
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "mlb",
+    "comparison": "bought_vs_neither",
+    "n_a": 55,
+    "n_b": 32,
+    "peak": 0.022,
+    "title": 0.062,
+    "low": 0.053,
+    "mean": 0.041,
+    "peak_ci": [
+     -0.029,
+     0.079
+    ],
+    "title_ci": [
+     -0.096,
+     0.235
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "mlb",
+    "comparison": "sold_vs_bought",
+    "n_a": 50,
+    "n_b": 55,
+    "peak": -0.004,
+    "title": -0.098,
+    "low": -0.121,
+    "mean": -0.121,
+    "peak_ci": [
+     -0.055,
+     0.051
+    ],
+    "title_ci": [
+     -0.284,
+     0.085
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nfl",
+    "comparison": "sold_vs_neither",
+    "n_a": 28,
+    "n_b": 75,
+    "peak": -0.01,
+    "title": 0.028,
+    "low": -0.007,
+    "mean": -0.047,
+    "peak_ci": [
+     -0.069,
+     0.054
+    ],
+    "title_ci": [
+     -0.226,
+     0.299
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nfl",
+    "comparison": "bought_vs_neither",
+    "n_a": 53,
+    "n_b": 75,
+    "peak": 0.04,
+    "title": 0.096,
+    "low": 0.002,
+    "mean": 0.01,
+    "peak_ci": [
+     -0.024,
+     0.109
+    ],
+    "title_ci": [
+     -0.055,
+     0.277
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "nfl",
+    "comparison": "sold_vs_bought",
+    "n_a": 28,
+    "n_b": 53,
+    "peak": -0.05,
+    "title": -0.069,
+    "low": -0.009,
+    "mean": -0.056,
+    "peak_ci": [
+     -0.138,
+     0.029
+    ],
+    "title_ci": [
+     -0.237,
+     0.106
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "all",
+    "comparison": "sold_vs_neither",
+    "n_a": 160,
+    "n_b": 178,
+    "peak": -0.019,
+    "title": -0.024,
+    "low": -0.034,
+    "mean": -0.056,
+    "peak_ci": [
+     -0.053,
+     0.017
+    ],
+    "title_ci": [
+     -0.127,
+     0.065
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "all",
+    "comparison": "bought_vs_neither",
+    "n_a": 217,
+    "n_b": 178,
+    "peak": 0.021,
+    "title": 0.041,
+    "low": 0.02,
+    "mean": 0.034,
+    "peak_ci": [
+     -0.011,
+     0.054
+    ],
+    "title_ci": [
+     -0.045,
+     0.132
+    ]
+   },
+   {
+    "groups": 0.333,
+    "horizon": 10,
+    "league": "all",
+    "comparison": "sold_vs_bought",
+    "n_a": 160,
+    "n_b": 217,
+    "peak": -0.04,
+    "title": -0.065,
+    "low": -0.054,
+    "mean": -0.091,
+    "peak_ci": [
+     -0.079,
+     -0.003
+    ],
+    "title_ci": [
+     -0.158,
+     0.028
+    ]
+   }
+  ]
+ },
+ "champions": {
+  "nhl": {
+   "n": 14,
+   "seasons": [
+    2011,
+    2025
+   ],
+   "pay": {
+    "percentile": 0.66,
+    "n": 12,
+    "above_half": 7,
+    "p": 0.7744,
+    "seasons": [
+     2014,
+     2025
+    ]
+   },
+   "early": {
+    "percentile": 0.589,
+    "n": 14,
+    "above_half": 10,
+    "p": 0.1796
+   },
+   "late": {
+    "percentile": 0.426,
+    "n": 14,
+    "above_half": 6,
+    "p": 0.7905
+   }
+  },
+  "nba": {
+   "n": 16,
+   "seasons": [
+    2010,
+    2025
+   ],
+   "pay": {
+    "percentile": 0.699,
+    "n": 25,
+    "above_half": 18,
+    "p": 0.0433,
+    "seasons": [
+     2001,
+     2025
+    ]
+   },
+   "early": {
+    "percentile": 0.51,
+    "n": 16,
+    "above_half": 8,
+    "p": 1.0
+   },
+   "late": {
+    "percentile": 0.597,
+    "n": 16,
+    "above_half": 9,
+    "p": 0.8036
+   }
+  },
+  "mlb": {
+   "n": 12,
+   "seasons": [
+    2010,
+    2021
+   ],
+   "pay": {
+    "percentile": 0.77,
+    "n": 25,
+    "above_half": 24,
+    "p": 0.0,
+    "seasons": [
+     2001,
+     2025
+    ]
+   },
+   "early": {
+    "percentile": 0.601,
+    "n": 12,
+    "above_half": 7,
+    "p": 0.7744
+   },
+   "late": {
+    "percentile": 0.652,
+    "n": 12,
+    "above_half": 7,
+    "p": 0.7744
+   }
+  },
+  "nfl": {
+   "n": 14,
+   "seasons": [
+    2011,
+    2024
+   ],
+   "pay": {
+    "percentile": 0.589,
+    "n": 12,
+    "above_half": 7,
+    "p": 0.7744,
+    "seasons": [
+     2013,
+     2024
+    ]
+   },
+   "early": {
+    "percentile": 0.31,
+    "n": 14,
+    "above_half": 4,
+    "p": 0.1796
+   },
+   "late": {
+    "percentile": 0.378,
+    "n": 14,
+    "above_half": 1,
+    "p": 0.0018
+   }
+  }
+ }
+}

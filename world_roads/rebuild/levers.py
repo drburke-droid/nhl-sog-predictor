@@ -29,7 +29,8 @@ teams in free agency and lost to them. Payroll as a share of the league's averag
   gap also comes adjusted: least squares with the starting rank, the trend into it (the change in rank over the two
   seasons before) and the roster's age held fixed.
 * champions: each champion's standing among that season's teams (0.5 typical) in stars traded, net, over seasons t-10
-  to t-3; in stars traded and signed, net, over t-2 to t; and in payroll; p from a sign test.
+  to t-3; in stars traded and signed, net, over t-2 to t; and in payroll (every title season with payroll); p from a
+  sign test.
 """
 import os, csv, json
 from collections import defaultdict
@@ -375,7 +376,17 @@ def champions(T, look=10):
         if not champs:
             continue
         res = dict(n=len(champs), seasons=[min(c["season"] for c in champs), max(c["season"] for c in champs)])
-        for k in ("early", "late", "pay"):
+        # payroll: every title season with payroll, whether or not the trades reach back ten years
+        pay = [(r["season"], r["payroll_rel"], r["champion"]) for (l, _), Ss in T.items() if l == lg for r in Ss
+               if not np.isnan(r["payroll_rel"])]
+        pct = [float(np.mean([p < c[1] for p in [q[1] for q in pay if q[0] == c[0] and not q[2]]])) for c in pay if c[2]]
+        if pct:
+            from scipy.stats import binomtest
+            above = sum(p > 0.5 for p in pct)
+            res["pay"] = dict(percentile=round(float(np.mean(pct)), 3), n=len(pct), above_half=above,
+                              p=round(float(binomtest(above, len(pct)).pvalue), 4),
+                              seasons=[min(q[0] for q in pay if q[2]), max(q[0] for q in pay if q[2])])
+        for k in ("early", "late"):
             pct = []
             for c in champs:
                 same = np.array([b[k] for b in base if b["season"] == c["season"] and not np.isnan(b[k])])
