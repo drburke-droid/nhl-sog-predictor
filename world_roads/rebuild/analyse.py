@@ -70,7 +70,7 @@ def team_level(seasons, teams, drafts, trades):
             mine = [s for s in S if s["team"] == t["team"] and int(s["season"]) >= first]
             if len(mine) < 10:
                 continue
-            r = dict(league=lg, team=t["team"], name=t["name"], seasons=len(mine), value_z=v_z, market_z=m_z, premium_z=p_z,
+            r = dict(league=lg, team=t["team"], name=t["name"], seasons=len(mine), first=first, value_z=v_z, market_z=m_z, premium_z=p_z,
                      value_musd=float(t["value_musd"]), metro_pop=int(t["metro_pop"]),
                      tank_rate=np.mean([bottom3(s) for s in mine]), top_rate=np.mean([top3(s) for s in mine]),
                      titles=sum(int(s["champion"]) for s in mine), playoff_rate=np.mean([int(s["playoffs"]) for s in mine if s["playoffs"]]) if lg != "mlb" else np.nan,
@@ -116,6 +116,25 @@ def assoc(rows, x, y, n=10000):
     per = {lg: round(float(spearmanr([r[x] for r in R if r["league"] == lg], [r[y] for r in R if r["league"] == lg])[0]), 3)
            for lg in LEAGUES if sum(r["league"] == lg for r in R) > 5}
     return dict(rho=round(float(rho), 3), p=round(float(np.mean(np.abs(null) >= abs(rho))), 4), n=len(R), by_league=per)
+
+
+def thirds(seasons, rows):
+    """each league's franchises split into thirds by value: how their seasons spread over the league's ranks"""
+    third = {}
+    for lg in LEAGUES:
+        R = sorted([r for r in rows if r["league"] == lg], key=lambda r: r["value_z"])
+        for i, r in enumerate(R):
+            third[(lg, r["team"])] = 3 * i // len(R)
+    first = {(r["league"], r["team"]): r.get("first", 0) for r in rows}
+    out = []
+    for k in range(3):
+        X = [s for s in seasons if third.get((s["league"], s["team"])) == k and int(s["season"]) >= first[(s["league"], s["team"])]]
+        rp = np.array([float(s["rank_pct"]) for s in X])
+        out.append(dict(third=["poorest", "middle", "richest"][k], seasons=len(X), mean_rank=round(float(rp.mean()), 3),
+                        sd_rank=round(float(rp.std()), 3), bottom3=round(float(np.mean([bottom3(s) for s in X])), 3),
+                        top3=round(float(np.mean([top3(s) for s in X])), 3), titles=sum(int(s["champion"]) for s in X),
+                        deciles=np.round(np.histogram(rp, bins=10, range=(0, 1))[0] / len(rp), 4).tolist()))
+    return out
 
 
 def partial(rows, x, y, c, n=10000):
@@ -251,6 +270,7 @@ def main():
                 grid[f"bottom{kb}_within{after}_over{horizon}"] = {"all": compare(e, n=500), "nba": compare(e, "nba", n=500)}
     bottom3, HORIZON, AFTER = keep
     champs = champions(seasons)
+    th = thirds(seasons, T)
     curves = {p: np.mean([e["curve"] for e in ev if e["path"] == p], axis=0).round(4).tolist() for p in ("teardown", "stayed")}
 
     print("H1: owner and fan measures against how franchises build (pooled Spearman, p by shuffling within league)")
@@ -271,10 +291,14 @@ def main():
         a, b = g["all"], g["nba"]
         print(f"  {k:24s} n {a['n_teardown']:3d}/{a['n_stayed']:3d}  peak {a['peak']['diff']:+.2f} {a['peak']['ci95']}  title {a['title']['diff']:+.2f} "
               f"{a['title']['ci95']}  low {a['low']['diff']:+.2f}  mean {a['mean']['diff']:+.2f}  | NBA title {b['title']['diff']:+.2f} {b['title']['ci95']}")
+    print("\nfranchises by value, thirds of each league: how their seasons spread")
+    for t in th:
+        print(f"  {t['third']:8s} {t['seasons']} seasons: mean rank {t['mean_rank']:.2f}, spread {t['sd_rank']:.3f}, bottom three {t['bottom3']:.1%}, "
+              f"top three {t['top3']:.1%}, {t['titles']} titles")
     print("\nchampions with a bottom-three finish in the ten seasons before the title, against all teams")
     for lg, c in champs.items():
         print(f"  {lg:4s} {c['titles']:2d} titles: {c['tore_first']:.0%} against {c['all_teams']:.0%}, p {c['p']:.3f}")
-    json.dump(dict(h1=h1, controls=controls, h2_team=h2_team, h2=h2, grid=grid, champions=champs, curves=curves,
+    json.dump(dict(h1=h1, controls=controls, thirds=th, h2_team=h2_team, h2=h2, grid=grid, champions=champs, curves=curves,
                    params=dict(mid=MID, stay=STAY, horizon=HORIZON, before=BEFORE, after=AFTER)),
               open(os.path.join(OUT, "results.json"), "w"), indent=1)
     with open(os.path.join(OUT, "team_level.csv"), "w", newline="") as f:

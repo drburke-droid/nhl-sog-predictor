@@ -53,3 +53,18 @@ statistical areas, 2025 estimates; Canadian census metropolitan areas, 2021 cens
   cause. Market size is the one measure winning does not move.
 * The premium measures value beyond market size, which is more than fan passion (stadium deals, ownership, brand).
 * MLB picks could not be traded before 2012 and prospects traded are not measured, so MLB's win-now signs rest on age.
+
+## The video
+
+`../media/rebuild/win_now_or_tear_it_down.mp4` (1920x1080, 30 fps, about 3.5 min, captions and an original score):
+the light-speed film's look, every number read from `results.json` and the tables beside it.
+
+```
+python video.py teardown 14 27   # stills of a section (out/teardown_014.0.png ...)
+python assemble.py render        # render the ten sections (4 at a time), join them with cross-fades, add the score
+```
+
+`look.py` (palette, glow, the season grid, chart helpers, chunked rendering), `video.py` (the sections: hook, theory,
+stories, richer, shifted, winnow, teardown, titles, verdict, outro), `music.py` (the score, synthesized with
+`../flights/score.py`), `assemble.py`. `VOICEOVER.md` has a narration script timed to the captions, for a voice over the
+top.
