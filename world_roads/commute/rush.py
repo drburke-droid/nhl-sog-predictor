@@ -1,18 +1,23 @@
 """When is rush hour in each metro, and why does it differ?  python rush.py
--> ../media/commute/rush.json, rush_clock.png, rush_trip_length.png, rush_friday.png
+-> ../media/commute/rush.json, rush_clock.png, rush_routes.png, rush_trip_length.png, rush_friday.png
 
-From two sources already fetched:
+From three sources already fetched:
 * the TomTom Traffic Index (tomtom_weekhour.json, tomtom.py): city-wide congestion (% extra travel time) for each
   weekday hour, averaged over 2025, metro area. Each value is taken as the middle of its hour, and a peak's time is
   refined with a parabola through the peak hour and its neighbours, so it is good to about a quarter of an hour.
-* the routed drive times (curves_tomtom.json, analyse.py): one commute per metro, every 5 minutes, Tue-Thu.
+* the routed drive times of every suburb, main (drive_times_tomtom.json) and others (drive_times_tomtom_more.json,
+  up to four per metro, one per compass direction), all taken alike: Wednesday 18 Nov, every 10 minutes. A route's
+  worst departure is refined with a parabola through its neighbours too.
+* the main suburbs' Tue-Thu averages (curves_tomtom.json, analyse.py), for the costliest half hour.
 
 What it measures:
 * rush hour, city-wide: the Tue-Thu morning (5-11 a.m.) and evening (noon-9 p.m.) peaks, the hours each stays above
   half its peak, a midday peak between them if there is one, the worst hour of the week, and Friday's evening and
   Monday's morning against Tue-Thu;
-* trip length: on one route, the worst time to leave against how long the drive is then (a longer trip has to start
-  earlier to meet the same peak), fitted over the US and Canada;
+* rush hour by route: each metro's worst time to leave on each of its routes, their median and spread, and the
+  middle of the trip at the worst departure against the city-wide peak;
+* trip length: the worst time to leave against how long the drive is then (a longer trip has to start earlier to
+  meet the same peak), over all US and Canadian routes and within each metro (each route against its metro's mean);
 * the sun: the clock time of solar noon (2025 average, daylight time included), against the city-wide peaks.
 """
 import os, json
@@ -23,24 +28,32 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from findings import MEDIA, SURFACE, INK, INK2, MUTED, GRID, BLUE, CONTEXT, hm, plain
 from metros import METROS
+from plan import MORE_DAY, MORE_STEP
 
 MX = {1, 12, 13}                                        # the Mexican metros, set apart in the fits
 MIDWEEK = ["TUESDAY", "WEDNESDAY", "THURSDAY"]
 WEEK = ["MONDAY"] + MIDWEEK + ["FRIDAY", "SATURDAY", "SUNDAY"]
-LABEL = ["New York", "Toronto", "Vancouver", "Detroit", "Houston", "Atlanta", "Calgary", "Edmonton", "Boston"]
-LEFT = {("Monterrey", "morning")}                       # labels set to the left of their dot, clear of a neighbour
+SHOW = 101                                              # the metro whose routes are named on the trip-length chart
+
+
+def minute(hhmm):
+    h, m = hhmm.split(":")
+    return int(h) * 60 + int(m)
 
 
 def profile(s, days):
     return np.array([np.mean([s[f"{d}-{h}"][2] for d in days]) for h in range(24)])
 
 
+def refine(a, b, c):
+    """offset of a parabola's top from the middle of three equally spaced values, in steps"""
+    return float(np.clip(0.5 * (a - c) / (a - 2 * b + c), -0.5, 0.5)) if a - 2 * b + c else 0.0
+
+
 def peak(p, h0, h1):
     """(clock minutes, congestion) of the highest hour in h0..h1, refined with a parabola through its neighbours"""
     k = h0 + int(np.argmax(p[h0:h1 + 1]))
-    a, b, c = p[k - 1], p[k], p[(k + 1) % 24]
-    d = 0.5 * (a - c) / (a - 2 * b + c) if a - 2 * b + c else 0.0
-    return (k + 0.5 + float(np.clip(d, -0.5, 0.5))) * 60, float(b)
+    return (k + 0.5 + refine(p[k - 1], p[k], p[(k + 1) % 24])) * 60, float(p[k])
 
 
 def solar_noon(tz, lon):
@@ -68,9 +81,43 @@ def city(key, w, lon, tz):
                 solar_noon=solar_noon(tz, lon), profile=p.round(1).tolist())
 
 
+def routes():
+    """one dict per route and commute: its Wednesday drives every 10 minutes and its worst departure"""
+    H = {m["rank"]: m for m in json.load(open(os.path.join(MEDIA, "homes_more.json")))["metros"]}
+    out = []
+    for f in ("drive_times_tomtom.json", "drive_times_tomtom_more.json"):
+        for rank, m in json.load(open(os.path.join(MEDIA, f)))["metros"].items():
+            main = next(h for h in H[int(rank)]["homes"] if h["main"])
+            rows = [r for r in m["rows"] if r["day"] == MORE_DAY.isoformat() and minute(r["depart"]) % MORE_STEP == 0]
+            for sector, direction in sorted({(r.get("sector", main["sector"]), r["direction"]) for r in rows}):
+                R = sorted((r for r in rows if r.get("sector", main["sector"]) == sector and r["direction"] == direction),
+                           key=lambda r: minute(r["depart"]))
+                dep, T = np.array([minute(r["depart"]) for r in R], float), np.array([r["minutes"] for r in R])
+                k = int(np.argmax(T))
+                d = refine(T[k - 1], T[k], T[k + 1]) if 0 < k < len(T) - 1 else 0.0
+                worst = dep[k] + d * MORE_STEP
+                out.append(dict(rank=int(rank), metro=m["metro"], sector=sector, home=R[0].get("home", main["name"]),
+                                main="sector" not in R[0], direction=direction, worst=worst, drive=float(T[k]),
+                                free=float(np.median([r["free_flow_minutes"] for r in R])), mid_trip=worst + float(T[k]) / 2,
+                                km=float(np.median([r["km"] for r in R]))))
+    return out
+
+
 def fit(x, y):
     b, a = np.polyfit(x, y, 1)
     return dict(slope=float(b), intercept=float(a), r=float(np.corrcoef(x, y)[0, 1]), n=len(x))
+
+
+def within(R):
+    """the fit of worst departure on drive within metros: each route against its metro's mean (metros with 2+ routes)"""
+    xs, ys = [], []
+    for rank in {r["rank"] for r in R}:
+        S = [r for r in R if r["rank"] == rank]
+        if len(S) > 1:
+            x, y = np.array([r["drive"] for r in S]), np.array([r["worst"] for r in S])
+            xs += list(x - x.mean()); ys += list(y - y.mean())
+    xs, ys = np.array(xs), np.array(ys)
+    return dict(slope=float((xs * ys).sum() / (xs * xs).sum()), r=float(np.corrcoef(xs, ys)[0, 1]), n=len(xs))
 
 
 def clock_chart(rows, dst):
@@ -104,39 +151,77 @@ def clock_chart(rows, dst):
     plt.close(fig)
 
 
+def routes_chart(rows, routed, dst):
+    """each metro's routes: the worst time to leave (dots) and the middle of the trip then (rings), against the
+    city-wide peak (bar)"""
+    rows = sorted(rows, key=lambda r: r["pm"])
+    fig, axes = plt.subplots(1, 2, figsize=(14, 9), dpi=160, sharey=True)
+    for ax, direction, peak_key, (lo, hi), title in zip(axes, ("evening", "morning"), ("pm", "am"),
+                                                       ((15 * 60, 19 * 60 + 30), (6 * 60 + 30, 9 * 60 + 30)),
+                                                       ("Leave work (evening)", "Leave home (morning)")):
+        for i, r in enumerate(rows):
+            R = [x for x in routed if x["rank"] == r["rank"] and x["direction"] == direction]
+            ax.plot([min(x["worst"] for x in R), max(x["worst"] for x in R)], [i, i], color=CONTEXT, lw=2, zorder=1,
+                    solid_capstyle="round")
+            ax.plot([x["worst"] for x in R], [i] * len(R), "o", ms=6.5, color=BLUE, mec=SURFACE, mew=1.2, zorder=3,
+                    label="worst time to leave, one dot per route" if i == 0 else None)
+            ax.plot([x["mid_trip"] for x in R], [i] * len(R), "o", ms=6.5, mfc="none", mec=BLUE, mew=1, zorder=2,
+                    label="middle of the trip, leaving then" if i == 0 else None)
+            ax.plot([r[peak_key]] * 2, [i - 0.35, i + 0.35], color=INK, lw=2, zorder=4, solid_capstyle="butt",
+                    label="city-wide peak (Traffic Index)" if i == 0 else None)
+        ticks = np.arange(lo, hi + 1, 30)
+        ax.set_xticks(ticks)
+        ax.set_xticklabels([hm(t) for t in ticks])
+        ax.set_xlim(lo, hi)
+        ax.set_title(title, loc="left", fontsize=12, color=INK)
+        ax.grid(axis="x", color=GRID, lw=0.7)
+        plain(ax)
+    axes[0].set_yticks(range(len(rows)))
+    axes[0].set_yticklabels([r["metro"] for r in rows], fontsize=9.5)
+    axes[0].invert_yaxis()
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="upper left", bbox_to_anchor=(0.16, 0.905), frameon=False,
+               fontsize=9.5, ncol=3)
+    fig.suptitle("Rush hour by route: up to four suburbs per metro", x=0.05, ha="left", fontsize=16, fontweight="bold")
+    fig.text(0.05, 0.93, "Office downtown to a suburb in each compass direction, Wednesday 18 Nov, every 10 minutes. "
+             "TomTom Routing API; city-wide peak from the TomTom Traffic Index.", color=INK2, fontsize=10)
+    fig.subplots_adjust(left=0.16, right=0.98, top=0.85, bottom=0.05, wspace=0.08)
+    fig.savefig(dst, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def trip_chart(routed, fits, dst):
     fig, axes = plt.subplots(1, 2, figsize=(14, 6.75), dpi=160)
     for ax, direction, title in zip(axes, ("evening", "morning"), ("Leave work (evening)", "Leave home (morning)")):
         R = [r for r in routed if r["direction"] == direction]
         for mx in (True, False):
             S = [r for r in R if (r["rank"] in MX) == mx]
-            ax.scatter([r["drive"] for r in S], [r["worst"] for r in S], s=60, color=CONTEXT if mx else BLUE,
-                       edgecolor=SURFACE, linewidth=1.5, zorder=3, label="Mexico" if mx else "US and Canada")
-        f = fits[direction]
-        x = np.array([min(r["drive"] for r in R if r["rank"] not in MX), max(r["drive"] for r in R if r["rank"] not in MX)])
+            ax.scatter([r["drive"] for r in S], [r["worst"] for r in S], s=40, color=CONTEXT if mx else BLUE,
+                       edgecolor=SURFACE, linewidth=1.2, zorder=3, label="Mexico" if mx else "US and Canada")
+        f, w = fits[direction]["pooled"], fits[direction]["within"]
+        us = [r["drive"] for r in R if r["rank"] not in MX]
+        x = np.array([min(us), max(us)])
         ax.plot(x, f["intercept"] + f["slope"] * x, color=INK2, lw=1, ls=(0, (4, 3)), zorder=2)
-        right = max(r["drive"] for r in R) - 8
-        for r in R:
-            if r["metro"] in LABEL or r["rank"] in MX:
-                left = r["drive"] > right or (r["metro"], direction) in LEFT
-                ax.annotate(r["metro"], (r["drive"], r["worst"]), xytext=(-6 if left else 6, 3), textcoords="offset points",
-                            fontsize=9, color=INK2, ha="right" if left else "left")
-        ax.text(0.98, 0.96, f"US and Canada: {abs(f['slope']) * 10:.0f} min earlier\nfor each 10 min more driving (r = {f['r']:.2f})",
-                transform=ax.transAxes, ha="right", va="top", fontsize=10, color=INK)
+        S = sorted((r for r in R if r["rank"] == SHOW), key=lambda r: r["drive"])
+        ax.plot([r["drive"] for r in S], [r["worst"] for r in S], color=INK, lw=0.8, zorder=2)
+        for r in S:
+            ax.annotate(r["home"], (r["drive"], r["worst"]), xytext=(5, 4), textcoords="offset points", fontsize=8.5, color=INK)
+        ax.text(0.98, 0.96, f"US and Canada, {f['n']} routes: {abs(f['slope']) * 10:.0f} min earlier for each\n10 min more "
+                f"driving (r = {f['r']:.2f}); within each metro, {abs(w['slope']) * 10:.0f} min (r = {w['r']:.2f})",
+                transform=ax.transAxes, ha="right", va="top", fontsize=9.5, color=INK)
         lo, hi = min(r["worst"] for r in R), max(r["worst"] for r in R)
-        ticks = np.arange(15 * np.floor(lo / 15), hi + 15, 15)
+        ticks = np.arange(30 * np.floor(lo / 30), hi + 30, 30)
         ax.set_yticks(ticks)
         ax.set_yticklabels([hm(t) for t in ticks])
-        ax.set_ylim(ticks[0] - 5, ticks[-1] + 5)
+        ax.set_ylim(ticks[0] - 5, ticks[-1] + 25)
         ax.set_title(title, loc="left", fontsize=12, color=INK)
         ax.set_xlabel("drive at the worst departure (minutes)")
         ax.grid(color=GRID, lw=0.7)
         plain(ax)
     axes[0].set_ylabel("worst time to leave")
-    axes[1].legend(loc="lower right", frameon=False, fontsize=9.5)
+    axes[1].legend(loc="lower left", frameon=False, fontsize=9.5)
     fig.suptitle("The longer the drive, the earlier the worst time to leave", x=0.05, ha="left", fontsize=16, fontweight="bold")
-    fig.text(0.05, 0.9, "One commute per metro, office downtown and a random suburb, Tuesday-Thursday average. "
-             "TomTom Routing API.", color=INK2, fontsize=10)
+    fig.text(0.05, 0.9, f"Office downtown to up to four suburbs per metro, Wednesday 18 Nov; the line joins "
+             f"{next(r['metro'] for r in routed if r['rank'] == SHOW)}'s routes. TomTom Routing API.", color=INK2, fontsize=10)
     fig.subplots_adjust(left=0.07, right=0.98, top=0.83, bottom=0.1, wspace=0.18)
     fig.savefig(dst, facecolor=SURFACE)
     plt.close(fig)
@@ -175,13 +260,20 @@ def main():
     rows = []
     for rank, name, cc, tz, (oname, lat, lon), key in METROS:
         rows.append(dict(rank=rank, metro=name, **city(key, W[key], lon, tz)))
-    routed = [dict(rank=c["rank"], metro=c["metro"], direction=c["direction"], worst=c["worst"]["depart"],
-                   drive=c["worst"]["drive"], mid_trip=c["worst"]["depart"] + c["worst"]["drive"] / 2,
-                   worst_half_hour=c["worst_half_hour"]["later"], worst_half_hour_at=c["worst_half_hour"]["depart"]) for c in C]
+    routed = routes()
     us = [r for r in rows if r["rank"] not in MX]
-    fits = {d: fit([r["drive"] for r in routed if r["direction"] == d and r["rank"] not in MX],
-                   [r["worst"] for r in routed if r["direction"] == d and r["rank"] not in MX]) for d in ("evening", "morning")}
+    fits = {d: dict(pooled=fit([r["drive"] for r in routed if r["direction"] == d and r["rank"] not in MX],
+                               [r["worst"] for r in routed if r["direction"] == d and r["rank"] not in MX]),
+                    within=within([r for r in routed if r["direction"] == d and r["rank"] not in MX])) for d in ("evening", "morning")}
     sun = {p: fit([r["solar_noon"] for r in us], [r[p] for r in us]) for p in ("am", "pm")}
+    by_city = []
+    for r in rows:
+        for direction, p in (("evening", "pm"), ("morning", "am")):
+            R = [x for x in routed if x["rank"] == r["rank"] and x["direction"] == direction]
+            by_city.append(dict(rank=r["rank"], metro=r["metro"], direction=direction, routes=len(R),
+                                worst_median=float(np.median([x["worst"] for x in R])), worst_from=min(x["worst"] for x in R),
+                                worst_to=max(x["worst"] for x in R), mid_trip_median=float(np.median([x["mid_trip"] for x in R])),
+                                city_peak=r[p]))
 
     print(f"{'':27s} {'morning':>13s} {'evening':>13s}  gap    hours>half  midday      Friday pm     Mon am  Sat/wkday  "
           f"worst hour of the week   solar noon")
@@ -192,6 +284,13 @@ def main():
               f"{hm(r['gap']):>5s}  {r['am_hours']:2d} / {r['pm_hours']:2d}   {md:11s} {r['friday_shift']:+5.0f} min {r['friday_level']:+4.0%}  "
               f"{r['monday_am_level']:+4.0%}   {r['saturday_vs_weekday']:.2f}     {w['day'][:3].title()} {w['hour']:2d}h {w['level']:5.1f}%"
               f"        {hm(r['solar_noon'])}")
+    print(f"\nby route, Wed 18 Nov every {MORE_STEP} min: worst time to leave (median of routes, range), middle of the trip "
+          f"then (median), city-wide peak")
+    for r in sorted(rows, key=lambda r: r["pm"]):
+        e, m = (next(b for b in by_city if b["rank"] == r["rank"] and b["direction"] == d) for d in ("evening", "morning"))
+        print(f"{r['rank']:3d} {r['metro']:23s} {e['routes']} routes | evening {hm(e['worst_median']):>5s} ({hm(e['worst_from'])}-"
+              f"{hm(e['worst_to'])}) mid {hm(e['mid_trip_median'])} city {hm(e['city_peak'])} | morning {hm(m['worst_median'])} "
+              f"({hm(m['worst_from'])}-{hm(m['worst_to'])}) mid {hm(m['mid_trip_median'])} city {hm(m['city_peak'])}")
     fr = [r["friday_shift"] for r in us]
     print(f"\nUS and Canada (n={len(us)}): evening peak {hm(min(r['pm'] for r in us))}-{hm(max(r['pm'] for r in us))}, "
           f"morning {hm(min(r['am'] for r in us))}-{hm(max(r['am'] for r in us))}; Mexico evening "
@@ -202,18 +301,28 @@ def main():
           f"{sum(f < 0 for f in fr)} of {len(fr)}); Monday morning peak lower than Tue-Thu in "
           f"{sum(r['monday_am_level'] < 0 for r in rows)} of {len(rows)} (average {np.mean([r['monday_am_level'] for r in rows]):+.0%})")
     for d, f in fits.items():
-        print(f"trip length, {d}: worst departure {f['slope']:+.2f} min per minute of drive, r = {f['r']:+.2f} (n={f['n']})")
+        p, w = f["pooled"], f["within"]
+        print(f"trip length, {d}: worst departure {p['slope']:+.2f} min per minute of drive, r = {p['r']:+.2f} ({p['n']} US and "
+              f"Canadian routes); within metros {w['slope']:+.2f}, r = {w['r']:+.2f}")
+    for d in ("evening", "morning"):
+        B = [b for b in by_city if b["direction"] == d]
+        gap = np.array([b["mid_trip_median"] - b["city_peak"] for b in B])
+        print(f"{d}: middle of the trip at the worst departure minus the city-wide peak, median of metros {np.median(gap):+.0f} min "
+              f"(middle half {np.percentile(gap, 25):+.0f} to {np.percentile(gap, 75):+.0f}); worst departure minus city peak "
+              f"{np.median([b['worst_median'] - b['city_peak'] for b in B]):+.0f} min")
     for p, f in sun.items():
         print(f"solar noon vs city-wide {p} peak, US and Canada: slope {f['slope']:+.2f}, r = {f['r']:+.2f}")
-    worst30 = max((r for r in routed if r["direction"] == "morning"), key=lambda r: r["worst_half_hour"])
-    print(f"the costliest half hour: {worst30['metro']}, leaving home at {hm(worst30['worst_half_hour_at'] + 30)} instead of "
-          f"{hm(worst30['worst_half_hour_at'])} a.m. gets you in {worst30['worst_half_hour']:.1f} min later")
+    worst30 = max((c for c in C if c["direction"] == "morning"), key=lambda c: c["worst_half_hour"]["later"])
+    w30 = worst30["worst_half_hour"]
+    print(f"the costliest half hour: {worst30['metro']}, leaving home at {hm(w30['then'])} instead of {hm(w30['depart'])} a.m. "
+          f"gets you in {w30['later']:.1f} min later")
 
     json.dump(dict(sources=["TomTom Traffic Index city pages, 2025 weekday-hour averages, metro area",
-                            "TomTom Routing API, historic traffic, Tue-Thu 17-19 Nov 2026"],
-                   cities=rows, routed=routed, trip_length=fits, solar_noon=sun),
+                            "TomTom Routing API, historic traffic, Wed 18 Nov 2026 every 10 minutes, up to four suburbs per metro"],
+                   cities=rows, routes=routed, by_city=by_city, trip_length=fits, solar_noon=sun),
               open(os.path.join(MEDIA, "rush.json"), "w"), ensure_ascii=False, separators=(",", ":"))
     clock_chart(rows, os.path.join(MEDIA, "rush_clock.png"))
+    routes_chart(rows, routed, os.path.join(MEDIA, "rush_routes.png"))
     trip_chart(routed, fits, os.path.join(MEDIA, "rush_trip_length.png"))
     friday_chart(rows, os.path.join(MEDIA, "rush_friday.png"))
 
