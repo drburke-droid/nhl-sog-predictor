@@ -56,7 +56,7 @@ statistical areas, 2025 estimates; Canadian census metropolitan areas, 2021 cens
 
 ## The video
 
-`../media/rebuild/win_now_or_tear_it_down.mp4` (1920x1080, 30 fps, about 3.5 min, captions and an original score):
+`../media/rebuild/win_now_or_tear_it_down.mp4` (1920x1080, 30 fps, 3 min 25.5 s, 6,165 frames, captions and an original score):
 the light-speed film's look, every number read from `results.json` and the tables beside it.
 
 ```
