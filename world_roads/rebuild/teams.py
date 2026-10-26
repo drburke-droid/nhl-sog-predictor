@@ -1,0 +1,160 @@
+"""The 122 franchises of the NHL, NBA, MLB and NFL, followed through name changes and moves since 2000.
+
+Each franchise: its code now, its name as Forbes lists it, its home metro area (a US metropolitan statistical area or a
+Canadian census metropolitan area, as Wikipedia's lists name them), and the codes it has had on Sports Reference (NHL,
+NBA, MLB) or in nflverse (NFL), each with the first season it was used in the current market where it moved. A
+franchise follows its organisation (players, staff, picks): the Charlotte Hornets of 2001-02 are today's New Orleans
+Pelicans, and the Arizona Coyotes' players and picks went to Utah in 2024.
+
+`moved`: the first season (end year) in the current market, for franchises that moved during 2000-2025; seasons before
+it are left out of anything that uses today's valuation or market.
+"""
+# league: [(code, Forbes name, metro, {old codes}, moved)]
+FRANCHISES = {
+    "nhl": [
+        ("ANA", "Anaheim Ducks", "Los Angeles", {"MDA"}, None),
+        ("BOS", "Boston Bruins", "Boston", set(), None),
+        ("BUF", "Buffalo Sabres", "Buffalo", set(), None),
+        ("CGY", "Calgary Flames", "Calgary", set(), None),
+        ("CAR", "Carolina Hurricanes", "Raleigh", set(), None),
+        ("CHI", "Chicago Blackhawks", "Chicago", set(), None),
+        ("COL", "Colorado Avalanche", "Denver", set(), None),
+        ("CBJ", "Columbus Blue Jackets", "Columbus", set(), None),
+        ("DAL", "Dallas Stars", "Dallas", set(), None),
+        ("DET", "Detroit Red Wings", "Detroit", set(), None),
+        ("EDM", "Edmonton Oilers", "Edmonton", set(), None),
+        ("FLA", "Florida Panthers", "Miami", set(), None),
+        ("LAK", "Los Angeles Kings", "Los Angeles", set(), None),
+        ("MIN", "Minnesota Wild", "Minneapolis", set(), None),
+        ("MTL", "Montreal Canadiens", "Montreal", set(), None),
+        ("NSH", "Nashville Predators", "Nashville", set(), None),
+        ("NJD", "New Jersey Devils", "New York", set(), None),
+        ("NYI", "New York Islanders", "New York", set(), None),
+        ("NYR", "New York Rangers", "New York", set(), None),
+        ("OTT", "Ottawa Senators", "Ottawa", set(), None),
+        ("PHI", "Philadelphia Flyers", "Philadelphia", set(), None),
+        ("PIT", "Pittsburgh Penguins", "Pittsburgh", set(), None),
+        ("SJS", "San Jose Sharks", "San Jose", set(), None),
+        ("SEA", "Seattle Kraken", "Seattle", set(), None),
+        ("STL", "St. Louis Blues", "St. Louis", set(), None),
+        ("TBL", "Tampa Bay Lightning", "Tampa", set(), None),
+        ("TOR", "Toronto Maple Leafs", "Toronto", set(), None),
+        ("UTA", "Utah Mammoth", "Salt Lake City", {"PHX", "ARI"}, 2025),
+        ("VAN", "Vancouver Canucks", "Vancouver", set(), None),
+        ("VEG", "Vegas Golden Knights", "Las Vegas", set(), None),
+        ("WSH", "Washington Capitals", "Washington", set(), None),
+        ("WPG", "Winnipeg Jets", "Winnipeg", {"ATL"}, 2012),
+    ],
+    "nba": [
+        ("ATL", "Atlanta Hawks", "Atlanta", set(), None),
+        ("BOS", "Boston Celtics", "Boston", set(), None),
+        ("BRK", "Brooklyn Nets", "New York", {"NJN"}, None),
+        ("CHO", "Charlotte Hornets", "Charlotte", {"CHA"}, None),
+        ("CHI", "Chicago Bulls", "Chicago", set(), None),
+        ("CLE", "Cleveland Cavaliers", "Cleveland", set(), None),
+        ("DAL", "Dallas Mavericks", "Dallas", set(), None),
+        ("DEN", "Denver Nuggets", "Denver", set(), None),
+        ("DET", "Detroit Pistons", "Detroit", set(), None),
+        ("GSW", "Golden State Warriors", "San Francisco", set(), None),
+        ("HOU", "Houston Rockets", "Houston", set(), None),
+        ("IND", "Indiana Pacers", "Indianapolis", set(), None),
+        ("LAC", "Los Angeles Clippers", "Los Angeles", set(), None),
+        ("LAL", "Los Angeles Lakers", "Los Angeles", set(), None),
+        ("MEM", "Memphis Grizzlies", "Memphis", {"VAN"}, 2002),
+        ("MIA", "Miami Heat", "Miami", set(), None),
+        ("MIL", "Milwaukee Bucks", "Milwaukee", set(), None),
+        ("MIN", "Minnesota Timberwolves", "Minneapolis", set(), None),
+        ("NOP", "New Orleans Pelicans", "New Orleans", {"CHH", "NOH", "NOK"}, 2003),
+        ("NYK", "New York Knicks", "New York", set(), None),
+        ("OKC", "Oklahoma City Thunder", "Oklahoma City", {"SEA"}, 2009),
+        ("ORL", "Orlando Magic", "Orlando", set(), None),
+        ("PHI", "Philadelphia 76ers", "Philadelphia", set(), None),
+        ("PHO", "Phoenix Suns", "Phoenix", set(), None),
+        ("POR", "Portland Trail Blazers", "Portland", set(), None),
+        ("SAC", "Sacramento Kings", "Sacramento", set(), None),
+        ("SAS", "San Antonio Spurs", "San Antonio", set(), None),
+        ("TOR", "Toronto Raptors", "Toronto", set(), None),
+        ("UTA", "Utah Jazz", "Salt Lake City", set(), None),
+        ("WAS", "Washington Wizards", "Washington", set(), None),
+    ],
+    "mlb": [
+        ("ARI", "Arizona Diamondbacks", "Phoenix", set(), None),
+        ("ATL", "Atlanta Braves", "Atlanta", set(), None),
+        ("BAL", "Baltimore Orioles", "Baltimore", set(), None),
+        ("BOS", "Boston Red Sox", "Boston", set(), None),
+        ("CHC", "Chicago Cubs", "Chicago", set(), None),
+        ("CHW", "Chicago White Sox", "Chicago", set(), None),
+        ("CIN", "Cincinnati Reds", "Cincinnati", set(), None),
+        ("CLE", "Cleveland Guardians", "Cleveland", set(), None),
+        ("COL", "Colorado Rockies", "Denver", set(), None),
+        ("DET", "Detroit Tigers", "Detroit", set(), None),
+        ("HOU", "Houston Astros", "Houston", set(), None),
+        ("KCR", "Kansas City Royals", "Kansas City", set(), None),
+        ("LAA", "Los Angeles Angels", "Los Angeles", {"ANA"}, None),
+        ("LAD", "Los Angeles Dodgers", "Los Angeles", set(), None),
+        ("MIA", "Miami Marlins", "Miami", {"FLA"}, None),
+        ("MIL", "Milwaukee Brewers", "Milwaukee", set(), None),
+        ("MIN", "Minnesota Twins", "Minneapolis", set(), None),
+        ("NYM", "New York Mets", "New York", set(), None),
+        ("NYY", "New York Yankees", "New York", set(), None),
+        ("ATH", "Athletics", "San Francisco", {"OAK"}, None),
+        ("PHI", "Philadelphia Phillies", "Philadelphia", set(), None),
+        ("PIT", "Pittsburgh Pirates", "Pittsburgh", set(), None),
+        ("SDP", "San Diego Padres", "San Diego", set(), None),
+        ("SFG", "San Francisco Giants", "San Francisco", set(), None),
+        ("SEA", "Seattle Mariners", "Seattle", set(), None),
+        ("STL", "St. Louis Cardinals", "St. Louis", set(), None),
+        ("TBR", "Tampa Bay Rays", "Tampa", {"TBD"}, None),
+        ("TEX", "Texas Rangers", "Dallas", set(), None),
+        ("TOR", "Toronto Blue Jays", "Toronto", set(), None),
+        ("WSN", "Washington Nationals", "Washington", {"MON"}, 2005),
+    ],
+    "nfl": [
+        ("ARI", "Arizona Cardinals", "Phoenix", set(), None),
+        ("ATL", "Atlanta Falcons", "Atlanta", set(), None),
+        ("BAL", "Baltimore Ravens", "Baltimore", set(), None),
+        ("BUF", "Buffalo Bills", "Buffalo", set(), None),
+        ("CAR", "Carolina Panthers", "Charlotte", set(), None),
+        ("CHI", "Chicago Bears", "Chicago", set(), None),
+        ("CIN", "Cincinnati Bengals", "Cincinnati", set(), None),
+        ("CLE", "Cleveland Browns", "Cleveland", set(), None),
+        ("DAL", "Dallas Cowboys", "Dallas", set(), None),
+        ("DEN", "Denver Broncos", "Denver", set(), None),
+        ("DET", "Detroit Lions", "Detroit", set(), None),
+        ("GB", "Green Bay Packers", "Green Bay", set(), None),
+        ("HOU", "Houston Texans", "Houston", set(), None),
+        ("IND", "Indianapolis Colts", "Indianapolis", set(), None),
+        ("JAX", "Jacksonville Jaguars", "Jacksonville", set(), None),
+        ("KC", "Kansas City Chiefs", "Kansas City", set(), None),
+        ("LV", "Las Vegas Raiders", "Las Vegas", {"OAK"}, 2020),
+        ("LAC", "Los Angeles Chargers", "Los Angeles", {"SD"}, 2017),
+        ("LA", "Los Angeles Rams", "Los Angeles", {"STL", "LAR"}, 2016),
+        ("MIA", "Miami Dolphins", "Miami", set(), None),
+        ("MIN", "Minnesota Vikings", "Minneapolis", set(), None),
+        ("NE", "New England Patriots", "Boston", set(), None),
+        ("NO", "New Orleans Saints", "New Orleans", set(), None),
+        ("NYG", "New York Giants", "New York", set(), None),
+        ("NYJ", "New York Jets", "New York", set(), None),
+        ("PHI", "Philadelphia Eagles", "Philadelphia", set(), None),
+        ("PIT", "Pittsburgh Steelers", "Pittsburgh", set(), None),
+        ("SF", "San Francisco 49ers", "San Francisco", set(), None),
+        ("SEA", "Seattle Seahawks", "Seattle", set(), None),
+        ("TB", "Tampa Bay Buccaneers", "Tampa", set(), None),
+        ("TEN", "Tennessee Titans", "Nashville", set(), None),
+        ("WAS", "Washington Commanders", "Washington", set(), None),
+    ],
+}
+
+
+def code_map(league):
+    """{any code the franchise has had: today's code}"""
+    out = {}
+    for code, name, metro, old, moved in FRANCHISES[league]:
+        out[code] = code
+        for o in old:
+            out[o] = code
+    return out
+
+
+def info(league):
+    return {code: dict(name=name, metro=metro, moved=moved) for code, name, metro, old, moved in FRANCHISES[league]}

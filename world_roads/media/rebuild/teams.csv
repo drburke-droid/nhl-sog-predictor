@@ -1,0 +1,125 @@
+league,team,name,metro,moved,value_musd,revenue_musd,metro_pop
+nhl,ANA,Anaheim Ducks,Los Angeles,,1400.0,185.0,12844441
+nhl,BOS,Boston Bruins,Boston,,2900.0,275.0,5034221
+nhl,BUF,Buffalo Sabres,Buffalo,,1325.0,175.0,1155653
+nhl,CGY,Calgary Flames,Calgary,,1900.0,210.0,1481806
+nhl,CAR,Carolina Hurricanes,Raleigh,,2000.0,218.0,1595720
+nhl,CHI,Chicago Blackhawks,Chicago,,2800.0,272.0,9434123
+nhl,COL,Colorado Avalanche,Denver,,1950.0,222.0,3092037
+nhl,CBJ,Columbus Blue Jackets,Columbus,,1300.0,161.0,2242028
+nhl,DAL,Dallas Stars,Dallas,,2300.0,250.0,8477157
+nhl,DET,Detroit Red Wings,Detroit,,2500.0,250.0,4390913
+nhl,EDM,Edmonton Oilers,Edmonton,,3200.0,431.0,1418118
+nhl,FLA,Florida Panthers,Miami,,1700.0,230.0,6391072
+nhl,LAK,Los Angeles Kings,Los Angeles,,3100.0,333.0,12844441
+nhl,MIN,Minnesota Wild,Minneapolis,,1800.0,240.0,3790295
+nhl,MTL,Montreal Canadiens,Montreal,,3400.0,320.0,4291732
+nhl,NSH,Nashville Predators,Nashville,,1600.0,203.0,2197416
+nhl,NJD,New Jersey Devils,New York,,2400.0,303.0,20112448
+nhl,NYI,New York Islanders,New York,,2100.0,220.0,20112448
+nhl,NYR,New York Rangers,New York,,4000.0,322.0,20112448
+nhl,OTT,Ottawa Senators,Ottawa,,1375.0,181.0,1488307
+nhl,PHI,Philadelphia Flyers,Philadelphia,,2700.0,315.0,6329118
+nhl,PIT,Pittsburgh Penguins,Pittsburgh,,1750.0,230.0,2421992
+nhl,SJS,San Jose Sharks,San Jose,,1500.0,182.0,1984473
+nhl,SEA,Seattle Kraken,Seattle,,1850.0,235.0,4161883
+nhl,STL,St. Louis Blues,St. Louis,,1550.0,208.0,2814421
+nhl,TBL,Tampa Bay Lightning,Tampa,,2050.0,240.0,3418895
+nhl,TOR,Toronto Maple Leafs,Toronto,,4400.0,375.0,6202225
+nhl,UTA,Utah Mammoth,Salt Lake City,2025,1450.0,195.0,1308377
+nhl,VAN,Vancouver Canucks,Vancouver,,2150.0,235.0,2642825
+nhl,VEG,Vegas Golden Knights,Las Vegas,,2200.0,250.0,2407226
+nhl,WSH,Washington Capitals,Washington,,2550.0,282.0,6465724
+nhl,WPG,Winnipeg Jets,Winnipeg,2012,1350.0,187.0,834678
+nba,ATL,Atlanta Hawks,Atlanta,,5000.0,477.0,6482182
+nba,BOS,Boston Celtics,Boston,,6700.0,458.0,5034221
+nba,BRK,Brooklyn Nets,New York,,5600.0,402.0,20112448
+nba,CHO,Charlotte Hornets,Charlotte,,3800.0,328.0,2938830
+nba,CHI,Chicago Bulls,Chicago,,6000.0,434.0,9434123
+nba,CLE,Cleveland Cavaliers,Cleveland,,4800.0,440.0,2165775
+nba,DAL,Dallas Mavericks,Dallas,,5100.0,407.0,8477157
+nba,DEN,Denver Nuggets,Denver,,4600.0,364.0,3092037
+nba,DET,Detroit Pistons,Detroit,,3650.0,321.0,4390913
+nba,GSW,Golden State Warriors,San Francisco,,11000.0,880.0,4630041
+nba,HOU,Houston Rockets,Houston,,5900.0,467.0,7904627
+nba,IND,Indiana Pacers,Indianapolis,,4200.0,342.0,2205695
+nba,LAC,Los Angeles Clippers,Los Angeles,,7500.0,569.0,12844441
+nba,LAL,Los Angeles Lakers,Los Angeles,,10000.0,551.0,12844441
+nba,MEM,Memphis Grizzlies,Memphis,2002,3500.0,306.0,1341412
+nba,MIA,Miami Heat,Miami,,5700.0,417.0,6391072
+nba,MIL,Milwaukee Bucks,Milwaukee,,4300.0,355.0,1575010
+nba,MIN,Minnesota Timberwolves,Minneapolis,,3600.0,320.0,3790295
+nba,NOP,New Orleans Pelicans,New Orleans,2003,3550.0,302.0,970849
+nba,NYK,New York Knicks,New York,,9750.0,532.0,20112448
+nba,OKC,Oklahoma City Thunder,Oklahoma City,2009,4350.0,357.0,1512813
+nba,ORL,Orlando Magic,Orlando,,3900.0,318.0,2957672
+nba,PHI,Philadelphia 76ers,Philadelphia,,5450.0,472.0,6329118
+nba,PHO,Phoenix Suns,Phoenix,,5425.0,455.0,5228938
+nba,POR,Portland Trail Blazers,Portland,,4250.0,361.0,2542282
+nba,SAC,Sacramento Kings,Sacramento,,4450.0,354.0,2477274
+nba,SAS,San Antonio Spurs,San Antonio,,4400.0,401.0,2813140
+nba,TOR,Toronto Raptors,Toronto,,5400.0,380.0,6202225
+nba,UTA,Utah Jazz,Salt Lake City,,4100.0,340.0,1308377
+nba,WAS,Washington Wizards,Washington,,4700.0,389.0,6465724
+mlb,ARI,Arizona Diamondbacks,Phoenix,,1960.0,234.0,5228938
+mlb,ATL,Atlanta Braves,Atlanta,,3350.0,524.0,6482182
+mlb,BAL,Baltimore Orioles,Baltimore,,2100.0,355.0,2857781
+mlb,BOS,Boston Red Sox,Boston,,5250.0,567.0,5034221
+mlb,CHC,Chicago Cubs,Chicago,,5000.0,599.0,9434123
+mlb,CHW,Chicago White Sox,Chicago,,1940.0,239.0,9434123
+mlb,CIN,Cincinnati Reds,Cincinnati,,1600.0,336.0,2312858
+mlb,CLE,Cleveland Guardians,Cleveland,,1680.0,337.0,2165775
+mlb,COL,Colorado Rockies,Denver,,1680.0,319.0,3092037
+mlb,DET,Detroit Tigers,Detroit,,1800.0,363.0,4390913
+mlb,HOU,Houston Astros,Houston,,3200.0,464.0,7904627
+mlb,KCR,Kansas City Royals,Kansas City,,1640.0,330.0,2270682
+mlb,LAA,Los Angeles Angels,Los Angeles,,2800.0,377.0,12844441
+mlb,LAD,Los Angeles Dodgers,Los Angeles,,7800.0,850.0,12844441
+mlb,MIA,Miami Marlins,Miami,,1500.0,320.0,6391072
+mlb,MIL,Milwaukee Brewers,Milwaukee,,1900.0,354.0,1575010
+mlb,MIN,Minnesota Twins,Minneapolis,,1710.0,315.0,3790295
+mlb,NYM,New York Mets,New York,,3500.0,553.0,20112448
+mlb,NYY,New York Yankees,New York,,8500.0,710.0,20112448
+mlb,ATH,Athletics,San Francisco,,2000.0,320.0,4630041
+mlb,PHI,Philadelphia Phillies,Philadelphia,,3400.0,539.0,6329118
+mlb,PIT,Pittsburgh Pirates,Pittsburgh,,1620.0,330.0,2421992
+mlb,SDP,San Diego Padres,San Diego,,3100.0,452.0,3282248
+mlb,SFG,San Francisco Giants,San Francisco,,4050.0,477.0,4630041
+mlb,SEA,Seattle Mariners,Seattle,,2350.0,390.0,4161883
+mlb,STL,St. Louis Cardinals,St. Louis,,2750.0,350.0,2814421
+mlb,TBR,Tampa Bay Rays,Tampa,,1700.0,290.0,3418895
+mlb,TEX,Texas Rangers,Dallas,,2700.0,398.0,8477157
+mlb,TOR,Toronto Blue Jays,Toronto,,2500.0,445.0,6202225
+mlb,WSN,Washington Nationals,Washington,2005,2150.0,215.0,6465724
+nfl,ARI,Arizona Cardinals,Phoenix,,5500.0,571.0,5228938
+nfl,ATL,Atlanta Falcons,Atlanta,,6350.0,612.0,6482182
+nfl,BAL,Baltimore Ravens,Baltimore,,6100.0,621.0,2857781
+nfl,BUF,Buffalo Bills,Buffalo,,5950.0,585.0,1155653
+nfl,CAR,Carolina Panthers,Charlotte,,5700.0,588.0,2938830
+nfl,CHI,Chicago Bears,Chicago,,8200.0,629.0,9434123
+nfl,CIN,Cincinnati Bengals,Cincinnati,,5250.0,573.0,2312858
+nfl,CLE,Cleveland Browns,Cleveland,,6400.0,685.0,2165775
+nfl,DAL,Dallas Cowboys,Dallas,,17000.0,1234.0,8477157
+nfl,DEN,Denver Broncos,Denver,,6800.0,645.0,3092037
+nfl,DET,Detroit Lions,Detroit,,5400.0,585.0,4390913
+nfl,GB,Green Bay Packers,Green Bay,,6650.0,719.0,336756
+nfl,HOU,Houston Texans,Houston,,7400.0,687.0,7904627
+nfl,IND,Indianapolis Colts,Indianapolis,,5900.0,593.0,2205695
+nfl,JAX,Jacksonville Jaguars,Jacksonville,,5600.0,552.0,1785500
+nfl,KC,Kansas City Chiefs,Kansas City,,6200.0,610.0,2270682
+nfl,LV,Las Vegas Raiders,Las Vegas,2020,7700.0,832.0,2407226
+nfl,LAC,Los Angeles Chargers,Los Angeles,2017,6000.0,593.0,12844441
+nfl,LA,Los Angeles Rams,Los Angeles,2016,13500.0,764.0,12844441
+nfl,MIA,Miami Dolphins,Miami,,7500.0,656.0,6391072
+nfl,MIN,Minnesota Vikings,Minneapolis,,6250.0,609.0,3790295
+nfl,NE,New England Patriots,Boston,,9000.0,762.0,5034221
+nfl,NO,New Orleans Saints,New Orleans,,5300.0,607.0,970849
+nfl,NYG,New York Giants,New York,,10100.0,707.0,20112448
+nfl,NYJ,New York Jets,New York,,8100.0,663.0,20112448
+nfl,PHI,Philadelphia Eagles,Philadelphia,,8300.0,688.0,6329118
+nfl,PIT,Pittsburgh Steelers,Pittsburgh,,6500.0,619.0,2421992
+nfl,SF,San Francisco 49ers,San Francisco,,8600.0,723.0,4630041
+nfl,SEA,Seattle Seahawks,Seattle,,6700.0,624.0,4161883
+nfl,TB,Tampa Bay Buccaneers,Tampa,,6600.0,629.0,3418895
+nfl,TEN,Tennessee Titans,Nashville,,6300.0,582.0,2197416
+nfl,WAS,Washington Commanders,Washington,,7600.0,644.0,6465724
