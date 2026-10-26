@@ -25,7 +25,9 @@ teams in free agency and lost to them. Payroll as a share of the league's averag
   *neither*, the middle (30-70 %) of both. Then over the ten seasons after: the peak (best rank in years 3-10), a
   top-three finish, a title, the low (worst rank in years 1-10), the average. Per league; again by payroll (the fifth
   that cut the most against the league, the fifth that added the most; NBA and MLB, the leagues with payroll long
-  enough); and over a grid (fifths or thirds, eight or ten seasons).
+  enough); and over a grid (fifths or thirds, eight or ten seasons). Sellers are often teams already sliding, so each
+  gap also comes adjusted: least squares with the starting rank, the trend into it (the change in rank over the two
+  seasons before) and the roster's age held fixed.
 * champions: each champion's standing among that season's teams (0.5 typical) in stars traded, net, over seasons t-10
   to t-3; in stars traded and signed, net, over t-2 to t; and in payroll; p from a sign test.
 """
@@ -55,7 +57,7 @@ def rows():
     out = defaultdict(list)
     for s in seasons:
         m = tm.get((s["league"], s["season"], s["team"]), {})
-        r = dict(league=s["league"], team=s["team"], season=int(s["season"]), rank=F(s["rank_pct"]),
+        r = dict(league=s["league"], team=s["team"], season=int(s["season"]), rank=F(s["rank_pct"]), age=F(s["age"]),
                  champion=int(s["champion"]), top3=int(s["rank"]) <= 3, bottom3=int(s["rank"]) > int(s["teams"]) - 3,
                  moved=teams[(s["league"], s["team"])]["moved"])
         for k in ("trade_net", "future_net", "trade_net_off", "trade_stars_in", "trade_stars_out", "trade_future_in", "trade_future_out",
@@ -64,6 +66,14 @@ def rows():
         r["sell"] = float(r["trade_net"] <= -SELL and r["future_net"] >= SELL) if not np.isnan(r["trade_net"]) else np.nan
         r["buy"] = float(r["trade_net"] >= BUY and r["future_net"] <= -BUY) if not np.isnan(r["trade_net"]) else np.nan
         out[(s["league"], s["team"])].append(r)
+    ages = defaultdict(list)                  # roster age against the league that season
+    for S in out.values():
+        for r in S:
+            ages[(r["league"], r["season"])].append(r["age"])
+    for S in out.values():
+        for r in S:
+            a = np.array(ages[(r["league"], r["season"])], float)
+            r["age_z"] = (r["age"] - np.nanmean(a)) / np.nanstd(a) if not np.isnan(r["age"]) else np.nan
     for S in out.values():
         S.sort(key=lambda r: r["season"])
         for a, b in zip(S, S[1:]):
@@ -241,7 +251,8 @@ def lever_events(T, horizon=HORIZON, mid=MID):
             if any(np.isnan(r["trade_net"]) for r in nx) or win[-1]["season"] - s["season"] > horizon + 1:
                 continue
             later = win[AFTER:]
-            out.append(dict(league=lg, team=team, season=s["season"], start=s["rank"],
+            out.append(dict(league=lg, team=team, season=s["season"], start=s["rank"], age_z=s["age_z"],
+                            trend=s["rank"] - S[i - 2]["rank"] if i >= 2 else np.nan,
                             traded=round(sum(r["trade_net"] for r in nx), 3), future=round(sum(r["future_net"] for r in nx), 3),
                             signed=round(sum(0 if np.isnan(r["fa_net"]) else r["fa_net"] for r in nx), 3),
                             d_pay=round(nx[-1]["payroll_rel"] - s["payroll_rel"], 4),
@@ -265,7 +276,8 @@ def paths(ev, q=Q, by="trades"):
             d = np.array([e["d_pay"] for e in E])
             lo, hi, m1, m2 = np.quantile(d, [q, 1 - q, 0.3, 0.7])
             for e in E:
-                e["path_pay"] = "sold" if e["d_pay"] <= lo else "bought" if e["d_pay"] >= hi else "neither" if m1 <= e["d_pay"] <= m2 else "other"
+                e["path_pay"] = ("sold" if e["d_pay"] <= min(lo, 0) else "bought" if e["d_pay"] >= max(hi, 0) else
+                                 "neither" if m1 <= e["d_pay"] <= m2 else "other")
             continue
         tr = np.array([e["traded"] for e in E])
         add = np.array([e["traded"] + e["signed"] for e in E])
@@ -274,7 +286,7 @@ def paths(ev, q=Q, by="trades"):
         t1, t2 = np.quantile(tr, [0.3, 0.7])
         for e in E:
             a = e["traded"] + e["signed"]
-            e["path"] = ("sold" if e["traded"] <= t_lo and e["future"] > 0 else "bought" if a >= a_hi else
+            e["path"] = ("sold" if e["traded"] <= min(t_lo, -0.05) and e["future"] > 0 else "bought" if a >= max(a_hi, 0.05) else
                          "neither" if a1 <= a <= a2 and t1 <= e["traded"] <= t2 else "other")
     return ev
 
@@ -292,11 +304,36 @@ def compare(ev, a, b, league=None, n=2000, key="path"):
     return res
 
 
+def adjusted(ev, a, b, league=None, n=1000, key="path"):
+    """the a-b gap with the starting rank, the trend into it (rank change over the two seasons before) and roster age
+    (not in the NFL) held fixed: least squares within league, CI from resampling franchises"""
+    E = [e for e in ev if e.get(key) in (a, b) and (league is None or e["league"] == league) and not np.isnan(e["trend"])]
+    if sum(e[key] == a for e in E) < 5 or sum(e[key] == b for e in E) < 5:
+        return None
+
+    def fit(R, k):
+        X = [[float(e[key] == a), e["start"], e["trend"]] + ([0.0 if np.isnan(e["age_z"]) else e["age_z"]] if league != "nfl" else [])
+             + ([float(e["league"] == l) for l in LEAGUES[1:]] if league is None else []) for e in R]
+        X = np.column_stack([np.ones(len(R)), np.array(X)])
+        y = np.array([e[k] for e in R], float)
+        return np.linalg.lstsq(X, y, rcond=None)[0][1]
+    out = {}
+    for k in ("peak", "title", "low", "mean"):
+        out[k] = boot(E, lambda R, k=k: fit(R, k) if len({e[key] for e in R}) == 2 else np.nan, n)
+    out["groups"] = {p: dict(start=round(float(np.mean([e["start"] for e in E if e[key] == p])), 3),
+                             trend=round(float(np.mean([e["trend"] for e in E if e[key] == p])), 3),
+                             age_z=round(float(np.nanmean([e["age_z"] for e in E if e[key] == p])), 3) if league != "nfl" else None)
+                     for p in (a, b)}
+    return out
+
+
 def teardown(T):
     ev = paths(paths(lever_events(T)), by="payroll")
     res = {"main": {lg or "all": dict(sold_vs_neither=compare(ev, "sold", "neither", lg),
                                       bought_vs_neither=compare(ev, "bought", "neither", lg),
-                                      sold_vs_bought=compare(ev, "sold", "bought", lg))
+                                      sold_vs_bought=compare(ev, "sold", "bought", lg),
+                                      adjusted=dict(sold_vs_neither=adjusted(ev, "sold", "neither", lg),
+                                                    bought_vs_neither=adjusted(ev, "bought", "neither", lg)))
                     for lg in LEAGUES + [None]}}
     res["payroll"] = {lg or "all": dict(cut_vs_neither=compare(ev, "sold", "neither", lg, key="path_pay"),
                                         added_vs_neither=compare(ev, "bought", "neither", lg, key="path_pay"),
