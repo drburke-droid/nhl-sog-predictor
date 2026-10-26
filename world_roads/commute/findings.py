@@ -69,7 +69,7 @@ def half_hour(C, direction, source, dst):
     ax.set_ylabel(f"minutes later {w['arrive']}, for leaving 30 min later")
     fig.suptitle(f"{w['leave'].capitalize()} 30 minutes later: how much later are you {w['arrive']}?", x=0.06, ha="left",
                  fontsize=16, fontweight="bold")
-    fig.text(0.06, 0.875, f"{w['trip']}, typical Tuesday-Thursday, in 20 North American metros (gray: the other 19)."
+    fig.text(0.06, 0.875, f"{w['trip']}, typical Tuesday-Thursday, in {len(C)} North American metros (gray: the other {len(C) - 1})."
              f"\nPredicted drive times every 5 minutes: {source}.", color=INK2, fontsize=10, linespacing=1.5)
     fig.subplots_adjust(left=0.07, right=0.98, top=0.83, bottom=0.1)
     fig.savefig(dst, facecolor=SURFACE)
@@ -80,7 +80,12 @@ def grid(C, direction, source, dst):
     w = WORDS[direction]
     top = max(max(c["drive_max"]) for c in C)
     ymax = 30 * np.ceil((top + 18) / 30)
-    fig, axes = plt.subplots(4, 5, figsize=(16, 11), dpi=140, sharex=True, sharey=True)
+    rows = -(-len(C) // 5)
+    fig, axes = plt.subplots(rows, 5, figsize=(16, 2.75 * rows), dpi=140, sharex=True, sharey=True)
+    for k, ax in enumerate(axes.flat):
+        if k >= len(C):
+            ax.set_visible(False)
+            axes.flat[k - 5].xaxis.set_tick_params(labelbottom=True)
     for ax, c in zip(axes.flat, sorted(C, key=lambda c: c["rank"])):
         dep, T = np.array(c["depart"]), np.array(c["drive"])
         ax.fill_between(dep, c["drive_min"], c["drive_max"], color=BAND, lw=0, zorder=1)

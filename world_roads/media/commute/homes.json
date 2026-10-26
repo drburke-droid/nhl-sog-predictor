@@ -466,6 +466,75 @@
     "km": 32.7
    },
    "candidates": 16
+  },
+  {
+   "rank": 28,
+   "metro": "Vancouver",
+   "tz": "America/Vancouver",
+   "tomtom": "vancouver",
+   "office": {
+    "name": "Burrard Station, Financial District",
+    "lat": 49.28564,
+    "lon": -123.11982
+   },
+   "home": {
+    "geonameid": 6158070,
+    "name": "Strawberry Hill",
+    "lat": 49.13333,
+    "lon": -122.88333,
+    "country": "CA",
+    "admin1": "02",
+    "feature": "PPL",
+    "population": 41000,
+    "km": 24.1
+   },
+   "candidates": 7
+  },
+  {
+   "rank": 101,
+   "metro": "Calgary",
+   "tz": "America/Edmonton",
+   "tomtom": "calgary",
+   "office": {
+    "name": "Bankers Hall, Stephen Avenue, Downtown",
+    "lat": 51.04524,
+    "lon": -114.06911
+   },
+   "home": {
+    "geonameid": 5924618,
+    "name": "Cochrane",
+    "lat": 51.18341,
+    "lon": -114.46871,
+    "country": "CA",
+    "admin1": "01",
+    "feature": "PPL",
+    "population": 32199,
+    "km": 31.8
+   },
+   "candidates": 2
+  },
+  {
+   "rank": 102,
+   "metro": "Edmonton",
+   "tz": "America/Edmonton",
+   "tomtom": "edmonton",
+   "office": {
+    "name": "Sir Winston Churchill Square, Downtown",
+    "lat": 53.54404,
+    "lon": -113.48977
+   },
+   "home": {
+    "geonameid": 6154383,
+    "name": "Spruce Grove",
+    "lat": 53.53344,
+    "lon": -113.91874,
+    "country": "CA",
+    "admin1": "01",
+    "feature": "PPL",
+    "population": 38985,
+    "km": 28.4
+   },
+   "candidates": 1
   }
  ]
 }

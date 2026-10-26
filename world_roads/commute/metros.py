@@ -1,9 +1,11 @@
-"""The 20 largest North American metro areas and where their downtown office is.
+"""The 20 largest North American metro areas, plus Vancouver, Calgary and Edmonton, and where their downtown office is.
 
 Ranking: Wikipedia, "List of North American metropolitan areas by population" (MSA / CMA / zona metropolitana,
 figures 2020-2025; page as of 25 Sep 2026). #20 there, Santo Domingo, has no TomTom Traffic Index data, so #21,
-Seattle, takes its place. The office is a well-known downtown or business-district point, set by hand (to within
-a block or two). The last field is the metro's city page in the TomTom Traffic Index.
+Seattle, takes its place. Vancouver (#28 there), Calgary and Edmonton are added on request. Calgary and Edmonton
+are not on that list (it stops at #50, Havana, 2.14 million), so their 101 and 102 are ids that order them, not
+ranks. The office is a well-known downtown or business-district point, set by hand (to within a block or two;
+the three added ones from OpenStreetMap). The last field is the metro's city page in the TomTom Traffic Index.
 """
 METROS = [
     # rank, name, country, time zone, office (name, lat, lon), TomTom Traffic Index city
@@ -27,4 +29,7 @@ METROS = [
     (18, "Montreal", "CA", "America/Toronto", ("Place Ville Marie, Downtown", 45.50170, -73.56940), "montreal"),
     (19, "Detroit", "US", "America/Detroit", ("Campus Martius, Downtown", 42.33140, -83.04660), "detroit-mi"),
     (21, "Seattle", "US", "America/Los_Angeles", ("Westlake Center, Downtown Seattle", 47.61145, -122.33740), "seattle-wa"),
+    (28, "Vancouver", "CA", "America/Vancouver", ("Burrard Station, Financial District", 49.28564, -123.11982), "vancouver"),
+    (101, "Calgary", "CA", "America/Edmonton", ("Bankers Hall, Stephen Avenue, Downtown", 51.04524, -114.06911), "calgary"),
+    (102, "Edmonton", "CA", "America/Edmonton", ("Sir Winston Churchill Square, Downtown", 53.54404, -113.48977), "edmonton"),
 ]

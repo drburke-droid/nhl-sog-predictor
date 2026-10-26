@@ -1,6 +1,6 @@
 # When should you leave work? (`commute/`)
 
-A narrated video in the style of `../traffic/`: for the 20 largest North American metro areas, how the time you
+A narrated video in the style of `../traffic/`: for the 20 largest North American metro areas and Vancouver, Calgary and Edmonton, how the time you
 get home depends on when you leave the office, and whether there is a "best time to leave", where staying longer
 at work barely makes you later home; and the same for the morning commute.
 
@@ -27,17 +27,17 @@ No public source gives route-specific predicted drive times without a key (searc
 needs one of:
 
 * **TomTom (`tomtom_routes.py`, recommended):** a free account at developer.tomtom.com (no credit card); the key
-  is on the dashboard. The Routing API's free allowance is 20,000 requests a month, and the whole run is 6,600.
+  is on the dashboard. The Routing API's free allowance is 20,000 requests a month, and the whole run is 7,590.
   Add the key in the environment's settings (Network secrets where offered, otherwise the environment variable
   `TOMTOM_API_KEY`; `API_KEY` also works), then start a new session.
 * **Google (`fetch.py`):** a Google Cloud project with billing on, the Routes API enabled and a key, as
-  `GOOGLE_MAPS_API_KEY`. The same 6,600 requests; check the free usage for traffic-aware routes in the console.
+  `GOOGLE_MAPS_API_KEY`. The same 7,590 requests; check the free usage for traffic-aware routes in the console.
 
 Then, in a new session, from `commute/`:
 
 ```
 python tomtom_routes.py --check     # one request: Toronto, Tue 17 Nov, 4:50 p.m.; compare with Google's 1-2 h
-python tomtom_routes.py             # the 6,600 requests, about 30 min, resumable
+python tomtom_routes.py             # the 7,590 requests, about 32 min, resumable
 python analyse.py tomtom            # -> ../media/commute/curves_tomtom.json, and a table of the findings
 python findings.py tomtom           # -> ../media/commute/findings_tomtom_{evening,morning}_{half_hour,drive}.png
 ```
@@ -48,7 +48,7 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
 
 | Step | Script | Output |
 |---|---|---|
-| The 20 metros and their downtown office points | `metros.py` | |
+| The 23 metros and their downtown office points | `metros.py` | |
 | A random suburb for each: GeoNames towns of 25,000+ people, 18-35 km from the office, seeded per metro | `homes.py` | `../media/commute/homes.json` |
 | The departures to ask about, both commutes | `plan.py` | |
 | Predicted drive for each departure, on the quickest route for it | `tomtom_routes.py` (or `fetch.py`) | `data/` (cache), `../media/commute/drive_times_<router>.json` |
@@ -57,8 +57,8 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
 
 * **Commutes:** evening, office to home, leaving every 5 minutes from 3:00 to 8:00 p.m.; morning, home to office,
   every 5 minutes from 6:00 to 10:00 a.m.; local time, on Tue-Thu 17-19 Nov 2026 (after the clocks change on
-  1 Nov, clear of US Thanksgiving and of Mexico's Revolution Day holiday on Mon 16 Nov). 20 metros × (61 + 49)
-  departures × 3 days = 6,600 requests.
+  1 Nov, clear of US Thanksgiving and of Mexico's Revolution Day holiday on Mon 16 Nov). 23 metros × (61 + 49)
+  departures × 3 days = 7,590 requests.
 * **TomTom:** Calculate Route, `routeType=fastest`, `traffic=true`, `departAt` the local departure,
   `computeTravelTimeFor=all`. The drive is `historicTrafficTravelTimeInSeconds`: TomTom's time-dependent historic
   traffic on that route for that weekday and time (weeks ahead, so no live traffic in it). The empty-roads time
@@ -72,7 +72,10 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
 * **Ranking:** Wikipedia, "List of North American metropolitan areas by population" (MSA / CMA / zona
   metropolitana; page as of 25 Sep 2026). #16 is the Inland Empire (office: downtown Riverside). #20 Santo
   Domingo has no TomTom Traffic Index data, so #21 Seattle takes its place (kept for the routed data too, so the
-  list stays one source).
+  list stays one source). Vancouver (#28), Calgary and Edmonton are added on request; Calgary and Edmonton are
+  not on the list (it stops at #50, Havana, 2.14 million), so their 101 and 102 in `metros.py` are ids, not ranks.
+  Their offices are OpenStreetMap points (Burrard Station; Bankers Hall, Stephen Avenue; Churchill Square). The
+  city-average baseline below has the first 20 only.
 * **Suburbs:** GeoNames (CC BY 4.0). One GeoNames entry is excluded with a reason in `homes.py`.
 
 ## The city-average baseline (not used for findings)
