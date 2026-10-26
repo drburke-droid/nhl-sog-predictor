@@ -11,6 +11,7 @@
    "rank": 1,
    "metro": "Mexico City",
    "tz": "America/Mexico_City",
+   "tomtom": "mexico-city",
    "office": {
     "name": "Ángel de la Independencia, Paseo de la Reforma",
     "lat": 19.42697,
@@ -33,6 +34,7 @@
    "rank": 2,
    "metro": "New York",
    "tz": "America/New_York",
+   "tomtom": "new-york-ny",
    "office": {
     "name": "Grand Central Terminal, Midtown Manhattan",
     "lat": 40.75274,
@@ -55,6 +57,7 @@
    "rank": 3,
    "metro": "Los Angeles",
    "tz": "America/Los_Angeles",
+   "tomtom": "los-angeles-ca",
    "office": {
     "name": "Pershing Square, Downtown LA",
     "lat": 34.04848,
@@ -77,6 +80,7 @@
    "rank": 4,
    "metro": "Chicago",
    "tz": "America/Chicago",
+   "tomtom": "chicago-il",
    "office": {
     "name": "Willis Tower, the Loop",
     "lat": 41.87886,
@@ -99,6 +103,7 @@
    "rank": 5,
    "metro": "Dallas–Fort Worth",
    "tz": "America/Chicago",
+   "tomtom": "dallas-tx",
    "office": {
     "name": "Main Street District, Downtown Dallas",
     "lat": 32.7807,
@@ -121,6 +126,7 @@
    "rank": 6,
    "metro": "Houston",
    "tz": "America/Chicago",
+   "tomtom": "houston-tx",
    "office": {
     "name": "City Hall, Downtown Houston",
     "lat": 29.76026,
@@ -143,6 +149,7 @@
    "rank": 7,
    "metro": "Toronto",
    "tz": "America/Toronto",
+   "tomtom": "toronto",
    "office": {
     "name": "King and Bay, Financial District",
     "lat": 43.6486,
@@ -165,6 +172,7 @@
    "rank": 8,
    "metro": "Atlanta",
    "tz": "America/New_York",
+   "tomtom": "atlanta-ga",
    "office": {
     "name": "Five Points, Downtown Atlanta",
     "lat": 33.75387,
@@ -187,6 +195,7 @@
    "rank": 9,
    "metro": "Washington",
    "tz": "America/New_York",
+   "tomtom": "washington-dc",
    "office": {
     "name": "Farragut Square, Downtown DC",
     "lat": 38.90195,
@@ -209,6 +218,7 @@
    "rank": 10,
    "metro": "Miami",
    "tz": "America/New_York",
+   "tomtom": "miami-fl",
    "office": {
     "name": "Brickell City Centre",
     "lat": 25.7668,
@@ -231,6 +241,7 @@
    "rank": 11,
    "metro": "Philadelphia",
    "tz": "America/New_York",
+   "tomtom": "philadelphia-pa",
    "office": {
     "name": "City Hall, Center City",
     "lat": 39.95238,
@@ -253,6 +264,7 @@
    "rank": 12,
    "metro": "Monterrey",
    "tz": "America/Monterrey",
+   "tomtom": "monterrey",
    "office": {
     "name": "Macroplaza, Centro",
     "lat": 25.66905,
@@ -275,6 +287,7 @@
    "rank": 13,
    "metro": "Guadalajara",
    "tz": "America/Mexico_City",
+   "tomtom": "guadalajara",
    "office": {
     "name": "Catedral, Centro",
     "lat": 20.6768,
@@ -297,6 +310,7 @@
    "rank": 14,
    "metro": "Phoenix",
    "tz": "America/Phoenix",
+   "tomtom": "phoenix-az",
    "office": {
     "name": "Washington and Central, Downtown Phoenix",
     "lat": 33.44838,
@@ -319,6 +333,7 @@
    "rank": 15,
    "metro": "Boston",
    "tz": "America/New_York",
+   "tomtom": "boston-ma",
    "office": {
     "name": "Post Office Square, Financial District",
     "lat": 42.3563,
@@ -341,6 +356,7 @@
    "rank": 16,
    "metro": "Inland Empire",
    "tz": "America/Los_Angeles",
+   "tomtom": "riverside-ca",
    "office": {
     "name": "City Hall, Downtown Riverside",
     "lat": 33.9806,
@@ -363,6 +379,7 @@
    "rank": 17,
    "metro": "San Francisco Bay Area",
    "tz": "America/Los_Angeles",
+   "tomtom": "san-francisco-ca",
    "office": {
     "name": "Montgomery and Market, Financial District",
     "lat": 37.7894,
@@ -385,6 +402,7 @@
    "rank": 18,
    "metro": "Montreal",
    "tz": "America/Toronto",
+   "tomtom": "montreal",
    "office": {
     "name": "Place Ville Marie, Downtown",
     "lat": 45.5017,
@@ -407,6 +425,7 @@
    "rank": 19,
    "metro": "Detroit",
    "tz": "America/Detroit",
+   "tomtom": "detroit-mi",
    "office": {
     "name": "Campus Martius, Downtown",
     "lat": 42.3314,
@@ -426,26 +445,27 @@
    "candidates": 15
   },
   {
-   "rank": 20,
-   "metro": "Santo Domingo",
-   "tz": "America/Santo_Domingo",
+   "rank": 21,
+   "metro": "Seattle",
+   "tz": "America/Los_Angeles",
+   "tomtom": "seattle-wa",
    "office": {
-    "name": "Piantini business district",
-    "lat": 18.4723,
-    "lon": -69.9398
+    "name": "Westlake Center, Downtown Seattle",
+    "lat": 47.61145,
+    "lon": -122.3374
    },
    "home": {
-    "geonameid": 3511540,
-    "name": "San Cristóbal",
-    "lat": 18.41713,
-    "lon": -70.10682,
-    "country": "DO",
-    "admin1": "33",
-    "feature": "PPLA",
-    "population": 154040,
-    "km": 18.7
+    "geonameid": 5802340,
+    "name": "Maple Valley",
+    "lat": 47.39272,
+    "lon": -122.04641,
+    "country": "US",
+    "admin1": "WA",
+    "feature": "PPL",
+    "population": 25686,
+    "km": 32.7
    },
-   "candidates": 2
+   "candidates": 16
   }
  ]
 }

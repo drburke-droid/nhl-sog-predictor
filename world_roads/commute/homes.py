@@ -43,13 +43,13 @@ def towns():
 def main():
     T = towns()
     homes = []
-    for rank, name, cc, tz, (oname, olat, olon) in METROS:
+    for rank, name, cc, tz, (oname, olat, olon), tt in METROS:
         cand = sorted([dict(t, km=round(km((olat, olon), (t["lat"], t["lon"])), 1)) for t in T
                        if t["country"] == cc and t["geonameid"] not in EXCLUDE
                        and RING[0] <= km((olat, olon), (t["lat"], t["lon"])) <= RING[1]],
                       key=lambda t: t["geonameid"])
         pick = random.Random(f"{SEED}-{rank}").choice(cand)
-        homes.append(dict(rank=rank, metro=name, tz=tz, office=dict(name=oname, lat=olat, lon=olon),
+        homes.append(dict(rank=rank, metro=name, tz=tz, tomtom=tt, office=dict(name=oname, lat=olat, lon=olon),
                           home=pick, candidates=len(cand)))
         print(f"{rank:2d} {name:24s} {pick['name']:28s} pop {pick['population']:>9,}  {pick['km']:5.1f} km  (of {len(cand)} suburbs)")
     os.makedirs(MEDIA, exist_ok=True)
