@@ -125,6 +125,18 @@ City-wide from the Traffic Index (2025, metro area), and on each routed commute:
   Calgary and Seattle. So the drives are a typical weekday, not November's, and the BC and Alberta offset is right.
 * **The costliest half hour:** leaving home in Mexico City at 6:50 instead of 6:20 a.m. gets you in 50 min later.
 
+## Rush-hour map (`rush_map.py`)
+
+`../media/commute/rush_map.mp4` (1920x1080, 30 fps, 80 s): the light-speed film's look (`../render.py`, `../na_wide.py`)
+on a map of the 23 metros. The clock runs from 5 a.m. to midnight at 4 s an hour, the same local time in every metro,
+as if North America had one time zone, and each metro's highways glow by its city-wide congestion at that local time:
+cyan while the roads are free, gold as they fill, white-hot at the worst (TomTom Traffic Index, Tue-Thu 2025
+averages, metro area; hourly values joined by a monotone cubic). A board shows the five worst metros of the moment and
+a line the average of all 23 through the day. Base map: Natural Earth 10 m land, lakes, borders and roads
+(`../data/ne`, fetched as `../run_all.sh` does, plus the roads and border layers from the same repository) in a
+Lambert conformal conic projection. `python rush_map.py still 8.5 17.25` renders stills
+(`rush_map_<hour>.png`).
+
 ## Next
 
 - [x] A TomTom key in the environment, then the run above (26 Oct 2026)
