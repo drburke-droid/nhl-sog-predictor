@@ -29,7 +29,7 @@ needs one of:
 * **TomTom (`tomtom_routes.py`, recommended):** a free account at developer.tomtom.com (no credit card); the key
   is on the dashboard. The Routing API's free allowance is 20,000 requests a month, and the whole run is 6,600.
   Add the key in the environment's settings (Network secrets where offered, otherwise the environment variable
-  `TOMTOM_API_KEY`), then start a new session.
+  `TOMTOM_API_KEY`; `API_KEY` also works), then start a new session.
 * **Google (`fetch.py`):** a Google Cloud project with billing on, the Routes API enabled and a key, as
   `GOOGLE_MAPS_API_KEY`. The same 6,600 requests; check the free usage for traffic-aware routes in the console.
 

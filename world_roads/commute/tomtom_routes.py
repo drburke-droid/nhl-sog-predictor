@@ -7,7 +7,7 @@ Route gives the quickest route for that departure and its drive time from TomTom
 traffic on that route (summary.historicTrafficTravelTimeInSeconds; the dates are weeks ahead, so no live
 traffic is in it), plus the same route on empty roads.
 
-Needs TOMTOM_API_KEY (developer.tomtom.com: free account, no credit card; the Routing API's free allowance is
+Needs the TomTom key as TOMTOM_API_KEY or API_KEY (developer.tomtom.com: free account, no credit card; the Routing API's free allowance is
 20,000 requests a month, and the whole run is 6,600). Requests already cached are never sent again, so a run can
 be stopped and resumed. --check sends just one request (Toronto, Tuesday, 4:50 p.m.) and prints it.
 """
@@ -105,9 +105,9 @@ def main(args):
     if "--dry-run" in args:
         print(url(every[0], None) + "&key=...")
         return
-    key = os.environ.get("TOMTOM_API_KEY")
+    key = os.environ.get("TOMTOM_API_KEY") or os.environ.get("API_KEY")
     if todo and not key:
-        raise SystemExit("TOMTOM_API_KEY is not set: add it in the environment's settings, then start a new session")
+        raise SystemExit("No TomTom key: set TOMTOM_API_KEY (or API_KEY) in the environment's settings, then start a new session")
     throttle = Throttle(RATE)
 
     def one(j):
