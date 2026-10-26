@@ -21,10 +21,24 @@ PARAMS = dict(travelMode="car", routeType="fastest", traffic="true", computeTrav
               routeRepresentation="polyline", maxAlternatives="0")
 RATE = 4.0                                              # requests per second, at most
 KEEP = 160                                              # points of each route kept, for maps and route changes
+# BC and Alberta keep daylight time from 1 Nov 2026 (tzdata 2026e), but TomTom still turns their clocks back, and its
+# historic traffic goes by its own local time. So for them ask for the local clock time at TomTom's offset.
+TOMTOM_OFFSET = {"America/Vancouver": "-08:00", "America/Edmonton": "-07:00"}
+
+
+def depart_at(j):
+    return j["at"][:-6] + TOMTOM_OFFSET[j["tz"]] if j["tz"] in TOMTOM_OFFSET else j["at"]
+
+
+def check(j, s):
+    """TomTom's departure, in its local time, must be the clock time asked for"""
+    if s["departureTime"][11:16] != j["local"]:
+        raise SystemExit(f"{j['metro']} {j['direction']} {j['day']}: asked for {j['local']} local, TomTom departs "
+                         f"{s['departureTime']}; check its time zone for {j['tz']}")
 
 
 def url(j, key):
-    q = dict(PARAMS, departAt=j["at"])
+    q = dict(PARAMS, departAt=depart_at(j))
     if key:
         q["key"] = key
     return API.format(o=j["o"], d=j["d"]) + "?" + urllib.parse.urlencode(q)
@@ -79,6 +93,7 @@ def collect(all_jobs):
             continue
         c = json.load(open(p))
         s = c["summary"]
+        check(j, s)
         m = out.setdefault(str(j["rank"]), dict(metro=j["metro"], rows=[]))
         historic = "historicTrafficTravelTimeInSeconds" in s
         m["rows"].append(dict(direction=j["direction"], day=j["day"], depart=j["local"],
@@ -113,6 +128,7 @@ def main(args):
     def one(j):
         os.makedirs(os.path.dirname(path(j)), exist_ok=True)
         c = trim(call(j, key, throttle))
+        check(j, c["summary"])
         json.dump(c, open(path(j), "w"))
         return j
 

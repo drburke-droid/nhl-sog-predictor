@@ -3,8 +3,9 @@
 * evening: office -> home, leaving every 5 minutes from 3:00 to 8:00 p.m. local time
 * morning: home -> office, leaving every 5 minutes from 6:00 to 10:00 a.m. local time
 
-on three ordinary weekdays ahead (Tue-Thu, 17-19 Nov 2026): after the clocks change on 1 Nov, clear of US
-Thanksgiving and of Mexico's Revolution Day holiday (Mon 16 Nov).
+on three ordinary weekdays ahead (Tue-Thu, 17-19 Nov 2026): after the clocks change on 1 Nov (BC and Alberta
+keep daylight time from then on, tzdata 2026e), clear of US Thanksgiving and of Mexico's Revolution Day holiday
+(Mon 16 Nov).
 """
 import os, json
 from datetime import datetime, date
@@ -39,7 +40,7 @@ def jobs(only=()):
             for day in DAYS:
                 for hh, mm in departures(direction):
                     local = datetime(day.year, day.month, day.day, hh, mm, tzinfo=tz)
-                    out.append(dict(rank=m["rank"], metro=m["metro"], direction=direction, day=day.isoformat(),
+                    out.append(dict(rank=m["rank"], metro=m["metro"], tz=m["tz"], direction=direction, day=day.isoformat(),
                                     local=f"{hh:02d}:{mm:02d}", at=local.isoformat(timespec="seconds"),
                                     utc=local.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%SZ"), o=o, d=d))
     return out

@@ -17,14 +17,18 @@ so:
 
 ## Status
 
-**The numbers must come from route-specific predictions; none are in yet.** A first pass with city-wide
-averages (`model.py`, below) was too low: for Toronto, King and Bay to Richmond Hill leaving at 4:50 p.m. on a
-Tuesday, it gave 61 minutes, and Google Maps shows 1 h to 2 h for that departure (checked 26 Oct 2026). The route
-is the DVP and Highway 404, far more congested at 5 p.m. than Toronto's average road. City averages can't be
-exact for any one commute, so its results are not used.
+**The routed numbers are in:** TomTom, fetched 26 Oct 2026, all 7,590 requests with historic traffic, in
+`../media/commute/drive_times_tomtom.json`, `curves_tomtom.json` and `findings_tomtom_*.png`. The spot check:
+Toronto, King and Bay to Richmond Hill leaving at 4:50 p.m. on Tue 17 Nov, 75 minutes (34 on empty roads), inside
+the 1 h to 2 h Google Maps shows. No metro has a "magic" departure and none breaks first-in, first-out; the
+closest is New York's evening (leave at 5:55 instead of 5:25, home 20.5 minutes later).
 
-No public source gives route-specific predicted drive times without a key (searched 26 Oct 2026). The run
-needs one of:
+A first pass with city-wide averages (`model.py`, below) was too low: for that Toronto departure it gave 61
+minutes. The route is the DVP and Highway 404, far more congested at 5 p.m. than Toronto's average road. City
+averages can't be exact for any one commute, so its results are not used.
+
+To run it again: no public source gives route-specific predicted drive times without a key (searched 26 Oct
+2026), so the run needs one of:
 
 * **TomTom (`tomtom_routes.py`, recommended):** a free account at developer.tomtom.com (no credit card); the key
   is on the dashboard. The Routing API's free allowance is 20,000 requests a month, and the whole run is 7,590.
@@ -57,13 +61,16 @@ python findings.py tomtom           # -> ../media/commute/findings_tomtom_{eveni
 
 * **Commutes:** evening, office to home, leaving every 5 minutes from 3:00 to 8:00 p.m.; morning, home to office,
   every 5 minutes from 6:00 to 10:00 a.m.; local time, on Tue-Thu 17-19 Nov 2026 (after the clocks change on
-  1 Nov, clear of US Thanksgiving and of Mexico's Revolution Day holiday on Mon 16 Nov). 23 metros × (61 + 49)
+  1 Nov (BC and Alberta keep daylight time from then on), clear of US Thanksgiving and of Mexico's Revolution Day holiday on Mon 16 Nov). 23 metros × (61 + 49)
   departures × 3 days = 7,590 requests.
 * **TomTom:** Calculate Route, `routeType=fastest`, `traffic=true`, `departAt` the local departure,
   `computeTravelTimeFor=all`. The drive is `historicTrafficTravelTimeInSeconds`: TomTom's time-dependent historic
   traffic on that route for that weekday and time (weeks ahead, so no live traffic in it). The empty-roads time
   is `noTrafficTravelTimeInSeconds`. Each cached response keeps its summary, a thinned route line and a
-  fingerprint of the full route, so route switches show.
+  fingerprint of the full route, so route switches show. TomTom's time zones predate tzdata 2026e and still turn
+  BC's and Alberta's clocks back on 1 Nov 2026, so for Vancouver, Calgary and Edmonton `departAt` is the local
+  clock time at TomTom's offset (UTC-8, UTC-7), and every response's departure must match the clock time asked
+  for (the first fetch, at the true instant, came back an hour early and was discarded).
 * **Google:** computeRoutes, `TRAFFIC_AWARE_OPTIMAL`, `trafficModel: BEST_GUESS`, `departureTime`.
 * **Findings (`analyse.py`), on the 5-minute departures as fetched, no interpolation:** the Tue-Thu average drive
   and its range over the three days; the worst departure and the rush window (within 5 minutes of the worst); the
@@ -88,7 +95,8 @@ hourly data smooths out sharp peaks. It stays as a comparison: how far a city's 
 
 ## Next
 
-- [ ] A TomTom (or Google) key in the environment, then the run above
-- [ ] Check the routed numbers against Google Maps spot checks (Toronto 4:50 p.m.: 1 h to 2 h)
+- [x] A TomTom key in the environment, then the run above (26 Oct 2026)
+- [x] Toronto 4:50 p.m. against Google Maps: 75 min, inside its 1 h to 2 h
+- [ ] More Google Maps spot checks, the three added Canadian metros among them
 - [ ] Findings for both commutes, then the video: reuse `../traffic/look.py` and `../traffic/voice.py`;
       narration with `../traffic/lily.py`-style recording (needs `ELEVENLABS_API_KEY` in the environment)
