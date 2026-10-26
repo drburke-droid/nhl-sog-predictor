@@ -1,4 +1,4 @@
-"""Drive time and time home for every departure, 3 to 8 p.m.:  python model.py [--radius KM]
+"""The city-average baseline (README: not used for findings), 3 to 8 p.m.:  python model.py [--radius KM]
 -> ../media/commute/curves.json
 
 The car moves along its free-flow route (routes.py) at a fraction of free-flow speed that depends on where it is

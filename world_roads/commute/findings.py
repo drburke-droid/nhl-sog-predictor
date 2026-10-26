@@ -1,7 +1,7 @@
-"""Charts of what model.py found:  python findings.py
--> ../media/commute/findings_half_hour.png, ../media/commute/findings_drive.png
+"""Charts of what analyse.py found:  python findings.py [tomtom|google] [--input FILE] [--out DIR]
+-> ../media/commute/findings_<router>_<direction>_half_hour.png and ..._drive.png, for both commutes
 """
-import os, json
+import os, sys, json
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -11,10 +11,12 @@ from matplotlib.ticker import FixedLocator
 HERE = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(os.path.dirname(HERE), "media", "commute")
 SURFACE, INK, INK2, MUTED, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#8a8984", "#e6e5e1"
-BLUE, CONTEXT = "#2a78d6", "#c9c8c3"
+BLUE, BAND, CONTEXT, MAGIC = "#2a78d6", "#d6e4f5", "#c9c8c3", "#f1e3c4"
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 11, "text.color": INK, "axes.labelcolor": INK2,
                      "xtick.color": INK2, "ytick.color": INK2, "axes.edgecolor": GRID, "figure.facecolor": SURFACE,
                      "axes.facecolor": SURFACE})
+WORDS = {"evening": dict(leave="leave work", arrive="home", ampm="p.m.", trip="Office downtown to a random suburb"),
+         "morning": dict(leave="leave home", arrive="at work", ampm="a.m.", trip="A random suburb to an office downtown")}
 
 
 def hm(minute):
@@ -24,77 +26,98 @@ def hm(minute):
 
 def ticks(ax, lo, hi):
     ax.xaxis.set_major_locator(FixedLocator(np.arange(lo, hi + 1, 60)))
-    ax.set_xticklabels([f"{hm(t)}" for t in np.arange(lo, hi + 1, 60)])
+    ax.set_xticklabels([hm(t) for t in np.arange(lo, hi + 1, 60)])
     ax.set_xlim(lo, hi)
 
 
-def half_hour(C):
-    fig, ax = plt.subplots(figsize=(12, 6.75), dpi=160)
-    best = min(C, key=lambda c: c["best_half_hour"]["later_home"])
-    for c in C:
-        dep, A = np.array(c["depart"]), np.array(c["depart"]) + np.array(c["drive"])
-        gap = A[30:] - A[:-30]
-        hi = c is best
-        ax.plot(dep[:-30], gap, color=BLUE if hi else CONTEXT, lw=2.2 if hi else 1.2, zorder=3 if hi else 2,
-                solid_capstyle="round")
-    ax.axhline(30, color=INK2, lw=1, ls=(0, (4, 3)), zorder=1)
-    ax.text(19 * 60 + 28, 30.5, "30 min: traffic gives nothing back", color=INK2, fontsize=10, va="bottom", ha="right")
-    ax.axhspan(0, 1.5, color="#f1e3c4", zorder=0)
-    ax.text(15 * 60 + 4, 2.2, "0 min: the \"magic\" departure, home no later for leaving later (never happens)",
-            color=INK2, fontsize=10, va="bottom")
-    b = best["best_half_hour"]
-    ax.annotate(f"{best['metro']} is the closest: leave {hm(b['then'])} instead of {hm(b['depart'])},\n"
-                f"home {b['later_home']:.1f} min later (saves {30 - b['later_home']:.1f} min of driving)",
-                xy=(b["depart"], b["later_home"]), xytext=(b["depart"] + 25, 14), color=INK, fontsize=10.5,
-                arrowprops=dict(arrowstyle="-", color=INK2, lw=0.8))
-    ax.text(15 * 60 + 4, 34.0, "the other 19 metros", color=MUTED, fontsize=10)
-    ticks(ax, 15 * 60, 19 * 60 + 30)
-    ax.set_ylim(0, 40)
-    ax.set_yticks([0, 10, 20, 30, 40])
-    ax.grid(axis="y", color=GRID, lw=0.8)
+def plain(ax):
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)
     ax.tick_params(length=0)
-    ax.set_xlabel("if you would have left at ...  (p.m., local time)")
-    ax.set_ylabel("minutes later home, for staying 30 min longer")
-    fig.suptitle("Stay 30 minutes longer at work: how much later do you get home?", x=0.06, ha="left", fontsize=16,
-                 fontweight="bold")
-    fig.text(0.06, 0.875, "Office downtown to a random suburb 22-40 km out, typical Tuesday-Thursday, in 20 North "
-             "American metros.\nModel: TomTom Traffic Index 2025 hourly congestion applied to an OSRM route on "
-             "OpenStreetMap.", color=INK2, fontsize=10, linespacing=1.5)
+
+
+def half_hour(C, direction, source, dst):
+    w = WORDS[direction]
+    fig, ax = plt.subplots(figsize=(12, 6.75), dpi=160)
+    best = min(C, key=lambda c: c["best_half_hour"]["later"])
+    top = 0
+    for c in C:
+        dep, A = np.array(c["depart"]), np.array(c["depart"]) + np.array(c["drive"])
+        n = int(round(30 / (dep[1] - dep[0])))
+        gap = A[n:] - A[:-n]
+        top = max(top, gap.max())
+        hi = c is best
+        ax.plot(dep[:-n], gap, color=BLUE if hi else CONTEXT, lw=2.2 if hi else 1.2, zorder=3 if hi else 2,
+                solid_capstyle="round")
+    lo_x, hi_x = C[0]["depart"][0], C[0]["depart"][-1] - 30
+    ax.axhline(30, color=INK2, lw=1, ls=(0, (4, 3)), zorder=1)
+    ax.text(hi_x - 2, 30.5, "30 min: traffic gives nothing back", color=INK2, fontsize=10, va="bottom", ha="right")
+    ax.axhspan(0, 1.5, color=MAGIC, zorder=0)
+    ax.text(lo_x + 4, 2.2, f"0 min: the \"magic\" departure, {w['arrive']} no later for leaving later", color=INK2,
+            fontsize=10, va="bottom")
+    b = best["best_half_hour"]
+    ax.annotate(f"{best['metro']} comes closest: {w['leave']} at {hm(b['then'])} instead of {hm(b['depart'])},\n"
+                f"{w['arrive']} {b['later']:.1f} min later ({30 - b['later']:.1f} min less driving)",
+                xy=(b["depart"], b["later"]), xytext=(lo_x + 20, max(6, b["later"] - 12)), color=INK, fontsize=10.5,
+                arrowprops=dict(arrowstyle="-", color=INK2, lw=0.8))
+    ticks(ax, lo_x, hi_x)
+    ymax = max(40, 10 * np.ceil((top + 3) / 10))
+    ax.set_ylim(min(0, b["later"] - 3), ymax)
+    ax.grid(axis="y", color=GRID, lw=0.8)
+    plain(ax)
+    ax.set_xlabel(f"if you would {w['leave']} at ...  ({w['ampm']}, local time)")
+    ax.set_ylabel(f"minutes later {w['arrive']}, for leaving 30 min later")
+    fig.suptitle(f"{w['leave'].capitalize()} 30 minutes later: how much later are you {w['arrive']}?", x=0.06, ha="left",
+                 fontsize=16, fontweight="bold")
+    fig.text(0.06, 0.875, f"{w['trip']}, typical Tuesday-Thursday, in 20 North American metros (gray: the other 19)."
+             f"\nPredicted drive times every 5 minutes: {source}.", color=INK2, fontsize=10, linespacing=1.5)
     fig.subplots_adjust(left=0.07, right=0.98, top=0.83, bottom=0.1)
-    fig.savefig(os.path.join(MEDIA, "findings_half_hour.png"), facecolor=SURFACE)
+    fig.savefig(dst, facecolor=SURFACE)
+    plt.close(fig)
 
 
-def grid(C):
+def grid(C, direction, source, dst):
+    w = WORDS[direction]
+    top = max(max(c["drive_max"]) for c in C)
+    ymax = 30 * np.ceil((top + 18) / 30)
     fig, axes = plt.subplots(4, 5, figsize=(16, 11), dpi=140, sharex=True, sharey=True)
     for ax, c in zip(axes.flat, sorted(C, key=lambda c: c["rank"])):
         dep, T = np.array(c["depart"]), np.array(c["drive"])
-        ax.plot(dep, T, color=BLUE, lw=2, solid_capstyle="round")
-        ax.axhline(c["free_flow_min"], color=MUTED, lw=0.9, ls=(0, (3, 3)))
-        pk = c["peak"]
-        ax.plot([pk["depart"]], [pk["drive"]], "o", ms=6, color=BLUE, mec=SURFACE, mew=2)
-        ax.annotate(f"worst {hm(pk['depart'])}\n{pk['drive']:.0f} min", (pk["depart"], pk["drive"]),
+        ax.fill_between(dep, c["drive_min"], c["drive_max"], color=BAND, lw=0, zorder=1)
+        ax.plot(dep, T, color=BLUE, lw=2, solid_capstyle="round", zorder=3)
+        ax.axhline(c["free_flow_min"], color=MUTED, lw=0.9, ls=(0, (3, 3)), zorder=2)
+        wk = c["worst"]
+        ax.plot([wk["depart"]], [wk["drive"]], "o", ms=6, color=BLUE, mec=SURFACE, mew=2, zorder=4)
+        ax.annotate(f"worst {hm(wk['depart'])}\n{wk['drive']:.0f} min", (wk["depart"], wk["drive"]),
                     xytext=(0, 8), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, color=INK)
-        ax.set_ylim(0, 92)
-        ax.set_yticks([0, 30, 60, 90])
-        ax.set_title(f"{c['metro']}  >  {c['home']}", fontsize=9.5, loc="left", color=INK)
-        ax.text(19 * 60 + 55, c["free_flow_min"] - 2.5, f"empty roads {c['free_flow_min']:.0f}", fontsize=7.5,
+        ax.set_ylim(0, ymax)
+        ax.set_yticks(np.arange(0, ymax + 1, 30))
+        ax.set_title(f"{c['metro']}  >  {c['home']}" if direction == "evening" else f"{c['home']}  >  {c['metro']}",
+                     fontsize=9.5, loc="left", color=INK)
+        ax.text(dep[-1] - 5, c["free_flow_min"] - 2.5, f"empty roads {c['free_flow_min']:.0f}", fontsize=7.5,
                 color=MUTED, ha="right", va="top")
-        ticks(ax, 15 * 60, 20 * 60)
+        ticks(ax, dep[0], dep[-1])
         ax.grid(axis="y", color=GRID, lw=0.7)
-        for s in ("top", "right", "left"):
-            ax.spines[s].set_visible(False)
-        ax.tick_params(length=0, labelsize=8.5)
-    fig.suptitle("The drive home by departure time, 3-8 p.m. (minutes)", x=0.04, ha="left", fontsize=16,
-                 fontweight="bold")
-    fig.text(0.04, 0.935, "Typical Tuesday-Thursday. TomTom Traffic Index 2025 hourly congestion (city centre "
-             "near the office, metro area beyond) applied to the OSRM route on OpenStreetMap.", color=INK2, fontsize=10)
+        plain(ax)
+        ax.tick_params(labelsize=8.5)
+    fig.suptitle(f"The drive by departure time, {hm(C[0]['depart'][0])}-{hm(C[0]['depart'][-1])} {w['ampm']} (minutes)",
+                 x=0.04, ha="left", fontsize=16, fontweight="bold")
+    fig.text(0.04, 0.935, f"{w['trip']}. Line: Tuesday-Thursday average; band: the range over the three days. "
+             f"{source}.", color=INK2, fontsize=10)
     fig.subplots_adjust(left=0.04, right=0.99, top=0.89, bottom=0.04, hspace=0.42, wspace=0.18)
-    fig.savefig(os.path.join(MEDIA, "findings_drive.png"), facecolor=SURFACE)
+    fig.savefig(dst, facecolor=SURFACE)
+    plt.close(fig)
 
 
 if __name__ == "__main__":
-    C = json.load(open(os.path.join(MEDIA, "curves.json")))["metros"]
-    half_hour(C)
-    grid(C)
+    args = sys.argv[1:]
+    router = next((a for a in args if a in ("tomtom", "google")), "tomtom")
+    src = args[args.index("--input") + 1] if "--input" in args else os.path.join(MEDIA, f"curves_{router}.json")
+    out = args[args.index("--out") + 1] if "--out" in args else MEDIA
+    D = json.load(open(src))
+    label = {"tomtom": "TomTom Routing API", "google": "Google Routes API"}[router]
+    for direction in ("evening", "morning"):
+        C = [c for c in D["metros"] if c["direction"] == direction]
+        if C:
+            half_hour(C, direction, label, os.path.join(out, f"findings_{router}_{direction}_half_hour.png"))
+            grid(C, direction, label, os.path.join(out, f"findings_{router}_{direction}_drive.png"))
