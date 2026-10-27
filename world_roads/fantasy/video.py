@@ -1,21 +1,24 @@
-"""Fantasy football's most valuable players since 2000: a bar-chart race of career value over replacement (1920x1080,
-30 fps), 12-team PPR.
+"""Fantasy football's most valuable seasons since 1980: a bar-chart race of the all-time best single seasons, in points
+over a replacement player (1920x1080, 30 fps), 12-team PPR.
 
-    python video.py still 2000.5 2006.99 ...   -> out/still_2000.50.png ... (t in seasons: 2006.5 is mid-2006;
-                                                  < 2000 is the title, > 2026 the summary)
+    python video.py still 1984.5 2006.99 ...   -> out/still_1984.50.png ... (t in seasons: 2006.5 is mid-2006;
+                                                  < 1980 is the title, > 2026 the summary)
+    python video.py timeline                   seconds per season
     python video.py render [jobs]              -> out/race.mp4 (chunks rendered in parallel)
 
-The twelve players with the most career VORP (../media/fantasy/seasons.csv, weekly.csv, built by vorp.py): bars slide
-past each other as the ranks change and move game by game: each game adds its points over replacement, and a bad one
-takes some away. Each bar carries the player, his position and team, his career VORP, and what this season has added
-or taken away (or, once his career is over, its span; the bar then fades). The scale follows the leader.
+The board holds the twelve most valuable single seasons so far (../media/fantasy/seasons.csv, weekly.csv, built by
+vorp.py); each bar is a player's season. While a season is played its bars grow toward their totals (outlined), and a
+great one climbs onto the board and stays until better seasons push it off. Under the board, the season's best so far
+when it is not on the board, with the place it would hold. Each bar carries the player, his position, team and year,
+the value, and the season's stat line once it is over. The scale follows the leader.
 
 Colour encodes the position (QB magenta, RB blue, WR yellow, TE green: validated together for colour-blind separation on
 this background) and every bar also names its position in text.
 
-Seasons do not all take the same time: a season runs 2 to 12 beats of the score (1.4 to 8.4 s) by how much value the
-players on the board added in it and how often they passed each other, so the busy early 2000s run longest and the
-seasons in which the board stands still pass quickly. Within a season the weeks take its first 80%; the final standings hold for the rest.
+Seasons do not all take the same time: a season runs 2 to 12 beats of the score (1.4 to 8.4 s) by how much value its
+seasons put on the board and how often bars passed each other, so the early years, when the board fills, run longest
+and a season that changes nothing passes in 1.4 s. Within a season the weeks take its first 80%; the final standings
+hold for the rest.
 """
 import os, sys, csv, json, time, subprocess
 from collections import defaultdict
@@ -26,31 +29,25 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "signal"))
 import style as ST                                    # fonts, translucent text  # noqa: E402
-from vorp import REPL                                  # replacement ranks  # noqa: E402
+from vorp import REPL, FIRST, LAST, CANDIDATES, weeks  # replacement ranks, years  # noqa: E402
 
 MEDIA = os.path.join(ROOT, "media", "fantasy")
 OUT = os.path.join(HERE, "out")
 W, H, FPS = 1920, 1080, 30
 BG = np.array([5, 7, 13], np.float32)                 # #05070d
 INK, INK2, MUTED = ST.INK, ST.INK2, ST.MUTED
-POSC = {"QB": (213, 81, 129), "RB": (57, 135, 229), "WR": (201, 133, 0), "TE": (0, 131, 0), "K": (150, 156, 168)}
+POSC = {"QB": (213, 81, 129), "RB": (57, 135, 229), "WR": (201, 133, 0), "TE": (0, 131, 0)}
 font = ST.font
 
-FIRST, LAST = 2000, 2025
 N = 12                                                # bars on the board: one per team in the league
 BEAT = 0.7                                            # 85.7 BPM
 INTRO, OUTRO = 12 * BEAT, 16 * BEAT                   # 8.4 s, 11.2 s
+HOLD = 4 * BEAT                                       # the final board holds 2.8 s before the summary
 WEEKS_FRAC = 0.8                                      # the weeks take this much of a season; the final standings the rest
 X0, X1 = 560, 1460                                    # bar baseline and the leader's bar end
-Y0, PITCH, BAR = 178, 58, 42                          # first row's top, row spacing, bar thickness
+Y0, PITCH, BAR = 178, 54, 40                          # first row's top, row spacing, bar thickness
+CHASE = Y0 + N * PITCH + 12                           # the season's best, when it is not on the board
 OFF = N + 3                                           # the place of a bar that is not near the board
-
-TEAM = {"ARI": "Cardinals", "ATL": "Falcons", "BAL": "Ravens", "BUF": "Bills", "CAR": "Panthers", "CHI": "Bears",
-        "CIN": "Bengals", "CLE": "Browns", "DAL": "Cowboys", "DEN": "Broncos", "DET": "Lions", "GB": "Packers",
-        "HOU": "Texans", "IND": "Colts", "JAX": "Jaguars", "KC": "Chiefs", "LA": "Rams", "STL": "Rams", "LAC": "Chargers",
-        "SD": "Chargers", "LV": "Raiders", "OAK": "Raiders", "MIA": "Dolphins", "MIN": "Vikings", "NE": "Patriots",
-        "NO": "Saints", "NYG": "Giants", "NYJ": "Jets", "PHI": "Eagles", "PIT": "Steelers", "SEA": "Seahawks",
-        "SF": "49ers", "TB": "Buccaneers", "TEN": "Titans", "WAS": "Washington"}
 
 
 def smooth(x):
@@ -66,53 +63,62 @@ def ordinal(n):
     return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
 
 
+def statline(r):
+    """the season's line, by position"""
+    i = lambda k: int(round(float(r[k])))
+    if r["pos"] == "QB":
+        return f"{i('pass_yds'):,} pass yds · {i('pass_td')} TD passes"
+    if r["pos"] == "RB":
+        return f"{i('rush_yds'):,} rush yds · {i('rec')} catches · {i('rush_td') + i('rec_td')} TD"
+    return f"{i('rec')} catches · {i('rec_yds'):,} yds · {i('rec_td')} TD"
+
+
 class Data:
     def __init__(self):
-        self.sea = {}                                 # (pid, season) -> row
-        for r in csv.DictReader(open(os.path.join(MEDIA, "seasons.csv"))):
-            for k in ("points", "vorp", "career_vorp", "replacement"):
-                r[k] = float(r[k])
-            r["season"] = int(r["season"])
-            self.sea[r["player_id"], r["season"]] = r
+        self.all = defaultdict(list)                  # season -> every season's VORP (for all-time places)
         self.rep = defaultdict(dict)
+        rows = []
+        for r in csv.DictReader(open(os.path.join(MEDIA, "seasons.csv"))):
+            r["season"], r["vorp"], r["points"] = int(r["season"]), float(r["vorp"]), float(r["points"])
+            r["games"], r["season_rank"] = int(r["games"]), int(r["season_rank"])
+            self.all[r["season"]].append(r["vorp"])
+            if r["season_rank"] <= CANDIDATES:
+                rows.append(r)
         for r in csv.DictReader(open(os.path.join(MEDIA, "replacement.csv"))):
             self.rep[int(r["season"])][r["pos"]] = float(r["replacement"])
-        wk = defaultdict(list)                        # (pid, season) -> [(week, team, vorp_week)]
-        name = {}
+        wk = defaultdict(list)                        # (pid, season) -> [(week, vorp_week)]
         for r in csv.DictReader(open(os.path.join(MEDIA, "weekly.csv"))):
-            wk[r["player_id"], int(r["season"])].append((int(r["week"]), r["team"], float(r["vorp_week"])))
-            name[r["player_id"]] = r["player"]
-        self.wk = wk
-        self.weeks = {y: (18 if y >= 2021 else 17) for y in range(FIRST, LAST + 1)}
-        # players with any value, in name order (a stable sort then breaks ties by name)
-        self.pids = sorted({p for p, _ in wk}, key=lambda p: (name[p], p))
-        self.name = name
-        self.ix = {p: i for i, p in enumerate(self.pids)}
-        self.played = defaultdict(list)               # pid -> seasons with a game
-        for (p, y) in self.sea:
-            if p in self.ix:
-                self.played[p].append(y)
-        for p in self.played:
-            self.played[p].sort()
-        # cumulative VORP at every week boundary of every season: C[y] is (players, weeks + 1)
-        P = len(self.pids)
-        base = np.zeros(P)
+            wk[r["player_id"], int(r["season"])].append((int(r["week"]), float(r["vorp_week"])))
+        # the bars: seasons that could reach the board, in name order (a stable sort then breaks ties by name)
+        self.e = sorted(rows, key=lambda r: (r["player"], r["season"]))
+        self.weeks = {y: weeks(y) for y in range(FIRST, LAST + 1)}
+        self.season_of = np.array([r["season"] for r in self.e])
+        # value at every week boundary of every season: C[y] is (bars, weeks + 1); a season grows in its own year
+        # (evenly over the games he played from 1999, over the season's weeks before), holds after, is 0 before
         self.C = {}
+        final = np.array([r["vorp"] for r in self.e])
         for y in range(FIRST, LAST + 1):
             nw = self.weeks[y]
-            inc = np.zeros((P, nw + 1))
-            for (p, yy), rows in wk.items():
-                if yy == y:
-                    for w, _, v in rows:
-                        inc[self.ix[p], min(w, nw)] += v
-            self.C[y] = base[:, None] + np.cumsum(inc, axis=1)
-            base = self.C[y][:, -1].copy()
+            c = np.where(self.season_of[:, None] < y, final[:, None], 0.0) * np.ones((1, nw + 1))
+            for i in np.nonzero(self.season_of == y)[0]:
+                r = self.e[i]
+                if r["source"] == "nflverse":
+                    inc = np.zeros(nw + 1)
+                    for w, v in wk[r["player_id"], y]:
+                        inc[min(w, nw)] += v
+                    c[i] = np.cumsum(inc)
+                    c[i] *= final[i] / c[i][-1] if c[i][-1] else 1.0      # ends exactly on the season's total
+                else:
+                    c[i] = final[i] * np.arange(nw + 1) / nw
+            self.C[y] = c
+        self.done = {y: np.sort(np.concatenate([self.all[s] for s in range(FIRST, y)]))[::-1] if y > FIRST else np.zeros(0)
+                     for y in range(FIRST, LAST + 2)}
         self.timeline()
         self.track()
 
     # ------------------------------------------------------------------ time
     def board_gain(self, y):
-        """value gained or lost in season y by the players on the board at its start or its end"""
+        """value put on the board in season y: the change of the bars on it at the season's start or end"""
         a, b = self.C[y][:, 0], self.C[y][:, -1]
         on = {i for i in np.argsort(-a, kind="stable")[:N] if a[i] > 0} | set(np.argsort(-b, kind="stable")[:N])
         return float(sum(abs(b[i] - a[i]) for i in on))
@@ -131,7 +137,7 @@ class Data:
         return n
 
     def timeline(self):
-        """beats per season: 2 (nothing moves) to 12, from the value added on the board (150 points a beat) and the
+        """beats per season: 2 (nothing moves) to 12, from the value put on the board (150 points a beat) and the
         passes on it (no more than 4 a second where the cap allows); the last season, the finish, at least 6"""
         self.beats = {}
         for y in range(FIRST, LAST + 1):
@@ -176,13 +182,18 @@ class Data:
         u = wf - k
         return c[:, k] + (c[:, k + 1] - c[:, k]) * u, y, wf, f
 
+    def place(self, v, y, vals):
+        """the all-time place a value would hold now: behind every finished season and this season's bars above it"""
+        before = int(np.sum(self.done[y] > v))
+        now = int(np.sum(vals[self.season_of == y] > v))
+        return before + now + 1
+
     def track(self):
-        """every bar's place at every frame of the race (ranked by value, ties by name; a player with no value is off
-        the board), eased in time with a Gaussian of 0.1 s so a pass takes about a third of a second; and the leader's
+        """every bar's place at every frame of the race (ranked by value, ties by name; a season with no value is off
+        the board), eased in time with a Gaussian of 0.1 s so a pass takes about a third of a second; the leader's
         value for the scale"""
         n = int(round(self.race_end * FPS)) + 1
-        P = len(self.pids)
-        R = np.full((P, n), float(OFF), np.float32)
+        R = np.full((len(self.e), n), float(OFF), np.float32)
         lead = np.zeros(n)
         for j in range(n):
             v = self.values(j / FPS)[0]
@@ -196,7 +207,6 @@ class Data:
         ker /= ker.sum()
         self.near = np.nonzero((R < OFF).any(1))[0]
         self.pos = {int(i): np.convolve(np.pad(R[i], h, mode="edge"), ker, mode="valid") for i in self.near}
-        # the scale: the leader's value with room for his label, smoothed both ways in time, never under 60
         k = int(0.9 * FPS)
         ker = np.exp(-0.5 * (np.arange(-k, k + 1) / (k / 2.2)) ** 2)
         ker /= ker.sum()
@@ -206,41 +216,8 @@ class Data:
     def frame_ix(self, T):
         return int(round(min(max(T, 0), self.race_end) * FPS))
 
-    # ------------------------------------------------------------------ labels
-    def label(self, i, y, wf):
-        """position, team, this season's value so far (None if he has no game this season), career span, and how far
-        his bar has faded (1 once his last season is over)"""
-        p = self.pids[i]
-        rows = self.wk.get((p, y))
-        if rows:
-            done = [r for r in rows if r[0] <= max(1, int(np.ceil(wf)))]
-            team = (done or rows)[-1][1]
-            pos = self.sea[p, y]["pos"]
-            this = self.C[y][i, min(self.weeks[y], int(np.floor(wf)))] - self.C[y][i, 0]
-            if wf < self.weeks[y]:
-                k = int(np.floor(wf))
-                this += (self.C[y][i, k + 1] - self.C[y][i, k]) * (wf - k)
-        else:                                         # no game this season: the team he played the most games for
-            last = max((s for s in self.played[p] if s < y), default=None)
-            nxt = min((s for s in self.played[p] if s > y), default=None)
-            src = last if last is not None else nxt
-            games = defaultdict(int)
-            for s in self.played[p]:
-                if s <= src:
-                    for w, t, _ in self.wk.get((p, s), []):
-                        games[t] += 1
-            team = max(games, key=lambda t: (games[t], t)) if games else self.sea[p, src]["team"]
-            pos = self.sea[p, src]["pos"]
-            this = None
-        seen = [s for s in self.played[p] if s <= y]
-        span = (seen[0], seen[-1]) if seen else None
-        return pos, TEAM.get(team, team), this, span
-
-    def faded(self, i, y, f):
-        last = self.played[self.pids[i]][-1]
-        if last >= LAST:
-            return 0.0
-        return smooth(((y - last - 1) + f) / 0.25) if y > last else 0.0
+    def at_pos(self, i, j):
+        return float(self.pos[i][min(j, len(self.pos[i]) - 1)]) if i in self.pos else float(OFF)
 
 
 D = None
@@ -291,6 +268,23 @@ def ticks(d, xmax, a=1.0):
         d.text((x, Y0 - 22), num(v), font=font(20, "Regular"), fill=MUTED + (int(255 * al),), anchor="ms")
 
 
+def bar(d, r, v, yy, x1, al, tl, live, final, sub=None):
+    """one season's bar and its labels; live: this season, outlined"""
+    col = POSC[r["pos"]]
+    d.rounded_rectangle([X0, yy, x1, yy + BAR], 4, fill=col + (int(255 * al),))
+    d.rectangle([X0, yy, min(x1, X0 + 6), yy + BAR], fill=col + (int(255 * al),))
+    if live:
+        d.rounded_rectangle([X0 - 2, yy - 2, x1 + 2, yy + BAR + 2], 5, outline=INK + (int(200 * al),), width=2)
+    if tl <= 0.01:
+        return
+    d.text((X0 - 18, yy + BAR / 2 - 9), r["player"], font=font(26, "SemiBold"), fill=INK + (int(255 * tl),), anchor="rm")
+    d.text((X0 - 18, yy + BAR / 2 + 13), f"{r['pos']} · {r['team']} · {r['season']}", font=font(18, "Regular"),
+           fill=(INK if live else INK2) + (int(235 * tl),), anchor="rm")
+    d.text((x1 + 14, yy + BAR / 2 - 7), num(v), font=font(26, "Bold"), fill=INK + (int(255 * tl),), anchor="lm")
+    sub = sub or (statline(r) if final else "so far")
+    d.text((x1 + 14, yy + BAR / 2 + 14), sub, font=font(18, "Regular"), fill=MUTED + (int(235 * tl),), anchor="lm")
+
+
 def board(im, T, a=1.0, hold=False):
     d = ImageDraw.Draw(im, "RGBA")
     j = D.frame_ix(T)
@@ -298,9 +292,10 @@ def board(im, T, a=1.0, hold=False):
     xs = lambda v: X0 + (X1 - X0) * v / xmax
     ticks(d, xmax, a)
     vals, y, wf, f = D.values(min(T, D.race_end))
+    final = wf >= D.weeks[y]
     st = {}
     for i in D.near:
-        r = float(D.pos[int(i)][min(j, len(D.pos[int(i)]) - 1)])
+        r = D.at_pos(int(i), j)
         if r < N - 0.15 and vals[i] > 0:
             st[int(i)] = (r, float(vals[i]))
     # longest first, so a shorter bar passing a longer one stays in view on top of it; while two bars overlap, the
@@ -310,45 +305,35 @@ def board(im, T, a=1.0, hold=False):
         if al <= 0.01:
             continue
         near = min((abs(r - r2) for i2, (r2, v2) in st.items() if i2 != i and (v2, -r2) > (v, -r)), default=9)
-        tl = al * smooth((near - 0.3) / 0.4)
-        pos, team, this, span = D.label(i, y, wf)
-        fd = D.faded(i, y, f)
-        yy = Y0 + r * PITCH
-        col = POSC[pos]
-        x1 = max(X0 + 6, xs(v))
-        ba = al * (1 - 0.55 * fd)
-        d.rounded_rectangle([X0, yy, x1, yy + BAR], 4, fill=col + (int(255 * ba),))
-        d.rectangle([X0, yy, min(x1, X0 + 6), yy + BAR], fill=col + (int(255 * ba),))
-        if r < 0.5 and not hold:                     # the leader
-            d.rounded_rectangle([X0 - 1, yy - 1, x1 + 1, yy + BAR + 1], 5, outline=INK + (int(110 * al * (1 - r * 2)),), width=2)
-        if tl <= 0.01:
-            continue
-        ta = tl * (1 - 0.3 * fd)
-        d.text((X0 - 18, yy + BAR / 2 - 10), D.name[D.pids[i]], font=font(27, "SemiBold"), fill=INK + (int(255 * ta),), anchor="rm")
-        d.text((X0 - 18, yy + BAR / 2 + 14), f"{pos} · {team}", font=font(18, "Regular"), fill=INK2 + (int(235 * ta),), anchor="rm")
-        d.text((x1 + 14, yy + BAR / 2 - 8), num(v), font=font(27, "Bold"), fill=INK + (int(255 * ta),), anchor="lm")
-        if this is not None:
-            sub = f"{'−' if round(this) < 0 else '+'}{num(abs(this))} in {y}"
-        elif span:
-            back = any(s > y for s in D.played[D.pids[i]])     # a season off, not the end of his career
-            sub = f"no games in {y}" if back else f"{span[0]}–{span[1]}"
-        else:
-            sub = ""
-        d.text((x1 + 14, yy + BAR / 2 + 15), sub, font=font(18, "Regular"), fill=MUTED + (int(235 * ta),), anchor="lm")
+        live = D.season_of[i] == y and not hold
+        bar(d, D.e[i], v, Y0 + r * PITCH, max(X0 + 6, xs(v)), al, al * smooth((near - 0.3) / 0.4), live,
+            final or D.season_of[i] < y)
+    # the season's best so far, under the board while it is not on it
+    if not hold:
+        mine = np.nonzero((D.season_of == y) & (vals > 0))[0]
+        if len(mine):
+            i = int(mine[np.argmax(vals[mine])])
+            show = a * smooth((D.at_pos(i, j) - (N - 0.15)) / 0.7)
+            if show > 0.01:
+                d.line([(X0 - 330, CHASE - 7), (X1 + 260, CHASE - 7)], fill=(40, 52, 72, int(200 * show)), width=1)
+                v = float(vals[i])
+                place = D.place(v, y, vals)
+                bar(d, D.e[i], v, CHASE, max(X0 + 6, xs(v)), show, show, True, final,
+                    sub=f"{y}'s best{' so far' if not final else ''}: No. {place} all-time")
     return d
 
 
 def header(d, a=1.0):
-    d.text((90, 62), "Fantasy football's most valuable players", font=font(46, "Bold"), fill=INK + (int(255 * a),), anchor="ls")
-    d.text((90, 104), "Career points over a replacement player since 2000 · 12-team PPR", font=font(25, "Regular"),
-           fill=INK2 + (int(255 * a),), anchor="ls")
+    d.text((90, 62), "Fantasy football's most valuable seasons", font=font(46, "Bold"), fill=INK + (int(255 * a),), anchor="ls")
+    d.text((90, 104), f"The 12 best single seasons since {FIRST}, in points over a replacement player · 12-team PPR",
+           font=font(25, "Regular"), fill=INK2 + (int(255 * a),), anchor="ls")
     x = W - 90
     for p in ("TE", "WR", "RB", "QB"):
         w = d.textlength(p, font=font(22, "SemiBold"))
         d.text((x, 62), p, font=font(22, "SemiBold"), fill=INK + (int(255 * a),), anchor="rs")
         d.rounded_rectangle([x - w - 30, 44, x - w - 10, 64], 4, fill=POSC[p] + (int(255 * a),))
         x -= w + 58
-    d.text((W - 90, 100), "faded bar: career over", font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="rs")
+    d.text((W - 90, 100), "outlined: this season", font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="rs")
 
 
 def season_label(d, T, a=1.0):
@@ -358,7 +343,7 @@ def season_label(d, T, a=1.0):
     d.text((W - 92, H - 46), wk, font=font(28, "SemiBold"), fill=INK2 + (int(255 * a),), anchor="rs")
     rep = D.rep[y]
     line = "   ".join(f"{p}{REPL[p]} {num(rep[p])}" for p in REPL)
-    d.text((X0, Y0 + N * PITCH + 46), f"Replacement in {y}, season points:   {line}", font=font(20, "Regular"),
+    d.text((X0, CHASE + BAR + 36), f"Replacement in {y}, season points:   {line}", font=font(20, "Regular"),
            fill=MUTED + (int(255 * a),), anchor="ls")
 
 
@@ -368,27 +353,27 @@ def caption(d, T, a=1.0):
         al = a * smooth((T - t0) / 0.35) * (1 - smooth((T - t1) / 0.35))
         if al <= 0.01:
             continue
-        lines = e["text"]
-        y = H - 96
-        for i, line in enumerate(lines):
-            d.text((90, y + i * 38), line, font=font(30 if i == 0 else 24, "SemiBold" if i == 0 else "Regular"),
+        y = H - 82
+        for i, line in enumerate(e["text"]):
+            d.text((90, y + i * 36), line, font=font(29 if i == 0 else 23, "SemiBold" if i == 0 else "Regular"),
                    fill=(INK if i == 0 else INK2) + (int(255 * al),), anchor="ls")
 
 
 def intro(d, T):
     a = smooth(T / 0.8) * (1 - smooth((T - INTRO + 0.9) / 0.8))
     cx = W / 2
-    d.text((cx, 330), "Fantasy football's most valuable players", font=font(68, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
-    d.text((cx, 410), f"Career value over replacement, {FIRST} to {LAST} · 12-team PPR league", font=font(34, "Regular"),
-           fill=INK2 + (int(255 * a),), anchor="mm")
+    d.text((cx, 330), "Fantasy football's most valuable seasons", font=font(68, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
+    d.text((cx, 410), f"The best single seasons, {FIRST} to {LAST}, in points over replacement · 12-team PPR league",
+           font=font(32, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     b = a * smooth((T - 1.6) / 0.8)
-    lines = ("Each season, a player scores his points minus the replacement level at his position: what the",
-             "best player left on waivers scored. A 12-team league starts a QB, 2 RBs, 3 WRs, a TE, a flex and a K,",
-             "so that is the " + ", ".join(f"{ordinal(REPL[p])} {p}" for p in list(REPL)[:-1])
-             + f" and {ordinal(REPL[list(REPL)[-1]])} {list(REPL)[-1]}. A season below that counts zero.")
+    ps = list(REPL)
+    lines = ("A season is worth the player's PPR points minus the replacement level at his position: what the best",
+             "player left on waivers scored. A 12-team league starts a QB, 2 RBs, 3 WRs, a TE and a flex, so that is the",
+             ", ".join(f"{ordinal(REPL[p])} {p}" for p in ps[:-1]) + f" and {ordinal(REPL[ps[-1]])} {ps[-1]}."
+             " Counted by the game: a game he misses counts nothing.")
     for k, line in enumerate(lines):
         d.text((cx, 540 + 46 * k), line, font=font(29, "Regular"), fill=INK2 + (int(255 * b),), anchor="mm")
-    x = cx - 2 * 150 + 30
+    x = cx - 1.5 * 150 + 30
     for p in REPL:
         d.rounded_rectangle([x - 52, 742, x - 30, 764], 4, fill=POSC[p] + (int(255 * b),))
         d.text((x - 20, 762), f"{p}{REPL[p]}", font=font(26, "SemiBold"), fill=INK + (int(255 * b),), anchor="ls")
@@ -396,27 +381,27 @@ def intro(d, T):
 
 
 def summary(d, s):
-    """over the final standings: the leader against the closest active player, and the board's make-up"""
-    a = smooth(s / 0.8) * (1 - smooth((s - (OUTRO - 2.4)) / 0.8))
+    """over the final standings: the top two seasons, the board's make-up, the best at the other positions"""
+    a = smooth(s / 0.8) * (1 - smooth((s - (OUTRO - HOLD - 0.8)) / 0.8))
     if a <= 0.01:
         return
     cx = W / 2
-    lead, chase = SUMMARY["lead"], SUMMARY["chase"]
-    d.text((cx, 250), f"Career points over replacement, {FIRST}–{LAST}", font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
-    for i, (r, x) in enumerate(((lead, cx - 400), (chase, cx + 400))):
-        d.text((x, 350), r["player"], font=font(44, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
-        d.text((x, 402), f"{r['pos']} · {r['teams']} · {r['span']}", font=font(26, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
-        d.text((x, 506), num(r["vorp"]), font=font(96, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
-        d.text((x, 580), r["note"], font=font(26, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
-    d.text((cx, 690), SUMMARY["gap"], font=font(36, "SemiBold"), fill=INK + (int(255 * a),), anchor="mm")
-    d.text((cx, 760), SUMMARY["mix"], font=font(28, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
+    d.text((cx, 230), f"The most valuable seasons, {FIRST}–{LAST}", font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
+    for r, x in ((SUMMARY["first"], cx - 400), (SUMMARY["second"], cx + 400)):
+        d.text((x, 330), r["player"], font=font(44, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
+        d.text((x, 382), f"{r['pos']} · {r['team']} · {r['season']}", font=font(26, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
+        d.text((x, 486), f"{r['vorp']:,.1f}", font=font(96, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
+        d.text((x, 560), r["line"], font=font(26, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
+    for k, key in enumerate(("gap", "mix", "others")):
+        d.text((cx, 670 + 64 * k), SUMMARY[key], font=font(36 if k == 0 else 28, "SemiBold" if k == 0 else "Regular"),
+               fill=(INK if k == 0 else INK2) + (int(255 * a),), anchor="mm")
     for i, line in enumerate(SOURCES):
         d.text((cx, 980 + 27 * i), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
 
 
-SOURCES = ("Data: nflverse weekly player stats and rosters, regular seasons 2000–2025",
-           "PPR: 1 per catch, 1 per 10 rushing or receiving yards, 1 per 25 passing yards, 6 per TD (4 passing), 2 per two-point",
-           "conversion, −2 per interception or lost fumble · K: 3, 4 or 5 per field goal by distance, 1 per extra point, −1 per miss")
+SOURCES = ("Data: Pro Football Reference season tables 1980–1998 (via fantasydatapros/data), nflverse weekly player stats 1999–2025",
+           "PPR: 1 per catch, 1 per 10 rushing or receiving yards, 1 per 25 passing yards, 6 per TD (4 passing), −2 per interception",
+           "or lost fumble (estimated before 1994) · two-point conversions and return TDs only from 1999 · regular seasons")
 
 
 def frame(T):
@@ -428,13 +413,13 @@ def frame(T):
     a = smooth((T - INTRO + 0.2) / 0.8)
     hold = T >= D.race_end
     end = total()
-    dim = 1 - 0.94 * smooth((T - (end - OUTRO + 1.6)) / 0.8)      # the board steps back for the summary
+    dim = 1 - 0.94 * smooth((T - (end - OUTRO + HOLD)) / 0.8)     # the board steps back for the summary
     d = board(im, T, a * dim, hold)
     header(d, a)
     season_label(d, T, a * max(0.0, dim - 0.06) / 0.94)
     caption(d, T, a)
-    if T > end - OUTRO + 1.6:
-        summary(d, T - (end - OUTRO + 1.6))
+    if T > end - OUTRO + HOLD:
+        summary(d, T - (end - OUTRO + HOLD))
     return np.asarray(im)
 
 
@@ -454,10 +439,11 @@ def setup():
                 CAPS[k - 1]["to"] = max(CAPS[k - 1]["from"] + 2.4, c["from"] - 0.3)
                 c["from"] = max(c["from"], CAPS[k - 1]["to"] + 0.3)
             c["to"] = c["from"] + 3.6
-        CAPS[-1]["to"] = min(CAPS[-1]["to"], D.race_end + 1.4)
-    s = json.load(open(os.path.join(HERE, "summary.json"))) if os.path.exists(os.path.join(HERE, "summary.json")) else None
-    if s:
-        SUMMARY.update(s)
+        if CAPS:
+            CAPS[-1]["to"] = min(CAPS[-1]["to"], D.race_end + HOLD - 0.2)
+    s = os.path.join(HERE, "summary.json")
+    if os.path.exists(s):
+        SUMMARY.update(json.load(open(s)))
 
 
 def render_range(c0, c1, part):

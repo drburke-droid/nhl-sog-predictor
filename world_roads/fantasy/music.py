@@ -1,10 +1,10 @@
 """The race's score, synthesized from scratch with the instruments of ../flights/score.py (no samples, no licensing).
 
 85.7 BPM: a beat is 0.7 s, and every season starts on a beat (video.py gives each season 2 to 12 beats). A minor
-(Am7 - Fmaj7 - Cmaj7 - G), a whole step up once the leader takes No. 1 for good; the energy follows how much value the
-players on the board added each season (on a log scale), so the crowded early 2000s drive and the quiet years thin out;
-a bell at each caption, an impact at each change at No. 1 and when an active player reaches No. 2 after the lift; a
-resolving chord over the closing summary.
+(Am7 - Fmaj7 - Cmaj7 - G), a whole step up once the record season takes No. 1 for good; the energy follows how much
+value each season puts on the board (on a log scale), so the years when the board fills and the record years drive and
+the seasons that change nothing thin out; a bell at each caption, an impact at each new No. 1; a resolving chord over
+the closing summary.
 """
 import os, sys
 import numpy as np
@@ -83,22 +83,22 @@ def track():
     ll = np.log1p(gain) / np.log1p(gain.max())
     E = [(0, 0.1), (V.INTRO - 0.7, 0.18)]
     for y, v in zip(years, ll):
-        E += [(D.t0[y] + 0.01, 0.24 + 0.66 * v), (D.t0[y] + D.beats[y] * BEAT - 0.01, 0.24 + 0.66 * v)]
-    E += [(D.race_end - 0.7, 0.9), (D.race_end + 1.4, 0.0), (total, 0.0)]
-    # the lift: when the leader takes No. 1 for good
+        E += [(D.t0[y] + 0.01, 0.34 + 0.56 * v), (D.t0[y] + D.beats[y] * BEAT - 0.01, 0.34 + 0.56 * v)]
+    E += [(D.race_end - 0.7, 0.9), (D.race_end + V.HOLD, 0.0), (total, 0.0)]
+    # the lift: when the record season takes No. 1 for good
     lead = [(y, w, int(np.argmax(D.C[y][:, w]))) for y in years for w in range(D.weeks[y] + 1) if D.C[y][:, w].max() > 0]
     k = len(lead) - 1
     while k > 0 and lead[k - 1][2] == lead[-1][2]:
         k -= 1
     up = D.film_time(lead[k][0], lead[k][1]) if k > 0 else None
     caps = V.CAPS
-    big = [c["from"] for c in caps if "for No. 1" in c["text"][0] or ("for No. 2" in c["text"][0] and c["from"] > (up or 0))]
+    big = [c["from"] for c in caps if "for No. 1" in c["text"][0]]
     T = Track(total, E, impacts=[(V.INTRO, 0.5)] + [(t, 0.4) for t in big],
               risers=[(D.race_end - 2 * BAR, D.race_end + 0.05)])
-    T.compose_bars(up, D.race_end + 1.4)
+    T.compose_bars(up, D.race_end + V.HOLD)
     for i, c in enumerate(caps):
         T.bell(c["from"], 79 + (5 if i % 2 else 0) + (2 if up is not None and c["from"] >= up else 0), 0.8, -0.3 if i % 2 else 0.3)
-    T.ending(D.race_end + 1.4, 2 if up is not None else 0)
+    T.ending(D.race_end + V.HOLD, 2 if up is not None else 0)
     for t, s in T.impacts:
         T.impact(t, s)
     for ta, tb in T.risers:

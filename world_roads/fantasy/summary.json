@@ -1,26 +1,21 @@
 {
- "lead": {
+ "first": {
+  "player": "Marshall Faulk",
+  "pos": "RB",
+  "team": "Rams",
+  "season": 2000,
+  "vorp": 329.7,
+  "line": "1,359 rush yds \u00b7 81 catches \u00b7 26 TD"
+ },
+ "second": {
   "player": "LaDainian Tomlinson",
   "pos": "RB",
-  "teams": "Chargers, Jets",
-  "span": "2001\u20132011",
-  "vorp": 1877.4819999999997,
-  "best": 329.6,
-  "best_year": 2006,
-  "rank": 1,
-  "note": "11 seasons above replacement \u00b7 best 330 in 2006"
+  "team": "Chargers",
+  "season": 2006,
+  "vorp": 329.6,
+  "line": "1,815 rush yds \u00b7 56 catches \u00b7 31 TD"
  },
- "chase": {
-  "player": "Christian McCaffrey",
-  "pos": "RB",
-  "teams": "Panthers, 49ers",
-  "span": "2017\u2013",
-  "vorp": 1468.747,
-  "best": 318.0,
-  "best_year": 2019,
-  "rank": 2,
-  "note": "9 seasons above replacement \u00b7 best 318 in 2019"
- },
- "gap": "McCaffrey (No. 2, the top active player) trails by 409, 1.3 times his best season",
- "mix": "The top 12 after 2025: 4 WRs, 4 QBs, 2 RBs, 2 TEs"
+ "gap": "Faulk's 2000 edges Tomlinson's 2006 by 0.1",
+ "mix": "The top 12: 10 RBs, 2 WRs \u00b7 2 from the 1990s, 7 from the 2000s, 1 from the 2010s, 2 from the 2020s",
+ "others": "Best of the rest: QB Dan Marino 1984 (221) \u00b7 TE Todd Christensen 1983 (192)"
 }

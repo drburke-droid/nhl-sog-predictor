@@ -1,47 +1,32 @@
 """The race's captions and closing summary, from the data:  python captions.py  -> captions.json, summary.json
 
 Every caption is found in the data, not written in by hand:
-* every change at No. 1 after the first season that lasts four weeks or more: the first leader at a new position,
-  and the leader who keeps it;
-* the most valuable season since 2000, at the end of that season, and any season within a point of it, in order;
-* the first player to the highest 500-point milestone anyone reaches;
-* the highest any quarterback climbs, the first time one gets there;
-* each new No. 2 after the leader retires that lasts three weeks or more (or to the end);
-* the last change of the top player at each other position, once the leader has No. 1 for good;
-* a run of two or more seasons in which no one on the board adds a point, and the first new name after it;
-* the highest-ranked active player at the end, when he climbs to that place.
+* each new No. 1 season after the first year, when it takes the top (if it holds it four weeks or to the end);
+* a season that finishes within a point of the record, at its end;
+* the best season at each position but the record's, at its end, with the place it then held;
+* a season cut short (fewer than 12 games a team), at its start; the first 17-game season, at its start;
+* the last season's best, at its end, with its all-time place.
 A caption is anchored to a season and week; video.py turns that into film time and spaces them out.
 """
 import os, sys, json
-from collections import defaultdict
+from collections import Counter
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import video as V                                     # noqa: E402
+from vorp import team_games                           # noqa: E402
 
-WORD = {"QB": ("quarterback", "QB"), "RB": ("running back", "RB"), "WR": ("receiver", "WR"), "TE": ("tight end", "TE"),
-        "K": ("kicker", "K")}
+WORD = {"QB": "quarterback", "RB": "running back", "WR": "receiver", "TE": "tight end"}
 
 
 def main():
     D = V.Data()
     N, F, L = V.N, V.FIRST, V.LAST
-    sea = D.sea
-    name = lambda i: D.name[D.pids[i]]
-    last = lambda i: name(i).split()[-1]
-    pid = lambda i: D.pids[i]
+    e = D.e
     num = V.num
-    active = lambda i, y: (pid(i), y) in D.wk
-
-    def pos(i, y):
-        p = pid(i)
-        s = max((s for s in D.played[p] if s <= y), default=D.played[p][0])
-        return sea[p, s]["pos"]
-
-    # every week boundary in order: (season, week, values)
+    who = lambda i: f"{e[i]['player']}'s {e[i]['season']}"
     marks = [(y, w, D.C[y][:, w]) for y in range(F, L + 1) for w in range(D.weeks[y] + 1)]
-    top = lambda v: [i for i in np.argsort(-v, kind="stable")[:N] if v[i] > 0]
     caps = []
 
     def holds(seq, k):
@@ -51,182 +36,91 @@ def main():
             n += 1
         return n if k + n < len(seq) else 99
 
-    # changes at No. 1 after the first season that last four weeks or more
+    # each new No. 1 after the first year
     lead = [(y, w, int(np.argmax(v))) for y, w, v in marks if v.max() > 0]
-    since = {lead[0][2]: lead[0][0]}
-    led = {pos(lead[0][2], lead[0][0])}
-    changes = [k for k in range(1, len(lead)) if lead[k][2] != lead[k - 1][2] and lead[k][0] > F and holds(lead, k) >= 4]
-    for n, k in enumerate(changes):
+    for k in range(1, len(lead)):
         y, w, i = lead[k]
-        o = lead[changes[n - 1]][2] if n else lead[k - 1][2]
-        p = pos(i, y)
-        if n == len(changes) - 1:
-            line = f"and holds it through {L}"
-        elif p not in led:
-            line = f"the first {WORD[p][0]} to lead"
-        else:
-            line = f"{last(o)} had led since {since[o]}"
-        led.add(p)
-        since[i] = y
-        caps.append(dict(season=y, week=w, text=[f"{name(i)} passes {name(o)} for No. 1", line]))
-    leader = lead[-1][2]
-    settled = lead[changes[-1]][:2] if changes else (F, 0)
-
-    # the most valuable season, and seasons within a point of it
-    rows = sorted(sea.values(), key=lambda r: -r["vorp"])
-    near = [r for r in rows if rows[0]["vorp"] - r["vorp"] < 1.0]
-    nxt = rows[len(near)]
-    top_so_far = None
-    for r in sorted(near, key=lambda r: r["season"]):
-        td = int(float(r["rush_td"]) + float(r["rec_td"]))
-        what = f"{int(float(r['pass_td']))} TD passes" if r["pos"] == "QB" else f"{td} touchdowns"
-        v = f"{r['vorp']:,.1f}" if len(near) > 1 else num(r["vorp"])
-        if len(near) == 1:
-            tail = f"the most in a season (next: {nxt['player'].split()[-1]}'s {nxt['season']}, {num(nxt['vorp'])})"
-        elif top_so_far is None:
-            tail = f"the most of any season since {F}" if r is rows[0] else "the most in a season so far"
-        else:
-            t = f"{top_so_far['player'].split()[-1]}'s {top_so_far['season']} ({top_so_far['vorp']:,.1f})"
-            tail = (f"edging {t} for the most in a season" if r["vorp"] > top_so_far["vorp"] else
-                    f"level with {t} for the most in a season" if r["vorp"] == top_so_far["vorp"] else f"just short of {t}")
-        if top_so_far is None or r["vorp"] > top_so_far["vorp"]:
-            top_so_far = r
-        caps.append(dict(season=r["season"], week=D.weeks[r["season"]], delay=0.2,
-                         text=[f"{r['player']}, {r['season']}: {what}, {num(r['points'])} PPR points",
-                               f"{v} over replacement, {tail}"]))
-
-    # the first to the highest 500-point milestone anyone reaches
-    peak = D.C[L][:, -1].max()
-    m = int(peak // 500 * 500)
-    if m >= 1000:
-        for y, w, v in marks:
-            if v.max() >= m:
-                i = int(np.argmax(v))
-                others = sum(1 for j in range(len(D.pids)) if j != i and D.C[L][j, -1] >= m)
-                caps.append(dict(season=y, week=w, text=[f"{name(i)}: the first to {num(m)} points over replacement",
-                                                         f"no one else has reached {num(m)}" if not others else
-                                                         f"{others} others have since"]))
-                break
-
-    # the highest any quarterback climbs (after the first season), the first time one gets there
-    qbr = [(y, w, rk, i) for y, w, v in marks if y > F for rk, i in enumerate(top(v)) if pos(i, y) == "QB"]
-    if qbr:
-        hi = min(r[2] for r in qbr)
-        y, w, rk, i = min((r for r in qbr if r[2] == hi), key=lambda r: (r[0], r[1]))
-        caps.append(dict(season=y, week=w, text=[f"{name(i)} climbs to No. {rk + 1}",
-                                                 "the highest any quarterback has stood"]))
-
-    # each new No. 2 after the leader retires: the highest an active player can stand
-    gone = D.played[pid(leader)][-1]
-    seq = [(y, w, top(v)[:2]) for y, w, v in marks]
-    sec = [(y, w, o[1] if len(o) > 1 else None) for y, w, o in seq]
-    for k in range(1, len(seq)):
-        y, w, o = seq[k]
-        po = seq[k - 1][2]
-        if y <= gone or len(o) < 2 or len(po) < 2 or o[1] == po[1] or holds(sec, k) < 3:
+        if i == lead[k - 1][2] or y == F or holds(lead, k) < 4:
             continue
-        i = o[1]
-        then = None                                   # the last active player as high, before him
-        for yy, ww, oo in seq[:k]:
-            for j in oo:
-                if active(j, yy) and j != i:
-                    then = (yy, name(j))
-        caps.append(dict(season=y, week=w, text=[f"{name(i)} passes {name(po[1])} for No. 2",
-                                                 f"no active player has stood higher since {then[1]} in {then[0]}" if then else
-                                                 "the highest an active player has stood"]))
+        o = lead[k - 1][2]
+        caps.append(dict(season=y, week=w, text=[f"{who(i)} passes {who(o)} for No. 1",
+                                                 f"{V.statline(e[i])}: {e[i]['vorp']:,.1f} over replacement"]))
+    record = lead[-1][2]
 
-    # the last change of the top player at each other position, once No. 1 is settled, if he is on the board
+    # seasons within a point of the record
+    for i in np.argsort([-r["vorp"] for r in e]):
+        if i != record and e[record]["vorp"] - e[i]["vorp"] < 1.0:
+            y = e[i]["season"]
+            gap = e[record]["vorp"] - e[i]["vorp"]
+            caps.append(dict(season=y, week=D.weeks[y], delay=0.2, text=[
+                f"{e[i]['player']}, {y}: {V.statline(e[i])}",
+                f"{e[i]['vorp']:,.1f} over replacement, {gap:.1f} short of {who(record)}" if y > e[record]["season"] else
+                f"{e[i]['vorp']:,.1f} over replacement, {gap:.1f} behind the record still to come"]))
+
+    # the best season at each other position, at its end, with the place it then held
     for P in WORD:
-        if P == pos(leader, L):
+        if P == e[record]["pos"]:
             continue
-        prev, chg, start = None, None, None
-        for y, w, v in marks:
-            o = [i for i in np.argsort(-v, kind="stable")[:60] if v[i] > 0 and pos(i, y) == P]
-            if o and o[0] != prev:
-                if prev is not None:
-                    chg = (y, w, o[0], prev, start)
-                prev, start = o[0], y
-        if chg and (chg[0], chg[1]) > settled:
-            y, w, i, o, s = chg
-            if i in top(D.C[y][:, w]):
-                caps.append(dict(season=y, week=w, text=[f"{name(i)} passes {name(o)} as the top {WORD[P][1]}",
-                                                         f"{last(o)} had been the top {WORD[P][0]} since {s}"]))
+        mine = [i for i in range(len(e)) if e[i]["pos"] == P]
+        if not mine:
+            continue
+        i = max(mine, key=lambda i: e[i]["vorp"])
+        y = e[i]["season"]
+        place = D.place(e[i]["vorp"] + 1e-6, y, D.C[y][:, -1])
+        caps.append(dict(season=y, week=D.weeks[y], delay=0.2, text=[
+            f"{e[i]['player']}, {y}: the most valuable {WORD[P]} season",
+            f"{V.statline(e[i])} · {e[i]['vorp']:,.0f} over replacement, No. {place} all-time when it ended"]))
 
-    # the board stands still
-    still = [y for y in range(F, L + 1) if D.board_gain(y) < 1.0]
-    runs, cur = [], []
-    for y in still:
-        if cur and y != cur[-1] + 1:
-            runs.append(cur)
-            cur = []
-        cur.append(y)
-    if cur:
-        runs.append(cur)
-    runs = [r for r in runs if len(r) >= 2]
-    for r in runs:
-        caps.append(dict(season=r[0], week=1, text=[f"{r[0]}–{r[-1]}: the board stands still",
-                                                    "no one in the top 12 scores above replacement"]))
-    # the first new name after the stillness, and the last one before it
-    first_in = {}
-    for y, w, v in marks:
-        for i in top(v):
-            first_in.setdefault(i, (y, w))
-    if runs:
-        after = sorted((t, i) for i, t in first_in.items() if t[0] > runs[-1][-1])
-        if after:
-            (y, w), i = after[0]
-            (ly, lw), li = max((t, j) for j, t in first_in.items() if t[0] < runs[-1][0])
-            caps.append(dict(season=y, week=w, text=[f"{name(i)}: the first new name in the top 12 since {ly}",
-                                                     f"when {name(li)} broke in"]))
+    # short seasons, and the first 17-game season
+    for y in range(F, L + 1):
+        g = int(team_games(y))
+        best = max((r["vorp"] for r in e if r["season"] == y), default=0)
+        twelfth = sorted(D.C[y][:, 0], reverse=True)[N - 1]
+        if g < 12:
+            caps.append(dict(season=y, week=0, delay=0.3, text=[
+                f"{y}: a players' strike cuts the season to {g} games",
+                "no season this short reaches the board" if best < twelfth else "the season's best still reaches the board"]))
+        if g == 17 and int(team_games(y - 1)) == 16:
+            caps.append(dict(season=y, week=0, delay=0.3, text=[f"{y}: the season grows to 17 games",
+                                                                "a 17th game is worth about 6% more over replacement"]))
 
-    # the highest-ranked active player at the end, when he climbs to that place
-    o = top(D.C[L][:, -1])
-    act = [i for i in o[1:] if active(i, L)]
-    if act:
-        i = act[0]
-        r = o.index(i)
-        w = min(w for w in range(D.weeks[L] + 1) if all(top(D.C[L][:, x]).index(i) == r if i in top(D.C[L][:, x]) else False
-                                                         for x in range(w, D.weeks[L] + 1)))
-        if not any(c["season"] == L and c["week"] == w and c["text"][0].startswith(name(i)) for c in caps):
-            caps.append(dict(season=L, week=w, text=[f"{name(i)} climbs to No. {r + 1}",
-                                                     "the highest of any active player"]))
+    # the last season's best, and where it ranks
+    mine = [i for i in range(len(e)) if e[i]["season"] == L]
+    if mine:
+        i = max(mine, key=lambda i: e[i]["vorp"])
+        place = D.place(e[i]["vorp"] + 1e-6, L, D.C[L][:, -1])
+        if place <= N:
+            caps.append(dict(season=L, week=D.weeks[L], delay=0.2, text=[
+                f"{e[i]['player']}, {L}: No. {place} all-time", f"{V.statline(e[i])} · {e[i]['vorp']:,.0f} over replacement"]))
 
     caps.sort(key=lambda c: (c["season"], c["week"]))
     json.dump(caps, open(os.path.join(HERE, "captions.json"), "w"), indent=1)
     for c in caps:
         print(c["season"], c["week"], " | ".join(c["text"]))
 
-    # the closing summary: No. 1 against the highest-ranked active player after the last season, and the board's make-up
+    # the closing summary: the top two, the board's make-up by position and decade, the best at the other positions
     v = D.C[L][:, -1]
-
-    def card(i):
-        p = pid(i)
-        ss = [sea[p, y] for y in D.played[p]]
-        teams = []
-        for r in ss:
-            for w_, t, _ in sorted(D.wk.get((p, r["season"]), [])):
-                t = V.TEAM.get(t, t)
-                if t not in teams:
-                    teams.append(t)
-        top_s = max(ss, key=lambda r: r["vorp"])
-        span = f"{D.played[p][0]}–" if D.played[p][-1] == L else f"{D.played[p][0]}–{D.played[p][-1]}"
-        above = sum(1 for r in ss if r["vorp"] > 0)
-        return dict(player=name(i), pos=ss[-1]["pos"], teams=", ".join(teams[:3]), span=span, vorp=float(v[i]),
-                    best=top_s["vorp"], best_year=top_s["season"], rank=o.index(i) + 1,
-                    note=f"{above} seasons above replacement · best {num(top_s['vorp'])} in {top_s['season']}")
-    a = card(o[0])
-    b = card(act[0] if act else o[1])
+    o = [i for i in np.argsort(-v, kind="stable")[:N]]
+    card = lambda i: dict(player=e[i]["player"], pos=e[i]["pos"], team=e[i]["team"], season=e[i]["season"],
+                          vorp=float(e[i]["vorp"]), line=V.statline(e[i]))
+    a, b = card(o[0]), card(o[1])
+    pos = Counter(e[i]["pos"] for i in o)
+    dec = Counter(f"{e[i]['season'] // 10 * 10}s" for i in o)
+    others = []
+    for P in WORD:
+        mine = [i for i in range(len(e)) if e[i]["pos"] == P]
+        if mine and P not in pos:
+            i = max(mine, key=lambda i: e[i]["vorp"])
+            others.append(f"{P} {e[i]['player']} {e[i]['season']} ({e[i]['vorp']:,.0f})")
     gap = a["vorp"] - b["vorp"]
-    mix = defaultdict(int)
-    for i in o:
-        mix[pos(i, L)] += 1
-    parts = [f"{mix[p]} {WORD[p][1]}{'s' if mix[p] != 1 else ''}" for p in sorted(mix, key=lambda p: -mix[p])]
-    who = f"No. {b['rank']}, the top active player" if act else f"No. {b['rank']}"
-    summary = dict(lead=a, chase=b, gap=f"{b['player'].split()[-1]} ({who}) trails by {num(gap)}, "
-                                       f"{gap / b['best']:.1f} times his best season",
-                   mix=f"The top 12 after {L}: " + ", ".join(parts))
+    summary = dict(first=a, second=b,
+                   gap=f"{a['player'].split()[-1]}'s {a['season']} edges {b['player'].split()[-1]}'s {b['season']} by "
+                       + (f"{gap:.1f}" if gap < 10 else num(gap)),
+                   mix="The top 12: " + ", ".join(f"{n} {p}{'s' if n != 1 else ''}" for p, n in pos.most_common())
+                       + " · " + ", ".join(f"{n} from the {d}" for d, n in sorted(dec.items())),
+                   others=("Best of the rest: " + " · ".join(others)) if others else "")
     json.dump(summary, open(os.path.join(HERE, "summary.json"), "w"), indent=1)
-    print(summary["gap"], "|", summary["mix"])
+    print(summary["gap"], "|", summary["mix"], "|", summary["others"])
 
 
 if __name__ == "__main__":

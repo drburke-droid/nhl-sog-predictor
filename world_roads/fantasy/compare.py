@@ -1,51 +1,37 @@
 """How the replacement ranks shape the board:  python compare.py  (needs data/ from vorp.py fetch)
 
-For each set of ranks: each position's share of the top-12 places at the 26 season ends, the final top 12's make-up,
-and the final top 12, with VORP counted as vorp.py counts it (by the game, below replacement negative). The README's
-table comes from this.
+For each set of ranks: each position's share of the places on the all-time board (the 12 best single seasons so far)
+at the 46 season ends, the final board's make-up, and the final board, with VORP counted as vorp.py counts it (by the
+game). The README's table comes from this.
 """
 import os, sys
-import pandas as pd
+from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import vorp as VP                                     # noqa: E402
 
 SCHEMES = [("first cut", dict(QB=13, RB=36, WR=36, TE=13)),
-           ("", dict(QB=20, RB=36, WR=36, TE=14, K=13)),
-           ("", dict(QB=20, RB=30, WR=42, TE=14, K=13)),
-           ("used", dict(QB=16, RB=30, WR=42, TE=14, K=13)),
-           ("", dict(QB=14, RB=30, WR=42, TE=14, K=13))]
+           ("", dict(QB=20, RB=36, WR=36, TE=14)),
+           ("used", dict(QB=16, RB=30, WR=42, TE=14)),
+           ("", dict(QB=16, RB=24, WR=48, TE=14)),
+           ("", dict(QB=24, RB=24, WR=48, TE=20))]
 
 
-def board(sea, R, n=12):
-    s = sea[sea.pos.isin(R)].copy()
-    s["rk"] = s.groupby(["season", "pos"]).points.rank(ascending=False, method="first")
-    rep = s[s.rk == s.pos.map(R)].set_index(["season", "pos"]).points
-    s["vorp"] = VP.vorp(s.points, [rep[y, p] for y, p in zip(s.season, s.pos)], s.games, s.season)
-    pos = s.sort_values("season").groupby("player_id").pos.last()
-    share = {p: 0 for p in R}
-    for y in range(VP.FIRST, VP.LAST + 1):
-        for pid in s[s.season <= y].groupby("player_id").vorp.sum().nlargest(n).index:
-            share[pos[pid]] += 1
-    car = s.groupby("player_id").agg(player=("player", "last"), vorp=("vorp", "sum")).join(pos).nlargest(n, "vorp")
-    return share, car
-
-
-def main():
+def main(n=12):
     wk = VP.load()
-    sea = wk.groupby(["player_id", "season"]).agg(player=("player_display_name", "last"), pos=("pos", "last"),
-                                                  points=("pts", "sum"), games=("week", "size")).reset_index()
     for label, R in SCHEMES:
-        share, car = board(sea, R)
+        s, _ = VP.seasons(wk, R)
+        share = Counter()
+        for y in range(VP.FIRST, VP.LAST + 1):
+            share.update(s[s.season <= y].nlargest(n, "vorp").pos)
+        top = s.nlargest(n, "vorp")
         tot = sum(share.values())
-        mix = car.pos.value_counts()
         print(" ".join(f"{p}{r}" for p, r in R.items()) + (f" ({label})" if label else ""))
         print("   share of the board:", "  ".join(f"{p} {100 * share[p] / tot:.0f}%" for p in R))
-        print("   final top 12:", ", ".join(f"{v} {p}" for p, v in mix.items()))
-        print("   " + "; ".join(f"{a} ({p}) {v:,.0f}" for a, p, v in zip(car.player, car.pos, car.vorp)))
+        print("   final top 12:", ", ".join(f"{v} {p}" for p, v in top.pos.value_counts().items()))
+        print("   " + "; ".join(f"{a} {y} ({p}) {v:,.0f}" for a, y, p, v in zip(top.player, top.season, top.pos, top.vorp)))
 
 
 if __name__ == "__main__":
-    pd.set_option("display.width", 200)
     main()

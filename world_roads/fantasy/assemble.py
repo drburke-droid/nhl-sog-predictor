@@ -1,11 +1,11 @@
-"""Score and picture together:  python assemble.py [render [jobs]]  -> ../media/fantasy/fantasy_vorp_race.mp4"""
+"""Score and picture together:  python assemble.py [render [jobs]]  -> ../media/fantasy/fantasy_best_seasons.mp4"""
 import os, sys, subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import video as V      # noqa: E402
 
-FINAL = os.path.join(os.path.dirname(HERE), "media", "fantasy", "fantasy_vorp_race.mp4")
+FINAL = os.path.join(os.path.dirname(HERE), "media", "fantasy", "fantasy_best_seasons.mp4")
 AF = "volume=-1.2dB,alimiter=limit=0.708:attack=3:release=60:level=false"   # peaks under -3 dBFS before AAC
 
 

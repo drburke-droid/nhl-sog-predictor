@@ -311,15 +311,17 @@ python thumbs.py                                                             # t
 * **Sources and methods:** [roomba/ACCURACY.md](roomba/ACCURACY.md). Master, Shorts, thumbnails and
   YouTube copy: `media/roomba/`.
 
-## Fantasy football's most valuable players since 2000 (`fantasy/`)
+## Fantasy football's most valuable seasons since 1980 (`fantasy/`)
 
-This is a bar-chart race of career value over replacement in a 12-team PPR league, 2000-2025. Replacement each season
-comes from a lineup of a QB, 2 RBs, 3 WRs, a TE, a flex and a K: the 16th QB, 30th RB, 42nd WR, 14th TE and 13th K.
-Value is counted by the game, so a season below replacement counts negative and a missed game counts nothing. The data
-is nflverse's weekly player stats, and the film is `media/fantasy/fantasy_vorp_race.mp4` (2 min 17 s). See
-[fantasy/README.md](fantasy/README.md).
+This is a bar-chart race of the all-time best single seasons in a 12-team PPR league, 1980-2025, valued in points over
+a replacement player (the 16th QB, 30th RB, 42nd WR and 14th TE each season, counted by the game). The board is a
+record book of the 12 most valuable seasons so far; each season's bars grow as it is played. The data is Pro Football
+Reference's season tables for 1980-1998 (via fantasydatapros/data) and nflverse's weekly stats from 1999. The film is
+`media/fantasy/fantasy_best_seasons.mp4` (2 min 45 s). See [fantasy/README.md](fantasy/README.md).
 
-* LaDainian Tomlinson leads with 1,877 and has held No. 1 since Week 9 of 2005.
-* Christian McCaffrey is No. 2 (1,469). The top 12 after 2025 holds 4 QBs, 4 WRs, 2 RBs and 2 TEs.
-* By raw career PPR points, the top six would all be quarterbacks. With RB36 and WR36 as replacement, running backs
-  took about two-thirds of the board; `fantasy/compare.py` shows how each choice of ranks shapes it.
+* The record is Marshall Faulk's 2000 (329.7). LaDainian Tomlinson's 2006 is 0.1 behind and Christian McCaffrey's
+  2019 is third.
+* The record passed from Billy Sims '80 to William Andrews '81, Eric Dickerson '83, James Wilder '84, Emmitt Smith '92
+  and '95, then Faulk.
+* The final board is 10 RB seasons and 2 WR seasons (Cooper Kupp 2021, Jerry Rice 1995). The best QB season (Dan
+  Marino 1984) and the best TE season (Todd Christensen 1983) were on the 1980s board.
