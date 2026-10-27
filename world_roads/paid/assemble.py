@@ -1,12 +1,13 @@
-"""Score and picture together:  python assemble.py [--career] [render [jobs]]
--> ../media/paid/best_paid_athletes.mp4 (the yearly race), best_paid_careers.mp4 (--career)"""
+"""Score and picture together:  python assemble.py [--career | --yearly] [render [jobs]]
+-> ../media/paid/best_paid_athletes.mp4 (the single-season race: the best-paid seasons to date), best_paid_careers.mp4
+   (--career), best_paid_by_year.mp4 (--yearly: each year's best-paid alone)"""
 import os, sys, subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import video as V      # noqa: E402
 
-FINAL = {"race": "best_paid_athletes.mp4", "careers": "best_paid_careers.mp4"}
+FINAL = {"seasons": "best_paid_athletes.mp4", "careers": "best_paid_careers.mp4", "race": "best_paid_by_year.mp4"}
 AF = "volume=-1.2dB,alimiter=limit=0.708:attack=3:release=60:level=false"   # peaks under -3 dBFS before AAC
 
 
@@ -14,8 +15,8 @@ def main():
     import music
     import score as SC
     args = sys.argv[1:]
-    if args and args[0] == "--career":
-        V.configure("career")
+    if args and args[0] in ("--career", "--yearly"):
+        V.configure({"--career": "career", "--yearly": "annual"}[args[0]])
         args = args[1:]
     film = V.MODE["film"]
     if args and args[0] == "render":

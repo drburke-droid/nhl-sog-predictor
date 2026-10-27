@@ -103,7 +103,7 @@ def track():
 
 if __name__ == "__main__":
     import video as V
-    if "--career" in sys.argv:
-        V.configure("career")
+    if "--career" in sys.argv or "--yearly" in sys.argv:
+        V.configure("career" if "--career" in sys.argv else "annual")
     SC.write(track(), os.path.join(HERE, "out", f"{V.MODE['film']}_score.wav"))
     print("wrote", f"out/{V.MODE['film']}_score.wav")

@@ -1,4 +1,10 @@
-"""The races' captions, from the data:  python captions.py [--career]  -> captions.json (captions_career.json)
+"""The races' captions, from the data:  python captions.py [--career | --yearly]
+-> captions.json (the single-season race, records below), captions_career.json, captions_yearly.json
+
+The single-season race (season_top.csv): each new record that stands three years or more, or still stands at the end,
+saying so when it ends a record of ten years or more; the first salaries on record to reach $100,000, $1 million,
+$10 million, $25 million and $50 million (one caption with the record if the season is both); Babe Ruth against the
+president; free agency. The yearly race (--yearly):
 
 * Milestones: the first salary on record here to reach $100,000, $1 million, $10 million, $25 million and $50 million
   in its own year's money, and what it was worth in 2025's.
@@ -102,6 +108,72 @@ def career():
     return caps + list(long.values())
 
 
+TWO_YEAR = {"NBA", "ABA", "BAA", "NBL", "NHL", "WHA"}
+
+
+def season(r):
+    y = int(r["season"])
+    return f"{y - 1}-{str(y)[2:]}" if r["circuit"] in TWO_YEAR else str(y)
+
+
+def records():
+    """the single-season race: each new record (the best season to date) that stands three years or more, or stands at
+    the end; a record that ends one of ten years or more says so; the milestones in nominal money, a milestone season
+    that is also a record sharing its caption; Babe Ruth against the president; free agency"""
+    rows = list(csv.DictReader(open(os.path.join(MEDIA, "season_top.csv"))))
+    for r in rows:
+        r["year"], r["nominal"], r["real"] = int(r["year"]), float(r["nominal"]), float(r["real_2025"])
+    lead = {r["year"]: r for r in rows if r["rank"] == "1"}
+    years = sorted(lead)
+    recs = []                                         # (first year on top, row, years it stood)
+    for y in years:
+        k = (lead[y]["pid"], lead[y]["season"])
+        if not recs or (recs[-1][1]["pid"], recs[-1][1]["season"]) != k:
+            recs.append([y, lead[y], 0])
+        recs[-1][2] += 1
+    caps = [FREE_AGENCY]
+    ruth = [r for r in rows if r["player"] == "Babe Ruth" and r["season"] == "1930"]
+    if ruth and ruth[0]["nominal"] == 80000:
+        caps.append(dict(year=1930, text=["Babe Ruth's $80,000 tops President Hoover's $75,000",
+                                          f"In 2025 dollars: {m(ruth[0]['real'])}"], hit=True))
+    seasons = {}
+    for r in rows:
+        seasons[(r["pid"], r["season"])] = r
+    marks = {}
+    for level, label in ((1e5, "$100,000"), (1e6, "$1 million"), (1e7, "$10 million"), (2.5e7, "$25 million"), (5e7, "$50 million")):
+        hit = sorted((r for r in seasons.values() if r["nominal"] >= level), key=lambda r: (int(r["season"]), -r["nominal"]))
+        if hit:
+            marks[(hit[0]["pid"], hit[0]["season"])] = (label, hit[0])
+    for i, (y, r, n) in enumerate(recs[1:], 1):
+        k = (r["pid"], r["season"])
+        last = i == len(recs) - 1
+        if not (n >= 3 or last):
+            continue
+        prev = recs[i - 1]
+        mark = marks.pop(k, None)
+        near = [mk for mk, (label, mr) in marks.items() if mk[0] == r["pid"] and abs(int(mk[1]) - int(r["season"])) <= 2]
+        if near and not mark:                         # the same player's milestone a season or two before
+            label, mr = marks.pop(near[0])
+            line = f"{r['player']}, {r['team']}: the first {label} salary ({season(mr)}), then the record ({season(r)})"
+            if last:
+                line = f"{r['player']}, {r['team']}: the first {label} salary ({season(mr)}), and the record since {season(r)}"
+            caps.append(dict(year=y, text=[line, f"{m(r['nominal'])} then · {m(r['real'])} in 2025 dollars"], hit=True))
+            continue
+        if mark:
+            line = f"{r['player']}, {r['team']}, {season(r)}: the first {mark[0]} salary, and a new record"
+        elif prev[2] >= 10:
+            line = f"{r['player']}'s {season(r)} breaks {prev[1]['player']}'s {season(prev[1])}, the record for {prev[2]} years"
+        else:
+            line = f"A new record: {r['player']}, {r['team']}, {season(r)}"
+        if last:
+            line += ", and the record ever since" if not mark else ", still standing"
+        caps.append(dict(year=y, text=[line, f"{m(r['nominal'])} then · {m(r['real'])} in 2025 dollars"], hit=True))
+    for (pid, sea), (label, r) in marks.items():
+        caps.append(dict(year=int(sea), text=[f"First {label} salary on record: {r['player']}, {r['team']}",
+                                              f"{m(r['nominal'])} in {season(r)} · {m(r['real'])} in 2025 dollars"], hit=True))
+    return caps
+
+
 FREE_AGENCY = dict(year=1977, text=["Free agency: the first free agents cash in",
                                     "an arbitrator struck down baseball's reserve clause in 1975"], hit=True)
 
@@ -119,8 +191,8 @@ def reigns(lead, least, what):
 
 
 def main():
-    is_career = "--career" in sys.argv
-    caps = career() if is_career else annual()
+    mode = "career" if "--career" in sys.argv else "yearly" if "--yearly" in sys.argv else "records"
+    caps = {"career": career, "yearly": annual, "records": records}[mode]()
     caps.sort(key=lambda c: c["year"])
     out = []
     for c in caps:
@@ -129,7 +201,7 @@ def main():
             out[-1]["to"] = max(out[-1]["from"] + SHORTEST, t0 - 0.3)
             t0 = max(t0, out[-1]["to"] + 0.3)
         out.append(dict(**{"from": t0, "to": t0 + SHOW}, text=c["text"], hit=c.get("hit", False)))
-    name = "captions_career.json" if is_career else "captions.json"
+    name = {"career": "captions_career.json", "yearly": "captions_yearly.json", "records": "captions.json"}[mode]
     json.dump(out, open(os.path.join(HERE, name), "w"), indent=1)
     for c in out:
         print(f"{c['from']:7.1f}  {c['text'][0]}  |  {c['text'][1] if len(c['text']) > 1 else ''}")

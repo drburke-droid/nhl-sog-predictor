@@ -1,16 +1,20 @@
 """The best-paid athletes, 1913-2025, every salary in 2025 dollars: a bar-chart race (1920x1080, 30 fps), in two cuts
 
-    python video.py [--career] still 1930.0 1998.5 ...   -> out/still_1930.0.png ... (t in years; < FIRST is the title)
-    python video.py [--career] render [jobs]             -> out/race.mp4 or out/careers.mp4 (chunks rendered in parallel)
+    python video.py [--career | --yearly] still 1930.0 1998.5 ...   -> out/seasons_still_1930.0.png ... (t in years;
+                                                                       < FIRST is the title)
+    python video.py [--career | --yearly] render [jobs]             -> out/seasons.mp4, careers.mp4 or race.mp4
 
-The yearly race: the ten best-paid each year, by salary in 2025 dollars (../media/paid/salaries.csv). The career race
-(--career): the ten biggest careers to date each year, every season's pay in 2025 dollars added up, retired players
-keeping their totals until they are passed (../media/paid/career_top.csv, lifetime.py).
+The single-season race: the ten best-paid seasons to date, by salary in 2025 dollars, each season its own bar (Michael
+Jordan's 1996-97 and 1997-98 are two), staying until ten better ones come along (../media/paid/season_top.csv,
+records.py). The career race (--career): the ten biggest careers to date each year, every season's pay in 2025 dollars
+added up, retired players keeping their totals until they are passed (../media/paid/career_top.csv, lifetime.py). The
+yearly race (--yearly): the ten best-paid of each year alone (../media/paid/salaries.csv).
 
 Bars slide past each other as the ranks change, grow (and in the yearly race shrink) with the pay, slide in from below
-the board and out of it. Each bar carries the player, his team and league (in the career race, for a retired player,
-his league and seasons), the figure in 2025 dollars, and under it the money as it was paid. The scale follows the
-leader. In the yearly race, while the scale is small, a dashed line marks today's MLB minimum salary ($760,000 in
+the board and out of it. Each bar carries the player (in the single-season race, and the season), his team and league
+(in the career race, for a retired player, his league and seasons), the figure in 2025 dollars, and under it the money
+as it was paid. The scale follows the
+leader. In the single-season and yearly races, while the scale is small, a dashed line marks today's MLB minimum salary ($760,000 in
 2025): the stars of the 1920s and 1930s earned, in today's money, about what a rookie on the minimum makes now. In the
 career race a career more than a fifth of whose money is estimated (lifetime.py) carries a "≈".
 
@@ -43,20 +47,33 @@ INTRO, OUTRO = 5.6, 11.2                              # whole bars of the score 
 MIN_2025 = 760_000                                    # MLB minimum salary, 2025
 X0, X1 = 560, 1500                                    # bar baseline and the leader's bar end
 MODES = {
-    "annual": dict(data="salaries.csv", captions="captions.json", film="race", title="The best-paid athletes",
+    "records": dict(data="season_top.csv", captions="captions.json", film="seasons", title="The best-paid seasons ever",
+                    subtitle="Single-season salaries in 2025 dollars, the ten best to date · MLB, NBA, NFL, NHL",
+                    intro=f"{FIRST} to {LAST}, every salary in 2025 dollars: a season stays until ten better ones come along"),
+    "annual": dict(data="salaries.csv", captions="captions_yearly.json", film="race", title="The best-paid athletes",
                    subtitle="Salaries in 2025 dollars · MLB, NBA, NFL, NHL",
                    intro=f"{FIRST} to {LAST}, every salary in 2025 dollars"),
     "career": dict(data="career_top.csv", captions="captions_career.json", film="careers", title="The biggest career earnings",
                    subtitle="Career salaries to date, in 2025 dollars · MLB, NBA, NFL, NHL",
                    intro=f"{FIRST} to {LAST}, every season's salary in 2025 dollars, added up"),
 }
-MODE = MODES["annual"]
-CAREER = False
+NAME = "records"
+MODE = MODES[NAME]
+CAREER, RECORDS = False, True
+TWO_YEAR = {"NBA", "ABA", "BAA", "NBL", "NHL", "WHA"}            # circuits whose seasons span two calendar years
 
 
 def configure(mode):
-    global MODE, CAREER
-    MODE, CAREER = MODES[mode], mode == "career"
+    global NAME, MODE, CAREER, RECORDS
+    NAME, MODE, CAREER, RECORDS = mode, MODES[mode], mode == "career", mode == "records"
+
+
+def season(row):
+    """a season as it is named: 1997-98 in basketball and hockey, 1998 in baseball and football"""
+    y = int(row["season"])
+    return f"{y - 1}-{str(y)[2:]}" if row["circuit"] in TWO_YEAR else str(y)
+
+
 Y0, PITCH, BAR = 186, 68, 48                          # first row's top, row spacing, bar thickness
 
 
@@ -87,8 +104,9 @@ class Data:
                 r["est_share"] = float(r["est_share"])
             else:
                 r["real"], r["nominal"] = float(r["real_2025"]), float(r["nominal"])
+            k = r["league"] + ":" + r["pid"] + (":" + r["season"] if RECORDS else "")   # in the records, each season its own
             if FIRST <= y <= LAST:
-                self.by[y][r["league"] + ":" + r["pid"]] = r
+                self.by[y][k] = r
         # ties keep one order (by name), so two equal salaries never trade places
         self.order = {y: sorted(d, key=lambda k: (-d[k]["real"], d[k]["player"])) for y, d in self.by.items()}
         self.cov = {int(r["year"]): r for r in csv.DictReader(open(os.path.join(MEDIA, "coverage.csv")))}
@@ -265,7 +283,11 @@ def board(im, t, a=1.0, hold=False):
             d.rounded_rectangle([X0 - 1, y - 1, x1 + 1, y + BAR + 1], 5, outline=GOLD + (int(150 * al * (1 - r * 2)),), width=2)
         if tl <= 0.01:
             continue
-        d.text((X0 - 18, y + BAR / 2 - 11), row["player"], font=font(29, "SemiBold"), fill=INK + (int(255 * tl),), anchor="rm")
+        nx = X0 - 18
+        if RECORDS:                                  # the season, after the name
+            d.text((nx, y + BAR / 2 - 1), season(row), font=font(23, "Regular"), fill=INK2 + (int(255 * tl),), anchor="rs")
+            nx -= d.textlength(season(row), font=font(23, "Regular")) + 10
+        d.text((nx, y + BAR / 2 - 1), row["player"], font=font(29, "SemiBold"), fill=INK + (int(255 * tl),), anchor="rs")
         d.text((X0 - 18, y + BAR / 2 + 15), who(row), font=font(19, "Regular"), fill=INK2 + (int(235 * tl),), anchor="rm")
         approx = "≈" if CAREER and row["est_share"] > 0.2 else ""
         d.text((x1 + 14, y + BAR / 2 - 9), approx + money(v, short=False), font=font(28, "Bold"), fill=INK + (int(255 * tl),), anchor="lm")
@@ -284,6 +306,8 @@ def who(row):
 
 def under(row):
     """under the figure: the money as it was paid"""
+    if RECORDS:
+        return f"{money(row['nominal'], short=False)} then"
     if not CAREER:
         return f"{money(row['nominal'], short=False)} in {row['year']}"
     return f"{row['seasons']} seasons · {money(row['nominal'], short=False)} as paid"
@@ -352,11 +376,15 @@ def summary(d, s):
         return
     then, now = SUMMARY["then"], SUMMARY["now"]
     cx = W / 2
-    d.text((cx, 300), "Career earnings, in 2025 dollars" if CAREER else "In 2025 dollars", font=font(34, "Regular"),
-           fill=INK2 + (int(255 * a),), anchor="mm")
+    head = {"career": "Career earnings, in 2025 dollars", "records": "The best-paid seasons, in 2025 dollars"}
+    d.text((cx, 300), head.get(NAME, "In 2025 dollars"), font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     for i, (r, x) in enumerate(((then, cx - 380), (now, cx + 380))):
-        sub = who(r) if CAREER else f"{r['team']} · {r['circuit']} · {r['year']}"
-        low = under(r) if CAREER else f"{money(r['nominal'], short=False)} in {r['year']} dollars"
+        if CAREER:
+            sub, low = who(r), under(r)
+        elif RECORDS:
+            sub, low = f"{r['team']} · {r['circuit']} · {season(r)}", f"{money(r['nominal'], short=False)} in {r['season']} dollars"
+        else:
+            sub, low = f"{r['team']} · {r['circuit']} · {r['year']}", f"{money(r['nominal'], short=False)} in {r['year']} dollars"
         d.text((x, 400), r["player"], font=font(44, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
         d.text((x, 452), sub, font=font(26, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
         d.text((x, 560), money(r["real"], short=False), font=font(86, "Bold"), fill=(GOLD if i else INK) + (int(255 * a),), anchor="mm")
@@ -365,15 +393,19 @@ def summary(d, s):
     d.text((cx, 740), f"{now['real'] / then['real']:.0f} times as much", font=font(40, "SemiBold"), fill=INK + (int(255 * a),), anchor="mm")
     if SUMMARY.get("line"):
         d.text((cx, 830), SUMMARY["line"], font=font(28, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
-    for i, line in enumerate(SOURCES[CAREER]):
-        d.text((cx, 996 + 28 * i - 14 * CAREER), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
+    lines = SOURCES[NAME]
+    for i, line in enumerate(lines):
+        d.text((cx, 996 + 28 * i - 14 * (len(lines) - 2)), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
 
 
-SOURCES = {False: ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database,",
-                   "Basketball Reference, OverTheCap, CapWages, published contracts · CPI-U: Federal Reserve Bank of Minneapolis"),
-           True: ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database,",
-                  "Basketball Reference, OverTheCap (cash paid), CapWages, published contracts · CPI-U: Federal Reserve Bank of Minneapolis",
-                  "Careers count seasons before 1913 too; a season between two documented salaries is estimated (≈: over a fifth estimated)")}
+SOURCES = {"annual": ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database,",
+                      "Basketball Reference, OverTheCap, CapWages, published contracts · CPI-U: Federal Reserve Bank of Minneapolis"),
+           "records": ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database,",
+                       "Basketball Reference, OverTheCap, CapWages, published contracts · CPI-U: Federal Reserve Bank of Minneapolis",
+                       "Baseball seasons before 1913 count too, converted with the Minneapolis Fed's CPI estimates"),
+           "career": ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database,",
+                      "Basketball Reference, OverTheCap (cash paid), CapWages, published contracts · CPI-U: Federal Reserve Bank of Minneapolis",
+                      "Careers count seasons before 1913 too; a season between two documented salaries is estimated (≈: over a fifth estimated)")}
 SUMMARY = {}
 
 
@@ -399,6 +431,12 @@ def setup():
                 start = i
         n, y0, y1, k = max(runs)
         SUMMARY["line"] = f"Longest at No. 1: {D.by[y1][k]['player']}, {n} years ({y0}–{y1})"
+    elif RECORDS:                                     # Ruth's best season against the record; the best of the last year
+        last = [r for r in D.by[LAST].values() if int(r["season"]) == LAST]
+        best = max(last, key=lambda r: r["real"]) if last else None
+        if best is not None and best is not SUMMARY["now"]:
+            SUMMARY["line"] = (f"The best of {LAST}: {best['player']}, {best['team']} · {best['circuit']}, "
+                               f"{money(best['real'], short=False)}")
     else:                                             # the record, if the last year's leader doesn't hold it
         rec = max(rows, key=lambda r: r["real"])
         if rec is not SUMMARY["now"]:
@@ -426,7 +464,7 @@ def render(jobs=4):
     n = int(round(total() * FPS))
     CH = 300
     film = MODE["film"]
-    mode = "career" if CAREER else "annual"
+    mode = NAME
     parts = [(c0, min(n, c0 + CH), os.path.join(OUT, "chunks", f"{film}_{c0:05d}.mp4")) for c0 in range(0, n, CH)]
     t0 = time.time()
     with ProcessPoolExecutor(jobs) as ex:
@@ -446,15 +484,15 @@ def render(jobs=4):
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     args = sys.argv[1:]
-    if args and args[0] == "--career":
-        configure("career")
+    if args and args[0] in ("--career", "--yearly"):
+        configure({"--career": "career", "--yearly": "annual"}[args[0]])
         args = args[1:]
     if args[0] == "still":
         setup()
         for a in args[1:]:
             t = float(a)
             T = INTRO + (t - FIRST) * PER_YEAR if t >= FIRST else t
-            Image.fromarray(frame(T)).save(os.path.join(OUT, f"{'career_' if CAREER else ''}still_{t:06.1f}.png"))
+            Image.fromarray(frame(T)).save(os.path.join(OUT, f"{MODE['film']}_still_{t:06.1f}.png"))
             print("still", t)
     else:
         render(int(args[1]) if len(args) > 1 else 4)

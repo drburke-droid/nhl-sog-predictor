@@ -3,26 +3,40 @@
 Two bar-chart races of players in MLB, the NBA, the NFL and the NHL, every salary converted to 2025 dollars, so Babe
 Ruth's $80,000 of 1930 and Dak Prescott's $60 million of 2025 stand on one scale:
 
-* **The yearly race**: the ten best-paid each year since 1913. Film: `../media/paid/best_paid_athletes.mp4`.
+* **The single-season race**: the ten best-paid seasons to date, each year since 1913. Every season is its own bar
+  (Michael Jordan's 1996-97 and his 1997-98 are two), and it stays until ten better seasons have come along, so the
+  board keeps the high-water marks. Film: `../media/paid/best_paid_athletes.mp4`.
 * **The career race**: the ten biggest careers to date each year, every season's pay in 2025 dollars added up, retired
   players keeping their totals until someone passes them. Film: `../media/paid/best_paid_careers.mp4`.
 
-Both 1920x1080, 30 fps, about 2 min 54 s, with an original synthesized score.
-Data: `../media/paid/salaries.csv` (every salary found, both dollars), `top.csv` (the 15 best-paid each year),
-`coverage.csv` (salaries found per league and year, and the CPI factor), `careers.csv` (every season counted in a
-career, documented or estimated, with running totals), `career_top.csv` (the 40 biggest careers to date each year).
+Both 1920x1080, 30 fps, about 2 min 54 s, with an original synthesized score. (`python assemble.py --yearly render`
+also makes the plain yearly board, each year's ten best-paid alone, as `best_paid_by_year.mp4`; it isn't kept here.)
+Data: `../media/paid/salaries.csv` (every salary found, both dollars), `season_top.csv` (the 40 best seasons to date,
+each year), `top.csv` (the 15 best-paid of each year alone), `coverage.csv` (salaries found per league and year, and
+the CPI factor), `careers.csv` (every season counted in a career, documented or estimated, with running totals),
+`career_top.csv` (the 40 biggest careers to date each year).
 
 ## What the races show
 
-**The yearly race.** In 2025 dollars, Babe Ruth's $80,000 of 1930 was $1.54 million, about twice today's MLB minimum
+**The single-season race: the record, in 2025 dollars.** Frank Chance's $25,000 as the Yankees' player-manager in
+1913 ($812,879) heads the first board, over the best seasons of baseball's first forty years (Honus Wagner's and Nap
+Lajoie's $10,000). Babe Ruth's $52,000 of 1922 took the record, then Red Grange's $100,000 for 1925, $1.84 million, held
+it for 41 years: Ruth's best season, 1932 ($75,000, $1.78 million), fell just short, though by 1932 his seasons filled
+nine of the ten places. Donny Anderson's 1966 broke it, then Bob Lanier's 1970-71, Derek Sanderson's 1972-73 and O.J.
+Simpson's 1976; from 1982 to 1998 the record fell almost every year (George Foster, Moses Malone, Steve Young in the
+USFL, Foster again, Patrick Ewing, Joe Montana, Ewing, Larry Bird, Wayne Gretzky, Cecil Fielder, Ewing's $18.7 million
+of 1995-96) until Michael Jordan's 1996-97 and 1997-98. His $33.1 million of 1997-98, $65.4 million in 2025 dollars,
+still stands. The 2025 board: Jordan 1997-98, Dak Prescott 2024 ($61.6M), Jordan 1996-97 ($60.4M), Prescott 2025
+($60.0M), Joe Burrow 2023, Burrow, Jordan Love and Trevor Lawrence 2024, Patrick Mahomes 2020, Stephen Curry 2024-25.
+
+**Year by year** (each year's ten best-paid alone, `top.csv`). In 2025 dollars, Babe Ruth's $80,000 of 1930 was $1.54 million, about twice today's MLB minimum
 salary; his best year was 1932 ($75,000, but Depression prices make it $1.78 million). Apart from Red Grange's $100,000
 of 1925, baseball held every top-ten place from 1913 to 1945; football's bonus babies (Donny
 Anderson, Joe Namath) and basketball's centres (Wilt Chamberlain, Kareem Abdul-Jabbar) broke in during the 1960s. Free
 agency opened baseball's purse after 1976 (Catfish Hunter, Pete Rose, Nolan Ryan's first $1 million salary in 1980).
 The NBA owned the late 1990s (60% of the top-ten places 1996-2010); the NFL's quarterback contracts own the 2020s.
 
-**The record is still Michael Jordan's**: $33.1 million in 1997-98, $65.4 million in 2025 dollars, ahead of Dak
-Prescott's $60 million of 2025, the top salary of the last two years.
+Dak Prescott's $60 million was the top salary of 2024 and of 2025.
 
 | Seasons | MLB | NBA | NFL | NHL |
 |---|---|---|---|---|
@@ -32,11 +46,11 @@ Prescott's $60 million of 2025, the top salary of the last two years.
 | 1996-2010 | 38% | 60% | 1% | 1% |
 | 2011-2025 | 48% | 24% | 28% | |
 
-(Share of the yearly top-ten places.)
+(Share of each year's top-ten places.)
 
 ## What counts as a salary
 
-Each league's pay is reported a different way, and the race takes each league's own convention:
+Each league's pay is reported a different way, and the single-season race takes each league's own convention:
 
 | League | Figure | Source | Seasons |
 |---|---|---|---|
@@ -106,17 +120,17 @@ could make a top ten, but a well-paid player whose deal went unreported would be
 ## The career race
 
 A career's earnings are the sum of its seasons' pay, each converted with its own year's CPI (`lifetime.py`). The pay of
-a season is the yearly race's figure, with two differences, because a career adds up the money as it was paid:
+a season is the single-season race's figure, with two differences, because a career adds up the money as it was paid:
 
 * **NFL: cash paid** that season (OverTheCap's season histories, 1983 on: salary and every bonus in the season it was
   paid), not the contract's average per year.
 * **Careers begin at their first season**, before 1913 too: Baseball Reference's salaries back to the 1870s, converted
   with the Minneapolis Fed's CPI estimates for 1800-1912 (spliced to the CPI-U at 1913). So the 1913 board holds Honus
   Wagner's and Nap Lajoie's whole careers, not one season of them.
-* NHL cap hits count from 2005-06 (the yearly race starts them in 2009-10, when every contract is in CapWages; a career
+* NHL cap hits count from 2005-06 (the single-season race starts them in 2009-10, when every contract is in CapWages; a career
   needs the long contracts already running before then).
 
-**Whole careers before the leagues' series.** The documented contracts the yearly race uses were researched for the
+**Whole careers before the leagues' series.** The documented contracts the single-season race uses were researched for the
 peak seasons; a career needs every season. A second research pass collected season-by-season pay for the stars who
 could reach a career top ten, each figure with its source and a quote: `research/careers_nba.csv` (150 seasons),
 `careers_nfl.csv` (100), `careers_nhl.csv` (321), and `spans_*.csv`, each player's seasons and the ones he sat out or
@@ -144,7 +158,7 @@ a career more than a fifth of whose money is estimated carries a "≈" on its ba
 
 **Limits.** Some careers before the series remain thin: the research ran out of searches before Johnny Unitas, Fran
 Tarkenton, Terry Bradshaw and Jim Brown, none of whom reached a career top ten on what was found. Career pay excludes
-the same things as the yearly race (endorsements, other sports, leagues outside North America).
+the same things as the single-season race (endorsements, other sports, leagues outside North America).
 
 **What the career race shows.** The biggest career belonged to Fred Clarke (1913-20), Ty Cobb (1921-29) and then Babe
 Ruth for 42 years, 1930 to 1971: $17.2 million in 2025 dollars, $856,500 as paid, over 22 seasons. Wilt Chamberlain
@@ -158,9 +172,13 @@ under 6% from 1946 to 1995, and almost none since.
 
 ## The film
 
-* The ten best-paid of each year, ranked by salary in 2025 dollars. A bar shows the salary in 2025 dollars and, under
-  it, the figure in its own year's money.
-* Between two years the salaries move in a straight line, and the board re-sorts as they do. A bar passes another
+* The single-season race ranks seasons, each its own bar, named with its season ("Michael Jordan 1997-98"; basketball
+  and hockey seasons span two years). A season's figure never changes: it rises from under the board in its year if it
+  ranks among the ten best to date, and sinks off when ten better ones have come along. Baseball seasons before 1913
+  count too (with the Minneapolis Fed's CPI estimates), so the first board is the best of the game's first forty years.
+  The career race ranks careers to date. A bar shows the figure in 2025 dollars and, under it, the money as it was
+  paid.
+* Between two years the figures move in a straight line, and the board re-sorts as they do. A bar passes another
   when its pay does; the passes happen over the middle of the year, so each year's board stands exactly as ranked on
   the year itself. A player arriving rises from under the board; one leaving sinks under it. A year takes 1.4 s.
 * The scale follows the leader. While it is small, a dashed line marks today's MLB minimum salary ($760,000). By that
@@ -169,9 +187,10 @@ under 6% from 1946 to 1995, and almost none since.
 * Colour encodes the league: MLB blue, NBA orange, NFL green. These three hues were checked for colour-blind
   separation on this background, and the NHL is a neutral grey. Every bar also names its league in text, so no
   reading depends on colour.
-* Captions come from the data (`captions.py`): in the yearly race the first salary on record to reach $100,000, $1
-  million, $10 million, $25 million and $50 million, the record in 2025 dollars, the long reigns at No. 1, and two
-  documented moments, each checked against the data before use; in the career race each new leader, the first careers
+* Captions come from the data (`captions.py`): in the single-season race each new record that stands three years or
+  more (or still stands), saying so when it ends one of ten years or more, the first salaries on record to reach
+  $100,000, $1 million, $10 million, $25 million and $50 million, and two documented moments, each checked against the
+  data before use (Babe Ruth's $80,000 of 1930 against President Hoover's $75,000; free agency); in the career race each new leader, the first careers
   past $10 million, $100 million, $250 million and $500 million in 2025 dollars, and the long reigns.
 * In the career race a retired player's bar names his league and seasons ("MLB · 1914–1935") instead of a team, and
   under its figure, his seasons and the money as it was paid.
@@ -188,13 +207,15 @@ python fetch.py c        # the CPI estimates for 1800-1912, the Federal Reserve'
 python curate.py         # research/*.csv -> curated.csv (one documented figure per player and season)
 python salaries.py       # -> ../media/paid/salaries.csv, top.csv, coverage.csv
 python lifetime.py       # -> ../media/paid/careers.csv, career_top.csv
-python captions.py       # -> captions.json (milestones and documented moments, from the data)
+python records.py        # -> ../media/paid/season_top.csv (the best seasons to date, each year)
+python captions.py       # -> captions.json (records, milestones and documented moments, from the data)
 python captions.py --career                # -> captions_career.json
 python assemble.py render                  # render, score, mux -> ../media/paid/best_paid_athletes.mp4
 python assemble.py --career render         # -> ../media/paid/best_paid_careers.mp4
 ```
 
-`python video.py [--career] still 1930 1998.5` renders stills.
+`python video.py [--career] still 1930 1998.5` renders stills. `--yearly` (captions.py, video.py, assemble.py) makes
+the plain yearly board instead.
 
 The rebuild study's cached pages (`../rebuild/data`: Basketball Reference team pages 2001-2025, Baseball Reference value
 pages 2001-2025, the Lahman package, nflverse contracts, CapWages signings) are reused, not fetched again. Sports

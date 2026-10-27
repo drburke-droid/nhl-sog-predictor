@@ -3,16 +3,17 @@
   "from": 1921.5,
   "to": 1924.1,
   "text": [
-   "Ty Cobb: the best-paid for 7 straight years (1915-1921)"
+   "A new record: Babe Ruth, Yankees, 1922",
+   "$52,000 then \u00b7 $996,357 in 2025 dollars"
   ],
-  "hit": false
+  "hit": true
  },
  {
   "from": 1924.5,
   "to": 1927.1,
   "text": [
-   "First $100,000 salary on record: Red Grange, Bears",
-   "$100,000 in 1925 \u00b7 $1.8 million in 2025 dollars"
+   "Red Grange, Bears, 1925: the first $100,000 salary, and a new record",
+   "$100,000 then \u00b7 $1.8 million in 2025 dollars"
   ],
   "hit": true
  },
@@ -26,16 +27,35 @@
   "hit": true
  },
  {
-  "from": 1933.5,
-  "to": 1936.1,
+  "from": 1965.5,
+  "to": 1968.1,
   "text": [
-   "Babe Ruth: the best-paid for 8 straight years (1926-1933)"
+   "Donny Anderson's 1966 breaks Red Grange's 1925, the record for 41 years",
+   "$237,000 then \u00b7 $2.3 million in 2025 dollars"
   ],
-  "hit": false
+  "hit": true
  },
  {
-  "from": 1976.5,
-  "to": 1979.1,
+  "from": 1972.5,
+  "to": 1975.1,
+  "text": [
+   "A new record: Derek Sanderson, Blazers, 1972-73",
+   "$530,000 then \u00b7 $3.8 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1975.5,
+  "to": 1977.0,
+  "text": [
+   "A new record: O.J. Simpson, Bills, 1976",
+   "$833,333 then \u00b7 $4.7 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1977.3,
+  "to": 1979.2,
   "text": [
    "Free agency: the first free agents cash in",
    "an arbitrator struck down baseball's reserve clause in 1975"
@@ -52,11 +72,20 @@
   "hit": true
  },
  {
+  "from": 1985.5,
+  "to": 1988.1,
+  "text": [
+   "A new record: George Foster, Mets, 1986",
+   "$2.8 million then \u00b7 $8.2 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
   "from": 1995.5,
   "to": 1997.2,
   "text": [
    "First $10 million salary on record: Patrick Ewing, Knicks",
-   "$18.7 million in 1996 \u00b7 $38.4 million in 2025 dollars"
+   "$18.7 million in 1995-96 \u00b7 $38.4 million in 2025 dollars"
   ],
   "hit": true
  },
@@ -64,18 +93,10 @@
   "from": 1997.5,
   "to": 2000.1,
   "text": [
-   "Michael Jordan, Bulls: the first $25 million salary, still the record in 2025 dollars",
-   "$33.1 million in 1998 \u00b7 $65.4 million in 2025 dollars"
+   "Michael Jordan, Bulls: the first $25 million salary (1996-97), and the record since 1997-98",
+   "$33.1 million then \u00b7 $65.4 million in 2025 dollars"
   ],
   "hit": true
- },
- {
-  "from": 2013.5,
-  "to": 2016.1,
-  "text": [
-   "Alex Rodriguez: the best-paid for 6 straight years (2008-2013)"
-  ],
-  "hit": false
  },
  {
   "from": 2021.5,
