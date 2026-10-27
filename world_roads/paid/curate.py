@@ -176,6 +176,10 @@ ADDED += [
     (dict(league="NHL", player="Sergei Fedorov", team="Detroit Red Wings", year_end=1998, salary_usd=6333333, basis="contract average",
           source_url="https://en.wikipedia.org/wiki/Sergei_Fedorov", source_quote="worth up to $38 million, including bonuses"),
      1998, 2003, "up to $38 million over six years (Sports Illustrated), matched by Detroit; $28 million of it paid in 1997-98"),
+    (dict(league="NFL", player="O.J. Simpson", team="Buffalo Bills", year_end=1972, salary_usd=53750,
+          basis="contract average (4 years, $215,000 salary; excl. $100,000 loan, incentives, annuity)",
+          source_url="https://en.wikipedia.org/wiki/1969_Buffalo_Bills_season", source_quote="Simpson signs a four-year contract worth $215,000."),
+     1972, 1972, "career research: the fourth season of the 1969 contract (careers_nfl.csv has 1969-71 from the same source)"),
 ]
 SPECS = {"nba_pre1985.csv": NBA, "nhl_pre2006.csv": NHL, "nfl_pre2011.csv": NFL}
 
@@ -196,9 +200,13 @@ CORRECT = {
     ("Joe Namath", 1967): "Phil Berger's 1969 biography itemizes the $427,000 (see 1965)",
     ("Warren Moon", 1991): "the NFLPA's salary survey: $2,883,000, over the $2 million average of his 1989 deal",
     ("Warren Moon", 1992): "the NFLPA's salary survey: $3,563,000, over the $2 million average of his 1989 deal",
+    ("Rick Barry", 1971): "Jim O'Brien, ABA All-Stars (1972): $165,000 a year with the Nets; the $75,000 used before was his Oaks rate",
+    ("Walt Frazier", 1975): "Pro Sports (March 1975): $250,000, over the APBR compilation's $340,000 average",
+    ("Bob McAdoo", 1981): "UPI (March 1981): $542,000, over the $500,000 used before",
 }
 DROP = {
     ("Wayne Gretzky", 1987): "an outdated 1979 schedule, superseded by the 1982 contract; the season is interpolated instead",
+    ("Jerry West", 1966): "a magazine writer's own estimate, not a reported figure; the season is interpolated instead",
 }
 DROP.update({("Maurice Richard", y): "Canadian dollars before 1971, when the Federal Reserve's H.10 rates begin"
              for y in (1943, 1944, 1951, 1954, 1955, 1956, 1957, 1958, 1959, 1960)})

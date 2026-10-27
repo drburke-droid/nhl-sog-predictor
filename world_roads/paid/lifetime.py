@@ -12,8 +12,9 @@ as it was paid:
 NHL cap hits count from 2005-06, the first season after the lockout; the yearly race starts them in 2009-10, when every
 contract is in CapWages, but a career needs the long contracts already running before then.
 
-A season a player played without a documented salary, between two seasons with one, is estimated: his salary moves in
-a straight line from one documented season to the next. MLB seasons played come from the Lahman database's appearances
+A season a player played without a documented salary, between two seasons with one, is estimated: his salary rises
+(or falls) by the same percentage each season from one documented season to the next. (A straight line would put too
+much in the seasons just before a big raise: O.J. Simpson's 1973-75, between $53,750 and $833,333.) MLB seasons played come from the Lahman database's appearances
 (the major leagues, 1871 on); in the other leagues the seasons between two documented ones, before each league's own
 series begins (NBA 1984-85, NFL 1983, NHL 2005-06), are taken as played, except the lockout season 2004-05 and the
 seasons the research found a player sat out or wasn't paid for (research/spans_*.csv). Seasons
@@ -109,7 +110,7 @@ GROUP = {"ABA": "NBA", "BAA": "NBA", "NBL": "NBA", "AFL": "NFL", "AAFC": "NFL", 
 
 def not_played():
     """seasons inside a career the player didn't play or wasn't paid for (research/spans_*.csv): (league, name) -> years"""
-    out = defaultdict(set)
+    out, stints = defaultdict(set), defaultdict(list)
     for lg in ("nba", "nfl", "nhl"):
         p = os.path.join(HERE, "research", f"spans_{lg}.csv")
         for r in csv.DictReader(open(p, encoding="utf8")) if os.path.exists(p) else []:
@@ -117,11 +118,16 @@ def not_played():
             for y in (r.get("not_played") or "").replace(",", ";").split(";"):
                 if y.strip().isdigit():
                     out[(group, key(r["player"]))].add(int(y))
+            stints[(group, key(r["player"]))].append((int(r["first_year_end"]), int(r["last_year_end"])))
+    for k, ss in stints.items():                      # the years between two stints (retired, then back)
+        for y in range(min(a for a, b in ss), max(b for a, b in ss) + 1):
+            if not any(a <= y <= b for a, b in ss):
+                out[k].add(y)
     return out
 
 
 def estimate(rows, played):
-    """the seasons played between two documented ones, their salary on the straight line between"""
+    """the seasons played between two documented ones, their salary by equal percentage steps between"""
     skip = not_played()
     by = defaultdict(dict)
     for r in rows:
@@ -138,8 +144,8 @@ def estimate(rows, played):
         for y in gaps:
             a = max(v for v in ys if v < y)
             b = min(v for v in ys if v > y)
-            ra, rb = d[a], d[b]
-            nom = ra["nominal"] + (rb["nominal"] - ra["nominal"]) * (y - a) / (b - a)
+            ra, rb = d[a], d[b]               # the same raise, in percent, each season from one documented salary to the next
+            nom = ra["nominal"] * (rb["nominal"] / ra["nominal"]) ** ((y - a) / (b - a))
             team = played.get(pid, {}).get(y) if lg == "MLB" else (ra["team"] if ra["team"] == rb["team"] else "")
             out.append(dict(year=y, league=lg, circuit=ra.get("circuit", lg) if ra.get("circuit") == rb.get("circuit") else lg,
                             pid=pid, player=ra["player"], team=team or ra["team"], nominal=nom, source="estimated",
