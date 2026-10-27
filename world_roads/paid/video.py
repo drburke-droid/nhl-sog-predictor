@@ -188,7 +188,7 @@ def board(im, t, a=1.0, hold=False):
         if r < 0.5 and not hold:                     # the leader
             d.rounded_rectangle([X0 - 1, y - 1, x1 + 1, y + BAR + 1], 5, outline=GOLD + (int(150 * al * (1 - r * 2)),), width=2)
         d.text((X0 - 18, y + BAR / 2 - 11), row["player"], font=font(29, "SemiBold"), fill=INK + (int(255 * al),), anchor="rm")
-        d.text((X0 - 18, y + BAR / 2 + 15), f"{row['team']} · {row['league']}", font=font(19, "Regular"), fill=INK2 + (int(235 * al),), anchor="rm")
+        d.text((X0 - 18, y + BAR / 2 + 15), f"{row['team']} · {row['circuit']}", font=font(19, "Regular"), fill=INK2 + (int(235 * al),), anchor="rm")
         d.text((x1 + 14, y + BAR / 2 - 9), money(v, short=False), font=font(28, "Bold"), fill=INK + (int(255 * al),), anchor="lm")
         d.text((x1 + 14, y + BAR / 2 + 15), f"{money(row['nominal'], short=False)} in {row['year']}", font=font(19, "Regular"),
                fill=MUTED + (int(235 * al),), anchor="lm")
@@ -261,7 +261,7 @@ def summary(d, s):
     d.text((cx, 300), "In the same money", font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     for i, (r, x) in enumerate(((then, cx - 380), (now, cx + 380))):
         d.text((x, 400), r["player"], font=font(44, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
-        d.text((x, 452), f"{r['team']} · {r['league']} · {r['year']}", font=font(26, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
+        d.text((x, 452), f"{r['team']} · {r['circuit']} · {r['year']}", font=font(26, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
         d.text((x, 560), money(r["real"], short=False), font=font(86, "Bold"), fill=(GOLD if i else INK) + (int(255 * a),), anchor="mm")
         d.text((x, 640), f"{money(r['nominal'], short=False)} in {r['year']} dollars", font=font(26, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
     d.text((cx, 560), "→", font=font(64, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")

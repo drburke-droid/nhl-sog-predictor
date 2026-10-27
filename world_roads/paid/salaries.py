@@ -194,9 +194,9 @@ def curated(covered):
         lg = {"ABA": "NBA", "AFL": "NFL", "AAFC": "NFL", "WFL": "NFL", "USFL": "NFL", "WHA": "NHL"}.get(lg, lg) if r.get("use_as") != "own" else lg
         if (lg, key(r["player"]), y) in covered:
             continue
-        rows.append(dict(year=y, league=lg, pid="c:" + key(r["player"]), player=r["player"], team=nickname(r["team"]),
-                         nominal=sal, source=r["source_url"], basis=r["basis"],
-                         note=(r["league"] + " · " if r["league"].upper() != lg else "") + r.get("notes", "")[:120]))
+        rows.append(dict(year=y, league=lg, circuit=r["league"].upper(), pid="c:" + key(r["player"]), player=r["player"],
+                         team=nickname(r["team"].split("/")[-1]), nominal=sal, source=r["source_url"], basis=r["basis"],
+                         note=r.get("notes", "")[:160]))
     return best(rows)
 
 
@@ -207,10 +207,11 @@ def main():
     covered = {(r["league"], key(r["player"]), r["year"]) for r in rows}
     rows += curated(covered)
     for r in rows:
+        r.setdefault("circuit", r["league"])
         r["real_2025"] = round(r["nominal"] * c[LAST] / c[r["year"]], 0)
         r["nominal"] = round(r["nominal"], 0)
     rows.sort(key=lambda r: (r["year"], -r["real_2025"]))
-    cols = ["year", "league", "player", "team", "nominal", "real_2025", "basis", "source", "pid", "note"]
+    cols = ["year", "league", "circuit", "player", "team", "nominal", "real_2025", "basis", "source", "pid", "note"]
     with open(os.path.join(OUT, "salaries.csv"), "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
@@ -219,7 +220,7 @@ def main():
     for y in range(FIRST, LAST + 1):
         R = [r for r in rows if r["year"] == y]
         for i, r in enumerate(R[:15]):
-            top.append(dict(year=y, rank=i + 1, **{k: r[k] for k in ("league", "player", "team", "nominal", "real_2025", "basis", "pid")}))
+            top.append(dict(year=y, rank=i + 1, **{k: r[k] for k in ("league", "circuit", "player", "team", "nominal", "real_2025", "basis", "pid")}))
         n = defaultdict(int)
         for r in R:
             n[r["league"]] += 1
