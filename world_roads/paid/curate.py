@@ -190,6 +190,12 @@ CORRECT = {
     ("Phil Esposito", 1979): "THN (Feb 1976): $375,000 a year with three years left, over the $200,000 used before",
     ("Wayne Gretzky", 1997): "AP's salary list (Sept 1996): $5,047,500, over the $4 million average used before",
     ("Wayne Gretzky", 1998): "THN: $6.5 million after the Oct 1997 renegotiation, over the $4 million average used before",
+    ("Joe Namath", 1965): "Phil Berger's 1969 biography itemizes the $427,000: $25,000 a season for four seasons (1965-68) and a "
+                          "$200,000 bonus were his pay; $127,000 went to a lawyer, a car and scouting jobs for relatives",
+    ("Joe Namath", 1966): "Phil Berger's 1969 biography itemizes the $427,000 (see 1965)",
+    ("Joe Namath", 1967): "Phil Berger's 1969 biography itemizes the $427,000 (see 1965)",
+    ("Warren Moon", 1991): "the NFLPA's salary survey: $2,883,000, over the $2 million average of his 1989 deal",
+    ("Warren Moon", 1992): "the NFLPA's salary survey: $3,563,000, over the $2 million average of his 1989 deal",
 }
 DROP = {
     ("Wayne Gretzky", 1987): "an outdated 1979 schedule, superseded by the 1982 contract; the season is interpolated instead",
