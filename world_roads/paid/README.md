@@ -234,8 +234,14 @@ under 6% from 1946 to 1995, and almost none since.
   past $10 million, $100 million, $250 million and $500 million in 2025 dollars, and the long reigns.
 * In the career race a retired player's bar names his league and seasons ("MLB · 1914–1935") instead of a team, and
   under its figure, his seasons and the money as it was paid.
-* The score is synthesized from scratch with the instruments of `../flights/score.py`: 85.7 BPM, one year every two
-  beats; it rises a whole step when free agency arrives, and its energy follows the leader's pay on a log scale.
+* The score is a sports anthem synthesized from scratch (`music.py`, no samples): brass sections, strings, timpani and
+  drums built from the oscillators and filters of `../flights/score.py`. 85.7 BPM in a half-time feel, C major,
+  I-V-vi-IV. A timpani roll and a trumpet fanfare open it, and the board lands on an orchestral hit; a sixteenth-note
+  string ostinato drives the race, toms, kick and snare join as the leader's pay climbs (on a log scale), then an
+  eight-bar heroic theme in the horns, doubled by trumpets at the peaks. Each record or milestone caption gets an
+  orchestral hit, each new No. 1 a crash; the music rises a whole step when free agency arrives and ends on a snare and
+  timpani roll into a held C major chord with a trumpet flourish under the summary. Years take whole half-beats, so
+  they turn on the music.
 
 ## Run it
 
