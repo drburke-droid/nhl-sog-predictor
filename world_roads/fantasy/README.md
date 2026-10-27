@@ -174,12 +174,30 @@ stand further above replacement than anyone else's.
   * the 1982 strike season;
   * the first 17-game season;
   * the last season's best and its place.
-* **The score** is synthesized from scratch with the instruments of `../flights/score.py`:
-  * 85.7 BPM, and every season starts on a beat;
-  * a pad and a light arpeggio under the explainer, with a soft bell at each scene;
-  * its energy follows how much value each season puts on the board;
-  * it rises a whole step when Faulk's 2000 takes No. 1;
-  * a bell marks each caption, and an impact each new No. 1.
+* **The score** (`music.py`) is an original heroic march in the gridiron-film manner. It's played by a synthesized
+  orchestra (`orchestra.py`), with no samples and no licensing. The instruments:
+  * **brass:** trumpets, horns, trombones and tuba, each note a few detuned saws that scoop into pitch, get brighter
+    and edgier as they get louder, and carry a little vibrato on long notes;
+  * **strings:** held or marcato;
+  * **percussion:** tuned timpani with rolls, a military snare with rolls, a concert bass drum, crash and swelling
+    cymbals;
+  * **hall:** a stereo concert-hall reverb.
+
+  How it follows the film:
+  * **Tempo and key.** D minor, 85.7 BPM, and every season starts on a beat. The theme is two original 8-bar halves.
+  * **Title.** A timpani roll and cymbal swell into a full-brass fanfare.
+  * **Explainer.** A quiet underscore for reading, about 7.5 dB under the race: low strings, the theme softly on a horn,
+    a timpani stroke at each scene. It ends on a snare and timpani roll into the race.
+  * **Race.** Driving low-string eighths, the march on the snare, timpani on the downbeats and the theme on the horns.
+    The busier a season, the more joins: bass drum, trombone chords, upper strings, then trumpets an octave up. Each
+    8-bar phrase ends on a snare roll into a crash. Seasons that change nothing thin it to strings and snare.
+  * **Records.** Each new No. 1 gets a brass stab, crash, bass drum and timpani on the nearest beat.
+  * **Key change.** It rises a whole step after Faulk's 2000 takes No. 1.
+  * **Summary.** A timpani roll into the full orchestra on the major chord.
+  * **Loudness.** −14 LUFS; the true peak after AAC is −2.5 dBFS.
+
+  To use a recording of your own instead (a licensed library track, say), run `python assemble.py --audio track.wav`.
+  It matches the loudness, fits the track to the film and fades it out.
 
 ## Run it
 
@@ -191,7 +209,8 @@ python captions.py       # -> captions.json, summary.json (from the data)
 python video.py timeline # seconds per season
 python video.py still 1984.95 2006.99 2026.5    # stills (t in seasons; 2026.5 is the closing summary)
 python video.py still 1979.1 1979.45 1979.63    # explainer stills (1979.x: that fraction of the explainer)
-python assemble.py render 4                     # picture (4 processes, about 6 min), score, mux -> ../media/fantasy/
+python assemble.py render 4                     # picture (4 processes, about 6 min), score (about 1.5 min), mux
+python assemble.py                              # the score alone, remuxed with the last picture
 python thumbs.py                                # -> ../media/fantasy/fantasy_thumb_A.png, _B.png, _C.png
 ```
 

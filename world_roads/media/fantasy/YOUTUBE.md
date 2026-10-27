@@ -6,7 +6,7 @@ replacement in a 12-team PPR league, explained in plain words in the first 39 se
 **Upload `fantasy_best_seasons.mp4`:**
 * 3:16, 1920×1080, 30 fps, H.264;
 * on-screen text, no narration;
-* original synthesized score at about −14 LUFS.
+* an original orchestral march in the gridiron-film manner, synthesized for this film (no samples), at −14.6 LUFS.
 
 **A/B/C test.** Each thumbnail is 1280×720 and built by `../../fantasy/thumbs.py` from the same data as the film.
 
@@ -44,7 +44,7 @@ Chapters
 2:35 2010s
 2:52 2020s
 
-Music: original, synthesized for this video.
+Music: an original orchestral march, synthesized for this video.
 ```
 
 **Notes on the upload.**
