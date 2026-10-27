@@ -15,7 +15,8 @@ contract is in CapWages, but a career needs the long contracts already running b
 A season a player played without a documented salary, between two seasons with one, is estimated: his salary rises
 (or falls) by the same percentage each season from one documented season to the next. (A straight line would put too
 much in the seasons just before a big raise: O.J. Simpson's 1973-75, between $53,750 and $833,333.) MLB seasons played come from the Lahman database's appearances
-(the major leagues, 1871 on); in the other leagues the seasons between two documented ones, before each league's own
+(the established major leagues, 1871 on; not the Negro leagues, which Lahman now includes but whose pay is not on
+record); in the other leagues the seasons between two documented ones, before each league's own
 series begins (NBA 1984-85, NFL 1983, NHL 2005-06), are taken as played, except the lockout season 2004-05 and the
 seasons the research found a player sat out or wasn't paid for (research/spans_*.csv). Seasons
 before a player's first documented salary or after his last are left out, not guessed. Estimated seasons are marked,
@@ -48,13 +49,18 @@ def cpi():
     return c
 
 
+MAJOR = {"NL", "AL", "AA", "UA", "PL", "FL", "NA"}     # the Negro leagues' seasons, which have no salaries on record, aside
+
+
 def mlb_played():
-    """(bbref id) -> {season: team nickname}, the major-league seasons of every player (Lahman appearances)"""
+    """(bbref id) -> {season: team nickname}, the seasons of every player in the established major leagues (Lahman
+    appearances)"""
     bb = {r.playerID: r.bbrefID for r in lahman("People").itertuples()}
     team = {(r.yearID, r.teamID): nickname(r.name) for r in lahman("Teams").itertuples()}
     out = defaultdict(dict)
     for r in lahman("Appearances").itertuples():
-        out[bb.get(r.playerID, r.playerID)][r.yearID] = team.get((r.yearID, r.teamID), r.teamID)
+        if r.lgID in MAJOR:
+            out[bb.get(r.playerID, r.playerID)][r.yearID] = team.get((r.yearID, r.teamID), r.teamID)
     return out
 
 
