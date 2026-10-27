@@ -1,6 +1,7 @@
 """The race's score, synthesized from scratch with the instruments of ../flights/score.py (no samples, no licensing).
 
-85.7 BPM: a beat is 0.7 s and a year 1.4 s, so every year turns on a beat (a bar is two years). C major
+85.7 BPM: a beat is 0.7 s and a year 1.4 s, so every year turns on a beat (a bar is two years); in the paced
+single-season race a year takes whole half-beats (0.35 s to 2.8 s), so it still turns on the music. C major
 (Cmaj7 - Am7 - Fmaj7 - G), a whole step up when free agency arrives (1977); the energy follows the leader's pay (on a
 log scale), from a sparse pulse in 1913 to the full groove of the 2020s; a bell at each milestone caption; a resolving
 chord over the final standings.
@@ -77,7 +78,7 @@ def track():
     import video as V
     V.setup()
     total = V.total()
-    at = lambda year: V.INTRO + (year - V.FIRST) * V.PER_YEAR
+    at = lambda year: V.INTRO + V.D.secs(year)       # a year's moment in the film (a paced race's years vary)
     # energy: the leader's pay on a log scale, smoothed
     years = np.arange(V.FIRST, V.LAST + 1)
     lead = np.array([V.D.by[y][V.D.order[y][0]]["real"] if V.D.order.get(y) else np.nan for y in years])
@@ -87,11 +88,11 @@ def track():
     E = [(0, 0.1), (V.INTRO - 0.5, 0.16)] + [(at(y), 0.22 + 0.68 * v) for y, v in zip(years, ll)]
     E += [(total - V.OUTRO + 0.5, 0.9), (total - V.OUTRO + 1.4, 0.0), (total, 0.0)]
     caps = V.D.events
-    T = Track(total, E, impacts=[(V.INTRO, 0.5)] + [(V.INTRO + (c["from"] - V.FIRST) * V.PER_YEAR, 0.35) for c in caps if c.get("hit")],
+    T = Track(total, E, impacts=[(V.INTRO, 0.5)] + [(c["T0"], 0.35) for c in caps if c.get("hit")],
               risers=[(total - V.OUTRO - 2 * BAR, total - V.OUTRO + 0.05)])
     T.compose_bars(at(1977))
     for i, c in enumerate(caps):
-        T.bell(V.INTRO + (c["from"] - V.FIRST) * V.PER_YEAR, 79 + (5 if i % 2 else 0), 0.8, -0.3 if i % 2 else 0.3)
+        T.bell(c["T0"], 79 + (5 if i % 2 else 0), 0.8, -0.3 if i % 2 else 0.3)
     T.ending(total - V.OUTRO + 1.4)
     for t, s in T.impacts:
         T.impact(t, s)

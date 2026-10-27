@@ -42,12 +42,14 @@ font = ST.font
 
 FIRST, LAST = 1913, 2025
 N = 10                                                # bars on the board
-PER_YEAR = 1.4                                        # seconds a year takes
+PER_YEAR = 1.4                                        # seconds a year takes (unless the race paces itself)
+HALF = 0.35                                           # half a beat of the score
+PACE = [1, 2, 3, 4, 5, 6, 7, 7, 8]                    # half-beats a year takes in a paced race, by how much its board changes
 INTRO, OUTRO = 5.6, 11.2                              # whole bars of the score (2.8 s)
 MIN_2025 = 760_000                                    # MLB minimum salary, 2025
 X0, X1 = 560, 1500                                    # bar baseline and the leader's bar end
 MODES = {
-    "records": dict(data="season_top.csv", captions="captions.json", film="seasons", title="The best-paid seasons ever",
+    "records": dict(data="season_top.csv", captions="captions.json", film="seasons", title="The best-paid seasons ever", paced=True,
                     subtitle="Single-season salaries in 2025 dollars, the ten best to date · MLB, NBA, NFL, NHL",
                     intro=f"{FIRST} to {LAST}, every salary in 2025 dollars: a season stays until ten better ones come along"),
     "annual": dict(data="salaries.csv", captions="captions_yearly.json", film="race", title="The best-paid athletes",
@@ -112,7 +114,47 @@ class Data:
         self.cov = {int(r["year"]): r for r in csv.DictReader(open(os.path.join(MEDIA, "coverage.csv")))}
         cap = os.path.join(HERE, MODE["captions"])
         self.events = json.load(open(cap)) if os.path.exists(cap) else []
+        self.pace()
+        self.windows()
         self.places()
+
+    def pace(self):
+        """the seconds each year takes, from the year before to it: PER_YEAR throughout, or, in a race that paces itself,
+        quick where the board stands still and slower where it churns. A year's change is the number of entries that
+        join the top ten, two more for a new No. 1, one more for a caption; it buys whole half-beats of the score (PACE),
+        so the years still turn on the music: 0.35 s for a year that changes nothing, up to 2.8 s for the busiest."""
+        capt = {int(round(e["from"] + 0.5)) for e in self.events}
+        steps = [0.0]
+        for y in range(FIRST + 1, LAST + 1):
+            if MODE.get("paced"):
+                before, now = self.top(y - 1, N), self.top(y, N)
+                change = len(set(now) - set(before)) + 2 * (now[:1] != before[:1]) + (y in capt)
+                steps.append(HALF * PACE[min(change, len(PACE) - 1)])
+            else:
+                steps.append(PER_YEAR)
+        self.knot_y = np.arange(FIRST, LAST + 1, dtype=float)
+        self.knot_s = np.cumsum(steps)
+        self.race = float(self.knot_s[-1])            # seconds from the first year's board to the last's
+
+    def secs(self, t):
+        """seconds into the race at time t (in years)"""
+        return float(np.interp(t, self.knot_y, self.knot_s))
+
+    def year_of(self, s):
+        return np.interp(s, self.knot_s, self.knot_y)
+
+    def windows(self):
+        """each caption's time on screen, in seconds: from its moment, for as long as captions.py gave it at the steady
+        pace (3.6 s); one due sooner makes room down to 2.1 s, then waits"""
+        last = None
+        for e in self.events:
+            e["T0"] = INTRO + self.secs(e["from"])
+            e["T1"] = e["T0"] + (e["to"] - e["from"]) * PER_YEAR
+            if last and e["T0"] < last["T1"] + 0.42:
+                last["T1"] = max(last["T0"] + 2.1, e["T0"] - 0.42)
+                shift = max(0.0, last["T1"] + 0.42 - e["T0"])
+                e["T0"], e["T1"] = e["T0"] + shift, e["T1"] + shift
+            last = e
 
     def top(self, y, n):
         return self.order.get(y, [])[:n]
@@ -126,10 +168,10 @@ class Data:
         """every bar's place on the board at every frame. Between two years the board is sorted by salaries moving in a
         straight line from one year's to the next's, over the middle 60% of the year, so a bar passes another when its
         pay does and each year's board stands exactly as ranked on the year itself; one arriving rises from under the
-        board, one leaving sinks under it. The places are then eased in time (a Gaussian of 0.06 years), so a pass takes
-        about a third of a second."""
-        n = int(round((LAST - FIRST) * PER_YEAR * FPS)) + 1
-        self.ts = FIRST + np.arange(n) / FPS / PER_YEAR
+        board, one leaving sinks under it. The places are then eased in time (a Gaussian of 0.084 s, on screen), so a
+        pass takes about a third of a second."""
+        n = int(round(self.race * FPS)) + 1
+        self.ts = self.year_of(np.arange(n) / FPS)    # each frame's time, in years
         keys = sorted({k for y in self.order for k in self.top(y, N + 3)})
         self.ix = {k: i for i, k in enumerate(keys)}
         self.keys = keys
@@ -159,7 +201,7 @@ class Data:
 
     def state(self, t):
         """the bars on the board at time t (in years): key -> (place, salary in 2025 dollars, row it is labelled from)"""
-        j = int(round((min(max(t, FIRST), LAST) - FIRST) * PER_YEAR * FPS))
+        j = min(len(self.ts) - 1, int(round(self.secs(t) * FPS)))
         y0 = int(np.floor(t))
         u, y1 = t - y0, min(LAST, y0 + 1)
         out = {}
@@ -183,10 +225,8 @@ D = None
 
 def scale_track():
     """the axis maximum at every frame: the leader's value with room for its label, smoothed both ways in time"""
-    n = int(round((LAST - FIRST) * PER_YEAR * FPS)) + 1
-    ts = FIRST + np.arange(n) / FPS / PER_YEAR
     lead = []
-    for t in ts:
+    for t in D.ts:
         on = [v for r, v, _ in D.state(t).values() if r < N - 0.5]
         lead.append(max(on) if on else 1.0)
     lead = np.array(lead)
@@ -202,7 +242,7 @@ SCALE = None
 
 
 def scale_at(t):
-    i = int(round((min(max(t, FIRST), LAST) - FIRST) * PER_YEAR * FPS))
+    i = int(round(D.secs(t) * FPS))
     return SCALE[min(i, len(SCALE) - 1)]
 
 
@@ -331,10 +371,10 @@ def year_label(d, t, a=1.0):
     d.text((W - 92, H - 40), f"$1 in {y} = ${f:,.2f} in 2025", font=font(24, "Regular"), fill=INK2 + (int(255 * a),), anchor="rs")
 
 
-def caption(d, t, a=1.0):
+def caption(d, T, a=1.0):
+    """T: seconds from the start of the film"""
     for e in D.events:
-        t0, t1 = e["from"], e["to"]
-        al = a * smooth((t - t0) / 0.35) * (1 - smooth((t - t1) / 0.35))
+        al = a * smooth((T - e["T0"]) / 0.5) * (1 - smooth((T - e["T1"]) / 0.5))
         if al <= 0.01:
             continue
         lines = e["text"] if isinstance(e["text"], list) else [e["text"]]
@@ -354,16 +394,15 @@ def frame(T):
         d.text((W / 2, 500), MODE["intro"], font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
         d.text((W / 2, 600), "MLB · NBA · NFL · NHL", font=font(26, "SemiBold"), fill=MUTED + (int(255 * a),), anchor="mm")
         return np.asarray(im)
-    t = FIRST + (T - INTRO) / PER_YEAR
-    hold = t >= LAST
-    t = min(t, LAST)
+    hold = T - INTRO >= D.race
+    t = float(D.year_of(min(T - INTRO, D.race)))
     a = smooth((T - INTRO) / 0.8)
     end = total()
     dim = 1 - 0.94 * smooth((T - (end - OUTRO + 1.6)) / 0.8)      # the board steps back for the summary
     d = board(im, t, a * dim, hold)
     header(d, a)
     year_label(d, t, a * (dim - 0.06) / 0.94)          # gone under the sources line
-    caption(d, FIRST + (T - INTRO) / PER_YEAR, a)
+    caption(d, T, a)
     if T > end - OUTRO + 1.6:
         summary(d, T - (end - OUTRO + 1.6))
     return np.asarray(im)
@@ -410,7 +449,7 @@ SUMMARY = {}
 
 
 def total():
-    return INTRO + (LAST - FIRST) * PER_YEAR + OUTRO
+    return INTRO + D.race + OUTRO
 
 
 def setup():
@@ -461,6 +500,8 @@ def render_range(c0, c1, part, mode):
 def render(jobs=4):
     from concurrent.futures import ProcessPoolExecutor
     os.makedirs(os.path.join(OUT, "chunks"), exist_ok=True)
+    if D is None:
+        setup()
     n = int(round(total() * FPS))
     CH = 300
     film = MODE["film"]
@@ -491,7 +532,7 @@ if __name__ == "__main__":
         setup()
         for a in args[1:]:
             t = float(a)
-            T = INTRO + (t - FIRST) * PER_YEAR if t >= FIRST else t
+            T = INTRO + D.secs(t) if t >= FIRST else t
             Image.fromarray(frame(T)).save(os.path.join(OUT, f"{MODE['film']}_still_{t:06.1f}.png"))
             print("still", t)
     else:

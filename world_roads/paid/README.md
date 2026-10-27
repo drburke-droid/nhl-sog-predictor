@@ -9,7 +9,7 @@ Ruth's $80,000 of 1930 and Dak Prescott's $60 million of 2025 stand on one scale
 * **The career race**: the ten biggest careers to date each year, every season's pay in 2025 dollars added up, retired
   players keeping their totals until someone passes them. Film: `../media/paid/best_paid_careers.mp4`.
 
-Both 1920x1080, 30 fps, about 2 min 54 s, with an original synthesized score. (`python assemble.py --yearly render`
+Both 1920x1080, 30 fps (2 min 23 s and 2 min 54 s), with an original synthesized score. (`python assemble.py --yearly render`
 also makes the plain yearly board, each year's ten best-paid alone, as `best_paid_by_year.mp4`; it isn't kept here.)
 Data: `../media/paid/salaries.csv` (every salary found, both dollars), `season_top.csv` (the 40 best seasons to date,
 each year), `top.csv` (the 15 best-paid of each year alone), `coverage.csv` (salaries found per league and year, and
@@ -180,7 +180,12 @@ under 6% from 1946 to 1995, and almost none since.
   paid.
 * Between two years the figures move in a straight line, and the board re-sorts as they do. A bar passes another
   when its pay does; the passes happen over the middle of the year, so each year's board stands exactly as ranked on
-  the year itself. A player arriving rises from under the board; one leaving sinks under it. A year takes 1.4 s.
+  the year itself. A player arriving rises from under the board; one leaving sinks under it.
+* The single-season race paces itself: a year that changes nothing passes in 0.35 s, and the busier a year (seasons
+  joining the top ten, a new record, a caption) the longer it takes, up to 2.8 s, so the decades when Red Grange's and
+  Babe Ruth's seasons stood unbeaten go by in seconds and the late-1980s and 1990s, when the record fell almost every
+  year, play at half speed. Every year takes whole half-beats of the score, so the years still turn on the music.
+  Captions keep their time on screen (3.6 s) whatever the pace. The career race moves at a steady 1.4 s a year.
 * The scale follows the leader. While it is small, a dashed line marks today's MLB minimum salary ($760,000). By that
   line, the best-paid stars of the 1920s and 1930s earned, in today's money, about what a rookie on the minimum makes
   now.
