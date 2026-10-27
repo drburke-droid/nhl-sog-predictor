@@ -12,6 +12,10 @@ great one climbs onto the board and stays until better seasons push it off. Unde
 when it is not on the board, with the place it would hold. Each bar carries the player, his position, team and year,
 the value, and the season's stat line once it is over. The scale follows the leader.
 
+The film opens with a 42-second explainer in plain words: why total points mislead (a real season where a quarterback
+outscored a running back who was worth more), what "points over replacement" means (the waiver-wire player you could
+have had for free), who that free player is in a 12-team league, why missed games count zero, and how to read the chart.
+
 Colour encodes the position (QB magenta, RB blue, WR yellow, TE green: validated together for colour-blind separation on
 this background) and every bar also names its position in text.
 
@@ -41,7 +45,10 @@ font = ST.font
 
 N = 12                                                # bars on the board: one per team in the league
 BEAT = 0.7                                            # 85.7 BPM
-INTRO, OUTRO = 12 * BEAT, 16 * BEAT                   # 8.4 s, 11.2 s
+# the intro, in plain words: the question, what "over replacement" means, who the free player is, missed games, how
+# to read the chart (beats each)
+SCENES = (("title", 5), ("question", 11), ("value", 14), ("free", 11), ("missed", 7), ("watch", 12))
+INTRO, OUTRO = sum(b for _, b in SCENES) * BEAT, 16 * BEAT    # 42 s, 11.2 s
 HOLD = 4 * BEAT                                       # the final board holds 2.8 s before the summary
 WEEKS_FRAC = 0.8                                      # the weeks take this much of a season; the final standings the rest
 X0, X1 = 560, 1460                                    # bar baseline and the leader's bar end
@@ -359,25 +366,128 @@ def caption(d, T, a=1.0):
                    fill=(INK if i == 0 else INK2) + (int(255 * al),), anchor="ls")
 
 
+def scene_at(T):
+    """the intro scene at film time T: (name, seconds into it, its length)"""
+    t = 0.0
+    for name, b in SCENES:
+        if T < t + b * BEAT or name == SCENES[-1][0]:
+            return name, T - t, b * BEAT
+        t += b * BEAT
+
+
+def scene_starts():
+    return list(np.cumsum([0] + [b * BEAT for _, b in SCENES[:-1]]))
+
+
+def lines(d, rows, y, al, size=31, col=INK2, weight="Regular", gap=46):
+    for k, line in enumerate(rows):
+        d.text((W / 2, y + gap * k), line, font=font(size, weight), fill=col + (int(255 * al),), anchor="mm")
+
+
+def example_bars(d, al, split=0.0, value_al=0.0):
+    """the intro's example: two seasons' points, then (split) the part the best free player would have scored"""
+    x = SUMMARY.get("example")
+    if not x or al <= 0.01:
+        return
+    k = 860 / max(x["qb"]["points"], x["rb"]["points"])
+    for n, (r, y) in enumerate(((x["qb"], 430), (x["rb"], 540))):
+        col = POSC[r["pos"]]
+        x0, xf, x1 = 640, 640 + r["free"] * k, 640 + r["points"] * k
+        d.rounded_rectangle([x0, y, x1, y + 64], 6, fill=col + (int(255 * al * (1 - 0.75 * split)),))
+        if split > 0.01:
+            d.rounded_rectangle([xf, y, x1, y + 64], 6, fill=col + (int(255 * al * split),))
+            d.rectangle([xf, y, min(x1, xf + 8), y + 64], fill=col + (int(255 * al * split),))
+            d.rounded_rectangle([x0, y, xf, y + 64], 6, fill=(70, 78, 92, int(255 * al * split)))
+            d.text(((x0 + xf) / 2, y + 32), f"best free {r['pos']}: {r['free']}", font=font(22, "SemiBold"),
+                   fill=INK + (int(255 * al * smooth((split - 0.5) / 0.5)),), anchor="mm")
+        d.text((x0 - 22, y + 20), r["player"], font=font(32, "SemiBold"), fill=INK + (int(255 * al),), anchor="rm")
+        d.text((x0 - 22, y + 50), f"{r['pos']} · {r['team']} · {x['season']}", font=font(21, "Regular"),
+               fill=INK2 + (int(255 * al),), anchor="rm")
+        pa = al * (1 - value_al)
+        d.text((x1 + 18, y + 32), f"{r['points']} points", font=font(30, "Bold"), fill=INK + (int(255 * pa),), anchor="lm")
+        va = al * value_al
+        d.text((x1 + 18, y + 20), f"+{r['value']}", font=font(30, "Bold"), fill=INK + (int(255 * va),), anchor="lm")
+        d.text((x1 + 18, y + 50), "over replacement", font=font(21, "Regular"), fill=INK2 + (int(255 * va),), anchor="lm")
+
+
 def intro(d, T):
-    a = smooth(T / 0.8) * (1 - smooth((T - INTRO + 0.9) / 0.8))
-    cx = W / 2
-    d.text((cx, 330), "Fantasy football's most valuable seasons", font=font(68, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
-    d.text((cx, 410), f"The best single seasons, {FIRST} to {LAST}, in points over replacement · 12-team PPR league",
-           font=font(32, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
-    b = a * smooth((T - 1.6) / 0.8)
-    ps = list(REPL)
-    lines = ("A season is worth the player's PPR points minus the replacement level at his position: what the best",
-             "player left on waivers scored. A 12-team league starts a QB, 2 RBs, 3 WRs, a TE and a flex, so that is the",
-             ", ".join(f"{ordinal(REPL[p])} {p}" for p in ps[:-1]) + f" and {ordinal(REPL[ps[-1]])} {ps[-1]}."
-             " Counted by the game: a game he misses counts nothing.")
-    for k, line in enumerate(lines):
-        d.text((cx, 540 + 46 * k), line, font=font(29, "Regular"), fill=INK2 + (int(255 * b),), anchor="mm")
-    x = cx - 1.5 * 150 + 30
-    for p in REPL:
-        d.rounded_rectangle([x - 52, 742, x - 30, 764], 4, fill=POSC[p] + (int(255 * b),))
-        d.text((x - 20, 762), f"{p}{REPL[p]}", font=font(26, "SemiBold"), fill=INK + (int(255 * b),), anchor="ls")
-        x += 150
+    name, s, dur = scene_at(T)
+    a = smooth(s / 0.5) * (1 - smooth((s - dur + 0.6) / 0.5))
+    rv = lambda t0: a * smooth((s - t0) / 0.6)                     # an element revealed t0 seconds into the scene
+    x = SUMMARY.get("example") or {}
+    q, b = x.get("qb", {}), x.get("rb", {})
+    if name == "title":
+        d.text((W / 2, 470), "Fantasy football's most valuable seasons", font=font(72, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
+        lines(d, [f"The best single seasons since {FIRST} · 12-team PPR league"], 556, rv(0.6), size=34)
+    elif name == "question":
+        lines(d, ["Who had the best fantasy season ever?"], 290, a, size=54, col=INK, weight="Bold")
+        lines(d, [f"Total points can't settle it. In {x.get('season')}, {q.get('player')} outscored {b.get('player')}:"], 370, rv(0.8))
+        example_bars(d, rv(1.6))
+        lines(d, [f"Yet {b.get('player', '').split()[-1]} did more to win fantasy leagues. Why?"], 740, rv(4.0), size=40,
+              col=INK, weight="SemiBold")
+    elif name == "value":
+        lines(d, ["Because a good quarterback was easy to find"], 230, a, size=54, col=INK, weight="Bold")
+        lines(d, ["Every season, useful players sit unclaimed on the waiver wire. A player is only worth",
+                  "what he scores beyond the best one his manager could have picked up for free."], 310, rv(0.6))
+        example_bars(d, a, split=smooth((s - 2.2) / 1.2), value_al=smooth((s - 3.6) / 0.6))
+        la = rv(2.8)
+        d.rounded_rectangle([560, 676, 584, 700], 4, fill=(70, 78, 92, int(255 * la)))
+        d.text((596, 688), "what the best free player at his position scored", font=font(23, "Regular"),
+               fill=INK2 + (int(255 * la),), anchor="lm")
+        d.rounded_rectangle([1150, 676, 1162, 700], 3, fill=POSC["QB"] + (int(255 * la),))
+        d.rounded_rectangle([1164, 676, 1176, 700], 3, fill=POSC["RB"] + (int(255 * la),))
+        d.text((1188, 688), "what the player added: points over replacement", font=font(23, "Regular"),
+               fill=INK2 + (int(255 * la),), anchor="lm")
+        lines(d, [f"{b.get('player', '').split()[-1]} added {b.get('value')}, {q.get('player', '').split()[-1]} {q.get('value')}."
+                  " That margin is what this race measures."], 800, rv(5.4), size=36, col=INK, weight="SemiBold")
+    elif name == "free":
+        lines(d, ["Who is the free player?"], 230, a, size=54, col=INK, weight="Bold")
+        lines(d, ["A 12-team league starts a QB, 2 RBs, 3 WRs, a TE and a flex (an RB, WR or TE).",
+                  "Once every team's starters are taken, the best player left is about the:"], 310, rv(0.6))
+        why = {"QB": "12 starters, plus bye-week fill-ins", "RB": "24 starters, plus flex spots",
+               "WR": "36 starters, plus flex spots", "TE": "12 starters, plus the odd flex"}
+        for n, p in enumerate(REPL):
+            ca = rv(1.6 + 0.4 * n)
+            cx = W / 2 + (n - 1.5) * 380
+            d.rounded_rectangle([cx - 130, 450, cx + 130, 456], 3, fill=POSC[p] + (int(255 * ca),))
+            d.text((cx, 530), ordinal(REPL[p]), font=font(80, "Bold"), fill=INK + (int(255 * ca),), anchor="mm")
+            d.text((cx, 602), f"best {p}", font=font(32, "SemiBold"), fill=INK + (int(255 * ca),), anchor="mm")
+            d.text((cx, 645), why[p], font=font(22, "Regular"), fill=MUTED + (int(255 * ca),), anchor="mm")
+        lines(d, ["Every season is measured against that year's free players,",
+                  "so a 1985 season and a 2025 season are each judged by the standards of their day."], 760, rv(4.0))
+    elif name == "missed":
+        lines(d, ["Missed games count zero"], 410, a, size=54, col=INK, weight="Bold")
+        lines(d, ["When a player sits out, his manager starts a free player that week,",
+                  "so the missed game neither helps nor hurts him."], 500, rv(0.6))
+        lines(d, ["300 points in 12 games beats 300 points in 16."], 660, rv(2.0), size=40, col=INK, weight="SemiBold")
+    else:                                                          # how to read the chart
+        lines(d, ["How to read the chart"], 250, a, size=54, col=INK, weight="Bold")
+        rows = ("Each bar is one player's season, coloured by position", "The board holds the 12 most valuable seasons so far",
+                "Outlined bars are the season being played, growing week by week",
+                "Under the board: this season's best so far, and where it would rank")
+        for n, text in enumerate(rows):
+            ra = rv(0.8 + 0.9 * n)
+            y = 380 + 120 * n
+            ix = 470
+            if n == 0:
+                for m, p in enumerate(POSC):
+                    d.rounded_rectangle([ix, y - 30 + 16 * m, ix + 150 - 22 * m, y - 18 + 16 * m], 3, fill=POSC[p] + (int(255 * ra),))
+                cx = 660
+                for p in POSC:
+                    d.rounded_rectangle([cx, y + 30, cx + 18, y + 48], 4, fill=POSC[p] + (int(255 * ra),))
+                    d.text((cx + 26, y + 39), p, font=font(22, "SemiBold"), fill=INK2 + (int(255 * ra),), anchor="lm")
+                    cx += 26 + d.textlength(p, font=font(22, "SemiBold")) + 28
+            elif n == 1:
+                for m in range(4):
+                    d.rounded_rectangle([ix, y - 30 + 16 * m, ix + 160 - 26 * m, y - 18 + 16 * m], 3, fill=POSC["RB"] + (int(255 * ra),))
+            elif n == 2:
+                d.rounded_rectangle([ix, y - 16, ix + 120, y + 16], 4, fill=POSC["WR"] + (int(255 * ra),))
+                d.rounded_rectangle([ix - 2, y - 18, ix + 122, y + 18], 5, outline=INK + (int(220 * ra),), width=2)
+            else:
+                d.line([(ix - 10, y - 26), (ix + 170, y - 26)], fill=(40, 52, 72, int(255 * ra)), width=2)
+                d.rounded_rectangle([ix, y - 14, ix + 80, y + 14], 4, fill=POSC["RB"] + (int(255 * ra),))
+                d.rounded_rectangle([ix - 2, y - 16, ix + 82, y + 16], 5, outline=INK + (int(220 * ra),), width=2)
+            d.text((660, y - (8 if n == 0 else 0)), text, font=font(30, "Regular"), fill=INK + (int(255 * ra),), anchor="lm")
 
 
 def summary(d, s):

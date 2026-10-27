@@ -8,8 +8,8 @@ Every caption is found in the data, not written in by hand:
 * the last season's best, at its end, with its all-time place.
 A caption is anchored to a season and week; video.py turns that into film time and spaces them out.
 """
-import os, sys, json
-from collections import Counter
+import os, sys, csv, json
+from collections import Counter, defaultdict
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -119,8 +119,39 @@ def main():
                    mix="The top 12: " + ", ".join(f"{n} {p}{'s' if n != 1 else ''}" for p, n in pos.most_common())
                        + " · " + ", ".join(f"{n} from the {d}" for d, n in sorted(dec.items())),
                    others=("Best of the rest: " + " · ".join(others)) if others else "")
+    summary["example"] = example()
     json.dump(summary, open(os.path.join(HERE, "summary.json"), "w"), indent=1)
     print(summary["gap"], "|", summary["mix"], "|", summary["others"])
+    x = summary["example"]
+    print("intro example:", x["season"], x["qb"]["player"], x["qb"]["points"], x["qb"]["free"], x["qb"]["value"], "|",
+          x["rb"]["player"], x["rb"]["points"], x["rb"]["free"], x["rb"]["value"])
+
+
+def example():
+    """the intro's example: a season's top-scoring QB who outscored one of its three top-scoring RBs, both playing every
+    game, while the RB was worth at least 30 more over replacement; of those, the QB who outscored his RB by the most"""
+    rows = [dict(r, season=int(r["season"]), points=float(r["points"]), replacement=float(r["replacement"]),
+                 vorp=float(r["vorp"]), games=int(r["games"])) for r in csv.DictReader(open(os.path.join(V.MEDIA, "seasons.csv")))]
+    by = defaultdict(list)
+    for r in rows:
+        if r["games"] == team_games(r["season"]):
+            by[r["season"], r["pos"]].append(r)
+    best = None
+    for (y, p), qbs in by.items():
+        if p != "QB":
+            continue
+        q = max(qbs, key=lambda r: r["points"])
+        if q["points"] < max(r["points"] for r in rows if r["season"] == y and r["pos"] == "QB"):
+            continue                                  # the season's top-scoring QB must have played every game
+        for b in sorted(by.get((y, "RB"), []), key=lambda r: -r["points"])[:3]:
+            m = q["points"] - b["points"]
+            if m > 0 and b["vorp"] - q["vorp"] >= 30 and (best is None or m > best[0]):
+                best = (m, q, b)
+    if best is None:
+        return None
+    side = lambda r: dict(player=r["player"], pos=r["pos"], team=r["team"], points=round(r["points"]),
+                          free=round(r["replacement"]), value=round(r["points"]) - round(r["replacement"]))
+    return dict(season=best[1]["season"], qb=side(best[1]), rb=side(best[2]))
 
 
 if __name__ == "__main__":

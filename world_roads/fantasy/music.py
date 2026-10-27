@@ -1,10 +1,11 @@
 """The race's score, synthesized from scratch with the instruments of ../flights/score.py (no samples, no licensing).
 
 85.7 BPM: a beat is 0.7 s, and every season starts on a beat (video.py gives each season 2 to 12 beats). A minor
-(Am7 - Fmaj7 - Cmaj7 - G), a whole step up once the record season takes No. 1 for good; the energy follows how much
-value each season puts on the board (on a log scale), so the years when the board fills and the record years drive and
-the seasons that change nothing thin out; a bell at each caption, an impact at each new No. 1; a resolving chord over
-the closing summary.
+(Am7 - Fmaj7 - Cmaj7 - G), a whole step up once the record season takes No. 1 for good. A pad and a light arpeggio
+under the opening explainer, with a soft bell at each of its scenes; then the energy follows how much value each season
+puts on the board (on a log scale), so the years when the board fills and the record years drive and the seasons that
+change nothing thin out; a bell at each caption, an impact at each new No. 1; a resolving chord over the closing
+summary.
 """
 import os, sys
 import numpy as np
@@ -81,7 +82,8 @@ def track():
     years = list(range(V.FIRST, V.LAST + 1))
     gain = np.array([D.board_gain(y) for y in years])
     ll = np.log1p(gain) / np.log1p(gain.max())
-    E = [(0, 0.1), (V.INTRO - 0.7, 0.18)]
+    starts = V.scene_starts()
+    E = [(0, 0.12), (starts[1], 0.2), (V.INTRO - 0.7, 0.3)]          # the explainer: pad, then a light arpeggio
     for y, v in zip(years, ll):
         E += [(D.t0[y] + 0.01, 0.34 + 0.56 * v), (D.t0[y] + D.beats[y] * BEAT - 0.01, 0.34 + 0.56 * v)]
     E += [(D.race_end - 0.7, 0.9), (D.race_end + V.HOLD, 0.0), (total, 0.0)]
@@ -96,6 +98,8 @@ def track():
     T = Track(total, E, impacts=[(V.INTRO, 0.5)] + [(t, 0.4) for t in big],
               risers=[(D.race_end - 2 * BAR, D.race_end + 0.05)])
     T.compose_bars(up, D.race_end + V.HOLD)
+    for k, t in enumerate(starts[1:]):                                # a soft bell at each explainer scene
+        T.bell(t, 72 + (5 if k % 2 else 0), 0.45, 0.2 if k % 2 else -0.2)
     for i, c in enumerate(caps):
         T.bell(c["from"], 79 + (5 if i % 2 else 0) + (2 if up is not None and c["from"] >= up else 0), 0.8, -0.3 if i % 2 else 0.3)
     T.ending(D.race_end + V.HOLD, 2 if up is not None else 0)

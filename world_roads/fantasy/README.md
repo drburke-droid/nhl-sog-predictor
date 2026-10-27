@@ -6,8 +6,8 @@ most valuable seasons so far. While a season is played, its bars grow toward the
 the board and stays until better seasons push it off. It's built like the best-paid athletes race (`paid/`): the same
 look, the same kind of synthesized score, and captions found in the data.
 
-* **Film:** `../media/fantasy/fantasy_best_seasons.mp4` (1920x1080, 30 fps, 2 min 45 s, with an original synthesized
-  score).
+* **Film:** `../media/fantasy/fantasy_best_seasons.mp4` (1920x1080, 30 fps, 3 min 19 s, with an original synthesized
+  score). It opens with a 42-second explainer of the method in plain words.
 * **Data:**
   * `../media/fantasy/seasons.csv`: every QB, RB, WR and TE season 1980-2025, with stat line, PPR points, games, rank
     at his position, replacement level, VORP and rank in its season.
@@ -122,6 +122,24 @@ stand further above replacement than anyone else's.
 
 ## The film
 
+* **The explainer (42 s).** Most viewers won't know what value over replacement is, so the film opens with six short
+  scenes:
+  1. **Title.**
+  2. **The question.** Who had the best season ever? Total points can't settle it. In 2020 Josh Allen outscored Derrick
+     Henry, 396 to 333, yet Henry did more to win fantasy leagues.
+  3. **The answer.** The same two bars split into what the best free player at the position scored and what the
+     player added. The best free QB scored 261 and the best free RB 158, so Henry added 175 and Allen 135. That margin
+     is what the race measures.
+  4. **Who the free player is.** A 12-team league starts a QB, 2 RBs, 3 WRs, a TE and a flex. Once every team's
+     starters are taken, the best player left is about the 16th QB, 30th RB, 42nd WR and 14th TE. Each season is
+     measured against that year's free players.
+  5. **Missed games count zero.** 300 points in 12 games beats 300 in 16.
+  6. **How to read the chart.** Colours, the board of 12, outlined bars for the season being played, and the row
+     under the board.
+
+  The example is picked from the data (`captions.py`): the season's top-scoring QB who outscored one of its top three
+  RBs, both playing every game, while the RB was worth at least 30 more over replacement. Of those, the widest
+  outscoring wins.
 * **The board.** It shows the twelve most valuable seasons so far. Each bar shows:
   * on the left, the player, his position, team and year;
   * on the right, the value, and once the season is over, its stat line.
@@ -146,6 +164,7 @@ stand further above replacement than anyone else's.
   * the last season's best and its place.
 * **The score** is synthesized from scratch with the instruments of `../flights/score.py`:
   * 85.7 BPM, and every season starts on a beat;
+  * a pad and a light arpeggio under the explainer, with a soft bell at each scene;
   * its energy follows how much value each season puts on the board;
   * it rises a whole step when Faulk's 2000 takes No. 1;
   * a bell marks each caption, and an impact each new No. 1.
@@ -159,7 +178,8 @@ python compare.py        # how the replacement ranks shape the board (the table 
 python captions.py       # -> captions.json, summary.json (from the data)
 python video.py timeline # seconds per season
 python video.py still 1984.95 2006.99 2026.5    # stills (t in seasons; 2026.5 is the closing summary)
-python assemble.py render 4                     # picture (4 processes, about 3 min), score, mux -> ../media/fantasy/
+python video.py still 1979.2 1979.45 1979.63    # explainer stills (1979.x: that fraction of the explainer)
+python assemble.py render 4                     # picture (4 processes, about 4 min), score, mux -> ../media/fantasy/
 ```
 
 Needs numpy, pandas, Pillow, numba and scipy (for the score), ffmpeg with libx264, and the Inter font.

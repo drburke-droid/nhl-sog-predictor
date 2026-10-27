@@ -17,5 +17,24 @@
  },
  "gap": "Faulk's 2000 edges Tomlinson's 2006 by 0.1",
  "mix": "The top 12: 10 RBs, 2 WRs \u00b7 2 from the 1990s, 7 from the 2000s, 1 from the 2010s, 2 from the 2020s",
- "others": "Best of the rest: QB Dan Marino 1984 (221) \u00b7 TE Todd Christensen 1983 (192)"
+ "others": "Best of the rest: QB Dan Marino 1984 (221) \u00b7 TE Todd Christensen 1983 (192)",
+ "example": {
+  "season": 2020,
+  "qb": {
+   "player": "Josh Allen",
+   "pos": "QB",
+   "team": "Bills",
+   "points": 396,
+   "free": 261,
+   "value": 135
+  },
+  "rb": {
+   "player": "Derrick Henry",
+   "pos": "RB",
+   "team": "Titans",
+   "points": 333,
+   "free": 158,
+   "value": 175
+  }
+ }
 }

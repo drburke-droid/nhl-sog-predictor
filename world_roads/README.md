@@ -317,7 +317,8 @@ This is a bar-chart race of the all-time best single seasons in a 12-team PPR le
 a replacement player (the 16th QB, 30th RB, 42nd WR and 14th TE each season, counted by the game). The board is a
 record book of the 12 most valuable seasons so far; each season's bars grow as it is played. The data is Pro Football
 Reference's season tables for 1980-1998 (via fantasydatapros/data) and nflverse's weekly stats from 1999. The film is
-`media/fantasy/fantasy_best_seasons.mp4` (2 min 45 s). See [fantasy/README.md](fantasy/README.md).
+`media/fantasy/fantasy_best_seasons.mp4` (3 min 19 s, opening with a 42-second plain-words explainer of value over
+replacement). See [fantasy/README.md](fantasy/README.md).
 
 * The record is Marshall Faulk's 2000 (329.7). LaDainian Tomlinson's 2006 is 0.1 behind and Christian McCaffrey's
   2019 is third.
