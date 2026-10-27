@@ -10,7 +10,8 @@
 * NFL: OverTheCap's contracts (nflverse): a season's pay is the average per year of the contract he was playing
   under, the way NFL pay is reported (a signing bonus spread over the deal, not counted in the year it was paid).
 * NHL: cap hits (each contract's average per year, CapWages), 2010 on.
-* Before those series begin (the NBA before 1984-85, the NFL before 1995, the NHL before 2010), the stars' contracts
+* Before those series begin (the NBA before 1984-85, the NFL before 1983 or a player OverTheCap lacks, the NHL before
+  2010), the stars' contracts
   as documented in published sources: curated.csv, each row with its source and a quote.
 
 Inflation: the annual average consumer price index (CPI-U) from the Federal Reserve Bank of Minneapolis' table,
@@ -155,7 +156,7 @@ def nfl():
                   and ((s.get("cash_paid") or 0) > 0 or (s.get("cap_number") or 0) > 0)}
         deals = sorted([h for h in c["contract_history"] or [] if h["year_signed"] and h["apy"]], key=lambda h: h["year_signed"])
         for y, team in played:
-            if not (1995 <= y <= LAST):
+            if not (1983 <= y <= LAST):
                 continue
             on = [h for h in deals if h["team"] == team and h["year_signed"] <= y <= h["year_signed"] + max(1, h["yrs"] or 1) - 1]
             if on:
@@ -191,7 +192,7 @@ def curated(covered):
     for r in csv.DictReader(open(p, encoding="utf8")):
         y, sal = int(r["year_end"]), float(r["salary_usd"])
         lg = r["league"].upper()
-        lg = {"ABA": "NBA", "AFL": "NFL", "AAFC": "NFL", "WFL": "NFL", "USFL": "NFL", "WHA": "NHL"}.get(lg, lg) if r.get("use_as") != "own" else lg
+        lg = {"ABA": "NBA", "BAA": "NBA", "NBL": "NBA", "AFL": "NFL", "AAFC": "NFL", "WFL": "NFL", "USFL": "NFL", "WHA": "NHL"}.get(lg, lg)
         if (lg, key(r["player"]), y) in covered:
             continue
         rows.append(dict(year=y, league=lg, circuit=r["league"].upper(), pid="c:" + key(r["player"]), player=r["player"],
