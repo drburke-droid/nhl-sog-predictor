@@ -1,10 +1,10 @@
 """The race's score, synthesized from scratch with the instruments of ../flights/score.py (no samples, no licensing).
 
 85.7 BPM: a beat is 0.7 s, and every season starts on a beat (video.py gives each season 2 to 12 beats). A minor
-(Am7 - Fmaj7 - Cmaj7 - G), a whole step up when the first new name reaches the board after the seasons in which it
-stood still; the energy follows how much value the players on the board added each season (on a log scale), so the
-crowded early 2000s drive and the still years thin out to a pad; a bell at each caption, an impact when the No. 1
-changes hands for good and when an active player reaches No. 2; a resolving chord over the closing summary.
+(Am7 - Fmaj7 - Cmaj7 - G), a whole step up once the leader takes No. 1 for good; the energy follows how much value the
+players on the board added each season (on a log scale), so the crowded early 2000s drive and the quiet years thin out;
+a bell at each caption, an impact at each change at No. 1 and when an active player reaches No. 2 after the lift; a
+resolving chord over the closing summary.
 """
 import os, sys
 import numpy as np
@@ -85,9 +85,12 @@ def track():
     for y, v in zip(years, ll):
         E += [(D.t0[y] + 0.01, 0.24 + 0.66 * v), (D.t0[y] + D.beats[y] * BEAT - 0.01, 0.24 + 0.66 * v)]
     E += [(D.race_end - 0.7, 0.9), (D.race_end + 1.4, 0.0), (total, 0.0)]
-    # the lift: the first season after the last run of still ones
-    still = [y for y in years if D.board_gain(y) < 1.0]
-    up = D.t0[max(still) + 1] if still and max(still) < V.LAST else None
+    # the lift: when the leader takes No. 1 for good
+    lead = [(y, w, int(np.argmax(D.C[y][:, w]))) for y in years for w in range(D.weeks[y] + 1) if D.C[y][:, w].max() > 0]
+    k = len(lead) - 1
+    while k > 0 and lead[k - 1][2] == lead[-1][2]:
+        k -= 1
+    up = D.film_time(lead[k][0], lead[k][1]) if k > 0 else None
     caps = V.CAPS
     big = [c["from"] for c in caps if "for No. 1" in c["text"][0] or ("for No. 2" in c["text"][0] and c["from"] > (up or 0))]
     T = Track(total, E, impacts=[(V.INTRO, 0.5)] + [(t, 0.4) for t in big],

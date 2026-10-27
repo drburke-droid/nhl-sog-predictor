@@ -26,14 +26,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "signal"))
 import style as ST                                    # fonts, translucent text  # noqa: E402
+from vorp import REPL                                  # replacement ranks  # noqa: E402
 
 MEDIA = os.path.join(ROOT, "media", "fantasy")
 OUT = os.path.join(HERE, "out")
 W, H, FPS = 1920, 1080, 30
 BG = np.array([5, 7, 13], np.float32)                 # #05070d
 INK, INK2, MUTED = ST.INK, ST.INK2, ST.MUTED
-POSC = {"QB": (213, 81, 129), "RB": (57, 135, 229), "WR": (201, 133, 0), "TE": (0, 131, 0)}
-REPL = {"QB": 13, "RB": 36, "WR": 36, "TE": 13}
+POSC = {"QB": (213, 81, 129), "RB": (57, 135, 229), "WR": (201, 133, 0), "TE": (0, 131, 0), "K": (150, 156, 168)}
 font = ST.font
 
 FIRST, LAST = 2000, 2025
@@ -62,11 +62,15 @@ def num(v):
     return f"{v:,.0f}"
 
 
+def ordinal(n):
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+
+
 class Data:
     def __init__(self):
         self.sea = {}                                 # (pid, season) -> row
         for r in csv.DictReader(open(os.path.join(MEDIA, "seasons.csv"))):
-            for k in ("ppr", "vorp", "career_vorp", "replacement"):
+            for k in ("points", "vorp", "career_vorp", "replacement"):
                 r[k] = float(r[k])
             r["season"] = int(r["season"])
             self.sea[r["player_id"], r["season"]] = r
@@ -353,8 +357,8 @@ def season_label(d, T, a=1.0):
     wk = "Final" if wf >= D.weeks[y] else f"Week {max(1, int(np.ceil(wf)))}"
     d.text((W - 92, H - 46), wk, font=font(28, "SemiBold"), fill=INK2 + (int(255 * a),), anchor="rs")
     rep = D.rep[y]
-    line = "   ".join(f"{p}{REPL[p]} {num(rep[p])}" for p in ("QB", "RB", "WR", "TE"))
-    d.text((X0, Y0 + N * PITCH + 46), f"Replacement level in {y}, season PPR points:   {line}", font=font(20, "Regular"),
+    line = "   ".join(f"{p}{REPL[p]} {num(rep[p])}" for p in REPL)
+    d.text((X0, Y0 + N * PITCH + 46), f"Replacement in {y}, season points:   {line}", font=font(20, "Regular"),
            fill=MUTED + (int(255 * a),), anchor="ls")
 
 
@@ -378,13 +382,14 @@ def intro(d, T):
     d.text((cx, 410), f"Career value over replacement, {FIRST} to {LAST} · 12-team PPR league", font=font(34, "Regular"),
            fill=INK2 + (int(255 * a),), anchor="mm")
     b = a * smooth((T - 1.6) / 0.8)
-    lines = ("Each season, a player scores his PPR points minus the replacement level at his position:",
-             "what the best player left on waivers scored. In a 12-team league that is the",
-             "13th-best QB and TE and the 36th-best RB and WR. A season below that counts zero.")
+    lines = ("Each season, a player scores his points minus the replacement level at his position: what the",
+             "best player left on waivers scored. A 12-team league starts a QB, 2 RBs, 3 WRs, a TE, a flex and a K,",
+             "so that is the " + ", ".join(f"{ordinal(REPL[p])} {p}" for p in list(REPL)[:-1])
+             + f" and {ordinal(REPL[list(REPL)[-1]])} {list(REPL)[-1]}. A season below that counts zero.")
     for k, line in enumerate(lines):
         d.text((cx, 540 + 46 * k), line, font=font(29, "Regular"), fill=INK2 + (int(255 * b),), anchor="mm")
-    x = cx - 2 * 150 + 75
-    for p in ("QB", "RB", "WR", "TE"):
+    x = cx - 2 * 150 + 30
+    for p in REPL:
         d.rounded_rectangle([x - 52, 742, x - 30, 764], 4, fill=POSC[p] + (int(255 * b),))
         d.text((x - 20, 762), f"{p}{REPL[p]}", font=font(26, "SemiBold"), fill=INK + (int(255 * b),), anchor="ls")
         x += 150
@@ -406,11 +411,12 @@ def summary(d, s):
     d.text((cx, 690), SUMMARY["gap"], font=font(36, "SemiBold"), fill=INK + (int(255 * a),), anchor="mm")
     d.text((cx, 760), SUMMARY["mix"], font=font(28, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     for i, line in enumerate(SOURCES):
-        d.text((cx, 996 + 28 * i), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
+        d.text((cx, 980 + 27 * i), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
 
 
-SOURCES = ("Data: nflverse weekly player stats and rosters, regular seasons 2000–2025 · PPR: 1 per catch, 1 per 10 rushing or",
-           "receiving yards, 1 per 25 passing yards, 6 per TD (4 passing), 2 per two-point conversion, −2 per interception or lost fumble")
+SOURCES = ("Data: nflverse weekly player stats and rosters, regular seasons 2000–2025",
+           "PPR: 1 per catch, 1 per 10 rushing or receiving yards, 1 per 25 passing yards, 6 per TD (4 passing), 2 per two-point",
+           "conversion, −2 per interception or lost fumble · K: 3, 4 or 5 per field goal by distance, 1 per extra point, −1 per miss")
 
 
 def frame(T):
