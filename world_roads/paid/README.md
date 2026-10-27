@@ -5,7 +5,8 @@ Ruth's $80,000 of 1930 and Dak Prescott's $60 million of 2025 stand on one scale
 
 * **The single-season race**: the ten best-paid seasons to date, each year since 1913. Every season is its own bar
   (Michael Jordan's 1996-97 and his 1997-98 are two), and it stays until ten better seasons have come along, so the
-  board keeps the high-water marks. Film: `../media/paid/best_paid_athletes.mp4`.
+  board keeps the high-water marks. Under it, each league's revenue, in the same 2025 dollars, draws itself year by
+  year. Film: `../media/paid/best_paid_athletes.mp4`.
 * **The career race**: the ten biggest careers to date each year, every season's pay in 2025 dollars added up, retired
   players keeping their totals until someone passes them. Film: `../media/paid/best_paid_careers.mp4`.
 
@@ -14,7 +15,8 @@ also makes the plain yearly board, each year's ten best-paid alone, as `best_pai
 Data: `../media/paid/salaries.csv` (every salary found, both dollars), `season_top.csv` (the 40 best seasons to date,
 each year), `top.csv` (the 15 best-paid of each year alone), `coverage.csv` (salaries found per league and year, and
 the CPI factor), `careers.csv` (every season counted in a career, documented or estimated, with running totals),
-`career_top.csv` (the 40 biggest careers to date each year).
+`career_top.csv` (the 40 biggest careers to date each year), `revenue.csv` (each league's revenue each year, both
+dollars, documented or between documented years).
 
 ## What the races show
 
@@ -28,6 +30,14 @@ USFL, Foster again, Patrick Ewing, Joe Montana, Ewing, Larry Bird, Wayne Gretzky
 of 1995-96) until Michael Jordan's 1996-97 and 1997-98. His $33.1 million of 1997-98, $65.4 million in 2025 dollars,
 still stands. The 2025 board: Jordan 1997-98, Dak Prescott 2024 ($61.6M), Jordan 1996-97 ($60.4M), Prescott 2025
 ($60.0M), Joe Burrow 2023, Burrow, Jordan Love and Trevor Lawrence 2024, Patrick Mahomes 2020, Stephen Curry 2024-25.
+
+**Revenue first, then the contracts.** The revenue panel shows each league's money growing ahead of its record
+salaries. The NBA's revenue nearly quadrupled in real terms from 1983 to 1990 ($0.38 billion to $1.49 billion in 2025
+dollars) and grew another 2.5 times by 1998, when Michael Jordan's $33.1 million came; MLB's more than doubled from 1982
+to 1990 ($1.41 billion to $3.32 billion) just before the salaries of 1992-93 (Bobby Bonilla, Ryne Sandberg); the NFL's
+grew sevenfold from 1957 to 1975, before O.J. Simpson's 1976 record, and sevenfold again from 1990 to 2025, to $22.7
+billion, the quarterbacks' contracts following it. The gold dots on each line mark the years one of the league's
+players set the salary record. (2020 shows the pandemic: MLB's $4.2 billion against $13.5 billion in 2019.)
 
 **Year by year** (each year's ten best-paid alone, `top.csv`). In 2025 dollars, Babe Ruth's $80,000 of 1930 was $1.54 million, about twice today's MLB minimum
 salary; his best year was 1932 ($75,000, but Depression prices make it $1.78 million). Apart from Red Grange's $100,000
@@ -117,6 +127,25 @@ players by WAR and the best-paid of 2010-16), and the Lahman database's salaries
 contracts were reported. So the early boards compare MLB's whole field with the other leagues' stars: the group that
 could make a top ten, but a well-paid player whose deal went unreported would be missing.
 
+## League revenue
+
+Each league's total revenue, in 2025 dollars (`revenue.py`, from `research/revenue_*.csv`: every figure the research
+found, with its source and a quote; the national TV contracts it found are in `research/tv_*.csv`). The sources are
+Congressional hearings (1939-75: the 1952 "Organized Baseball" report, the 1957-58 House and Senate hearings on
+professional sports, the 1970s hearings), the leagues' own statements, MLB's Blue Ribbon Panel's audited figures
+(1995-2001), and the sums of every club's revenue as Financial World (1990-96), Forbes (1997 on), Sportico and CNBC
+estimated it, most of it through Rodney Fort's sports business data.
+
+A season's revenue is reported several ways, 10-25% apart (a league's statement, the clubs' summed revenue, which Forbes
+reports net of stadium debt, a CBA's defined subset such as the NBA's BRI or the NHL's HRR), so each league's line keeps
+to one: MLB's stated industry revenue, or the clubs' sum where there is none; the NBA's and NHL's summed team revenue;
+the NFL's league and club totals from the hearings and the press, then the clubs' sum. Between two documented years
+revenue grows by the same percentage each year, and a stretch of more than three undocumented years is drawn dotted,
+so the line never passes an estimate off as a figure. The lines begin with the first figure on record: MLB 1939, NFL
+1952 (its 1968-69 totals include the AFL's ten clubs), NBA 1956, NHL 1990 (its earlier figures are gate receipts alone
+or incomplete, in mixed currencies). Not used: Sports Illustrated's hedged 1970 NFL guess, the NBA's 1981 figure
+(tickets and TV only) and a conflicting 1984 one, BRI and HRR.
+
 ## The career race
 
 A career's earnings are the sum of its seasons' pay, each converted with its own year's CPI (`lifetime.py`). The pay of
@@ -172,6 +201,10 @@ under 6% from 1946 to 1995, and almost none since.
 
 ## The film
 
+* The single-season race has its own look: a gold-ruled title, the year at the top right rolling into place, numbered
+  places, bars with a gradient and a lit top edge, the leader's halo flaring when a new No. 1 arrives, captions in a
+  band, and along the bottom the revenue panel. Its axis grows with the largest revenue drawn so far, as the bars' scale
+  follows the leader; each line's head carries the league and its figure.
 * The single-season race ranks seasons, each its own bar, named with its season ("Michael Jordan 1997-98"; basketball
   and hockey seasons span two years). A season's figure never changes: it rises from under the board in its year if it
   ranks among the ten best to date, and sinks off when ten better ones have come along. Baseball seasons before 1913
@@ -213,6 +246,7 @@ python curate.py         # research/*.csv -> curated.csv (one documented figure 
 python salaries.py       # -> ../media/paid/salaries.csv, top.csv, coverage.csv
 python lifetime.py       # -> ../media/paid/careers.csv, career_top.csv
 python records.py        # -> ../media/paid/season_top.csv (the best seasons to date, each year)
+python revenue.py        # -> ../media/paid/revenue.csv (each league's revenue, research/revenue_*.csv)
 python captions.py       # -> captions.json (records, milestones and documented moments, from the data)
 python captions.py --career                # -> captions_career.json
 python assemble.py render                  # render, score, mux -> ../media/paid/best_paid_athletes.mp4

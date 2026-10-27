@@ -292,7 +292,7 @@ def rev_at(lg, t):
 
 
 def rev_money(v):
-    return f"${v / 1e9:.1f}B" if v >= 1e9 else f"${v / 1e6:.0f}M"
+    return f"${v / 1e9:.1f}B" if v >= 1e9 else f"${v / 1e6:.0f}M" if v >= 1e6 else f"${v / 1e3:.0f}K"
 
 
 def rev_scale_track():
@@ -327,6 +327,11 @@ def revenue(im, t, a):
     ymax = REVSCALE[min(len(REVSCALE) - 1, int(round(D.secs(t) * FPS)))]
     xs = lambda y: RX0 + (RX1 - RX0) * (y - FIRST) / (LAST - FIRST)
     ys = lambda v: RY1 - (RY1 - RY0) * v / ymax
+    start = min(D.rev[lg][0][0] for lg in D.rev)       # the first year with a figure on record
+    before = 1 - smooth((t - start + 0.6) / 0.6)       # until then, the axis of years and a note
+    if before > 0.01:
+        d.text(((RX0 + RX1) / 2, (RY0 + RY1) / 2), f"League revenue figures on record begin in {int(start)}", font=font(19, "Regular"),
+               fill=MUTED + (int(200 * a * before),), anchor="mm")
     # the revenue axis: nice steps, fading in and out as it grows
     seen = {}
     for st in [m * 10 ** e for e in range(5, 12) for m in (1, 2, 5)]:
@@ -336,8 +341,12 @@ def revenue(im, t, a):
         while al > 0.02 and v <= ymax:
             seen[v] = max(seen.get(v, 0), al)
             v += st
+    al0 = dict(seen)
+    for v in seen:                                    # a tick crowding a stronger one gives way to it
+        near = [abs(ys(v) - ys(u)) for u in al0 if al0[u] > al0[v]]
+        seen[v] *= smooth((min(near, default=1e9) - 22) / 14)
     for v, al in seen.items():
-        y = ys(v)
+        y, al = ys(v), al * (1 - before)
         d.line([(RX0, y), (RX1, y)], fill=(40, 52, 72, int(110 * al * a)), width=1)
         d.text((RX0 - 12, y), rev_money(v).replace(".0B", "B"), font=font(15, "Regular"), fill=MUTED + (int(255 * al * a),),
                anchor="rm", features=TNUM)
@@ -609,8 +618,10 @@ def year_label(d, t, a=1.0):
     if p < 1:
         d.text((W - 90, 108 - 26 * p), str(y - 1), font=big, fill=INK + (int(235 * a * (1 - p)),), anchor="rs", features=TNUM)
     d.text((W - 90, 108 + 26 * (1 - p)), str(y), font=big, fill=INK + (int(235 * a * p),), anchor="rs", features=TNUM)
-    d.text((W - 92, 140), f"$1 in {y} = ${f:,.2f} in 2025", font=font(19, "Regular"), fill=INK2 + (int(255 * a),), anchor="rs",
-           features=TNUM)
+    for yy, al in ((y - 1, 1 - p), (y, p)):          # its line under it changes with it
+        if al > 0.01 and yy >= FIRST:
+            d.text((W - 92, 140), f"$1 in {yy} = ${float(D.cov[yy]['to_2025']):,.2f} in 2025", font=font(19, "Regular"),
+                   fill=INK2 + (int(255 * a * al),), anchor="rs", features=TNUM)
 
 
 def caption(d, T, a=1.0):

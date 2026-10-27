@@ -12,13 +12,16 @@ apart, so each league's line keeps to one basis wherever it can (choose() below)
   1956-57 sums reported to Congress and the league's own totals for 1971 and 1983. Not BRI.
 * NHL: the sum of all clubs' revenue from 1990 (Financial World, Forbes, then CNBC or Sportico where Forbes is missing).
   Not HRR; not the 1947-56 figures (gate receipts only, or receipts net of taxes, with an incomplete Toronto).
-* NFL: see choose().
+* NFL: the one figure per year the research found: league totals and club sums from the Congressional hearings
+  (1952-57; 1968-69 include the AFL's ten clubs, 1974-75), press figures for 1973, 1980, 1984 and 1988, and the sum of
+  all clubs' revenue from Financial World (1990-96) and Forbes (1997 on). Not Sports Illustrated's hedged 1970 guess
+  ("may have gone over $120 million").
 
 Between two documented years revenue grows by the same percentage each year (marked; the panel draws a gap of more than
 three years dotted); a league's line begins at its first documented year and ends at its last. Revenue is converted to
 2025 dollars with the CPI-U (salaries.py).
 """
-import os, sys, csv, re
+import os, sys, csv
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -45,8 +48,8 @@ def choose(lg, rows):
                 keep = [r for r in rs if b(r).startswith("league") and "approximate" not in b(r)]
         elif lg == "NHL":
             keep = [r for r in rs if y >= 1990 and b(r).startswith("sum of all")]
-        else:
-            keep = [r for r in rs if not re.search(r"\b(bri|hrr|partial|gate receipts only)\b", b(r))]
+        else:                                         # NFL: one figure a year; not a hedged press guess
+            keep = [r for r in rs if "hedged" not in b(r)]
         if keep:
             rank = lambda r: min([i for i, k in enumerate(SOURCE_ORDER) if k in b(r)] or [len(SOURCE_ORDER)])
             out[y] = min(keep, key=rank)

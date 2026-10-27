@@ -156,6 +156,80 @@ NBA,2022,10023000000,11022902972,1,"team-revenue sum: Forbes revenue, all 30 tea
 NBA,2023,10620000000,11219488021,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1FhJZdj5S2qMRCx_8OMMk4q9EOy_whCDS/view
 NBA,2024,11300000000,11595377749,1,"team-revenue sum: Forbes revenue, all 30 teams (total as stated by Sports Value, rounded)",https://www.sportsvalue.com.br/en/nba-teams-surpassed-us-11-3-billion-in-revenue-in-2024-total-valuation-reached-us-132-8-billio
 NBA,2025,12499000000,12499000000,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1jyt12KfZM-2mOpXSnbqidAMth617pe3c/view
+NFL,1952,8327117,100770638,1,league total stated in Congressional hearing (total revenues of NFL member clubs),https://archive.org/details/sim_united-states-congress-hearings-prints-and-reports_june-17-19-20-24-26-july-17-19-24-25-31-au_1
+NFL,1953,9510603,114233698,1,"sum of all 12 clubs' gross operating income (club statements filed with Congress, via Rodney Fort)",https://drive.google.com/file/d/1PcLnkpsgFqzAvTxiNInic5iQ4mcLgIH9/view
+NFL,1954,10756957,128723586,1,"sum of all 12 clubs' gross operating income (club statements filed with Congress, via Rodney Fort)",https://drive.google.com/file/d/1TdJqcMfUUroA6PQhFruB5wxDQ1yDT4M7/view
+NFL,1955,11455341,137592323,1,"sum of all 12 clubs' gross operating income (club statements filed with Congress, via Rodney Fort)",https://drive.google.com/file/d/18l6jDNaKZFxOvjKSp74lj4qI2t35hXxz/view
+NFL,1956,12370074,146394368,1,league total stated in Congressional hearing (total revenues of NFL member clubs),https://archive.org/details/sim_united-states-congress-hearings-prints-and-reports_june-17-19-20-24-26-july-17-19-24-25-31-au_1
+NFL,1957,14221205,162911242,1,league total stated by the NFL commissioner (combined gross receipts of all 12 clubs),https://archive.org/details/sim_united-states-congress-hearings-prints-and-reports_july-9-15-18-22-24-28-31-1958
+NFL,1958,16857208,187762463,0,between documented years,
+NFL,1959,19981813,220278955,0,between documented years,
+NFL,1960,23685586,257580743,0,between documented years,
+NFL,1961,28075879,302261725,0,between documented years,
+NFL,1962,33279946,353558237,0,between documented years,
+NFL,1963,39448624,414984050,0,between documented years,
+NFL,1964,46760710,485557180,0,between documented years,
+NFL,1965,55428145,566422849,0,between documented years,
+NFL,1966,65702150,650754529,0,between documented years,
+NFL,1967,77880517,750590973,0,between documented years,
+NFL,1968,92316232,853925146,1,"combined total income of all 26 pro football clubs (16 NFL + 10 AFL), stated total",https://drive.google.com/file/d/15Fv5o5XLH0zIvKQbpF4ui5gilIZEecOt/view
+NFL,1969,102463127,898716092,1,"combined total income of all 26 pro football clubs (16 NFL + 10 AFL), stated total",https://drive.google.com/file/d/15Fv5o5XLH0zIvKQbpF4ui5gilIZEecOt/view
+NFL,1970,114976294,953888378,0,between documented years,
+NFL,1971,129017614,1025451113,0,between documented years,
+NFL,1972,144773711,1114896118,0,between documented years,
+NFL,1973,162454000,1177791500,1,league total stated in a secondary source (textbook),https://archive.org/details/businessenterpri0000hodg
+NFL,1974,171633000,1120662529,1,"combined total income of all 26 NFL clubs, stated total (Congressional hearing, via Rodney Fort)",https://drive.google.com/file/d/15Fv5o5XLH0zIvKQbpF4ui5gilIZEecOt/view
+NFL,1975,192377000,1151043797,1,"combined total income of all 26 NFL clubs, stated total (Congressional hearing, via Rodney Fort)",https://drive.google.com/file/d/15Fv5o5XLH0zIvKQbpF4ui5gilIZEecOt/view
+NFL,1976,224353132,1269231518,0,between documented years,
+NFL,1977,261644209,1389822953,0,between documented years,
+NFL,1978,305133659,1506480443,0,between documented years,
+NFL,1979,355851751,1577805490,0,between documented years,
+NFL,1980,415000000,1621219660,1,press figure (newspaper decade review of sports business),https://archive.org/details/The_Times_News_Idaho_Newspaper_1989_12_26
+NFL,1981,481173153,1703956415,0,between documented years,
+NFL,1982,557897840,1861008443,0,between documented years,
+NFL,1983,646856537,2090593568,0,between documented years,
+NFL,1984,750000000,2323628489,1,press estimate,https://archive.org/details/InternationalHeraldTribune1985FranceEnglish
+NFL,1985,825361333,2469180418,0,between documented years,
+NFL,1986,908295106,2667702506,0,between documented years,
+NFL,1987,999562213,2832386234,0,between documented years,
+NFL,1988,1100000000,2993153001,1,press figure (newspaper decade review of sports business),https://archive.org/details/The_Times_News_Idaho_Newspaper_1989_12_26
+NFL,1989,1202064890,3120521678,0,between documented years,
+NFL,1990,1313600000,3235255088,1,"sum of all 28 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/1uP82xzlkiUiuyhiueDBvtJkV58uttN1U/view
+NFL,1991,1469000000,3471887665,1,"sum of all 28 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/111R8ITSFfq36kTqYZEgrkCgHo-NaM-N_/view
+NFL,1992,1491300000,3421592801,1,"sum of all 28 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/1zDAVPRjnBAF3Pj4_dKEp-KYPHTBQnJVX/view
+NFL,1993,1752900000,3904903183,1,"sum of all 28 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/1DDTWRvRvRUDMlINj2X7DKDsd3WmtioSQ/view
+NFL,1994,1729500000,3756586032,1,"sum of all 28 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/124hyiyFPlNOYuUCqOHWZgoaqRwHKyLmd/view
+NFL,1995,2058600000,4348184646,1,"sum of all 30 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/1xHXI7vqqeMa3qzMO2wFrPILytNy_SoyC/view
+NFL,1996,2331300000,4782953920,1,"sum of all 30 clubs' revenue (Financial World team finances, via Rodney Fort)",https://drive.google.com/file/d/1nx9QSUlV26cR5Y_MdG3d_IrQahxNqNsy/view
+NFL,1997,2448400000,4910529346,1,"sum of all 30 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1gwam6KGT4RmPSE2XGI4EXHXRBR7sgtLj/view
+NFL,1998,3270700000,6459130859,1,"sum of all 30 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1-oTz-hPXP0KyVmWN0yfLyPLhc3zzDmoz/view
+NFL,1999,3602200000,6960073109,1,"sum of all 31 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1ZKdlJsi0dNl5EOC8kMXz-8wf_wY-HcPx/view
+NFL,2000,3938000000,7361452962,1,"sum of all 31 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1-OcnUm-C58E29cfNd2h6jjLOaJVuWFfF/view
+NFL,2001,4284000000,7786671937,1,"sum of all 31 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/15BbDFni6tSI8fHfsoWjnB9ucWmQldKQt/view
+NFL,2002,4944000000,8846434686,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1AqZBvypy2A9gO3lSeDa_OENE1N08GFtU/view
+NFL,2003,5330000000,9324603261,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1tOBqZA4sLq52r4kQFfix3dk9MEvQ2LGQ/view
+NFL,2004,6029000000,10273875596,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/14-JxdZfimxxiRwT1Gj3BeodUT51A8Wq7/view
+NFL,2005,6160000000,10153118280,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1eQKCdkvxmY_brPjmZ38JF7_YwLkPWRgo/view
+NFL,2006,6539000000,10440992560,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1hOxgByHZEskfo3GolmsvhfTWNlynhQSP/view
+NFL,2007,7090000000,11009507959,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1_yLXu4QZwMd8zR0LIEsdxHuCn0-1SnQX/view
+NFL,2008,7575000000,11325557362,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1B_lxQOG79mlXtk5xEyEDF4kvTojkQ6D2/view
+NFL,2009,8016000000,12029605594,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1Ssz4Cgv22mqajPFgExLeSvzr7Axg6uKP/view
+NFL,2010,8345000000,12316623109,1,"sum of all 32 clubs' revenue (Forbes team finances, via Rodney Fort)",https://drive.google.com/file/d/1OsEic4Msrb4786x3ZgMfzq_bw5WPmk-Y/view
+NFL,2011,8823000000,12628384615,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2012/position/true.json?limit=50
+NFL,2012,9167000000,12852165941,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2013/position/true.json?limit=50
+NFL,2013,9575000000,13228293991,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2014/position/true.json?limit=50
+NFL,2014,11091000000,15083197719,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2015/position/true.json?limit=50
+NFL,2015,12157000000,16511975949,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2016/position/true.json?limit=50
+NFL,2016,13156000000,17645485000,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2017/position/true.json?limit=50
+NFL,2017,13679000000,17965198286,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2018/position/true.json?limit=50
+NFL,2018,14476000000,18557643967,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2019/position/true.json?limit=50
+NFL,2019,15257000000,19206993743,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2020/position/true.json?limit=50
+NFL,2020,12198000000,15172087326,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2021/position/true.json?limit=50
+NFL,2021,17187000000,20415111808,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2022/position/true.json?limit=50
+NFL,2022,18601000000,20456651520,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2023/position/true.json?limit=50
+NFL,2023,20238000000,21380414178,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2024/position/true.json?limit=50
+NFL,2024,21191000000,21744924769,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2025/position/true.json?limit=50
+NFL,2025,22743000000,22743000000,1,sum of all 32 clubs' revenue (Forbes team valuations),https://www.forbes.com/forbesapi/org/nfl-valuations/2026/position/true.json?limit=50
 NHL,1990,465000000,1145244836,1,sum of all 21 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/11aKacjxUdUF3uu6b8g2UmuTL7kUWt6oX/view
 NHL,1991,517700000,1223550881,1,sum of all 21 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/192NJSCEiFzrpdYKNTQktgg74gwvQ_iMD/view
 NHL,1992,574600000,1318344547,1,sum of all 22 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/1SGt5iKsoYcFSBFhPm2QgBTw5LVlj1Yay/view
