@@ -1,0 +1,24 @@
+{
+ "lead": {
+  "player": "LaDainian Tomlinson",
+  "pos": "RB",
+  "teams": "Chargers, Jets",
+  "span": "2001\u20132011",
+  "vorp": 2022.8779999999997,
+  "best": 351.7,
+  "best_year": 2006,
+  "note": "11 seasons above replacement \u00b7 best 352 in 2006"
+ },
+ "chase": {
+  "player": "Christian McCaffrey",
+  "pos": "RB",
+  "teams": "Panthers, 49ers",
+  "span": "2017\u2013",
+  "vorp": 1427.8580000000002,
+  "best": 329.0,
+  "best_year": 2019,
+  "note": "6 seasons above replacement \u00b7 best 329 in 2019"
+ },
+ "gap": "Tomlinson leads by 595, 1.8 times McCaffrey's best season",
+ "mix": "The top 12 after 2025: 6 RBs, 3 WRs, 2 TEs, 1 QB"
+}

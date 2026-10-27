@@ -310,3 +310,15 @@ python thumbs.py                                                             # t
   (`cover.py`). Counts are in blocks (intersection to intersection): 91,022 in NYC, 23.0 million in the US.
 * **Sources and methods:** [roomba/ACCURACY.md](roomba/ACCURACY.md). Master, Shorts, thumbnails and
   YouTube copy: `media/roomba/`.
+
+## Fantasy football's most valuable players since 2000 (`fantasy/`)
+
+This is a bar-chart race of career value over replacement in a 12-team PPR league, 2000-2025. Replacement is the
+13th-best QB and TE and the 36th-best RB and WR each season, and a season below replacement counts zero. The data is
+nflverse's weekly player stats, and the film is `media/fantasy/fantasy_vorp_race.mp4` (2 min 6 s). See
+[fantasy/README.md](fantasy/README.md).
+
+* LaDainian Tomlinson leads with 2,023 and has held No. 1 since Week 3 of 2005.
+* Christian McCaffrey is second with 1,428, the closest any active player has come.
+* By raw career PPR points, the top six would all be quarterbacks. By value over replacement, the top 12 holds six
+  RBs, three WRs, two TEs and one QB (Peyton Manning).
