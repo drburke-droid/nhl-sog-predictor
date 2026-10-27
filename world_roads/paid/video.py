@@ -59,44 +59,79 @@ def money(v, short=True):
 
 class Data:
     def __init__(self):
-        self.by = defaultdict(dict)                   # year -> pid -> row
+        self.by = defaultdict(dict)                   # year -> key -> row
         for r in csv.DictReader(open(os.path.join(MEDIA, "salaries.csv"))):
             y = int(r["year"])
             r["real"], r["nominal"] = float(r["real_2025"]), float(r["nominal"])
             self.by[y][r["league"] + ":" + r["pid"]] = r
-        # ties keep one order from year to year (by name), so two equal salaries don't swap places
+        # ties keep one order (by name), so two equal salaries never trade places
         self.order = {y: sorted(d, key=lambda k: (-d[k]["real"], d[k]["player"])) for y, d in self.by.items()}
-        self.rank = {y: {k: i for i, k in enumerate(o)} for y, o in self.order.items()}
         self.cov = {int(r["year"]): r for r in csv.DictReader(open(os.path.join(MEDIA, "coverage.csv")))}
         self.events = json.load(open(os.path.join(HERE, "captions.json"))) if os.path.exists(os.path.join(HERE, "captions.json")) else []
+        self.places()
 
     def top(self, y, n):
         return self.order.get(y, [])[:n]
 
-    def slot(self, y, k, other):
-        """a bar's place in year y: its rank; below the board if it has no salary that year (arriving or gone),
-        spaced by its rank in the other year so that no two share a slot"""
-        r = self.rank.get(y, {}).get(k)
-        if r is not None:
-            return min(r, N + 8)
-        return N + 1.5 + self.rank.get(other, {}).get(k, N) * 0.35
+    def floor(self, y):
+        """where a bar with no salary in year y (arriving or gone) is ranked: under the board's 12th"""
+        o = self.order.get(y, [])
+        return 0.8 * self.by[y][o[min(len(o), N + 2) - 1]]["real"] if o else 0.0
+
+    def places(self):
+        """every bar's place on the board at every frame. Between two years the board is sorted by salaries moving in a
+        straight line from one year's to the next's, over the middle 60% of the year, so a bar passes another when its
+        pay does and each year's board stands exactly as ranked on the year itself; one arriving rises from under the
+        board, one leaving sinks under it. The places are then eased in time (a Gaussian of 0.06 years), so a pass takes
+        about a third of a second."""
+        n = int(round((LAST - FIRST) * PER_YEAR * FPS)) + 1
+        self.ts = FIRST + np.arange(n) / FPS / PER_YEAR
+        keys = sorted({k for y in self.order for k in self.top(y, N + 3)})
+        self.ix = {k: i for i, k in enumerate(keys)}
+        self.keys = keys
+        R = np.full((len(keys), n), float(OFF), np.float32)
+        for j, t in enumerate(self.ts):
+            y0 = int(np.floor(t))
+            u, y1 = min(1.0, max(0.0, (t - y0 - 0.2) / 0.6)), min(LAST, y0 + 1)
+            on = []
+            for k in set(self.top(y0, N + 3)) | set(self.top(y1, N + 3)):
+                a, b = self.by[y0].get(k), self.by[y1].get(k)
+                v0 = a["real"] if a else self.floor(y0)
+                v1 = b["real"] if b else self.floor(y1)
+                on.append((-(v0 + (v1 - v0) * u), (a or b)["player"], k))
+            for r, (_, _, k) in enumerate(sorted(on)):
+                R[self.ix[k], j] = min(r, OFF)
+        s = 0.06 * PER_YEAR * FPS
+        h = int(3 * s)
+        ker = np.exp(-0.5 * (np.arange(-h, h + 1) / s) ** 2)
+        ker /= ker.sum()
+        self.pos = np.array([np.convolve(np.pad(r, h, mode="edge"), ker, mode="valid") for r in R], np.float32)
+
+    def row(self, k, y, other):
+        r = self.by[y].get(k) or self.by[other].get(k)
+        for d in range(1, 3):
+            r = r or self.by.get(y - d, {}).get(k) or self.by.get(y + d, {}).get(k)
+        return r
 
     def state(self, t):
-        """every bar on or near the board at time t (in years): key -> (rank, real value, row of the nearest year)"""
+        """the bars on the board at time t (in years): key -> (place, salary in 2025 dollars, row it is labelled from)"""
+        j = int(round((min(max(t, FIRST), LAST) - FIRST) * PER_YEAR * FPS))
         y0 = int(np.floor(t))
-        u = t - y0
-        y1 = min(LAST, y0 + 1)
-        keys = set(self.top(y0, N + 2)) | set(self.top(y1, N + 2))
+        u, y1 = t - y0, min(LAST, y0 + 1)
         out = {}
-        mv = smooth((u - 0.08) / 0.84)               # ranks move through the middle of the year
-        for k in keys:
+        for i in np.nonzero(self.pos[:, j] < N - 0.15)[0]:
+            k = self.keys[i]
             a, b = self.by[y0].get(k), self.by[y1].get(k)
-            r0, r1 = self.slot(y0, k, y1), self.slot(y1, k, y0)
-            v0 = a["real"] if a else b["real"]
-            v1 = b["real"] if b else a["real"]
-            row = (b if u >= 0.5 and b else a) or b
-            out[k] = (r0 + (r1 - r0) * mv, v0 + (v1 - v0) * u, row, int(round(t)) if (b if u >= 0.5 else a) else (y1 if b else y0))
+            if a and b:
+                v = a["real"] + (b["real"] - a["real"]) * u
+            else:                                     # arriving or leaving: its one salary
+                v = (a or b or self.row(k, y0, y1))["real"]
+            row = (b if u >= 0.5 and b else a) or b or self.row(k, y0, y1)
+            out[k] = (float(self.pos[i, j]), v, row)
         return out
+
+
+OFF = N + 3                                           # the place of a bar that is not near the board
 
 
 D = None
@@ -108,8 +143,7 @@ def scale_track():
     ts = FIRST + np.arange(n) / FPS / PER_YEAR
     lead = []
     for t in ts:
-        st = D.state(t)
-        on = [v for r, v, _, _ in st.values() if r < N]
+        on = [v for r, v, _ in D.state(t).values() if r < N - 0.5]
         lead.append(max(on) if on else 1.0)
     lead = np.array(lead)
     k = int(0.9 * FPS)
@@ -153,8 +187,13 @@ def ticks(d, xmax, a=1.0):
         while v <= xmax * 1.001:
             seen[v] = max(seen.get(v, 0), al)
             v += s
+    px = {v: X0 + (X1 - X0) * v / xmax for v in seen}
+    al0 = dict(seen)
+    for v in seen:                                    # a tick crowding a stronger one gives way to it
+        near = [abs(px[v] - px[u]) for u in al0 if al0[u] > al0[v]]
+        seen[v] *= smooth((min(near, default=1e9) - 50) / 60)
     for v, al in seen.items():
-        x = X0 + (X1 - X0) * v / xmax
+        x = px[v]
         if x > X1 + 150:
             continue
         al *= a
@@ -168,18 +207,30 @@ def board(im, t, a=1.0, hold=False):
     xmax = scale_at(t)
     xs = lambda v: X0 + (X1 - X0) * v / xmax
     ticks(d, xmax, a)
-    # today's minimum salary, while the scale is small enough for it to mean something
+    st = D.state(t)
+    # today's minimum salary, while the scale is small enough for it to mean something; its dashes break around labels
     xm = xs(MIN_2025)
     am = a * smooth((xm - X0 - 40) / 60) * (1 - smooth((t - 1975) / 4))
     if am > 0.01:
+        gaps = []
+        for r, v, row in st.values():
+            x1 = max(X0 + 6, xs(v)) + 8
+            w = max(d.textlength(money(v, short=False), font=font(28, "Bold")),
+                    d.textlength(f"{money(row['nominal'], short=False)} in {row['year']}", font=font(19, "Regular")))
+            if x1 <= xm <= x1 + w + 12:
+                gaps.append((Y0 + r * PITCH - 4, Y0 + r * PITCH + BAR + 4))
         for y in range(Y0 - 6, Y0 + N * PITCH - 8, 14):
-            d.line([(xm, y), (xm, y + 7)], fill=GOLD + (int(200 * am),), width=2)
-        d.text((xm + 8, Y0 + N * PITCH - 16), "today's MLB minimum, $760K", font=font(20, "Regular"), fill=GOLD + (int(230 * am),), anchor="ls")
-    st = D.state(t)
-    for k, (r, v, row, yr) in sorted(st.items(), key=lambda kv: -kv[1][0]):
-        al = a * smooth((N + 0.45 - r) / 0.9)
+            if not any(g0 < y + 7 and y < g1 for g0, g1 in gaps):
+                d.line([(xm, y), (xm, y + 7)], fill=GOLD + (int(200 * am),), width=2)
+        d.text((xm, Y0 + N * PITCH + 18), "today's MLB minimum, $760K", font=font(20, "Regular"), fill=GOLD + (int(230 * am),), anchor="ms")
+    # longest first, so a shorter bar passing a longer one stays in view on top of it; while two bars overlap, the
+    # lower-paid one's labels give way
+    for k, (r, v, row) in sorted(st.items(), key=lambda kv: (-kv[1][1], kv[1][0])):
+        al = a * smooth((N - 0.15 - r) / 0.7)
         if al <= 0.01:
             continue
+        near = min((abs(r - r2) for k2, (r2, v2, _) in st.items() if k2 != k and (v2, -r2) > (v, -r)), default=9)
+        tl = al * smooth((near - 0.3) / 0.4)
         y = Y0 + r * PITCH
         col = LEAGUE[row["league"]]
         x1 = max(X0 + 6, xs(v))
@@ -187,11 +238,13 @@ def board(im, t, a=1.0, hold=False):
         d.rectangle([X0, y, min(x1, X0 + 6), y + BAR], fill=col + (int(255 * al),))
         if r < 0.5 and not hold:                     # the leader
             d.rounded_rectangle([X0 - 1, y - 1, x1 + 1, y + BAR + 1], 5, outline=GOLD + (int(150 * al * (1 - r * 2)),), width=2)
-        d.text((X0 - 18, y + BAR / 2 - 11), row["player"], font=font(29, "SemiBold"), fill=INK + (int(255 * al),), anchor="rm")
-        d.text((X0 - 18, y + BAR / 2 + 15), f"{row['team']} · {row['circuit']}", font=font(19, "Regular"), fill=INK2 + (int(235 * al),), anchor="rm")
-        d.text((x1 + 14, y + BAR / 2 - 9), money(v, short=False), font=font(28, "Bold"), fill=INK + (int(255 * al),), anchor="lm")
+        if tl <= 0.01:
+            continue
+        d.text((X0 - 18, y + BAR / 2 - 11), row["player"], font=font(29, "SemiBold"), fill=INK + (int(255 * tl),), anchor="rm")
+        d.text((X0 - 18, y + BAR / 2 + 15), f"{row['team']} · {row['circuit']}", font=font(19, "Regular"), fill=INK2 + (int(235 * tl),), anchor="rm")
+        d.text((x1 + 14, y + BAR / 2 - 9), money(v, short=False), font=font(28, "Bold"), fill=INK + (int(255 * tl),), anchor="lm")
         d.text((x1 + 14, y + BAR / 2 + 15), f"{money(row['nominal'], short=False)} in {row['year']}", font=font(19, "Regular"),
-               fill=MUTED + (int(235 * al),), anchor="lm")
+               fill=MUTED + (int(235 * tl),), anchor="lm")
     return d
 
 
@@ -207,7 +260,7 @@ def header(d, a=1.0):
 
 
 def year_label(d, t, a=1.0):
-    y = int(round(min(max(t, FIRST), LAST)))
+    y = int(np.floor(min(max(t, FIRST), LAST) + 0.5))
     d.text((W - 90, H - 78), str(y), font=font(132, "Bold"), fill=INK + (int(235 * a),), anchor="rs")
     f = float(D.cov[y]["to_2025"])
     d.text((W - 92, H - 40), f"$1 in {y} = ${f:,.2f} in 2025", font=font(24, "Regular"), fill=INK2 + (int(255 * a),), anchor="rs")
@@ -241,10 +294,10 @@ def frame(T):
     t = min(t, LAST)
     a = smooth((T - INTRO) / 0.8)
     end = total()
-    dim = 1 - 0.72 * smooth((T - (end - OUTRO + 1.6)) / 0.8)      # the board steps back for the summary
+    dim = 1 - 0.94 * smooth((T - (end - OUTRO + 1.6)) / 0.8)      # the board steps back for the summary
     d = board(im, t, a * dim, hold)
     header(d, a)
-    year_label(d, t, a * dim)
+    year_label(d, t, a * (dim - 0.06) / 0.94)          # gone under the sources line
     caption(d, FIRST + (T - INTRO) / PER_YEAR, a)
     if T > end - OUTRO + 1.6:
         summary(d, T - (end - OUTRO + 1.6))
@@ -258,7 +311,7 @@ def summary(d, s):
         return
     then, now = SUMMARY["then"], SUMMARY["now"]
     cx = W / 2
-    d.text((cx, 300), "In the same money", font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
+    d.text((cx, 300), "In 2025 dollars", font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     for i, (r, x) in enumerate(((then, cx - 380), (now, cx + 380))):
         d.text((x, 400), r["player"], font=font(44, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
         d.text((x, 452), f"{r['team']} · {r['circuit']} · {r['year']}", font=font(26, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
@@ -266,10 +319,11 @@ def summary(d, s):
         d.text((x, 640), f"{money(r['nominal'], short=False)} in {r['year']} dollars", font=font(26, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
     d.text((cx, 560), "→", font=font(64, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     d.text((cx, 740), f"{now['real'] / then['real']:.0f} times as much", font=font(40, "SemiBold"), fill=INK + (int(255 * a),), anchor="mm")
-    d.text((cx, 1010), SOURCES, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
+    for i, line in enumerate(SOURCES):
+        d.text((cx, 996 + 28 * i), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
 
 
-SOURCES = ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database, "
+SOURCES = ("Salaries: Baseball Reference (Michael Haupert's research of the Hall of Fame's contract cards), Lahman database,",
            "Basketball Reference, OverTheCap, CapWages, published contracts · CPI-U: Federal Reserve Bank of Minneapolis")
 SUMMARY = {}
 

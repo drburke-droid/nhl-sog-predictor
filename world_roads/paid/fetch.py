@@ -39,7 +39,8 @@ def cache(path, url, wait=0):
     for attempt in range(3):
         try:
             data = get(url)
-            open(path, "wb").write(data)
+            open(path + ".part", "wb").write(data)
+            os.replace(path + ".part", path)           # a page is either all there or not there
             time.sleep(wait)
             return True
         except Exception as e:
@@ -97,7 +98,10 @@ def together(*fs):
 
 def mlb_players():
     ids = [l.strip() for l in open(os.path.join(DATA, "candidates.txt")) if l.strip()]
-    run([sr(f"mlb/players/{pid}.shtml", f"https://www.baseball-reference.com/players/{pid[0]}/{pid}.shtml") for pid in ids], "mlb players")
+    jobs = [sr(f"mlb/players/{pid}.shtml", f"https://www.baseball-reference.com/players/{pid[0]}/{pid}.shtml") for pid in ids]
+    # three readers in priority order: a page takes longer to arrive than the rate limit's gap, so one reader alone
+    # would use half the allowance
+    together(*[(lambda part=jobs[i::3], i=i: run(part, f"mlb players {i + 1}/3")) for i in range(3)])
 
 
 def stage_b():
