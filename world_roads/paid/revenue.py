@@ -1,15 +1,22 @@
 """League revenue, 1913-2025, in 2025 dollars, for the panel under the single-season race:  python revenue.py
 -> ../media/paid/revenue.csv (league, year, revenue then, revenue in 2025 dollars, documented or between two documented years)
 
-research/revenue_{mlb,nfl,nba,nhl}.csv hold every figure the research found, each with its source and a quote. For each
-league and year one figure is used: the league's own total as reported, else the sum of every club's reported revenue,
-in the order of BASIS_RANK below; a figure SKIP lists is left out, for the reason given. A rival league's revenue (the
-AFL's, the ABA's, the WHA's) is added to its league's in the years both are documented, as the bars count rival
-leagues' players in their league's colour. Canadian dollars are converted at the Federal Reserve's H.10 rates (1971 on)
-and at par before (the Canadian dollar stayed within about 8% of the US dollar from 1946 to 1970).
+research/revenue_{mlb,nfl,nba,nhl}.csv hold every figure the research found, each with its source and a quote, often
+several per year on different bases (a league's own statement, the sum of every club's revenue as Financial World,
+Forbes, Sportico or CNBC estimated it, a CBA's defined subset such as the NBA's BRI or the NHL's HRR). These run 10-25%
+apart, so each league's line keeps to one basis wherever it can (choose() below):
 
-Between two documented years revenue grows by the same percentage each year; a league's line begins at its first
-documented year and ends at its last. Revenue is converted to 2025 dollars with the CPI-U (salaries.py).
+* MLB: the one figure per year the research chose: MLB's stated industry revenue (Congressional reports, the Blue Ribbon
+  Panel's audited figures, the league's statements) and, where there is none, the sum of all clubs.
+* NBA: the sum of all teams' revenue (Financial World 1990-96, Forbes from 1998; Forbes over Sportico); before 1990, the
+  1956-57 sums reported to Congress and the league's own totals for 1971 and 1983. Not BRI.
+* NHL: the sum of all clubs' revenue from 1990 (Financial World, Forbes, then CNBC or Sportico where Forbes is missing).
+  Not HRR; not the 1947-56 figures (gate receipts only, or receipts net of taxes, with an incomplete Toronto).
+* NFL: see choose().
+
+Between two documented years revenue grows by the same percentage each year (marked; the panel draws a gap of more than
+three years dotted); a league's line begins at its first documented year and ends at its last. Revenue is converted to
+2025 dollars with the CPI-U (salaries.py).
 """
 import os, sys, csv, re
 from collections import defaultdict
@@ -19,18 +26,31 @@ sys.path.insert(0, HERE)
 import salaries as S                                            # noqa: E402
 
 FIRST, LAST = S.FIRST, S.LAST
-RIVAL = {"AFL": "NFL", "ABA": "NBA", "WHA": "NHL"}
-SKIP = {}                                                       # (league, year, revenue): why
+SOURCE_ORDER = ("forbes", "financial world", "cnbc", "sportico")   # for a year with more than one club sum
 
 
-def basis_rank(basis):
-    """lower is preferred: a reported league total, then a sum of every club, then a defined subset (BRI, HRR)"""
-    b = basis.lower()
-    if re.search(r"\b(bri|hrr|basketball related|hockey related)\b", b):
-        return 3
-    if "sum" in b or "clubs" in b or "teams" in b:
-        return 2
-    return 1
+def choose(lg, rows):
+    """year -> the one row used, by the rules above"""
+    by = defaultdict(list)
+    for r in rows:
+        by[int(r["year"])].append(r)
+    out = {}
+    for y, rs in by.items():
+        b = lambda r: r["basis"].lower()
+        if lg == "MLB":
+            keep = rs
+        elif lg == "NBA":
+            keep = [r for r in rs if b(r).startswith("team-revenue sum")]
+            if not keep and y < 1990:
+                keep = [r for r in rs if b(r).startswith("league") and "approximate" not in b(r)]
+        elif lg == "NHL":
+            keep = [r for r in rs if y >= 1990 and b(r).startswith("sum of all")]
+        else:
+            keep = [r for r in rs if not re.search(r"\b(bri|hrr|partial|gate receipts only)\b", b(r))]
+        if keep:
+            rank = lambda r: min([i for i, k in enumerate(SOURCE_ORDER) if k in b(r)] or [len(SOURCE_ORDER)])
+            out[y] = min(keep, key=rank)
+    return out
 
 
 def fx():
@@ -40,28 +60,20 @@ def fx():
 
 def main():
     rates = None
-    raw = defaultdict(dict)                                     # league -> year -> (usd, row)
+    raw = {}                                                    # league -> year -> (usd, row)
     for lg in ("mlb", "nfl", "nba", "nhl"):
         p = os.path.join(HERE, "research", f"revenue_{lg}.csv")
         if not os.path.exists(p):
             continue
-        for r in csv.DictReader(open(p, encoding="utf8")):
-            y, v = int(r["year"]), float(r["revenue_usd"])
-            if (r["league"], y, int(v)) in SKIP or v <= 0:
-                continue
-            if r.get("currency", "USD").strip().upper() == "CAD":
-                if y >= 1972:
-                    rates = rates or fx()
-                    v = v / ((rates[y - 1] + rates[y]) / 2)
-            best = raw[r["league"]].get(y)
-            if best is None or basis_rank(r["basis"]) < basis_rank(best[1]["basis"]):
-                raw[r["league"]][y] = (v, r)
-    # rival leagues join their league's total in the years both are documented
-    for rival, lg in RIVAL.items():
-        for y, (v, r) in raw.pop(rival, {}).items():
-            if y in raw[lg]:
-                v0, r0 = raw[lg][y]
-                raw[lg][y] = (v0 + v, dict(r0, basis=r0["basis"] + f"; plus the {rival}'s {v:,.0f}"))
+        rows = [r for r in csv.DictReader(open(p, encoding="utf8")) if r["league"].upper() == lg.upper()]
+        picked = {}
+        for y, r in choose(lg.upper(), rows).items():
+            v = float(r["revenue_usd"])
+            if r.get("currency", "USD").strip().upper() == "CAD" and y >= 1972:
+                rates = rates or fx()
+                v = v / ((rates[y - 1] + rates[y]) / 2)
+            picked[y] = (v, r)
+        raw[lg.upper()] = picked
     c = S.cpi()
     out = []
     for lg, d in sorted(raw.items()):

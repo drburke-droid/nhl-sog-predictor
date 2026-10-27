@@ -1,0 +1,194 @@
+league,year,revenue,real_2025,documented,basis,source
+MLB,1939,12113300,280523113,1,"league total as reported: combined gross receipts of all 16 major-league clubs (House Judiciary subcommittee 'Organized Baseball' report, H.R. Rep. No. 2002, 82d Cong., 2d Sess., pp. 4-5)",https://www.law.cornell.edu/supremecourt/text/346/356
+MLB,1940,11784385,270956680,0,between documented years,
+MLB,1941,11464401,251046986,0,between documented years,
+MLB,1942,11153106,220256731,0,between documented years,
+MLB,1943,10850263,201890154,1,"sum of 16 clubs' Gross Operating Income (1951 House Judiciary hearings, Study of Monopoly Power, 'Organized Baseball', pp. 1602-1609)",https://drive.google.com/file/d/1YxaB-U89GObNF9sTMpBpgTzTKyFcjkBb/view
+MLB,1944,14795147,270599881,0,between documented years,
+MLB,1945,20174293,360783602,0,between documented years,
+MLB,1946,27509161,454112765,1,"sum of 16 clubs' Gross Operating Income (1951 House Judiciary hearings, pp. 1602-1609)",https://drive.google.com/file/d/1qOqOwhDilHHBAODigYJ6Q5Afzp59kYqK/view
+MLB,1947,28576951,412507643,0,between documented years,
+MLB,1948,29686187,398165990,0,between documented years,
+MLB,1949,30838480,417096923,0,between documented years,
+MLB,1950,32035500,427893255,1,"league total as reported: combined gross receipts of all 16 major-league clubs (H.R. Rep. No. 2002, 1952, pp. 4-5)",https://www.law.cornell.edu/supremecourt/text/346/356
+MLB,1951,31552277,390641454,0,between documented years,
+MLB,1952,31076342,376070470,1,"sum of 16 clubs' Total Income (1957 House Antitrust Subcommittee hearings, Organized Professional Team Sports, Pt. 1, pp. 354-363)",https://drive.google.com/file/d/1Ma_3WHTeyzYBQGw4OvC0EQOeGDx71Kyc/view
+MLB,1953,32889525,395042466,1,"sum of 16 clubs' Total Income (1957 House hearings, Organized Professional Team Sports, Pt. 1, pp. 354-363)",https://drive.google.com/file/d/1DHnsePk-AFWO6fF9mcq-Y75iQQMfkq1B/view
+MLB,1954,38974975,466395705,1,"sum of 16 clubs' Total Income (1957 House hearings, Organized Professional Team Sports, Pt. 1, pp. 354-363)",https://drive.google.com/file/d/1Ioe9CRRlCrzTgx7nDlm6XPpw6JMKUNzb/view
+MLB,1955,39757340,477533125,1,"sum of 16 clubs' Total Income (1957 House hearings, Organized Professional Team Sports, Pt. 1, pp. 354-363)",https://drive.google.com/file/d/1cbBd_DCOLBzgHaNsZwFDb2LQr5I6DzFg/view
+MLB,1956,45046418,533104484,1,"sum of 16 clubs' Total Income (1957 House hearings, Organized Professional Team Sports, Pt. 1, pp. 354-363)",https://drive.google.com/file/d/1vDX8ii9fwNjUne76ZEwwSnO4gYOwN6kQ/view
+MLB,1957,48194811,552096424,0,between documented years,
+MLB,1958,51563251,574332544,0,between documented years,
+MLB,1959,55167119,608160811,0,between documented years,
+MLB,1960,59022870,641873708,0,between documented years,
+MLB,1961,63148107,679845339,0,between documented years,
+MLB,1962,67561666,717759086,0,between documented years,
+MLB,1963,72283698,760396161,0,between documented years,
+MLB,1964,77335764,803044594,0,between documented years,
+MLB,1965,82740929,845533497,0,between documented years,
+MLB,1966,88523874,876794920,0,between documented years,
+MLB,1967,94711000,912798534,0,between documented years,
+MLB,1968,101330559,937307671,0,between documented years,
+MLB,1969,108412773,950901135,0,between documented years,
+MLB,1970,115989978,962298301,0,between documented years,
+MLB,1971,124096771,986339523,0,between documented years,
+MLB,1972,132770166,1022457329,0,between documented years,
+MLB,1973,142049762,1029860778,0,between documented years,
+MLB,1974,151977931,992326488,0,between documented years,
+MLB,1975,162600000,972879926,1,league total as reported: baseball's overall revenues per MLB management documents released by the House Judiciary Committee (Dec. 1994),https://www.deseret.com/1994/12/26/19149944/documents-teams-basically-break-even/
+MLB,1976,186322342,1054080171,0,between documented years,
+MLB,1977,213505627,1134116523,0,between documented years,
+MLB,1978,244654787,1207889201,0,between documented years,
+MLB,1979,280348418,1243032448,0,between documented years,
+MLB,1980,321249530,1254978445,0,between documented years,
+MLB,1981,368117864,1303598905,0,between documented years,
+MLB,1982,421824000,1407099954,1,"sum of 26 clubs' revenues (Scully 1989, The Business of Major League Baseball), in $ thousands",https://drive.google.com/file/d/1U48Uqsivfiwby0M46n7PRyooZIej4aUn/view
+MLB,1983,487758828,1576401273,0,between documented years,
+MLB,1984,563999854,1747368171,0,between documented years,
+MLB,1985,652158027,1951019228,0,between documented years,
+MLB,1986,754096104,2214813284,0,between documented years,
+MLB,1987,871968006,2470831875,0,between documented years,
+MLB,1988,1008264329,2743535821,0,between documented years,
+MLB,1989,1165864976,3026547869,0,between documented years,
+MLB,1990,1348100000,3320224866,1,"sum of 26 clubs' total revenues (Financial World survey, via The Olympian 6/12/91), $ millions",https://drive.google.com/file/d/1BvBbYnAFaeXJWfxB9g3_SLrdxDAsUAHA/view
+MLB,1991,1504100000,3554844273,1,"sum of 26 clubs' total revenues (TR column, Financial World-style survey), $ millions",https://drive.google.com/file/d/1rE9c6V5lMkDTqvEl1rv_56iVmDIlyOoC/view
+MLB,1992,1584500000,3635428011,1,"sum of 26 clubs' total revenues (Financial World, 5/25/93, pp. 26-30), $ millions",https://drive.google.com/file/d/1hWepjtWme5H-O-hgWzodKpSvQsaxqqwn/view
+MLB,1993,1774500000,3953021107,1,"sum of 28 clubs' total revenues (Financial World, 5/10/94, pp. 50-59), $ millions",https://drive.google.com/file/d/1whpHCBmZMaIXR1c9zlMMwgJnsvikH_kZ/view
+MLB,1994,1132000000,2458777328,1,"sum of 28 clubs' total revenues (Financial World, 5/9/95, pp. 42-56), $ millions",https://drive.google.com/file/d/1YV6OiqUgYWWnv-2tyZsc7HTUvx11vdIl/view
+MLB,1995,1384985100,2925372071,1,"league total as reported: MLB industry revenue (Report of the Independent Members of the Commissioner's Blue Ribbon Panel on Baseball Economics, July 2000; MLB data verified by Ernst & Young through 1998)",http://roadsidephotos.sabr.org/baseball/2000blueribbonreport.pdf
+MLB,1996,1775166374,3641976136,1,"league total as reported: MLB industry revenue (Report of the Independent Members of the Commissioner's Blue Ribbon Panel on Baseball Economics, July 2000; MLB data verified by Ernst & Young through 1998)",http://roadsidephotos.sabr.org/baseball/2000blueribbonreport.pdf
+MLB,1997,2067222496,4146036894,1,"league total as reported: MLB industry revenue (Report of the Independent Members of the Commissioner's Blue Ribbon Panel on Baseball Economics, July 2000; MLB data verified by Ernst & Young through 1998)",http://roadsidephotos.sabr.org/baseball/2000blueribbonreport.pdf
+MLB,1998,2478851353,4895351230,1,"league total as reported: MLB industry revenue (Report of the Independent Members of the Commissioner's Blue Ribbon Panel on Baseball Economics, July 2000; MLB data verified by Ernst & Young through 1998)",http://roadsidephotos.sabr.org/baseball/2000blueribbonreport.pdf
+MLB,1999,2786874001,5384722334,1,"league total as reported: MLB industry revenue (Report of the Independent Members of the Commissioner's Blue Ribbon Panel on Baseball Economics, July 2000; MLB data verified by Ernst & Young through 1998)",http://roadsidephotos.sabr.org/baseball/2000blueribbonreport.pdf
+MLB,2000,3177600000,5940008362,1,"sum of 30 clubs' Forbes total revenue, $ millions (Forbes.com, via Fort)",https://drive.google.com/file/d/1HEqKU3CvkruYrrtJdg-osKESY4ak_Ka9/view
+MLB,2001,3550000000,6452540937,1,"league total as reported: MLB industry revenue (Blue Ribbon Panel update, Dec. 2001; same figure in Selig's Dec. 2001 House testimony)",https://drive.google.com/file/d/1yik2W3a1sir6XLKycyG67CNvV80Z13jI/view
+MLB,2002,3652000000,6534623680,1,"sum of 30 clubs' Forbes total revenue, $ millions",https://drive.google.com/file/d/1oNkHxyeoJh7JKwCgCA22XqKXUFFKCwKI/view
+MLB,2003,3878000000,6784392391,1,"sum of 30 clubs' Forbes total revenues, $ millions",https://drive.google.com/file/d/1q-A1TDJ8Kp8l5-0oxKZctvHQCZJuVG1V/view
+MLB,2004,4269000000,7274701429,1,"sum of 30 clubs' Forbes total revenue, $ millions",https://drive.google.com/file/d/1EqomcNMv-0hrVpYW3NLbOKZpf7FtXZIc/view
+MLB,2005,4733000000,7801089094,1,"sum of 30 clubs' Forbes revenues, $ millions",https://drive.google.com/file/d/19AvsZU2UShZiNQTxk7TijWF3hg4FmEd1/view
+MLB,2006,5200000000,8302976190,1,"league total as reported (Time, 2007)","https://content.time.com/time/specials/2007/article/0,28804,1637285_1637283_1637441,00.html"
+MLB,2007,6080000000,9441157742,1,"league total as reported (Reuters, Nov. 2007, citing Selig/MLB)",https://www.chinadaily.com.cn/cndy/2007-11/30/content_6288826.htm
+MLB,2008,6500000000,9718300046,1,"league total as reported (MLB gross revenues via Maury Brown, Biz of Baseball)",https://www.nbcsports.com/mlb/news/baseball-set-a-revenue-record-in-2009
+MLB,2009,6600000000,9904615385,1,"league total as reported (MLB gross revenues via Maury Brown, Biz of Baseball)",https://www.nbcsports.com/mlb/news/baseball-set-a-revenue-record-in-2009
+MLB,2010,7000000000,10331499312,1,"league total as reported (Fortune interview with Selig, April 2011)",https://fortune.com/2011/04/01/bud-selig-ready-to-play-ball
+MLB,2011,7000000000,10019119609,1,"league total as reported, stated as 'in excess of' $7 billion (not officially released)",https://www.nbcsportsboston.com/news/seligs-extended-tenure-deserves-some-cheer/312002/
+MLB,2012,7500000000,10515026132,1,league total as reported (MLB),https://csmonitor.com/USA/Latest-News-Wires/2013/0926/Bud-Selig-s-tenure-Transformative
+MLB,2013,8000000000,11052360515,1,"league total as reported, stated as 'surpassing' $8 billion (league source to Forbes/Maury Brown)",https://amp.foxsports.com/stories/mlb/report-mlb-revenue-tops-record-8b
+MLB,2014,9000000000,12239543726,1,league total as reported: estimated gross revenues (Forbes/Maury Brown),https://www.thescore.com/mlb/news/654237
+MLB,2015,9500000000,12903164557,1,league total as reported: gross revenues (Forbes/Maury Brown),https://www.thescore.com/mlb/news/901912
+MLB,2016,10000000000,13412500000,1,"league total as reported, stated as 'approached' $10 billion (MLB Commissioner's office)",https://www.fccj.or.jp/event/press-conference-robert-d-manfred-jr-commissioner-major-league-baseball
+MLB,2017,10000000000,13133414933,1,"league total as reported, stated as 'eclipsed' $10 billion (league sources to Forbes/Maury Brown)",https://www.thescore.com/mlb/news/1428768
+MLB,2018,10300000000,13204181601,1,league total as reported: baseball-related revenues (industry sources to Forbes/Maury Brown),https://dodgerblue.com/mlb-grosses-record-10-3-billion-in-revenues-during-2018-season/2019/01/10/amp/
+MLB,2019,10700000000,13470199452,1,league total as reported (Forbes/Maury Brown),https://nbcsports.com/mlb/news/major-league-baseball-sets-new-revenue-record-10-7-billion
+MLB,2020,3406000000,4236442813,1,"sum of 30 clubs' total team revenue (Sportico 2023 MLB valuations, 'Rev 2020'), $ millions",https://drive.google.com/file/d/1OnD4TawHUioWiZeytyBmjo8Q4iPlBdta/view
+MLB,2021,9449000000,11223738376,1,"sum of 30 clubs' total team revenue (Sportico 2023 MLB valuations, 'Rev 2021'), $ millions",https://drive.google.com/file/d/1OnD4TawHUioWiZeytyBmjo8Q4iPlBdta/view
+MLB,2022,10800000000,11877417151,1,"league total as reported, stated as a range of $10.8-$10.9 billion (Forbes/Maury Brown, 'confirmed by the league')",https://dodgerblue.com/mlb-set-record-revenue-of-nearly-11-billion-during-2022-season/2023/01/31/amp/
+MLB,2023,11600000000,12254808008,1,league total as reported (industry source/Forbes),https://heavy.com/sports/mlb/sets-revenue-record-11-6-billion/
+MLB,2024,12100000000,12416289449,1,league total as reported (Forbes/Maury Brown),https://www.cbssports.com/mlb/news/mlb-reports-record-12-1-billion-in-revenues-for-2024-season/
+MLB,2025,12527000000,12527000000,1,"sum of 30 clubs' Forbes revenue (Forbes MLB valuations 2026), $ millions",https://www.forbes.com/sites/justinteitelbaum/2026/03/20/baseballs-most-valuable-teams-2026/
+NBA,1956,1798884,21288999,1,"team-revenue sum: total income reported to Congress, all 8 teams",https://drive.google.com/file/d/1hFlRx-WRO3sXVGLOz4TEj5MA9xOPmkx0/view
+NBA,1957,1776181,20347070,1,"team-revenue sum: total income reported to Congress, all 8 teams",https://drive.google.com/file/d/1flhzMFWnKfVtngIHNf8OJjq62ds-OwI5/view
+NBA,1958,2185078,24338288,0,between documented years,
+NBA,1959,2688107,29633618,0,between documented years,
+NBA,1960,3306939,35962964,0,between documented years,
+NBA,1961,4068234,43798140,0,between documented years,
+NBA,1962,5004786,53169661,0,between documented years,
+NBA,1963,6156944,64768637,0,between documented years,
+NBA,1964,7574341,78650983,0,between documented years,
+NBA,1965,9318039,95221487,0,between documented years,
+NBA,1966,11463156,113538151,0,between documented years,
+NBA,1967,14102102,135912179,0,between documented years,
+NBA,1968,17348564,160474216,0,between documented years,
+NBA,1969,21342397,187196664,0,between documented years,
+NBA,1970,26255655,217827200,0,between documented years,
+NBA,1971,32300000,256725185,1,league total revenue as reported to Congress (secondary source),https://live-global-sport-matter.ws.asu.edu/business/2023/06/16/wnba-future-seen-nba-past
+NBA,1972,35982595,277100414,0,between documented years,
+NBA,1973,40085051,290616617,0,between documented years,
+NBA,1974,44655236,291572426,0,between documented years,
+NBA,1975,49746479,297646686,0,between documented years,
+NBA,1976,55418186,313516945,0,between documented years,
+NBA,1977,61736537,327937149,0,between documented years,
+NBA,1978,68775257,339551461,0,between documented years,
+NBA,1979,76616477,339708595,0,between documented years,
+NBA,1980,85351692,333430943,0,between documented years,
+NBA,1981,95082829,336712459,0,between documented years,
+NBA,1982,105923434,353334231,0,between documented years,
+NBA,1983,118000000,381367470,1,league revenue (stated),https://foxbusiness.com/sports/david-stern-former-nba-commissioner-dead-at-77
+NBA,1984,149082154,461882054,0,between documented years,
+NBA,1985,188351599,563479364,0,between documented years,
+NBA,1986,237964932,698913428,0,between documented years,
+NBA,1987,300646819,851920873,0,between documented years,
+NBA,1988,379839622,1033561913,0,between documented years,
+NBA,1989,479892449,1245785318,0,between documented years,
+NBA,1990,606300000,1493251492,1,"team-revenue sum: Financial World total revenues, all 27 teams",https://drive.google.com/file/d/1UJsXVjPqJDFvLUJBZ-q8CA5ErTgph_wH/view
+NBA,1991,843100000,1992612996,1,"team-revenue sum: Financial World total revenues, all 27 teams",https://drive.google.com/file/d/1hbijE1qAFBnpQAeOOhG_EuJ1DM7FYu0N/view
+NBA,1992,999900000,2294139772,1,"team-revenue sum: Financial World total revenues, all 27 teams",https://drive.google.com/file/d/1ZFDRsqp_TMdDnUgi-FoSQyOzvXte8alh/view
+NBA,1993,1050200000,2339511280,1,"team-revenue sum: Financial World total revenues, all 27 teams",https://drive.google.com/file/d/1OsoypZMhIr4j_d0YhcHeYVYcW_PS5d47/view
+NBA,1994,1259100000,2734846761,1,"team-revenue sum: Financial World total revenues, all 27 teams",https://drive.google.com/file/d/1qONA_EMuols2-7Km1IXzbAA7Fwvl8kRb/view
+NBA,1995,1402900000,2963212008,1,"team-revenue sum: Financial World total revenues, all 27 teams",https://drive.google.com/file/d/1-BTtOeglWD8IBjyZsVBGb2yyGu8ZlDkC/view
+NBA,1996,1664200000,3414314723,1,"team-revenue sum: Financial World total revenues, all 29 teams",https://drive.google.com/file/d/1TGRBH6557IZTJX9bC-MWlMSNFcJviO-X/view
+NBA,1997,1766128551,3542160627,0,between documented years,
+NBA,1998,1874300000,3701455031,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/16dhri31MuKxeLYGzwUHRC_XuGEU34Zoc/view
+NBA,1999,1219800000,2356864466,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/1f-zsKhk1FkO38q1AVu3sgLo4Np7t7X_h/view
+NBA,2000,2316000000,4329386760,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/1w53PyBgQwhb5tcVRZXUp9O9mbjU6RLYh/view
+NBA,2001,2496000000,4536772445,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/1nl2qiooh33n2V0p9wNRJyN4WEKG18uDC/view
+NBA,2002,2664000000,4766768205,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/156yk4lSxvMJ0S0sTgWljHvWcIfR_xsbf/view
+NBA,2003,2721000000,4760271196,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/1BavFJQ-iAXVQYDcT_3xAvXjvUHCAo98x/view
+NBA,2004,2932000000,4996351509,1,"team-revenue sum: Forbes revenue, all 29 teams",https://drive.google.com/file/d/1STVlrcASy3Xnl4Wrfy97bAGGyWw9Roo4/view
+NBA,2005,3185000000,5249623656,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/16X5eqU3r5DYt7_hzobNfwf7UeF7Sstz_/view
+NBA,2006,3367000000,5376177083,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1Zccnr4thOYS6Sqmw1GW6YBLAxxAKHiS1/view
+NBA,2007,3573000000,5548232996,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1x6yQQ3eIO_n7AgsmGiCkszka7zLBT92G/view
+NBA,2008,3765000000,5629138412,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/171sev2gwlJ7ybxwCOmVQhIEy9ddIyuU-/view
+NBA,2009,3786000000,5681647552,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/13NK6t47pF9txL_L294SmtWo23tPk-4FT/view
+NBA,2010,3805000000,5615907840,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1zxryUpKqVzarQDb1mvAe0biHNEAmDK4W/view
+NBA,2011,3960000000,5667959093,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1Q4K8lv5l1ashdWWN4HBUUGe5eRJHL40o/view
+NBA,2012,3681000000,5160774826,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/12Pzr3qmdO_RlfRlcnwKEd7QWztoSAUw8/view
+NBA,2013,4556000000,6294319313,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1g27-1EJoJnHBi7TC12HFgkFoNitrfMWW/view
+NBA,2014,4788000000,6511437262,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1513qVbDjyhR3y-hrRMGsYKQ0bNZg5Xb3/view
+NBA,2015,5180000000,7035620253,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1yI5H8eOsvhZzvPNHjKWK_VJobWZ1gmtK/view
+NBA,2016,5866000000,7867772500,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1dVxOxe8pt5lwOpKpl-o07gBAYv_fZU2Q/view
+NBA,2017,7368000000,9676700122,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1qQJweQ88jisceqpXgEeRbbtN59Yr4igC/view
+NBA,2018,8007000000,10264648746,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1fmzdSyDU1kgQJcpkUICthW3bdzNEtnWb/view
+NBA,2019,8759000000,11026680094,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1EuCk5_UVFH6FjlCtFhqtxDBl_g0AeYVc/view
+NBA,2020,7916000000,9846060278,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/140PxOapLys1MMIzsX318aFbqzvQ7Ah59/view
+NBA,2021,6406000000,7609193358,1,"team-revenue sum: Forbes revenue, all 30 teams (total as stated by RunRepeat)",https://runrepeat.com/nba-revenue-statistics
+NBA,2022,10023000000,11022902972,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1YAdEouiXNj-hs6eP2HRvNKS9CStmCCHX/view
+NBA,2023,10620000000,11219488021,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1FhJZdj5S2qMRCx_8OMMk4q9EOy_whCDS/view
+NBA,2024,11300000000,11595377749,1,"team-revenue sum: Forbes revenue, all 30 teams (total as stated by Sports Value, rounded)",https://www.sportsvalue.com.br/en/nba-teams-surpassed-us-11-3-billion-in-revenue-in-2024-total-valuation-reached-us-132-8-billio
+NBA,2025,12499000000,12499000000,1,"team-revenue sum: Forbes revenue, all 30 teams",https://drive.google.com/file/d/1jyt12KfZM-2mOpXSnbqidAMth617pe3c/view
+NHL,1990,465000000,1145244836,1,sum of all 21 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/11aKacjxUdUF3uu6b8g2UmuTL7kUWt6oX/view
+NHL,1991,517700000,1223550881,1,sum of all 21 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/192NJSCEiFzrpdYKNTQktgg74gwvQ_iMD/view
+NHL,1992,574600000,1318344547,1,sum of all 22 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/1SGt5iKsoYcFSBFhPm2QgBTw5LVlj1Yay/view
+NHL,1993,693800000,1545565536,1,sum of all 24 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/1Ek3xpnJ0QN43szjV4vSyGKeV4hRAOf9y/view
+NHL,1994,817400000,1775445749,1,sum of all 26 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/1hhVFGyd1C3M3Urgz7tgELBptUtR0cxvu/view
+NHL,1995,727500000,1536628937,1,sum of all 26 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/18AXqckWEagMifqzBuzKL2mHu23c2fZ-2/view
+NHL,1996,1099400000,2255556788,1,sum of all 26 clubs' total revenue (Financial World annual survey),https://drive.google.com/file/d/1q65iCuiimA93migGo8XCLmyAT_BlIW5t/view
+NHL,1997,1211849215,2430493846,0,between documented years,
+NHL,1998,1335800000,2638000123,1,sum of all 26 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1ujAtBW7p_D1Q3joeByAg7zEsXhui1Zt1/view
+NHL,1999,1505695773,2909264521,0,between documented years,
+NHL,2000,1697200000,3172640418,1,sum of all 28 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1OP9JiYy_RsGYMyr47KyZY6YrRERq3Dm2/view
+NHL,2001,1906000000,3464378317,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/14_Co_BERjF6egQZ9T7PtuaUUaK_65JBb/view
+NHL,2002,2077000000,3716433018,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1Q8pSlpDXlRsLpkgssQVlxCBS0MghM2zD/view
+NHL,2003,2094000000,3663361957,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1Pgc9D3Ja27AxNCirOBrUMQQ26oxwh06A/view
+NHL,2004,2238000000,3813722605,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1JfhqJM13o-Q8u_LjuBHjHtatWjpZwHEi/view
+NHL,2005,2252453329,3712569005,0,between documented years,
+NHL,2006,2267000000,3619778274,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1yglQd_DouTGXucg7lxNSjvNIIbv6XX_7/view
+NHL,2007,2436000000,3782674385,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1qZEXyG8J4E3qJk0wWegSj-vD5JN2dGOd/view
+NHL,2008,2747000000,4107103112,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1j0LPkPPE2HgMAeRKzXqu-SyHXYsPb2Hm/view
+NHL,2009,2819000000,4230471329,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1_JQF2qN5LTFaOmQkOCPXpWP_5uV1p0IJ/view
+NHL,2010,2929000000,4322994498,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1gErw5S4bQuEjEhfGhy8SFw38X-o84gte/view
+NHL,2011,3090000000,4422725656,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1fXZKPTMx7vx0l2mLptY_NXKvu4LFrsu3/view
+NHL,2012,3374000000,4730359756,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1_AsItI7QrEt0lV0DZV8VRh1ROM54BY_4/view
+NHL,2013,2630000000,3633463519,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1qpAZWSSgQwzg4WX0Wjr8pVEK4qQ4Z-AZ/view
+NHL,2014,3701000000,5033172370,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/14sdhWvUHlO10Sh-JZoAbDD_DuvKrfu9v/view
+NHL,2015,3979000000,5404388608,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1a1-qrzLGhSSjZCSKm5ZeAf9YaIfNuv1b/view
+NHL,2016,4101000000,5500466250,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1p2JksRTAINUesM48zLy-_P_WwE1Xmt_C/view
+NHL,2017,4427000000,5814162791,1,sum of all 30 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1YQN3CC5Wd-Z2lK9hW8XGgDioSMJW1-xJ/view
+NHL,2018,4858000000,6227758662,1,sum of all 31 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1B2MekwMkq6WFDdq_mPCfp0AGbDNRU7oz/view
+NHL,2019,5086000000,6402750880,1,sum of all 31 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1Zqh22GtfP6H8LrSrmb3ohyxEd-rWmQTX/view
+NHL,2020,4368000000,5432995363,1,sum of all 31 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1agTkhgpMRqP-hRybLshOBIegRy3QoP8g/view
+NHL,2021,2334000000,2772378598,1,sum of all 31 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1ll2qCcI8sirmt-pAa6hRax3cXQmM0DcW/view
+NHL,2022,5931000000,6522681585,1,sum of all 32 clubs' revenue (Forbes team valuations),https://drive.google.com/file/d/1GEUiwOlcXazWY0g30kqHjfioj8JonyEG/view
+NHL,2023,6789000000,7172232032,1,"sum of all 32 clubs' revenue (Sportico team valuations, Oct 2024)",https://d3data.sportico.com/NHLValuations/NHLVal.html
+NHL,2024,7145000000,7331767612,1,"sum of all 32 clubs' revenue (CNBC team valuations, Ozanian)",https://drive.google.com/file/d/1mq2LEo8VmFYENwrwg8NJi-WiDZuwdQYr/view
+NHL,2025,7935000000,7935000000,1,sum of all 32 clubs' revenue (Forbes NHL valuations 2025),https://en.wikipedia.org/wiki/Forbes_list_of_the_most_valuable_NHL_teams

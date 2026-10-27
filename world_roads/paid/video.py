@@ -262,18 +262,32 @@ RX0, RX1 = 168, 1640                                  # the revenue panel's plot
 RY0, RY1 = 868, 1004                                  # its top and its baseline
 
 
+GAP = 3                                               # a stretch of more years than this between documented ones is drawn dotted
+
+
 def load_revenue():
-    """league -> (years, revenue in 2025 dollars), from revenue.py's table"""
+    """league -> (years, revenue in 2025 dollars, whether the step into each year crosses a long undocumented stretch),
+    from revenue.py's table"""
     out = defaultdict(list)
     if not os.path.exists(REV_FILE):
         return {}
     for r in csv.DictReader(open(REV_FILE)):
-        out[r["league"]].append((int(r["year"]), float(r["real_2025"])))
-    return {lg: (np.array([y for y, _ in v], float), np.array([x for _, x in v])) for lg, v in out.items()}
+        out[r["league"]].append((int(r["year"]), float(r["real_2025"]), r.get("documented", "1") == "1"))
+    rev = {}
+    for lg, v in out.items():
+        ys = [y for y, _, _ in v]
+        docs = [y for y, _, d in v if d]
+        dotted = []
+        for y in ys:
+            a = max([x for x in docs if x < y], default=y)
+            b = min([x for x in docs if x >= y], default=y)
+            dotted.append(b - a > GAP)
+        rev[lg] = (np.array(ys, float), np.array([x for _, x, _ in v]), dotted)
+    return rev
 
 
 def rev_at(lg, t):
-    ys, vs = D.rev[lg]
+    ys, vs = D.rev[lg][:2]
     return float(np.interp(t, ys, vs)) if ys[0] <= t else None
 
 
@@ -301,7 +315,8 @@ REVSCALE = None
 
 
 def revenue(im, t, a):
-    """league revenue, in 2025 dollars, drawn year by year as the race runs: one line per league, its head labelled; a
+    """league revenue, in 2025 dollars, drawn year by year as the race runs: one line per league (dotted across a stretch
+    of more than three years with no figure), its head labelled; a
     gold dot on a league's line in each year one of its players set the salary record"""
     if not D.rev or a <= 0.01:
         return
@@ -314,7 +329,7 @@ def revenue(im, t, a):
     ys = lambda v: RY1 - (RY1 - RY0) * v / ymax
     # the revenue axis: nice steps, fading in and out as it grows
     seen = {}
-    for st in [m * 10 ** e for e in range(5, 12) for m in (1, 2, 2.5, 5)]:
+    for st in [m * 10 ** e for e in range(5, 12) for m in (1, 2, 5)]:
         dens = ymax / st
         al = smooth((dens - 1.6) / 0.8) * (1 - smooth((dens - 4.2) / 1.2))
         v = st
@@ -338,13 +353,26 @@ def revenue(im, t, a):
     for lg in ("MLB", "NHL", "NBA", "NFL"):
         if lg not in D.rev or D.rev[lg][0][0] > t:
             continue
-        yrs, vals = D.rev[lg]
-        pts = [(xs(y), ys(v)) for y, v in zip(yrs, vals) if y <= t]
+        yrs, vals, dotted = D.rev[lg]
         hv = rev_at(lg, t)
-        pts.append((xs(t), ys(hv)))
-        pts = [((x - ox) * S, (y - oy) * S) for x, y in pts]
-        if len(pts) > 1:
-            ld.line(pts, fill=LEAGUE[lg] + (255,), width=3 * S, joint="curve")
+        pts = [(xs(y), ys(v), dot) for y, v, dot in zip(yrs, vals, dotted) if y <= t]
+        if t > yrs[len(pts) - 1]:                     # the head, between two years
+            pts.append((xs(t), ys(hv), dotted[min(len(pts), len(dotted) - 1)]))
+        pts = [((x - ox) * S, (y - oy) * S, dot) for x, y, dot in pts]
+        run = [pts[0][:2]]                            # solid runs as lines; a long undocumented stretch as faint dots
+        for (x0, y0, _), (x1, y1, dot) in zip(pts, pts[1:]):
+            if dot:
+                if len(run) > 1:
+                    ld.line(run, fill=LEAGUE[lg] + (255,), width=3 * S, joint="curve")
+                n = max(1, int(np.hypot(x1 - x0, y1 - y0) / (9 * S)))
+                for i in range(n):
+                    px, py = x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n
+                    ld.ellipse([px - 1.6 * S, py - 1.6 * S, px + 1.6 * S, py + 1.6 * S], fill=LEAGUE[lg] + (170,))
+                run = [(x1, y1)]
+            else:
+                run.append((x1, y1))
+        if len(run) > 1:
+            ld.line(run, fill=LEAGUE[lg] + (255,), width=3 * S, joint="curve")
         heads.append([ys(hv), lg, xs(t), hv])
     layer = layer.resize((layer.width // S, layer.height // S), Image.LANCZOS)
     if a < 1:
@@ -406,7 +434,7 @@ def canvas():
 
 def ticks(d, xmax, a=1.0):
     """gridlines and labels for the scale, nice steps fading in and out as the scale moves"""
-    steps = [m * 10 ** e for e in range(3, 9) for m in (1, 2, 2.5, 5)]
+    steps = [m * 10 ** e for e in range(3, 9) for m in (1, 2, 5)]         # 1-2-5: one family of ticks at a time
     seen = {}
     for s in steps:
         dens = xmax / s
