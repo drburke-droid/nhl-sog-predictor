@@ -47,8 +47,32 @@ Chapters
 Music: an original orchestral march, synthesized for this video.
 ```
 
+**Tags**
+
+```
+fantasy football, greatest fantasy football season, best fantasy season ever, fantasy football history, bar chart race, PPR, value over replacement, VORP, Marshall Faulk, LaDainian Tomlinson, Christian McCaffrey, Priest Holmes, Cooper Kupp, Emmitt Smith, Jerry Rice, NFL history, NFL stats
+```
+
+**Pinned comment** (the closing board, from `seasons.csv`)
+
+```
+The final top 12, in points over replacement:
+1. Marshall Faulk, 2000 (RB, Rams): 329.7
+2. LaDainian Tomlinson, 2006 (RB, Chargers): 329.6
+3. Christian McCaffrey, 2019 (RB, Panthers): 318.0
+4. Priest Holmes, 2002 (RB, Chiefs): 307.7
+5. Marshall Faulk, 2001 (RB, Rams): 300.2
+6. Priest Holmes, 2003 (RB, Chiefs): 296.9
+7. LaDainian Tomlinson, 2003 (RB, Chargers): 295.7
+8. Cooper Kupp, 2021 (WR, Rams): 283.1
+9. Christian McCaffrey, 2025 (RB, 49ers): 271.2
+10. Emmitt Smith, 1995 (RB, Cowboys): 269.1
+11. Jerry Rice, 1995 (WR, 49ers): 268.1
+12. Steven Jackson, 2006 (RB, Rams): 263.9
+
+10 running backs, 2 receivers. Which season got robbed?
+```
+
 **Notes on the upload.**
 * **Chapters.** YouTube needs each chapter to last at least 10 s, so the title and the "why total points lie" scenes
   share the first chapter. The closing summary (3:07, 9 s) is part of the 2020s chapter.
-* **Pinned comment.** A good one is the full top 12 from the closing board, as a list, with the question "Which season
-  is missing?" The full table is in `seasons.csv`.
