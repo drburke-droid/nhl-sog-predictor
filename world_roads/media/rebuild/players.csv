@@ -85661,7 +85661,7 @@ nhl,2003,sturmma01,Marco Sturm,24,SJS,6.2,0.747,SJS,
 nhl,2003,conrocr01,Craig Conroy,31,CGY,6.2,0.747,CGY,
 nhl,2003,salosa01,Sami Salo,28,VAN,6.2,0.747,VAN,
 nhl,2003,bonkra01,Radek Bonk,27,OTT,6.2,0.747,OTT,
-nhl,2003,gueribi01,Bill Guerin,32,DAL,6.2,0.747,DAL,0.0
+nhl,2003,gueribi01,Bill Guerin,32,DAL,6.2,0.747,DAL,6.242
 nhl,2003,weekeke01,Kevin Weekes,27,CAR,6.175,0.744,CAR,
 nhl,2003,marlepa01,Patrick Marleau,23,SJS,6.1,0.735,SJS,
 nhl,2003,dupuipa01,Pascal Dupuis,23,MIN,6.1,0.735,MIN,
@@ -86534,7 +86534,7 @@ nhl,2004,charazd01,Zdeno Chára,26,OTT,10.3,1.241,OTT,
 nhl,2004,hejdumi01,Milan Hejduk,27,COL,10.2,1.229,COL,
 nhl,2004,langro01,Robert Lang,33,DET,10.0,1.205,WSH|DET,
 nhl,2004,tkachke01,Keith Tkachuk,31,STL,9.9,1.193,STL,
-nhl,2004,gueribi01,Bill Guerin,33,DAL,9.8,1.181,DAL,0.0
+nhl,2004,gueribi01,Bill Guerin,33,DAL,9.8,1.181,DAL,6.242
 nhl,2004,schnema01,Mathieu Schneider,34,DET,9.8,1.181,DET,
 nhl,2004,reddewa01,Wade Redden,26,OTT,9.7,1.169,OTT,2.7413
 nhl,2004,stillco01,Cory Stillman,30,TBL,9.7,1.169,TBL,
@@ -86632,7 +86632,7 @@ nhl,2004,nurmipa01,Pasi Nurminen,28,WPG,6.242,0.752,WPG,
 nhl,2004,holikbo01,Bobby Holík,33,NYR,6.2,0.747,NYR,
 nhl,2004,regehro01,Robyn Regehr,23,CGY,6.2,0.747,CGY,1.3748
 nhl,2004,marapa01,Paul Mara,24,UTA,6.2,0.747,UTA,
-nhl,2004,pitkajo01,Joni Pitkänen,20,PHI,6.2,0.747,PHI,0.0
+nhl,2004,pitkajo01,Joni Pitkänen,20,PHI,6.2,0.747,PHI,0.6952
 nhl,2004,martipa01,Paul Martin,22,NJD,6.2,0.747,NJD,
 nhl,2004,hechtjo01,Jochen Hecht,26,BUF,6.2,0.747,BUF,
 nhl,2004,bironma01,Martin Biron,26,BUF,6.109,0.736,BUF,
@@ -86823,7 +86823,7 @@ nhl,2004,orszavl01,Vladimír Országh,26,NSH,3.5,0.422,NSH,
 nhl,2004,stefapa01,Patrik Štefan,23,WPG,3.5,0.422,WPG,
 nhl,2004,fischji01,Jiří Fischer,23,DET,3.5,0.422,DET,
 nhl,2004,lombama01,Matthew Lombardi,21,CGY,3.5,0.422,CGY,
-nhl,2004,lupuljo01,Joffrey Lupul,20,ANA,3.5,0.422,ANA,0.0
+nhl,2004,lupuljo01,Joffrey Lupul,20,ANA,3.5,0.422,ANA,0.6952
 nhl,2004,kovalal01,Alex Kovalev,30,MTL,3.4,0.41,NYR|MTL,
 nhl,2004,kozlovi01,Viktor Kozlov,28,NJD,3.4,0.41,FLA|NJD,
 nhl,2004,maddejo01,John Madden,30,NJD,3.4,0.41,NJD,
@@ -87532,7 +87532,7 @@ nhl,2006,heatlda01,Dany Heatley,25,OTT,13.1,1.578,OTT,4.5
 nhl,2006,lidstni01,Nicklas Lidström,35,DET,13.1,1.578,DET,
 nhl,2006,cheecjo01,Jonathan Cheechoo,25,SJS,12.9,1.554,SJS,
 nhl,2006,ovechal01,Alex Ovechkin,20,WSH,12.8,1.542,WSH,0.9842
-nhl,2006,alfreda01,Daniel Alfredsson,33,OTT,12.5,1.506,OTT,0.0
+nhl,2006,alfreda01,Daniel Alfredsson,33,OTT,12.5,1.506,OTT,3.8991
 nhl,2006,zubovse01,Sergei Zubov,35,DAL,12.3,1.482,DAL,
 nhl,2006,luongro01,Roberto Luongo,26,FLA,12.284,1.48,FLA,3.2
 nhl,2006,schnema01,Mathieu Schneider,36,DET,12.0,1.446,DET,
@@ -87548,12 +87548,12 @@ nhl,2006,crosbsi01,Sidney Crosby,18,PIT,10.7,1.289,PIT,0.85
 nhl,2006,zettehe01,Henrik Zetterberg,25,DET,10.7,1.289,DET,2.65
 nhl,2006,shanabr01,Brendan Shanahan,37,DET,10.6,1.277,DET,
 nhl,2006,niedesc01,Scott Niedermayer,32,ANA,10.5,1.265,ANA,6.75
-nhl,2006,vokouto01,Tomáš Vokoun,29,NSH,10.491,1.264,NSH,0.0
+nhl,2006,vokouto01,Tomáš Vokoun,29,NSH,10.491,1.264,NSH,1.52
 nhl,2006,mcdonan01,Andy McDonald,28,ANA,10.3,1.241,ANA,
 nhl,2006,hossama01,Marián Hossa,27,WPG,10.3,1.241,WPG,6.0
 nhl,2006,prongch01,Chris Pronger,31,EDM,10.3,1.241,EDM,6.25
-nhl,2006,kaberto01,Tomáš Kaberle,27,TOR,10.2,1.229,TOR,0.0
-nhl,2006,visnolu01,Ľubomír Višňovský,29,LAK,10.1,1.217,LAK,0.0
+nhl,2006,kaberto01,Tomáš Kaberle,27,TOR,10.2,1.229,TOR,1.14
+nhl,2006,visnolu01,Ľubomír Višňovský,29,LAK,10.1,1.217,LAK,1.368
 nhl,2006,jokinol01,Olli Jokinen,27,FLA,9.9,1.193,FLA,2.5
 nhl,2006,datsypa01,Pavel Datsyuk,27,DET,9.9,1.193,DET,3.9
 nhl,2006,brodema01,Martin Brodeur,33,NJD,9.894,1.192,NJD,
@@ -87570,12 +87570,12 @@ nhl,2006,spaceja01,Jaroslav Špaček,31,EDM,8.7,1.048,CHI|EDM,
 nhl,2006,marlepa01,Patrick Marleau,26,SJS,8.7,1.048,SJS,4.1667
 nhl,2006,arnotja01,Jason Arnott,31,DAL,8.7,1.048,DAL,
 nhl,2006,sundima01,Mats Sundin,34,TOR,8.6,1.036,TOR,
-nhl,2006,pitkajo01,Joni Pitkänen,22,PHI,8.6,1.036,PHI,0.0
+nhl,2006,pitkajo01,Joni Pitkänen,22,PHI,8.6,1.036,PHI,0.6952
 nhl,2006,meszaan01,Andrej Meszároš,20,OTT,8.5,1.024,OTT,
 nhl,2006,blakero01,Rob Blake,36,COL,8.5,1.024,COL,
-nhl,2006,nylanmi01,Michael Nylander,33,NYR,8.5,1.024,NYR,0.0
+nhl,2006,nylanmi01,Michael Nylander,33,NYR,8.5,1.024,NYR,1.52
 nhl,2006,boyleda01,Dan Boyle,29,TBL,8.5,1.024,TBL,3.3333
-nhl,2006,charazd01,Zdeno Chára,28,OTT,8.5,1.024,OTT,0.0
+nhl,2006,charazd01,Zdeno Chára,28,OTT,8.5,1.024,OTT,1.862
 nhl,2006,markoan01,Andrei Markov,27,MTL,8.5,1.024,MTL,2.5
 nhl,2006,fernama01,Manny Fernandez,31,MIN,8.499,1.024,MIN,
 nhl,2006,kariypa01,Paul Kariya,31,NSH,8.4,1.012,NSH,
@@ -87587,7 +87587,7 @@ nhl,2006,lecavvi01,Vincent Lecavalier,25,TBL,8.2,0.988,TBL,6.875
 nhl,2006,lundqhe01,Henrik Lundqvist,23,NYR,8.101,0.976,NYR,0.817
 nhl,2006,lilesjo01,John-Michael Liles,25,COL,8.1,0.976,COL,0.45
 nhl,2006,richabr01,Brad Richards,25,TBL,8.1,0.976,TBL,1.9337
-nhl,2006,zidlima01,Marek Židlický,28,NSH,8.1,0.976,NSH,0.0
+nhl,2006,zidlima01,Marek Židlický,28,NSH,8.1,0.976,NSH,0.57
 nhl,2006,forsbpe01,Peter Forsberg,32,PHI,8.1,0.976,PHI,5.75
 nhl,2006,iginlja01,Jarome Iginla,28,CGY,8.0,0.964,CGY,7.0
 nhl,2006,auldal01,Alex Auld,25,VAN,7.968,0.96,VAN,
@@ -87600,7 +87600,7 @@ nhl,2006,corvojo01,Joe Corvo,28,LAK,7.7,0.928,LAK,
 nhl,2006,strakma01,Martin Straka,33,NYR,7.6,0.916,NYR,
 nhl,2006,nasluma02,Markus Näslund,32,VAN,7.6,0.916,VAN,
 nhl,2006,prospva01,Václav Prospal,30,TBL,7.6,0.916,TBL,
-nhl,2006,bergema02,Marc-André Bergeron,25,EDM,7.6,0.916,EDM,0.0
+nhl,2006,bergema02,Marc-André Bergeron,25,EDM,7.6,0.916,EDM,1.1192
 nhl,2006,williju01,Justin Williams,24,CAR,7.5,0.904,CAR,1.225
 nhl,2006,afinoma01,Maxim Afinogenov,26,BUF,7.5,0.904,BUF,
 nhl,2006,smythry01,Ryan Smyth,29,EDM,7.5,0.904,EDM,3.5
@@ -87656,9 +87656,9 @@ nhl,2006,kovalal01,Alex Kovalev,32,MTL,6.4,0.771,MTL,4.5
 nhl,2006,doansh01,Shane Doan,29,UTA,6.3,0.759,UTA,
 nhl,2006,kotalal01,Aleš Kotalík,27,BUF,6.3,0.759,BUF,0.8379
 nhl,2006,campbbr02,Brian Campbell,26,BUF,6.3,0.759,BUF,
-nhl,2006,conrocr01,Craig Conroy,34,LAK,6.3,0.759,LAK,0.0
+nhl,2006,conrocr01,Craig Conroy,34,LAK,6.3,0.759,LAK,2.583
 nhl,2006,ohlunma01,Mattias Öhlund,29,VAN,6.3,0.759,VAN,3.5
-nhl,2006,sourash01,Sheldon Souray,29,MTL,6.3,0.759,MTL,0.0
+nhl,2006,sourash01,Sheldon Souray,29,MTL,6.3,0.759,MTL,1.5453
 nhl,2006,clarkbr01,Brett Clark,29,COL,6.2,0.747,COL,
 nhl,2006,stlouma01,Martin St. Louis,30,TBL,6.2,0.747,TBL,5.25
 nhl,2006,legacma01,Manny Legace,32,DET,6.175,0.744,DET,
@@ -87680,7 +87680,7 @@ nhl,2006,samuemi01,Mikael Samuelsson,29,DET,6.0,0.723,DET,0.5375
 nhl,2006,baumgno01,Nolan Baumgartner,29,VAN,6.0,0.723,VAN,
 nhl,2006,nieuwjo01,Joe Nieuwendyk,39,FLA,6.0,0.723,FLA,
 nhl,2006,denisma01,Marc Denis,28,CBJ,5.91,0.712,CBJ,
-nhl,2006,hannasc01,Scott Hannan,27,SJS,5.9,0.711,SJS,0.0
+nhl,2006,hannasc01,Scott Hannan,27,SJS,5.9,0.711,SJS,1.4377
 nhl,2006,leopojo01,Jordan Leopold,25,CGY,5.9,0.711,CGY,
 nhl,2006,malikma01,Marek Malík,30,NYR,5.9,0.711,NYR,
 nhl,2006,reinpst01,Steve Reinprecht,29,UTA,5.8,0.699,CGY|UTA,
@@ -87717,7 +87717,7 @@ nhl,2006,froloal01,Alex Frolov,23,LAK,5.4,0.651,LAK,
 nhl,2006,suttoan01,Andy Sutton,30,WPG,5.3,0.639,WPG,
 nhl,2006,connoti01,Tim Connolly,24,BUF,5.3,0.639,BUF,
 nhl,2006,eliaspa01,Patrik Eliáš,29,NJD,5.3,0.639,NJD,4.18
-nhl,2006,ballake01,Keith Ballard,23,UTA,5.2,0.627,UTA,0.0
+nhl,2006,ballake01,Keith Ballard,23,UTA,5.2,0.627,UTA,0.6004
 nhl,2006,hartnsc01,Scott Hartnell,23,NSH,5.2,0.627,NSH,1.0
 nhl,2006,jokinju01,Jussi Jokinen,22,DAL,5.2,0.627,DAL,
 nhl,2006,lupuljo01,Joffrey Lupul,22,ANA,5.2,0.627,ANA,
@@ -87731,7 +87731,7 @@ nhl,2006,skoulma01,Martin Škoula,26,MIN,5.1,0.614,DAL|MIN,
 nhl,2006,schaepe01,Peter Schaefer,28,OTT,5.1,0.614,OTT,
 nhl,2006,torrera01,Raffi Torres,24,EDM,5.1,0.614,EDM,0.875
 nhl,2006,cullema01,Matt Cullen,29,CAR,5.1,0.614,CAR,
-nhl,2006,whitnry01,Ryan Whitney,22,PIT,5.1,0.614,PIT,0.0
+nhl,2006,whitnry01,Ryan Whitney,22,PIT,5.1,0.614,PIT,0.9006
 nhl,2006,leclapa01,Pascal Leclaire,23,CBJ,5.046,0.608,CBJ,
 nhl,2006,dandema01,Mathieu Dandenault,29,MTL,5.0,0.602,MTL,
 nhl,2006,carteje01,Jeff Carter,21,PHI,5.0,0.602,PHI,0.9424
@@ -87744,7 +87744,7 @@ nhl,2006,cammami01,Mike Cammalleri,23,LAK,4.9,0.59,LAK,0.8579
 nhl,2006,modryja01,Jaroslav Modrý,34,WPG,4.9,0.59,WPG,
 nhl,2006,ehrhoch01,Christian Ehrhoff,23,SJS,4.9,0.59,SJS,0.4193
 nhl,2006,lehtoka01,Kari Lehtonen,22,WPG,4.847,0.584,WPG,
-nhl,2006,vanekth01,Thomas Vanek,22,BUF,4.8,0.578,BUF,0.0
+nhl,2006,vanekth01,Thomas Vanek,22,BUF,4.8,0.578,BUF,0.6283
 nhl,2006,johnsmi01,Mike Johnson,31,UTA,4.8,0.578,UTA,
 nhl,2006,vandeji01,Jim Vandermeer,25,CHI,4.8,0.578,CHI,
 nhl,2006,allisja02,Jason Allison,30,TOR,4.8,0.578,TOR,
@@ -87773,7 +87773,7 @@ nhl,2006,keithdu01,Duncan Keith,22,CHI,4.4,0.53,CHI,
 nhl,2006,ponikal01,Alexei Ponikarovsky,25,TOR,4.4,0.53,TOR,
 nhl,2006,fedotru01,Ruslan Fedotenko,27,TBL,4.4,0.53,TBL,
 nhl,2006,allenbr01,Bryan Allen,25,VAN,4.4,0.53,VAN,
-nhl,2006,smithja01,Jason Smith,32,EDM,4.4,0.53,EDM,0.0
+nhl,2006,smithja01,Jason Smith,32,EDM,4.4,0.53,EDM,1.482
 nhl,2006,whiteco01,Colin White,28,NJD,4.4,0.53,NJD,
 nhl,2006,royde01,Derek Roy,22,BUF,4.4,0.53,BUF,
 nhl,2006,phillch02,Chris Phillips,27,OTT,4.4,0.53,OTT,
@@ -87866,7 +87866,7 @@ nhl,2006,odonnse01,Sean O'Donnell,34,ANA,3.2,0.386,UTA|ANA,
 nhl,2006,barnest01,Stu Barnes,35,DAL,3.2,0.386,DAL,
 nhl,2006,averyse01,Sean Avery,25,LAK,3.2,0.386,LAK,
 nhl,2006,commomi01,Mike Commodore,26,CAR,3.2,0.386,CAR,0.45
-nhl,2006,gueribi01,Bill Guerin,35,DAL,3.2,0.386,DAL,0.0
+nhl,2006,gueribi01,Bill Guerin,35,DAL,3.2,0.386,DAL,6.242
 nhl,2006,matviri01,Richard Matvichuk,32,NJD,3.2,0.386,NJD,
 nhl,2006,antroni01,Nik Antropov,25,TOR,3.2,0.386,TOR,
 nhl,2006,pominja01,Jason Pominville,23,BUF,3.2,0.386,BUF,0.45
@@ -87874,7 +87874,7 @@ nhl,2006,osgooch01,Chris Osgood,33,DET,3.121,0.376,DET,
 nhl,2006,weekeke01,Kevin Weekes,30,NYR,3.121,0.376,NYR,
 nhl,2006,morrish01,Shaone Morrisonn,23,WSH,3.1,0.373,WSH,
 nhl,2006,rucchst01,Steve Rucchin,34,NYR,3.1,0.373,NYR,
-nhl,2006,jackmba01,Barret Jackman,24,STL,3.1,0.373,STL,0.0
+nhl,2006,jackmba01,Barret Jackman,24,STL,3.1,0.373,STL,0.912
 nhl,2006,markoda01,Danny Markov,29,NSH,3.1,0.373,NSH,
 nhl,2006,theodjo01,José Théodore,29,COL,3.054,0.368,MTL|COL,
 nhl,2006,simjo01,Jon Sim,28,FLA,3.0,0.361,PHI|FLA,
@@ -87893,7 +87893,7 @@ nhl,2006,kellych01,Chris Kelly,25,OTT,2.9,0.349,OTT,0.45
 nhl,2006,kolniju01,Juraj Kolník,25,FLA,2.9,0.349,FLA,
 nhl,2006,klemmjo01,Jon Klemm,36,DAL,2.9,0.349,DAL,
 nhl,2006,niedero01,Rob Niedermayer,31,ANA,2.9,0.349,ANA,
-nhl,2006,handzmi01,Michal Handzuš,28,PHI,2.9,0.349,PHI,0.0
+nhl,2006,handzmi01,Michal Handzuš,28,PHI,2.9,0.349,PHI,1.4187
 nhl,2006,mellasc01,Scott Mellanby,39,WPG,2.9,0.349,WPG,
 nhl,2006,belaner01,Éric Bélanger,28,LAK,2.9,0.349,LAK,
 nhl,2006,jurcimi01,Milan Jurčina,22,BOS,2.9,0.349,BOS,
@@ -87904,7 +87904,7 @@ nhl,2006,toivoha01,Hannu Toivonen,21,BOS,2.855,0.344,BOS,
 nhl,2006,weinrer01,Eric Weinrich,39,VAN,2.8,0.337,STL|VAN,
 nhl,2006,dallmke01,Kevin Dallman,24,STL,2.8,0.337,BOS|STL,
 nhl,2006,willsbr01,Brian Willsie,27,WSH,2.8,0.337,WSH,
-nhl,2006,parisza01,Zach Parise,21,NJD,2.8,0.337,NJD,0.0
+nhl,2006,parisza01,Zach Parise,21,NJD,2.8,0.337,NJD,0.777
 nhl,2006,krajilu01,Lukáš Krajíček,22,FLA,2.8,0.337,FLA,
 nhl,2006,woollja01,Jason Woolley,36,DET,2.8,0.337,DET,
 nhl,2006,upshasc01,Scottie Upshall,22,NSH,2.8,0.337,NSH,
@@ -87944,7 +87944,7 @@ nhl,2006,boyntni01,Nick Boynton,27,BOS,2.5,0.301,BOS,
 nhl,2006,mogilal01,Alexander Mogilny,36,NJD,2.5,0.301,NJD,
 nhl,2006,niinija01,Janne Niinimaa,30,DAL,2.4,0.289,NYI|DAL,
 nhl,2006,leclemi01,Mike Leclerc,29,CGY,2.4,0.289,UTA|CGY,
-nhl,2006,maddejo01,John Madden,32,NJD,2.4,0.289,NJD,0.0
+nhl,2006,maddejo01,John Madden,32,NJD,2.4,0.289,NJD,2.9385
 nhl,2006,richami02,Mike Richards,20,PHI,2.4,0.289,PHI,0.9424
 nhl,2006,plekato01,Tomáš Plekanec,23,MTL,2.4,0.289,MTL,0.45
 nhl,2006,batessh01,Shawn Bates,30,NYI,2.4,0.289,NYI,1.2
@@ -87977,7 +87977,7 @@ nhl,2006,legwada01,David Legwand,25,NSH,2.1,0.253,NSH,1.349
 nhl,2006,johnsaa01,Aaron Johnson,22,CBJ,2.1,0.253,CBJ,
 nhl,2006,fischji01,Jiří Fischer,25,DET,2.1,0.253,DET,
 nhl,2006,havlama01,Martin Havlát,24,OTT,2.1,0.253,OTT,2.6
-nhl,2006,wardca01,Cam Ward,21,CAR,2.058,0.248,CAR,0.0
+nhl,2006,wardca01,Cam Ward,21,CAR,2.058,0.248,CAR,0.456
 nhl,2006,marchto01,Todd Marchant,32,ANA,2.0,0.241,CBJ|ANA,
 nhl,2006,donovsh01,Shean Donovan,31,CGY,2.0,0.241,CGY,
 nhl,2006,hallad01,Adam Hall,25,NSH,2.0,0.241,NSH,
@@ -88138,7 +88138,7 @@ nhl,2006,brookwa01,Wade Brookbank,28,VAN,0.8,0.096,VAN,
 nhl,2006,kondrma01,Maxim Kondratiev,23,NYR,0.8,0.096,NYR,
 nhl,2006,mcgilda01,Dan McGillis,33,NJD,0.8,0.096,NJD,
 nhl,2006,pirjela01,Lasse Pirjetä,31,PIT,0.8,0.096,PIT,
-nhl,2006,pennedu01,Dustin Penner,23,ANA,0.8,0.096,ANA,0.0
+nhl,2006,pennedu01,Dustin Penner,23,ANA,0.8,0.096,ANA,0.3
 nhl,2006,orszavl01,Vladimír Országh,28,STL,0.8,0.096,STL,
 nhl,2006,clemmsc01,Scott Clemmensen,28,NJD,0.797,0.096,NJD,
 nhl,2006,munroad01,Adam Munro,23,CHI,0.797,0.096,CHI,
@@ -88146,13 +88146,13 @@ nhl,2006,bouchbr01,Brian Boucher,29,CGY,0.73,0.088,UTA|CGY,
 nhl,2006,schaeno01,Nolan Schaefer,26,SJS,0.73,0.088,SJS,
 nhl,2006,primewa01,Wayne Primeau,29,BOS,0.7,0.084,SJS|BOS,
 nhl,2006,downeaa01,Aaron Downey,31,MTL,0.7,0.084,STL|MTL,
-nhl,2006,pandoja01,Jay Pandolfo,31,NJD,0.7,0.084,NJD,0.0
+nhl,2006,pandoja01,Jay Pandolfo,31,NJD,0.7,0.084,NJD,0.627
 nhl,2006,deverbo01,Boyd Devereaux,27,UTA,0.7,0.084,UTA,
 nhl,2006,boulter01,Eric Boulton,29,WPG,0.7,0.084,WPG,0.5
 nhl,2006,larosch01,Chad Larose,23,CAR,0.7,0.084,CAR,
 nhl,2006,cassean01,Andrew Cassels,36,WSH,0.7,0.084,WSH,
 nhl,2006,jonesra01,Randy Jones,24,PHI,0.7,0.084,PHI,
-nhl,2006,eagerbe01,Ben Eager,22,PHI,0.7,0.084,PHI,0.0
+nhl,2006,eagerbe01,Ben Eager,22,PHI,0.7,0.084,PHI,0.416
 nhl,2006,konopze01,Zenon Konopka,25,ANA,0.7,0.084,ANA,
 nhl,2006,vasicjo01,Josef Vašíček,25,CAR,0.7,0.084,CAR,
 nhl,2006,nickuer01,Eric Nickulas,30,BOS,0.7,0.084,BOS,
@@ -88273,7 +88273,7 @@ nhl,2006,grebede01,Denis Grebeshkov,22,NYI,0.1,0.012,LAK|NYI,
 nhl,2006,perrona01,Nathan Perrott,29,DAL,0.1,0.012,TOR|DAL,
 nhl,2006,tambeje01,Jeff Tambellini,21,NYI,0.1,0.012,LAK|NYI,0.816
 nhl,2006,yakubmi01,Mikhail Yakubov,23,FLA,0.1,0.012,CHI|FLA,
-nhl,2006,cullija01,Jassen Cullimore,33,CHI,0.1,0.012,CHI,0.0
+nhl,2006,cullija01,Jassen Cullimore,33,CHI,0.1,0.012,CHI,1.425
 nhl,2006,giulije01,Jeff Giuliano,26,LAK,0.1,0.012,LAK,
 nhl,2006,vigiejp01,J.P. Vigier,29,WPG,0.1,0.012,WPG,
 nhl,2006,pettito01,Tomi Pettinen,28,NYI,0.1,0.012,NYI,
@@ -88314,7 +88314,7 @@ nhl,2006,taffeje01,Jeff Taffe,24,UTA,0.0,0.0,NYR|UTA,
 nhl,2006,sugloal01,Alexander Suglobov,24,TOR,0.0,0.0,NJD|TOR,
 nhl,2006,riccimi01,Mike Ricci,34,UTA,0.0,0.0,UTA,
 nhl,2006,brashdo01,Donald Brashear,34,PHI,0.0,0.0,PHI,
-nhl,2006,browncu01,Curtis Brown,29,CHI,0.0,0.0,CHI,0.0
+nhl,2006,browncu01,Curtis Brown,29,CHI,0.0,0.0,CHI,1.254
 nhl,2006,cibakma01,Martin Cibák,25,TBL,0.0,0.0,TBL,
 nhl,2006,scudero01,Rob Scuderi,27,PIT,0.0,0.0,PIT,0.525
 nhl,2006,belakwa01,Wade Belak,29,TOR,0.0,0.0,TOR,
@@ -88344,7 +88344,7 @@ nhl,2006,healeer01,Eric Healey,31,BOS,0.0,0.0,BOS,
 nhl,2006,healepa01,Paul Healey,30,COL,0.0,0.0,COL,
 nhl,2006,jillsje01,Jeff Jillson,25,BUF,0.0,0.0,BUF,
 nhl,2006,keithma01,Matt Keith,22,CHI,0.0,0.0,CHI,
-nhl,2006,kleinke01,Kevin Klein,21,NSH,0.0,0.0,NSH,0.0
+nhl,2006,kleinke01,Kevin Klein,21,NSH,0.0,0.0,NSH,0.4413
 nhl,2006,robinna01,Nathan Robinson,24,BOS,0.0,0.0,BOS,
 nhl,2006,thorbch01,Chris Thorburn,22,BUF,0.0,0.0,BUF,
 nhl,2006,barkeca01,Cam Barker,19,CHI,0.0,0.0,CHI,0.9842
@@ -88410,7 +88410,7 @@ nhl,2006,blatnzd01,Zdeněk Blatný,25,BOS,-0.1,-0.012,BOS,
 nhl,2006,clarkno02,Noah Clarke,26,LAK,-0.1,-0.012,LAK,
 nhl,2006,disaljo01,Jon DiSalvatore,24,STL,-0.1,-0.012,STL,
 nhl,2006,hullbr01,Brett Hull,41,UTA,-0.1,-0.012,UTA,
-nhl,2006,tolleol01,Ole-Kristian Tollefsen,21,CBJ,-0.1,-0.012,CBJ,0.0
+nhl,2006,tolleol01,Ole-Kristian Tollefsen,21,CBJ,-0.1,-0.012,CBJ,0.3412
 nhl,2006,hudleji01,Jiří Hudler,22,DET,-0.1,-0.012,DET,
 nhl,2006,ivanara01,Raitis Ivanāns,27,MTL,-0.1,-0.012,MTL,
 nhl,2006,barnesc01,Scott Barney,26,WPG,-0.1,-0.012,WPG,
@@ -88497,7 +88497,7 @@ nhl,2007,niedesc01,Scott Niedermayer,33,ANA,12.4,1.494,ANA,6.75
 nhl,2007,thornjo01,Joe Thornton,27,SJS,12.3,1.482,SJS,6.6667
 nhl,2007,prongch01,Chris Pronger,32,ANA,12.3,1.482,ANA,6.25
 nhl,2007,stlouma01,Martin St. Louis,31,TBL,11.9,1.434,TBL,5.25
-nhl,2007,vanekth01,Thomas Vanek,23,BUF,11.7,1.41,BUF,0.0
+nhl,2007,vanekth01,Thomas Vanek,23,BUF,11.7,1.41,BUF,0.6283
 nhl,2007,brodema01,Martin Brodeur,34,NJD,11.487,1.384,NJD,5.2
 nhl,2007,luongro01,Roberto Luongo,27,VAN,11.354,1.368,VAN,
 nhl,2007,iginlja01,Jarome Iginla,29,CGY,11.2,1.349,CGY,7.0
@@ -88514,12 +88514,12 @@ nhl,2007,bouchph01,Philippe Boucher,33,DAL,10.7,1.289,DAL,
 nhl,2007,boyleda01,Dan Boyle,30,TBL,10.5,1.265,TBL,3.3333
 nhl,2007,spezzja01,Jason Spezza,23,OTT,10.5,1.265,OTT,4.5
 nhl,2007,timonki01,Kimmo Timonen,31,NSH,10.2,1.229,NSH,1.6875
-nhl,2007,alfreda01,Daniel Alfredsson,34,OTT,10.2,1.229,OTT,0.0
+nhl,2007,alfreda01,Daniel Alfredsson,34,OTT,10.2,1.229,OTT,3.8991
 nhl,2007,brierda01,Daniel Brière,29,BUF,10.1,1.217,BUF,5.0
 nhl,2007,whitnry01,Ryan Whitney,23,PIT,10.1,1.217,PIT,
 nhl,2007,gonchse01,Sergei Gonchar,32,PIT,10.0,1.205,PIT,5.0
-nhl,2007,visnolu01,Ľubomír Višňovský,30,LAK,9.9,1.193,LAK,0.0
-nhl,2007,sourash01,Sheldon Souray,30,MTL,9.8,1.181,MTL,0.0
+nhl,2007,visnolu01,Ľubomír Višňovský,30,LAK,9.9,1.193,LAK,1.368
+nhl,2007,sourash01,Sheldon Souray,30,MTL,9.8,1.181,MTL,1.5453
 nhl,2007,dipieri01,Rick DiPietro,25,NYI,9.694,1.168,NYI,4.5
 nhl,2007,huselkr01,Kristian Huselius,28,CGY,9.6,1.157,CGY,
 nhl,2007,malkiev01,Evgeni Malkin,20,PIT,9.5,1.145,PIT,0.9842
@@ -88537,7 +88537,7 @@ nhl,2007,mccabbr01,Bryan McCabe,31,TOR,9.1,1.096,TOR,
 nhl,2007,mcdonan01,Andy McDonald,29,ANA,9.1,1.096,ANA,3.3333
 nhl,2007,langkda01,Daymond Langkow,30,CGY,9.1,1.096,CGY,
 nhl,2007,whitnra01,Ray Whitney,34,CAR,9.1,1.096,CAR,
-nhl,2007,nylanmi01,Michael Nylander,34,NYR,9.1,1.096,NYR,0.0
+nhl,2007,nylanmi01,Michael Nylander,34,NYR,9.1,1.096,NYR,1.52
 nhl,2007,phanedi01,Dion Phaneuf,21,CGY,9.1,1.096,CGY,0.7853
 nhl,2007,seminal01,Alexander Semin,22,WSH,9.0,1.084,WSH,1.3
 nhl,2007,biekske01,Kevin Bieksa,25,VAN,8.9,1.072,VAN,0.525
@@ -88565,7 +88565,7 @@ nhl,2007,stastpa01,Paul Stastny,21,COL,8.2,0.988,COL,0.6433
 nhl,2007,gaborma01,Marián Gáborík,24,MIN,8.2,0.988,MIN,6.3333
 nhl,2007,michami01,Milan Michálek,22,SJS,8.1,0.976,SJS,
 nhl,2007,fleurma01,Marc-André Fleury,22,PIT,8.034,0.968,PIT,1.2948
-nhl,2007,bergema02,Marc-André Bergeron,26,NYI,8.0,0.964,EDM|NYI,0.0
+nhl,2007,bergema02,Marc-André Bergeron,26,NYI,8.0,0.964,EDM|NYI,1.1192
 nhl,2007,thomati01,Tim Thomas,32,BOS,7.968,0.96,BOS,1.1
 nhl,2007,kolziol01,Olaf Kölzig,36,WSH,7.835,0.944,WSH,
 nhl,2007,campbbr02,Brian Campbell,27,BUF,7.8,0.94,BUF,
@@ -88608,7 +88608,7 @@ nhl,2007,sullist01,Steve Sullivan,32,NSH,6.9,0.831,NSH,3.2
 nhl,2007,tkachke01,Keith Tkachuk,34,WPG,6.8,0.819,STL|WPG,
 nhl,2007,vlasima01,Marc-Édouard Vlasic,19,SJS,6.8,0.819,SJS,0.735
 nhl,2007,malikma01,Marek Malík,31,NYR,6.8,0.819,NYR,
-nhl,2007,vokouto01,Tomáš Vokoun,30,NSH,6.706,0.808,NSH,0.0
+nhl,2007,vokouto01,Tomáš Vokoun,30,NSH,6.706,0.808,NSH,1.52
 nhl,2007,zhitnal01,Alexei Zhitnik,34,WPG,6.7,0.807,NYI|PHI|WPG,3.5038
 nhl,2007,bouchpi02,Pierre-Marc Bouchard,22,MIN,6.7,0.807,MIN,
 nhl,2007,charazd01,Zdeno Chára,29,BOS,6.7,0.807,BOS,7.5
@@ -88629,7 +88629,7 @@ nhl,2007,langeja01,Jamie Langenbrunner,31,NJD,6.1,0.735,NJD,2.8
 nhl,2007,rydermi01,Michael Ryder,26,MTL,6.1,0.735,MTL,2.2
 nhl,2007,schubch01,Christoph Schubert,24,OTT,6.1,0.735,OTT,
 nhl,2007,clarkch01,Chris Clark,30,WSH,6.1,0.735,WSH,
-nhl,2007,jackmba01,Barret Jackman,25,STL,6.1,0.735,STL,0.0
+nhl,2007,jackmba01,Barret Jackman,25,STL,6.1,0.735,STL,0.912
 nhl,2007,knublmi01,Mike Knuble,34,PHI,6.1,0.735,PHI,
 nhl,2007,budajpe01,Peter Budaj,24,COL,6.042,0.728,COL,0.7
 nhl,2007,hasekdo01,Dominik Hašek,42,DET,6.042,0.728,DET,
@@ -88651,7 +88651,7 @@ nhl,2007,nabokev01,Evgeni Nabokov,31,SJS,5.71,0.688,SJS,
 nhl,2007,pennedu01,Dustin Penner,24,ANA,5.7,0.687,ANA,
 nhl,2007,richabr01,Brad Richards,26,TBL,5.7,0.687,TBL,7.8
 nhl,2007,kozlovi01,Viktor Kozlov,31,NYI,5.7,0.687,NYI,
-nhl,2007,hannasc01,Scott Hannan,28,SJS,5.7,0.687,SJS,0.0
+nhl,2007,hannasc01,Scott Hannan,28,SJS,5.7,0.687,SJS,1.4377
 nhl,2007,regehro01,Robyn Regehr,26,CGY,5.7,0.687,CGY,1.3748
 nhl,2007,volchan01,Anton Volchenkov,24,OTT,5.7,0.687,OTT,1.3
 nhl,2007,wardca01,Cam Ward,22,CAR,5.644,0.68,CAR,
@@ -88744,7 +88744,7 @@ nhl,2007,averyse01,Sean Avery,26,NYR,4.3,0.518,LAK|NYR,
 nhl,2007,roberga01,Gary Roberts,40,PIT,4.3,0.518,FLA|PIT,
 nhl,2007,zajactr01,Travis Zajac,21,NJD,4.3,0.518,NJD,0.9842
 nhl,2007,robidst01,Stéphane Robidas,29,DAL,4.3,0.518,DAL,0.55
-nhl,2007,ballake01,Keith Ballard,24,UTA,4.3,0.518,UTA,0.0
+nhl,2007,ballake01,Keith Ballard,24,UTA,4.3,0.518,UTA,0.6004
 nhl,2007,armstde01,Derek Armstrong,33,LAK,4.3,0.518,LAK,
 nhl,2007,spaceja01,Jaroslav Špaček,32,BUF,4.3,0.518,BUF,3.3333
 nhl,2007,kubinpa01,Pavel Kubina,29,TOR,4.3,0.518,TOR,5.0
@@ -88814,7 +88814,7 @@ nhl,2007,paetsna01,Nathan Paetsch,23,BUF,3.5,0.422,BUF,
 nhl,2007,colaica01,Carlo Colaiacovo,24,TOR,3.5,0.422,TOR,
 nhl,2007,wardaa01,Aaron Ward,34,BOS,3.4,0.41,NYR|BOS,
 nhl,2007,chimeja01,Jason Chimera,27,CBJ,3.4,0.41,CBJ,0.875
-nhl,2007,smithja01,Jason Smith,33,EDM,3.4,0.41,EDM,0.0
+nhl,2007,smithja01,Jason Smith,33,EDM,3.4,0.41,EDM,1.482
 nhl,2007,vermean01,Antoine Vermette,24,OTT,3.4,0.41,OTT,1.0
 nhl,2007,whiteco01,Colin White,29,NJD,3.4,0.41,NJD,3.0
 nhl,2007,tallihe01,Henrik Tallinder,28,BUF,3.4,0.41,BUF,
@@ -88853,7 +88853,7 @@ nhl,2007,scudero01,Rob Scuderi,28,PIT,2.9,0.349,PIT,0.525
 nhl,2007,eavespa01,Patrick Eaves,22,OTT,2.9,0.349,OTT,0.9421
 nhl,2007,tyutife01,Fedor Tyutin,23,NYR,2.9,0.349,NYR,0.9875
 nhl,2007,fritsda01,Dan Fritsche,21,CBJ,2.9,0.349,CBJ,
-nhl,2007,conrocr01,Craig Conroy,35,CGY,2.8,0.337,LAK|CGY,0.0
+nhl,2007,conrocr01,Craig Conroy,35,CGY,2.8,0.337,LAK|CGY,2.583
 nhl,2007,battaba01,Bates Battaglia,31,TOR,2.8,0.337,TOR,
 nhl,2007,steenal01,Alexander Steen,22,TOR,2.8,0.337,TOR,0.7702
 nhl,2007,griermi01,Mike Grier,32,SJS,2.8,0.337,SJS,
@@ -88887,7 +88887,7 @@ nhl,2007,thibajo01,Jocelyn Thibault,32,PIT,2.457,0.296,PIT,
 nhl,2007,perrier01,Éric Perrin,31,TBL,2.4,0.289,TBL,
 nhl,2007,armstco01,Colby Armstrong,24,PIT,2.4,0.289,PIT,
 nhl,2007,pisanfe01,Fernando Pisani,30,EDM,2.4,0.289,EDM,
-nhl,2007,maddejo01,John Madden,33,NJD,2.4,0.289,NJD,0.0
+nhl,2007,maddejo01,John Madden,33,NJD,2.4,0.289,NJD,2.9385
 nhl,2007,fiddlve01,Vernon Fiddler,26,NSH,2.4,0.289,NSH,0.45
 nhl,2007,tolleol01,Ole-Kristian Tollefsen,22,CBJ,2.4,0.289,CBJ,
 nhl,2007,clymebe01,Ben Clymer,28,WSH,2.4,0.289,WSH,0.8667
@@ -88945,7 +88945,7 @@ nhl,2007,auldal01,Alex Auld,26,FLA,1.992,0.24,FLA,
 nhl,2007,halakja01,Jaroslav Halák,21,MTL,1.926,0.232,MTL,0.4917
 nhl,2007,laraqge01,Georges Laraque,30,PIT,1.9,0.229,UTA|PIT,
 nhl,2007,hatchde01,Derian Hatcher,34,PHI,1.9,0.229,PHI,
-nhl,2007,pandoja01,Jay Pandolfo,32,NJD,1.9,0.229,NJD,0.0
+nhl,2007,pandoja01,Jay Pandolfo,32,NJD,1.9,0.229,NJD,0.627
 nhl,2007,laperia01,Ian Laperrière,33,COL,1.9,0.229,COL,
 nhl,2007,greenma01,Matt Greene,23,EDM,1.9,0.229,EDM,
 nhl,2007,bonkra01,Radek Bonk,31,MTL,1.9,0.229,MTL,
@@ -88963,7 +88963,7 @@ nhl,2007,radivbr01,Branko Radivojevič,26,MIN,1.8,0.217,MIN,
 nhl,2007,talboma01,Maxime Talbot,22,PIT,1.8,0.217,PIT,
 nhl,2007,filppva01,Valtteri Filppula,22,DET,1.8,0.217,DET,0.7333
 nhl,2007,zherdni01,Nikolai Zherdev,22,CBJ,1.8,0.217,CBJ,2.5
-nhl,2007,cullija01,Jassen Cullimore,34,CHI,1.8,0.217,CHI,0.0
+nhl,2007,cullija01,Jassen Cullimore,34,CHI,1.8,0.217,CHI,1.425
 nhl,2007,beechkr01,Kris Beech,25,WSH,1.8,0.217,WSH,
 nhl,2007,salvabr01,Bryce Salvador,30,STL,1.8,0.217,STL,1.4
 nhl,2007,johnsaa01,Aaron Johnson,23,CBJ,1.8,0.217,CBJ,0.45
@@ -89026,7 +89026,7 @@ nhl,2007,kobasch01,Chuck Kobasew,24,BOS,1.2,0.145,CGY|BOS,
 nhl,2007,welchno01,Noah Welch,24,FLA,1.2,0.145,PIT|FLA,
 nhl,2007,nychola01,Lawrence Nycholat,27,OTT,1.2,0.145,WSH|OTT,
 nhl,2007,moentr01,Travis Moen,24,ANA,1.2,0.145,ANA,
-nhl,2007,browncu01,Curtis Brown,30,SJS,1.2,0.145,SJS,0.0
+nhl,2007,browncu01,Curtis Brown,30,SJS,1.2,0.145,SJS,1.254
 nhl,2007,ritchby01,Byron Ritchie,29,CGY,1.2,0.145,CGY,
 nhl,2007,gleasti01,Tim Gleason,24,CAR,1.2,0.145,CAR,1.175
 nhl,2007,bourqre01,Rene Bourque,25,CHI,1.2,0.145,CHI,0.825
@@ -89055,7 +89055,7 @@ nhl,2007,plattge01,Geoff Platt,21,CBJ,1.0,0.12,CBJ,
 nhl,2007,kaspada01,Darius Kasparaitis,34,NYR,1.0,0.12,NYR,
 nhl,2007,tambeje01,Jeff Tambellini,22,NYI,1.0,0.12,NYI,0.816
 nhl,2007,callary01,Ryan Callahan,21,NYR,1.0,0.12,NYR,0.575
-nhl,2007,handzmi01,Michal Handzuš,29,CHI,1.0,0.12,CHI,0.0
+nhl,2007,handzmi01,Michal Handzuš,29,CHI,1.0,0.12,CHI,1.4187
 nhl,2007,mclenja01,Jamie McLennan,35,CGY,0.996,0.12,CGY,
 nhl,2007,toivoha01,Hannu Toivonen,22,BOS,0.93,0.112,BOS,
 nhl,2007,sabouda01,Dany Sabourin,26,VAN,0.93,0.112,VAN,
@@ -89132,7 +89132,7 @@ nhl,2007,newbukr01,Kris Newbury,24,TOR,0.5,0.06,TOR,
 nhl,2007,byfugdu01,Dustin Byfuglien,21,CHI,0.5,0.06,CHI,0.6083
 nhl,2007,walsede01,Derrick Walser,28,CBJ,0.5,0.06,CBJ,
 nhl,2007,clarkda03,David Clarkson,22,NJD,0.5,0.06,NJD,0.5383
-nhl,2007,kleinke01,Kevin Klein,22,NSH,0.5,0.06,NSH,0.0
+nhl,2007,kleinke01,Kevin Klein,22,NSH,0.5,0.06,NSH,0.4413
 nhl,2007,cloutda01,Dan Cloutier,30,LAK,0.465,0.056,LAK,2.5
 nhl,2007,brustba01,Barry Brust,23,LAK,0.465,0.056,LAK,
 nhl,2007,lenevda01,David LeNeveu,23,UTA,0.465,0.056,UTA,
@@ -89141,7 +89141,7 @@ nhl,2007,mowerma01,Mark Mowers,32,BOS,0.4,0.048,BOS,
 nhl,2007,sjostfr01,Fredrik Sjöström,23,UTA,0.4,0.048,UTA,
 nhl,2007,tarnani01,Nick Tarnasky,22,TBL,0.4,0.048,TBL,
 nhl,2007,vigiejp01,J.P. Vigier,30,WPG,0.4,0.048,WPG,
-nhl,2007,eagerbe01,Ben Eager,23,PHI,0.4,0.048,PHI,0.0
+nhl,2007,eagerbe01,Ben Eager,23,PHI,0.4,0.048,PHI,0.416
 nhl,2007,holmqmi01,Michael Holmqvist,27,CHI,0.4,0.048,CHI,
 nhl,2007,bradlma01,Matt Bradley,28,WSH,0.4,0.048,WSH,0.7
 nhl,2007,shannry01,Ryan Shannon,23,ANA,0.4,0.048,ANA,
@@ -89357,7 +89357,7 @@ nhl,2007,tukonla01,Lauri Tukonen,20,LAK,-0.1,-0.012,LAK,0.9842
 nhl,2007,comeabl01,Blake Comeau,20,NYI,-0.1,-0.012,NYI,0.6917
 nhl,2007,cullema02,Mark Cullen,28,PHI,-0.1,-0.012,PHI,
 nhl,2007,duponmi01,Micki DuPont,26,PIT,-0.1,-0.012,PIT,
-nhl,2007,grabomi01,Mikhail Grabovski,23,MTL,-0.1,-0.012,MTL,0.6875
+nhl,2007,grabomi01,Mikhail Grabovski,23,MTL,-0.1,-0.012,MTL,0.0725
 nhl,2007,jacingr01,Greg Jacina,24,FLA,-0.1,-0.012,FLA,
 nhl,2007,poulibe01,Benoît Pouliot,20,MIN,-0.1,-0.012,MIN,0.85
 nhl,2007,reidbr01,Brandon Reid,25,VAN,-0.1,-0.012,VAN,
@@ -89441,7 +89441,7 @@ nhl,2008,rafalbr01,Brian Rafalski,34,DET,12.0,1.446,DET,6.0
 nhl,2008,gaborma01,Marián Gáborík,25,MIN,11.9,1.434,MIN,6.3333
 nhl,2008,spezzja01,Jason Spezza,24,OTT,11.7,1.41,OTT,4.5
 nhl,2008,heatlda01,Dany Heatley,27,OTT,11.7,1.41,OTT,4.5
-nhl,2008,alfreda01,Daniel Alfredsson,35,OTT,11.6,1.398,OTT,0.0
+nhl,2008,alfreda01,Daniel Alfredsson,35,OTT,11.6,1.398,OTT,3.8991
 nhl,2008,phanedi01,Dion Phaneuf,22,CGY,11.4,1.373,CGY,
 nhl,2008,gonchse01,Sergei Gonchar,33,PIT,11.4,1.373,PIT,5.0
 nhl,2008,kovalal01,Alex Kovalev,34,MTL,11.0,1.325,MTL,4.5
@@ -89587,7 +89587,7 @@ nhl,2008,garonma01,Mathieu Garon,30,EDM,5.976,0.72,EDM,1.1
 nhl,2008,ballake01,Keith Ballard,25,UTA,5.9,0.711,UTA,2.275
 nhl,2008,lilesjo01,John-Michael Liles,27,COL,5.9,0.711,COL,1.325
 nhl,2008,robidst01,Stéphane Robidas,30,DAL,5.8,0.699,DAL,1.5
-nhl,2008,visnolu01,Ľubomír Višňovský,31,LAK,5.8,0.699,LAK,0.0
+nhl,2008,visnolu01,Ľubomír Višňovský,31,LAK,5.8,0.699,LAK,1.368
 nhl,2008,hejdaja01,Jan Hejda,29,CBJ,5.8,0.699,CBJ,1.0
 nhl,2008,johnski01,Kim Johnsson,31,MIN,5.8,0.699,MIN,
 nhl,2008,hamrlro01,Roman Hamrlík,33,MTL,5.8,0.699,MTL,
@@ -89637,7 +89637,7 @@ nhl,2008,schulni01,Nick Schultz,25,MIN,5.0,0.602,MIN,1.85
 nhl,2008,hechtjo01,Jochen Hecht,30,BUF,5.0,0.602,BUF,
 nhl,2008,brindro01,Rod Brind'Amour,37,CAR,5.0,0.602,CAR,3.6
 nhl,2008,lydmato01,Toni Lydman,30,BUF,4.9,0.59,BUF,2.875
-nhl,2008,cullija01,Jassen Cullimore,35,FLA,4.9,0.59,FLA,0.0
+nhl,2008,cullija01,Jassen Cullimore,35,FLA,4.9,0.59,FLA,1.425
 nhl,2008,seminal01,Alexander Semin,23,WSH,4.9,0.59,WSH,1.3
 nhl,2008,cullema01,Matt Cullen,31,CAR,4.9,0.59,CAR,2.875
 nhl,2008,gillha01,Hal Gill,32,PIT,4.8,0.578,TOR|PIT,2.075
@@ -89652,7 +89652,7 @@ nhl,2008,kotalal01,Aleš Kotalík,29,BUF,4.7,0.566,BUF,2.3333
 nhl,2008,marlepa01,Patrick Marleau,28,SJS,4.7,0.566,SJS,4.1667
 nhl,2008,komismi01,Mike Komisarek,26,MTL,4.7,0.566,MTL,
 nhl,2008,gueribi01,Bill Guerin,37,NYI,4.6,0.554,NYI,4.5
-nhl,2008,maddejo01,John Madden,34,NJD,4.6,0.554,NJD,0.0
+nhl,2008,maddejo01,John Madden,34,NJD,4.6,0.554,NJD,2.9385
 nhl,2008,comrimi01,Mike Comrie,27,NYI,4.6,0.554,NYI,
 nhl,2008,mitchwi01,Willie Mitchell,30,VAN,4.6,0.554,VAN,3.5
 nhl,2008,schulje02,Jeff Schultz,21,WSH,4.6,0.554,WSH,0.8333
@@ -89773,7 +89773,7 @@ nhl,2008,sauerku01,Kurt Sauer,27,COL,3.2,0.386,COL,
 nhl,2008,hillejo01,Jonas Hiller,25,ANA,3.187,0.384,ANA,
 nhl,2008,budajpe01,Peter Budaj,25,COL,3.121,0.376,COL,0.7
 nhl,2008,hlavaja01,Jan Hlaváč,31,NSH,3.1,0.373,TBL|NSH,
-nhl,2008,bergema02,Marc-André Bergeron,27,ANA,3.1,0.373,NYI|ANA,0.0
+nhl,2008,bergema02,Marc-André Bergeron,27,ANA,3.1,0.373,NYI|ANA,1.1192
 nhl,2008,armstde01,Derek Armstrong,34,LAK,3.1,0.373,LAK,
 nhl,2008,belaner01,Éric Bélanger,30,MIN,3.1,0.373,MIN,1.75
 nhl,2008,rydermi01,Michael Ryder,27,MTL,3.1,0.373,MTL,2.95
@@ -89790,7 +89790,7 @@ nhl,2008,martira01,Radek Martínek,31,NYI,3.0,0.361,NYI,
 nhl,2008,murragl01,Glen Murray,35,BOS,3.0,0.361,BOS,4.15
 nhl,2008,walkesc01,Scott Walker,34,CAR,3.0,0.361,CAR,
 nhl,2008,carcida01,Daniel Carcillo,23,UTA,3.0,0.361,UTA,0.5167
-nhl,2008,pandoja01,Jay Pandolfo,33,NJD,3.0,0.361,NJD,0.0
+nhl,2008,pandoja01,Jay Pandolfo,33,NJD,3.0,0.361,NJD,0.627
 nhl,2008,kostise01,Sergei Kostitsyn,20,MTL,3.0,0.361,MTL,0.565
 nhl,2008,barkeca01,Cam Barker,21,CHI,3.0,0.361,CHI,0.9842
 nhl,2008,bouchph01,Philippe Boucher,34,DAL,3.0,0.361,DAL,
@@ -89800,7 +89800,7 @@ nhl,2008,smithmi01,Mike Smith,25,TBL,2.922,0.352,DAL|TBL,
 nhl,2008,niittan01,Antero Niittymäki,27,PHI,2.922,0.352,PHI,
 nhl,2008,stuarma01,Mark Stuart,23,BOS,2.9,0.349,BOS,0.9424
 nhl,2008,brodzky01,Kyle Brodziak,23,EDM,2.9,0.349,EDM,0.4975
-nhl,2008,conrocr01,Craig Conroy,36,CGY,2.9,0.349,CGY,0.0
+nhl,2008,conrocr01,Craig Conroy,36,CGY,2.9,0.349,CGY,2.583
 nhl,2008,sydorda01,Darryl Sydor,35,PIT,2.9,0.349,PIT,2.5
 nhl,2008,mckeeja01,Jay McKee,30,STL,2.9,0.349,STL,4.0
 nhl,2008,pecami01,Michael Peca,33,CBJ,2.9,0.349,CBJ,
@@ -89849,7 +89849,7 @@ nhl,2008,tellqmi01,Mikael Tellqvist,28,UTA,2.457,0.296,UTA,
 nhl,2008,ersbeer01,Erik Ersberg,25,LAK,2.457,0.296,LAK,
 nhl,2008,metrogl01,Glen Metropolit,33,BOS,2.4,0.289,BOS,
 nhl,2008,kapanni01,Niko Kapanen,29,UTA,2.4,0.289,UTA,
-nhl,2008,smithja01,Jason Smith,34,PHI,2.4,0.289,PHI,0.0
+nhl,2008,smithja01,Jason Smith,34,PHI,2.4,0.289,PHI,1.482
 nhl,2008,krepska01,Kamil Kreps,23,FLA,2.4,0.289,FLA,
 nhl,2008,fleisto01,Tomáš Fleischmann,23,WSH,2.4,0.289,WSH,0.495
 nhl,2008,arnasty01,Tyler Arnason,28,COL,2.4,0.289,COL,
@@ -89967,7 +89967,7 @@ nhl,2008,hilbean01,Andy Hilbert,26,NYI,1.2,0.145,NYI,0.675
 nhl,2008,wellwky01,Kyle Wellwood,24,TOR,1.2,0.145,TOR,0.875
 nhl,2008,peltovi01,Ville Peltonen,34,FLA,1.2,0.145,FLA,
 nhl,2008,vorosaa01,Aaron Voros,26,MIN,1.2,0.145,MIN,
-nhl,2008,browncu01,Curtis Brown,31,SJS,1.2,0.145,SJS,0.0
+nhl,2008,browncu01,Curtis Brown,31,SJS,1.2,0.145,SJS,1.254
 nhl,2008,peverri01,Rich Peverley,25,NSH,1.2,0.145,NSH,0.47
 nhl,2008,ryanbo01,Bobby Ryan,20,ANA,1.2,0.145,ANA,0.8217
 nhl,2008,moulsma01,Matt Moulson,24,LAK,1.2,0.145,LAK,0.4775
@@ -90047,7 +90047,7 @@ nhl,2008,cartery01,Ryan Carter,24,ANA,0.7,0.084,ANA,0.56
 nhl,2008,torrera01,Raffi Torres,26,EDM,0.7,0.084,EDM,2.25
 nhl,2008,warrerh01,Rhett Warrener,32,CGY,0.7,0.084,CGY,
 nhl,2008,moreaet01,Ethan Moreau,32,EDM,0.7,0.084,EDM,
-nhl,2008,grabomi01,Mikhail Grabovski,24,MTL,0.7,0.084,MTL,0.6875
+nhl,2008,grabomi01,Mikhail Grabovski,24,MTL,0.7,0.084,MTL,0.0725
 nhl,2008,conboti01,Tim Conboy,25,CAR,0.7,0.084,CAR,
 nhl,2008,jaffrja01,Jason Jaffray,26,VAN,0.7,0.084,VAN,
 nhl,2008,tanabda01,David Tanabe,27,CAR,0.7,0.084,CAR,0.75
@@ -90251,7 +90251,7 @@ nhl,2008,peckhth01,Theo Peckham,20,EDM,0.0,0.0,EDM,
 nhl,2008,sestito01,Tom Sestito,20,CBJ,0.0,0.0,CBJ,0.5633
 nhl,2008,stewagr01,Greg Stewart,21,MTL,0.0,0.0,MTL,
 nhl,2008,tukonla01,Lauri Tukonen,21,LAK,0.0,0.0,LAK,0.9842
-nhl,2008,winchje01,Jesse Winchester,24,OTT,0.0,0.0,OTT,2.3808
+nhl,2008,winchje01,Jesse Winchester,24,OTT,0.0,0.0,OTT,1.2096
 nhl,2008,zubovil01,Ilya Zubov,20,OTT,0.0,0.0,OTT,
 nhl,2008,greisth01,Thomas Greiss,22,SJS,0.0,0.0,SJS,
 nhl,2008,quickjo01,Jonathan Quick,22,LAK,0.0,0.0,LAK,0.56
@@ -90427,7 +90427,7 @@ nhl,2009,toewsjo01,Jonathan Toews,20,CHI,8.4,1.012,CHI,0.85
 nhl,2009,bouwmja01,Jay Bouwmeester,25,FLA,8.3,1.0,FLA,4.875
 nhl,2009,spezzja01,Jason Spezza,25,OTT,8.3,1.0,OTT,7.0
 nhl,2009,whitnra01,Ray Whitney,36,CAR,8.3,1.0,CAR,3.55
-nhl,2009,alfreda01,Daniel Alfredsson,36,OTT,8.3,1.0,OTT,0.0
+nhl,2009,alfreda01,Daniel Alfredsson,36,OTT,8.3,1.0,OTT,3.8991
 nhl,2009,millery01,Ryan Miller,28,BUF,8.3,1.0,BUF,
 nhl,2009,campbbr02,Brian Campbell,29,CHI,8.2,0.988,CHI,
 nhl,2009,prongch01,Chris Pronger,34,ANA,8.2,0.988,ANA,6.25
@@ -90447,7 +90447,7 @@ nhl,2009,kiprumi01,Miikka Kiprusoff,32,CGY,7.636,0.92,CGY,5.8333
 nhl,2009,bironma01,Martin Biron,31,PHI,7.636,0.92,PHI,3.5
 nhl,2009,hartnsc01,Scott Hartnell,26,PHI,7.6,0.916,PHI,4.2
 nhl,2009,edleral01,Alexander Edler,22,VAN,7.6,0.916,VAN,0.55
-nhl,2009,bergema02,Marc-André Bergeron,28,MIN,7.6,0.916,MIN,0.0
+nhl,2009,bergema02,Marc-André Bergeron,28,MIN,7.6,0.916,MIN,1.1192
 nhl,2009,arnotja01,Jason Arnott,34,NSH,7.6,0.916,NSH,4.5
 nhl,2009,bryzgil01,Ilya Bryzgalov,28,UTA,7.57,0.912,UTA,4.25
 nhl,2009,froloal01,Alex Frolov,26,LAK,7.5,0.904,LAK,
@@ -90994,7 +90994,7 @@ nhl,2009,ericsjo01,Jonathan Ericsson,24,DET,0.7,0.084,DET,0.9
 nhl,2009,oreilca01,Cal O'Reilly,22,NSH,0.7,0.084,NSH,0.5
 nhl,2009,reitzer01,Erik Reitz,26,NYR,0.6,0.072,MIN|NYR,
 nhl,2009,hutchan01,Andrew Hutchinson,28,DAL,0.6,0.072,TBL|DAL,
-nhl,2009,maddejo01,John Madden,35,NJD,0.6,0.072,NJD,0.0
+nhl,2009,maddejo01,John Madden,35,NJD,0.6,0.072,NJD,2.9385
 nhl,2009,bollja01,Jared Boll,22,CBJ,0.6,0.072,CBJ,0.555
 nhl,2009,barchkr01,Krys Barch,28,DAL,0.6,0.072,DAL,0.575
 nhl,2009,burisad01,Adam Burish,26,CHI,0.6,0.072,CHI,0.7125
@@ -91028,7 +91028,7 @@ nhl,2009,nokelpe01,Petteri Nokelainen,23,ANA,0.4,0.048,BOS|ANA,0.85
 nhl,2009,downist01,Steve Downie,21,TBL,0.4,0.048,PHI|TBL,
 nhl,2009,nychola01,Lawrence Nycholat,29,COL,0.4,0.048,VAN|COL,0.55
 nhl,2009,sjostfr01,Fredrik Sjöström,25,NYR,0.4,0.048,NYR,0.84
-nhl,2009,boulter01,Eric Boulton,32,WPG,0.4,0.048,WPG,0.6
+nhl,2009,boulter01,Eric Boulton,32,WPG,0.4,0.048,WPG,0.06
 nhl,2009,fedorto01,Todd Fedoruk,29,UTA,0.4,0.048,UTA,1.0583
 nhl,2009,marchto01,Todd Marchant,35,ANA,0.4,0.048,ANA,
 nhl,2009,armstde01,Derek Armstrong,35,LAK,0.4,0.048,LAK,
@@ -92045,7 +92045,7 @@ nhl,2010,modinfr01,Fredrik Modin,35,LAK,0.3,0.036,CBJ|LAK,
 nhl,2010,tlustji01,Jiří Tlustý,21,CAR,0.3,0.036,TOR|CAR,
 nhl,2010,reasoma01,Marty Reasoner,32,WPG,0.3,0.036,WPG,1.15
 nhl,2010,lapiema01,Maxim Lapierre,24,MTL,0.3,0.036,MTL,0.6875
-nhl,2010,boulter01,Eric Boulton,33,WPG,0.3,0.036,WPG,0.6
+nhl,2010,boulter01,Eric Boulton,33,WPG,0.3,0.036,WPG,0.06
 nhl,2010,sobotvl01,Vladimír Sobotka,22,BOS,0.3,0.036,BOS,
 nhl,2010,jackmti01,Tim Jackman,28,NYI,0.3,0.036,NYI,0.55
 nhl,2010,svatoma01,Marek Svatoš,27,COL,0.3,0.036,COL,2.05
@@ -94136,7 +94136,7 @@ nhl,2012,sheahri01,Riley Sheahan,20,DET,0.0,0.0,DET,0.785
 nhl,2012,stortza01,Zack Stortini,26,NSH,0.0,0.0,NSH,0.55
 nhl,2012,thangry01,Ryan Thang,24,NSH,0.0,0.0,NSH,
 nhl,2012,wathifr01,Francis Wathier,27,DAL,0.0,0.0,DAL,
-nhl,2012,welshje01,Jeremy Welsh,23,CAR,0.0,0.0,CAR,17.945
+nhl,2012,welshje01,Jeremy Welsh,23,CAR,0.0,0.0,CAR,0.925
 nhl,2012,whitftr01,Trent Whitfield,34,BOS,0.0,0.0,BOS,
 nhl,2012,wishaty01,Ty Wishart,23,NYI,0.0,0.0,NYI,0.8033
 nhl,2012,yonkmno01,Nolan Yonkman,30,FLA,0.0,0.0,FLA,
@@ -95123,7 +95123,7 @@ nhl,2013,leighmi01,Michael Leighton,31,PHI,-0.133,-0.016,PHI,0.9
 nhl,2013,volpaaa01,Aaron Volpatti,27,WSH,-0.2,-0.024,VAN|WSH,
 nhl,2013,daugaka01,Kaspars Daugaviņš,24,BOS,-0.2,-0.024,OTT|BOS,0.635
 nhl,2013,moentr01,Travis Moen,30,MTL,-0.2,-0.024,MTL,
-nhl,2013,desjaan01,Andrew Desjardins,26,SJS,-0.2,-0.024,SJS,0.54
+nhl,2013,desjaan01,Andrew Desjardins,26,SJS,-0.2,-0.024,SJS,0.5
 nhl,2013,jackmti01,Tim Jackman,31,CGY,-0.2,-0.024,CGY,0.6125
 nhl,2013,wrighja02,James Wright,22,WPG,-0.2,-0.024,WPG,0.65
 nhl,2013,bowmadr01,Drayson Bowman,23,CAR,-0.2,-0.024,CAR,0.6
@@ -95146,7 +95146,7 @@ nhl,2013,forsbfi01,Filip Forsberg,18,NSH,-0.2,-0.024,NSH,0.925
 nhl,2013,timmisc01,Scott Timmins,23,FLA,-0.2,-0.024,FLA,
 nhl,2013,savarda01,David Savard,22,CBJ,-0.2,-0.024,CBJ,
 nhl,2013,barbema01,Mark Barberio,22,TBL,-0.2,-0.024,TBL,
-nhl,2013,lebladr01,Drew LeBlanc,23,CHI,-0.2,-0.024,CHI,1.4866
+nhl,2013,lebladr01,Drew LeBlanc,23,CHI,-0.2,-0.024,CHI,0.925
 nhl,2013,tangrer01,Eric Tangradi,23,WPG,-0.3,-0.036,PIT|WPG,0.726
 nhl,2013,hallad01,Adam Hall,32,PHI,-0.3,-0.036,TBL|CAR|PHI,0.6
 nhl,2013,sheppja01,James Sheppard,24,SJS,-0.3,-0.036,SJS,0.825
@@ -96032,7 +96032,7 @@ nhl,2014,callami01,Mitch Callahan,22,DET,0.0,0.0,DET,
 nhl,2014,granbpe01,Petter Granberg,21,TOR,0.0,0.0,TOR,0.8
 nhl,2014,hunwima01,Matt Hunwick,28,COL,0.0,0.0,COL,1.6
 nhl,2014,khokhal01,Alexander Khokhlachev,20,BOS,0.0,0.0,BOS,
-nhl,2014,kunykco01,Cody Kunyk,23,TBL,0.0,0.0,TBL,1.5841
+nhl,2014,kunykco01,Cody Kunyk,23,TBL,0.0,0.0,TBL,0.925
 nhl,2014,leblape01,Peter LeBlanc,25,WSH,0.0,0.0,WSH,
 nhl,2014,letoupi01,Pierre-Luc Letourneau-Leblond,28,PIT,0.0,0.0,PIT,0.55
 nhl,2014,mckeggr01,Greg McKegg,21,TOR,0.0,0.0,TOR,
@@ -97561,7 +97561,7 @@ nhl,2016,nordsjo02,Joakim Nordström,23,CAR,2.4,0.289,CAR,0.605
 nhl,2016,mcquaad01,Adam McQuaid,29,BOS,2.4,0.289,BOS,
 nhl,2016,stewach02,Chris Stewart,28,ANA,2.4,0.289,ANA,1.7
 nhl,2016,theodsh01,Shea Theodore,20,ANA,2.4,0.289,ANA,0.925
-nhl,2016,pickaca01,Calvin Pickard,23,COL,2.39,0.288,COL,0.8505
+nhl,2016,pickaca01,Calvin Pickard,23,COL,2.39,0.288,COL,0.85
 nhl,2016,vasilan02,Andrei Vasilevskiy,21,TBL,2.324,0.28,TBL,0.925
 nhl,2016,fiddlve01,Vernon Fiddler,35,DAL,2.3,0.277,DAL,1.25
 nhl,2016,edmunjo01,Joel Edmundson,22,STL,2.3,0.277,STL,
@@ -97778,7 +97778,7 @@ nhl,2016,downist01,Steve Downie,28,UTA,0.7,0.084,UTA,1.75
 nhl,2016,ennisty01,Tyler Ennis,26,BUF,0.7,0.084,BUF,4.6
 nhl,2016,hymanza01,Zach Hyman,23,TOR,0.7,0.084,TOR,0.9
 nhl,2016,kostkmi01,Mike Kostka,30,OTT,0.7,0.084,OTT,
-nhl,2016,nelsoca01,Casey Nelson,23,BUF,0.7,0.084,BUF,1.738
+nhl,2016,nelsoca01,Casey Nelson,23,BUF,0.7,0.084,BUF,0.925
 nhl,2016,garbury01,Ryan Garbutt,30,ANA,0.6,0.072,CHI|ANA,1.8
 nhl,2016,smithbe01,Ben Smith,27,TOR,0.6,0.072,SJS|TOR,1.5
 nhl,2016,carrico01,Connor Carrick,21,TOR,0.6,0.072,WSH|TOR,0.6367
@@ -98009,7 +98009,7 @@ nhl,2016,wisnija01,James Wisniewski,31,CAR,0.0,0.0,CAR,5.5
 nhl,2016,woodmi01,Miles Wood,20,NJD,0.0,0.0,NJD,0.925
 nhl,2016,budajpe01,Peter Budaj,33,LAK,0.0,0.0,LAK,0.575
 nhl,2016,copleph01,Pheonix Copley,24,STL,0.0,0.0,STL,
-nhl,2016,kasdoja01,Jason Kasdorf,23,BUF,0.0,0.0,BUF,1.2122
+nhl,2016,kasdoja01,Jason Kasdorf,23,BUF,0.0,0.0,BUF,0.925
 nhl,2016,sarosju01,Juuse Saros,20,NSH,0.0,0.0,NSH,0.6925
 nhl,2016,binnijo01,Jordan Binnington,22,STL,-0.066,-0.008,STL,
 nhl,2016,hellbma01,Magnus Hellberg,24,NYR,-0.066,-0.008,NYR,0.625
@@ -98050,7 +98050,7 @@ nhl,2016,mckencu01,Curtis McKenzie,24,DAL,-0.1,-0.012,DAL,0.675
 nhl,2016,percyst01,Stuart Percy,22,TOR,-0.1,-0.012,TOR,
 nhl,2016,rendubo01,Borna Rendulic,23,COL,-0.1,-0.012,COL,
 nhl,2016,summech01,Chris Summers,27,NYR,-0.1,-0.012,NYR,0.6
-nhl,2016,tanevbr01,Brandon Tanev,24,WPG,-0.1,-0.012,WPG,2.2662
+nhl,2016,tanevbr01,Brandon Tanev,24,WPG,-0.1,-0.012,WPG,0.925
 nhl,2016,agostke01,Kenny Agostino,23,CGY,-0.1,-0.012,CGY,0.735
 nhl,2016,baunky01,Kyle Baun,23,CHI,-0.1,-0.012,CHI,0.8588
 nhl,2016,collise02,Sean Collins,27,WSH,-0.1,-0.012,WSH,0.575
@@ -99073,7 +99073,7 @@ nhl,2017,engluan01,Andreas Englund,21,OTT,-0.2,-0.024,OTT,0.7758
 nhl,2017,lashobr01,Brian Lashoff,26,DET,-0.2,-0.024,DET,0.65
 nhl,2017,molingr01,Griffen Molino,23,VAN,-0.2,-0.024,VAN,0.925
 nhl,2017,milanso01,Sonny Milano,20,CBJ,-0.2,-0.024,CBJ,0.925
-nhl,2017,rooneke01,Kevin Rooney,23,NJD,-0.2,-0.024,NJD,0.7964
+nhl,2017,rooneke01,Kevin Rooney,23,NJD,-0.2,-0.024,NJD,0.625
 nhl,2017,veyli01,Linden Vey,25,CGY,-0.2,-0.024,CGY,0.7
 nhl,2017,thomsbe01,Ben Thomson,24,NJD,-0.2,-0.024,NJD,
 nhl,2017,poturan01,Andrew Poturalski,23,CAR,-0.2,-0.024,CAR,0.8588
@@ -100958,9 +100958,9 @@ nhl,2019,beanja01,Jake Bean,20,CAR,0.0,0.0,CAR,0.925
 nhl,2019,belpelo01,Louis Belpedio,22,MIN,0.0,0.0,MIN,0.925
 nhl,2019,branner01,Erik Brännström,19,OTT,0.0,0.0,OTT,0.925
 nhl,2019,goulbty01,Tyrell Goulbourne,25,PHI,0.0,0.0,PHI,0.715
-nhl,2019,raffebr01,Brogan Rafferty,23,VAN,0.0,0.0,VAN,5.1338
+nhl,2019,raffebr01,Brogan Rafferty,23,VAN,0.0,0.0,VAN,0.925
 nhl,2019,sherwko01,Kole Sherwood,22,CBJ,0.0,0.0,CBJ,
-nhl,2019,sturmni01,Nico Sturm,23,MIN,0.0,0.0,MIN,4.2735
+nhl,2019,sturmni01,Nico Sturm,23,MIN,0.0,0.0,MIN,0.925
 nhl,2019,zborija01,Jakub Zbořil,21,BOS,0.0,0.0,BOS,
 nhl,2019,blidhan01,Anton Blidh,23,BOS,0.0,0.0,BOS,0.65
 nhl,2019,bouchre01,Reid Boucher,25,VAN,0.0,0.0,VAN,
@@ -100974,7 +100974,7 @@ nhl,2019,nogiene01,Nelson Nogier,22,WPG,0.0,0.0,WPG,
 nhl,2019,oregada01,Danny O'Regan,25,BUF,0.0,0.0,BUF,
 nhl,2019,pitlire01,Rem Pitlick,21,NSH,0.0,0.0,NSH,0.925
 nhl,2019,richaan01,Anthony Richard,22,NSH,0.0,0.0,NSH,
-nhl,2019,schulja01,Jimmy Schuldt,23,VEG,0.0,0.0,VEG,6.5675
+nhl,2019,schulja01,Jimmy Schuldt,23,VEG,0.0,0.0,VEG,0.925
 nhl,2019,stillri01,Riley Stillman,20,FLA,0.0,0.0,FLA,0.7733
 nhl,2019,thorbch01,Chris Thorburn,35,STL,0.0,0.0,STL,0.9
 nhl,2019,neuvimi01,Michal Neuvirth,30,PHI,0.0,0.0,PHI,2.5
@@ -101042,7 +101042,7 @@ nhl,2019,gignabr01,Brandon Gignac,21,NJD,-0.1,-0.012,NJD,0.7175
 nhl,2019,grecoan01,Anthony Greco,25,FLA,-0.1,-0.012,FLA,0.6675
 nhl,2019,jacobjo01,Joshua Jacobs,22,NJD,-0.1,-0.012,NJD,
 nhl,2019,lizotbl01,Blake Lizotte,21,LAK,-0.1,-0.012,LAK,0.925
-nhl,2019,tevesjo01,Josh Teves,23,VAN,-0.1,-0.012,VAN,1.5207
+nhl,2019,tevesjo01,Josh Teves,23,VAN,-0.1,-0.012,VAN,0.925
 nhl,2019,condomi01,Mike Condon,28,OTT,-0.133,-0.016,OTT,2.4
 nhl,2019,lyonal01,Alex Lyon,26,PHI,-0.133,-0.016,PHI,0.75
 nhl,2019,bachmri01,Richard Bachman,31,VAN,-0.133,-0.016,VAN,
@@ -102060,7 +102060,7 @@ nhl,2020,irwinma01,Matt Irwin,32,ANA,-0.4,-0.048,NSH|ANA,
 nhl,2020,seeleni01,Nick Seeler,26,CHI,-0.4,-0.048,MIN|CHI,0.725
 nhl,2020,anderjo05,Josh Anderson,25,CBJ,-0.4,-0.048,CBJ,0.765
 nhl,2020,beaudje01,J.C. Beaudin,22,OTT,-0.4,-0.048,OTT,
-nhl,2020,stewach02,Chris Stewart,32,PHI,-0.4,-0.048,PHI,0.7538
+nhl,2020,stewach02,Chris Stewart,32,PHI,-0.4,-0.048,PHI,0.75
 nhl,2020,schalti01,Tim Schaller,29,LAK,-0.5,-0.06,VAN|LAK,1.9
 nhl,2020,beaglja01,Jay Beagle,34,VAN,-0.5,-0.06,VAN,3.0
 nhl,2020,ericsjo01,Jonathan Ericsson,35,DET,-0.5,-0.06,DET,4.25
@@ -103273,7 +103273,7 @@ nhl,2022,mooretr01,Trevor Moore,26,LAK,5.3,0.639,LAK,
 nhl,2022,trochvi01,Vincent Trocheck,28,CAR,5.3,0.639,CAR,4.75
 nhl,2022,lindgry01,Ryan Lindgren,23,NYR,5.3,0.639,NYR,3.0
 nhl,2022,karlser01,Erik Karlsson,31,SJS,5.3,0.639,SJS,11.5
-nhl,2022,kaneev01,Evander Kane,30,EDM,5.3,0.639,EDM,2.1087
+nhl,2022,kaneev01,Evander Kane,30,EDM,5.3,0.639,EDM,1.375
 nhl,2022,oreilry01,Ryan O'Reilly,30,STL,5.2,0.627,STL,7.5
 nhl,2022,leean01,Anders Lee,31,NYI,5.2,0.627,NYI,7.0
 nhl,2022,atkinca01,Cam Atkinson,32,PHI,5.2,0.627,PHI,5.875
@@ -103869,7 +103869,7 @@ nhl,2022,bernaja01,Jacob Bernard-Docker,21,OTT,0.3,0.036,OTT,0.925
 nhl,2022,bordeth01,Thomas Bordeleau,20,SJS,0.3,0.036,SJS,0.9167
 nhl,2022,chrisja01,Jake Christiansen,22,CBJ,0.3,0.036,CBJ,0.925
 nhl,2022,stranau01,Austin Strand,24,LAK,0.3,0.036,LAK,0.7718
-nhl,2022,blankni01,Nick Blankenburg,23,CBJ,0.3,0.036,CBJ,1.6885
+nhl,2022,blankni01,Nick Blankenburg,23,CBJ,0.3,0.036,CBJ,0.925
 nhl,2022,cottepa01,Paul Cotter,22,VEG,0.3,0.036,VEG,
 nhl,2022,leivojo01,Josh Leivo,28,CAR,0.3,0.036,CAR,0.75
 nhl,2022,norlima01,Mattias Norlinder,21,MTL,0.3,0.036,MTL,0.8592
@@ -104985,7 +104985,7 @@ nhl,2023,kessemi01,Michael Kesselring,23,UTA,0.3,0.036,UTA,0.925
 nhl,2023,robinbu01,Buddy Robinson,31,CHI,0.3,0.036,CHI,0.75
 nhl,2023,poulide01,Derrick Pouliot,29,SJS,0.3,0.036,SJS,0.75
 nhl,2023,wrighsh01,Shane Wright,19,SEA,0.3,0.036,SEA,0.95
-nhl,2023,hirosak01,Akito Hirose,23,VAN,0.3,0.036,VAN,2.0267
+nhl,2023,hirosak01,Akito Hirose,23,VAN,0.3,0.036,VAN,0.95
 nhl,2023,schueco01,Corey Schueneman,27,MTL,0.3,0.036,MTL,
 nhl,2023,danfoju01,Justin Danforth,29,CBJ,0.3,0.036,CBJ,0.975
 nhl,2023,sokoleg01,Egor Sokolov,22,OTT,0.3,0.036,OTT,0.8183
@@ -105061,7 +105061,7 @@ nhl,2023,eklunwi01,William Eklund,20,SJS,0.1,0.012,SJS,0.925
 nhl,2023,larssja01,Jacob Larsson,25,OTT,0.1,0.012,OTT,0.75
 nhl,2023,wagneau01,Austin Wagner,25,CHI,0.1,0.012,CHI,1.1333
 nhl,2023,leonajo01,John Leonard,24,NSH,0.1,0.012,NSH,0.75
-nhl,2023,livinja02,Jake Livingstone,,NSH,0.1,0.012,NSH,2.0017
+nhl,2023,livinja02,Jake Livingstone,,NSH,0.1,0.012,NSH,0.95
 nhl,2023,bittewi01,William Bitten,24,STL,0.1,0.012,STL,0.7625
 nhl,2023,borowma01,Mark Borowiecki,33,NSH,0.1,0.012,NSH,0.9
 nhl,2023,santist01,Steven Santini,27,STL,0.1,0.012,STL,0.75
@@ -106948,7 +106948,7 @@ nhl,2025,mcginbr01,Brock McGinn,30,ANA,0.7,0.084,ANA,2.75
 nhl,2025,franket01,Ethen Frank,26,WSH,0.7,0.084,WSH,0.775
 nhl,2025,karlsli01,Linus Karlsson,25,VAN,0.7,0.084,VAN,
 nhl,2025,delbelu01,Luca Del Bel Belluz,21,CBJ,0.7,0.084,CBJ,0.9233
-nhl,2025,klingjo01,John Klingberg,32,EDM,0.7,0.084,EDM,1.7551
+nhl,2025,klingjo01,John Klingberg,32,EDM,0.7,0.084,EDM,1.35
 nhl,2025,schmiak01,Akira Schmid,24,VEG,0.664,0.08,VEG,0.875
 nhl,2025,deshavi01,Vincent Desharnais,28,SJS,0.6,0.072,VAN|PIT|SJS,2.0
 nhl,2025,dickija01,Jason Dickinson,29,CHI,0.6,0.072,CHI,4.25
@@ -107131,7 +107131,7 @@ nhl,2025,athanan01,Andreas Athanasiou,30,CHI,0.0,0.0,CHI,4.25
 nhl,2025,laczyta01,Tanner Laczynski,27,VEG,0.0,0.0,VEG,0.775
 nhl,2025,ludvijo01,John Ludvig,24,COL,0.0,0.0,COL,0.775
 nhl,2025,megnaja02,Jaycob Megna,32,FLA,0.0,0.0,FLA,0.775
-nhl,2025,schulja01,Jimmy Schuldt,29,SJS,0.0,0.0,SJS,0.8
+nhl,2025,schulja01,Jimmy Schuldt,29,SJS,0.0,0.0,SJS,0.775
 nhl,2025,caggidr01,Drake Caggiula,30,EDM,0.0,0.0,EDM,0.775
 nhl,2025,condolu01,Lucas Condotta,27,MTL,0.0,0.0,MTL,0.85
 nhl,2025,footeno01,Nolan Foote,24,NJD,0.0,0.0,NJD,0.825

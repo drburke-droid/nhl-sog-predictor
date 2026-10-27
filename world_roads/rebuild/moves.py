@@ -375,8 +375,12 @@ def nhl_fa_payroll(P):
         if not pid:
             miss += 1
             continue
-        cap = float(re.sub(r"[^\d.]", "", c["capHit"]) or 0) / 1e6
         n = int(c["length"] or 1)
+        listed = c["capHit"].strip()
+        cap = float(re.sub(r"[^\d.]", "", listed) or 0) / 1e6 if listed.startswith("$") else 0.0
+        total = float(re.sub(r"[^\d.]", "", c.get("value") or "") or 0) / 1e6
+        if total and not 0 < cap <= total:    # a cap hit that is not money ('NHL LOCKOUT / 24% ROLLBACK'), or more
+            cap = total / n                   # than the whole deal ($17.9M for a $925,000 one-year deal): its average
         start = s + 1 if "Ext" in c["contractType"] else s          # an extension starts the season after
         contracts[pid].append([start, n, cap, c["contractType"], f"{yy}{mo:02d}{dd:02d}"])
         if c["contractType"] in ("Std", "35+ Contract") and COVER["fa"]["nhl"][0] <= s:
