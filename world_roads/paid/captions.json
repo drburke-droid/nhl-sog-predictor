@@ -1,0 +1,89 @@
+[
+ {
+  "from": 1921.5,
+  "to": 1924.1,
+  "text": [
+   "Ty Cobb: the best-paid for 7 straight years (1915-1921)"
+  ],
+  "hit": false
+ },
+ {
+  "from": 1924.5,
+  "to": 1927.1,
+  "text": [
+   "First $100,000 salary on record: Red Grange, Bears",
+   "$100,000 in 1925 \u00b7 $1.8 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1929.5,
+  "to": 1932.1,
+  "text": [
+   "Babe Ruth's $80,000 tops President Hoover's $75,000",
+   "In 2025 dollars: $1.5 million"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1933.5,
+  "to": 1936.1,
+  "text": [
+   "Babe Ruth: the best-paid for 8 straight years (1926-1933)"
+  ],
+  "hit": false
+ },
+ {
+  "from": 1976.5,
+  "to": 1979.1,
+  "text": [
+   "Free agency: the first free agents cash in",
+   "an arbitrator struck down baseball's reserve clause in 1975"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1979.5,
+  "to": 1982.1,
+  "text": [
+   "First $1 million salary on record: Nolan Ryan, Astros",
+   "$1.1 million in 1980 \u00b7 $4.4 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1995.5,
+  "to": 1997.2,
+  "text": [
+   "First $10 million salary on record: Patrick Ewing, Knicks",
+   "$18.7 million in 1996 \u00b7 $38.4 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
+  "from": 1997.5,
+  "to": 2000.1,
+  "text": [
+   "Michael Jordan, Bulls: the first $25 million salary, still the record in 2025 dollars",
+   "$33.1 million in 1998 \u00b7 $65.4 million in 2025 dollars"
+  ],
+  "hit": true
+ },
+ {
+  "from": 2013.5,
+  "to": 2016.1,
+  "text": [
+   "Alex Rodriguez: the best-paid for 6 straight years (2008-2013)"
+  ],
+  "hit": false
+ },
+ {
+  "from": 2021.5,
+  "to": 2024.1,
+  "text": [
+   "First $50 million salary on record: Aaron Rodgers, Packers",
+   "$50.3 million in 2022 \u00b7 $55.3 million in 2025 dollars"
+  ],
+  "hit": true
+ }
+]

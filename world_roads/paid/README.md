@@ -12,7 +12,27 @@ Data: `../media/paid/salaries.csv` (every salary found, both dollars), `top.csv`
 `coverage.csv` (salaries found per league and year, and the CPI factor), `careers.csv` (every season counted in a
 career, documented or estimated, with running totals), `career_top.csv` (the 40 biggest careers to date each year).
 
-<!-- FINDINGS -->
+## What the races show
+
+**The yearly race.** In 2025 dollars, Babe Ruth's $80,000 of 1930 was $1.54 million, about twice today's MLB minimum
+salary; his best year was 1932 ($75,000, but Depression prices make it $1.78 million). Apart from Red Grange's $100,000
+of 1925, baseball held every top-ten place from 1913 to 1945; football's bonus babies (Donny
+Anderson, Joe Namath) and basketball's centres (Wilt Chamberlain, Kareem Abdul-Jabbar) broke in during the 1960s. Free
+agency opened baseball's purse after 1976 (Catfish Hunter, Pete Rose, Nolan Ryan's first $1 million salary in 1980).
+The NBA owned the late 1990s (60% of the top-ten places 1996-2010); the NFL's quarterback contracts own the 2020s.
+
+**The record is still Michael Jordan's**: $33.1 million in 1997-98, $65.4 million in 2025 dollars, ahead of Dak
+Prescott's $60 million of 2025, the top salary of the last two years.
+
+| Seasons | MLB | NBA | NFL | NHL |
+|---|---|---|---|---|
+| 1913-1945 | 100% | | 0% | |
+| 1946-1975 | 76% | 19% | 4% | 1% |
+| 1976-1995 | 63% | 26% | 8% | 3% |
+| 1996-2010 | 38% | 60% | 1% | 1% |
+| 2011-2025 | 48% | 24% | 28% | |
+
+(Share of the yearly top-ten places.)
 
 ## What counts as a salary
 
@@ -63,7 +83,25 @@ could make a top ten, but a well-paid player whose deal went unreported is missi
 
 ## Coverage
 
-<!-- COVERAGE -->
+Salaries found, per league, for some of the years (`coverage.csv` has every year):
+
+| Year | MLB | NBA | NFL | NHL | $1 then, in 2025 |
+|---|---|---|---|---|---|
+| 1913 | 75 | | | | $32.52 |
+| 1930 | 135 | | 1 | | $19.28 |
+| 1950 | 82 | 2 | 1 | | $13.36 |
+| 1970 | 91 | 13 | 2 | 7 | $8.30 |
+| 1980 | 97 | 20 | 5 | 12 | $3.91 |
+| 1990 | 871 | 65 | 24 | 11 | $2.46 |
+| 2000 | 836 | 506 | 81 | 13 | $1.87 |
+| 2010 | 835 | 456 | 701 | 643 | $1.48 |
+| 2025 | 275 | 518 | 2,571 | 889 | $1.00 |
+
+MLB: every candidate's Baseball Reference page (2,283: the Hall of Famers, the All-Stars, each season's most valuable
+players by WAR and the best-paid of 2010-16), and the Lahman database's salaries for everyone, 1985-2016. The NBA from
+1984-85 and the NFL from 1983 are complete rosters; before that, and for the NHL before 2009-10, the stars whose
+contracts were reported. So the early boards compare MLB's whole field with the other leagues' stars: the group that
+could make a top ten, but a well-paid player whose deal went unreported would be missing.
 
 ## The career race
 
@@ -108,7 +146,15 @@ a career more than a fifth of whose money is estimated carries a "≈" on its ba
 Tarkenton, Terry Bradshaw and Jim Brown, none of whom reached a career top ten on what was found. Career pay excludes
 the same things as the yearly race (endorsements, other sports, leagues outside North America).
 
-<!-- CAREER FINDINGS -->
+**What the career race shows.** The biggest career belonged to Fred Clarke (1913-20), Ty Cobb (1921-29) and then Babe
+Ruth for 42 years, 1930 to 1971: $17.2 million in 2025 dollars, $856,500 as paid, over 22 seasons. Wilt Chamberlain
+passed him in 1972, Kareem Abdul-Jabbar held the lead for 13 years (1978-90), then Dave Winfield, Patrick Ewing (the
+first career past $100 million in 2025 dollars, 1996), Michael Jordan, Shaquille O'Neal (the first past $500 million,
+2010), Alex Rodriguez for 13 years (2012-24), and in 2025 LeBron James: $658.3 million in 2025 dollars ($531.3 million
+as paid, 22 seasons), 38 times Ruth's career. The 2025 top ten: LeBron James, Alex Rodriguez ($646.2M), Kevin Garnett,
+Kevin Durant, Miguel Cabrera, Justin Verlander, Shaquille O'Neal, Chris Paul, Matthew Stafford (the NFL's best, $496.1M
+of cash) and Kobe Bryant. Estimated seasons make up 12.5% of the top-ten money before 1946 (the early baseball careers),
+under 6% from 1946 to 1995, and almost none since.
 
 ## The film
 
