@@ -326,3 +326,14 @@ replacement; thumbnails and YouTube copy in `media/fantasy/`). See [fantasy/READ
   and '95, then Faulk.
 * The final board is 10 RB seasons and 2 WR seasons (Cooper Kupp 2021, Jerry Rice 1995). The best QB season (Dan
   Marino 1984) and the best TE season (Todd Christensen 1983) were on the 1980s board.
+
+## YouTube package for the best-paid athletes race (`paid_youtube/`)
+
+The best-paid athletes race itself (`paid/`) is on branch `claude/wonderful-ritchie-uyd31i`. This folder holds what
+goes around its single-season film on YouTube:
+* `media/paid_youtube/best_paid_athletes_march.mp4` is the film with the fantasy race's march under it, ready to upload.
+* Thumbnails A/B/C (`paid_youtube/thumbs.py`) use Babe Ruth (1921, Library of Congress, no known restrictions) and
+  Michael Jordan (1997, Steve Lipofsky, CC BY-SA 3.0).
+* `media/paid_youtube/YOUTUBE.md` has the titles, description, chapters, tags and pinned comment.
+
+`python thumbs.py PAID` reads that race's `season_top.csv` from PAID, its `media/paid` directory.
