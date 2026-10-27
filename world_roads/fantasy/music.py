@@ -94,7 +94,7 @@ def track():
         k -= 1
     up = D.film_time(lead[k][0], lead[k][1]) if k > 0 else None
     caps = V.CAPS
-    big = [c["from"] for c in caps if "for No. 1" in c["text"][0]]
+    big = [c["from"] for c in caps if c.get("tag") == "NEW No. 1"]
     T = Track(total, E, impacts=[(V.INTRO, 0.5)] + [(t, 0.4) for t in big],
               risers=[(D.race_end - 2 * BAR, D.race_end + 0.05)])
     T.compose_bars(up, D.race_end + V.HOLD)

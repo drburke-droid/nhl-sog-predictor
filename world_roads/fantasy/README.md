@@ -6,8 +6,10 @@ most valuable seasons so far. While a season is played, its bars grow toward the
 the board and stays until better seasons push it off. It's built like the best-paid athletes race (`paid/`): the same
 look, the same kind of synthesized score, and captions found in the data.
 
-* **Film:** `../media/fantasy/fantasy_best_seasons.mp4` (1920x1080, 30 fps, 3 min 19 s, with an original synthesized
-  score). It opens with a 42-second explainer of the method in plain words.
+* **Film:** `../media/fantasy/fantasy_best_seasons.mp4` (1920x1080, 30 fps, 3 min 16 s, with an original synthesized
+  score). It opens with a 39-second explainer of the method in plain words.
+* **For YouTube:** `../media/fantasy/YOUTUBE.md` has three thumbnails (`fantasy_thumb_A/B/C.png`) and a title for each,
+  the description and chapters.
 * **Data:**
   * `../media/fantasy/seasons.csv`: every QB, RB, WR and TE season 1980-2025, with stat line, PPR points, games, rank
     at his position, replacement level, VORP and rank in its season.
@@ -122,9 +124,9 @@ stand further above replacement than anyone else's.
 
 ## The film
 
-* **The explainer (42 s).** Most viewers won't know what value over replacement is, so the film opens with six short
-  scenes:
-  1. **Title.**
+* **The explainer (39 s).** Most viewers won't know what value over replacement is, so the film opens with five
+  short scenes:
+  1. **The hook.** "The greatest fantasy season ever", decided by a tenth of a point.
   2. **The question.** Who had the best season ever? Total points can't settle it. In 2020 Josh Allen outscored Derrick
      Henry, 396 to 333, yet Henry did more to win fantasy leagues.
   3. **The answer.** The same two bars split into what the best free player at the position scored and what the
@@ -133,18 +135,27 @@ stand further above replacement than anyone else's.
   4. **Who the free player is.** A 12-team league starts a QB, 2 RBs, 3 WRs, a TE and a flex. Once every team's
      starters are taken, the best player left is about the 16th QB, 30th RB, 42nd WR and 14th TE. Each season is
      measured against that year's free players.
-  5. **Missed games count zero.** 300 points in 12 games beats 300 in 16.
-  6. **How to read the chart.** Colours, the board of 12, outlined bars for the season being played, and the row
-     under the board.
+  5. **How to read the race.** Colours, the board of 12, glowing bars for the season being played, and the row under
+     the board.
 
   The example is picked from the data (`captions.py`): the season's top-scoring QB who outscored one of its top three
   RBs, both playing every game, while the RB was worth at least 30 more over replacement. Of those, the widest
   outscoring wins.
+* **The look** (`look.py`):
+  * a navy field lit from above, with a faint beam, a vignette and fine grain;
+  * Barlow Condensed for display type (SIL OFL, in `fonts/` with its licence), Inter for the small print;
+  * bars with a sheen and a bright top edge, with the season's year set in the tip;
+  * a numbered lane for each of the 12 places, No. 1 in gold;
+  * captions as lower-third cards with a tag (NEW No. 1, BEST QB SEASON, STRIKE…) and an accent stripe: gold for
+    records, the position's colour for its best season, grey for the season's context;
+  * when a new No. 1 arrives, a gold glow and a "NEW No. 1" tag on its bar for about two seconds;
+  * a big italic year with the week and a season progress bar;
+  * a 1980-2025 timeline along the bottom, with a gold dot where each record fell.
 * **The board.** It shows the twelve most valuable seasons so far. Each bar shows:
   * on the left, the player, his position, team and year;
   * on the right, the value, and once the season is over, its stat line.
 
-  The current season's bars are outlined.
+  The bars of the season being played glow.
 * **The chaser.** Under the board, while the season's best so far isn't on the board, a row shows it with the all-time
   place it would hold. In the quiet years, that row is the one that moves.
 * **Pacing.** Seasons don't all take the same time. A season runs 2 to 12 beats of the score (1.4 to 8.4 s), depending
@@ -155,7 +166,8 @@ stand further above replacement than anyone else's.
 * **Colour** encodes the position: QB magenta, RB blue, WR yellow, TE green. These four were validated together for
   colour-blind separation on this background. The one warning (yellow against green under protanopia) is covered
   because every bar also names its position in text.
-* **Captions** come from the data (`captions.py`), and none is written by hand. They mark:
+* **Captions** come from the data (`captions.py`), and none is written by hand. Each has a tag and an accent colour.
+  They mark:
   * each new No. 1;
   * the season 0.1 short of the record;
   * the best QB, WR and TE seasons, with the place each held when it ended;
@@ -178,8 +190,9 @@ python compare.py        # how the replacement ranks shape the board (the table 
 python captions.py       # -> captions.json, summary.json (from the data)
 python video.py timeline # seconds per season
 python video.py still 1984.95 2006.99 2026.5    # stills (t in seasons; 2026.5 is the closing summary)
-python video.py still 1979.2 1979.45 1979.63    # explainer stills (1979.x: that fraction of the explainer)
-python assemble.py render 4                     # picture (4 processes, about 4 min), score, mux -> ../media/fantasy/
+python video.py still 1979.1 1979.45 1979.63    # explainer stills (1979.x: that fraction of the explainer)
+python assemble.py render 4                     # picture (4 processes, about 6 min), score, mux -> ../media/fantasy/
+python thumbs.py                                # -> ../media/fantasy/fantasy_thumb_A.png, _B.png, _C.png
 ```
 
 Needs numpy, pandas, Pillow, numba and scipy (for the score), ffmpeg with libx264, and the Inter font.

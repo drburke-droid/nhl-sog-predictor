@@ -2,15 +2,27 @@
  {
   "season": 1981,
   "week": 16,
+  "tag": "NEW No. 1",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
-   "William Andrews's 1981 passes Billy Sims's 1980 for No. 1",
-   "1,301 rush yds \u00b7 81 catches \u00b7 12 TD: 183.8 over replacement"
+   "William Andrews's 1981 passes Billy Sims's 1980",
+   "1,301 rush yds \u00b7 81 catches \u00b7 12 TD \u00b7 183.8 over replacement"
   ]
  },
  {
   "season": 1982,
   "week": 0,
   "delay": 0.3,
+  "tag": "STRIKE",
+  "accent": [
+   170,
+   186,
+   206
+  ],
   "text": [
    "1982: a players' strike cuts the season to 9 games",
    "the season's best still reaches the board"
@@ -19,15 +31,27 @@
  {
   "season": 1983,
   "week": 15,
+  "tag": "NEW No. 1",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
-   "Eric Dickerson's 1983 passes William Andrews's 1981 for No. 1",
-   "1,808 rush yds \u00b7 51 catches \u00b7 20 TD: 202.1 over replacement"
+   "Eric Dickerson's 1983 passes William Andrews's 1981",
+   "1,808 rush yds \u00b7 51 catches \u00b7 20 TD \u00b7 202.1 over replacement"
   ]
  },
  {
   "season": 1983,
   "week": 16,
   "delay": 0.2,
+  "tag": "BEST TE SEASON",
+  "accent": [
+   0,
+   131,
+   0
+  ],
   "text": [
    "Todd Christensen, 1983: the most valuable tight end season",
    "92 catches \u00b7 1,247 yds \u00b7 12 TD \u00b7 192 over replacement, No. 2 all-time when it ended"
@@ -36,15 +60,27 @@
  {
   "season": 1984,
   "week": 14,
+  "tag": "NEW No. 1",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
-   "James Wilder's 1984 passes Eric Dickerson's 1983 for No. 1",
-   "1,544 rush yds \u00b7 85 catches \u00b7 13 TD: 245.4 over replacement"
+   "James Wilder's 1984 passes Eric Dickerson's 1983",
+   "1,544 rush yds \u00b7 85 catches \u00b7 13 TD \u00b7 245.4 over replacement"
   ]
  },
  {
   "season": 1984,
   "week": 16,
   "delay": 0.2,
+  "tag": "BEST QB SEASON",
+  "accent": [
+   213,
+   81,
+   129
+  ],
   "text": [
    "Dan Marino, 1984: the most valuable quarterback season",
    "5,084 pass yds \u00b7 48 TD passes \u00b7 221 over replacement, No. 3 all-time when it ended"
@@ -53,31 +89,55 @@
  {
   "season": 1992,
   "week": 17,
+  "tag": "NEW No. 1",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
-   "Emmitt Smith's 1992 passes James Wilder's 1984 for No. 1",
-   "1,713 rush yds \u00b7 59 catches \u00b7 19 TD: 253.9 over replacement"
+   "Emmitt Smith's 1992 passes James Wilder's 1984",
+   "1,713 rush yds \u00b7 59 catches \u00b7 19 TD \u00b7 253.9 over replacement"
   ]
  },
  {
   "season": 1995,
   "week": 17,
+  "tag": "NEW No. 1",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
-   "Emmitt Smith's 1995 passes Emmitt Smith's 1992 for No. 1",
-   "1,773 rush yds \u00b7 62 catches \u00b7 25 TD: 269.1 over replacement"
+   "Emmitt Smith's 1995 passes Emmitt Smith's 1992",
+   "1,773 rush yds \u00b7 62 catches \u00b7 25 TD \u00b7 269.1 over replacement"
   ]
  },
  {
   "season": 2000,
   "week": 15,
+  "tag": "NEW No. 1",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
-   "Marshall Faulk's 2000 passes Emmitt Smith's 1995 for No. 1",
-   "1,359 rush yds \u00b7 81 catches \u00b7 26 TD: 329.7 over replacement"
+   "Marshall Faulk's 2000 passes Emmitt Smith's 1995",
+   "1,359 rush yds \u00b7 81 catches \u00b7 26 TD \u00b7 329.7 over replacement"
   ]
  },
  {
   "season": 2006,
   "week": 17,
   "delay": 0.2,
+  "tag": "0.1 SHORT",
+  "accent": [
+   255,
+   196,
+   92
+  ],
   "text": [
    "LaDainian Tomlinson, 2006: 1,815 rush yds \u00b7 56 catches \u00b7 31 TD",
    "329.6 over replacement, 0.1 short of Marshall Faulk's 2000"
@@ -87,6 +147,12 @@
   "season": 2021,
   "week": 0,
   "delay": 0.3,
+  "tag": "17 GAMES",
+  "accent": [
+   170,
+   186,
+   206
+  ],
   "text": [
    "2021: the season grows to 17 games",
    "a 17th game is worth about 6% more over replacement"
@@ -96,6 +162,12 @@
   "season": 2021,
   "week": 18,
   "delay": 0.2,
+  "tag": "BEST WR SEASON",
+  "accent": [
+   201,
+   133,
+   0
+  ],
   "text": [
    "Cooper Kupp, 2021: the most valuable receiver season",
    "145 catches \u00b7 1,947 yds \u00b7 16 TD \u00b7 283 over replacement, No. 8 all-time when it ended"
@@ -105,6 +177,12 @@
   "season": 2025,
   "week": 18,
   "delay": 0.2,
+  "tag": "2025",
+  "accent": [
+   57,
+   135,
+   229
+  ],
   "text": [
    "Christian McCaffrey, 2025: No. 9 all-time",
    "1,202 rush yds \u00b7 102 catches \u00b7 17 TD \u00b7 271 over replacement"

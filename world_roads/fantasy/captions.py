@@ -6,7 +6,9 @@ Every caption is found in the data, not written in by hand:
 * the best season at each position but the record's, at its end, with the place it then held;
 * a season cut short (fewer than 12 games a team), at its start; the first 17-game season, at its start;
 * the last season's best, at its end, with its all-time place.
-A caption is anchored to a season and week; video.py turns that into film time and spaces them out.
+A caption is anchored to a season and week, with a tag and an accent colour for its card (gold for records, the
+position's colour for its best season, grey for the season's context); video.py turns the anchor into film time and
+spaces them out.
 """
 import os, sys, csv, json
 from collections import Counter, defaultdict
@@ -18,6 +20,7 @@ import video as V                                     # noqa: E402
 from vorp import team_games                           # noqa: E402
 
 WORD = {"QB": "quarterback", "RB": "running back", "WR": "receiver", "TE": "tight end"}
+GOLD, GREY = V.L.GOLD, V.INK2                         # caption accents: records, and the season's context
 
 
 def main():
@@ -43,8 +46,8 @@ def main():
         if i == lead[k - 1][2] or y == F or holds(lead, k) < 4:
             continue
         o = lead[k - 1][2]
-        caps.append(dict(season=y, week=w, text=[f"{who(i)} passes {who(o)} for No. 1",
-                                                 f"{V.statline(e[i])}: {e[i]['vorp']:,.1f} over replacement"]))
+        caps.append(dict(season=y, week=w, tag="NEW No. 1", accent=GOLD, text=[
+            f"{who(i)} passes {who(o)}", f"{V.statline(e[i])} · {e[i]['vorp']:,.1f} over replacement"]))
     record = lead[-1][2]
 
     # seasons within a point of the record
@@ -52,7 +55,7 @@ def main():
         if i != record and e[record]["vorp"] - e[i]["vorp"] < 1.0:
             y = e[i]["season"]
             gap = e[record]["vorp"] - e[i]["vorp"]
-            caps.append(dict(season=y, week=D.weeks[y], delay=0.2, text=[
+            caps.append(dict(season=y, week=D.weeks[y], delay=0.2, tag=f"{gap:.1f} SHORT", accent=GOLD, text=[
                 f"{e[i]['player']}, {y}: {V.statline(e[i])}",
                 f"{e[i]['vorp']:,.1f} over replacement, {gap:.1f} short of {who(record)}" if y > e[record]["season"] else
                 f"{e[i]['vorp']:,.1f} over replacement, {gap:.1f} behind the record still to come"]))
@@ -67,7 +70,7 @@ def main():
         i = max(mine, key=lambda i: e[i]["vorp"])
         y = e[i]["season"]
         place = D.place(e[i]["vorp"] + 1e-6, y, D.C[y][:, -1])
-        caps.append(dict(season=y, week=D.weeks[y], delay=0.2, text=[
+        caps.append(dict(season=y, week=D.weeks[y], delay=0.2, tag=f"BEST {P} SEASON", accent=V.POSC[P], text=[
             f"{e[i]['player']}, {y}: the most valuable {WORD[P]} season",
             f"{V.statline(e[i])} · {e[i]['vorp']:,.0f} over replacement, No. {place} all-time when it ended"]))
 
@@ -77,12 +80,12 @@ def main():
         best = max((r["vorp"] for r in e if r["season"] == y), default=0)
         twelfth = sorted(D.C[y][:, 0], reverse=True)[N - 1]
         if g < 12:
-            caps.append(dict(season=y, week=0, delay=0.3, text=[
+            caps.append(dict(season=y, week=0, delay=0.3, tag="STRIKE", accent=GREY, text=[
                 f"{y}: a players' strike cuts the season to {g} games",
                 "no season this short reaches the board" if best < twelfth else "the season's best still reaches the board"]))
         if g == 17 and int(team_games(y - 1)) == 16:
-            caps.append(dict(season=y, week=0, delay=0.3, text=[f"{y}: the season grows to 17 games",
-                                                                "a 17th game is worth about 6% more over replacement"]))
+            caps.append(dict(season=y, week=0, delay=0.3, tag="17 GAMES", accent=GREY, text=[
+                f"{y}: the season grows to 17 games", "a 17th game is worth about 6% more over replacement"]))
 
     # the last season's best, and where it ranks
     mine = [i for i in range(len(e)) if e[i]["season"] == L]
@@ -90,7 +93,7 @@ def main():
         i = max(mine, key=lambda i: e[i]["vorp"])
         place = D.place(e[i]["vorp"] + 1e-6, L, D.C[L][:, -1])
         if place <= N:
-            caps.append(dict(season=L, week=D.weeks[L], delay=0.2, text=[
+            caps.append(dict(season=L, week=D.weeks[L], delay=0.2, tag=str(L), accent=V.POSC[e[i]["pos"]], text=[
                 f"{e[i]['player']}, {L}: No. {place} all-time", f"{V.statline(e[i])} · {e[i]['vorp']:,.0f} over replacement"]))
 
     caps.sort(key=lambda c: (c["season"], c["week"]))
