@@ -201,7 +201,8 @@ stand further above replacement than anyone else's.
 * **The same march for the best-paid athletes race.** `python music.py paid PAID` writes
   `../media/fantasy/march_best_paid.wav`, 142.8 s at 48 kHz. PAID is that race's `paid/` directory, from its own branch
   (`claude/wonderful-ritchie-uyd31i`). The march is laid on that film's real timeline, read from its `video.py`. That
-  race paces itself, so its years take uneven time. The same file is committed there as `media/paid/march_best_paid.wav`.
+  race paces itself, so its years take uneven time. To use the file on that branch, run
+  `git checkout origin/claude/tender-dirac-ek6oyp -- world_roads/media/fantasy/march_best_paid.wav` there.
   * 0:00 a timpani roll and swell; 0:02.8 the fanfare, under its 5.6 s title;
   * 0:05.6 the march from 1913, building from horns and strings to the full band, about 5 dB louder by the end;
   * 0:56.0 up a whole step with free agency (1977), at the bar nearest that year;
