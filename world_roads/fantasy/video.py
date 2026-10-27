@@ -6,9 +6,9 @@
     python video.py render [jobs]              -> out/race.mp4 (chunks rendered in parallel)
 
 The twelve players with the most career VORP (../media/fantasy/seasons.csv, weekly.csv, built by vorp.py): bars slide
-past each other as the ranks change and grow week by week as each season's value accrues. Each bar carries the player,
-his position and team, his career VORP, and what this season has added (or, once his career is over, its span; the bar
-then fades). The scale follows the leader.
+past each other as the ranks change and move game by game: each game adds its points over replacement, and a bad one
+takes some away. Each bar carries the player, his position and team, his career VORP, and what this season has added
+or taken away (or, once his career is over, its span; the bar then fades). The scale follows the leader.
 
 Colour encodes the position (QB magenta, RB blue, WR yellow, TE green: validated together for colour-blind separation on
 this background) and every bar also names its position in text.
@@ -112,10 +112,10 @@ class Data:
 
     # ------------------------------------------------------------------ time
     def board_gain(self, y):
-        """value added in season y by the players on the board at its start or its end"""
+        """value gained or lost in season y by the players on the board at its start or its end"""
         a, b = self.C[y][:, 0], self.C[y][:, -1]
         on = {i for i in np.argsort(-a, kind="stable")[:N] if a[i] > 0} | set(np.argsort(-b, kind="stable")[:N])
-        return float(sum(b[i] - a[i] for i in on))
+        return float(sum(abs(b[i] - a[i]) for i in on))
 
     def passes(self, y):
         """how many times a bar moves up the board in season y (sampled 48 times a week)"""
@@ -328,7 +328,7 @@ def board(im, T, a=1.0, hold=False):
         d.text((X0 - 18, yy + BAR / 2 + 14), f"{pos} · {team}", font=font(18, "Regular"), fill=INK2 + (int(235 * ta),), anchor="rm")
         d.text((x1 + 14, yy + BAR / 2 - 8), num(v), font=font(27, "Bold"), fill=INK + (int(255 * ta),), anchor="lm")
         if this is not None:
-            sub = f"+{num(this)} in {y}"
+            sub = f"{'−' if round(this) < 0 else '+'}{num(abs(this))} in {y}"
         elif span:
             back = any(s > y for s in D.played[D.pids[i]])     # a season off, not the end of his career
             sub = f"no games in {y}" if back else f"{span[0]}–{span[1]}"

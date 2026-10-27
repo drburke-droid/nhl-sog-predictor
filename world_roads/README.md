@@ -315,10 +315,11 @@ python thumbs.py                                                             # t
 
 This is a bar-chart race of career value over replacement in a 12-team PPR league, 2000-2025. Replacement each season
 comes from a lineup of a QB, 2 RBs, 3 WRs, a TE, a flex and a K: the 16th QB, 30th RB, 42nd WR, 14th TE and 13th K.
-A season below replacement counts zero. The data is nflverse's weekly player stats, and the film is
-`media/fantasy/fantasy_vorp_race.mp4` (2 min 10 s). See [fantasy/README.md](fantasy/README.md).
+Value is counted by the game, so a season below replacement counts negative and a missed game counts nothing. The data
+is nflverse's weekly player stats, and the film is `media/fantasy/fantasy_vorp_race.mp4` (2 min 17 s). See
+[fantasy/README.md](fantasy/README.md).
 
-* LaDainian Tomlinson leads with 1,834 and has held No. 1 since Week 3 of 2005.
-* The top 12 after 2025 holds 4 QBs, 4 WRs, 2 RBs and 2 TEs. Christian McCaffrey, at No. 6, is the top active player.
+* LaDainian Tomlinson leads with 1,877 and has held No. 1 since Week 9 of 2005.
+* Christian McCaffrey is No. 2 (1,469). The top 12 after 2025 holds 4 QBs, 4 WRs, 2 RBs and 2 TEs.
 * By raw career PPR points, the top six would all be quarterbacks. With RB36 and WR36 as replacement, running backs
-  took 57% of the board; `fantasy/compare.py` shows how each choice of ranks shapes it.
+  took about two-thirds of the board; `fantasy/compare.py` shows how each choice of ranks shapes it.

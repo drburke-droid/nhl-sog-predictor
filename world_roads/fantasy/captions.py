@@ -1,11 +1,12 @@
 """The race's captions and closing summary, from the data:  python captions.py  -> captions.json, summary.json
 
 Every caption is found in the data, not written in by hand:
-* every change at No. 1 after the first month: the first leader at a new position, and the leader who keeps it;
-* the most valuable season since 2000, at the end of that season (and any season within a point of it);
+* every change at No. 1 after the first season that lasts four weeks or more: the first leader at a new position,
+  and the leader who keeps it;
+* the most valuable season since 2000, at the end of that season, and any season within a point of it, in order;
 * the first player to the highest 500-point milestone anyone reaches;
-* the first quarterback in the top 3 (in the top 12 if none gets that high), at the end of that season;
-* each new No. 2 after the leader retires (the highest an active player can then stand);
+* the highest any quarterback climbs, the first time one gets there;
+* each new No. 2 after the leader retires that lasts three weeks or more (or to the end);
 * the last change of the top player at each other position, once the leader has No. 1 for good;
 * a run of two or more seasons in which no one on the board adds a point, and the first new name after it;
 * the highest-ranked active player at the end, when he climbs to that place.
@@ -43,21 +44,22 @@ def main():
     top = lambda v: [i for i in np.argsort(-v, kind="stable")[:N] if v[i] > 0]
     caps = []
 
-    # changes at No. 1 (after the first four weeks, when one game can still reorder everything)
+    def holds(seq, k):
+        """how many week marks the place changed at mark k stays with its new holder (to the end: a large number)"""
+        n = 1
+        while k + n < len(seq) and seq[k + n][2] == seq[k][2]:
+            n += 1
+        return n if k + n < len(seq) else 99
+
+    # changes at No. 1 after the first season that last four weeks or more
     lead = [(y, w, int(np.argmax(v))) for y, w, v in marks if v.max() > 0]
     since = {lead[0][2]: lead[0][0]}
     led = {pos(lead[0][2], lead[0][0])}
-    changes = []
-    for k in range(1, len(lead)):
+    changes = [k for k in range(1, len(lead)) if lead[k][2] != lead[k - 1][2] and lead[k][0] > F and holds(lead, k) >= 4]
+    for n, k in enumerate(changes):
         y, w, i = lead[k]
-        if i != lead[k - 1][2]:
-            changes.append((y, w, i, lead[k - 1][2]))
-            since.setdefault(i, y)
-    for n, (y, w, i, o) in enumerate(changes):
+        o = lead[changes[n - 1]][2] if n else lead[k - 1][2]
         p = pos(i, y)
-        if (y, w) <= (F, 4):
-            led.add(p)
-            continue
         if n == len(changes) - 1:
             line = f"and holds it through {L}"
         elif p not in led:
@@ -65,26 +67,33 @@ def main():
         else:
             line = f"{last(o)} had led since {since[o]}"
         led.add(p)
+        since[i] = y
         caps.append(dict(season=y, week=w, text=[f"{name(i)} passes {name(o)} for No. 1", line]))
-    leader, settled = lead[-1][2], (changes[-1][0], changes[-1][1]) if changes else (F, 0)
+    leader = lead[-1][2]
+    settled = lead[changes[-1]][:2] if changes else (F, 0)
 
     # the most valuable season, and seasons within a point of it
     rows = sorted(sea.values(), key=lambda r: -r["vorp"])
-    best = rows[0]
-    ties = [r for r in rows[1:] if best["vorp"] - r["vorp"] < 1.0]
-    nxt = rows[len(ties) + 1]
-    for k, r in enumerate([best] + ties):
+    near = [r for r in rows if rows[0]["vorp"] - r["vorp"] < 1.0]
+    nxt = rows[len(near)]
+    top_so_far = None
+    for r in sorted(near, key=lambda r: r["season"]):
         td = int(float(r["rush_td"]) + float(r["rec_td"]))
         what = f"{int(float(r['pass_td']))} TD passes" if r["pos"] == "QB" else f"{td} touchdowns"
-        if k == 0 and not ties:
+        v = f"{r['vorp']:,.1f}" if len(near) > 1 else num(r["vorp"])
+        if len(near) == 1:
             tail = f"the most in a season (next: {nxt['player'].split()[-1]}'s {nxt['season']}, {num(nxt['vorp'])})"
-        elif k == 0:
-            tail = "no season since has topped it"
+        elif top_so_far is None:
+            tail = f"the most of any season since {F}" if r is rows[0] else "the most in a season so far"
         else:
-            tail = f"level with {best['player'].split()[-1]}'s {best['season']} as the most in a season"
+            t = f"{top_so_far['player'].split()[-1]}'s {top_so_far['season']} ({top_so_far['vorp']:,.1f})"
+            tail = (f"edging {t} for the most in a season" if r["vorp"] > top_so_far["vorp"] else
+                    f"level with {t} for the most in a season" if r["vorp"] == top_so_far["vorp"] else f"just short of {t}")
+        if top_so_far is None or r["vorp"] > top_so_far["vorp"]:
+            top_so_far = r
         caps.append(dict(season=r["season"], week=D.weeks[r["season"]], delay=0.2,
                          text=[f"{r['player']}, {r['season']}: {what}, {num(r['points'])} PPR points",
-                               f"{num(r['vorp'])} over replacement, {tail}"]))
+                               f"{v} over replacement, {tail}"]))
 
     # the first to the highest 500-point milestone anyone reaches
     peak = D.C[L][:, -1].max()
@@ -99,28 +108,22 @@ def main():
                                                          f"{others} others have since"]))
                 break
 
-    # the first quarterback in the top 3 (or the top 12), at the end of that season
-    for depth in (3, N):
-        hit = None
-        for y in range(F, L + 1):
-            qb = [i for i in top(D.C[y][:, -1])[:depth] if active(i, y) and sea[pid(i), y]["pos"] == "QB"]
-            if qb:
-                hit = (y, qb[0])
-                break
-        if hit:
-            y, i = hit
-            caps.append(dict(season=y, week=D.weeks[y], delay=0.2,
-                             text=[f"{name(i)}, {y}: {int(float(sea[pid(i), y]['pass_td']))} touchdown passes",
-                                   f"the first quarterback in the top {depth}"]))
-            break
+    # the highest any quarterback climbs (after the first season), the first time one gets there
+    qbr = [(y, w, rk, i) for y, w, v in marks if y > F for rk, i in enumerate(top(v)) if pos(i, y) == "QB"]
+    if qbr:
+        hi = min(r[2] for r in qbr)
+        y, w, rk, i = min((r for r in qbr if r[2] == hi), key=lambda r: (r[0], r[1]))
+        caps.append(dict(season=y, week=w, text=[f"{name(i)} climbs to No. {rk + 1}",
+                                                 "the highest any quarterback has stood"]))
 
     # each new No. 2 after the leader retires: the highest an active player can stand
     gone = D.played[pid(leader)][-1]
     seq = [(y, w, top(v)[:2]) for y, w, v in marks]
+    sec = [(y, w, o[1] if len(o) > 1 else None) for y, w, o in seq]
     for k in range(1, len(seq)):
         y, w, o = seq[k]
         po = seq[k - 1][2]
-        if y <= gone or len(o) < 2 or len(po) < 2 or o[1] == po[1]:
+        if y <= gone or len(o) < 2 or len(po) < 2 or o[1] == po[1] or holds(sec, k) < 3:
             continue
         i = o[1]
         then = None                                   # the last active player as high, before him
@@ -184,8 +187,9 @@ def main():
         r = o.index(i)
         w = min(w for w in range(D.weeks[L] + 1) if all(top(D.C[L][:, x]).index(i) == r if i in top(D.C[L][:, x]) else False
                                                          for x in range(w, D.weeks[L] + 1)))
-        caps.append(dict(season=L, week=w, text=[f"{name(i)} climbs to No. {r + 1}",
-                                                 "the highest of any active player"]))
+        if not any(c["season"] == L and c["week"] == w and c["text"][0].startswith(name(i)) for c in caps):
+            caps.append(dict(season=L, week=w, text=[f"{name(i)} climbs to No. {r + 1}",
+                                                     "the highest of any active player"]))
 
     caps.sort(key=lambda c: (c["season"], c["week"]))
     json.dump(caps, open(os.path.join(HERE, "captions.json"), "w"), indent=1)

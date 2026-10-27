@@ -15,11 +15,13 @@ starts a QB, 2 RBs, 3 WRs, a TE, a flex (RB, WR or TE) and a K, twelve teams:
 * TE14: the 12 starters, and the odd flex;
 * QB16: the 12 starters, and the bye-week and injury fill-ins teams start along the way;
 * K13: the 12 starters, and the next one.
-A season's VORP is the player's season total minus that line, and never less than zero: a season under replacement is
-one a manager would have filled off waivers.
+VORP is counted by the game: a season is worth the player's points minus replacement's share of the games he played
+(the line over the season's 16 games, 17 from 2021). A full season is worth his total minus the line; a season of 8
+games, his total minus half the line. Playing below replacement counts negative, so a bad season takes value away; a
+game he misses counts nothing, since his manager starts a replacement that week.
 
-Within a season the VORP accrues week by week in step with the player's points (each week's share of his season's
-points), so each season's board is exact at its end and a player hurt in Week 3 stops climbing in Week 3.
+Within a season, the film spreads its VORP evenly over the games he played, so each season's board is exact at its end,
+a player hurt in Week 3 stops moving in Week 3, and a bad season's bar shrinks game by game.
 """
 import os, sys, glob, subprocess
 import numpy as np
@@ -30,6 +32,15 @@ DATA = os.path.join(HERE, "data")
 MEDIA = os.path.join(os.path.dirname(HERE), "media", "fantasy")
 FIRST, LAST = 2000, 2025
 REPL = {"QB": 16, "RB": 30, "WR": 42, "TE": 14, "K": 13}
+
+
+def team_games(season):
+    return np.where(np.asarray(season) >= 2021, 17, 16)
+
+
+def vorp(points, replacement, games, season):
+    """a season's value over replacement, game by game: his points minus the line's share of the games he played"""
+    return points - replacement * games / team_games(season)
 POS = {"QB": "QB", "RB": "RB", "HB": "RB", "FB": "RB", "WR": "WR", "TE": "TE", "K": "K", "PK": "K"}
 REL = "https://github.com/nflverse/nflverse-data/releases/download"
 
@@ -102,19 +113,18 @@ def build():
                          top=round(s.points.iloc[0], 2), top_player=s.player.iloc[0], starters_avg=round(s.points.iloc[:n - 1].mean(), 2)))
     rep = pd.DataFrame(rows)
     sea = sea.merge(rep[["season", "pos", "replacement"]], on=["season", "pos"])
-    sea["vorp"] = (sea.points - sea.replacement).clip(lower=0)
+    sea["vorp"] = vorp(sea.points, sea.replacement, sea.games, sea.season)
     sea["pos_rank"] = sea.groupby(["season", "pos"]).points.rank(ascending=False, method="first").astype(int)
     sea = sea.sort_values(["player_id", "season"])
     sea["career_vorp"] = sea.groupby("player_id").vorp.cumsum()
     sea["career_points"] = sea.groupby("player_id").points.cumsum()
     sea["seasons_above"] = sea.groupby("player_id").vorp.transform(lambda v: (v > 0).cumsum())
-    # weekly: the season's VORP accrues with each week's share of his (non-negative) points
-    wk = wk.merge(sea[["player_id", "season", "vorp"]], on=["player_id", "season"])
+    # weekly: the season's VORP spread evenly over the games he played
+    wk = wk.merge(sea[["player_id", "season", "vorp", "games"]], on=["player_id", "season"])
     wk = wk.sort_values(["player_id", "season", "week"])
-    pos_pts = wk.pts.clip(lower=0)
-    tot = pos_pts.groupby([wk.player_id, wk.season]).transform("sum")
-    share = np.where(tot > 0, pos_pts / tot.where(tot > 0, 1), 0)
-    wk["vorp_week"] = wk.vorp * share
+    wk["vorp_week"] = wk.vorp / wk.games
+    assert np.allclose(wk.groupby(["player_id", "season"]).vorp_week.sum().sort_index(),
+                       sea.set_index(["player_id", "season"]).vorp.sort_index())
     weeks = wk[["player_id", "player_display_name", "season", "week", "team", "pos", "pts", "vorp_week"]].rename(
         columns={"player_display_name": "player", "pts": "points"})
     os.makedirs(MEDIA, exist_ok=True)
@@ -123,7 +133,7 @@ def build():
             "seasons_above"]
     sea[cols].round(2).sort_values(["season", "vorp", "points"], ascending=[True, False, False]).to_csv(os.path.join(MEDIA, "seasons.csv"), index=False)
     rep.to_csv(os.path.join(MEDIA, "replacement.csv"), index=False)
-    # the weekly file keeps players with a season of VORP (everyone else stays at zero)
+    # the weekly file keeps players with a season above replacement (no one else comes near the board)
     weeks = weeks[weeks.player_id.isin(sea.loc[sea.vorp > 0, "player_id"])]
     weeks.round(3).to_csv(os.path.join(MEDIA, "weekly.csv"), index=False)
     car = sea.groupby("player_id").agg(player=("player", "last"), pos=("pos", "last"), first=("season", "min"), last=("season", "max"),

@@ -1,7 +1,8 @@
 """How the replacement ranks shape the board:  python compare.py  (needs data/ from vorp.py fetch)
 
 For each set of ranks: each position's share of the top-12 places at the 26 season ends, the final top 12's make-up,
-and the final top 12. The README's table comes from this.
+and the final top 12, with VORP counted as vorp.py counts it (by the game, below replacement negative). The README's
+table comes from this.
 """
 import os, sys
 import pandas as pd
@@ -21,7 +22,7 @@ def board(sea, R, n=12):
     s = sea[sea.pos.isin(R)].copy()
     s["rk"] = s.groupby(["season", "pos"]).points.rank(ascending=False, method="first")
     rep = s[s.rk == s.pos.map(R)].set_index(["season", "pos"]).points
-    s["vorp"] = (s.points - [rep[y, p] for y, p in zip(s.season, s.pos)]).clip(lower=0)
+    s["vorp"] = VP.vorp(s.points, [rep[y, p] for y, p in zip(s.season, s.pos)], s.games, s.season)
     pos = s.sort_values("season").groupby("player_id").pos.last()
     share = {p: 0 for p in R}
     for y in range(VP.FIRST, VP.LAST + 1):
@@ -34,7 +35,7 @@ def board(sea, R, n=12):
 def main():
     wk = VP.load()
     sea = wk.groupby(["player_id", "season"]).agg(player=("player_display_name", "last"), pos=("pos", "last"),
-                                                  points=("pts", "sum")).reset_index()
+                                                  points=("pts", "sum"), games=("week", "size")).reset_index()
     for label, R in SCHEMES:
         share, car = board(sea, R)
         tot = sum(share.values())
