@@ -1,6 +1,10 @@
 """The race's score: an original heroic march in the gridiron-film manner, for the synthesized orchestra of
 orchestra.py (no samples, no licensing).
 
+    python music.py          -> out/score.wav, on this film's timeline (assemble.py muxes it)
+    python music.py paid     -> ../media/fantasy/march_best_paid.wav, the same march on the best-paid athletes race's
+                                timeline (paid/: 5.6 s title, 1913-2025 at 1.4 s a year, 11.2 s outro), 173.6 s
+
 D minor, 85.7 BPM (a beat is 0.7 s, a bar 2.8 s; every season starts on a beat), the theme in two 8-bar halves:
   A  Dm  Bb  F  C | Dm  Gm  A  A
   B  Bb  F  Gm  A | Dm  C   A  Dm
@@ -59,23 +63,8 @@ def snare_bar(o, tb, e, last):
         o.snare_roll(tb + 2 * BEAT, tb + BAR - 0.02, 0.3, 0.75 + 0.2 * e)
 
 
-def track():
-    import video as V
-    V.setup()
-    D = V.D
-    total = V.total()
-    o = O.Orchestra(total)
-    years = list(range(V.FIRST, V.LAST + 1))
-    gain = np.array([D.board_gain(y) for y in years])
-    level = dict(zip(years, np.log1p(gain) / np.log1p(gain.max())))
-    energy = lambda t: 0.3 + 0.65 * level[D.at(t)[0]]                     # the race's energy at film time t
-    race0, end = V.INTRO, D.race_end + V.HOLD                               # bar 14 and the summary's bar
-    nb = int(round(total / BAR))
-    records = [c["from"] for c in V.CAPS if c.get("tag") == "NEW No. 1"]
-    lift_bar = int(np.ceil(records[-1] / BAR)) if records else nb + 1
-    key = lambda b: 2 if b >= lift_bar else 0
-
-    # ---------------------------------------------------------------- the title: roll, swell, fanfare
+def title(o):
+    """bars 0-1: a timpani roll and cymbal swell, then the full-brass fanfare"""
     o.timp_roll(0.05, BAR - 0.05, 38, 0.12, 0.85)
     o.swell(0.0, BAR, 0.7)
     for j in range(16):
@@ -106,7 +95,9 @@ def track():
     o.strings(2 * BAR, BAR * 1.2, 38, 0.6)
     o.strings(2 * BAR, BAR * 1.2, 50, 0.5)
 
-    # ---------------------------------------------------------------- the explainer: a held underscore, then the roll
+
+def explainer(o, race0, scenes):
+    """bars 2 to the race: a held underscore for reading, a timpani stroke at each scene, a roll into the race"""
     for k, name in enumerate(EXPLAIN):
         b = 2 + k
         tb = b * BAR
@@ -122,24 +113,27 @@ def track():
         if 8 <= k <= 10:
             for j in range(4):
                 o.snare(tb + j * BEAT, 0.22 + 0.05 * (k - 8))
-    for t in V.scene_starts()[1:]:
+    for t in scenes:
         o.timpani(t, 38, 0.55)
     tb = race0 - BAR                                                     # into the race
     o.snare_roll(tb, race0 - 0.02, 0.15, 0.95, 0.042)
     o.timp_roll(tb + BAR / 2, race0 - 0.03, 45, 0.2, 0.85)
     o.swell(tb, race0, 0.8)
 
-    # ---------------------------------------------------------------- the race: the march
-    b0, b1 = int(round(race0 / BAR)), int(round(end / BAR))
+
+def chord_at(b, b0, key):
+    return tones(PROG["A" if ((b - b0) // 8) % 2 == 0 else "B"][(b - b0) % 8], key(b))
+
+
+def march(o, b0, b1, energy, key):
+    """bars b0 to b1: the march, its layers joining as the energy rises (0 to 1)"""
     for b in range(b0, b1):
         tb = b * BAR
         e = energy(tb + 0.01)
-        ph = (b - b0) // 8
-        theme = "A" if ph % 2 == 0 else "B"
+        theme = "A" if ((b - b0) // 8) % 2 == 0 else "B"
         k8 = (b - b0) % 8
-        name = PROG[theme][k8]
         k = key(b)
-        root, ch = tones(name, k)
+        root, ch = chord_at(b, b0, key)
         last = k8 == 7 or b == b1 - 1
         if k8 == 0 and (e > 0.45 or b == b0):
             o.crash(tb, 0.55 + 0.4 * e)
@@ -158,7 +152,7 @@ def track():
         if e > 0.58:
             o.bass_drum(tb, 0.7 + 0.25 * e)
             o.bass_drum(tb + 2 * BEAT, 0.55 + 0.25 * e)
-        # the theme on the horns; trumpets double it an octave up when the board is busiest
+        # the theme on the horns; trumpets double it an octave up at the busiest
         if e >= 0.36:
             for beat, m, d in THEME[theme][k8]:
                 o.brass(tb + beat * BEAT, d * BEAT * 0.93, m + k, 0.5 + 0.45 * e, "horn")
@@ -175,11 +169,12 @@ def track():
             for m in ch:
                 o.strings(tb, BAR * 0.98, m + 24, 0.3 + 0.35 * e)
 
-    # ---------------------------------------------------------------- each new No. 1: a stab on the nearest beat
-    for t in records:
+
+def stabs(o, times, b0, key):
+    """a brass stab, crash, bass drum and timpani on the nearest half beat to each time"""
+    for t in times:
         tq = round(t / (BEAT / 2)) * BEAT / 2
-        b = int(tq // BAR)
-        root, ch = tones(PROG["A" if ((b - b0) // 8) % 2 == 0 else "B"][(b - b0) % 8], key(b))
+        root, ch = chord_at(int(tq // BAR), b0, key)
         o.crash(tq, 1.0)
         o.bass_drum(tq, 1.0)
         o.timpani(tq, root, 1.0)
@@ -187,8 +182,9 @@ def track():
             o.brass(tq, BEAT * 0.5, m + 36, 1.0, "trumpet")
             o.brass(tq, BEAT * 0.5, m + 12, 1.0, "trombone")
 
-    # ---------------------------------------------------------------- the summary: the major chord, held
-    k = key(b1)
+
+def finale(o, end, total, k):
+    """a roll into the full orchestra on the major chord at end, held nearly to total"""
     root = 38 + k
     o.timp_roll(end - BAR / 2, end - 0.03, root, 0.3, 1.0)
     o.snare_roll(end - BAR / 2, end - 0.02, 0.3, 1.0, 0.04)
@@ -207,14 +203,64 @@ def track():
         o.strings(end, hold, m, 0.75)
     o.strings(end, hold, root, 0.8)
     o.strings(end, hold, root + 12, 0.8)
-    # the master dynamics: the fanfare 2 dB up, the explainer about 7.5 dB under the race for reading, a swell back into the
-    # race, the race full (its arrangement carries its ups and downs), the finale full
+
+
+def track():
+    """the fantasy race's score, laid on video.py's timeline"""
+    import video as V
+    V.setup()
+    D = V.D
+    total = V.total()
+    o = O.Orchestra(total)
+    years = list(range(V.FIRST, V.LAST + 1))
+    gain = np.array([D.board_gain(y) for y in years])
+    level = dict(zip(years, np.log1p(gain) / np.log1p(gain.max())))
+    energy = lambda t: 0.3 + 0.65 * level[D.at(t)[0]]                     # the race's energy at film time t
+    race0, end = V.INTRO, D.race_end + V.HOLD                               # bar 14 and the summary's bar
+    records = [c["from"] for c in V.CAPS if c.get("tag") == "NEW No. 1"]
+    lift_bar = int(np.ceil(records[-1] / BAR)) if records else int(round(total / BAR)) + 1
+    key = lambda b: 2 if b >= lift_bar else 0
+    b0, b1 = int(round(race0 / BAR)), int(round(end / BAR))
+    title(o)
+    explainer(o, race0, V.scene_starts()[1:])
+    march(o, b0, b1, energy, key)
+    stabs(o, records, b0, key)
+    finale(o, end, total, key(b1))
+    # the master dynamics: the fanfare 2 dB up, the explainer about 7.5 dB under the race for reading, a swell back into
+    # the race, the race full (its arrangement carries its ups and downs), the finale full
     quiet = 0.42
     o.auto = [(0.0, 0.55), (BAR, 1.25), (2 * BAR, 1.15), (2 * BAR + 2.0, quiet), (race0 - BAR, quiet), (race0, 1.0),
               (total, 1.0)]
     return o.mix()
 
 
+def paid(intro=5.6, first=1913, last=2025, per_year=1.4, outro=11.2, lift_year=1977, hits=()):
+    """the same march on the best-paid athletes race's timeline (paid/video.py): the fanfare under its 5.6 s title,
+    the march from 1913, building from horns and strings to the full band by the 2000s (and about 5 dB louder), a
+    whole step up with free agency (1977), a roll into the major chord two beats after the race ends (1.4 s before its summary), held to the
+    end. 173.6 s. hits: film times for a brass stab (that race's milestone captions, say)."""
+    race_end = intro + (last - first) * per_year
+    total = race_end + outro
+    o = O.Orchestra(total)
+    energy = lambda t: 0.38 + 0.57 * np.clip((t - intro) / (race_end - intro), 0, 1) ** 0.85
+    lift_bar = int(np.ceil((intro + (lift_year - first) * per_year) / BAR - 1e-6))
+    key = lambda b: 2 if b >= lift_bar else 0
+    b0, b1 = int(round(intro / BAR)), int(round(race_end / BAR))
+    title(o)
+    march(o, b0, b1, energy, key)
+    stabs(o, hits, b0, key)
+    finale(o, race_end + 2 * BEAT, total, key(b1))
+    lift = lift_bar * BAR                            # a crescendo across the century on top of the layers joining
+    o.auto = [(0.0, 0.55), (BAR, 1.25), (2 * BAR, 1.1), (2 * BAR + 2.0, 0.58), (lift - 0.5, 0.78), (lift + 0.5, 0.86),
+              (race_end - 12.0, 1.0), (total, 1.05)]
+    return o.mix(), dict(total=total, race_end=race_end, lift=lift_bar * BAR, finale=race_end + 2 * BEAT)
+
+
 if __name__ == "__main__":
     os.makedirs(os.path.join(HERE, "out"), exist_ok=True)
-    O.SC.write(track(), os.path.join(HERE, "out", "score.wav"))
+    if sys.argv[1:] == ["paid"]:                     # the cut for the best-paid athletes race -> ../media/fantasy/
+        x, when = paid()
+        O.SC.write(x, os.path.join(os.path.dirname(HERE), "media", "fantasy", "march_best_paid.wav"))
+        print({k: round(v, 2) for k, v in when.items()})
+    else:
+        O.SC.write(track(), os.path.join(HERE, "out", "score.wav"))

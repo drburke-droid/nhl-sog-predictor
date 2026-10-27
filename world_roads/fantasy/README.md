@@ -198,6 +198,15 @@ stand further above replacement than anyone else's.
 
   To use a recording of your own instead (a licensed library track, say), run `python assemble.py --audio track.wav`.
   It matches the loudness, fits the track to the film and fades it out.
+* **The same march for the best-paid athletes race.** `python music.py paid` writes
+  `../media/fantasy/march_best_paid.wav`, laid on that film's timeline (173.6 s, 48 kHz):
+  * 0:00 a timpani roll and swell; 0:02.8 the fanfare, under its 5.6 s title;
+  * 0:05.6 the march from 1913, one year every two beats. It builds from horns and strings to the full band, about
+    5 dB louder by the 2000s.
+  * 1:35.2 up a whole step with free agency (1977);
+  * 2:42.4 a roll as the race ends; 2:43.8 the major chord, held to the end.
+
+  `music.paid(hits=[...])` adds a brass stab at given film times, such as that race's milestone captions.
 
 ## Run it
 
