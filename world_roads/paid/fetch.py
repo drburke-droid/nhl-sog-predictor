@@ -5,6 +5,7 @@
       league pages and every team page 1985-2000 (each roster's salaries; 2001-2025 from ../rebuild/data)
   b   the Baseball Reference page of every candidate (candidates.py): its salary table, Michael Haupert's research of
       the Hall of Fame's contract cards for the early years, the contracts since (and the NBA pages, if a not done)
+  c   for the career race: the Minneapolis Fed's CPI estimates for 1800-1912 (careers that began before 1913)
 
 Sports Reference asks for no more than 20 requests a minute: request starts are kept 3.5 s apart across all threads,
 and a page already cached is never asked for again.
@@ -16,6 +17,7 @@ DATA = os.path.join(HERE, "data")
 REBUILD = os.path.join(os.path.dirname(HERE), "rebuild", "data")
 UA = "Claude-User (research on athletes' pay for a video; one request per page, cached)"
 CPI = "https://www.minneapolisfed.org/about-us/monetary-policy/inflation-calculator/consumer-price-index-1913-"
+CPI_1800 = "https://www.minneapolisfed.org/about-us/monetary-policy/inflation-calculator/consumer-price-index-1800-"
 
 
 GAP = 3.5                                   # seconds between request starts, all threads together (<= 17 a minute)
@@ -108,6 +110,10 @@ def stage_b():
     together(mlb_players, nba_teams)
 
 
+def stage_c():
+    run([(os.path.join(DATA, "cpi_1800.html"), CPI_1800)], "cpi 1800-")
+
+
 def run(jobs, what=""):
     todo = [(p, u) for p, u in jobs if not os.path.exists(p)]
     print(f"{what}: {len(jobs)} pages, {len(todo)} to fetch", flush=True)
@@ -118,4 +124,4 @@ def run(jobs, what=""):
 
 
 if __name__ == "__main__":
-    {"a": stage_a, "b": stage_b}[sys.argv[1] if len(sys.argv) > 1 else "a"]()
+    {"a": stage_a, "b": stage_b, "c": stage_c}[sys.argv[1] if len(sys.argv) > 1 else "a"]()

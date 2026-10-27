@@ -72,7 +72,7 @@ def page(*p):
 
 # ---------------------------------------------------------------- MLB
 
-def mlb():
+def mlb(first=FIRST):
     rows = []
     d = os.path.join(DATA, "sr", "mlb", "players")
     have = set()
@@ -87,7 +87,7 @@ def mlb():
             y = text(r.get("year_ID", ""))
             sal = money(r.get("Salary", ""))
             note = text(r.get("notes", ""))
-            if not y.isdigit() or sal is None or not (FIRST <= int(y) <= LAST):
+            if not y.isdigit() or sal is None or not (first <= int(y) <= LAST):
                 continue
             if re.search(r"per month|per week|per game", note, re.I) or sal < 100:
                 continue                                   # a rate, not a season's salary
@@ -101,7 +101,7 @@ def mlb():
     tname = {(r.yearID, r.teamID): r.name for r in teams.itertuples()}
     for r in lahman("Salaries").itertuples():
         bb, nm = names.get(r.playerID, (r.playerID, r.playerID))
-        if (bb, r.yearID) in have or not (FIRST <= r.yearID <= LAST):
+        if (bb, r.yearID) in have or not (first <= r.yearID <= LAST):
             continue
         rows.append(dict(year=r.yearID, league="MLB", pid=bb, player=nm, team=nickname(tname.get((r.yearID, r.teamID), r.teamID)),
                          nominal=float(r.salary), source="Lahman database", basis="salary", note=""))

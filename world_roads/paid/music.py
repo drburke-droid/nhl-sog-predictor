@@ -102,5 +102,8 @@ def track():
 
 
 if __name__ == "__main__":
-    SC.write(track(), os.path.join(HERE, "out", "score.wav"))
-    print("wrote out/score.wav")
+    import video as V
+    if "--career" in sys.argv:
+        V.configure("career")
+    SC.write(track(), os.path.join(HERE, "out", f"{V.MODE['film']}_score.wav"))
+    print("wrote", f"out/{V.MODE['film']}_score.wav")
