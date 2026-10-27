@@ -15,7 +15,8 @@ contract is in CapWages, but a career needs the long contracts already running b
 A season a player played without a documented salary, between two seasons with one, is estimated: his salary moves in
 a straight line from one documented season to the next. MLB seasons played come from the Lahman database's appearances
 (the major leagues, 1871 on); in the other leagues the seasons between two documented ones, before each league's own
-series begins (NBA 1984-85, NFL 1983, NHL 2005-06), are taken as played, the lockout season 2004-05 aside. Seasons
+series begins (NBA 1984-85, NFL 1983, NHL 2005-06), are taken as played, except the lockout season 2004-05 and the
+seasons the research found a player sat out or wasn't paid for (research/spans_*.csv). Seasons
 before a player's first documented salary or after his last are left out, not guessed. Estimated seasons are marked,
 and each career's estimated share is kept.
 """
@@ -103,8 +104,25 @@ def merge_curated(rows):
     return rows
 
 
+GROUP = {"ABA": "NBA", "BAA": "NBA", "NBL": "NBA", "AFL": "NFL", "AAFC": "NFL", "WFL": "NFL", "USFL": "NFL", "WHA": "NHL"}
+
+
+def not_played():
+    """seasons inside a career the player didn't play or wasn't paid for (research/spans_*.csv): (league, name) -> years"""
+    out = defaultdict(set)
+    for lg in ("nba", "nfl", "nhl"):
+        p = os.path.join(HERE, "research", f"spans_{lg}.csv")
+        for r in csv.DictReader(open(p, encoding="utf8")) if os.path.exists(p) else []:
+            group = GROUP.get(r["league"].strip().upper(), r["league"].strip().upper())
+            for y in (r.get("not_played") or "").replace(",", ";").split(";"):
+                if y.strip().isdigit():
+                    out[(group, key(r["player"]))].add(int(y))
+    return out
+
+
 def estimate(rows, played):
     """the seasons played between two documented ones, their salary on the straight line between"""
+    skip = not_played()
     by = defaultdict(dict)
     for r in rows:
         by[(r["league"], r["pid"])][r["year"]] = r
@@ -114,7 +132,9 @@ def estimate(rows, played):
         if lg == "MLB":
             gaps = [y for y in played.get(pid, {}) if ys[0] < y < ys[-1] and y not in d]
         else:
-            gaps = [y for y in range(ys[0] + 1, ys[-1]) if y not in d and y < SERIES[lg] and not (lg == "NHL" and y == 2005)]
+            out_ = skip.get((lg, key(d[ys[0]]["player"])), set()) | skip.get((lg, key(d[ys[-1]]["player"])), set())
+            gaps = [y for y in range(ys[0] + 1, ys[-1]) if y not in d and y < SERIES[lg] and y not in out_
+                    and not (lg == "NHL" and y == 2005)]
         for y in gaps:
             a = max(v for v in ys if v < y)
             b = min(v for v in ys if v > y)

@@ -178,6 +178,13 @@ ADDED += [
 ]
 SPECS = {"nba_pre1985.csv": NBA, "nhl_pre2006.csv": NHL, "nfl_pre2011.csv": NFL}
 
+# The career research (research/careers_*.csv): whole careers season by season, for the career race, one figure per
+# player and season chosen by the same rules. A season the selection above already has keeps that figure unless the
+# research corrects it (CORRECT); a row in DROP is left out, for the reason given.
+CAREERS = ["careers_nba.csv", "careers_nfl.csv", "careers_nhl.csv"]
+CORRECT = {}
+DROP = {}
+
 
 def main():
     out = []
@@ -200,12 +207,27 @@ def main():
         k = (r["player"], r["year_end"])
         assert k not in keys, f"two figures for {k}"
         keys[k] = r
+    added = 0
+    for fname in CAREERS:
+        p = os.path.join(R, fname)
+        for r in csv.DictReader(open(p, encoding="utf8")) if os.path.exists(p) else []:
+            k = (r["player"], int(r["year_end"]))
+            if k in DROP or (k in keys and k not in CORRECT) or not r["salary_usd"].strip():
+                continue
+            row = dict(league=r["league"], player=r["player"], team=r["team"].split(" / ")[-1], year_end=k[1],
+                       salary_usd=float(r["salary_usd"]), basis=r["basis"], source_url=r["source_url"],
+                       source_quote=r["source_quote"], notes=("career research; " + CORRECT[k] + "; " if k in CORRECT else "career research; ") + r["notes"])
+            if k in keys:
+                out.remove(keys[k])
+            out.append(row)
+            keys[k] = row
+            added += 1
     cols = ["league", "player", "team", "year_end", "salary_usd", "basis", "source_url", "source_quote", "notes"]
     with open(os.path.join(HERE, "curated.csv"), "w", newline="", encoding="utf8") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
         w.writerows(sorted(out, key=lambda r: (r["year_end"], -float(r["salary_usd"]))))
-    print(f"curated.csv: {len(out)} rows")
+    print(f"curated.csv: {len(out)} rows ({added} from the career research)")
 
 
 if __name__ == "__main__":
