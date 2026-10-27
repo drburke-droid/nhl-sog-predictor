@@ -204,7 +204,9 @@ under 6% from 1946 to 1995, and almost none since.
 * The single-season race has its own look: a gold-ruled title, the year at the top right rolling into place, numbered
   places, bars with a gradient and a lit top edge, the leader's halo flaring when a new No. 1 arrives, captions in a
   band, and along the bottom the revenue panel. Its axis grows with the largest revenue drawn so far, as the bars' scale
-  follows the leader; each line's head carries the league and its figure.
+  follows the leader; each line's head carries the league and its figure, and a key in the panel's header says what
+  the marks mean (a solid line: revenue on record; dotted: no figures, filled in between; a gold dot: a salary record
+  by one of that league's players).
 * The single-season race ranks seasons, each its own bar, named with its season ("Michael Jordan 1997-98"; basketball
   and hockey seasons span two years). A season's figure never changes: it rises from under the board in its year if it
   ranks among the ten best to date, and sinks off when ten better ones have come along. Baseball seasons before 1913

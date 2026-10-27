@@ -314,6 +314,23 @@ def rev_scale_track():
 REVSCALE = None
 
 
+def key(d, x, y, a):
+    """what the panel's marks mean: a solid line, a dotted one, a gold dot"""
+    f, grey = font(16, "Regular"), (150, 160, 176)
+    d.line([(x, y), (x + 26, y)], fill=grey + (int(255 * a),), width=3)
+    x += 36
+    d.text((x, y), "revenue on record", font=f, fill=INK2 + (int(255 * a),), anchor="lm")
+    x += d.textlength("revenue on record", font=f) + 30
+    for i in range(4):
+        d.ellipse([x + 7 * i - 1.6, y - 1.6, x + 7 * i + 1.6, y + 1.6], fill=grey + (int(220 * a),))
+    x += 36
+    d.text((x, y), "no figures: filled in between", font=f, fill=INK2 + (int(255 * a),), anchor="lm")
+    x += d.textlength("no figures: filled in between", font=f) + 30
+    d.ellipse([x, y - 5, x + 10, y + 5], fill=GOLD + (int(240 * a),))
+    x += 20
+    d.text((x, y), "a salary record by one of that league's players", font=f, fill=INK2 + (int(255 * a),), anchor="lm")
+
+
 def revenue(im, t, a):
     """league revenue, in 2025 dollars, drawn year by year as the race runs: one line per league (dotted across a stretch
     of more than three years with no figure), its head labelled; a
@@ -324,6 +341,7 @@ def revenue(im, t, a):
     d.rounded_rectangle([70, 814, W - 70, 1052], 14, fill=(255, 255, 255, int(7 * a)), outline=(255, 255, 255, int(18 * a)))
     d.text((96, 846), "League revenue, in 2025 dollars", font=font(19, "SemiBold"), fill=INK2 + (int(255 * a),), anchor="ls")
     legend(d, W - 96, 846, a, size=17, swatch="line")
+    key(d, 440, 840, a)
     ymax = REVSCALE[min(len(REVSCALE) - 1, int(round(D.secs(t) * FPS)))]
     xs = lambda y: RX0 + (RX1 - RX0) * (y - FIRST) / (LAST - FIRST)
     ys = lambda v: RY1 - (RY1 - RY0) * v / ymax
