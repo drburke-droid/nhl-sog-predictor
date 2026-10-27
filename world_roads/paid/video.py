@@ -24,7 +24,7 @@ separation on this background, the fourth league neutral) and every bar also nam
 import os, sys, csv, json, time, subprocess
 from collections import defaultdict
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -35,10 +35,23 @@ MEDIA = os.path.join(ROOT, "media", "paid")
 OUT = os.path.join(HERE, "out")
 W, H, FPS = 1920, 1080, 30
 BG = np.array([5, 7, 13], np.float32)                 # #05070d
+BG_RGB = (5, 7, 13)
 INK, INK2, MUTED = ST.INK, ST.INK2, ST.MUTED
 GOLD = (255, 186, 80)
 LEAGUE = {"MLB": (57, 135, 229), "NBA": (217, 89, 38), "NFL": (25, 158, 112), "NHL": (150, 156, 168)}
 font = ST.font
+_DF = {}
+
+
+def dfont(size, weight="Bold"):
+    """Inter Display, cut for headline sizes"""
+    if (size, weight) not in _DF:
+        _DF[(size, weight)] = ImageFont.truetype(os.path.join(ST.FD, f"InterDisplay-{weight}.otf"), size,
+                                                 layout_engine=ImageFont.Layout.RAQM)
+    return _DF[(size, weight)]
+
+
+TNUM = ["tnum"]                                       # figures of one width, so changing numbers don't jitter
 
 FIRST, LAST = 1913, 2025
 N = 10                                                # bars on the board
@@ -50,6 +63,7 @@ MIN_2025 = 760_000                                    # MLB minimum salary, 2025
 X0, X1 = 560, 1500                                    # bar baseline and the leader's bar end
 MODES = {
     "records": dict(data="season_top.csv", captions="captions.json", film="seasons", title="The best-paid seasons ever", paced=True,
+                    layout="panel",
                     subtitle="Single-season salaries in 2025 dollars, the ten best to date · MLB, NBA, NFL, NHL",
                     intro=f"{FIRST} to {LAST}, every salary in 2025 dollars: a season stays until ten better ones come along"),
     "annual": dict(data="salaries.csv", captions="captions_yearly.json", film="race", title="The best-paid athletes",
@@ -65,9 +79,20 @@ CAREER, RECORDS = False, True
 TWO_YEAR = {"NBA", "ABA", "BAA", "NBL", "NHL", "WHA"}            # circuits whose seasons span two calendar years
 
 
+# two layouts: "classic" (the board fills the frame, the year and captions below it) and "panel" (a slimmer board, the
+# year at the top right, captions in a band, league revenue in a panel along the bottom)
+GEOM = {"classic": dict(Y0=186, PITCH=68, BAR=48, NAME=29, SEASON=23, SUB=19, VAL=28, UNDER=19, TICK=20),
+        "panel": dict(Y0=178, PITCH=52, BAR=38, NAME=25, SEASON=20, SUB=16, VAL=25, UNDER=16, TICK=18)}
+G = GEOM["panel"]
+PANEL = True
+
+
 def configure(mode):
-    global NAME, MODE, CAREER, RECORDS
+    global NAME, MODE, CAREER, RECORDS, G, PANEL, Y0, PITCH, BAR
     NAME, MODE, CAREER, RECORDS = mode, MODES[mode], mode == "career", mode == "records"
+    PANEL = MODE.get("layout") == "panel"
+    G = GEOM["panel" if PANEL else "classic"]
+    Y0, PITCH, BAR = G["Y0"], G["PITCH"], G["BAR"]
 
 
 def season(row):
@@ -76,7 +101,7 @@ def season(row):
     return f"{y - 1}-{str(y)[2:]}" if row["circuit"] in TWO_YEAR else str(y)
 
 
-Y0, PITCH, BAR = 186, 68, 48                          # first row's top, row spacing, bar thickness
+Y0, PITCH, BAR = G["Y0"], G["PITCH"], G["BAR"]        # first row's top, row spacing, bar thickness (configure sets them)
 
 
 def smooth(x):
@@ -117,6 +142,17 @@ class Data:
         self.pace()
         self.windows()
         self.places()
+        self.leads = [y for y in range(FIRST + 1, LAST + 1) if self.top(y, 1) != self.top(y - 1, 1)]
+        self.rev = load_revenue() if PANEL else {}
+
+    def pulse(self, T):
+        """0 to 1: the leader's halo flares as a new No. 1 reaches the top, and fades over a second"""
+        p = 0.0
+        for y in self.leads:
+            dt = T - (INTRO + self.secs(y - 0.5))
+            if -0.3 < dt < 3:
+                p = max(p, smooth((dt + 0.3) / 0.4) * np.exp(-max(0.0, dt - 0.1) / 0.9))
+        return p
 
     def pace(self):
         """the seconds each year takes, from the year before to it: PER_YEAR throughout, or, in a race that paces itself,
@@ -221,6 +257,116 @@ OFF = N + 3                                           # the place of a bar that 
 
 
 D = None
+REV_FILE = os.path.join(MEDIA, "revenue.csv")
+RX0, RX1 = 168, 1640                                  # the revenue panel's plot: left and right
+RY0, RY1 = 868, 1004                                  # its top and its baseline
+
+
+def load_revenue():
+    """league -> (years, revenue in 2025 dollars), from revenue.py's table"""
+    out = defaultdict(list)
+    if not os.path.exists(REV_FILE):
+        return {}
+    for r in csv.DictReader(open(REV_FILE)):
+        out[r["league"]].append((int(r["year"]), float(r["real_2025"])))
+    return {lg: (np.array([y for y, _ in v], float), np.array([x for _, x in v])) for lg, v in out.items()}
+
+
+def rev_at(lg, t):
+    ys, vs = D.rev[lg]
+    return float(np.interp(t, ys, vs)) if ys[0] <= t else None
+
+
+def rev_money(v):
+    return f"${v / 1e9:.1f}B" if v >= 1e9 else f"${v / 1e6:.0f}M"
+
+
+def rev_scale_track():
+    """the revenue axis's maximum at every frame: the largest revenue drawn so far, eased in time"""
+    top, m = [], 1e6
+    for t in D.ts:
+        for lg in D.rev:
+            v = rev_at(lg, t)
+            if v is not None:
+                m = max(m, v)
+        top.append(m)
+    top = np.array(top)
+    k = int(0.9 * FPS)
+    ker = np.exp(-0.5 * (np.arange(-k, k + 1) / (k / 2.2)) ** 2)
+    ker /= ker.sum()
+    return np.maximum(np.convolve(np.pad(top, k, mode="edge"), ker, mode="valid"), top) * 1.1
+
+
+REVSCALE = None
+
+
+def revenue(im, t, a):
+    """league revenue, in 2025 dollars, drawn year by year as the race runs: one line per league, its head labelled; a
+    gold dot on a league's line in each year one of its players set the salary record"""
+    if not D.rev or a <= 0.01:
+        return
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rounded_rectangle([70, 814, W - 70, 1052], 14, fill=(255, 255, 255, int(7 * a)), outline=(255, 255, 255, int(18 * a)))
+    d.text((96, 846), "League revenue, in 2025 dollars", font=font(19, "SemiBold"), fill=INK2 + (int(255 * a),), anchor="ls")
+    legend(d, W - 96, 846, a, size=17, swatch="line")
+    ymax = REVSCALE[min(len(REVSCALE) - 1, int(round(D.secs(t) * FPS)))]
+    xs = lambda y: RX0 + (RX1 - RX0) * (y - FIRST) / (LAST - FIRST)
+    ys = lambda v: RY1 - (RY1 - RY0) * v / ymax
+    # the revenue axis: nice steps, fading in and out as it grows
+    seen = {}
+    for st in [m * 10 ** e for e in range(5, 12) for m in (1, 2, 2.5, 5)]:
+        dens = ymax / st
+        al = smooth((dens - 1.6) / 0.8) * (1 - smooth((dens - 4.2) / 1.2))
+        v = st
+        while al > 0.02 and v <= ymax:
+            seen[v] = max(seen.get(v, 0), al)
+            v += st
+    for v, al in seen.items():
+        y = ys(v)
+        d.line([(RX0, y), (RX1, y)], fill=(40, 52, 72, int(110 * al * a)), width=1)
+        d.text((RX0 - 12, y), rev_money(v).replace(".0B", "B"), font=font(15, "Regular"), fill=MUTED + (int(255 * al * a),),
+               anchor="rm", features=TNUM)
+    d.line([(RX0, RY1), (RX1, RY1)], fill=(70, 84, 106, int(200 * a)), width=1)
+    for y in range(1920, LAST + 1, 10):
+        d.line([(xs(y), RY1), (xs(y), RY1 + 5)], fill=(70, 84, 106, int(200 * a)), width=1)
+        d.text((xs(y), RY1 + 22), str(y), font=font(15, "Regular"), fill=MUTED + (int(255 * a),), anchor="ms", features=TNUM)
+    # the lines, drawn at twice the size and scaled down so they are smooth
+    S, ox, oy = 2, RX0 - 20, RY0 - 24
+    layer = Image.new("RGBA", ((RX1 - ox + 30) * S, (RY1 - oy + 12) * S), (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    heads = []
+    for lg in ("MLB", "NHL", "NBA", "NFL"):
+        if lg not in D.rev or D.rev[lg][0][0] > t:
+            continue
+        yrs, vals = D.rev[lg]
+        pts = [(xs(y), ys(v)) for y, v in zip(yrs, vals) if y <= t]
+        hv = rev_at(lg, t)
+        pts.append((xs(t), ys(hv)))
+        pts = [((x - ox) * S, (y - oy) * S) for x, y in pts]
+        if len(pts) > 1:
+            ld.line(pts, fill=LEAGUE[lg] + (255,), width=3 * S, joint="curve")
+        heads.append([ys(hv), lg, xs(t), hv])
+    layer = layer.resize((layer.width // S, layer.height // S), Image.LANCZOS)
+    if a < 1:
+        layer.putalpha(layer.getchannel("A").point(lambda v: int(v * a)))
+    im.paste(layer, (ox, oy), layer)
+    # the record markers
+    for y in D.leads:
+        lg = D.by[y][D.order[y][0]]["league"]
+        if lg in D.rev and y - 0.5 <= t and D.rev[lg][0][0] <= y:
+            al = a * smooth((t - (y - 0.5)) / 0.4)
+            cx, cy = xs(y), ys(rev_at(lg, y))
+            d.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=GOLD + (int(240 * al),), outline=BG_RGB + (int(255 * al),), width=1)
+    # the heads, their labels kept apart
+    heads.sort()
+    for i in range(1, len(heads)):
+        heads[i][0] = max(heads[i][0], heads[i - 1][0] + 18)
+    for i in range(len(heads) - 2, -1, -1):
+        heads[i][0] = min(heads[i][0], heads[i + 1][0] - 18)
+    for ly, lg, hx, hv in heads:
+        hy = ys(hv)
+        d.ellipse([hx - 5, hy - 5, hx + 5, hy + 5], fill=LEAGUE[lg] + (int(255 * a),), outline=BG_RGB + (int(255 * a),), width=2)
+        d.text((hx + 12, ly), f"{lg} {rev_money(hv)}", font=font(15, "SemiBold"), fill=INK + (int(255 * a),), anchor="lm", features=TNUM)
 
 
 def scale_track():
@@ -283,15 +429,53 @@ def ticks(d, xmax, a=1.0):
         al *= a
         d.line([(x, Y0 - 14), (x, Y0 + N * PITCH - 8)], fill=(40, 52, 72, int(140 * al)), width=1)
         lab = f"${v / 1e6:g}M" if v >= 1e6 else f"${v / 1e3:g}K"
-        d.text((x, Y0 - 22), lab, font=font(20, "Regular"), fill=MUTED + (int(255 * al),), anchor="mb")
+        d.text((x, Y0 - 22), lab, font=font(G["TICK"], "Regular"), fill=MUTED + (int(255 * al),), anchor="mb")
 
 
-def board(im, t, a=1.0, hold=False):
+_GRAD = {}
+
+
+def bar_fill(col, w, h):
+    """a bar's face: from 80% of its colour at the baseline to all of it at the end, a faint light along the top edge"""
+    if (col, h) not in _GRAD:
+        g = np.linspace(0.8, 1.0, 256)[None, :, None] * np.array(col, np.float32)[None, None, :]
+        strip = np.repeat(g, h, axis=0)
+        strip[:2] = np.minimum(255, strip[:2] * 1.16)
+        strip[-1:] *= 0.86
+        _GRAD[(col, h)] = Image.fromarray(strip.astype(np.uint8))
+    return _GRAD[(col, h)].resize((max(1, int(w)), h), Image.BILINEAR)
+
+
+def draw_bar(im, x0, y, x1, col, al):
+    w, yi = int(round(x1 - x0)), int(round(y))
+    mask = Image.new("L", (w, BAR), 0)
+    md = ImageDraw.Draw(mask)
+    md.rounded_rectangle([0, 0, w - 1, BAR - 1], 5, fill=int(255 * al))
+    md.rectangle([0, 0, min(w - 1, 6), BAR - 1], fill=int(255 * al))     # the baseline end stays square
+    im.paste(bar_fill(col, w, BAR), (int(x0), yi), mask)
+
+
+def glow(im, x0, y, x1, col, strength):
+    """a soft halo of colour around a bar"""
+    if strength <= 0.01:
+        return
+    pad = 28
+    w, h = int(x1 - x0) + 2 * pad, BAR + 2 * pad
+    layer = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(layer).rounded_rectangle([pad, pad + 2, w - pad, h - pad - 2], 8, fill=int(255 * min(1.0, strength)))
+    im.paste(col, (int(x0) - pad, int(round(y)) - pad), layer.filter(ImageFilter.GaussianBlur(13)))
+
+
+def board(im, t, a=1.0, hold=False, T=None):
     d = ImageDraw.Draw(im, "RGBA")
     xmax = scale_at(t)
     xs = lambda v: X0 + (X1 - X0) * v / xmax
     ticks(d, xmax, a)
     st = D.state(t)
+    # the places, numbered
+    for i in range(N):
+        d.text((118, Y0 + i * PITCH + BAR / 2), str(i + 1), font=dfont(G["NAME"] - 4, "Medium"), fill=MUTED + (int(150 * a),),
+               anchor="rm", features=TNUM)
     # today's minimum salary, while the scale is small enough for it to mean something; its dashes break around labels
     xm = xs(MIN_2025)
     am = a * smooth((xm - X0 - 40) / 60) * (1 - smooth((t - 1975) / 4)) * (not CAREER)
@@ -299,13 +483,20 @@ def board(im, t, a=1.0, hold=False):
         gaps = []
         for r, v, row in st.values():
             x1 = max(X0 + 6, xs(v)) + 8
-            w = max(d.textlength(money(v, short=False), font=font(28, "Bold")), d.textlength(under(row), font=font(19, "Regular")))
+            w = max(d.textlength(money(v, short=False), font=font(G["VAL"], "Bold")), d.textlength(under(row), font=font(G["UNDER"], "Regular")))
             if x1 <= xm <= x1 + w + 12:
                 gaps.append((Y0 + r * PITCH - 4, Y0 + r * PITCH + BAR + 4))
         for y in range(Y0 - 6, Y0 + N * PITCH - 8, 14):
             if not any(g0 < y + 7 and y < g1 for g0, g1 in gaps):
                 d.line([(xm, y), (xm, y + 7)], fill=GOLD + (int(200 * am),), width=2)
-        d.text((xm, Y0 + N * PITCH + 18), "today's MLB minimum, $760K", font=font(20, "Regular"), fill=GOLD + (int(230 * am),), anchor="ms")
+        d.text((xm, Y0 + N * PITCH + 16), "today's MLB minimum, $760K", font=font(G["TICK"], "Regular"), fill=GOLD + (int(230 * am),), anchor="ms")
+    # the leader's halo, brighter for a moment when a new No. 1 arrives
+    pulse = D.pulse(T) if T is not None else 0.0
+    for k, (r, v, row) in st.items():
+        if r < 0.5 and not hold:
+            al = a * (1 - r * 2)
+            glow(im, X0, Y0 + r * PITCH, max(X0 + 6, xs(v)), LEAGUE[row["league"]], al * 0.42)
+            glow(im, X0, Y0 + r * PITCH, max(X0 + 6, xs(v)), GOLD, al * 0.75 * pulse)
     # longest first, so a shorter bar passing a longer one stays in view on top of it; while two bars overlap, the
     # lower-paid one's labels give way
     for k, (r, v, row) in sorted(st.items(), key=lambda kv: (-kv[1][1], kv[1][0])):
@@ -317,21 +508,22 @@ def board(im, t, a=1.0, hold=False):
         y = Y0 + r * PITCH
         col = LEAGUE[row["league"]]
         x1 = max(X0 + 6, xs(v))
-        d.rounded_rectangle([X0, y, x1, y + BAR], 4, fill=col + (int(255 * al),))
-        d.rectangle([X0, y, min(x1, X0 + 6), y + BAR], fill=col + (int(255 * al),))
+        draw_bar(im, X0, y, x1, col, al)
         if r < 0.5 and not hold:                     # the leader
-            d.rounded_rectangle([X0 - 1, y - 1, x1 + 1, y + BAR + 1], 5, outline=GOLD + (int(150 * al * (1 - r * 2)),), width=2)
+            d.rounded_rectangle([X0 - 1, y - 1, x1 + 1, y + BAR + 1], 6, outline=GOLD + (int((150 + 100 * pulse) * al * (1 - r * 2)),), width=2)
         if tl <= 0.01:
             continue
         nx = X0 - 18
         if RECORDS:                                  # the season, after the name
-            d.text((nx, y + BAR / 2 - 1), season(row), font=font(23, "Regular"), fill=INK2 + (int(255 * tl),), anchor="rs")
-            nx -= d.textlength(season(row), font=font(23, "Regular")) + 10
-        d.text((nx, y + BAR / 2 - 1), row["player"], font=font(29, "SemiBold"), fill=INK + (int(255 * tl),), anchor="rs")
-        d.text((X0 - 18, y + BAR / 2 + 15), who(row), font=font(19, "Regular"), fill=INK2 + (int(235 * tl),), anchor="rm")
+            d.text((nx, y + BAR / 2 - 1), season(row), font=font(G["SEASON"], "Regular"), fill=INK2 + (int(255 * tl),), anchor="rs")
+            nx -= d.textlength(season(row), font=font(G["SEASON"], "Regular")) + 9
+        d.text((nx, y + BAR / 2 - 1), row["player"], font=font(G["NAME"], "SemiBold"), fill=INK + (int(255 * tl),), anchor="rs")
+        d.text((X0 - 18, y + BAR / 2 + G["SUB"] - 3), who(row), font=font(G["SUB"], "Regular"), fill=INK2 + (int(235 * tl),), anchor="rm")
         approx = "≈" if CAREER and row["est_share"] > 0.2 else ""
-        d.text((x1 + 14, y + BAR / 2 - 9), approx + money(v, short=False), font=font(28, "Bold"), fill=INK + (int(255 * tl),), anchor="lm")
-        d.text((x1 + 14, y + BAR / 2 + 15), under(row), font=font(19, "Regular"), fill=MUTED + (int(235 * tl),), anchor="lm")
+        d.text((x1 + 14, y + BAR / 2 - G["VAL"] / 3), approx + money(v, short=False), font=font(G["VAL"], "Bold"), fill=INK + (int(255 * tl),),
+               anchor="lm", features=TNUM)
+        d.text((x1 + 14, y + BAR / 2 + G["UNDER"] - 3), under(row), font=font(G["UNDER"], "Regular"), fill=MUTED + (int(235 * tl),),
+               anchor="lm", features=TNUM)
     return d
 
 
@@ -353,22 +545,44 @@ def under(row):
     return f"{row['seasons']} seasons · {money(row['nominal'], short=False)} as paid"
 
 
+def legend(d, x, y, a, size=22, swatch="square"):
+    """the leagues' colours, right-aligned at x"""
+    for lg in ("NHL", "NFL", "NBA", "MLB"):
+        w = d.textlength(lg, font=font(size, "SemiBold"))
+        d.text((x, y), lg, font=font(size, "SemiBold"), fill=INK + (int(255 * a),), anchor="rs")
+        if swatch == "square":
+            d.rounded_rectangle([x - w - size - 8, y - size + 4, x - w - 10, y + 2 - 2], 4, fill=LEAGUE[lg] + (int(255 * a),))
+        else:                                         # a stroke, for lines
+            d.rounded_rectangle([x - w - 34, y - size / 2 - 1, x - w - 10, y - size / 2 + 3], 2, fill=LEAGUE[lg] + (int(255 * a),))
+        x -= w + (58 if swatch == "square" else 56)
+
+
 def header(d, a=1.0):
+    if PANEL:
+        d.rounded_rectangle([64, 28, 70, 108], 3, fill=GOLD + (int(255 * a),))
+        d.text((90, 66), MODE["title"], font=dfont(48, "Bold"), fill=INK + (int(255 * a),), anchor="ls")
+        d.text((91, 102), MODE["subtitle"], font=font(22, "Regular"), fill=INK2 + (int(255 * a),), anchor="ls")
+        return
     d.text((90, 62), MODE["title"], font=font(46, "Bold"), fill=INK + (int(255 * a),), anchor="ls")
     d.text((90, 104), MODE["subtitle"], font=font(25, "Regular"), fill=INK2 + (int(255 * a),), anchor="ls")
-    x = W - 90
-    for lg in ("NHL", "NFL", "NBA", "MLB"):
-        w = d.textlength(lg, font=font(22, "SemiBold"))
-        d.text((x, 62), lg, font=font(22, "SemiBold"), fill=INK + (int(255 * a),), anchor="rs")
-        d.rounded_rectangle([x - w - 30, 44, x - w - 10, 64], 4, fill=LEAGUE[lg] + (int(255 * a),))
-        x -= w + 58
+    legend(d, W - 90, 62, a)
 
 
 def year_label(d, t, a=1.0):
     y = int(np.floor(min(max(t, FIRST), LAST) + 0.5))
-    d.text((W - 90, H - 78), str(y), font=font(132, "Bold"), fill=INK + (int(235 * a),), anchor="rs")
     f = float(D.cov[y]["to_2025"])
-    d.text((W - 92, H - 40), f"$1 in {y} = ${f:,.2f} in 2025", font=font(24, "Regular"), fill=INK2 + (int(255 * a),), anchor="rs")
+    if not PANEL:
+        d.text((W - 90, H - 78), str(y), font=font(132, "Bold"), fill=INK + (int(235 * a),), anchor="rs")
+        d.text((W - 92, H - 40), f"$1 in {y} = ${f:,.2f} in 2025", font=font(24, "Regular"), fill=INK2 + (int(255 * a),), anchor="rs")
+        return
+    # the year at the top right, the new one rolling up into place as the old one leaves
+    p = smooth((D.secs(t) - D.secs(y - 0.5)) / 0.24) if y > FIRST else 1.0
+    big = dfont(104, "Bold")
+    if p < 1:
+        d.text((W - 90, 108 - 26 * p), str(y - 1), font=big, fill=INK + (int(235 * a * (1 - p)),), anchor="rs", features=TNUM)
+    d.text((W - 90, 108 + 26 * (1 - p)), str(y), font=big, fill=INK + (int(235 * a * p),), anchor="rs", features=TNUM)
+    d.text((W - 92, 140), f"$1 in {y} = ${f:,.2f} in 2025", font=font(19, "Regular"), fill=INK2 + (int(255 * a),), anchor="rs",
+           features=TNUM)
 
 
 def caption(d, T, a=1.0):
@@ -378,6 +592,13 @@ def caption(d, T, a=1.0):
         if al <= 0.01:
             continue
         lines = e["text"] if isinstance(e["text"], list) else [e["text"]]
+        if PANEL:                                     # in the band between the board and the revenue panel
+            y0 = Y0 + N * PITCH + 52
+            d.rounded_rectangle([90, y0 - 26, 95, y0 + 4 + 30 * (len(lines) - 1)], 2, fill=GOLD + (int(230 * al),))
+            for i, line in enumerate(lines):
+                d.text((112, y0 + i * 32), line, font=font(26 if i == 0 else 21, "SemiBold" if i == 0 else "Regular"),
+                       fill=(INK if i == 0 else INK2) + (int(255 * al),), anchor="ls")
+            continue
         y = H - 96
         for i, line in enumerate(lines):
             d.text((90, y + i * 38), line, font=font(30 if i == 0 else 24, "SemiBold" if i == 0 else "Regular"),
@@ -390,6 +611,20 @@ def frame(T):
     if T < INTRO:
         d = ImageDraw.Draw(im, "RGBA")
         a = smooth(T / 0.8) * (1 - smooth((T - INTRO + 1.0) / 0.8))
+        if PANEL:                                     # a title card: the span, the title over a gold rule, the leagues
+            lift = 18 * (1 - smooth(T / 1.2))
+            d.text((W / 2, 372 + lift), f"{FIRST} – {LAST}", font=font(24, "SemiBold"), fill=GOLD + (int(255 * a),), anchor="mm")
+            d.text((W / 2, 452 + lift), MODE["title"], font=dfont(86, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
+            d.rounded_rectangle([W / 2 - 60, 516 + lift, W / 2 + 60, 520 + lift], 2, fill=GOLD + (int(255 * a),))
+            for i, line in enumerate(("Every salary in 2025 dollars.", "A season stays on the board until ten better ones come along.")):
+                d.text((W / 2, 572 + 40 * i + lift), line, font=font(30, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
+            ws = [26 + d.textlength(lg, font=font(24, "SemiBold")) for lg in ("MLB", "NBA", "NFL", "NHL")]
+            x = W / 2 - (sum(ws) + 44 * 3) / 2
+            for lg, w in zip(("MLB", "NBA", "NFL", "NHL"), ws):
+                d.ellipse([x, 696, x + 16, 712], fill=LEAGUE[lg] + (int(255 * a),))
+                d.text((x + 26, 704), lg, font=font(24, "SemiBold"), fill=INK + (int(230 * a),), anchor="lm")
+                x += w + 44
+            return np.asarray(im)
         d.text((W / 2, 420), MODE["title"], font=font(72, "Bold"), fill=INK + (int(255 * a),), anchor="mm")
         d.text((W / 2, 500), MODE["intro"], font=font(34, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
         d.text((W / 2, 600), "MLB · NBA · NFL · NHL", font=font(26, "SemiBold"), fill=MUTED + (int(255 * a),), anchor="mm")
@@ -399,7 +634,9 @@ def frame(T):
     a = smooth((T - INTRO) / 0.8)
     end = total()
     dim = 1 - 0.94 * smooth((T - (end - OUTRO + 1.6)) / 0.8)      # the board steps back for the summary
-    d = board(im, t, a * dim, hold)
+    if PANEL:
+        revenue(im, t, a * dim)
+    d = board(im, t, a * dim, hold, T)
     header(d, a)
     year_label(d, t, a * (dim - 0.06) / 0.94)          # gone under the sources line
     caption(d, T, a)
@@ -453,9 +690,10 @@ def total():
 
 
 def setup():
-    global D, SCALE
+    global D, SCALE, REVSCALE
     D = Data()
     SCALE = scale_track()
+    REVSCALE = rev_scale_track() if D.rev else None
     rows = [r for d in D.by.values() for r in d.values()]
     ruth = [r for r in rows if r["player"] == "Babe Ruth"]
     SUMMARY["now"] = D.by[LAST][D.order[LAST][0]]
