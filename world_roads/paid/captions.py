@@ -40,7 +40,7 @@ def main():
         hit = sorted((r for r in rows if r["nominal"] >= level), key=lambda r: (r["year"], -r["nominal"]))
         if hit:
             r = hit[0]
-            caps.append(dict(year=r["year"], text=[f"The first {label} salary: {r['player']}, {r['team']}",
+            caps.append(dict(year=r["year"], text=[f"First {label} salary on record: {r['player']}, {r['team']}",
                                                   f"{m(r['nominal'])} in {r['year']} · {m(r['real'])} in 2025 dollars"], hit=True))
     # long reigns at No. 1
     lead = {y: max(by[y], key=lambda r: r["real"]) for y in by}
