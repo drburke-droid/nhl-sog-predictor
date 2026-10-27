@@ -5,7 +5,8 @@
       league pages and every team page 1985-2000 (each roster's salaries; 2001-2025 from ../rebuild/data)
   b   the Baseball Reference page of every candidate (candidates.py): its salary table, Michael Haupert's research of
       the Hall of Fame's contract cards for the early years, the contracts since (and the NBA pages, if a not done)
-  c   for the career race: the Minneapolis Fed's CPI estimates for 1800-1912 (careers that began before 1913)
+  c   for the career race: the Minneapolis Fed's CPI estimates for 1800-1912 (careers that began before 1913), and the
+      Federal Reserve's H.10 daily US$/C$ rates since 1971 (to convert salaries reported in Canadian dollars)
 
 Sports Reference asks for no more than 20 requests a minute: request starts are kept 3.5 s apart across all threads,
 and a page already cached is never asked for again.
@@ -111,7 +112,9 @@ def stage_b():
 
 
 def stage_c():
-    run([(os.path.join(DATA, "cpi_1800.html"), CPI_1800)], "cpi 1800-")
+    run([(os.path.join(DATA, "cpi_1800.html"), CPI_1800)] +
+        [(os.path.join(DATA, "fx", f"{f}_ca.htm"), f"https://www.federalreserve.gov/releases/h10/hist/{f}_ca.htm")
+         for f in ("dat89", "dat96", "dat00")], "cpi 1800-, exchange rates")
 
 
 def run(jobs, what=""):

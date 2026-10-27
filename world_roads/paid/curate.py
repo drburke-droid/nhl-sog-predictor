@@ -10,7 +10,8 @@ guessed. A signing or playoff bonus is spread over its contract, as the leagues'
 million of 1997-98 counts as six years of up to $38 million), and NFL cash-paid figures, which put a whole bonus in
 one season, are not used. Each row keeps its source's URL and quote, and a note on what it overrode.
 """
-import os, csv
+import os, re, csv, html
+from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = os.path.join(HERE, "research")
@@ -182,8 +183,36 @@ SPECS = {"nba_pre1985.csv": NBA, "nhl_pre2006.csv": NHL, "nfl_pre2011.csv": NFL}
 # player and season chosen by the same rules. A season the selection above already has keeps that figure unless the
 # research corrects it (CORRECT); a row in DROP is left out, for the reason given.
 CAREERS = ["careers_nba.csv", "careers_nfl.csv", "careers_nhl.csv"]
-CORRECT = {}
-DROP = {}
+CORRECT = {
+    ("Eric Lindros", 1998): "the revised two-year, $16 million deal of Dec 1997 paid $7.5 million in 1997-98 (NYT), not the $3.5 million average",
+    ("Phil Esposito", 1977): "THN (Feb 1976): $375,000 a year with three years left, over the $200,000 used before",
+    ("Phil Esposito", 1978): "Globe and Mail: $325,000 for 1977-78, over the $200,000 used before",
+    ("Phil Esposito", 1979): "THN (Feb 1976): $375,000 a year with three years left, over the $200,000 used before",
+    ("Wayne Gretzky", 1997): "AP's salary list (Sept 1996): $5,047,500, over the $4 million average used before",
+    ("Wayne Gretzky", 1998): "THN: $6.5 million after the Oct 1997 renegotiation, over the $4 million average used before",
+}
+DROP = {
+    ("Wayne Gretzky", 1987): "an outdated 1979 schedule, superseded by the 1982 contract; the season is interpolated instead",
+}
+DROP.update({("Maurice Richard", y): "Canadian dollars before 1971, when the Federal Reserve's H.10 rates begin"
+             for y in (1943, 1944, 1951, 1954, 1955, 1956, 1957, 1958, 1959, 1960)})
+UNPAID = {   # seasons of the selection above the research found were not paid
+    ("Bobby Orr", 1978): "sat out 1977-78 and refused his salary; he 'never cashed a Chicago paycheque' (Montreal Gazette, Nov 1978)",
+}
+
+
+def fx():
+    """Canadian dollars per US dollar, each calendar year's average of the Federal Reserve's H.10 noon rates (1971 on)"""
+    by = defaultdict(list)
+    for f in ("dat89", "dat96", "dat00"):
+        h = open(os.path.join(HERE, "data", "fx", f"{f}_ca.htm"), encoding="utf8", errors="replace").read()
+        for r in re.findall(r"<tr[^>]*>(.*?)</tr>", h, re.S):
+            t = html.unescape(re.sub(r"<[^>]+>", "", r)).replace("\xa0", " ")
+            m = re.search(r"(\d{1,2})-([A-Za-z]{3})-(\d{2})\s+([\d.]+)", t)
+            if m:
+                yy = int(m.group(3))
+                by[(1900 if yy >= 50 else 2000) + yy].append(float(m.group(4)))
+    return {y: sum(v) / len(v) for y, v in by.items()}
 
 
 def main():
@@ -207,6 +236,9 @@ def main():
         k = (r["player"], r["year_end"])
         assert k not in keys, f"two figures for {k}"
         keys[k] = r
+    for k, why in UNPAID.items():
+        out.remove(keys.pop(k))
+    rates = fx()
     added = 0
     for fname in CAREERS:
         p = os.path.join(R, fname)
@@ -214,8 +246,12 @@ def main():
             k = (r["player"], int(r["year_end"]))
             if k in DROP or (k in keys and k not in CORRECT) or not r["salary_usd"].strip():
                 continue
+            sal, basis = float(r["salary_usd"]), r["basis"]
+            if basis.startswith("C$"):                # a season's rate: the average of the two calendar years it spans
+                rate = (rates[k[1] - 1] + rates[k[1]]) / 2
+                sal, basis = round(sal / rate), f"{basis}; C${sal:,.0f} at C${rate:.4f} per US$ (Federal Reserve H.10)"
             row = dict(league=r["league"], player=r["player"], team=r["team"].split(" / ")[-1], year_end=k[1],
-                       salary_usd=float(r["salary_usd"]), basis=r["basis"], source_url=r["source_url"],
+                       salary_usd=sal, basis=basis, source_url=r["source_url"],
                        source_quote=r["source_quote"], notes=("career research; " + CORRECT[k] + "; " if k in CORRECT else "career research; ") + r["notes"])
             if k in keys:
                 out.remove(keys[k])
