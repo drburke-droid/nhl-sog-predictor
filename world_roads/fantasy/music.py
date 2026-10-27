@@ -2,8 +2,10 @@
 orchestra.py (no samples, no licensing).
 
     python music.py          -> out/score.wav, on this film's timeline (assemble.py muxes it)
-    python music.py paid     -> ../media/fantasy/march_best_paid.wav, the same march on the best-paid athletes race's
-                                timeline (paid/: 5.6 s title, 1913-2025 at 1.4 s a year, 11.2 s outro), 173.6 s
+    python music.py paid [PAID]
+                             -> ../media/fantasy/march_best_paid.wav, the same march on the best-paid athletes race's
+                                timeline, read from that race's code (PAID, its paid/ directory: 5.6 s title, a 126 s
+                                race that paces itself, 11.2 s outro), 142.8 s; without PAID, those numbers as of 2026-10
 
 D minor, 85.7 BPM (a beat is 0.7 s, a bar 2.8 s; every season starts on a beat), the theme in two 8-bar halves:
   A  Dm  Bb  F  C | Dm  Gm  A  A
@@ -234,32 +236,46 @@ def track():
     return o.mix()
 
 
-def paid(intro=5.6, first=1913, last=2025, per_year=1.4, outro=11.2, lift_year=1977, hits=()):
-    """the same march on the best-paid athletes race's timeline (paid/video.py): the fanfare under its 5.6 s title,
-    the march from 1913, building from horns and strings to the full band by the 2000s (and about 5 dB louder), a
-    whole step up with free agency (1977), a roll into the major chord two beats after the race ends (1.4 s before its summary), held to the
-    end. 173.6 s. hits: film times for a brass stab (that race's milestone captions, say)."""
-    race_end = intro + (last - first) * per_year
+def paid(intro=5.6, race=126.0, outro=11.2, lift=55.7, hits=(13.125, 18.025, 22.925, 39.375, 49.35, 53.725,
+                                                                56.665, 59.85, 72.98, 95.9, 101.5, 126.0)):
+    """the same march on the best-paid athletes race's timeline (paid/video.py, whose years take uneven time): the
+    fanfare under its title, the march from its first board, building from horns and strings to the full band by the
+    race's end (and about 5 dB louder), a whole step up at the bar nearest lift (free agency, 1977), a brass stab at
+    each of hits (film times: its milestone captions), a roll into the major chord two beats after the race ends (1.4 s
+    before its summary), held to the end. The defaults are that film as of 2026-10: 142.8 s, 51 bars."""
+    race_end = intro + race
     total = race_end + outro
     o = O.Orchestra(total)
     energy = lambda t: 0.38 + 0.57 * np.clip((t - intro) / (race_end - intro), 0, 1) ** 0.85
-    lift_bar = int(np.ceil((intro + (lift_year - first) * per_year) / BAR - 1e-6))
+    lift_bar = int(round(lift / BAR))
     key = lambda b: 2 if b >= lift_bar else 0
     b0, b1 = int(round(intro / BAR)), int(round(race_end / BAR))
     title(o)
     march(o, b0, b1, energy, key)
-    stabs(o, hits, b0, key)
+    stabs(o, [t for t in hits if intro < t < race_end - BAR], b0, key)    # the finale answers the race's end
     finale(o, race_end + 2 * BEAT, total, key(b1))
     lift = lift_bar * BAR                            # a crescendo across the century on top of the layers joining
     o.auto = [(0.0, 0.55), (BAR, 1.25), (2 * BAR, 1.1), (2 * BAR + 2.0, 0.58), (lift - 0.5, 0.78), (lift + 0.5, 0.86),
               (race_end - 12.0, 1.0), (total, 1.05)]
-    return o.mix(), dict(total=total, race_end=race_end, lift=lift_bar * BAR, finale=race_end + 2 * BEAT)
+    return o.mix(), dict(total=total, race_end=race_end, lift=lift, finale=race_end + 2 * BEAT)
+
+
+def paid_timeline(src):
+    """paid()'s arguments from the best-paid athletes race itself (src: its paid/ directory, on its own branch)"""
+    import importlib.util
+    sys.path.insert(0, src)
+    spec = importlib.util.spec_from_file_location("paid_video", os.path.join(src, "video.py"))
+    V = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(V)
+    V.setup()
+    return dict(intro=V.INTRO, race=V.D.race, outro=V.OUTRO, lift=V.INTRO + V.D.secs(1977) - 0.5 * V.PER_YEAR,
+                hits=[c["T0"] for c in V.D.events if c.get("hit")])
 
 
 if __name__ == "__main__":
     os.makedirs(os.path.join(HERE, "out"), exist_ok=True)
-    if sys.argv[1:] == ["paid"]:                     # the cut for the best-paid athletes race -> ../media/fantasy/
-        x, when = paid()
+    if sys.argv[1:2] == ["paid"]:                    # the cut for the best-paid athletes race -> ../media/fantasy/
+        x, when = paid(**paid_timeline(os.path.abspath(sys.argv[2]))) if len(sys.argv) > 2 else paid()
         O.SC.write(x, os.path.join(os.path.dirname(HERE), "media", "fantasy", "march_best_paid.wav"))
         print({k: round(v, 2) for k, v in when.items()})
     else:

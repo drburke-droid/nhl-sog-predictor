@@ -198,15 +198,17 @@ stand further above replacement than anyone else's.
 
   To use a recording of your own instead (a licensed library track, say), run `python assemble.py --audio track.wav`.
   It matches the loudness, fits the track to the film and fades it out.
-* **The same march for the best-paid athletes race.** `python music.py paid` writes
-  `../media/fantasy/march_best_paid.wav`, laid on that film's timeline (173.6 s, 48 kHz):
+* **The same march for the best-paid athletes race.** `python music.py paid PAID` writes
+  `../media/fantasy/march_best_paid.wav`, 142.8 s at 48 kHz. PAID is that race's `paid/` directory, from its own branch
+  (`claude/wonderful-ritchie-uyd31i`). The march is laid on that film's real timeline, read from its `video.py`. That
+  race paces itself, so its years take uneven time. The same file is committed there as `media/paid/march_best_paid.wav`.
   * 0:00 a timpani roll and swell; 0:02.8 the fanfare, under its 5.6 s title;
-  * 0:05.6 the march from 1913, one year every two beats. It builds from horns and strings to the full band, about
-    5 dB louder by the 2000s.
-  * 1:35.2 up a whole step with free agency (1977);
-  * 2:42.4 a roll as the race ends; 2:43.8 the major chord, held to the end.
+  * 0:05.6 the march from 1913, building from horns and strings to the full band, about 5 dB louder by the end;
+  * 0:56.0 up a whole step with free agency (1977), at the bar nearest that year;
+  * a brass stab, crash and timpani at each of that film's 12 milestone captions (its `"hit"` events);
+  * 2:11.6 a roll as the race ends; 2:13.0 the major chord, 0.2 s before its summary, held to the end.
 
-  `music.paid(hits=[...])` adds a brass stab at given film times, such as that race's milestone captions.
+  Without PAID, `paid()` uses that film's numbers as of 2026-10. If that race's timing changes, run it again with PAID.
 
 ## Run it
 
