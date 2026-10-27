@@ -191,7 +191,7 @@ def ticks(d, xmax, a=1.0):
     al0 = dict(seen)
     for v in seen:                                    # a tick crowding a stronger one gives way to it
         near = [abs(px[v] - px[u]) for u in al0 if al0[u] > al0[v]]
-        seen[v] *= smooth((min(near, default=1e9) - 50) / 60)
+        seen[v] *= smooth((min(near, default=1e9) - 75) / 45)
     for v, al in seen.items():
         x = px[v]
         if x > X1 + 150:
@@ -319,6 +319,10 @@ def summary(d, s):
         d.text((x, 640), f"{money(r['nominal'], short=False)} in {r['year']} dollars", font=font(26, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
     d.text((cx, 560), "→", font=font(64, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     d.text((cx, 740), f"{now['real'] / then['real']:.0f} times as much", font=font(40, "SemiBold"), fill=INK + (int(255 * a),), anchor="mm")
+    rec = SUMMARY["record"]
+    if rec is not now:
+        d.text((cx, 830), f"The record: {rec['player']}, {rec['team']} · {rec['circuit']}, {rec['year']}: {money(rec['real'], short=False)} "
+               f"({money(rec['nominal'], short=False)} then)", font=font(28, "Regular"), fill=INK2 + (int(255 * a),), anchor="mm")
     for i, line in enumerate(SOURCES):
         d.text((cx, 996 + 28 * i), line, font=font(19, "Regular"), fill=MUTED + (int(255 * a),), anchor="mm")
 
@@ -340,6 +344,7 @@ def setup():
     ruth = [r for d in D.by.values() for r in d.values() if r["player"] == "Babe Ruth"]
     SUMMARY["then"] = max(ruth, key=lambda r: r["real"]) if ruth else D.by[FIRST][D.order[FIRST][0]]
     SUMMARY["now"] = D.by[LAST][D.order[LAST][0]]
+    SUMMARY["record"] = max((r for d in D.by.values() for r in d.values()), key=lambda r: r["real"])
     for r in SUMMARY.values():
         r["year"] = int(r["year"])
 
