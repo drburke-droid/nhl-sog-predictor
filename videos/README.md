@@ -9,13 +9,12 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 | File | Format | Length | What it is |
 |---|---|---|---|
 | vernier_you_can_see_smaller_than_your_pixels_6m19s_4K.mp4 | 16:9, 4K | 6:19 | Vernier hyperacuity (replaces the older hyperacuity video). Smaller 51 MB copy; the 150 MB 4K master was sent separately. Copy: `copy/vernier_YOUTUBE.md`, thumbnails vernier_thumb_A/B/C |
-| glasses_work_by_slowing_light_SHORT_68s.mp4 | vertical | 1:08 | Thick glasses: your lenses work by slowing light down |
+| glasses_work_by_slowing_light_SHORT_68s.mp4 | vertical | 1:08 | Your glasses work by slowing light down (lenses, refraction, thin vs thick lens, the Mariana Trench) |
 | blur_adaptation_7m09s.mp4 | 16:9 | 7:09 | Blur adaptation. Copy: `copy/blur_adaptation_YOUTUBE.md`, thumbnails blur_adaptation_thumb_A/B/C |
 | blur_adaptation_we_didnt_start_the_fire_edition_7m16s.mp4 | 16:9 | 7:16 | Same film, "We Didn't Start the Fire" edition (pick one of the two). Copy: `copy/blur_adaptation_fire_edition_YOUTUBE.md`, thumbnails blur_adaptation_fire_thumb_A/B/C |
 
-Not here: the BVD video (binocular vision dysfunction, AI-voice 5:27 and no-voice 6:21 versions plus Shorts). It was
-rendered on your computer from the neurogaze repository and the rendered files were never committed, so they aren't in
-any repository this folder could draw on.
+Not here, because neither was saved to any repository: the BVD video (binocular vision dysfunction; AI-voice and
+no-voice versions plus Shorts, made with the neurogaze project) and the video of glasses lenses growing thicker up to -39D.
 
 ## speed_of_light/
 
