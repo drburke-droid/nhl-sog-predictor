@@ -10,7 +10,8 @@ in the 33 m in view. That is a line blast: R = (E'/rho)^(1/4) sqrt(age), ~500 sq
 the path in 0.1 ms, the car in 0.15 ms, the camera 20 m away in 1.65 ms, still moving at Mach 18 (380 atmospheres):
 nothing in the picture survives it, the camera last.
 
-Here the probe meets the air as it comes into the picture at the left (as if it appeared there)."""
+Here the probe meets the air just inside the picture at the left (as if it appeared there), so it is seen whole for a
+moment before it goes."""
 import math, sys, os
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -19,7 +20,7 @@ import flight as F, camera as Cam
 V0 = 192227.0
 MASS, AREA, RHO = 685.0, 4.15, 1.225
 PY, PZ = F.FLY_Y, F.MACHINES["parker"]["alt"]
-X_IN = -16.5                     # where the probe meets the air (its heat shield), just left of the picture
+X_IN = -13.5                     # where the probe meets the air (its heat shield), just inside the picture
 LS = MASS / (RHO * AREA)         # snowplough length, 135 m
 KE0 = 0.5 * MASS * V0 ** 2
 T_SHIELD, T_GONE = 4e-6, 25e-6   # heat shield gone; the whole probe vapour
@@ -80,7 +81,7 @@ STEP0 = 2e-6
 
 def replay():
     out = []
-    t = -4 * STEP0
+    t = -6 * STEP0
     t_exit = float(t_at(17.0))
     while t < t_exit:
         out.append((t, STEP0 * F.FPS)); t += STEP0

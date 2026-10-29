@@ -53,8 +53,12 @@ def vis(T):
 
 
 def core(x, t):
-    """radius of the luminous region: everything inside the blast front (shocked to thousands of kelvin)"""
-    return 0.08 + P.shock_r(x, t)
+    """radius of the luminous region: everything inside the blast front (shocked to thousands of kelvin); behind the
+    point where the probe met the air the blast closes in a rounded end"""
+    x = np.asarray(x, float)
+    R = P.shock_r(np.maximum(x, P.X_IN), t)
+    behind = np.maximum(P.X_IN - x, 0)
+    return 0.08 + np.sqrt(np.maximum(R ** 2 - behind ** 2, 0))
 
 
 def lum_temperature(a):
@@ -85,8 +89,8 @@ def column(t):
                 m = m + amp * cv2.GaussianBlur(cv2.resize(rng.random((H // cells + 2, W // cells + 2)).astype(np.float32),
                                                           (W, H), interpolation=cv2.INTER_CUBIC), (0, 0), cells / 3)
             _mottle.append(((m - m.mean()) / (m.std() + 1e-6)).astype(np.float32))
-    a = t - P.t_at(XS)
-    on = (a > 0) & (XS >= P.X_IN)
+    a = t - P.t_at(np.maximum(XS, P.X_IN))
+    on = (a > 0) & (core(XS, t) > 0.081)
     img = np.zeros((H, W, 3), np.float32)
     if on.any():
         aa = np.where(on, a, 1e-3)
@@ -143,15 +147,16 @@ def ground_light(ls):
     return np.where(GROUND[..., None], E / 0.8, 0)
 
 
-def exposure(col):
-    """the camera's exposure: it holds the brightest thing in view just below white, so the daylit scene sinks"""
-    m = float(np.percentile(col.max(-1), 99.9)) if col.max() > 0 else 0.0
+def exposure(img):
+    """the camera's exposure, metered on the whole picture: it holds the brightest part just below white, so the
+    daylit scene sinks as the fireball grows"""
+    m = float(np.percentile(img.max(-1), 99.5))
     return min(1.0, 1.1 / max(m, 1e-9))
 
 
 def displacement(t):
     """the blast's front bending light where rays graze it"""
-    Rr = P.shock_r(XS, t).astype(np.float32)
+    Rr = (core(XS, t) - 0.08).astype(np.float32)
     on = Rr > 0.2
     w = 0.08 + 0.03 * Rr
     q = (DMIN - Rr) / w
@@ -169,7 +174,7 @@ def wall_density(t):
     global _noise
     X, Y, Z = VIS.coords()
     if _noise is None: _noise = D.noise3(VIS.n, 6, 31, 3).astype(np.float32)
-    Rr = P.shock_r(X, t)
+    Rr = core(X, t) - 0.08
     rg = np.sqrt(np.maximum(Rr ** 2 - P.PZ ** 2, 0))                 # how far out along the ground the blast is
     rho = np.abs(Y - P.PY)
     front = rg * 0.97
@@ -177,7 +182,7 @@ def wall_density(t):
     h = 0.4 + 0.12 * rg
     shell = np.exp(-((rho - front) / w) ** 2) * (Z < h * (0.5 + 1.0 * _noise)) * (rho < rg * 1.02)
     inner = 0.0 * Z
-    vapour = np.hypot(Y - P.PY, Z - P.PZ) < core(X, t)                     # inside the hot core: no dust left
+    vapour = np.hypot(Y - P.PY, Z - P.PZ) < 0.5 * Rr                       # the hottest inner core: no dust left
     return (30.0 * (shell + inner) * (0.4 + _noise) * (rg > 0) * ~vapour).astype(np.float32)
 
 
@@ -204,7 +209,6 @@ def replay_frame(job):
     img = C.over_props(plate, C.plate_match(p, 7000 + n))
     if ls and p is not None: img = img + C.relight(p, ls)
     col = column(t)
-    g = exposure(col)
     if p is not None:                                                    # what stands in front of the glowing air
         Rr = core(XS, t)
         entry = COLDEPTH - np.sqrt(np.maximum(Rr ** 2 - DMIN ** 2, 0))
@@ -214,6 +218,7 @@ def replay_frame(job):
     wl = wall(t, ls)
     if wl is not None: img = img * wl[1] + wl[0]
     img = FX.warp(img, displacement(t))
+    g = exposure(img)
     img = img * g
     img = img / (1 + img / 24.0)                                        # what the sensor can hold, before the bloom
     # the last frames: the blast at the lens
@@ -260,7 +265,7 @@ def realtime():
         out.append(C.label(o, lines, min(1.0, n / 8), corner="bl"))
     o = np.zeros((C.H, C.W, 3), np.uint8); o[C.TOP:C.TOP + C.PH] = 255
     out.append(o)
-    return out + lost(1.4) + card("The camera's last 1.8 milliseconds", "replayed 20,000 times slower", 2.6)
+    return out + lost(1.4) + card("The camera's last 1.7 milliseconds", "replayed 20,000 times slower", 2.6)
 
 
 def card(text, sub, seconds, fade=0.5):
