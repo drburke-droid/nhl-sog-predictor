@@ -438,7 +438,7 @@ def march_l(dirs, org, d, ts, sky, gmin, h, zmax, kappa, albedo, sun_rad, sky_ra
                         lr = 0.0; lg = 0.0; lb = 0.0
                         for l in range(nl):
                             ex = sx - lp[l, 0]; ey = sy - lp[l, 1]; ez = sz - lp[l, 2]
-                            d2 = ex * ex + ey * ey + ez * ez + 0.01
+                            d2 = ex * ex + ey * ey + ez * ez + lp[l, 3]
                             dd_ = math.sqrt(d2)
                             c2 = (ex * dx + ey * dy + ez * dz) / dd_
                             pl = (1 - g2) / (4 * math.pi * (1 + g2 - 2 * phase_g * c2) ** 1.5) / d2
@@ -471,8 +471,9 @@ def ray_tmax(R, depth, alpha):
 
 
 def render_l(R, lights=None, zmax=1e9, step=None, tmax=None):
-    """Renderer.render with point lights [(pos, rgb intensity)], the box cut at zmax, and the march stopped at CG
-    surfaces (tmax, from ray_tmax)"""
+    """Renderer.render with point lights [(pos, rgb intensity[, radius])], the box cut at zmax, and the march stopped at
+    CG surfaces (tmax, from ray_tmax). A light's radius (default 0.1 m) softens it, for a light that stands for a
+    stretch of a glowing column rather than a point."""
     g = R.g
     ts = np.empty_like(g.d); sky = np.empty_like(g.d)
     sd = (R.sundir / np.abs(R.sundir).max()).astype(np.float32)
@@ -481,7 +482,8 @@ def render_l(R, lights=None, zmax=1e9, step=None, tmax=None):
     rgb = np.zeros((R.H, R.W, 3), np.float32); tr = np.ones((R.H, R.W), np.float32)
     gs = np.ones((R.H, R.W), np.float32)
     lights = lights or []
-    lp = np.array([l[0] for l in lights] or [[0, 0, -100]], np.float32).reshape(-1, 3)
+    lp = np.array([list(l[0]) + [(l[2] if len(l) > 2 else 0.1) ** 2] for l in lights] or [[0, 0, -100, 0.01]],
+                  np.float32).reshape(-1, 4)
     lc = np.array([l[1] for l in lights] or [[0, 0, 0]], np.float32).reshape(-1, 3)
     if tmax is None:
         tmax = np.full((R.H, R.W), np.inf, np.float32)

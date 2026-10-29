@@ -44,7 +44,30 @@ NASA's Parker Solar Probe (public domain, nasa/NASA-3D-Resources).
   back as slowly as the pictures (16 times slower is four octaves down: each propeller blade becomes a thump).
 * `make_fly.py`: composites each shot (and its replay) and joins it to its sound.
 
-First shot: `../media/speed_ladder/fly1_wright_flyer.mp4`.
+Shots so far: `../media/speed_ladder/fly1_wright_flyer.mp4`, `fly2_spitfire.mp4`, `fly3_bell_x1.mp4`.
+
+### The X-1, the X-15 and the finale
+
+* The X-1 (`flyby_dust.py`, `fly_fx.py`): silent until its Mach cone reaches the camera 18 ms after it passes; the
+  boom (about 15 kPa under it, the shock and its reflection; ~3 kPa at the camera) lifts a sheet of dust off the sand
+  and gravel along its path. It barely rocks the cone (about a degree: the pressure jump pushes on a small object only
+  for the millisecond it takes to wrap round it). In the replay (32 times slower) its bow and tail shocks bend the light
+  where rays graze them, and its rocket's hot trail shimmers.
+* The X-15 (`hyper.py`): at sea level, Mach 5.9 means 2.45 MPa of dynamic pressure, about 20 times what it was built
+  for; it is shown intact, its leading edges glowing (900-2,300 K by how squarely they face the flow, a blackbody's
+  visible brightness). Its drag leaves 3 MJ in every metre of air: a line blast that reaches the ground 14 ms after it
+  passes, throws the cone 12 m, folds the sign over, slams the car onto its bump stops and blows in its windows, and
+  raises a wall of dust (`flyby_dust.py`); the camera is hit 57 ms after it passes.
+* The finale (`parker.py`, `parker_render.py`, `parker_comp.py`): the probe cannot survive sea-level air at 192 km/s.
+  It boils away within ~25 microseconds, 5 m after meeting the air, and its vapour carries on as a bolt of plasma,
+  slowed only as it shoves air aside, leaving 6-9e10 J in every metre (0.6 kilotons across the picture). The blast
+  reaches the camera 1.8 ms later at Mach 18. In real time: one white frame, then no signal. The replay (20,000 times
+  slower, then ramping up) shows the bolt, the column of air it leaves at tens of thousands of kelvin widening behind
+  the blast front (optically thick, as bright as its temperature), the camera's exposure falling a hundredfold so the
+  daylit scene sinks to silhouettes lit by the fireball, the ground erupting along the front as it races toward the
+  lens. End card: light is still 1,560 times faster.
+* `make_film.py`: title, the five shots cut together, one mix that keeps the escalation.
+
 
 ## The physics the escalation follows
 
