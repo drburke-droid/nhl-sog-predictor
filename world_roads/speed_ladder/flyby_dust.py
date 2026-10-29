@@ -16,6 +16,10 @@ NAME = sys.argv[1] if len(sys.argv) > 1 else "x1"
 CFG = {
     "x1": dict(kind="boom", dp0=15000.0, d0=6.0, dp_min=3500.0, n_fine=700_000, n_sand=60_000, lift=0.1, unit=0.028,
                wake=7.0, grid=(-17, 17, 9, 31, 6), vis=(-16, 16, 9.5, 30.5, 5)),
+    # the F-35 at Mach 1.6: a longer, heavier aircraft, a stronger boom (~30 kPa under it), and the afterburner's jet
+    # dragging the air (and the dust) behind it
+    "f35": dict(kind="boom", dp0=30000.0, d0=6.0, dp_min=4500.0, n_fine=900_000, n_sand=80_000, lift=0.1, unit=0.03,
+                wake=22.0, grid=(-17, 17, 7, 33, 7), vis=(-16, 16, 7.5, 32.5, 6)),
     # the X-15's line blast (hyper.py): dust thrown off the ground when the blast reaches it, at ~6% of the impulse
     # per area in m/s (16 m/s under the path), outward and up; a core of heated air 6 m up, expanding, then rising
     "x15": dict(kind="blast", n_fine=1_300_000, n_sand=160_000, lift=0.045, unit=0.11, area=8.0, wake=12.0,
@@ -71,6 +75,9 @@ def setup():
     # the rocket's wake: air dragged backward behind the plane, spreading down toward the ground
     r2 = (Y - PY) ** 2 + (Z - ALT) ** 2
     air.u -= (CFG["wake"] * np.exp(-r2 / (2 * 1.8 ** 2))).astype(np.float32)
+    if NAME == "f35":                                   # the afterburner's jet spreads down to the ground behind it
+        air.u -= (0.45 * CFG["wake"] * np.exp(-(Y - PY) ** 2 / (2 * 3.0 ** 2)) * np.exp(-Z / 2.5)).astype(np.float32)
+        air.w += (2.5 * np.exp(-(Y - PY) ** 2 / (2 * 3.0 ** 2)) * np.exp(-Z / 1.5)).astype(np.float32)
     core = None
     if blast:
         # the heated core along the path, and behind the blast the air near the ground thrown outward

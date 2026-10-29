@@ -166,8 +166,8 @@ def load(path, prefix="ac", skip=None, collection=None):
         if l is None: break
         t = _tok(l)
         if t[0] == "MATERIAL":
-            m = {"name": t[1]}
-            for j in range(2, len(t)):
+            m = {"name": t[1], "rgb": (0.7, 0.7, 0.7)}           # (an empty name "" may vanish when tokenized)
+            for j in range(1, len(t)):
                 if t[j] == "rgb": m["rgb"] = tuple(float(x) for x in t[j + 1:j + 4])
                 elif t[j] == "shi": m["shi"] = float(t[j + 1])
                 elif t[j] == "trans": m["trans"] = float(t[j + 1])

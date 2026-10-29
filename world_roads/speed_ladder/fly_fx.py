@@ -10,6 +10,7 @@ R_ = "/home/user/lot/render"
 # shock refraction: px the plate moves across the bow shock where a ray grazes it 6 m from the path (falling as
 # d^-3/4 like the pressure jump); shake: px, when the boom reaches the camera
 FX = {"x1": dict(refr=2.2, shake=9.0, trail=1.2),
+      "f35": dict(refr=3.2, shake=14.0, trail=1.8),
       "x15": dict(refr=7.0, shake=24.0, trail=1.8)}
 _geo = {}
 

@@ -123,9 +123,15 @@ def xlr99(dur, rng):
     return rocket(dur, rng, peak=160.0, crackle=0.9)
 
 
-SOURCES = {"wright": wright_engine, "spitfire": merlin, "x1": rocket, "x15": xlr99}
-LEVEL = {"wright": 2.2, "spitfire": 9.0, "x1": 14.0, "x15": 30.0}  # at 1 m, relative: 12 hp against 1,600 hp ...
-BOOM = {"x1": dict(dp=1.6, length=0.016)}             # relative to the sound levels above; N-wave length s
+def f135(dur, rng):
+    """the F-35's F135 in full afterburner (190 kN): a jet's roar, lower and broader than a rocket's, and the
+    afterburner's crackle"""
+    return rocket(dur, rng, peak=260.0, crackle=1.1)
+
+
+SOURCES = {"wright": wright_engine, "spitfire": merlin, "x1": rocket, "f35": f135, "x15": xlr99}
+LEVEL = {"wright": 2.2, "spitfire": 9.0, "x1": 14.0, "f35": 22.0, "x15": 30.0}  # at 1 m, relative: 12 hp against 1,600 hp ...
+BOOM = {"x1": dict(dp=1.6, length=0.016), "f35": dict(dp=2.6, length=0.024)}             # relative to the sound levels above; N-wave length s
 
 
 def path(name, te):

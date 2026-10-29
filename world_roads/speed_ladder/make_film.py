@@ -1,14 +1,15 @@
 """The whole film: a title over the empty road, the five machines in order of speed (each shot opens on the empty road,
 so they cut straight together), the finale's end card. One sound mix: the shots' tracks at levels that keep the
 escalation (a 12 hp engine is quiet next to a sonic boom), each limited so nothing clips.
-  python make_film.py -> /home/user/lot/out/history_fastest_machines.mp4"""
+  python make_film.py -> /home/user/lot/out/history_fastest_machines.mp4
+  NO_PARKER=1 python make_film.py -> ..._no_parker.mp4: ending on the X-15, with its own end card"""
 import cv2, numpy as np, os, subprocess, sys, wave
 from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import comp as C, fly_sound as S
 
 OUT = "/home/user/lot/out"
-SHOTS = [("wright", 0.45), ("spitfire", 0.8), ("x1", 1.0), ("x15", 1.0), ("parker", 1.0)]   # name, level in the mix
+SHOTS = [("wright", 0.45), ("spitfire", 0.8), ("x1", 1.0), ("f35", 1.0), ("x15", 1.0), ("parker", 1.0)]   # name, mix level
 TITLE = ("What if history's fastest machines", "flew past you?")
 WHITE = (255, 255, 255)
 
@@ -41,9 +42,14 @@ def title_frames(seconds=4.0):
     return frames
 
 
+END_X15 = ("The X-15 still holds the speed record for a crewed aircraft.", "Light is 148,000 times faster.")
+
+
 if __name__ == "__main__":
     import shutil
-    fr = f"{OUT}/frames_film"
+    no_parker = os.environ.get("NO_PARKER") == "1"
+    if no_parker: SHOTS = [s_ for s_ in SHOTS if s_[0] != "parker"]
+    fr = f"{OUT}/frames_film" + ("_np" if no_parker else "")
     shutil.rmtree(fr, ignore_errors=True); os.makedirs(fr)
     k = 0
     tf = title_frames()
@@ -61,10 +67,17 @@ if __name__ == "__main__":
         n = int(len(files) / 25 * sr)
         a = np.pad(a, ((0, max(0, n - len(a))), (0, 0)))[:n]
         audio.append(a * level)
+    if no_parker:                                       # an end card after the X-15
+        import parker_comp as PCo
+        card = PCo.lost(0.6) + PCo.card(*END_X15, 4.5)
+        for im in card:
+            cv2.imwrite(f"{fr}/f{k:05d}.png", im[..., ::-1]); k += 1
+        audio.append(np.zeros((int(len(card) / 25 * sr), 2)))
     mix = np.concatenate(audio)
     mix = np.tanh(mix * 1.1) / 1.1 * 0.95
-    S.write(f"{OUT}/film.wav", mix)
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", "25", "-i", f"{fr}/f%05d.png", "-i", f"{OUT}/film.wav",
+    wav = f"{OUT}/film{'_np' if no_parker else ''}.wav"
+    S.write(wav, mix)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", "25", "-i", f"{fr}/f%05d.png", "-i", wav,
                     "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest",
-                    f"{OUT}/history_fastest_machines.mp4"], check=True)
+                    f"{OUT}/history_fastest_machines{'_no_parker' if no_parker else ''}.mp4"], check=True)
     print("frames", k, "seconds", k / 25)

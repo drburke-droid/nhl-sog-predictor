@@ -16,6 +16,8 @@ MACHINES = {
     "wright":   dict(title="1903 Wright Flyer", mph=30, speed=13.41, alt=3.8, box=(6.56, 12.48, 2.94), pre=3.4, post=3.0),
     "spitfire": dict(title="1943 Spitfire", mph=370, speed=165.4, alt=4.0, box=(9.24, 11.24, 2.86), pre=2.0, post=2.0),
     "x1":       dict(title="1947 Bell X-1", mph=807, speed=360.6, alt=6.0, box=(9.42, 8.50, 2.82), pre=2.0, post=2.5),
+    "f35":      dict(title="2016 F-35 Lightning II", mph=1228, speed=548.8, alt=6.0, box=(17.2, 10.84, 3.65), pre=2.0,
+                     post=2.5),
     "x15":      dict(title="1967 X-15", mph=4520, speed=2020.6, alt=6.0, box=(15.86, 6.70, 3.26), pre=2.0, post=3.0),
     "parker":   dict(title="2024 Parker Solar Probe", mph=430000, speed=192227.0, alt=5.0, box=(6.62, 5.74, 5.26), pre=2.0,
                      post=3.0),
@@ -23,7 +25,7 @@ MACHINES = {
 
 
 # the slow-motion replay: how much slower than real time while it crosses (a camera running 25 / slow frames a second)
-REPLAY = {"spitfire": 1 / 16, "x1": 1 / 32, "x15": 1 / 200, "parker": 1 / 20000}
+REPLAY = {"spitfire": 1 / 16, "x1": 1 / 32, "f35": 1 / 48, "x15": 1 / 200, "parker": 1 / 20000}
 RAMP, TAIL = 50, 15               # frames ramping back to real speed, then frames at real speed
 
 

@@ -43,6 +43,7 @@ def finish(img, seed, lines, label_alpha=1.0, fl=0.0, shake_t=-1.0, shake_amp=10
 
 # a word on how the speed was set where the real record was flown high up, in thinner air
 NOTE = {"x1": "Mach 1.06, its record (700 mph at 43,000 ft); here at sea level",
+        "f35": "Mach 1.6, its top speed (flown high up); here at sea level",
         "x15": "its record speed (flown 20 miles up), here at sea level"}
 
 

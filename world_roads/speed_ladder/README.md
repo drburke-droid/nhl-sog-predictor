@@ -17,10 +17,13 @@ The ball is replaced by five machines from the history of speed, each flying acr
 | Wright Flyer, 1903 | 30 mph (its airspeed on the first flight) | 3.8 m | 3 s |
 | Spitfire, 1943 | 370 mph | 4 m | 0.25 s |
 | Bell X-1, 1947 | Mach 1.06: 807 mph at sea level (the record's 700 mph was Mach 1.06 at 43,000 ft) | 6 m | 0.1 s |
+| F-35 Lightning II, 2016 | Mach 1.6: 1,228 mph at sea level (its top speed is flown high up) | 6 m | 80 ms |
 | X-15, 1967 | 4,520 mph | 6 m | 20 ms |
 | Parker Solar Probe, 2024 | 430,000 mph | 5 m | 0.2 ms |
 
-Models: FlightGear's Wright Flyer, Spitfire IX, Bell X-1 and X-15 (GPL; Aircraft-2024 from the FlightGear mirrors), and
+Models: FlightGear's Wright Flyer, Spitfire IX, Bell X-1, F-35 (its F-35B, in the AF-01 test livery, an F-35A; gear
+and lift-fan doors shut, the difference doesn't show from the side) and X-15 (GPL; Aircraft-2024 from the FlightGear
+mirrors), and
 NASA's Parker Solar Probe (public domain, nasa/NASA-3D-Resources).
 
 * `ac3d.py`: a reader for FlightGear's AC3D models (objects, transforms, UVs, smoothing, textures, transparency) into

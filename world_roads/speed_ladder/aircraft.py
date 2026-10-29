@@ -29,6 +29,11 @@ AIRCRAFT = {
         title="Bell X-1", year=1947, mph=807, mach=1.06, speed=1.06 * 343.0, alt=6.0,
         files=[(f"{FG}/Bell-X1/Bell-X1/Models/x1.ac", (0, 0, 0))],
         hide=_GEN + r"|roue|axe[ADG]", props=[]),
+    "f35": dict(
+        title="F-35 Lightning II", year=2016, mph=1228, speed=548.8, alt=6.0,
+        files=[(f"{FG}/../f35/x/F-35B/Models/F-35B.ac", (0, 0, 0)), (f"{FG}/../f35/x/F-35B/Models/Engine.ac", (0, 0, 0)),
+               (f"{FG}/../f35/x/F-35B/Models/Pilot.ac", (0, 0, 0))],
+        hide=_GEN + r"|^(fan|box|case|lights|fuel.*|ReheatL)$", keep_people=False, props=[]),
     "x15": dict(
         title="X-15", year=1967, mph=4520, speed=2020.6, alt=6.0,
         files=[(f"{FG}/X15/X15/Models/X15.ac", (0, 0, 0))],
@@ -110,12 +115,14 @@ def build(name):
 PLUMES = {
     "x1": ("sorties", 4, 3.2, 1.6, (1.0, 0.82, 0.62), (1.0, 0.42, 0.18), 14.0),
     "x15": ("Nozzle", 1, 11.0, 1.3, (1.0, 0.75, 0.62), (1.0, 0.45, 0.3), 0.9),
+    # the F-35's F135 in full afterburner: a long yellow-orange flame with shock diamonds
+    "f35": ("NozzlePetal", 1, 8.0, 1.2, (1.0, 0.72, 0.38), (1.0, 0.4, 0.12), 6.0),
 }
 
 
-def _nozzle_exits(obj, count):
+def _nozzle_exits(objs, count):
     """[(centre, radius)] of the nozzle exits: the vertices at the aft end, split into `count` clusters"""
-    pts = [obj.matrix_world @ v.co for v in obj.data.vertices]
+    pts = [o.matrix_world @ v.co for o in objs for v in o.data.vertices]
     xmin = min(p.x for p in pts)
     aft = [p for p in pts if p.x < xmin + 0.04]
     c = sum(aft, Vector()) / len(aft)
@@ -138,9 +145,11 @@ def plume(root, name):
     """emissive volumes trailing from each nozzle exit, parented to the machine"""
     if name not in PLUMES: return []
     objname, count, length, lam_d, c0, c1, strength = PLUMES[name]
-    src = next(o for o in bpy.data.objects if o.type == "MESH" and objname in o.name and len(o.data.vertices) > 50)
+    src = [o for o in bpy.data.objects if o.type == "MESH" and objname in o.name and o.name.startswith(name + "_")
+           and not o.hide_render and len(o.data.vertices) > 8]
+    big = [o for o in src if len(o.data.vertices) > 50]
     out = []
-    for i, (c, r0) in enumerate(_nozzle_exits(src, count)):
+    for i, (c, r0) in enumerate(_nozzle_exits(src if objname == "NozzlePetal" else big[:1], count)):
         r0 *= 0.92
         grow = 2.2 if name == "x15" else 1.8
         segs, rings = 24, 48
