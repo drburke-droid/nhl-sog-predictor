@@ -109,7 +109,7 @@ def build(name):
 # colour near the nozzle, colour downstream, emission)
 PLUMES = {
     "x1": ("sorties", 4, 3.2, 1.6, (1.0, 0.82, 0.62), (1.0, 0.42, 0.18), 14.0),
-    "x15": ("Nozzle", 1, 9.0, 1.3, (0.95, 0.8, 1.0), (1.0, 0.5, 0.35), 4.0),
+    "x15": ("Nozzle", 1, 11.0, 1.3, (1.0, 0.75, 0.62), (1.0, 0.45, 0.3), 0.9),
 }
 
 
@@ -192,7 +192,7 @@ def _plume_volume(mname, length, r0, grow, lam, c0, c1, strength):
     rmax = op("MULTIPLY", r0, op("ADD", 1.0, op("MULTIPLY", grow - 1, op("POWER", u, 0.7))))
     rr = op("DIVIDE", r, rmax)                                                # 0 on the axis, 1 at the edge
     core = op("POWER", op("MAXIMUM", op("SUBTRACT", 1.0, op("MULTIPLY", rr, rr)), 0.0), 1.5)
-    fade = op("EXPONENT", op("MULTIPLY", u, -3.2))
+    fade = op("EXPONENT", op("MULTIPLY", u, -2.2))
     cosd = op("COSINE", op("MULTIPLY", x, 2 * math.pi / lam))
     diam = op("POWER", op("MULTIPLY", op("ADD", cosd, 1.0), 0.5), 6.0)
     knots = op("MULTIPLY", diam, op("EXPONENT", op("MULTIPLY", u, -5.0)))
@@ -211,3 +211,37 @@ def _plume_volume(mname, length, r0, grow, lam, c0, c1, strength):
     outn = N("ShaderNodeOutputMaterial")
     Lk(em.outputs[0], outn.inputs["Volume"])
     return m
+
+
+def heat(name):
+    """the X-15 at Mach 5.9 in sea-level air: the air stopped on its nose is at about 2,400 K, and its leading edges
+    glow. The more a surface faces into the flow the hotter (900 K side-on to 2,300 K head-on); blackbody colour, and
+    the visible brightness of a blackbody, which climbs as exp(-24,000 K / T): at 2,300 K some 70 times a sunlit white
+    surface, at 1,500 K a dim glow, below 1,000 K nothing to see in daylight"""
+    if name != "x15": return
+    done = set()
+    for o in bpy.data.objects:
+        if o.type != "MESH" or not o.name.startswith(name + "_") or "plume" in o.name: continue
+        for m in o.data.materials:
+            if m is None or m.name in done or not m.use_nodes: continue
+            done.add(m.name)
+            nt = m.node_tree
+            bsdf = next((n for n in nt.nodes if n.type == "BSDF_PRINCIPLED"), None)
+            if bsdf is None: continue
+            N, Lk = nt.nodes.new, nt.links.new
+
+            def op(o_, a_, b_=None):
+                n_ = N("ShaderNodeMath"); n_.operation = o_
+                for i, v in enumerate((a_, b_)):
+                    if v is None: continue
+                    if isinstance(v, (int, float)): n_.inputs[i].default_value = v
+                    else: Lk(v, n_.inputs[i])
+                return n_.outputs[0]
+            geo = N("ShaderNodeNewGeometry")
+            sep = N("ShaderNodeSeparateXYZ"); Lk(geo.outputs["Normal"], sep.inputs[0])
+            f = op("MAXIMUM", sep.outputs["X"], 0.0)
+            T = op("ADD", 900.0, op("MULTIPLY", 1400.0, op("POWER", f, 1.2)))
+            bb = N("ShaderNodeBlackbody"); Lk(T, bb.inputs["Temperature"])
+            st = op("MULTIPLY", 60.0, op("EXPONENT", op("SUBTRACT", 24000 / 2300, op("DIVIDE", 24000.0, T))))
+            Lk(bb.outputs["Color"], bsdf.inputs["Emission Color"])
+            Lk(st, bsdf.inputs["Emission Strength"])

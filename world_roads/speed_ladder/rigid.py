@@ -2,7 +2,8 @@
 cone 100 m into the air however it was set up). Each body is a set of contact points on its hull; where one goes below
 the ground a spring-damper pushes back and Coulomb friction drags; gravity and air drag act on the centre of mass.
 Semi-implicit Euler at 0.2 ms. Bodies don't collide with each other.
-  python rigid.py roll|blast  -> /home/user/lot/props/sim_<scenario>.npz (t every 1 ms; per prop loc, quat w x y z)"""
+  python rigid.py roll|blast  -> /home/user/lot/props/sim_<scenario>.npz (t every 1 ms; per prop loc, quat w x y z)
+  python rigid.py x1          -> the same for a flyby (flight.py's clock: t = 0 as the nose crosses x = 0)"""
 import numpy as np, math, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import motion as M, replay_time as T
@@ -86,6 +87,41 @@ class Body:
             self.q = qmul(dq, self.q); self.q /= np.linalg.norm(self.q)
 
 
+def boom_kick(b, kind, x, y, rng, sc):
+    """a sonic boom on a small body: the pressure jump acts on its face only while it wraps round (its width / c, a
+    millisecond); after that the air's push is a breeze. Impulse = dp * area * width / c, at about half its height"""
+    import flyby_dust as FD
+    top, width, area, mass = (0.71, 0.36, 0.12, 3.5) if kind == "cone" else (0.93, 0.58, 0.5, 18.0)
+    d = math.hypot(y - FD.PY, FD.ALT - top / 2)
+    J = float(FD.dp(np.array(d))) * area * width / 343.0 * rng.uniform(0.85, 1.15)
+    side = 1.0 if y >= FD.PY else -1.0
+    dirn = np.array([0.33, side, -(FD.ALT - top / 2) / d]); dirn /= np.linalg.norm(dirn)
+    arm = top * 0.45 - (COM.get(kind) or top / 2)
+    axis = np.cross([0, 0, 1], dirn); axis /= np.linalg.norm(axis)
+    b.kick_t = float(FD.arrival(np.array(x), np.array(y)))
+    b.kick_v, b.kick_w = dirn * J / mass, axis * J * arm / b.Ib[0, 0]
+    print(f"{kind} at ({x:.1f}, {y:.1f}): {d:.1f} m from the line, boom {float(FD.dp(np.array(d))) / 1000:.1f} kPa at "
+          f"{b.kick_t * 1e3:.1f} ms, {J:.2f} N s")
+
+
+def blast_kick(b, kind, x, y, rng):
+    """the X-15's line blast (hyper.py): an impulse away from the path, 6 m up, so down and toward the camera"""
+    import hyper as Hy
+    top, area, mass = (0.71, 0.25, 3.5) if kind == "cone" else (0.93, 0.51, 18.0)
+    d = float(Hy.dist(y, top / 2))
+    dv = min(35.0, float(Hy.impulse(d)) * area / mass) * rng.uniform(0.85, 1.15)
+    dirn = Hy.direction(x, y, top / 2) + np.array([rng.uniform(-0.15, 0.15), 0, 0])
+    dirn[2] = abs(dirn[2]) * rng.uniform(0.15, 0.4)     # thrown along the ground, lifting off it, not into it
+    dirn /= np.linalg.norm(dirn)
+    side = np.sign(dirn[1])
+    axis = np.cross([0, 0, 1], [0, side, 0]) + np.array([rng.uniform(-0.3, 0.3), 0, rng.uniform(-0.4, 0.4)])
+    axis /= np.linalg.norm(axis)
+    spin = (1.6 if kind == "cone" else 0.9) * dv / top
+    b.kick_t = float(Hy.t_hit(x, y, top / 2))
+    b.kick_v, b.kick_w = dirn * dv, axis * spin
+    print(f"{kind} at ({x:.1f}, {y:.1f}): {d:.1f} m from the path, hit at {b.kick_t * 1e3:.1f} ms, {dv:.1f} m/s")
+
+
 def build(sc):
     bodies = {}
     rng = np.random.default_rng(3)
@@ -93,7 +129,11 @@ def build(sc):
         if kind not in ("cone", "drum"): continue
         b = Body(kind, x, y, h)
         bodies[name] = b
-        if sc == "roll":
+        if sc == "x1":
+            boom_kick(b, kind, x, y, rng, sc)
+        elif sc == "x15":
+            blast_kick(b, kind, x, y, rng)
+        elif sc == "roll":
             pass                                     # at 50 mph nothing but the ball moves
         else:
             rad, top = (0.155, 0.71) if kind == "cone" else (0.29, 0.93)
@@ -114,7 +154,7 @@ def build(sc):
 
 if __name__ == "__main__":
     sc = sys.argv[1]
-    T0, T1 = (0.0, 2.4) if sc == "roll" else (-0.05, 2.6)
+    T0, T1 = {"roll": (0.0, 2.4), "x1": (-0.1, 3.6), "x15": (-0.1, 4.2)}.get(sc, (-0.05, 2.6))
     bodies = build(sc)
     n = int(round((T1 - T0) * 1000)) + 1
     out = {"t": T0 + np.arange(n) / 1000.0}
@@ -130,6 +170,8 @@ if __name__ == "__main__":
     for k in bodies:
         out[k + "_loc"], out[k + "_quat"] = rec[k]
         moved = np.linalg.norm(rec[k][0][-1] - rec[k][0][0])
-        if moved > 0.01:
-            print(f"{k}: ends {moved:.1f} m away, peak {rec[k][0][:, 2].max():.2f} m")
+        q = rec[k][1]
+        tilt = np.degrees(2 * np.arccos(np.clip(np.abs((q * q[0]).sum(1)), 0, 1))).max()
+        if moved > 0.01 or tilt > 0.5:
+            print(f"{k}: ends {moved:.2f} m away, peak {rec[k][0][:, 2].max():.2f} m, tilts up to {tilt:.1f} deg")
     np.savez_compressed(f"/home/user/lot/props/sim_{sc}.npz", **out)

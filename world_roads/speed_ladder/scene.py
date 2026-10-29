@@ -6,7 +6,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import camera as C
 
 from scene_sun import SUN_AZ, SUN_EL   # degrees: to the right of the road direction, above the horizon
-SUN_STRENGTH, SUN_ANGLE = 2.6, 4.0  # W/m^2, degrees (thin cloud softens the shadows)
+import os
+# Calibrated against the plate (calib.py): test patches of asphalt and road paint rendered on the road beside the real
+# ones came out 2-4 times too bright and too blue with the plate-built sky at full strength. The sky as seen in
+# reflections stays as the plate shows it; the light it sheds on diffuse surfaces is scaled down and warmed, and the
+# sun is golden, giving about half the light on open ground (the stones on the shoulder are lit on their right faces
+# and throw short soft shadows to the left).
+SUN_STRENGTH = float(os.environ.get("SUN_STRENGTH", "1.3"))      # W/m^2
+SUN_ANGLE = 5.0                                                 # degrees: thin cloud softens the shadows
+SUN_COLOR = (1.0, 0.78, 0.58)
+SKY_DIFFUSE = float(os.environ.get("SKY_DIFFUSE", "0.32"))       # the sky's light on diffuse surfaces, relative
+SKY_TINT = (1.1, 1.0, 0.85)
+GROUND_ALBEDO = (0.075, 0.065, 0.058)                           # dark asphalt and darker gravel, for bounce light
 
 
 def reset(samples=64, scale=100, fps=25):
@@ -53,16 +64,28 @@ def world(s):
     nt.nodes.clear()
     tex = nt.nodes.new("ShaderNodeTexEnvironment")
     tex.image = bpy.data.images.load("/home/user/lot/env.hdr")
-    bg = nt.nodes.new("ShaderNodeBackground")
     out = nt.nodes.new("ShaderNodeOutputWorld")
-    nt.links.new(tex.outputs["Color"], bg.inputs["Color"])
-    nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
+    # reflections see the sky as the plate does; diffuse light from it is scaled and warmed (see SKY_DIFFUSE)
+    full = nt.nodes.new("ShaderNodeBackground")
+    nt.links.new(tex.outputs["Color"], full.inputs["Color"])
+    tint = nt.nodes.new("ShaderNodeMix"); tint.data_type = "RGBA"; tint.blend_type = "MULTIPLY"
+    tint.inputs["Factor"].default_value = 1.0
+    nt.links.new(tex.outputs["Color"], tint.inputs["A"])
+    tint.inputs["B"].default_value = (*(SKY_DIFFUSE * c for c in SKY_TINT), 1.0)
+    dim = nt.nodes.new("ShaderNodeBackground")
+    nt.links.new(tint.outputs["Result"], dim.inputs["Color"])
+    lp = nt.nodes.new("ShaderNodeLightPath")
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(lp.outputs["Is Diffuse Ray"], mix.inputs["Fac"])
+    nt.links.new(full.outputs["Background"], mix.inputs[1])
+    nt.links.new(dim.outputs["Background"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
 
 def sun(s):
     l = bpy.data.lights.new("sun", "SUN")
     l.energy, l.angle = SUN_STRENGTH, math.radians(SUN_ANGLE)
-    l.color = (1.0, 0.93, 0.84)
+    l.color = SUN_COLOR
     o = bpy.data.objects.new("sun", l)
     # a sun lamp shines along its local -Z; point it from (az, el) toward the scene
     az, el = math.radians(SUN_AZ), math.radians(SUN_EL)
@@ -79,7 +102,7 @@ def ground(s):
     o.is_shadow_catcher = True
     m = bpy.data.materials.new("groundmat")
     m.use_nodes = True
-    m.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.2, 0.15, 0.11, 1)
+    m.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (*GROUND_ALBEDO, 1)
     m.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 1.0
     me.materials.append(m)
     s.collection.objects.link(o)

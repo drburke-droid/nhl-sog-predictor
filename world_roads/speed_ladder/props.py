@@ -202,6 +202,9 @@ BMW = asset("bmw27_cpu.blend", "/home/user/lot/props/bmw/bmw27_cpu.blend")   # "
 BMW_LENGTH = 4.38                                     # a real 1M coupe, m
 
 
+TYRE_SQUASH = 0.012                  # m each tyre is flattened where it meets the road
+
+
 def car(name="car"):
     """the benchmark's BMW 1M, scaled to its real length, front along +y, wheels on the ground, under one empty;
     its glass is tagged so a blast can shatter it, its badges hidden"""
@@ -212,6 +215,17 @@ def car(name="car"):
     bpy.context.scene.collection.children.link(col)
     for o in list(col.objects):
         if o.type == "ARMATURE": bpy.data.objects.remove(o)
+    # the benchmark's car is a rig (the wheels follow the body through constraints and drivers, and sit on a Floor
+    # object by a Floor constraint): freeze it in its pose, so it moves and scales as one piece
+    bpy.context.view_layer.update()
+    depth = lambda o: 0 if o.parent is None else 1 + depth(o.parent)
+    frozen = [(o, o.matrix_world.copy()) for o in sorted(col.objects, key=depth)]
+    for o, mw in frozen:
+        o.constraints.clear()
+        if o.animation_data: o.animation_data_clear()
+    for o, mw in frozen:
+        o.matrix_world = mw
+        bpy.context.view_layer.update()
     shell = bpy.data.objects["carShell"]
     for o in col.objects:
         if o.name.startswith("Roundel") or o.name == "MStreak": o.hide_render = True
@@ -229,10 +243,15 @@ def car(name="car"):
         me = ob.data
         step = max(1, len(me.vertices) // 400)
         pts += [mw @ me.vertices[i].co for i in range(0, len(me.vertices), step)]
-    xs = [p.x for p in pts]; ys = [p.y for p in pts]; zs = [p.z for p in pts]
+    xs = [p.x for p in pts]; ys = [p.y for p in pts]
     length = max(xs) - min(xs)
     k = BMW_LENGTH / length
-    cx, cy, z0 = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2, min(zs)
+    cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
+    # the ground is where the tyres touch it: the lowest point of every tyre (all its vertices), less a little for the
+    # weight of the car flattening each one onto the road
+    tyres = [min((inst.matrix_world @ v.co).z for v in inst.object.data.vertices) for inst in dg.object_instances
+             if inst.object.type == "MESH" and inst.object.original.name.startswith("TireRubber")]
+    z0 = (sum(tyres) / len(tyres) if tyres else min(p.z for p in pts)) + TYRE_SQUASH / k
     shell.parent = root
     # put the shell so the car's centre is at the root and its tyres touch the ground, scaled, front to +y
     shell.matrix_parent_inverse = Matrix.Rotation(-math.pi / 2, 4, "Z") @ Matrix.Scale(k, 4) @ Matrix.Translation((-cx, -cy, -z0))

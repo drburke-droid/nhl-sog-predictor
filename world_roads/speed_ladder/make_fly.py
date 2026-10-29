@@ -3,7 +3,7 @@
 import cv2, numpy as np, os, subprocess, sys
 from multiprocessing import Pool
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import comp as C, flight as F
+import comp as C, flight as F, fly_fx as FX
 R_ = "/home/user/lot/render"
 OUT = "/home/user/lot/out"
 WHITE, DIM = (255, 255, 255), (214, 220, 228)
@@ -33,12 +33,12 @@ def fly(name, n, replay=False):
 def finish(img, seed, lines, label_alpha=1.0, fl=0.0, shake_t=-1.0, shake_amp=10.0):
     img = C.flash(img, fl)
     img = C.bloom(img)
-    img = C.shake(img, shake_t, amp=shake_amp, seed=seed)
+    img = C.shake(img, shake_t, amp=shake_amp, seed=3)      # one shake, continuous from frame to frame
     img = C.grain(img, seed)
     pic = (C.srgb(img) * 255 + 0.5).astype(np.uint8)
     out = np.zeros((C.H, C.W, 3), np.uint8)
     out[C.TOP:C.TOP + C.PH] = pic
-    return C.label(out, lines, label_alpha) if lines else out
+    return C.label(out, lines, label_alpha, corner="bl") if lines else out
 
 
 def lines(name):
@@ -52,18 +52,32 @@ def replay_lines(name, slow):
     return lines(name) + [(s, 26, "Medium", DIM)]
 
 
+def compose(name, n, t, bg, replay=False, expo=0.01):
+    """plate, dust shadow, CG, dust, bent by the shocks"""
+    dl = FX.dust_layer(name, n, replay)
+    if dl is not None: bg = bg * (1 - C.SUN_FRACTION * (1 - dl[2]))
+    img = C.over_props(bg, C.plate_match(fly(name, n, replay), 5000 + n + (100000 if replay else 0)))
+    glow = FX.wake_glow(name, t, expo)
+    if glow is not None: img = img + glow
+    if dl is not None: img = img * dl[1] + dl[0]
+    return FX.warp(img, FX.displacement(name, t))
+
+
 def one(job):
     name, n, plate0, path = job
-    img = C.over_props(C.plate_loop(plate0 + n), fly(name, n))
-    out = finish(img, 7000 + n, lines(name), label_alpha=min(1.0, n / 8))
+    t = F.frames(name)[n][1]
+    img = compose(name, n, t, C.plate_loop(plate0 + n))
+    out = finish(img, 7000 + n, lines(name), label_alpha=min(1.0, n / 8), shake_t=FX.shake_t(name, t),
+                 shake_amp=FX.FX.get(name, {}).get("shake", 0.0))
     cv2.imwrite(path, out[..., ::-1])
 
 
 def one_replay(job):
     """the replay: the plate frozen while time crawls (it moves on in real time)"""
     name, n, t, slow, t_first, plate0, path = job
-    img = C.over_props(C.plate_loop(plate0 + int((t - t_first) * F.FPS)), fly(name, n, replay=True))
-    out = finish(img, 9000 + n, replay_lines(name, slow), label_alpha=min(1.0, n / 6))
+    img = compose(name, n, t, C.plate_loop(plate0 + int((t - t_first) * F.FPS)), replay=True, expo=0.01 * slow)
+    out = finish(img, 9000 + n, replay_lines(name, slow), label_alpha=min(1.0, n / 6), shake_t=FX.shake_t(name, t),
+                 shake_amp=FX.FX.get(name, {}).get("shake", 0.0))
     cv2.imwrite(path, out[..., ::-1])
 
 

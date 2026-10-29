@@ -87,7 +87,9 @@ def screen_rect(name, t, expo=0.01, margin=40):
         shadow = P - np.outer(P[:, 2] / to_sun[2], to_sun)
         for Q in (P, shadow):
             uv, z = Cam.project(Q)
-            if (z <= 0.1).any(): return (0, 0, Cam.W, Cam.H_IMG)
+            if (z <= 0.1).any():                  # beside or behind the camera: far off to that side of the picture
+                xc = (Q - np.array([Cam.CAM_X, 0.0, Cam.H])) @ Cam.R()[0]
+                uv[z <= 0.1] = np.stack([Cam.CX + np.sign(xc[z <= 0.1]) * 1e6, np.full((z <= 0.1).sum(), Cam.CY)], 1)
             r = (uv[:, 0].min() - margin, uv[:, 1].min() - margin, uv[:, 0].max() + margin, uv[:, 1].max() + margin)
             if r[2] < 0 or r[0] > Cam.W or r[3] < 0 or r[1] > Cam.H_IMG: continue
             rect = r if rect is None else (min(rect[0], r[0]), min(rect[1], r[1]), max(rect[2], r[2]), max(rect[3], r[3]))

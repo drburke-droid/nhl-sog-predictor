@@ -89,7 +89,7 @@ def shake(img, t, amp=10.0, decay=5.0, freq=11.0, seed=0):
     return cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
 
-def grain(img, seed, s=0.006):
+def grain(img, seed, s=0.0025):
     rng = np.random.default_rng(seed)
     n = rng.normal(0, s, img.shape[:2]).astype(np.float32)
     return img + n[..., None] * np.sqrt(np.clip(img, 0, 1) + 0.02)
@@ -100,11 +100,14 @@ def font(size, weight="SemiBold"):
 
 
 def label(frame8, lines, alpha=1.0, corner="tl"):
-    """lines: [(text, size, weight, colour)]; drawn in the picture's top-left with a soft shadow"""
+    """lines: [(text, size, weight, colour)]; drawn in the picture's top-left (or bottom-left, corner="bl") with a soft
+    shadow"""
     im = Image.fromarray(frame8)
     ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(ov)
     x, y = 64, TOP + 48
+    if corner == "bl":
+        y = TOP + PH - 44 - sum(int(size * 1.18) for _, size, _, _ in lines)
     for text, size, weight, colour in lines:
         f = font(size, weight)
         for dx, dy in ((2, 2), (0, 2), (2, 0)):
@@ -154,6 +157,25 @@ def props(path):
     for k in ("normal", "position", "diffcol"):
         if k in d: out[k] = d[k].astype(np.float32)
     return out
+
+
+VEIL = 0.0025                             # the plate's black level (lens flare and haze): its darkest ground is ~0.003
+
+
+def plate_match(p, seed, soft=0.35):
+    """make a render look shot by the same camera as the plate: its softness, its black level, and its noise (measured
+    on the plate frame to frame: sigma = 0.006 sqrt(value), the form grain() uses)"""
+    if p is None: return None
+    rgb, a = p["rgb"], p["a"]
+    if soft:
+        rgb = cv2.GaussianBlur(rgb, (0, 0), soft); a = cv2.GaussianBlur(a, (0, 0), soft)
+        if a.ndim == 2: a = a[..., None]
+    rgb = rgb + VEIL * a
+    rng = np.random.default_rng(seed)
+    n = rng.normal(0, 0.006, rgb.shape[:2]).astype(np.float32)[..., None]
+    straight = rgb / np.maximum(a, 1e-4)
+    rgb = rgb + a * n * np.sqrt(np.clip(straight, 0, 1) + 0.002)
+    return dict(p, rgb=rgb, a=a)
 
 
 def over_props(bg, p):

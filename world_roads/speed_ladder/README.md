@@ -85,11 +85,19 @@ gaps. Pitch 1.24 deg down, yaw -0.82 deg, roll 0. The projected lane lines sit o
 
 ## Light
 
-* Sun 50 deg right of the road, 20 deg up, soft (4 deg; thin cloud), warm; read from the rocks' shading and the lit
-  face of the berm. 2.6 W/m^2 puts ~45% of the light on open ground in the sun, the rest from the sky.
+* Sun 50 deg right of the road, 20 deg up, soft (5 deg; thin cloud), golden; read from the stones on the left
+  shoulder (lit on their right faces, short soft shadows to the left) and the lit face of the berm.
 * `env.py`: an environment map for fill and reflections built from the plate itself (directions outside the camera's
   view fold back into it).
-* Rendered with the Standard view transform, so render values match the plate's.
+* Calibrated against the plate: strips of asphalt (albedo 0.05) and road paint (0.65) rendered on the road beside the
+  real ones (`calib.py`) came out 2-4 times too bright and too blue with that sky and a 2.6 W/m^2 sun. Now the sky
+  as seen in reflections stays as the plate shows it, but the light it sheds on diffuse surfaces is scaled to 0.32
+  and warmed, and the sun is 1.3 W/m^2, golden (1, 0.78, 0.58): CG paint now matches the real paint at 6-13 m, and
+  the sun gives about half the light on open ground. The ground under the shadow catcher bounces light at the
+  asphalt's and gravel's dark albedo. The asphalt itself shows no cloud shadow: the plate/CG ratio holds from 4 to 25 m.
+* Rendered with the Standard view transform, so render values match the plate's. `comp.plate_match` then gives every
+  render the plate's look: a touch of its softness, its black level (0.0025), and its noise, measured frame to frame
+  on the plate (sigma = 0.006 sqrt(value)), so CG isn't cleaner than the footage around it.
 
 ## CG
 
@@ -115,6 +123,9 @@ gaps. Pitch 1.24 deg down, yaw -0.82 deg, roll 0. The projected lane lines sit o
   the frame), hits the road at x = 0.8 m at 9 m/s, bounces (restitution 0.4, the hit takes 15% of its speed and sets it
   spinning) and clips the cone standing on its line at the top of its hop. Also the blast's timing and push for each
   prop (below), the sign bending and the pickup rocking.
+* (The flybys keep only the car, one warning cone at the lane edge behind it and the sign; the car's tyres sit on the
+  road, each flattened 12 mm: the benchmark car is a rig whose wheels hung 5 cm up once moved, so it is frozen in its
+  pose first.)
 * `props.py`, `layout.py`: traffic cones and a 100 km/h sign built here, oil drums (Poly Haven `barrel_03`, CC0,
   weathered blue steel), and a car parked on the right shoulder: the BMW 1M from Blender's benchmark scene (CC0),
   scaled to its real 4.38 m, badges hidden. (A pickup built here from boxes looked fake.) Assets and licences in

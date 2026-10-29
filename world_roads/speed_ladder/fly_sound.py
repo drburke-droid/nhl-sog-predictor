@@ -94,8 +94,38 @@ def merlin(dur, rng, rpm=3000, prop_rpm=1430):
     return sig
 
 
-SOURCES = {"wright": wright_engine, "spitfire": merlin}
-LEVEL = {"wright": 2.2, "spitfire": 9.0}            # at 1 m, relative: a 12 hp engine against a 1,600 hp one
+def rocket(dur, rng, peak=420.0, crackle=0.6):
+    """a rocket engine at 1 m: broadband roar peaking where the jet's big eddies shed (a few hundred Hz for the X-1's
+    small chambers), and the crackle of shocklets in the jet (sparse, sharp, one-sided pops)"""
+    n = int(dur * SR)
+    w = rng.standard_normal(n)
+    roar = filt(w, "bandpass", [peak / 4, peak * 4], 1) + 0.5 * filt(w, "bandpass", [peak, peak * 12], 2)
+    roar *= wander(n, 8, 0.15, rng)
+    pops = np.zeros(n)
+    k = rng.random(n) < 1500 / SR
+    pops[k] = rng.exponential(1.0, k.sum()) ** 2
+    pops = filt(pops, "highpass", 900, 2)
+    return 1.4 * roar + crackle * pops
+
+
+def n_wave(dp, length, rise=0.0002):
+    """a sonic boom's N-wave: a jump up, a straight fall through zero to as far below, a jump back"""
+    n = int((length + 2 * rise) * SR)
+    t = np.arange(n) / SR
+    x = np.where(t < rise, t / rise, np.where(t < length + rise, 1 - 2 * (t - rise) / length,
+                                              np.maximum(-1 + (t - length - rise) / rise, 0) * 0 - 1))
+    x[int((length + 2 * rise) * SR) - int(rise * SR):] *= np.linspace(1, 0, int(rise * SR))
+    return dp * x
+
+
+def xlr99(dur, rng):
+    """the X-15's XLR99 (250 kN): a far bigger jet, so its roar sits lower"""
+    return rocket(dur, rng, peak=160.0, crackle=0.9)
+
+
+SOURCES = {"wright": wright_engine, "spitfire": merlin, "x1": rocket, "x15": xlr99}
+LEVEL = {"wright": 2.2, "spitfire": 9.0, "x1": 14.0, "x15": 30.0}  # at 1 m, relative: 12 hp against 1,600 hp ...
+BOOM = {"x1": dict(dp=1.6, length=0.016)}             # relative to the sound levels above; N-wave length s
 
 
 def path(name, te):
@@ -163,6 +193,120 @@ def shot(name, seed=3):
     t_src0 = -n0 / F.FPS - 1.0                                    # emitted from a second before the shot begins
     src = SOURCES[name](dur + 2.0, rng)
     out = wind(int(dur * SR), rng) + LEVEL[name] * heard(name, src, t_src0, n0, dur)
+    if name in BOOM:
+        out += boom(name, n0, int(dur * SR), rng)
+    if name == "x15":
+        out += blast_events(n0, int(dur * SR), rng)
+    return out
+
+
+# ---------------------------------------------------------------- the X-15's blast and what it throws
+def place(out, sig, t0, pan=0.0, gain=1.0):
+    i0 = int(t0 * SR)
+    if i0 >= len(out) or i0 + len(sig) <= 0: return
+    if i0 < 0: sig, i0 = sig[-i0:], 0
+    m = min(len(sig), len(out) - i0)
+    out[i0:i0 + m, 0] += gain * math.cos((pan + 1) * math.pi / 4) * sig[:m]
+    out[i0:i0 + m, 1] += gain * math.sin((pan + 1) * math.pi / 4) * sig[:m]
+
+
+def arrive(p, te):
+    """(arrival time, pan, distance) at the camera of a sound made at p at flight time te"""
+    d = float(np.linalg.norm(np.asarray(p, float) - CAM))
+    return te + d / C_SOUND, float(np.clip((p[0] - CAM[0]) / 10, -1, 1)), d
+
+
+def plastic(rng, gain=1.0):
+    n = int(0.09 * SR); t = np.arange(n) / SR
+    return gain * (filt(rng.standard_normal(n), "bandpass", [350, 2200]) * np.exp(-t / 0.02) +
+                   0.5 * np.sin(2 * math.pi * 160 * t) * np.exp(-t / 0.03))
+
+
+def clang(rng, f0, gain=1.0, dur=1.4):
+    n = int(dur * SR); t = np.arange(n) / SR
+    x = np.zeros(n)
+    for k, (ratio, dec, amp) in enumerate(((1.0, 0.9, 1.0), (2.32, 0.6, 0.6), (3.86, 0.4, 0.45), (5.1, 0.3, 0.3))):
+        x += amp * np.sin(2 * math.pi * f0 * ratio * t + k) * np.exp(-t / dec)
+    return gain * (x + 0.8 * filt(rng.standard_normal(n), "bandpass", [800, 5000]) * np.exp(-t / 0.01))
+
+
+def glass(rng, gain=1.0, dur=0.7):
+    n = int(dur * SR)
+    x = filt(rng.standard_normal(n) * (rng.random(n) < 0.005), "bandpass", [3000, 11000])
+    return gain * x * np.exp(-np.arange(n) / (0.2 * SR))
+
+
+def impacts(sim, name, min_v=1.0):
+    """(time, speed, position) of each landing of a simulated prop: where its fall turns into a bounce"""
+    t, z = sim["t"], sim[name + "_loc"][:, 2]
+    vz = np.gradient(z, t)
+    out, i = [], 1
+    while i < len(t) - 5:
+        if vz[i] < -min_v and vz[i + 3] > vz[i] + min_v:
+            out.append((t[i], -vz[i], sim[name + "_loc"][i])); i += 40
+        i += 1
+    return out
+
+
+def blast_events(n0, n, rng):
+    """the blast reaching the camera (a crack, 80 Pa s: deafening, the boom and its rumble rolling off the land), the
+    car's windows bursting, the sign's post folding, every landing of every thrown cone and drum, the gravel raining
+    down, the dust hissing"""
+    import hyper as Hy
+    out = np.zeros((n, 2))
+    off = n0 / F.FPS
+    t_cam = float(Hy.t_hit(CAM[0], CAM[1], CAM[2])) + off
+    m = int(0.02 * SR); tt = np.arange(m) / SR
+    crack = np.where(tt < 0.004, 1 - 2 * tt / 0.004, 0.0) + 0.7 * filt(rng.standard_normal(m), "highpass", 700) * np.exp(-tt / 0.004)
+    place(out, crack, t_cam, 0.0, 3.0)
+    m = int(4.0 * SR); tt = np.arange(m) / SR
+    f = 30 + 45 * np.exp(-tt / 0.25)
+    rumble = 0.9 * np.sin(2 * math.pi * np.cumsum(f) / SR) * np.exp(-tt / 0.8) + \
+        1.8 * filt(rng.standard_normal(m), "lowpass", 200) * np.exp(-tt / 1.3) * np.minimum(1, tt / 0.01)
+    for pan in (-0.5, 0.5):
+        place(out, rumble * rng.uniform(0.9, 1.1), t_cam + 0.003, pan, 1.6)
+    car = (Hy.CAR["x"], Hy.CAR["y"], 1.0)
+    ta, pan, d = arrive(car, Hy.first_hit())
+    place(out, glass(rng), ta + 0.002, pan, 0.6 * 20 / d)
+    place(out, clang(rng, 95, 0.5, 0.8), ta, pan, 20 / d)                     # the body slammed onto its stops
+    ta, pan, d = arrive((Hy.SIGN["x"], Hy.SIGN["y"], 2.0), float(Hy.t_hit(Hy.SIGN["x"], Hy.SIGN["y"], 2.0)))
+    place(out, clang(rng, 180, 0.4, 1.0), ta + 0.03, pan, 12 / d)
+    sim = dict(np.load("/home/user/lot/props/sim_x15.npz"))
+    for name in [k[:-4] for k in sim if k.endswith("_loc")]:
+        for te, v, pos in impacts(sim, name):
+            ta, pan, d = arrive(pos, te)
+            g = min(1.5, 0.12 * v) * 12 / max(d, 2.0)
+            place(out, clang(rng, rng.uniform(70, 110), g, 1.0) if name.startswith("drum") else plastic(rng, g),
+                  ta + off, pan)
+    for _ in range(320):                                                      # gravel raining back down
+        tc = t_cam + rng.gamma(3.0, 0.35)
+        mm = int(0.004 * SR)
+        click = filt(rng.standard_normal(mm), "bandpass", [1200 + 3000 * rng.random(), 9000]) * np.exp(-np.arange(mm) / (0.0008 * SR))
+        place(out, click, tc, float(rng.uniform(-1, 1)), 0.06 * rng.lognormal(0, 0.6))
+    m = int(3.0 * SR)
+    for pan in (-0.4, 0.4):
+        place(out, filt(rng.standard_normal(m), "bandpass", [2000, 9000]) * np.exp(-np.arange(m) / (1.0 * SR)), t_cam + 0.05, pan, 0.1)
+    return out
+
+
+def boom(name, n0, n, rng):
+    """the Mach cone reaching the camera: the N-wave, its echo off the ground a moment later, then the rumble of the
+    boom coming back off the land around"""
+    b = BOOM[name]
+    t_cone, r = cone_arrival(name, n0)
+    out = np.zeros((n, 2))
+    nw = n_wave(b["dp"], b["length"])
+    for dt, g in ((0.0, 1.0), (0.0035, 0.8)):
+        i = int((t_cone + dt) * SR)
+        m = min(len(nw), n - i)
+        if m > 0: out[i:i + m] += g * nw[:m, None] * np.array([0.9, 1.0])
+    i = int(t_cone * SR)
+    m = n - i
+    if m > 0:
+        tt = np.arange(m) / SR
+        rum = filt(rng.standard_normal((m, 2)), "lowpass", 160, 2) * np.exp(-tt / 0.9)[:, None]
+        rum += 0.4 * filt(rng.standard_normal((m, 2)), "bandpass", [200, 1200], 2) * np.exp(-tt / 0.25)[:, None]
+        out[i:] += 0.9 * b["dp"] * rum * np.minimum(1, tt / 0.02)[:, None]
     return out
 
 
