@@ -265,13 +265,17 @@ def blast_events(n0, n, rng):
         1.8 * filt(rng.standard_normal(m), "lowpass", 200) * np.exp(-tt / 1.3) * np.minimum(1, tt / 0.01)
     for pan in (-0.5, 0.5):
         place(out, rumble * rng.uniform(0.9, 1.1), t_cam + 0.003, pan, 1.6)
-    car = (Hy.CAR["x"], Hy.CAR["y"], 1.0)
-    ta, pan, d = arrive(car, Hy.first_hit())
-    place(out, glass(rng), ta + 0.002, pan, 0.6 * 20 / d)
-    place(out, clang(rng, 95, 0.5, 0.8), ta, pan, 20 / d)                     # the body slammed onto its stops
-    ta, pan, d = arrive((Hy.SIGN["x"], Hy.SIGN["y"], 2.0), float(Hy.t_hit(Hy.SIGN["x"], Hy.SIGN["y"], 2.0)))
-    place(out, clang(rng, 180, 0.4, 1.0), ta + 0.03, pan, 12 / d)
-    sim = dict(np.load("/home/user/lot/props/sim_x15.npz"))
+    from layout import LAYOUT
+    if "car" in LAYOUT:
+        car = (Hy.CAR["x"], Hy.CAR["y"], 1.0)
+        ta, pan, d = arrive(car, Hy.first_hit())
+        place(out, glass(rng), ta + 0.002, pan, 0.6 * 20 / d)
+        place(out, clang(rng, 95, 0.5, 0.8), ta, pan, 20 / d)                 # the body slammed onto its stops
+    if "sign" in LAYOUT:
+        ta, pan, d = arrive((Hy.SIGN["x"], Hy.SIGN["y"], 2.0), float(Hy.t_hit(Hy.SIGN["x"], Hy.SIGN["y"], 2.0)))
+        place(out, clang(rng, 180, 0.4, 1.0), ta + 0.03, pan, 12 / d)
+    simf = "/home/user/lot/props/sim_x15.npz"
+    sim = dict(np.load(simf)) if LAYOUT and os.path.exists(simf) else {}
     for name in [k[:-4] for k in sim if k.endswith("_loc")]:
         for te, v, pos in impacts(sim, name):
             ta, pan, d = arrive(pos, te)

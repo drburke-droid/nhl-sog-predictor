@@ -3,12 +3,9 @@ import math, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # name: (kind, x, y, heading in degrees about z)
-# the car parked on the right shoulder with a warning cone set out behind it, and the 100 sign
-LAYOUT = {
-    "cone1": ("cone", 2.95, 13.2, 20),
-    "sign": ("sign", 4.5, 10.2, 0),
-    "car": ("car", 5.6, 17.2, 0),
-}
+# The flybys now have the road to themselves: the car, the cone and the sign looked pasted in, so they are gone.
+# (cone, drum, sign and car builders stay in props.py.)
+LAYOUT = {}
 
 
 COM = {"cone": 0.15}                             # height of the centre of mass (the cone's base is heavy rubber)

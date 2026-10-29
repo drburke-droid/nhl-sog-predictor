@@ -3,6 +3,7 @@
 cd /home/user/lot/src
 B=/home/user/bpyenv/bin/python
 L=/home/user/lot/render
+SAMPLES=40 $B parker_render.py > $L/parker_render.log 2>&1
 SAMPLES=48 $B render_flyby.py wright > $L/fly_wright.log 2>&1
 SAMPLES=48 $B render_flyby.py spitfire > $L/fly_spitfire.log 2>&1
 SAMPLES=48 $B render_flyby.py spitfire replay > $L/fly_spitfire_replay.log 2>&1

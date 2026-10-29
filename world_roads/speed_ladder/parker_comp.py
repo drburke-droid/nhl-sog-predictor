@@ -30,6 +30,10 @@ tg = np.where(dirs[..., 2] < -1e-6, -org[2] / np.minimum(dirs[..., 2], -1e-6), n
 GROUND = np.isfinite(tg)
 GP = org + np.where(GROUND, tg, 0)[..., None] * dirs
 FWD = Cam.R()[2]
+# the height of each ray's closest approach to the path (for the dust raised inside the blast, near the ground)
+_oy, _oz = org[1] - P.PY, org[2] - P.PZ
+_ts = np.clip(-(_oy * dirs[..., 1] + _oz * dirs[..., 2]) / (dirs[..., 1] ** 2 + dirs[..., 2] ** 2), 0, tg)
+ZC = (org[2] + _ts * dirs[..., 2]).astype(np.float32)
 COLDEPTH = ((np.stack([XS, np.full_like(XS, P.PY), np.full_like(XS, P.PZ)], -1) - P.CAM_P) @ FWD).astype(np.float32)
 
 _BB = [(1000, (1.0, 0.18, 0.0)), (1500, (1.0, 0.39, 0.06)), (2000, (1.0, 0.54, 0.16)), (3000, (1.0, 0.71, 0.42)),
@@ -52,94 +56,120 @@ def vis(T):
     return np.where(T > 6000, 60.0 * math.exp(24000 / 2300 - 4.0) * T / 6000.0, lo)
 
 
-def core(x, t):
-    """radius of the luminous region: everything inside the blast front (shocked to thousands of kelvin); behind the
-    point where the probe met the air the blast closes in a rounded end"""
+# ---------------------------------------------------------------- the shock around the probe and the blast behind it
+# The bow shock stands DELTA ahead of the heat shield (a flat disk 1.15 m in radius; behind a shock this strong the
+# gas is squeezed ~15-fold, so the gap is about a fifth of the radius) and curves back as a paraboloid (radius of
+# curvature ~2.5 m, as for a blunt flat face). Further back it follows the blast-wave law, r^2 = (B^2 / v) * distance:
+# the same shock, now spreading as the energy the probe leaves in each metre pushes it out (parker.py). The two meet
+# smoothly: r^2 = (B^2/v) u + (5.0 - B^2/v) L (1 - exp(-u / L)), u the distance behind the shock's nose.
+DELTA, BULGE_L, NOSE = 0.2, 0.5, 5.0
+
+
+def r_shock(x, t):
+    """radius of the shock (bow shock, then blast front) around the path at x, time t; 0 ahead of it. Behind the point
+    where the probe met the air it closes in a rounded end"""
     x = np.asarray(x, float)
-    R = P.shock_r(np.maximum(x, P.X_IN), t)
+    xh = float(P.x_head(t))
+    if t <= 0: return np.zeros_like(x)
+    xe = np.maximum(x, P.X_IN)
+    u = np.maximum(xh + DELTA - xe, 0)
+    b2v = P.blast(xe) ** 2 / P.V0
+    r2 = b2v * u + np.maximum(NOSE - b2v, 0) * BULGE_L * (1 - np.exp(-u / BULGE_L))
     behind = np.maximum(P.X_IN - x, 0)
-    return 0.08 + np.sqrt(np.maximum(R ** 2 - behind ** 2, 0))
+    return np.sqrt(np.maximum(r2 - behind ** 2, 0))
 
 
-def lum_temperature(a):
-    """K of the glowing air a seconds after the plasma passed: tens of thousands at first; behind a front still moving
-    at Mach 18 when it reaches the camera, shocked air stays at 6,000-8,000 K (ionisation holds it there)"""
-    return np.clip(P.temperature(a), 5500.0, 40000.0)
+def core(x, t):                                     # kept for the dust wall and the shimmer: the shock's radius
+    return 0.08 + r_shock(x, t)
 
 
-def head(t):
-    """(x, radius) of the plasma bolt: the probe's vapour, its cloud swelling as the probe boils away"""
-    return float(P.x_head(t)), 0.2 + 0.8 * min(t / P.T_GONE, 1.0)
+def shell_temperature(x, t):
+    """K of the air just behind the shock: set by how fast the shock moves into it. At the nose, 192 km/s: ~60,000 K;
+    the blast front still moving at 7 km/s gives ~8,000 K (energy going into ionising the air holds it down)"""
+    x = np.asarray(x, float)
+    r = np.maximum(r_shock(x, t), 1e-3)
+    xh = float(P.x_head(t))
+    u = np.maximum(xh + DELTA - np.maximum(x, P.X_IN), 0)
+    b2v = P.blast(np.maximum(x, P.X_IN)) ** 2 / P.V0
+    slope = (b2v + np.maximum(NOSE - b2v, 0) * np.exp(-u / BULGE_L)) / (2 * r)      # dr/du
+    un = P.V0 * slope / np.sqrt(1 + slope ** 2)                                      # speed into the shock
+    return np.clip(8000.0 * (un / 7000.0) ** 0.6, 5500.0, 60000.0)
 
 
-T_HEAD = 30000.0
+def inner_temperature(a):
+    """K of the gas inside the envelope, a seconds after the head passed: it expands and cools behind the shock"""
+    return np.clip(P.temperature(a), 4500.0, 40000.0)
+
+
 _mottle = None
 
 
-def column(t):
-    """radiance of the blast's glowing air (optically thick: as bright as its temperature, brightest toward its
-    edge where the line of sight runs longest through the shocked shell, mottled) and the plasma bolt's head"""
+def envelope(t):
+    """the shock envelope's light along each ray, and how much of what lies inside and behind it shows through.
+    A thin shell of freshly shocked air (an eighth of the radius) round a dimmer interior; partly transparent, so the
+    edges, where the line of sight runs longest through the shell, glow brightest: what a bow shock looks like.
+    -> (radiance rgb, transmission to the probe inside, transmission to what is behind)"""
     global _mottle
-    if _mottle is None:
+    rs = r_shock(XS, t).astype(np.float32)
+    on = rs > 0.02
+    Lrgb = np.zeros((H, W, 3), np.float32)
+    T_in = np.ones((H, W), np.float32); T_bg = np.ones((H, W), np.float32)
+    if not on.any(): return Lrgb, T_in, T_bg
+    if _mottle is None:                                  # streaks along the flow in the turbulent gas behind
         rng = np.random.default_rng(12)
         _mottle = []
-        for _ in range(6):                                  # turbulent brightness: smooth, several scales
-            m = 0
-            for cells, amp in ((48, 0.5), (20, 0.3), (8, 0.2)):
-                m = m + amp * cv2.GaussianBlur(cv2.resize(rng.random((H // cells + 2, W // cells + 2)).astype(np.float32),
-                                                          (W, H), interpolation=cv2.INTER_CUBIC), (0, 0), cells / 3)
-            _mottle.append(((m - m.mean()) / (m.std() + 1e-6)).astype(np.float32))
-    a = t - P.t_at(np.maximum(XS, P.X_IN))
-    on = (a > 0) & (core(XS, t) > 0.081)
-    img = np.zeros((H, W, 3), np.float32)
-    if on.any():
-        aa = np.where(on, a, 1e-3)
-        Rr = core(XS, t)
-        q = DMIN / Rr
-        shell = np.clip(1 - q ** 20, 0, 1) * (0.8 + 0.2 * np.clip(q, 0, 1) ** 4)
-        ph = t / 40e-6
-        k0 = int(ph) % 6; f = ph % 1
-        mot = _mottle[k0] * (1 - f) + _mottle[(k0 + 1) % 6] * f
-        T = lum_temperature(aa)
-        L = vis(T) * shell * np.clip(1 + 0.12 * mot, 0.6, 1.4)
-        img += (np.where(on, L, 0)[..., None] * bb(T)).astype(np.float32)
-    if t > 0:
-        xh, rh = head(t)
-        uv, z = Cam.project([[xh, P.PY, P.PZ]])
-        if z[0] > 0:
-            r_px = Cam.F * rh / z[0]
-            yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-            dx = xx - uv[0, 0]
-            trail = 3.0 if t > P.T_GONE else 0.25 + 2.75 * t / P.T_GONE        # a cap on the heat shield, then a bolt
-            sx = np.where(dx < 0, trail * r_px, r_px)
-            d2 = (dx / sx) ** 2 + ((yy - uv[0, 1]) / r_px) ** 2
-            img += (float(vis(T_HEAD)) * np.exp(-0.5 * d2 ** 2))[..., None] * bb(T_HEAD)
-    return img
+        for _ in range(6):
+            m = cv2.GaussianBlur(cv2.resize(rng.standard_normal((H // 6, W // 60)).astype(np.float32), (W, H),
+                                            interpolation=cv2.INTER_CUBIC), (0, 0), 3)
+            _mottle.append(m / (m.std() + 1e-6))
+    d = DMIN
+    ri = rs * 0.9
+    c_shell = np.where(d < ri, np.sqrt(np.maximum(rs ** 2 - d ** 2, 0)) - np.sqrt(np.maximum(ri ** 2 - d ** 2, 0)),
+                       np.sqrt(np.maximum(rs ** 2 - d ** 2, 0)))                 # each side, front and back
+    c_in = 2 * np.sqrt(np.maximum(ri ** 2 - d ** 2, 0))
+    kap = 1.6 / np.maximum(rs, 0.05)
+    tf = np.exp(-kap * c_shell); ti = np.exp(-0.12 * kap * c_in)
+    a = np.maximum(t - P.t_at(np.maximum(XS, P.X_IN)), 1e-8)
+    Ts = shell_temperature(XS, t); Tin = inner_temperature(a)
+    ph = t / 40e-6; k0 = int(ph) % 6; f = ph % 1
+    mot = _mottle[k0] * (1 - f) + _mottle[(k0 + 1) % 6] * f
+    turb = 1 + 0.05 * mot * np.clip(a / 20e-6, 0, 1)
+    Ss = (vis(Ts) * turb)[..., None] * bb(Ts)
+    Si = (vis(Tin) * turb)[..., None] * bb(Tin)
+    # where the blast has swept the ground, the dust it raised fills the bottom of the envelope: darker, browner,
+    # thicker there (it rises as the gas inside does)
+    dusty = np.clip(1 - ZC / (0.6 + 0.25 * rs), 0, 1) * np.clip((rs - P.PZ) / 1.5, 0, 1) * (c_in > 0)
+    Si = Si * (1 - 0.75 * dusty)[..., None] * np.array([1.0, 0.8, 0.62], np.float32)
+    Ss = Ss * (1 - 0.45 * dusty)[..., None]
+    ti = ti * np.exp(-4.0 * dusty)
+    L = Ss * (1 - tf)[..., None] * (1 + (tf * ti)[..., None]) + Si * ((1 - ti) * tf)[..., None]
+    Lrgb = np.where(on[..., None], L, 0).astype(np.float32)
+    T_in = np.where(on, tf * np.sqrt(ti), 1).astype(np.float32)
+    T_bg = np.where(on, tf * tf * ti, 1).astype(np.float32)
+    return Lrgb, T_in, T_bg
 
 
 def lights(t, n=28):
-    """the column and the bolt as point lights [((x, y, z), rgb)], in the daylight's units (sun 1.3 W/m^2): a stretch
-    of optically thick column of radius r and radiance L shines with intensity L * 2r * length"""
+    """the envelope as point lights [((x, y, z), rgb, radius)] in the daylight's units (sun 1.3 W/m^2): a stretch of
+    shell of radius r and radiance L shines with intensity ~ L * 2r * length"""
     out = []
     if t <= 0: return out
-    xh, rh = head(t)
+    xh = float(P.x_head(t))
     xs = np.linspace(P.X_IN, min(xh, 40.0), n)
-    dx = xs[1] - xs[0]
+    dx = xs[1] - xs[0] if n > 1 else 1.0
     for x in xs:
-        a = t - float(P.t_at(x))
-        if a <= 0: continue
-        T = float(lum_temperature(a))
-        c = bb(T) * float(vis(T)) * 2 * float(core(x, t)) * dx
-        out.append(((float(x), P.PY, P.PZ), tuple(float(v) for v in c)))
-    c = bb(T_HEAD) * float(vis(T_HEAD)) * math.pi * rh ** 2 * 2
-    out.append(((xh, P.PY, P.PZ), tuple(float(v) for v in c)))
+        r = float(r_shock(np.array([x]), t)[0])
+        if r <= 0: continue
+        T = float(shell_temperature(np.array([x]), t)[0])
+        c = bb(T) * float(vis(T)) * 2 * r * dx * 0.22
+        out.append(((float(x), P.PY, P.PZ), tuple(float(v) for v in c), max(1.0, r)))
     return out
 
 
 def ground_light(ls):
     """irradiance on the ground the plate shows, from point lights, relative to the daylight's (0.8)"""
     E = np.zeros((H, W, 3), np.float32)
-    for (lx, ly, lz), c in ls:
+    for (lx, ly, lz), c, *_ in ls:
         L = np.array([lx, ly, lz], np.float32) - GP
         d2 = (L ** 2).sum(-1) + 0.05
         cos = np.clip(L[..., 2] / np.sqrt(d2), 0, 1)
@@ -150,23 +180,24 @@ def ground_light(ls):
 def exposure(img):
     """the camera's exposure, metered on the whole picture: it holds the brightest part just below white, so the
     daylit scene sinks as the fireball grows"""
-    m = float(np.percentile(img.max(-1), 99.5))
-    return min(1.0, 1.1 / max(m, 1e-9))
+    m = float(np.percentile(img.max(-1), 99.97))
+    return min(1.0, 1.2 / max(m, 1e-9))
 
 
 def displacement(t):
-    """the blast's front bending light where rays graze it"""
-    Rr = (core(XS, t) - 0.08).astype(np.float32)
-    on = Rr > 0.2
-    w = 0.08 + 0.03 * Rr
+    """the shock bending light where rays graze it: the air behind it is many times denser"""
+    Rr = r_shock(XS, t).astype(np.float32)
+    on = Rr > 0.02
+    w = 0.03 + 0.03 * Rr
     q = (DMIN - Rr) / w
-    disp = np.where(on, 14.0 * (-q * np.exp(0.5 - 0.5 * q * q)), 0).astype(np.float32)
+    disp = np.where(on, 12.0 * (-q * np.exp(0.5 - 0.5 * q * q)), 0).astype(np.float32)
     return disp * GX, disp * GY
 
 
 # ---------------------------------------------------------------- the ground erupting: a wall of dust and vapour
 VIS = D.Grid(x0=-16, x1=17, y0=1.0, y1=36.0, z1=10, h=0.15)
-REN = D.Renderer(VIS, scale=0.5, kappa=1.6, albedo=(0.4, 0.3, 0.22), sun_irr=1.3, sun_col=(1.0, 0.78, 0.58))
+REN = D.Renderer(VIS, scale=0.5, kappa=1.6, albedo=(0.5, 0.38, 0.27), phase_g=0.72, sun_irr=1.3,
+                 sun_col=(1.0, 0.78, 0.58))
 _noise = None
 
 
@@ -180,7 +211,8 @@ def wall_density(t):
     front = rg * 0.97
     w = 0.2 + 0.05 * rg
     h = 0.4 + 0.12 * rg
-    shell = np.exp(-((rho - front) / w) ** 2) * (Z < h * (0.5 + 1.0 * _noise)) * (rho < rg * 1.02)
+    top = h * (0.5 + 1.0 * _noise)
+    shell = np.exp(-((rho - front) / w) ** 2) * np.clip((top - Z) / (0.5 * top + 0.1), 0, 1) ** 1.5 * (rho < rg * 1.02)
     inner = 0.0 * Z
     vapour = np.hypot(Y - P.PY, Z - P.PZ) < 0.5 * Rr                       # the hottest inner core: no dust left
     return (30.0 * (shell + inner) * (0.4 + _noise) * (rg > 0) * ~vapour).astype(np.float32)
@@ -191,8 +223,7 @@ def wall(t, ls):
     VIS.d[:] = gaussian_filter(wall_density(t), 0.8)
     if VIS.d.max() < 1e-3: return None
     # a light stands for a stretch of column: soften it by that stretch and the column's radius
-    soft = [((x, y, z), c, max(2.0, float(core(np.array([x]), t)[0]))) for (x, y, z), c in ls]
-    rgb, tr, gs = D.render_l(REN, soft)
+    rgb, tr, gs = D.render_l(REN, [(p_, tuple(3.0 * v for v in c), max(2.0, r)) for p_, c, r in ls])
     up = lambda a: cv2.resize(a, (W, H), interpolation=cv2.INTER_LINEAR)
     return up(rgb), up(tr)[..., None]
 
@@ -207,16 +238,20 @@ def replay_frame(job):
     pp = f"{R_}/p{n:04d}.npz"
     p = C.props(pp if os.path.exists(pp) else f"{R_}/static.npz")
     img = C.over_props(plate, C.plate_match(p, 7000 + n))
-    if ls and p is not None: img = img + C.relight(p, ls)
-    col = column(t)
-    if p is not None:                                                    # what stands in front of the glowing air
-        Rr = core(XS, t)
+    if ls and p is not None: img = img + C.relight(p, [(q_, c) for q_, c, _ in ls])
+    L, T_in, T_bg = envelope(t)
+    if p is not None:
+        # the probe sits inside the envelope (seen through its near side); anything nearer than the envelope is in
+        # front of it; the plate is behind it
+        Rr = r_shock(XS, t)
         entry = COLDEPTH - np.sqrt(np.maximum(Rr ** 2 - DMIN ** 2, 0))
-        hide = (p["a"][..., 0] > 0.5) & (p["depth"] < entry)
-        col = col * (~hide)[..., None]
-    img = img + col
-    wl = wall(t, ls)
-    if wl is not None: img = img * wl[1] + wl[0]
+        solid = p["a"][..., 0] > 0.5
+        front = solid & (p["depth"] < entry)
+        inside = solid & ~front
+        T = np.where(inside, T_in, T_bg)
+        img = np.where(front[..., None], img, img * T[..., None] + L)
+    else:
+        img = img * T_bg[..., None] + L
     img = FX.warp(img, displacement(t))
     g = exposure(img)
     img = img * g

@@ -56,8 +56,14 @@ Shots so far: `../media/speed_ladder/fly1_wright_flyer.mp4`, `fly2_spitfire.mp4`
 * The X-15 (`hyper.py`): at sea level, Mach 5.9 means 2.45 MPa of dynamic pressure, about 20 times what it was built
   for; it is shown intact, its leading edges glowing (900-2,300 K by how squarely they face the flow, a blackbody's
   visible brightness). Its drag leaves 3 MJ in every metre of air: a line blast that reaches the ground 14 ms after it
-  passes, throws the cone 12 m, folds the sign over, slams the car onto its bump stops and blows in its windows, and
-  raises a wall of dust (`flyby_dust.py`); the camera is hit 57 ms after it passes.
+  passes and raises a wall of dust (`flyby_dust.py`); the camera is hit 57 ms after it passes.
+* The finale's shock (`parker_comp.r_shock`): a bow shock 20 cm ahead of the heat shield (behind a shock this strong
+  the gas is squeezed ~15-fold, so the gap is about a fifth of the shield's radius), curving back as a paraboloid and
+  then following the blast-wave law, r^2 = (B^2/v) x distance behind, the same shock spreading as the probe's energy
+  pushes it out. Freshly shocked air glows in a thin shell (~60,000 K at the nose, set by how fast the shock moves into
+  the air; ~8,000 K where the blast front has slowed to 7 km/s) round a cooler interior; partly transparent, so the
+  shell glows brightest at its edges and the probe shows through it; the dust the blast raises fills its base; light
+  bends where rays graze the shock.
 * The finale (`parker.py`, `parker_render.py`, `parker_comp.py`): the probe cannot survive sea-level air at 192 km/s.
   It boils away within ~25 microseconds, 5 m after meeting the air, and its vapour carries on as a bolt of plasma,
   slowed only as it shoves air aside, leaving 6-9e10 J in every metre (0.6 kilotons across the picture). The blast
@@ -146,9 +152,8 @@ gaps. Pitch 1.24 deg down, yaw -0.82 deg, roll 0. The projected lane lines sit o
   the frame), hits the road at x = 0.8 m at 9 m/s, bounces (restitution 0.4, the hit takes 15% of its speed and sets it
   spinning) and clips the cone standing on its line at the top of its hop. Also the blast's timing and push for each
   prop (below), the sign bending and the pickup rocking.
-* (The flybys keep only the car, one warning cone at the lane edge behind it and the sign; the car's tyres sit on the
-  road, each flattened 12 mm: the benchmark car is a rig whose wheels hung 5 cm up once moved, so it is frozen in its
-  pose first.)
+* (The flybys have the road to themselves: the car, the cone and the sign looked pasted in, so they were taken out.
+  The builders stay in `props.py`.)
 * `props.py`, `layout.py`: traffic cones and a 100 km/h sign built here, oil drums (Poly Haven `barrel_03`, CC0,
   weathered blue steel), and a car parked on the right shoulder: the BMW 1M from Blender's benchmark scene (CC0),
   scaled to its real 4.38 m, badges hidden. (A pickup built here from boxes looked fake.) Assets and licences in

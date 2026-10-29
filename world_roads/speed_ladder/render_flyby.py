@@ -41,7 +41,7 @@ glass = [o for o in bpy.data.objects if o.get("glass")]
 glassmat = glass[0].data.materials[0] if glass else None
 # the props the blast moves (the X-15): cones and drums from rigid.py, the sign and the car from hyper.py
 SIMF = f"/home/user/lot/props/sim_{NAME}.npz"
-SIM = dict(np.load(SIMF)) if NAME == "x15" and os.path.exists(SIMF) else None
+SIM = dict(np.load(SIMF)) if NAME == "x15" and L.LAYOUT and os.path.exists(SIMF) else None
 if SIM is not None:
     import hyper as Hy
 root, pivots = A.build(NAME)
