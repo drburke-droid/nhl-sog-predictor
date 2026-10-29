@@ -1,0 +1,88 @@
+"""Composite the flybys over the plate and join them with their sound.
+  python make_fly.py wright [...] -> /home/user/lot/out/fly_<name>.mp4"""
+import cv2, numpy as np, os, subprocess, sys
+from multiprocessing import Pool
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import comp as C, flight as F
+R_ = "/home/user/lot/render"
+OUT = "/home/user/lot/out"
+WHITE, DIM = (255, 255, 255), (214, 220, 228)
+FEATHER = 80                     # px over which a partial render blends into the static frame at its edges
+
+
+def fly(name, n, replay=False):
+    """the CG for frame n: the render where the machine is in the picture (feathered into the static frame at the edges
+    of the part rendered), else the static frame"""
+    st = C.props(f"{R_}/fly_{name}/static.npz")
+    p = f"{R_}/fly_{name}{'_replay' if replay else ''}/p{n:04d}.npz"
+    if not os.path.exists(p): return st
+    d = np.load(p)
+    out = C.props(p)
+    if "rect" in d:
+        x0, y0, x1, y1 = [int(v) for v in d["rect"]]
+        h, w = out["a"].shape[:2]
+        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+        dist = np.minimum.reduce([xx - x0 if x0 > 0 else np.full_like(xx, 1e4), x1 - 1 - xx if x1 < w else np.full_like(xx, 1e4),
+                                  yy - y0 if y0 > 0 else np.full_like(yy, 1e4), y1 - 1 - yy if y1 < h else np.full_like(yy, 1e4)])
+        k = np.clip(dist / FEATHER, 0, 1)[..., None]
+        for key in ("rgb", "a"):
+            out[key] = out[key] * k + st[key] * (1 - k)
+    return out
+
+
+def finish(img, seed, lines, label_alpha=1.0, fl=0.0, shake_t=-1.0, shake_amp=10.0):
+    img = C.flash(img, fl)
+    img = C.bloom(img)
+    img = C.shake(img, shake_t, amp=shake_amp, seed=seed)
+    img = C.grain(img, seed)
+    pic = (C.srgb(img) * 255 + 0.5).astype(np.uint8)
+    out = np.zeros((C.H, C.W, 3), np.uint8)
+    out[C.TOP:C.TOP + C.PH] = pic
+    return C.label(out, lines, label_alpha) if lines else out
+
+
+def lines(name):
+    m = F.MACHINES[name]
+    year, title = m["title"].split(" ", 1)
+    return [(f"{m['mph']:,} mph", 64, "Bold", WHITE), (f"{title}, {year}", 30, "Medium", DIM)]
+
+
+def replay_lines(name, slow):
+    s = f"replay, {1 / slow:,.0f}× slower" if slow < 0.95 else "replay, real speed"
+    return lines(name) + [(s, 26, "Medium", DIM)]
+
+
+def one(job):
+    name, n, plate0, path = job
+    img = C.over_props(C.plate_loop(plate0 + n), fly(name, n))
+    out = finish(img, 7000 + n, lines(name), label_alpha=min(1.0, n / 8))
+    cv2.imwrite(path, out[..., ::-1])
+
+
+def one_replay(job):
+    """the replay: the plate frozen while time crawls (it moves on in real time)"""
+    name, n, t, slow, t_first, plate0, path = job
+    img = C.over_props(C.plate_loop(plate0 + int((t - t_first) * F.FPS)), fly(name, n, replay=True))
+    out = finish(img, 9000 + n, replay_lines(name, slow), label_alpha=min(1.0, n / 6))
+    cv2.imwrite(path, out[..., ::-1])
+
+
+def shot(name, plate0=0):
+    fr = f"{OUT}/frames_{name}"
+    os.makedirs(fr, exist_ok=True)
+    jobs = [(name, n, plate0, f"{fr}/f{n:04d}.png") for n, _ in F.frames(name)]
+    with Pool(3) as p: p.map(one, jobs)
+    if name in F.REPLAY:                                     # the replay follows straight on
+        tl = F.replay(name)
+        k0 = len(jobs)
+        rj = [(name, n, t, slow, tl[0][0], plate0 + 60, f"{fr}/f{k0 + n:04d}.png") for n, (t, slow) in enumerate(tl)]
+        with Pool(3) as p: p.map(one_replay, rj)
+    subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fly_sound.py"), name], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", "25", "-i", f"{fr}/f%04d.png", "-i", f"{OUT}/fly_{name}.wav",
+                    "-c:v", "libx264", "-crf", "16", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest",
+                    f"{OUT}/fly_{name}.mp4"], check=True)
+
+
+if __name__ == "__main__":
+    for name in sys.argv[1:]:
+        shot(name)

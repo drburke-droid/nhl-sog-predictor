@@ -5,7 +5,7 @@ import bpy, math, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import camera as C
 
-SUN_AZ, SUN_EL = 50.0, 20.0         # degrees: to the right of the road direction, above the horizon
+from scene_sun import SUN_AZ, SUN_EL   # degrees: to the right of the road direction, above the horizon
 SUN_STRENGTH, SUN_ANGLE = 2.6, 4.0  # W/m^2, degrees (thin cloud softens the shadows)
 
 

@@ -11,6 +11,7 @@ import numpy as np
 from mathutils import Quaternion, Vector
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import scene as S, layout as L, props as P, motion as M, replay_time as T
+from exr import save
 
 SEQ = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else sys.argv[1]
 args = [a for a in sys.argv[1:] if a not in ("--",)]
@@ -125,21 +126,6 @@ def place(n, t, expo):
         else:
             o.data.energy = 0.0
     s.frame_set(n)
-
-
-def save(path, exr, passes=False):
-    """Combined and depth always; normal, position and diffuse colour (for relighting) when asked"""
-    import OpenEXR
-    f = OpenEXR.File(exr)
-    ch = {k: np.asarray(c.pixels) for part in f.parts for k, c in part.channels.items()}
-    out = {"rgba": ch["ViewLayer.Combined"].astype(np.float16),
-           "depth": np.minimum(ch["ViewLayer.Depth.Z"], 6e4).astype(np.float16)}
-    if passes:
-        out["normal"] = np.stack([ch[f"ViewLayer.Normal.{a}"] for a in "XYZ"], -1).astype(np.float16)
-        out["position"] = np.clip(np.stack([ch[f"ViewLayer.Position.{a}"] for a in "XYZ"], -1), -6e4, 6e4).astype(np.float16)
-        out["diffcol"] = ch["ViewLayer.Diffuse Color"].astype(np.float16)
-    np.savez_compressed(path, **out)
-    os.remove(exr)
 
 
 todo = frames()

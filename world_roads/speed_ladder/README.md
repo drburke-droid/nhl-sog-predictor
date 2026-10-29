@@ -1,4 +1,4 @@
-# How fast is fast: a steel ball across a desert road (experiment)
+# How fast is fast: history's fastest machines across a desert road (experiment)
 
 One steel ball the size of a bowling ball (20 cm, 33 kg) crosses a real desert highway from left to right, faster each
 time, from 50 mph to the fastest thing ever built (Parker Solar Probe, 430,000 mph). The speed is in the corner. Only
@@ -6,6 +6,45 @@ the speed changes, so everything the ball does to the scene comes from the speed
 
 Experiments so far (`../media/speed_ladder/`): `test1_roll_and_orbital_pass.mp4`, the 50 mph roll and the 17,500 mph
 pass in real time; `test2_with_slowmo_replay.mp4`, the same followed by the slow-motion replay of the pass, with sound.
+
+## History's fastest machines fly past (the current direction)
+
+The ball is replaced by five machines from the history of speed, each flying across the road at its real top speed,
+20 m out (behind the cone row), a few metres up, left to right:
+
+| Machine | Speed | Height | Crosses the picture in |
+|---|---|---|---|
+| Wright Flyer, 1903 | 30 mph (its airspeed on the first flight) | 3.8 m | 3 s |
+| Spitfire, 1943 | 370 mph | 4 m | 0.25 s |
+| Bell X-1, 1947 | Mach 1.06: 807 mph at sea level (the record's 700 mph was Mach 1.06 at 43,000 ft) | 6 m | 0.1 s |
+| X-15, 1967 | 4,520 mph | 6 m | 20 ms |
+| Parker Solar Probe, 2024 | 430,000 mph | 5 m | 0.2 ms |
+
+Models: FlightGear's Wright Flyer, Spitfire IX, Bell X-1 and X-15 (GPL; Aircraft-2024 from the FlightGear mirrors), and
+NASA's Parker Solar Probe (public domain, nasa/NASA-3D-Resources).
+
+* `ac3d.py`: a reader for FlightGear's AC3D models (objects, transforms, UVs, smoothing, textures, transparency) into
+  Blender, y-up turned z-up.
+* `aircraft.py`: each machine built ready to fly: imported, nose along +x, landing gear up (wheels, legs and the parts
+  that only show with the gear down hidden; the X-1's gear doors kept shut), the Spitfire's propeller from its own file
+  on its hub, each propeller on a pivot so it can spin (the Flyer's two pushers counter-rotating at 350 rpm, the
+  Spitfire's at 1,430). Rocket exhaust for the X-1's four chambers and the X-15's XLR99: emissive volumes, brightest
+  at the nozzle, with shock diamonds.
+* `flight.py`: where each machine is at every moment (the Flyer undulating in pitch, as it did), which frames of its
+  shot need it rendered (any part of it, or its shadow, in the picture), and the slow-motion replay's clock.
+* `render_flyby.py`: Blender renders over the plate's camera and light with the props in place, so its shadow falls
+  across the road, the cones and the drums. 1/100 s exposure (90-degree shutter); the propellers get 17 motion steps
+  so they blur round. Only the part of the picture the machine and its shadow touch is rendered; the rest comes from
+  one static frame (`make_fly.fly` feathers the seam).
+* `fly_sound.py`: each machine heard from the camera. Its sound is carried from where it left to the camera at
+  343 m/s, splatted onto the arrival clock, so the Doppler shift and its swell, and above the speed of sound the
+  silence before the Mach cone, come out by themselves. The Flyer's 12 hp four-cylinder (34 firings a second, open
+  exhaust ports), valve clatter, chains and propellers; the Spitfire's Merlin V12 (300 firings a second, every
+  multiple of 25 Hz present), its stub exhausts and four-bladed propeller. In the replay the real-time sound is played
+  back as slowly as the pictures (16 times slower is four octaves down: each propeller blade becomes a thump).
+* `make_fly.py`: composites each shot (and its replay) and joins it to its sound.
+
+First shot: `../media/speed_ladder/fly1_wright_flyer.mp4`.
 
 ## The physics the escalation follows
 
