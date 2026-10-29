@@ -4,7 +4,7 @@ ball, its wake and its sparks; the camera shaken when the blast reaches it 33 ms
   python replay_comp.py [first last]  -> /home/user/lot/out/replay/r####.png"""
 import numpy as np, math, os, sys, cv2
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import camera as Cam, comp as C, dust as D, replay_time as T
+import camera as Cam, comp as C, dust as D, replay_time as T, chunks
 OUT = "/home/user/lot/out/replay"
 DUST = "/home/user/lot/render/replay_dust"
 DEB = "/home/user/lot/render/replay_debris"
@@ -212,6 +212,10 @@ def warp(img, dx, dy):
     return cv2.remap(img, XX - dx, YY - dy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
 
+def relight_props(p, t):
+    return C.relight(p, T.lights(t))
+
+
 def label(slow, t):
     if slow >= T.SLOW - 1e-6: s = f"replay, {T.SLOW:,}× slower"
     elif slow > 1.05: s = f"replay, {slow:,.0f}× slower"
@@ -221,18 +225,36 @@ def label(slow, t):
     return [("17,500 mph", 64, "Bold", WHITE), (s, 30, "Medium", DIM), (f"t = {tt}", 26, "Medium", DIM)]
 
 
+PROPS = "/home/user/lot/render/props_replay"
+FWD = Cam.R()[2]
+TS_RAY = ts                                         # distance along each ray to its closest approach to the path
+
+
 def frame(idx, t, slow, expo):
     bg = C.plate_loop(P0 + max(0, int(round(t * T.FPS))))
-    dx, dy = displacement(t)
-    bg = warp(bg, dx, dy)
     dl = C.dust(f"{DUST}/d{idx:04d}.png", f"{DUST}/g{idx:04d}.png")
     if dl is not None:
         bg = bg * (1 - C.SUN_FRACTION * (1 - dl[2]))
     bg = bg * (1 + ground_light(t) / 2.3)
-    img = C.over(bg, rocks(t, expo), soften=0)
+    # the props: rendered each frame once they move; while time is slowed they stand still, so one render, relit
+    # by the glowing ball and its wake
+    p = C.props(f"{PROPS}/p{idx:04d}.npz")
+    if p is None:
+        p = C.props(f"{PROPS}/static.npz")
+        if p is not None and slow >= T.SLOW:
+            p = dict(p); p["rgb"] = p["rgb"] + relight_props(p, t)
+    img = C.over_props(bg, p)
+    dx, dy = displacement(t)                         # the shock bends whatever is seen through it
+    img = warp(img, dx, dy)
+    img = C.over(img, rocks(t, expo), soften=0)
+    img = img + chunks.shards(t, expo)
     if dl is not None:
         img = img * dl[1] + dl[0]
     gl = glow(t) + sparks(t, expo)
+    if p is not None:                                # props standing between the camera and the path hide the glow
+        ray_t = p["depth"] / np.maximum((dirs @ FWD), 1e-3)
+        front = (p["a"][..., 0] > 0.5) & (ray_t < TS_RAY - 0.25)
+        gl = gl * (1 - front[..., None] * p["a"])
     if dl is not None: gl = gl * np.sqrt(dl[1])
     img = img + gl
     img = C.bloom(img, thresh=0.9, sigma=(4, 16, 60), gain=(0.6, 0.4, 0.3))

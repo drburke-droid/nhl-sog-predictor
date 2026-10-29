@@ -91,6 +91,15 @@ def setup():
 SIG, AREA, TAU = 0.55, 3.0, 0.05
 
 
+def props_tmax(R, shot_frame, seq="blast"):
+    """where the props stand in front of the dust (their depth pass), so the march stops there"""
+    p = f"/home/user/lot/render/props_{seq}/p{shot_frame:04d}.npz"
+    if not os.path.exists(p): p = f"/home/user/lot/render/props_{seq}/static.npz"
+    if not os.path.exists(p): return None
+    d = np.load(p)
+    return D.ray_tmax(R, d["depth"].astype(np.float32), d["rgba"][..., 3].astype(np.float32))
+
+
 if __name__ == "__main__":
     NF = int(sys.argv[1]) if len(sys.argv) > 1 else 60
     S = setup()
@@ -118,6 +127,6 @@ if __name__ == "__main__":
         D.splat(P, mass * UNIT / (vis.h ** 3) * 1e-3, alive, vis.d, vis.o, vis.h)
         from scipy.ndimage import gaussian_filter
         vis.d[:] = gaussian_filter(vis.d, 0.6)
-        rgb, tr, gs = R.render()
+        rgb, tr, gs = D.render_l(R, [], tmax=props_tmax(R, K + j + 17))
         save(K + j, rgb, tr, gs)
         print(f"frame {K + j} t={t:.3f}s alive {alive.sum()} maxd {vis.d.max():.2f} T.min {tr.min():.3f}  {time.time() - t0:.1f}s", flush=True)

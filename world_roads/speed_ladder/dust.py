@@ -392,7 +392,7 @@ def divergence_minus(u, v, w, h, div, src):
 # ---------------------------------------------------------------- marching with point lights (the glowing ball)
 @njit(parallel=True, cache=True)
 def march_l(dirs, org, d, ts, sky, gmin, h, zmax, kappa, albedo, sun_rad, sky_rad, phase_g, sundir, step, seed_img,
-            lp, lc, rgb, trans, gshadow):
+            lp, lc, tmax, rgb, trans, gshadow):
     H, W, _ = dirs.shape
     nx, ny, nz = d.shape
     gmax0 = gmin[0] + nx * h; gmax1 = gmin[1] + ny * h; gmax2 = min(nz * h, zmax)
@@ -418,6 +418,8 @@ def march_l(dirs, org, d, ts, sky, gmin, h, zmax, kappa, albedo, sun_rad, sky_ra
                 tg = -org[2] / dz
                 if tg < t1:
                     t1 = tg; hit_ground = True
+            if tmax[py, px] < t1:                     # an object in front: dust behind it is hidden
+                t1 = tmax[py, px]
             T = 1.0; r = 0.0; gg = 0.0; b = 0.0
             if t1 > t0:
                 cosang = dx * sundir[0] + dy * sundir[1] + dz * sundir[2]
@@ -457,8 +459,20 @@ def march_l(dirs, org, d, ts, sky, gmin, h, zmax, kappa, albedo, sun_rad, sky_ra
                     gshadow[py, px] = trilin(ts, x, y, 0.0)
 
 
-def render_l(R, lights=None, zmax=1e9, step=None):
-    """Renderer.render with point lights [(pos, rgb intensity)] and the box cut at zmax"""
+def ray_tmax(R, depth, alpha):
+    """per-pixel distance along the ray to the first opaque CG surface (from a z-depth pass), inf where there is none"""
+    fwd = C.R()[2]
+    cosf = (R.dirs @ fwd).astype(np.float32)
+    t = np.where(alpha > 0.5, depth / np.maximum(cosf, 1e-3), np.inf).astype(np.float32)
+    if t.shape != R.dirs.shape[:2]:
+        import cv2
+        t = cv2.resize(t, (R.W, R.H), interpolation=cv2.INTER_NEAREST)
+    return t
+
+
+def render_l(R, lights=None, zmax=1e9, step=None, tmax=None):
+    """Renderer.render with point lights [(pos, rgb intensity)], the box cut at zmax, and the march stopped at CG
+    surfaces (tmax, from ray_tmax)"""
     g = R.g
     ts = np.empty_like(g.d); sky = np.empty_like(g.d)
     sd = (R.sundir / np.abs(R.sundir).max()).astype(np.float32)
@@ -469,6 +483,8 @@ def render_l(R, lights=None, zmax=1e9, step=None):
     lights = lights or []
     lp = np.array([l[0] for l in lights] or [[0, 0, -100]], np.float32).reshape(-1, 3)
     lc = np.array([l[1] for l in lights] or [[0, 0, 0]], np.float32).reshape(-1, 3)
+    if tmax is None:
+        tmax = np.full((R.H, R.W), np.inf, np.float32)
     march_l(R.dirs, R.org, g.d, ts, sky, g.o[:2].copy(), g.h, float(zmax), R.kappa, R.albedo, R.sun_rad, R.sky_rad,
-            R.phase_g, R.sundir, step or g.h * 0.6, R.seed, lp, lc, rgb, tr, gs)
+            R.phase_g, R.sundir, step or g.h * 0.6, R.seed, lp, lc, tmax, rgb, tr, gs)
     return rgb, tr, gs

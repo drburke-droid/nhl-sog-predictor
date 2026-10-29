@@ -68,7 +68,7 @@ def render_at(t, Prender, live, idx):
     D.splat(Prender, (mass * lift * UNIT / (vis.h ** 3) * 1e-3).astype(np.float32), live, vis.d, vis.o, vis.h)
     vis.d[:] = gaussian_filter(vis.d, 0.45)
     zmax = float(Prender[live, 2].max()) + 0.6 if live.any() else 0.5
-    rgb, tr, gs = D.render_l(R, T.lights(t), zmax=zmax)
+    rgb, tr, gs = D.render_l(R, T.lights(t), zmax=zmax, tmax=B.props_tmax(R, idx, "replay"))
     cv2.imwrite(f"{OUT}/d{idx:04d}.png", np.clip(rgb[..., ::-1] * 32767.5, 0, 65535).astype(np.uint16))
     cv2.imwrite(f"{OUT}/g{idx:04d}.png", np.clip(np.stack([np.zeros_like(tr), gs, tr], -1) * 65535, 0, 65535).astype(np.uint16))
     return zmax, tr.min()

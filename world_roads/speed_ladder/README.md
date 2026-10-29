@@ -70,6 +70,34 @@ gaps. Pitch 1.24 deg down, yaw -0.82 deg, roll 0. The projected lane lines sit o
   softness and grain, the label. 1920x1080, the 2.39:1 picture letterboxed.
 * `make_test.py`: assembles the test clip.
 
+## Props, and the 50 mph ball falling (test 3)
+
+* `motion.py`: the 50 mph ball is thrown from far left, so it comes into view already falling (it drops 3.3 m crossing
+  the frame), hits the road at x = 0.8 m at 9 m/s, bounces (restitution 0.4, the hit takes 15% of its speed and sets it
+  spinning) and clips the cone standing on its line at the top of its hop. Also the blast's timing and push for each
+  prop (below), the sign bending and the pickup rocking.
+* `props.py`, `layout.py`: traffic cones and a 100 km/h sign built here, oil drums (Poly Haven `barrel_03`, CC0,
+  weathered blue steel), and a car parked on the right shoulder: the BMW 1M from Blender's benchmark scene (CC0),
+  scaled to its real 4.38 m, badges hidden. (A pickup built here from boxes looked fake.) Assets and licences in
+  `assets/`.
+* The blast reaches each prop when the shock does (`motion.t_hit`); the impulse per area falls as 1/distance from the
+  path, ~200 Pa s at 2 m (rough, for a 1 MJ/m line blast). Cones within ~1.5 m of the path leave at 20-35 m/s and fly
+  30-50 m; those 3-6 m away topple and tumble 2-8 m; the nearest drum is thrown 17 m, the others roll. The sign's post
+  bends flat (the force on its panel is ~50 times what the post can carry). The car, 1.5 t with its rear 3 m from the
+  path, only lurches (~0.25 m/s) and rocks on its springs, but its windows blow in.
+* `rigid.py`: the tumbling, simulated here (contact points on each body's hull, spring-damper ground, Coulomb friction,
+  air drag, 0.2 ms steps). Blender's Bullet threw a kicked cone 100 m straight up however it was set up.
+* `render_props.py`: Blender renders of the props (and the 50 mph ball) for each shot, with z-depth; motion blur from
+  keys at the real exposure's times. Where nothing moves one frame is shared; for the replay's slowed part (2.5 ms,
+  props moving under 3 cm) that one render carries normal, position and diffuse-colour passes so the compositor relights
+  it with the glowing ball (`comp.relight`).
+* The dust renderer stops each ray at the props' depth (`dust.ray_tmax`), so dust behind a prop doesn't veil it, and the
+  glow is hidden behind props standing between the camera and the path.
+* `roll_dust.py` and `chunks.py`: the 50 mph impact (a faint puff of road dust, asphalt grit, a scuff left on the road);
+  the car's tempered glass glinting as it falls.
+* `sound.py` adds the ball rushing in and its thud, the cone it clips, every landing of every thrown cone (plastic) and
+  drum (a clang), the windows shattering, the sign's twang, each delayed by its distance to the camera.
+
 ## The slow-motion replay (17,500 mph)
 
 `replay_time.py` holds the clock and the physics. The ball crosses the 20 m in view in 2.5 ms, so the replay runs at
@@ -115,5 +143,8 @@ python make_test.py
 python replay_dust.py                  # 210 replay frames, 6-35 s each
 python make_replay.py                  # composite (3 processes), join, sound
 ```
+
+Test 3 (props): `python rigid.py roll && python rigid.py blast`, then `render_all_props.sh` (bpy, ~40 s a frame, 193
+frames) and `pipeline3.sh` (dust with the props' depth, `make_test3.py`, the replay, sound).
 
 `resume.py` re-renders only the frames missing from a saved .blend (renders get interrupted when the container restarts).

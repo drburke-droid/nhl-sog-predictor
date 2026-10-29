@@ -143,3 +143,43 @@ def frame(bg_lin, layer=None, fl=0.0, shake_t=-1.0, seed=0, lines=None, label_al
     out[TOP:TOP + PH] = pic
     if lines: out = label(out, lines, label_alpha)
     return out
+
+
+def props(path):
+    """a props render (render_props.py): premultiplied linear rgb, alpha, z-depth, and relighting passes if present"""
+    if not os.path.exists(path): return None
+    d = np.load(path)
+    rgba = d["rgba"].astype(np.float32)
+    out = dict(rgb=rgba[..., :3], a=rgba[..., 3:4], depth=d["depth"].astype(np.float32))
+    for k in ("normal", "position", "diffcol"):
+        if k in d: out[k] = d[k].astype(np.float32)
+    return out
+
+
+def over_props(bg, p):
+    return bg if p is None else p["rgb"] + bg * (1 - p["a"])
+
+
+def relight(p, lights):
+    """the light a set of point lights [((x, y, z), rgb W/sr)] adds to the props' diffuse surfaces (no shadows)"""
+    if p is None or "position" not in p or not lights: return 0.0
+    P, N, A = p["position"], p["normal"], p["diffcol"]
+    add = np.zeros_like(A)
+    for (lx, ly, lz), c in lights:
+        L = np.array([lx, ly, lz], np.float32) - P
+        d2 = (L ** 2).sum(-1, keepdims=True) + 0.01
+        cos = np.clip((N * L).sum(-1, keepdims=True) / np.sqrt(d2), 0, 1)
+        add += A / math.pi * cos / d2 * np.array(c, np.float32)
+    return add * p["a"]
+
+
+def scuff(img, uv, rx, ry, t_age, seed=4):
+    """a dark scuff on the road where the ball hit: an ellipse of crushed asphalt, ragged"""
+    if t_age <= 0: return img
+    h, w = img.shape[:2]
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    r = ((xx - uv[0]) / rx) ** 2 + ((yy - uv[1]) / ry) ** 2
+    rng = np.random.default_rng(seed)
+    n = cv2.resize(rng.random((h // 6, w // 6)).astype(np.float32), (w, h), interpolation=cv2.INTER_CUBIC)
+    m = np.clip(1.3 - r - 0.6 * n, 0, 1) * 0.45
+    return img * (1 - m[..., None])
