@@ -121,7 +121,8 @@ def wake_glow(name, t, expo):
         r_m = 0.3 + 0.25 * float(Hy.shock_r(a)) ** 0.5
         r_px = max(2.0, Cam.F * r_m / z[0])
         seg = m["speed"] * a * (ages[1] / ages[0] - 1)               # metres of wake this sample stands for
-        L_px = Cam.F * seg / z[0] + m["speed"] * expo * Cam.F / z[0]
+        blur = m["speed"] * expo * Cam.F / z[0]                      # smeared by the motion during the exposure
+        L_px = Cam.F * seg / z[0] + blur
         k = math.exp(-a / 4e-4)
         col = np.array([1.0, 0.45 + 0.35 * k, 0.15 + 0.3 * k ** 2], np.float32) * 2.2 * (0.25 + 0.75 * k)
         x0, x1 = int(u - L_px - 3 * r_px), int(u + 3 * r_px)
@@ -131,7 +132,8 @@ def wake_glow(name, t, expo):
         yy, xx = np.mgrid[ya:yb, xa:xb].astype(np.float32)
         dxl = np.clip(xx - u, -L_px, 0) - (xx - u)                   # distance to the streak's segment
         prof = np.exp(-(dxl ** 2 + (yy - v) ** 2) / (2 * r_px ** 2))
-        img[ya:yb, xa:xb] += prof[..., None] * col * 0.5
+        keep = (Cam.F * seg / z[0] + 2.5 * r_px) / (L_px + 2.5 * r_px)   # the same light spread over the smear
+        img[ya:yb, xa:xb] += prof[..., None] * col * 0.5 * keep
     return img if img.max() > 1e-4 else None
 
 

@@ -110,14 +110,16 @@ def setup():
         keep = rng.random(n) < weight(d) * avail(x)
         x, y, d = x[keep], y[keep], d[keep]; n = len(x)
         c = GN[np.clip(((x + 18) / 0.1).astype(int), 0, 359), np.clip(((y - 9) / 0.1).astype(int), 0, 219)]
-        sp = gain * launch_speed(d) * np.exp(0.25 * c) * rng.lognormal(0, 0.35, n)
+        sp = gain * launch_speed(d) * np.exp(0.25 * c) * rng.lognormal(0, 0.6 if blast else 0.35, n)
         out_ = 0.9 if blast else 0.5
         dirn = np.stack([(0.0 if blast else 0.33) + 0.2 * rng.standard_normal(n),
                          out_ * np.sign(y - PY) + 0.2 * rng.standard_normal(n), 1.0 + 0.3 * rng.standard_normal(n)], 1)
         dirn /= np.linalg.norm(dirn, axis=1, keepdims=True)
         P = np.stack([x, y, rng.uniform(0, 0.05, n)], 1).astype(np.float32)
+        # not all at once: the ground lets go raggedly, some grains a few milliseconds after the front passes
+        late = rng.exponential(0.004, n) * (1.0 if blast else 0.3)
         return P, (dirn * sp[:, None]).astype(np.float32), np.full(n, tau, np.float32), np.full(n, vs, np.float32), \
-            np.exp(0.8 * c).astype(np.float32), arrival(x, y).astype(np.float32)
+            np.exp(0.8 * c).astype(np.float32), (arrival(x, y) + late).astype(np.float32)
 
     fine = emit(CFG["n_fine"], 0.3, 0.08, 1.0)
     sand = emit(CFG["n_sand"], 0.9, 6.0, 0.6)
