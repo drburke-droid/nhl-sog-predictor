@@ -4,8 +4,8 @@ One steel ball the size of a bowling ball (20 cm, 33 kg) crosses a real desert h
 time, from 50 mph to the fastest thing ever built (Parker Solar Probe, 430,000 mph). The speed is in the corner. Only
 the speed changes, so everything the ball does to the scene comes from the speed.
 
-This folder is the first experiment: the 50 mph roll and the 17,500 mph pass in real time
-(`../media/speed_ladder/test1_roll_and_orbital_pass.mp4`).
+Experiments so far (`../media/speed_ladder/`): `test1_roll_and_orbital_pass.mp4`, the 50 mph roll and the 17,500 mph
+pass in real time; `test2_with_slowmo_replay.mp4`, the same followed by the slow-motion replay of the pass, with sound.
 
 ## The physics the escalation follows
 
@@ -70,6 +70,37 @@ gaps. Pitch 1.24 deg down, yaw -0.82 deg, roll 0. The projected lane lines sit o
   softness and grain, the label. 1920x1080, the 2.39:1 picture letterboxed.
 * `make_test.py`: assembles the test clip.
 
+## The slow-motion replay (17,500 mph)
+
+`replay_time.py` holds the clock and the physics. The ball crosses the 20 m in view in 2.5 ms, so the replay runs at
+1/2000 speed (a camera at 50,000 frames per second, 20 microseconds a frame) while it crosses, then ramps back to real
+speed (each frame's step growing by the same factor, 20 us to 40 ms over 60 frames), then half a second at real speed.
+The label shows how much slower and the time since the replay began.
+
+* The blast along the path is a strong cylindrical shock, R = (E/rho)^(1/4) sqrt(age), E = 1.08 MJ per metre: 1 m behind
+  the ball in 0.5 ms, until it slows to the speed of sound at 2 ms and 1.37 m; then a sound wave that reaches the
+  camera at 33 ms, when the camera shakes.
+* The ball: white-hot inside a plasma sheath trailing back like a teardrop (a 7000 K shock layer). Lit as a point light
+  of 200 W/sr in units where the sun is 2.6 W/m^2 (the real one would be ~25x brighter): a pool of light runs along the
+  road under it. Its wake is the core of hot air, cooling from white through yellow and orange to dull red within a
+  few milliseconds, widening as the shock does.
+* Sparks: droplets of steel shed by the ball (it loses about a millimetre crossing the scene), slowed by the air within
+  a few centimetres, cooling over 0.1-3 ms.
+* The shock bends light where a ray grazes its front: the plate is displaced across the front (7 px while strong,
+  fading as it weakens); the hot core shimmers.
+* `replay_dust.py`: the same dust parcels as the real-time pass, each leaving the ground when the shock reaches it (the
+  ball's passage plus the shock's travel to that spot). Behind a strong shock the air moves at hundreds of metres a
+  second, so the dust first jumps up to ~0.2 m in about a millisecond, raggedly, more in some patches than others,
+  then rises at its launch speed; kinematic until 3 ms, then the air solver takes over. The ball lights it.
+* `replay_comp.py`: the plate frozen while time is slowed (it advances in real time), bent by the shock, the dust's
+  shadow and the ball's light on the ground, gravel (ballistic, bouncing; drawn here rather than in Blender, so it
+  can be shown at any instant), the dust, the glow and sparks, bloom, shake, grain, labels.
+* `make_replay.py` composites every frame in parallel, joins the replay to the test clip and adds the sound.
+* `sound.py`: the sound, synthesized. Desert wind; the ball rolling past; the crack of the shock arriving 35 ms after
+  the pass (an N-wave), the boom and rumble, gravel landing over the next second or two, dust hiss. In the replay the
+  world is muffled: a low drone and the plasma's sizzle swelling as the ball crosses, near-silence as the shock travels
+  toward the camera, then a slowed, deeper boom when it arrives (replay frame 179, 37 ms of real time).
+
 ## Run
 
 Work files go to `/home/user/lot`. Blender runs as the `bpy` module (`pip install bpy`, Python 3.13):
@@ -81,6 +112,8 @@ bpy-python roll.py                     # 37 frames, ~15 s each
 python blast_dust.py 60                # dust, ~7 s a frame at full size
 bpy-python blast.py 100 32             # streak and debris, ~25 s a frame
 python make_test.py
+python replay_dust.py                  # 210 replay frames, 6-35 s each
+python make_replay.py                  # composite (3 processes), join, sound
 ```
 
 `resume.py` re-renders only the frames missing from a saved .blend (renders get interrupted when the container restarts).

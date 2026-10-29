@@ -387,3 +387,88 @@ def divergence_minus(u, v, w, h, div, src):
         for j in range(ny):
             for k in range(nz):
                 div[i, j, k] -= src[i, j, k]
+
+
+# ---------------------------------------------------------------- marching with point lights (the glowing ball)
+@njit(parallel=True, cache=True)
+def march_l(dirs, org, d, ts, sky, gmin, h, zmax, kappa, albedo, sun_rad, sky_rad, phase_g, sundir, step, seed_img,
+            lp, lc, rgb, trans, gshadow):
+    H, W, _ = dirs.shape
+    nx, ny, nz = d.shape
+    gmax0 = gmin[0] + nx * h; gmax1 = gmin[1] + ny * h; gmax2 = min(nz * h, zmax)
+    g2 = phase_g * phase_g
+    nl = lp.shape[0]
+    for py in prange(H):
+        for px in range(W):
+            dx = dirs[py, px, 0]; dy = dirs[py, px, 1]; dz = dirs[py, px, 2]
+            t0 = 0.0; t1 = 1e9
+            for a in range(3):
+                o = org[a]; dd = dirs[py, px, a]
+                lo = gmin[a] if a < 2 else 0.0
+                hi = gmax0 if a == 0 else (gmax1 if a == 1 else gmax2)
+                if abs(dd) < 1e-9:
+                    if o < lo or o > hi: t1 = -1.0
+                else:
+                    ta = (lo - o) / dd; tb = (hi - o) / dd
+                    if ta > tb: ta, tb = tb, ta
+                    t0 = max(t0, ta); t1 = min(t1, tb)
+            hit_ground = False
+            tg = 1e9
+            if dz < 0:
+                tg = -org[2] / dz
+                if tg < t1:
+                    t1 = tg; hit_ground = True
+            T = 1.0; r = 0.0; gg = 0.0; b = 0.0
+            if t1 > t0:
+                cosang = dx * sundir[0] + dy * sundir[1] + dz * sundir[2]
+                ph = (1 - g2) / (4 * math.pi * (1 + g2 - 2 * phase_g * cosang) ** 1.5)
+                t = t0 + step * seed_img[py, px]
+                while t < t1 and T > 0.003:
+                    sx = org[0] + t * dx; sy = org[1] + t * dy; sz = org[2] + t * dz
+                    x = (sx - gmin[0]) / h - 0.5
+                    y = (sy - gmin[1]) / h - 0.5
+                    z = sz / h - 0.5
+                    rho = trilin(d, x, y, z)
+                    if rho > 1e-4:
+                        st = kappa * rho
+                        a_ = 1.0 - math.exp(-st * step)
+                        tsun = trilin(ts, x, y, z); occ = trilin(sky, x, y, z)
+                        lr = 0.0; lg = 0.0; lb = 0.0
+                        for l in range(nl):
+                            ex = sx - lp[l, 0]; ey = sy - lp[l, 1]; ez = sz - lp[l, 2]
+                            d2 = ex * ex + ey * ey + ez * ez + 0.01
+                            dd_ = math.sqrt(d2)
+                            c2 = (ex * dx + ey * dy + ez * dz) / dd_
+                            pl = (1 - g2) / (4 * math.pi * (1 + g2 - 2 * phase_g * c2) ** 1.5) / d2
+                            lr += lc[l, 0] * pl; lg += lc[l, 1] * pl; lb += lc[l, 2] * pl
+                        amb = 0.25 + 0.75 * occ
+                        r += T * a_ * albedo[0] * (sun_rad[0] * tsun * ph + sky_rad[0] * amb + lr)
+                        gg += T * a_ * albedo[1] * (sun_rad[1] * tsun * ph + sky_rad[1] * amb + lg)
+                        b += T * a_ * albedo[2] * (sun_rad[2] * tsun * ph + sky_rad[2] * amb + lb)
+                        T *= 1.0 - a_
+                    t += step
+            rgb[py, px, 0] = r; rgb[py, px, 1] = gg; rgb[py, px, 2] = b
+            trans[py, px] = T
+            gshadow[py, px] = 1.0
+            if hit_ground:
+                x = (org[0] + t1 * dx - gmin[0]) / h - 0.5
+                y = (org[1] + t1 * dy - gmin[1]) / h - 0.5
+                if x > 0 and y > 0 and x < nx - 1 and y < ny - 1:
+                    gshadow[py, px] = trilin(ts, x, y, 0.0)
+
+
+def render_l(R, lights=None, zmax=1e9, step=None):
+    """Renderer.render with point lights [(pos, rgb intensity)] and the box cut at zmax"""
+    g = R.g
+    ts = np.empty_like(g.d); sky = np.empty_like(g.d)
+    sd = (R.sundir / np.abs(R.sundir).max()).astype(np.float32)
+    sun_transmittance(g.d, g.h * float(np.linalg.norm(sd)), sd, R.kappa, ts)
+    sky_occlusion(g.d, g.h, R.kappa * 0.6, sky)
+    rgb = np.zeros((R.H, R.W, 3), np.float32); tr = np.ones((R.H, R.W), np.float32)
+    gs = np.ones((R.H, R.W), np.float32)
+    lights = lights or []
+    lp = np.array([l[0] for l in lights] or [[0, 0, -100]], np.float32).reshape(-1, 3)
+    lc = np.array([l[1] for l in lights] or [[0, 0, 0]], np.float32).reshape(-1, 3)
+    march_l(R.dirs, R.org, g.d, ts, sky, g.o[:2].copy(), g.h, float(zmax), R.kappa, R.albedo, R.sun_rad, R.sky_rad,
+            R.phase_g, R.sundir, step or g.h * 0.6, R.seed, lp, lc, rgb, tr, gs)
+    return rgb, tr, gs
