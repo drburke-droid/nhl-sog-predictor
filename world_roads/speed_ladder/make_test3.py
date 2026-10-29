@@ -1,5 +1,5 @@
-"""Test 3, with the props: 50 mph (the ball falls in, bounces off the road, clips a cone), then 17,500 mph in real time
-(the blast throws the cones and drums, bends the sign flat, rocks the parked car and blows in its windows); the replay
+"""Test 3, with the props: 50 mph (the ball falls in and bounces off the road in front of the line of cones closing
+it), then 17,500 mph in real time (the blast throws the cones and drums, bends the sign flat, rocks the parked car and blows in its windows); the replay
 follows (replay_comp.py).  -> /home/user/lot/out/test3_a.mp4"""
 import cv2, numpy as np, os, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

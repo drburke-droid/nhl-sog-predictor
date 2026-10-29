@@ -2,7 +2,7 @@
 
 The 50 mph ball: thrown from far left, it comes into view falling (it has already dropped ~1 m), hits the road at
 x = 0.8 m, bounces (restitution 0.4 for steel on asphalt, the friction of the hit takes 15% of its speed and sets it
-spinning) and clips the cone standing on its line.
+spinning) and hops away to the right.
 
 The blast of the 17,500 mph pass reaches each prop at t_hit (the ball's passage at its x plus the shock's travel); the
 impulse per area falls off as 1/distance from the path, ~200 Pa s at 2 m (rough: a 1 MJ/m line blast; a few atmospheres

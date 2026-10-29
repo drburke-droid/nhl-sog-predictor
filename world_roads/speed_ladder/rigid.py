@@ -94,12 +94,7 @@ def build(sc):
         b = Body(kind, x, y, h)
         bodies[name] = b
         if sc == "roll":
-            if name == "cone9":
-                # the 33 kg ball at ~19 m/s, rising 2.5 m/s, clips the 3.5 kg cone above its centre of mass: the cone
-                # takes most of the ball's speed (crumpling plastic, no rebound) and tumbles; the ball barely slows
-                xc = x - (M.R_BALL + 0.07)
-                b.kick_t = M.T_LAND + (xc - M.X_LAND) / M.VX1
-                b.kick_v, b.kick_w = (16.0, 0.8, 3.4), (0.0, 13.0, 2.0)
+            pass                                     # at 50 mph nothing but the ball moves
         else:
             rad, top = (0.155, 0.71) if kind == "cone" else (0.29, 0.93)
             dy = abs(y - T.PY)

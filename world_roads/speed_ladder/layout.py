@@ -3,15 +3,18 @@ import math, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # name: (kind, x, y, heading in degrees about z)
-LAYOUT = {
-    "cone1": ("cone", -2.3, 12.9, 0), "cone2": ("cone", -0.6, 11.0, 20), "cone3": ("cone", 1.5, 13.2, 40),
-    "cone4": ("cone", 2.6, 10.4, 10), "cone5": ("cone", -3.1, 8.6, 30), "cone6": ("cone", 0.9, 8.0, 5),
-    "cone7": ("cone", -1.2, 17.0, 15), "cone8": ("cone", 2.2, 18.5, 25),
-    "cone9": ("cone", 3.2, 12.05, 0),             # on the ball's line: the 50 mph ball clips it after its bounce
+# a line of cones across both lanes, edge line to edge line, 1.5 m beyond the ball's line: the road closed for the test
+ROW_Y = 13.5
+_ROW_X = [-4.0, -2.96, -1.92, -0.88, 0.16, 1.2, 2.24, 3.28]
+_JIT = [(0.03, 10), (-0.02, 35), (0.04, 5), (-0.03, 50), (0.02, 20), (-0.04, 65), (0.01, 15), (-0.02, 40)]
+
+# name: (kind, x, y, heading in degrees about z)
+LAYOUT = {f"cone{i + 1}": ("cone", x, ROW_Y + dy, h) for i, (x, (dy, h)) in enumerate(zip(_ROW_X, _JIT))}
+LAYOUT.update({
     "drum1": ("drum", -6.2, 13.4, 10), "drum2": ("drum", -6.9, 14.0, 70), "drum3": ("drum", -5.4, 9.0, 30),
     "sign": ("sign", 4.5, 10.2, 0),
     "car": ("car", 5.6, 17.2, 0),
-}
+})
 
 
 COM = {"cone": 0.15}                             # height of the centre of mass (the cone's base is heavy rubber)

@@ -1,7 +1,7 @@
 """A sound track for the test clip (roll, real-time pass, replay), synthesized.
   python sound.py total_seconds -> /home/user/lot/out/test2.wav
 
-Real time: desert wind; the ball rolling past at 50 mph; at 17,500 mph the crack of the shock arriving 35 ms after the
+Real time: desert wind; the 50 mph ball rushing in, its thud on the road; at 17,500 mph the crack of the shock arriving 35 ms after the
 pass (12 m at 343 m/s), the boom and rumble of the blast, gravel landing over the next second or two, the hiss of
 dust. Replay: the world muffled; a low drone and the sizzle of the plasma swelling as the ball crosses; silence as the
 shock travels toward the camera; a slowed, deeper boom when it arrives; the dust rumbling on."""
@@ -57,7 +57,7 @@ duck[a:b] = 0.35
 duck[int((T_BOOM2 - 0.6) * SR):b] = np.linspace(0.35, 0.05, b - int((T_BOOM2 - 0.6) * SR))
 out += 0.035 * w * duck[:, None]
 
-# the 50 mph shot: the ball rushing in, the thud on the road, the cone clipped and clattering away
+# the 50 mph shot: the ball rushing in, the thud on the road, the second landing off to the right
 import motion as M
 from layout import LAYOUT
 
@@ -120,14 +120,6 @@ for k in range(8):
 r, pan = dist_pan((M.X_LAND, 12.0, 0.0))
 add(thud(70, 0.35, 900, 1.0), M.T_LAND + r / 343, pan, 0.9)
 add(filt(rng.standard_normal(int(0.25 * SR)), "bandpass", [1500, 7000]) * np.exp(-np.arange(int(0.25 * SR)) / (0.05 * SR)), M.T_LAND + r / 343, pan, 0.15)
-sim_r = dict(np.load("/home/user/lot/props/sim_roll.npz"))
-xc = LAYOUT["cone9"][1] - (M.R_BALL + 0.07)
-tc = M.T_LAND + (xc - M.X_LAND) / M.VX1
-r, pan = dist_pan((LAYOUT["cone9"][1], 12.0, 0.4))
-add(plastic(1.0), tc + r / 343, pan, 0.6)
-for te, v, p in impacts(sim_r, "cone9"):
-    r, pan = dist_pan(p)
-    add(plastic(min(1.0, v / 4)), te + r / 343, pan, 0.35 * 12 / r)
 # the ball's second landing, off-screen right
 add(thud(60, 0.3, 700, 0.5), M.T_LAND + 2 * M.VZ1 / 9.81 + 0.06, 1.0, 0.5)
 
