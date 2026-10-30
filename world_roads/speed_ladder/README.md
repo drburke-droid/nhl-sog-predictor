@@ -117,7 +117,7 @@ few microseconds nothing moves but the grain; the clock keeps its 40 ns a frame)
 the clock and the badge, light's laps of the Earth: one pip for each of the 17, the newest flaring as it comes round.
 Captions in the band below the picture (`captions.py`) say what is going on, light's part in light's colour.
 
-`history_light_film.mp4` (4 min, `RACE=1 PARKER=1 OUTSUF=_pk make_light_film.py`): the whole thing as one film,
+`history_light_film.mp4` (6 min, narrated; `RACE=1 PARKER=1 OUTSUF=_pk make_light_film.py`): the whole thing as one film,
 told toward light, the subject that holds it together. "How fast is light? Let's work up to it." Part 1, real speed
 (`history_realtime.mp4`); part 2, 48x slower (`history_slow48.mp4`); part 3, the race with Parker
 (`history_race_parker.mp4`); each opened by a card, with captions that keep light in view: how many times faster it
@@ -128,6 +128,16 @@ frame of the race (the ladder, one line a lap), and how time will run in part 4,
 speed, time stopped, 48x, 1,000x, time stopped, the finish). Part 4, the race with light. The ending: how long each
 would take to reach the Moon, 332 days for the Wright Flyer down to 33 minutes for Parker, while a pulse goes there on
 screen in the 1.28 s light takes. The cards' sound is the road's wind; under the black ones, a low quiet chord.
+Narration: Lily (`vo_script.py`, every line as spoken and as subtitled; `vo_tts.py` says them with Kokoro-82M's
+bf_lily voice offline, `vo_lily/`, or ElevenLabs' Lily when a key is in the environment) explains it all for anyone:
+what each part shows, how the race is timed, that light is circling the Earth and each line is one more lap, and that
+TIME STOPPED is really a million times slower. She is silent whenever anything flies at real speed (part 1, the
+Wright Flyer in part 2, the races' first seconds), so those keep their own sound. Each line goes at its moment, or
+after the one before it ends (`make_light_film.py plan` lists them); the cards last as long as she needs; a part that
+ends before its line does holds a card or a black frame; part 4's frozen stretches are held as long as her
+explanation (`make_light_film.py holds`, passed to `make_race_light.py` as `LT_HOLDS` with `LT_CAPTIONS=0` and
+`LT_NAME=history_race_light_vo`). The film's own sound dips 10 dB under her voice (4 dB on the cards), and the
+subtitles are her words, a sentence at a time.
 
 Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
 cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
