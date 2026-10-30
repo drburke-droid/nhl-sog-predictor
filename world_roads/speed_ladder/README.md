@@ -96,7 +96,8 @@ the distance behind the head over v0: 30 ms on, twice the radius); and the air b
 shock's speed makes it (the ionising-gas fit above ~4.5 km/s, an ideal gas's Rankine-Hugoniot below), and clear once
 it has cooled below ~4,500 K. The finale's own frames predate both; within its 1.7 ms they change little.
 
-`history_race_light.mp4` (35 s, `RACE=1 PARKER=1 OUTSUF=_pk make_race_light.py`): the same race with a pulse of light
+`history_race_light.mp4` (40 s; `RACE=1 PARKER=1 OUTSUF=_pk make_race_light.py clean` composites the frames once
+into a near-lossless file, then `make_race_light.py` draws the signs over them): the same race with a pulse of light
 in it. Light goes round the world (40,075 km) in 0.1337 s, 7.5 times a second; counting back 17 laps from a pass just
 before Parker comes in lands on the frame the Wright Flyer comes in, so while the Flyer crosses the picture, light goes
 round 17 times. It flies 250 m out, behind everything, each lap 3 m above the last, and each pass leaves a faint line:
@@ -107,6 +108,26 @@ rush in at 2.5 times the speed of light and leave at 0.6, so it lingers on the r
 time stops and the pulse crosses a million times slower (a camera at 25 million frames a second), rushing in and
 slowing as it goes; the sound stops with it. The glow stands in for what a pulse scatters toward the camera, and light
 does not follow the curve of the Earth by itself (round the equator in a fibre, a lap would take 0.20 s).
+The signs keep apart the two ways time is slowed. Slow motion (real speed, 48x, 1,000x) is amber, on a scale from real
+speed to 1,000x, with what each is for ("so we can see the planes", "so we can see Parker"). Time stopped is light's
+colour: the badge reads TIME STOPPED, a dark band across the picture with a pause sign says what it is for, and as it
+ends a play sign says what the race goes back to (real speed after the first pass, 1,000x after the last). The frozen
+stretches before and after each pass are held longer than the pulse needs (their frames repeat back and forth: in a
+few microseconds nothing moves but the grain; the clock keeps its 40 ns a frame), so there is time to read. Between
+the clock and the badge, light's laps of the Earth: one pip for each of the 17, the newest flaring as it comes round.
+Captions in the band below the picture (`captions.py`) say what is going on, light's part in light's colour.
+
+`history_light_film.mp4` (4 min, `RACE=1 PARKER=1 OUTSUF=_pk make_light_film.py`): the whole thing as one film,
+told toward light, the subject that holds it together. "How fast is light? Let's work up to it." Part 1, real speed
+(`history_realtime.mp4`); part 2, 48x slower (`history_slow48.mp4`); part 3, the race with Parker
+(`history_race_parker.mp4`); each opened by a card, with captions that keep light in view: how many times faster it
+is than each machine, how far each goes in a second against light's 186,282 miles. Then what light is, how it comes
+into the race, and how to read part 4: its speed with the machines' as bars drawn to scale (scaled to Parker the planes
+barely show; scaled to light Parker is 0.8 px), round the Earth 7.5 times in a second at real speed, the plan over a
+frame of the race (the ladder, one line a lap), and how time will run in part 4, drawn from its own frames (real
+speed, time stopped, 48x, 1,000x, time stopped, the finish). Part 4, the race with light. The ending: how long each
+would take to reach the Moon, 332 days for the Wright Flyer down to 33 minutes for Parker, while a pulse goes there on
+screen in the 1.28 s light takes. The cards' sound is the road's wind; under the black ones, a low quiet chord.
 
 Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
 cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
@@ -293,5 +314,9 @@ python make_replay.py                  # composite (3 processes), join, sound
 
 Test 3 (props): `python rigid.py roll && python rigid.py blast`, then `render_all_props.sh` (bpy, ~40 s a frame, 193
 frames) and `pipeline3.sh` (dust with the props' depth, `make_test3.py`, the replay, sound).
+
+The film told toward light: `parker_race.sh` (the race's renders and dust in Parker's lane), then with
+`RACE=1 PARKER=1 OUTSUF=_pk`: `make_race_parker.py`, `make_race_light.py clean` (~45 min, 3 processes),
+`make_race_light.py` (the signs, ~5 min) and `make_light_film.py` (the film, from the four cuts and its own cards).
 
 `resume.py` re-renders only the frames missing from a saved .blend (renders get interrupted when the container restarts).

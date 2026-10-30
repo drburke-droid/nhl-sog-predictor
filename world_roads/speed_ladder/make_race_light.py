@@ -22,6 +22,7 @@ import cv2, numpy as np, os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import make_race_parker as MP
 import comp as C, flight as F, race as RC, slowmo as SM, camera as Cam, fly_sound as S, make_cuts as MC
+import captions as CAP
 
 C_LIGHT = 299792458.0
 LAP = 40075e3 / C_LIGHT
@@ -136,6 +137,12 @@ def laps_done(T):
     return sum(1 for Tn in PASS_T if Tn <= T + 1e-12)
 
 
+def passes_seen(k, extra):
+    """passes the camera has seen by this frame (the frozen ones once the pulse comes into the picture)"""
+    if not extra: return laps_done(tl[k][0])
+    return extra[0] + (extra[1] > seen_at(np.array([XA]), Z0 + DZ * extra[0])[0])
+
+
 def labels(fr, k, extra=None):
     T = tl[k][0]
     lines = []
@@ -144,11 +151,9 @@ def labels(fr, k, extra=None):
         m = F.MACHINES[name]
         year, title = m["title"].split(" ", 1)
         lines.append((f"{m['mph']:,} mph  ·  {title}, {year}", 30, "SemiBold", MP.WHITE))
-    p = laps_done(T) if not extra else extra[0] + (extra[1] > seen_at(np.array([XA]), Z0 + DZ * extra[0])[0])
+    p = passes_seen(k, extra)
     if p:
-        n = p - 1
-        what = "setting off round the world" if n == 0 else f"{n} lap{'s' if n > 1 else ''} of the Earth"
-        lines.append((f"{C_LIGHT * 3600 / 1609.344:,.0f} mph  ·  light, {what}", 30, "SemiBold", (200, 225, 255)))
+        lines.append((f"{C_LIGHT * 3600 / 1609.344:,.0f} mph  ·  light", 30, "SemiBold", SM.CYAN))
     if T > 1e-4:
         lines.append(("all five cleared the frame on the same 1/25,000 s", 26, "Medium", MP.DIM))
     return C.label(fr, lines, 1.0 - MP.white(k), corner="bl") if lines else fr
@@ -187,40 +192,205 @@ def audio(js, n_after):
     return np.concatenate(segs)
 
 
-if __name__ == "__main__":
+CLEAN = "/home/user/lot/out/race_light_clean.mp4"     # the composited frames, before any sign or label
+
+
+def clean():
+    """the slow part, done once: the composited frames into a near-lossless file that the signs are drawn over"""
     from multiprocessing import Pool
+    import subprocess
     MP.LIGHT = layer
     js = jobs()
-    full_slow = next(k for k, (T, s) in enumerate(tl) if abs(s - RC.SLOW) < 1e-9)
-    full_deep = next(k for k, (T, s) in enumerate(tl) if abs(s - RC.DEEP) < 1e-9)
-    k_ramp = next(k for k in range(full_slow, len(tl)) if tl[k][1] < RC.SLOW - 1e-12)   # the second slowdown
-    pick = [int(a) for a in sys.argv[1:]]
-    if pick: js = [js[i] for i in pick]
-    if not pick: sink = MC.Sink("history_race_light")
-    os.makedirs("/home/user/lot/out/test_lt", exist_ok=True)
+    p = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{C.W}x{C.H}",
+                          "-r", "25", "-i", "-", "-c:v", "libx264", "-crf", "10", "-preset", "fast", "-pix_fmt",
+                          "yuv420p", CLEAN + ".part.mp4"], stdin=subprocess.PIPE)
     with Pool(int(os.environ.get("NPROC", "3"))) as pool:
-        for c0 in range(0, len(js), 24):
-            chunk = js[c0:c0 + 24]
-            raw = pool.map(MP.frame, [(k, extra) for k, extra, s, clock in chunk])
-            out = []
-            for (k, extra, s, clock), fr in zip(chunk, raw):
-                fr = labels(fr, k, extra)
-                amt = min(1.0, math.log(1 / s) / math.log(48.0)) if s < 0.99 else 0.0
-                fr = SM.badge(SM.tint(fr, amt), s, clock, top=TOP)
-                if extra is None:
-                    fr = SM.slam(fr, 48, k - full_slow + 4)
-                    fr = SM.slam(fr, 1000, k - k_ramp, n_hold=12, n_out=10)    # gone before Parker comes in
-                else:
-                    jj = round((extra[1] - seen_at(np.array([XA]), Z0 + DZ * extra[0])[0]) / (FREEZE / F.FPS)) + PRE
-                    fr = SM.slam(fr, 1e6, jj, n_hold=16)
-                out.append(fr)
-            if pick:
-                for i, fr in zip(pick[c0:c0 + 24], out): cv2.imwrite(f"/home/user/lot/out/test_lt/j{i:04d}.png", fr[..., ::-1])
-            else:
-                sink.add(out)
-            print("jobs", c0 + len(chunk), "of", len(js), flush=True)
-    if not pick:
-        after = MP.PC.lost(1.2) + MP.PC.card("Light went round the world 17 times",
-                                             "while the Wright Flyer crossed the picture.", 4.5)
+        for n, fr in enumerate(pool.imap(MP.frame, [(k, extra) for k, extra, s, clock in js], chunksize=2)):
+            p.stdin.write(np.ascontiguousarray(fr, np.uint8).tobytes())
+            if (n + 1) % 24 == 0: print("clean", n + 1, "of", len(js), flush=True)
+    p.stdin.close(); p.wait()
+    os.replace(CLEAN + ".part.mp4", CLEAN)
+    print("clean done", len(js), flush=True)
+
+
+HOLD_PRE, HOLD_POST = 65, 40      # frames time stands still before a frozen pass comes in, and after it has gone
+
+
+def sequence():
+    """the frames shown, [(job, clock, phase)]: the jobs in order, but with the frozen stretch before each frozen pass
+    held for HOLD_PRE frames and the one after for HOLD_POST (their frames repeat back and forth: in a few
+    microseconds nothing moves but the grain), long enough to read what is going on; the clock keeps its 40 ns a
+    frame throughout. phase: None for the race's own frames, else (pass, "pre" | "cross" | "post", frames into it)"""
+    js = jobs()
+    dt = FREEZE / F.FPS
+    out, i = [], 0
+    while i < len(js):
+        k, extra, s, clock = js[i]
+        if extra is None:
+            out.append((i, clock, None)); i += 1; continue
+        run = [j for j in range(i, len(js)) if js[j][1] is not None and js[j][1][0] == extra[0]]
+        pre, cross, post = run[:PRE], run[PRE:len(run) - POST], run[len(run) - POST:]
+        bounce = lambda seq, m: seq[m % (2 * len(seq) - 2) if m % (2 * len(seq) - 2) < len(seq)
+                                    else 2 * len(seq) - 2 - m % (2 * len(seq) - 2)]
+        c0, c1 = js[cross[0]][3], js[cross[-1]][3]
+        for m in range(HOLD_PRE):
+            out.append((bounce(pre[::-1], HOLD_PRE - 1 - m), c0 - (HOLD_PRE - m) * dt, (extra[0], "pre", m)))
+        for m, j in enumerate(cross):
+            out.append((j, js[j][3], (extra[0], "cross", m)))
+        for m in range(HOLD_POST):
+            out.append((bounce(post, m), c1 + (m + 1) * dt, (extra[0], "post", m)))
+        i = run[-1] + 1
+    return js, out
+
+
+def lap_counter(frame8, laps, flash=0.0, alpha=1.0):
+    """in the band above the picture, between the clock and the rate: light's laps of the Earth so far, one pip
+    for each of the 17, the newest flaring as it comes round"""
+    from PIL import Image, ImageDraw
+    im = Image.fromarray(frame8).convert("RGBA")
+    ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(ov)
+    a = int(255 * alpha)
+    cy = SM.BAND // 2 + 4
+    n_laps = N_PASS - 1
+    pip, gap = 16, 9
+    x0 = 560
+    r = 22                                              # the Earth: a disc with its equator and a meridian
+    gx, gy = x0 + r, cy
+    d.ellipse((gx - r, gy - r, gx + r, gy + r), outline=SM.CYAN + (a,), width=3)
+    d.line((gx - r, gy, gx + r, gy), fill=SM.CYAN + (a,), width=2)
+    d.ellipse((gx - r * 0.45, gy - r, gx + r * 0.45, gy + r), outline=SM.CYAN + (int(a * 0.7),), width=2)
+    tx = gx + r + 18
+    f1, f2 = C.font(24, "Bold"), C.font(24, "Medium")
+    head = "LIGHT"
+    d.text((tx, cy - 38), head, font=f1, fill=SM.CYAN + (a,))
+    w = d.textlength(head + "  ", font=f1)
+    what = "setting off round the Earth" if laps == 0 else f"{laps} lap{'s' if laps != 1 else ''} of the Earth"
+    d.text((tx + w, cy - 38), what, font=f2, fill=SM.WHITE + (a,))
+    for n in range(n_laps):
+        x = tx + n * (pip + gap)
+        box = (x, cy + 4, x + pip, cy + 4 + pip)
+        if n < laps:
+            d.ellipse(box, fill=SM.CYAN + (a,))
+        else:
+            d.ellipse(box, outline=SM.DIM + (int(a * 0.55),), width=2)
+    if flash > 0 and laps > 0:
+        x = tx + (laps - 1) * (pip + gap) + pip / 2
+        rr = pip / 2 + 10 * flash
+        d.ellipse((x - rr, cy + 4 + pip / 2 - rr, x + rr, cy + 4 + pip / 2 + rr), fill=(235, 248, 255, int(a * flash)))
+    return np.asarray(Image.alpha_composite(im, ov).convert("RGB"))
+
+
+def cues(js, seq):
+    """the captions, on the frames shown"""
+    first = {}
+    for o, (j, clock, phase) in enumerate(seq):
+        k = js[j][0]
+        if phase is None: first.setdefault(k, o)
+        else: first.setdefault((phase[0], phase[1]), o)
+    A, B = 0, N_PASS - 1
+    o = lambda k: first[k]
+    laps_at = lambda k: laps_done(tl[k][0]) - 1
+    k_x15 = next(k for k, (T, s) in enumerate(tl) if RC.own("x15", T) >= RC.entry_time("x15") - 1e-9)
+    k_fin = next(k for k, (T, s) in enumerate(tl) if T >= -1e-12)
+    return [
+        (first[(A, "pre")], first[(A, "cross")], "Time has stopped. Watch for a pulse of [light]."),
+        (first[(A, "cross")], first[(A, "post")] + HOLD_POST, "[Light crosses the whole picture in 1.3 millionths of a second.]"),
+        (o(K_FIRST), o(K_FIRST + 95), "Off round the Earth: [7½ laps a second], one line in the sky per lap."),
+        (o(130), o(215), "Slowed 48×, [light still laps the Earth every 6½ seconds]."),
+        (o(k_x15), o(k_x15 + 40), f"[{laps_at(k_x15)} laps of the Earth] so far, and the finish is close."),
+        (first[(B, "pre")], first[(B, "cross")], "Time stops again: [light is coming round for the 17th time]."),
+        (first[(B, "cross")], first[(B, "post")] + HOLD_POST, "[17 laps of the Earth] since the Wright Flyer appeared."),
+        (o(K_LAST), o(k_fin), "Here comes Parker: 430,000 mph."),
+        (o(k_fin), o(k_fin + 50), "All five finish together, in the same 1/25,000 s."),
+        (o(k_fin + 50), o(len(tl) - 1) + 1 + 30, "Even Parker is [1,560 times slower than light]."),     # into the black
+    ]
+
+
+def audio_seq(js, seq, n_after):
+    """the race's sound (make_race_parker.audio), with silence while time stands still"""
+    a = MP.audio(tl, n_after)
+    per = S.SR / F.FPS
+    segs, i_race, run = [], 0, 0
+    for j, clock, phase in seq:
+        if phase is None:
+            run += 1
+            continue
+        if run:
+            segs.append(a[int(i_race * per):int((i_race + run) * per)]); i_race += run; run = 0
+        segs.append(np.zeros((int(per), 2)))
+    segs.append(a[int(i_race * per):])
+    return np.concatenate(segs)
+
+
+def clean_frames():
+    """the clean file's frames, in job order"""
+    import subprocess
+    p = subprocess.Popen(["ffmpeg", "-v", "error", "-i", CLEAN, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         stdout=subprocess.PIPE)
+    n = C.W * C.H * 3
+    while True:
+        b = p.stdout.read(n)
+        if len(b) < n: break
+        yield np.frombuffer(b, np.uint8).reshape(C.H, C.W, 3)
+    p.wait()
+
+
+def overlay(pick=None):
+    """the signs, labels and captions over the clean frames: the finished cut (or, pick: those frames shown, as PNG)"""
+    js, seq = sequence()
+    full_slow = next(k for k, (T, s) in enumerate(tl) if abs(s - RC.SLOW) < 1e-9)
+    k_ramp = next(k for k in range(full_slow, len(tl)) if tl[k][1] < RC.SLOW - 1e-12)   # the second slowdown
+    cq = cues(js, seq)
+    src, cache, last = clean_frames(), {}, -1
+    sink = None if pick else MC.Sink("history_race_light")
+    os.makedirs("/home/user/lot/out/test_lt", exist_ok=True)
+    laps_prev, since = 0, 99
+    for o, (j, clock, phase) in enumerate(seq):
+        while last < j:
+            last += 1; cache[last] = next(src)
+        for x in [x for x in cache if x < j - 90]: del cache[x]
+        k, extra, s, _ = js[j]
+        laps = max(0, passes_seen(k, extra) - 1)
+        since = 0 if laps != laps_prev else since + 1
+        laps_prev = laps
+        if pick is not None and o not in pick: continue
+        fr = labels(cache[j].copy(), k, extra)
+        amt = min(1.0, math.log(1 / s) / math.log(48.0)) if s < 0.99 else 0.0
+        stopped = phase is not None
+        fr = SM.badge(SM.tint(fr, amt), s, clock, top=1000.0, stopped=stopped)
+        if passes_seen(k, extra) >= 1:
+            fr = lap_counter(fr, laps, flash=max(0.0, 1 - since / 8), alpha=1.0 - MP.white(k))
+        if phase is None:
+            fr = SM.slam(fr, 48, k - full_slow + 4, sub="so we can see the planes")
+            fr = SM.slam(fr, 1000, k - k_ramp, n_hold=12, n_out=8, sub="so we can see Parker")   # gone before time stops
+        else:
+            n, part, m = phase
+            if part == "pre":
+                fr = SM.banner(fr, "TIME STOPPED", "a million times slower, to watch light set off" if n == 0
+                               else "a million times slower: light is coming round again", m, n_hold=40, n_out=10)
+            elif part == "post":
+                fr = SM.banner(fr, "BACK TO REAL SPEED" if n == 0 else "BACK TO 1,000× SLOWER",
+                               "the race carries on where it stopped" if n == 0 else "Parker is three frames away",
+                               m, mark="play", n_in=5, n_hold=HOLD_POST - 13, n_out=8, size=96)
+        fr = CAP.draw(fr, *CAP.at(cq, o))
+        if pick is not None:
+            cv2.imwrite(f"/home/user/lot/out/test_lt/o{o:04d}.png", fr[..., ::-1])
+        else:
+            sink.add([fr])
+        if (o + 1) % 100 == 0: print("overlay", o + 1, "of", len(seq), flush=True)
+    if pick is None:
+        lost = [CAP.draw(f, *CAP.at(cq, len(seq) + i)) for i, f in enumerate(MP.PC.lost(1.2))]
+        after = lost + MP.PC.card("Light went round the world 17 times", "while the Wright Flyer crossed the picture.", 4.5)
         sink.add(after)
-        sink.close(MC.mic(audio(js, len(after)), 1.6))
+        sink.close(MC.mic(audio_seq(js, seq, len(after)), 1.6))
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["clean"]:
+    clean()
+elif __name__ == "__main__" and sys.argv[1:2] == ["seq"]:          # where things fall in the frames shown
+    js, seq = sequence()
+    print(len(seq), "frames shown")
+    for o, (k0, k1, text) in enumerate(cues(js, seq)): print(k0, k1, text)
+elif __name__ == "__main__":
+    overlay([int(a) for a in sys.argv[1:]] or None)
