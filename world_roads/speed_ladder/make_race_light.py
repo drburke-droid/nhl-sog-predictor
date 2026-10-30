@@ -214,6 +214,11 @@ def clean():
 
 
 HOLD_PRE, HOLD_POST = 65, 40      # frames time stands still before a frozen pass comes in, and after it has gone
+HOLDS = {0: (HOLD_PRE, HOLD_POST), N_PASS - 1: (HOLD_PRE, HOLD_POST)}
+if os.environ.get("LT_HOLDS"):     # "pre,post,pre,post": held longer, for a voice to say what is going on
+    _h = [int(x) for x in os.environ["LT_HOLDS"].split(",")]
+    HOLDS = {0: (_h[0], _h[1]), N_PASS - 1: (_h[2], _h[3])}
+RESUME = 100                      # frames at most the "back to" sign shows, at the end of the stretch after a pass
 
 
 def sequence():
@@ -233,11 +238,12 @@ def sequence():
         bounce = lambda seq, m: seq[m % (2 * len(seq) - 2) if m % (2 * len(seq) - 2) < len(seq)
                                     else 2 * len(seq) - 2 - m % (2 * len(seq) - 2)]
         c0, c1 = js[cross[0]][3], js[cross[-1]][3]
-        for m in range(HOLD_PRE):
-            out.append((bounce(pre[::-1], HOLD_PRE - 1 - m), c0 - (HOLD_PRE - m) * dt, (extra[0], "pre", m)))
+        h_pre, h_post = HOLDS[extra[0]]
+        for m in range(h_pre):
+            out.append((bounce(pre[::-1], h_pre - 1 - m), c0 - (h_pre - m) * dt, (extra[0], "pre", m)))
         for m, j in enumerate(cross):
             out.append((j, js[j][3], (extra[0], "cross", m)))
-        for m in range(HOLD_POST):
+        for m in range(h_post):
             out.append((bounce(post, m), c1 + (m + 1) * dt, (extra[0], "post", m)))
         i = run[-1] + 1
     return js, out
@@ -295,12 +301,12 @@ def cues(js, seq):
     k_fin = next(k for k, (T, s) in enumerate(tl) if T >= -1e-12)
     return [
         (first[(A, "pre")], first[(A, "cross")], "Time has stopped. Watch for a pulse of [light]."),
-        (first[(A, "cross")], first[(A, "post")] + HOLD_POST, "[Light crosses the whole picture in 1.3 millionths of a second.]"),
+        (first[(A, "cross")], first[(A, "post")] + HOLDS[A][1], "[Light crosses the whole picture in 1.3 millionths of a second.]"),
         (o(K_FIRST), o(K_FIRST + 95), "Off round the Earth: [7½ laps a second], one line in the sky per lap."),
         (o(130), o(215), "Slowed 48×, [light still laps the Earth every 6½ seconds]."),
         (o(k_x15), o(k_x15 + 40), f"[{laps_at(k_x15)} laps of the Earth] so far, and the finish is close."),
         (first[(B, "pre")], first[(B, "cross")], "Time stops again: [light is coming round for the 17th time]."),
-        (first[(B, "cross")], first[(B, "post")] + HOLD_POST, "[17 laps of the Earth] since the Wright Flyer appeared."),
+        (first[(B, "cross")], first[(B, "post")] + HOLDS[B][1], "[17 laps of the Earth] since the Wright Flyer appeared."),
         (o(K_LAST), o(k_fin), "Here comes Parker: 430,000 mph."),
         (o(k_fin), o(k_fin + 50), "All five finish together, in the same 1/25,000 s."),
         (o(k_fin + 50), o(len(tl) - 1) + 1 + 30, "Even Parker is [1,560 times slower than light]."),     # into the black
@@ -341,9 +347,9 @@ def overlay(pick=None):
     js, seq = sequence()
     full_slow = next(k for k, (T, s) in enumerate(tl) if abs(s - RC.SLOW) < 1e-9)
     k_ramp = next(k for k in range(full_slow, len(tl)) if tl[k][1] < RC.SLOW - 1e-12)   # the second slowdown
-    cq = cues(js, seq)
+    cq = cues(js, seq) if os.environ.get("LT_CAPTIONS", "1") == "1" else []     # LT_CAPTIONS=0: the film's own
     src, cache, last = clean_frames(), {}, -1
-    sink = None if pick else MC.Sink("history_race_light")
+    sink = None if pick else MC.Sink(os.environ.get("LT_NAME", "history_race_light"))
     os.makedirs("/home/user/lot/out/test_lt", exist_ok=True)
     laps_prev, since = 0, 99
     for o, (j, clock, phase) in enumerate(seq):
@@ -370,9 +376,11 @@ def overlay(pick=None):
                 fr = SM.banner(fr, "TIME STOPPED", "a million times slower, to watch light set off" if n == 0
                                else "a million times slower: light is coming round again", m, n_hold=40, n_out=10)
             elif part == "post":
+                h_post = HOLDS[n][1]
+                L = min(h_post, RESUME)                  # the last L frames before the race takes up again
                 fr = SM.banner(fr, "BACK TO REAL SPEED" if n == 0 else "BACK TO 1,000× SLOWER",
                                "the race carries on where it stopped" if n == 0 else "Parker is three frames away",
-                               m, mark="play", n_in=5, n_hold=HOLD_POST - 13, n_out=8, size=96)
+                               m - (h_post - L), mark="play", n_in=5, n_hold=L - 13, n_out=8, size=96)
         fr = CAP.draw(fr, *CAP.at(cq, o))
         if pick is not None:
             cv2.imwrite(f"/home/user/lot/out/test_lt/o{o:04d}.png", fr[..., ::-1])
