@@ -5,3 +5,5 @@ app.log
 *.vbs
 analysis.py
 nhl_history.db
+# Local secrets written by `elevenlabs onboard`
+/.env
