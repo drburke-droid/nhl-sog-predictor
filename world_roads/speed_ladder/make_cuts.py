@@ -200,6 +200,7 @@ def slow_audio(name, ts, lead):
     T = np.arange(int(n / F.FPS * S.SR)) / S.SR
     tk = np.interp(T * F.FPS, np.arange(n), ts) + n0 / F.FPS
     a = np.stack([np.interp(tk * S.SR, np.arange(len(rt)), rt[:, c]) for c in (0, 1)], 1)
+    a = S.filt(a, "highpass", 25, 4)              # slowed 48x most of it falls below hearing: keep what can be heard
     a = np.concatenate([np.zeros((int(lead / F.FPS * S.SR), 2)), a])
     rum = S.filt(np.random.default_rng(17).standard_normal((len(a), 2)), "bandpass", [30, 110], 2)
     rum *= 0.012 / (np.sqrt((rum ** 2).mean()) + 1e-9)
@@ -289,6 +290,23 @@ if __name__ == "__main__":
     which = sys.argv[1]
     if which == "slow48":
         slow48(); sys.exit()
+    if which == "realtime":                             # with the sign: REAL SPEED, and the clock
+        out = Sink("history_realtime")
+        title = MFi.title_frames()
+        out.add(title)
+        audio = [S.wind(int(len(title) / 25 * S.SR), np.random.default_rng(1), 0.035)]
+        for name in ORDER:
+            f = rt_frames(name)
+            ts = [(t, 1.0) for _, t in F.frames(name)]
+            out.add(slowed(f, ts, ts[0][0])); audio.append(segment_audio(name, len(f)))
+        n0 = round(F.MACHINES["parker"]["pre"] * F.FPS)
+        pr = parker_rt()
+        out.add(slowed(pr, [(k / 25, 1.0) for k in range(len(pr))], 0.0))
+        audio.append(parker_audio(n0 + 1, len(pr) - n0 - 1))
+        card = PC.lost(0.4) + PC.card("At 430,000 mph, nothing in this picture survives.", "Light is still 1,560 times faster.", 4.5)
+        out.add(card); audio.append(np.zeros((int(len(card) / 25 * S.SR), 2)))
+        out.close(mic(np.concatenate(audio), 1.6))
+        sys.exit()
     title = MFi.title_frames()
     frames = list(title)
     audio = [S.wind(int(len(title) / 25 * S.SR), np.random.default_rng(1), 0.035)]

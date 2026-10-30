@@ -132,10 +132,11 @@ def audio(tl):
     Tk = np.interp(tau * F.FPS, np.arange(len(tl)), ts)
     pos = (Tk - T0) * S.SR
     out = np.stack([np.interp(pos, np.arange(n), mix[:, c]) for c in (0, 1)], 1)
+    out = S.filt(out, "highpass", 25, 4)          # slowed 48x most of it falls below hearing: keep what can be heard
     slowk = np.interp(tau * F.FPS, np.arange(len(tl)), [math.log(1 / s) / math.log(48) for _, s in tl])
     rum = S.filt(np.random.default_rng(17).standard_normal((len(out), 2)), "bandpass", [30, 110], 2)
     rum *= 0.012 / (np.sqrt((rum ** 2).mean()) + 1e-9)
-    return out + rum * slowk[:, None]
+    return out * (1 - 0.45 * slowk)[:, None] + rum * slowk[:, None]     # the slowed sound a little under, as in the replays
 
 
 if __name__ == "__main__":

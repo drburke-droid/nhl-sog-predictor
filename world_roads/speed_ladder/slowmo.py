@@ -53,7 +53,7 @@ def badge(frame8, slow, t_real, alpha=1.0, fps_note=True):
     fb, fs, fn = C.font(92, "Black"), C.font(34, "Bold"), C.font(22, "Medium")
     xr = C.W - 56
     if is_slow:
-        big = f"{factor:.0f}×"
+        big = f"{factor:.0f}×" if factor >= 9.95 else f"{factor:.1f}×"     # the ramps: 1.3x, not "1x slower"
         wb = d.textlength(big, font=fb)
         ws = max(d.textlength("SLOWER", font=fs), d.textlength("THAN REAL", font=fn))
         x0 = xr - ws - 18 - wb

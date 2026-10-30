@@ -7,11 +7,20 @@ import camera as Cam, comp as C, dust as D, flight as F
 
 W, H = Cam.W, Cam.H_IMG
 R_ = "/home/user/lot/render"
-# shock refraction: px the plate moves across the bow shock where a ray grazes it 6 m from the path (falling as
-# d^-3/4 like the pressure jump); shake: px, when the boom reaches the camera
-FX = {"x1": dict(refr=2.2, shake=9.0, trail=1.2),
-      "f35": dict(refr=3.2, shake=14.0, trail=1.8),
-      "x15": dict(refr=7.0, shake=24.0, trail=1.8)}
+# shake: px, when the boom reaches the camera; trail: px of shimmer in the hot exhaust trail
+FX = {"x1": dict(shake=9.0, trail=1.2),
+      "f35": dict(shake=14.0, trail=1.8),
+      "x15": dict(shake=24.0, trail=1.8)}
+# light bent by a shock: the air behind it is denser, so each shell (a Mach cone, or the X-15's blast cylinder) is the
+# edge of a weak cylindrical lens. A ray passing d from the axis of a shell of radius R with the index stepping up by dn
+# inside is bent toward the axis by 2 dn d / sqrt(R^2 - d^2) (the cone's slant cancels out), averaged here over the
+# pixel, so the bend is strongest in the pixel just inside the shell and falls off inward. The index step comes from
+# the pressure jump: the peak pressure at the camera (make_cuts.KPA, in the 20 m shots) scaled as distance^-3/4, or,
+# close to the X-15's path, the strong shock of its line blast (hyper.py); density across the shock by Rankine-Hugoniot.
+N_AIR = 2.6e-4                            # refractivity of the desert air, n - 1
+KPA_SHOT = {"x1": 5.9, "f35": 11.8, "x15": 20.0}       # make_cuts.KPA: peak pressure at the camera in the 20 m shots
+D_SHOT = math.hypot(20.0, 6.0 - 1.37)
+TAIL = 0.8                                # the tail shock's jump against the bow shock's
 _geo = {}
 
 
@@ -33,7 +42,26 @@ def geometry(alt, fly_y=F.FLY_Y):
     gy, gx = np.gradient(dmin)
     gn = np.sqrt(gx ** 2 + gy ** 2) + 1e-9
     _geo[key] = (dmin, xs, (gx / gn).astype(np.float32), (gy / gn).astype(np.float32))
+    _geo[key + ("px",)] = gn.astype(np.float32)          # m of closest approach per px
     return _geo[key]
+
+
+def index_step(name, R):
+    """n inside - n outside, just behind a shock R m from the path"""
+    R = np.maximum(np.asarray(R, np.float32), 0.5)
+    dp = KPA_SHOT[name] * 1e3 * (D_SHOT / R) ** 0.75
+    if name == "x15":
+        import hyper as Hy
+        ms = np.maximum(1.0, Hy.BLAST ** 2 / (2 * R) / Hy.C_SOUND)       # the strong blast's own shock speed
+        dp = np.maximum(dp, Hy.P0 * 2.8 / 2.4 * (ms ** 2 - 1))
+    P = 1 + dp / 1.013e5
+    return N_AIR * ((2.4 * P + 0.4) / (0.4 * P + 2.4) - 1)
+
+
+def bend(d, R, dn, h):
+    """px a ray is bent toward the axis, its pixel spanning d - h .. d + h of closest approach to a shell of radius R"""
+    a = np.clip(d - h, 0, R); b = np.clip(d + h, 0, R)
+    return 2 * dn * (np.sqrt(R * R - a * a) - np.sqrt(R * R - b * b)) / (2 * h) * Cam.F
 
 
 _rng = np.random.default_rng(5)
@@ -48,6 +76,7 @@ def displacement(name, t):
     if mach <= 1: return None
     cot = math.sqrt(mach ** 2 - 1)
     dmin, xs, gx, gy = geometry(m["alt"], F.lane_y(name))
+    h = 0.5 * _geo[(m["alt"], F.lane_y(name), "px")]
     L = m["box"][0]
     disp = np.zeros((H, W), np.float32)
     if name == "x15":
@@ -57,18 +86,13 @@ def displacement(name, t):
         on = a > 0
         if on.any():
             Rr = Hy.shock_r(np.where(on, a, 0)).astype(np.float32)
-            amp = fx["refr"] * np.minimum(1.0, Hy.R_WEAK / np.maximum(Rr, 1e-3)) ** 1.1
-            w = 0.05 + 0.03 * Rr
-            q = (dmin - Rr) / w
-            disp = np.where(on & (Rr < 30), amp * (-q * np.exp(0.5 - 0.5 * q * q)), 0).astype(np.float32)
-    for x_apex, sign in (() if name == "x15" else ((m["speed"] * t + L / 2, 1.0), (m["speed"] * t - L / 2, -0.8))):
+            disp = np.where(on & (Rr < 30), bend(dmin, Rr, index_step(name, Rr), h), 0).astype(np.float32)
+    for x_apex, k in (() if name == "x15" else ((m["speed"] * t + L / 2, 1.0), (m["speed"] * t - L / 2, TAIL))):
         Rr = (x_apex - xs) / cot                          # the cone's radius at each pixel's closest point
         on = Rr > 0.3
         if not on.any(): continue
-        w = 0.05 + 0.012 * Rr
-        q = (dmin - Rr) / w
-        amp = fx["refr"] * (6.0 / np.maximum(Rr, 1.5)) ** 0.75
-        disp += np.where(on & (Rr < 40), sign * amp * (-q * np.exp(0.5 - 0.5 * q * q)), 0).astype(np.float32)
+        Rc = np.maximum(Rr, 0.3)
+        disp += np.where(on & (Rr < 40), bend(dmin, Rc, k * index_step(name, np.maximum(Rc, 1.5)), h), 0).astype(np.float32)
     dx, dy = disp * gx, disp * gy
     # the exhaust trail: hot gas left behind the nozzles, shimmering, cooling over a second or so
     age = (m["speed"] * t - L / 2 - xs) / m["speed"]
