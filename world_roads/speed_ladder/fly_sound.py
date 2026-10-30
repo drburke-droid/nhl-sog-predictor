@@ -348,6 +348,12 @@ if __name__ == "__main__":
     name = sys.argv[1]
     x = normalize(shot(name))
     if name in F.REPLAY:
-        x = np.concatenate([x, normalize(replay_audio(name), rms=0.13)])
+        r = normalize(replay_audio(name), rms=0.13)
+        # under the slowed world a faint low rumble, so a replay that opens before any sound has reached the camera
+        # (anything supersonic) is quiet, not dead
+        n = len(r); tt = np.arange(n) / SR
+        rum = filt(np.random.default_rng(17).standard_normal((n, 2)), "bandpass", [30, 110], 2)
+        rum *= 0.012 / (np.sqrt((rum ** 2).mean()) + 1e-9) * np.minimum(1, np.minimum(tt / 0.4, (tt[-1] - tt) / 0.4))[:, None]
+        x = np.concatenate([x, r + rum])
     print(name, "peak", round(float(np.abs(x).max()), 3))
     write(f"/home/user/lot/out/fly_{name}.wav", x)

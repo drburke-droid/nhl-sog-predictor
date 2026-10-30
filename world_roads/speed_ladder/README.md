@@ -47,7 +47,7 @@ NASA's Parker Solar Probe (public domain, nasa/NASA-3D-Resources).
   back as slowly as the pictures (16 times slower is four octaves down: each propeller blade becomes a thump).
 * `make_fly.py`: composites each shot (and its replay) and joins it to its sound.
 
-Shots so far: `../media/speed_ladder/fly1_wright_flyer.mp4`, `fly2_spitfire.mp4`, `fly3_bell_x1.mp4`.
+The film: `../media/speed_ladder/history_fastest_machines.mp4` (80 s, ending on the Parker Solar Probe) and `history_fastest_machines_no_parker.mp4` (67 s, ending on the X-15). The shots on their own: `fly1_wright_flyer.mp4`, `fly2_spitfire.mp4`, `fly3_bell_x1.mp4`, `fly4a_f35.mp4`, `fly4_x15.mp4`, `fly5_parker_finale.mp4`.
 
 ### The X-1, the X-15 and the finale
 
