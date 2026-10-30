@@ -10,7 +10,7 @@ import comp as C, fly_sound as S
 
 OUT = "/home/user/lot/out"
 SHOTS = [("wright", 0.45), ("spitfire", 0.8), ("x1", 1.0), ("f35", 1.0), ("x15", 1.0), ("parker", 1.0)]   # name, mix level
-TITLE = ("What if history's fastest machines", "flew past you?")
+TITLE = ("120 years of speed,", "flying past you")
 WHITE = (255, 255, 255)
 
 

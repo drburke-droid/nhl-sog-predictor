@@ -22,11 +22,11 @@ REPLAY = len(args) > 1 and args[1] == "replay"
 args = [NAME] + args[1 + REPLAY:]
 rng_ = [int(a) for a in args[1:3]] if len(args) >= 3 else None
 STATIC = f"/home/user/lot/render/fly_{NAME}/static.npz"
-OUT = f"/home/user/lot/render/fly_{NAME}" + ("_replay" if REPLAY else "")
+OUT = f"/home/user/lot/render/fly_{NAME}" + ("_replay" if REPLAY else "") + os.environ.get("OUTSUF", "")
 os.makedirs(OUT, exist_ok=True)
 os.makedirs(os.path.dirname(STATIC), exist_ok=True)
 SAMPLES = int(os.environ.get("SAMPLES", "48"))
-EXPO = 0.01
+EXPO = float(os.environ.get("EXPO", "0.01"))     # 1/100 s; EXPO=0.02 for a 180-degree shutter
 
 s = S.reset(samples=SAMPLES)
 s.render.use_motion_blur, s.render.motion_blur_shutter = True, 0.25

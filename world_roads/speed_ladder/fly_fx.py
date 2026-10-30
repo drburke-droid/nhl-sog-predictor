@@ -133,6 +133,7 @@ def wake_glow(name, t, expo):
         dxl = np.clip(xx - u, -L_px, 0) - (xx - u)                   # distance to the streak's segment
         prof = np.exp(-(dxl ** 2 + (yy - v) ** 2) / (2 * r_px ** 2))
         keep = (Cam.F * seg / z[0] + 2.5 * r_px) / (L_px + 2.5 * r_px)   # the same light spread over the smear
+        keep *= min(1.0, 0.005 / max(expo, 1e-9)) if expo > 0.012 else 1.0   # a long exposure: it glows a sliver of it
         img[ya:yb, xa:xb] += prof[..., None] * col * 0.5 * keep
     return img if img.max() > 1e-4 else None
 

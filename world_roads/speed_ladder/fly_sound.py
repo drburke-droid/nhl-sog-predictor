@@ -131,7 +131,9 @@ def f135(dur, rng):
 
 SOURCES = {"wright": wright_engine, "spitfire": merlin, "x1": rocket, "f35": f135, "x15": xlr99}
 LEVEL = {"wright": 2.2, "spitfire": 9.0, "x1": 14.0, "f35": 22.0, "x15": 30.0}  # at 1 m, relative: 12 hp against 1,600 hp ...
-BOOM = {"x1": dict(dp=1.6, length=0.016), "f35": dict(dp=2.6, length=0.024)}             # relative to the sound levels above; N-wave length s
+# relative to the sound levels above; scaled to the pressure each makes at the camera (X-1 ~6 kPa, F-35 ~12 kPa);
+# N-wave length s
+BOOM = {"x1": dict(dp=1.6, length=0.016), "f35": dict(dp=3.2, length=0.024)}             # relative to the sound levels above; N-wave length s
 
 
 def path(name, te):
@@ -264,13 +266,13 @@ def blast_events(n0, n, rng):
     t_cam = float(Hy.t_hit(CAM[0], CAM[1], CAM[2])) + off
     m = int(0.02 * SR); tt = np.arange(m) / SR
     crack = np.where(tt < 0.004, 1 - 2 * tt / 0.004, 0.0) + 0.7 * filt(rng.standard_normal(m), "highpass", 700) * np.exp(-tt / 0.004)
-    place(out, crack, t_cam, 0.0, 3.0)
+    place(out, crack, t_cam, 0.0, 5.4)                                      # ~20 kPa: 3.4x the X-1's boom
     m = int(4.0 * SR); tt = np.arange(m) / SR
     f = 30 + 45 * np.exp(-tt / 0.25)
     rumble = 0.9 * np.sin(2 * math.pi * np.cumsum(f) / SR) * np.exp(-tt / 0.8) + \
         1.8 * filt(rng.standard_normal(m), "lowpass", 200) * np.exp(-tt / 1.3) * np.minimum(1, tt / 0.01)
     for pan in (-0.5, 0.5):
-        place(out, rumble * rng.uniform(0.9, 1.1), t_cam + 0.003, pan, 1.6)
+        place(out, rumble * rng.uniform(0.9, 1.1), t_cam + 0.003, pan, 2.4)
     from layout import LAYOUT
     if "car" in LAYOUT:
         car = (Hy.CAR["x"], Hy.CAR["y"], 1.0)
