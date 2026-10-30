@@ -1,0 +1,1 @@
+Part three. A race. Each machine sets off at just the right moment, so that all five reach the right-hand edge at exactly the same instant.
