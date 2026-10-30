@@ -96,6 +96,18 @@ the distance behind the head over v0: 30 ms on, twice the radius); and the air b
 shock's speed makes it (the ionising-gas fit above ~4.5 km/s, an ideal gas's Rankine-Hugoniot below), and clear once
 it has cooled below ~4,500 K. The finale's own frames predate both; within its 1.7 ms they change little.
 
+`history_race_light.mp4` (35 s, `RACE=1 PARKER=1 OUTSUF=_pk make_race_light.py`): the same race with a pulse of light
+in it. Light goes round the world (40,075 km) in 0.1337 s, 7.5 times a second; counting back 17 laps from a pass just
+before Parker comes in lands on the frame the Wright Flyer comes in, so while the Flyer crosses the picture, light goes
+round 17 times. It flies 250 m out, behind everything, each lap 3 m above the last, and each pass leaves a faint line:
+a ladder building in the sky (markers: clear air keeps no trace of light gone by). Light crosses the 384 m-wide
+picture there in 1.3 us, so a pass falls in one frame or none; the shutter is open a quarter of each frame, and catches
+4 of the 16 passes it does not freeze on, as a streak brightest at the right (seen from the camera the pulse seems to
+rush in at 2.5 times the speed of light and leave at 0.6, so it lingers on the right). At its first pass and its last,
+time stops and the pulse crosses a million times slower (a camera at 25 million frames a second), rushing in and
+slowing as it goes; the sound stops with it. The glow stands in for what a pulse scatters toward the camera, and light
+does not follow the curve of the Earth by itself (round the equator in a fibre, a lap would take 0.20 s).
+
 Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
 cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
 refractive index by dn = 2.6e-4 x (density ratio - 1); a ray that passes a shell of radius R at distance d from its
