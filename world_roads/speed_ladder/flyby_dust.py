@@ -170,9 +170,9 @@ if __name__ == "__main__":
              if t >= t_start]
     if RACE:                                            # the race's frames instead (race.py)
         import race as RC
-        o_rc = f"{R_}/fly_{NAME}_race_dust"
+        o_rc = f"{R_}/fly_{NAME}_race_dust{SUF}"
         os.makedirs(o_rc, exist_ok=True)
-        want = [(RC.own(NAME, T), o_rc, n, f"{R_}/fly_{NAME}_race/p{n:04d}.npz") for n, (T, _) in enumerate(RC.timeline())
+        want = [(RC.own(NAME, T), o_rc, n, f"{R_}/fly_{NAME}_race{SUF}/p{n:04d}.npz") for n, (T, _) in enumerate(RC.timeline())
                 if RC.own(NAME, T) >= t_start]
     want.sort(key=lambda w: w[0])
     vx0, vx1, vy0, vy1, vz1 = CFG["vis"]

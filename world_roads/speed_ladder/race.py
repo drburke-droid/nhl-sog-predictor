@@ -23,6 +23,17 @@ DOWN = 20                   # frames slowing down to it
 AFTER = 0.025               # s at 48x after the finish (the F-35's boom reaches the camera at about +0.008)
 UP = 50                     # frames ramping back to real speed (the X-15's blast arrives on the way)
 TAIL = 62                   # frames at real speed to end
+# PARKER=1: the race with the Parker Solar Probe (parker.py, in flight.PARKER_LANE). It crosses in 1.25 ms, so in the
+# last few milliseconds everything slows again, to 1,000x, while it comes in at the left and crosses with the others;
+# after the finish the frames lengthen step by step until its blast reaches the camera (57 ms after it met the air)
+PARKER = F.PARKER
+DEEP = 1 / 1000
+PRE_P = 0.2e-3              # s at 1,000x before it meets the air
+DEEP_N = 25                 # frames slowing from 48x to 1,000x
+AFTER_P = 0.2e-3            # s at 1,000x after the finish
+BLAST_N = 90                # frames from there to the blast reaching the camera
+if PARKER:
+    import parker as P
 
 
 @functools.lru_cache(maxsize=None)
@@ -46,7 +57,9 @@ def u_range(name, t):
 
 @functools.lru_cache(maxsize=None)
 def exit_time(name):
-    """own time its last pixel leaves the right edge"""
+    """own time its last pixel leaves the right edge (Parker's: its head, the probe's own time counted from when it
+    meets the air at the left edge)"""
+    if name == "parker": return float(P.t_at(P.X_FINISH))
     v = F.MACHINES[name]["speed"]
     lo, hi = 0.0, 200.0 / v
     for _ in range(60):
@@ -58,6 +71,7 @@ def exit_time(name):
 @functools.lru_cache(maxsize=None)
 def entry_time(name):
     """own time its first pixel comes in at the left edge"""
+    if name == "parker": return 0.0
     v = F.MACHINES[name]["speed"]
     lo, hi = -200.0 / v, 0.0
     for _ in range(60):
@@ -94,12 +108,39 @@ def timeline():
     while T - 1 / FPS >= T0:
         T -= 1 / FPS; real.append((T, 1.0))
     real = real[::-1]
+    if PARKER: return real + down + deep_end(slow, step)
     gu = (1 / SLOW) ** (1 / UP)
     up, T, st = [], slow[-1][0], step
     for i in range(UP):
         st *= gu; T += st; up.append((T, st * FPS))
     tail = [(T + (i + 1) / FPS, 1.0) for i in range(TAIL)]
     return real + down + slow + up + tail
+
+
+def deep_end(slow, step):
+    """PARKER=1: the 48x frames up to the second slowdown, the slowdown to 1,000x (each step shorter by the same
+    factor, scaled a touch so that it starts on a 48x frame and ends on a 1,000x one), 1,000x through the finish, then
+    each step longer by the same factor until the blast reaches the camera"""
+    s1 = DEEP / FPS
+    M = math.ceil((exit_time("parker") + PRE_P) / s1)
+    hold = [(-m * s1, DEEP) for m in range(M, -1, -1)] + [(m * s1, DEEP) for m in range(1, round(AFTER_P / s1) + 1)]
+    q = (s1 / step) ** (1 / DEEP_N)
+    st = step * q ** np.arange(1, DEEP_N + 1)
+    j = round((M * s1 + st.sum()) / step)
+    st *= (j * step - M * s1) / st.sum()
+    Ts = -j * step + np.cumsum(st)
+    ramp = [(float(T), float(d * FPS)) for T, d in zip(Ts[:-1], st[:-1])]
+    before = [(T, sl) for T, sl in slow if T <= -j * step + 1e-12]
+    T_cam = P.T_CAMERA - exit_time("parker")
+    T, span = hold[-1][0], T_cam - hold[-1][0]
+    lo, hi = 1.0, 1.5
+    for _ in range(60):                       # the ratio that lands the last frame on the blast reaching the camera
+        r = (lo + hi) / 2
+        lo, hi = (lo, r) if s1 * r * (r ** BLAST_N - 1) / (r - 1) > span else (r, hi)
+    after, d = [], s1
+    for i in range(BLAST_N):
+        d *= r; T += d; after.append((min(T, T_cam), d * FPS))
+    return before + ramp + hold + after
 
 
 def finish_frame():

@@ -29,13 +29,15 @@ def _stopwatch(d, cx, cy, r, col, frac, alpha):
     d.ellipse((cx - w, cy - w, cx + w, cy + w), fill=col + (a,))
 
 
-def fmt_clock(t):
+def fmt_clock(t, slow=1.0):
+    if slow < 1e-5: return f"{t:.8f} s" if t >= 1 else f"{t * 1000:.6f} ms"      # a million times: 40 ns a frame
+    if slow < 1 / 200 and t >= 1: return f"{t:.5f} s"          # 1,000x: a frame is 40 us, so it still ticks
     return f"{t:.2f} s" if t >= 10 else f"{t:.3f} s" if t >= 1 else f"{t * 1000:.1f} ms"
 
 
-def badge(frame8, slow, t_real, alpha=1.0, fps_note=True):
+def badge(frame8, slow, t_real, alpha=1.0, fps_note=True, top=48.0):
     """slow: this frame's step against real time (1 real speed, 1/48 48x slower); t_real: real seconds since the
-    clock started"""
+    clock started; top: the slowest the cut goes, the far end of the scale"""
     im = Image.fromarray(frame8).convert("RGBA")
     ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(ov)
@@ -47,14 +49,16 @@ def badge(frame8, slow, t_real, alpha=1.0, fps_note=True):
     # left: the stopwatch and the clock at real time (a turn of the hand every second of real time)
     _stopwatch(d, 70, cy, 30, col, t_real % 1.0, alpha)
     f1, f2 = C.font(44, "Bold"), C.font(22, "Medium")
-    d.text((122, cy - 34), fmt_clock(t_real), font=f1, fill=WHITE + (a,))
+    d.text((122, cy - 34), fmt_clock(t_real, slow), font=f1, fill=WHITE + (a,))
     d.text((124, cy + 16), "real time gone by", font=f2, fill=DIM + (a,))
     # right: the rate
     fb, fs, fn = C.font(92, "Black"), C.font(34, "Bold"), C.font(22, "Medium")
     xr = C.W - 56
     if is_slow:
-        big = f"{factor:.0f}×" if factor >= 9.95 else f"{factor:.1f}×"     # the ramps: 1.3x, not "1x slower"
+        big = f"{factor:,.0f}×" if factor >= 9.95 else f"{factor:.1f}×"     # the ramps: 1.3x, not "1x slower"
         wb = d.textlength(big, font=fb)
+        if wb > 420:                                     # a million: smaller, clear of the note below it
+            fb = C.font(int(92 * 420 / wb), "Black"); wb = d.textlength(big, font=fb)
         ws = max(d.textlength("SLOWER", font=fs), d.textlength("THAN REAL", font=fn))
         x0 = xr - ws - 18 - wb
         d.text((x0, cy - 62), big, font=fb, fill=ACCENT + (a,))
@@ -65,14 +69,14 @@ def badge(frame8, slow, t_real, alpha=1.0, fps_note=True):
             wn = d.textlength(note, font=fn)
             d.ellipse((xr - wn - 30, cy + 40, xr - wn - 16, cy + 54), fill=RED + (a,))
             d.text((xr - wn, cy + 35), note, font=fn, fill=DIM + (a,))
-        # how slow, on a scale from real speed to 48x
-        frac = math.log(factor) / math.log(48.0)
+        # how slow, on a scale from real speed to the slowest
+        frac = math.log(factor) / math.log(top)
         bx0, bx1, by = x0 - 250, x0 - 40, cy + 2
         d.rounded_rectangle((bx0, by - 7, bx1, by + 7), 7, outline=DIM + (int(a * 0.6),), width=2)
         d.rounded_rectangle((bx0, by - 7, bx0 + max(14, (bx1 - bx0) * min(1.0, frac)), by + 7), 7, fill=ACCENT + (a,))
         d.text((bx0, by + 12), "real", font=C.font(18, "Medium"), fill=DIM + (a,))
-        w48 = d.textlength("48×", font=C.font(18, "Medium"))
-        d.text((bx1 - w48, by + 12), "48×", font=C.font(18, "Medium"), fill=DIM + (a,))
+        w48 = d.textlength(f"{top:,.0f}×", font=C.font(18, "Medium"))
+        d.text((bx1 - w48, by + 12), f"{top:,.0f}×", font=C.font(18, "Medium"), fill=DIM + (a,))
     else:
         txt = "REAL SPEED"
         w = d.textlength(txt, font=C.font(56, "Black"))
@@ -93,7 +97,7 @@ def slam(frame8, factor, k, n_in=6, n_hold=22, n_out=12):
     ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(ov)
     fb, fs = C.font(int(150 * s), "Black"), C.font(int(56 * s), "Bold")
-    big, sub = f"{factor:.0f}× SLOWER", "slow motion"
+    big, sub = f"{factor:,.0f}× SLOWER", "slow motion"
     wb, ws = d.textlength(big, font=fb), d.textlength(sub, font=fs)
     cy = C.TOP + C.PH // 2 - 40
     for dx, dy in ((4, 5), (0, 4), (4, 0)):

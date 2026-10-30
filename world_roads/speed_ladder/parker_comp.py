@@ -23,7 +23,8 @@ WHITE, DIM = (255, 255, 255), (214, 220, 228)
 P0 = 40                                   # plate frame the replay freezes on
 
 # per-pixel geometry: closest approach of each ray to the path, where along it, and the ground point it sees
-DMIN, XS, GX, GY = FX.geometry(P.PZ)
+DMIN, XS, GX, GY = FX.geometry(P.PZ, P.PY)
+PX_M = FX._geo[(P.PZ, P.PY, "px")]                  # m of closest approach per pixel
 R0 = D.Renderer(D.Grid(h=1.0), scale=1.0)
 dirs, org = R0.dirs, R0.org
 tg = np.where(dirs[..., 2] < -1e-6, -org[2] / np.minimum(dirs[..., 2], -1e-6), np.inf)
@@ -73,10 +74,21 @@ def r_shock(x, t):
     if t <= 0: return np.zeros_like(x)
     xe = np.maximum(x, P.X_IN)
     u = np.maximum(xh + DELTA - xe, 0)
-    b2v = P.blast(xe) ** 2 / P.V0
-    r2 = b2v * u + np.maximum(NOSE - b2v, 0) * BULGE_L * (1 - np.exp(-u / BULGE_L))
+    B2, vh = P.blast(xe) ** 2, head_speed(t)
+    # the blast's r^2 = B^2 x its age there (as the probe slows, the age is more than u / v0: in the race, where the
+    # plasma has slowed to a tenth of its speed 30 ms on, a steady paraboloid would be half the size)
+    r2 = B2 * age(xe, t, u) + np.maximum(NOSE - B2 / vh, 0) * BULGE_L * (1 - np.exp(-u / BULGE_L))
     behind = np.maximum(P.X_IN - x, 0)
     return np.sqrt(np.maximum(r2 - behind ** 2, 0))
+
+
+def head_speed(t):
+    return P.V0 / (1 + (float(P.x_head(t)) - P.X_IN) / P.LS)
+
+
+def age(xe, t, u):
+    """s since the head passed xe; ahead of the head (the bow shock's nose, u < DELTA) as if it had"""
+    return np.where(u > DELTA, np.maximum(t - P.t_at(xe), 0), u / P.V0)
 
 
 def core(x, t):                                     # kept for the dust wall and the shimmer: the shock's radius
@@ -90,15 +102,24 @@ def shell_temperature(x, t):
     r = np.maximum(r_shock(x, t), 1e-3)
     xh = float(P.x_head(t))
     u = np.maximum(xh + DELTA - np.maximum(x, P.X_IN), 0)
-    b2v = P.blast(np.maximum(x, P.X_IN)) ** 2 / P.V0
-    slope = (b2v + np.maximum(NOSE - b2v, 0) * np.exp(-u / BULGE_L)) / (2 * r)      # dr/du
-    un = P.V0 * slope / np.sqrt(1 + slope ** 2)                                      # speed into the shock
-    return np.clip(8000.0 * (un / 7000.0) ** 0.6, 5500.0, 60000.0)
+    B2, vh = P.blast(np.maximum(x, P.X_IN)) ** 2, head_speed(t)
+    drdt = (B2 + vh * np.maximum(NOSE - B2 / vh, 0) * np.exp(-u / BULGE_L)) / (2 * r)  # outward, at fixed x
+    slope = drdt / vh                                                                # dr/du
+    un = drdt / np.sqrt(1 + slope ** 2)                                              # speed into the shock
+    # fast, it is held down by ionising the air; slower (the blast front far out, ~1 km/s at 100 m) an ideal gas's
+    # shock: Mach 3 heats it only to ~800 K, and it no longer glows
+    M2 = (un / 343.0) ** 2
+    rh = 288.0 * (2.8 * M2 - 0.4) * (0.4 * M2 + 2) / (5.76 * np.maximum(M2, 1.0))
+    return np.clip(np.minimum(8000.0 * (un / 7000.0) ** 0.6, rh), 300.0, 60000.0)
 
 
 def inner_temperature(a):
     """K of the gas inside the envelope, a seconds after the head passed: it expands and cools behind the shock"""
-    return np.clip(P.temperature(a), 4500.0, 40000.0)
+    return np.clip(P.temperature(a), 800.0, 40000.0)
+
+
+def opacity(T):
+    return np.clip((np.asarray(T, np.float32) - 1500.0) / 3000.0, 0.0, 1.0)
 
 
 _mottle = None
@@ -128,9 +149,10 @@ def envelope(t):
                        np.sqrt(np.maximum(rs ** 2 - d ** 2, 0)))                 # each side, front and back
     c_in = 2 * np.sqrt(np.maximum(ri ** 2 - d ** 2, 0))
     kap = 1.6 / np.maximum(rs, 0.05)
-    tf = np.exp(-kap * c_shell); ti = np.exp(-0.12 * kap * c_in)
     a = np.maximum(t - P.t_at(np.maximum(XS, P.X_IN)), 1e-8)
     Ts = shell_temperature(XS, t); Tin = inner_temperature(a)
+    # hot air is murky (ionised), cool air clear: the shell and the gas inside thin out as they cool below ~4,500 K
+    tf = np.exp(-kap * opacity(Ts) * c_shell); ti = np.exp(-0.12 * kap * opacity(Tin) * c_in)
     ph = t / 40e-6; k0 = int(ph) % 6; f = ph % 1
     mot = _mottle[k0] * (1 - f) + _mottle[(k0 + 1) % 6] * f
     turb = 1 + 0.05 * mot * np.clip(a / 20e-6, 0, 1)
@@ -155,7 +177,7 @@ def lights(t, n=28):
     out = []
     if t <= 0: return out
     xh = float(P.x_head(t))
-    xs = np.linspace(P.X_IN, min(xh, 40.0), n)
+    xs = np.linspace(P.X_IN, min(xh, P.X_OUT), n)
     dx = xs[1] - xs[0] if n > 1 else 1.0
     for x in xs:
         r = float(r_shock(np.array([x]), t)[0])
@@ -190,12 +212,16 @@ def displacement(t):
     on = Rr > 0.02
     w = 0.03 + 0.03 * Rr
     q = (DMIN - Rr) / w
-    disp = np.where(on, 12.0 * (-q * np.exp(0.5 - 0.5 * q * q)), 0).astype(np.float32)
+    # no more than the band can take without folding over (its steepest slope is 1.65 amp / width in px): a shell
+    # thinner than the pixels it covers (far out, as in the race) cannot be resolved
+    amp = np.minimum(12.0, 0.48 * w / PX_M)
+    disp = np.where(on, amp * (-q * np.exp(0.5 - 0.5 * q * q)), 0).astype(np.float32)
     return disp * GX, disp * GY
 
 
 # ---------------------------------------------------------------- the ground erupting: a wall of dust and vapour
-VIS = D.Grid(x0=-16, x1=17, y0=1.0, y1=36.0, z1=10, h=0.15)
+VIS = D.Grid(x0=-16, x1=17, y0=1.0, y1=36.0, z1=10, h=0.15) if not F.PARKER else \
+      D.Grid(x0=P.X_IN - 4, x1=P.X_FINISH + 8, y0=1.0, y1=P.PY + 40, z1=24, h=0.5)    # the race: 100 m out
 REN = D.Renderer(VIS, scale=0.5, kappa=1.6, albedo=(0.5, 0.38, 0.27), phase_g=0.72, sun_irr=1.3,
                  sun_col=(1.0, 0.78, 0.58))
 _noise = None
@@ -204,7 +230,7 @@ _noise = None
 def wall_density(t):
     global _noise
     X, Y, Z = VIS.coords()
-    if _noise is None: _noise = D.noise3(VIS.n, 6, 31, 3).astype(np.float32)
+    if _noise is None: _noise = D.noise3(VIS.n, 6 if not F.PARKER else 10, 31, 3 if not F.PARKER else 4).astype(np.float32)
     Rr = core(X, t) - 0.08
     rg = np.sqrt(np.maximum(Rr ** 2 - P.PZ ** 2, 0))                 # how far out along the ground the blast is
     rho = np.abs(Y - P.PY)
@@ -213,13 +239,13 @@ def wall_density(t):
     h = 0.4 + 0.12 * rg
     top = h * (0.5 + 1.0 * _noise)
     shell = np.exp(-((rho - front) / w) ** 2) * np.clip((top - Z) / (0.5 * top + 0.1), 0, 1) ** 1.5 * (rho < rg * 1.02)
-    inner = 0.0 * Z
+    inner = 0.12 * (rho < front) * np.clip(1 - Z / (0.8 * top + 0.1), 0, 1)      # what it raised hangs behind
     vapour = np.hypot(Y - P.PY, Z - P.PZ) < 0.5 * Rr                       # the hottest inner core: no dust left
     return (30.0 * (shell + inner) * (0.4 + _noise) * (rg > 0) * ~vapour).astype(np.float32)
 
 
 def wall(t, ls):
-    if P.shock_r(np.array([0.0]), t)[0] < P.PZ: return None
+    if P.shock_r(np.array([P.X_IN + 2.0 if F.PARKER else 0.0]), t)[0] < P.PZ: return None
     VIS.d[:] = gaussian_filter(wall_density(t), 0.8)
     if VIS.d.max() < 1e-3: return None
     # a light stands for a stretch of column: soften it by that stretch and the column's radius

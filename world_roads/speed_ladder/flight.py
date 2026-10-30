@@ -31,10 +31,17 @@ RACE_LANES = {"wright": (13.0, 1.85), "spitfire": (22.0, 6.0), "f35": (32.0, 5.2
 RACE = os.environ.get("RACE") == "1"
 if RACE:
     for _n, (_y, _z) in RACE_LANES.items(): MACHINES[_n]["alt"] = _z
+# the race with the Parker Solar Probe in it (PARKER=1 with RACE=1): 100 m out, so that its blast (~16 m in its first
+# millisecond) reaches none of the others before the finish, and 12 m up, crossing open sky above the X-15
+PARKER_LANE = (100.0, 12.0)
+PARKER = RACE and os.environ.get("PARKER") == "1"
+if PARKER:
+    MACHINES["parker"]["alt"] = PARKER_LANE[1]
 
 
 def lane_y(name):
     """the distance from the camera the machine flies past at"""
+    if PARKER and name == "parker": return PARKER_LANE[0]
     return RACE_LANES[name][0] if RACE and name in RACE_LANES else FLY_Y
 
 

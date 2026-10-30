@@ -14,6 +14,7 @@ import comp as C, flight as F, fly_fx as FX, fly_sound as S, make_fly as MF, rac
 import make_cuts as MC
 
 R_ = "/home/user/lot/render"
+SUF = os.environ.get("OUTSUF", "")                  # _pk: the race with Parker (make_race_parker.py)
 OUT = "/home/user/lot/out"
 WHITE, DIM = MF.WHITE, MF.DIM
 FAR_FIRST = ["x15", "f35", "spitfire", "wright"]
@@ -29,7 +30,7 @@ KPA = {n: MC.KPA[n] * (D_SHOT / dist(n)) ** 0.75 for n in ("f35", "x15")}
 
 
 def load(name, k):
-    p = f"{R_}/fly_{name}_race/p{k:04d}.npz"
+    p = f"{R_}/fly_{name}_race{SUF}/p{k:04d}.npz"
     if not os.path.exists(p): return None
     st = C.props(f"{R_}/fly_{name}/static.npz")
     d = np.load(p)
@@ -48,7 +49,7 @@ def load(name, k):
 
 
 def dust(name, k):
-    p = f"{R_}/fly_{name}_race_dust"
+    p = f"{R_}/fly_{name}_race_dust{SUF}"
     return C.dust(f"{p}/d{k:04d}.png", f"{p}/g{k:04d}.png")
 
 
@@ -133,7 +134,7 @@ def audio(tl):
     pos = (Tk - T0) * S.SR
     out = np.stack([np.interp(pos, np.arange(n), mix[:, c]) for c in (0, 1)], 1)
     out = S.filt(out, "highpass", 25, 4)          # slowed 48x most of it falls below hearing: keep what can be heard
-    slowk = np.interp(tau * F.FPS, np.arange(len(tl)), [math.log(1 / s) / math.log(48) for _, s in tl])
+    slowk = np.interp(tau * F.FPS, np.arange(len(tl)), [min(1.0, math.log(1 / s) / math.log(48)) for _, s in tl])
     rum = S.filt(np.random.default_rng(17).standard_normal((len(out), 2)), "bandpass", [30, 110], 2)
     rum *= 0.012 / (np.sqrt((rum ** 2).mean()) + 1e-9)
     return out * (1 - 0.45 * slowk)[:, None] + rum * slowk[:, None]     # the slowed sound a little under, as in the replays

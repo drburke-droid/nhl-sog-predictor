@@ -19,8 +19,24 @@ import flight as F, camera as Cam
 
 V0 = 192227.0
 MASS, AREA, RHO = 685.0, 4.15, 1.225
-PY, PZ = F.FLY_Y, F.MACHINES["parker"]["alt"]
-X_IN = -13.5                     # where the probe meets the air (its heat shield), just inside the picture
+PY, PZ = F.lane_y("parker"), F.MACHINES["parker"]["alt"]
+
+
+def edge_x(u):
+    """x along the path seen at column u of the picture"""
+    lo, hi = -1e3, 1e3
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if Cam.project((mid, PY, PZ))[0][0, 0] < u else (lo, mid)
+    return (lo + hi) / 2
+
+
+if F.PARKER:                     # the race (race.py): it meets the air at the left edge, the finish is the right edge
+    X_IN, X_FINISH = edge_x(0.0), edge_x(Cam.W)
+    X_OUT = X_FINISH + 10.0      # how far along the lights that stand for its column reach
+else:
+    X_IN = -13.5                 # where the probe meets the air (its heat shield), just inside the picture
+    X_OUT = 40.0
 LS = MASS / (RHO * AREA)         # snowplough length, 135 m
 KE0 = 0.5 * MASS * V0 ** 2
 T_SHIELD, T_GONE = 4e-6, 25e-6   # heat shield gone; the whole probe vapour

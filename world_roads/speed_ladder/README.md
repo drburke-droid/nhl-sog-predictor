@@ -72,6 +72,30 @@ X-15's blast 115 ms later, each shaking it by its pressure there (~8 and ~11 kPa
 distance^-3/4). The X-1 is not in the race (it would fit between the Spitfire and the F-35); neither is the Parker
 probe (it would cross the whole picture in about 0.2 ms, a fifth of one frame even at 48x).
 
+`history_race_parker.mp4` (28 s, `RACE=1 PARKER=1 OUTSUF=_pk make_race_parker.py`; renders and dust for the frames
+that differ from the race's, `parker_race.sh`): the race with the Parker Solar Probe in it. The same frames as the race
+until 7.5 ms before the finish; then everything slows again, to 1,000 times slower (a camera at 25,000 frames a
+second, with its own "1,000x SLOWER" while it slows), the planes all but stopped in the last few per cent of the
+picture, and the probe comes in at the left and crosses in 31 frames: all five clear the right edge on the same
+1/25,000 s. Its lane is 100 m out and 12 m up (`flight.PARKER_LANE`): its blast grows ~16 m in its first millisecond,
+so nearer it would reach the planes before the finish; at 100 m it reaches the X-15's lane ~20 ms after the finish
+and the camera 56 ms after. As in the finale it meets the air at the left edge (as if it appeared there) and is a
+plasma bolt within 5 m; the air it shoves aside slows it, 192 km/s coming in, 90 km/s at the right edge. After the
+finish each frame is 4.7% longer than the last until the blast reaches the camera: the column white-hot, then cooling
+(by the time the blast is down to Mach 3 its shock heats the air only to ~800 K, so the glow is gone within ~10 ms),
+the dust it raises from the desert rolling toward the camera in daylight, and the lens hit by the blast and the dust
+(Mach 3, ten atmospheres). The F-35's boom arrives on the way, the X-15's never does; the probe itself is silent until
+its blast arrives, cut off with the camera. Its light on everything else (`make_race_parker.py`): the ground lit to
+hundreds of times its daylight, the air round the column glowing with the light it scatters (4e-5 per metre, clear
+desert air), the planes lit by the glowing ground and air round them; the camera's exposure follows what its sensor
+records (log mean, highlights clipped), so the column blows out white and the rest comes down to where it can be seen.
+
+Two corrections to the finale's shock model (`parker_comp.py`), which show only this far out and this late: the
+blast's radius is B x sqrt(its age there) rather than a steady paraboloid (as the plasma slows, the age is more than
+the distance behind the head over v0: 30 ms on, twice the radius); and the air behind the shock is as hot as the
+shock's speed makes it (the ionising-gas fit above ~4.5 km/s, an ideal gas's Rankine-Hugoniot below), and clear once
+it has cooled below ~4,500 K. The finale's own frames predate both; within its 1.7 ms they change little.
+
 Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
 cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
 refractive index by dn = 2.6e-4 x (density ratio - 1); a ray that passes a shell of radius R at distance d from its
