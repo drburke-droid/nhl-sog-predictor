@@ -49,6 +49,8 @@ NASA's Parker Solar Probe (public domain, nasa/NASA-3D-Resources).
 
 The film: `../media/speed_ladder/history_fastest_machines.mp4` (80 s, ending on the Parker Solar Probe) and `history_fastest_machines_no_parker.mp4` (67 s, ending on the X-15). The shots on their own: `fly1_wright_flyer.mp4`, `fly2_spitfire.mp4`, `fly3_bell_x1.mp4`, `fly4a_f35.mp4`, `fly4_x15.mp4`, `fly5_parker_finale.mp4`.
 
+Two more cuts (`make_cuts.py`): `history_realtime.mp4` (37 s), every machine at real speed one after another, no slow motion: a 180-degree shutter (1/50 s) so each smears as far as it travels while the shutter is open (the X-15 40 m, wider than the picture: a faint streak across the sky in one frame), how long each was in the picture (2.9 s, 0.25 s, 0.11 s, 0.089 s, 0.023 s), and the shake and boom scaled to the pressure at the camera (~6, ~12 and ~20 kPa); `history_pegged16.mp4` (55 s), every replay at the same 16 times slower, from the replay renders. Title on every cut: "120 years of speed, flying past you".
+
 ### The X-1, the X-15 and the finale
 
 * The X-1 (`flyby_dust.py`, `fly_fx.py`): silent until its Mach cone reaches the camera 18 ms after it passes; the

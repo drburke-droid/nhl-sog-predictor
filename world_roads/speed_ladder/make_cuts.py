@@ -99,7 +99,7 @@ def peg_times(name):
     ts = np.array([t for t, _ in tl])
     step = PEG / F.FPS
     out, t = [], ts[0]
-    avg = 1 if F.REPLAY[name] >= PEG / 3 else int(round(0.01 * PEG / (F.REPLAY[name] / F.FPS)))   # frames per exposure
+    avg = 1
     while True:
         i = int(np.argmin(np.abs(ts - t)))
         # tight while the machine is in the picture; once it has gone only the dust moves, slowly, so the nearest
@@ -116,6 +116,18 @@ def peg_times(name):
     return out
 
 
+def exposure_blur(name, p):
+    """smear the render along the flight to the exposure a 400 fps camera would give (1/1,600 s), when it was rendered
+    for a faster one (the X-15's replay, at 200x slower): a continuous blur, as the real exposure would be"""
+    if p is None or F.REPLAY[name] >= PEG / 3: return p
+    m = F.MACHINES[name]
+    px = m["speed"] * (0.01 * PEG - 0.01 * F.REPLAY[name]) * 1250.0 / F.FLY_Y
+    k = max(1, int(round(px)))
+    ker = np.ones((1, k), np.float32) / k
+    return dict(p, rgb=cv2.filter2D(p["rgb"], -1, ker), a=cv2.filter2D(p["a"], -1, ker)[..., None]
+                if p["a"].ndim == 3 else cv2.filter2D(p["a"], -1, ker))
+
+
 def peg_frames(name, seed0=0):
     out = []
     amp = SHAKE_PER_KPA * KPA.get(name, 0)
@@ -123,7 +135,12 @@ def peg_frames(name, seed0=0):
     tl = F.replay(name)
     for k, (t, idx) in enumerate(peg_times(name)):
         bg = C.plate_loop(60 + int((t - t_first) * F.FPS))
-        imgs = [MF.compose(name, j, tl[j][0], bg, replay=True, expo=0.01 * F.REPLAY[name]) for j in idx]
+        prev = MF.fly
+        MF.fly = lambda nm, n, replay=False: exposure_blur(nm, prev(nm, n, replay))
+        try:
+            imgs = [MF.compose(name, j, tl[j][0], bg, replay=True, expo=0.01 * PEG) for j in idx]
+        finally:
+            MF.fly = prev
         img = sum(imgs) / len(imgs)
         lines = MF.lines(name) + [(f"replay, {1 / PEG:.0f}× slower", 26, "Medium", DIM)]
         out.append(finish(img, seed0 + 9000 + k, lines, min(1.0, k / 6), FX.shake_t(name, t) if name in KPA else -1, amp))
