@@ -51,6 +51,34 @@ The film: `../media/speed_ladder/history_fastest_machines.mp4` (80 s, ending on 
 
 Two more cuts (`make_cuts.py`): `history_realtime.mp4` (37 s), every machine at real speed one after another, no slow motion: a 180-degree shutter (1/50 s) so each smears as far as it travels while the shutter is open (the X-15 40 m, wider than the picture: a faint streak across the sky in one frame), how long each was in the picture (2.9 s, 0.25 s, 0.11 s, 0.089 s, 0.023 s), and the shake and boom scaled to the pressure at the camera (~6, ~12 and ~20 kPa); `history_pegged16.mp4` (55 s), every replay at the same 16 times slower, from the replay renders. Title on every cut: "120 years of speed, flying past you".
 
+`history_slow48.mp4` (62 s, `REPLAY48=1 make_cuts.py slow48`): the Wright Flyer at real speed, then the Spitfire, X-1,
+F-35 and X-15 only in slow motion, every one 48 times slower (a camera at 1,200 frames a second), from replay renders
+at that rate (`flight.REPLAY_SUF`). The slow-motion sign (`slowmo.py`) sits in the black band above the picture: a
+stopwatch and a clock that runs at real time (so it crawls: the X-15's pass takes 23 ms of it), how many times slower
+than real ("48x SLOWER THAN REAL", a bar from real to 48x, the frame rate a camera would need), and while ramping
+the rate with one decimal (1.3x, 8.4x); each slowdown slams a big "48x SLOWER / slow motion" across the picture, which
+cools a touch while slowed. `history_realtime.mp4` carries the same band reading REAL SPEED.
+
+`history_race.mp4` (23 s, `RACE=1 make_race.py`, timeline in `race.py`): the Wright Flyer, the Spitfire, the F-35
+and the X-15 all clear the right edge of the picture on the same frame (frame 421, within 1/1,200 s), so they start
+staggered by their speeds. The Flyer comes in at real speed; at about 90% of the way across everything slows to 48x
+(frame 59-79); the Spitfire comes in (frame 95) and is about halfway across, the Flyer at about 95%, when the F-35
+comes in (frame 272); then the X-15 (frame 368, 45 ms before the finish). Each has its own lane (`flight.RACE_LANES`,
+metres out from the camera and up): the Flyer 13 m / 1.85 m, the Spitfire 22 m / 6 m, the F-35 32 m / 5.2 m, the
+X-15 48 m / 3.3 m, so they never meet and stand apart at the finish; renders, dust and shadows are redone in those
+lanes (`RACE=1`). Each is in the picture for 2.30 s, 0.272 s, 0.125 s and 0.045 s. The supersonic ones pass in
+silence; after the finish, as it ramps back to real speed, the F-35's boom reaches the camera 7 ms later and the
+X-15's blast 115 ms later, each shaking it by its pressure there (~8 and ~11 kPa, scaled from the 20 m shots as
+distance^-3/4). The X-1 is not in the race (it would fit between the Spitfire and the F-35); neither is the Parker
+probe (it would cross the whole picture in about 0.2 ms, a fifth of one frame even at 48x).
+
+Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
+cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
+refractive index by dn = 2.6e-4 x (density ratio - 1); a ray that passes a shell of radius R at distance d from its
+axis is turned toward the axis by 2 dn d / sqrt(R^2 - d^2) (the cone's slant drops out), averaged over each pixel's
+footprint. That confines the bending to a pixel or two along each shell's edge, where rays graze it, instead of
+tearing the picture.
+
 ### The X-1, the X-15 and the finale
 
 * The X-1 (`flyby_dust.py`, `fly_fx.py`): silent until its Mach cone reaches the camera 18 ms after it passes; the
