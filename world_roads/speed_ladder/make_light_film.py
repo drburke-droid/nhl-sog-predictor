@@ -278,21 +278,21 @@ def plan(bg):
         d.rectangle((0, 0, C.W, C.TOP), fill=(0, 0, 0, 255))
         d.rectangle((0, C.TOP + C.PH, C.W, C.H), fill=(0, 0, 0, 255))
         text(d, (C.W / 2, C.TOP / 2), "Next: the same race, with a pulse of [light] in it.", 48, "Bold", WHITE, a_all)
-        a1 = ease((t - 1.2) / 0.5) * a_all
-        xb = 1690                                       # a bracket on the right, spanning the lines
+        a1 = ease((t - 1.2) / 0.5) * a_all              # on the left, in clear sky: what the lines are
         top, bot = rows[-1], rows[0]
         if a1 > 0:
-            d.line((xb, top, xb + 18, top), fill=CYAN + (int(255 * a1),), width=4)
-            d.line((xb, bot, xb + 18, bot), fill=CYAN + (int(255 * a1),), width=4)
-            d.line((xb + 18, top, xb + 18, bot), fill=CYAN + (int(255 * a1),), width=4)
-            text(d, (xb - 16, (top + bot) / 2 - 22), "one line for each", 30, "SemiBold", WHITE, a1, "rm")
-            text(d, (xb - 16, (top + bot) / 2 + 22), "lap of the Earth", 30, "SemiBold", WHITE, a1, "rm")
+            d.rounded_rectangle((28, (top + bot) / 2 - 52, 330, (top + bot) / 2 + 52), 10, fill=(4, 8, 16, int(150 * a1)))
+            text(d, (48, (top + bot) / 2 - 20), "one line for each", 30, "SemiBold", WHITE, a1, "lm")
+            text(d, (48, (top + bot) / 2 + 20), "lap of the Earth", 30, "SemiBold", CYAN, a1, "lm")
         a2 = ease((t - 3.5) / 0.5) * a_all
         if a2 > 0:
             for r, lab in ((rows[0], "where it set off"), (rows[-1], "lap 16")):
-                d.line((150, r, 260, r), fill=CYAN + (int(255 * a2),), width=3)
-                d.polygon([(260, r - 9), (278, r), (260, r + 9)], fill=CYAN + (int(255 * a2),))
-                text(d, (140, r), lab, 28, "SemiBold", WHITE, a2, "rm")
+                f = C.font(28, "SemiBold")
+                w = d.textlength(lab, font=f)
+                d.rounded_rectangle((28, r - 22, 60 + w, r + 22), 10, fill=(4, 8, 16, int(150 * a2)))
+                text(d, (44, r), lab, 28, "SemiBold", WHITE, a2, "lm")
+                d.line((68 + w, r, 380, r), fill=CYAN + (int(255 * a2),), width=3)
+                d.polygon([(380, r - 9), (398, r), (380, r + 9)], fill=CYAN + (int(255 * a2),))
         a3 = ease((t - 5.5) / 0.5) * a_all
         text(d, (C.W / 2, rows[-1] - 60), "250 m away, each lap 3 m above the last", 28, "Medium", WHITE, a3)
         cap = ("It sets off the moment the Wright Flyer appears." if t < 5.5 else
@@ -491,7 +491,7 @@ def pad(n_frames, seed=3):
         for ch, det in ((0, 0.997), (1, 1.003)):
             ph = rng.uniform(0, 2 * np.pi)
             x[:, ch] += g * np.sin(2 * np.pi * f * det * t + ph) * (0.75 + 0.25 * np.sin(2 * np.pi * 0.09 * t + ph))
-    x *= 0.012
+    x *= 0.02
     e = min(n // 2, int(0.6 * S.SR))
     x[:e] *= np.linspace(0, 1, e)[:, None]; x[-e:] *= np.linspace(1, 0, e)[:, None]
     return x
