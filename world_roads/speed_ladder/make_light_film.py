@@ -86,17 +86,15 @@ def road(n, dim=0.45):
 
 # ---- cards
 
-def opening(n0=0):
-    nf = int(6.5 * FPS)
+def opening(T, dur, n0=0):
+    """T: when each of the voice's lines starts (s); dur: how long the card lasts"""
+    nf = int(round(dur * FPS))
     out = []
     for i in range(nf):
         t = i / FPS
         a = min(1.0, (nf - 1 - i) / 10)
         im, ov = canvas(road(n0 + i, 0.5 + 0.2 * (1 - ease(t / 1.5))))
         glow_text(im, (C.W / 2, C.H / 2 - 60), "How fast is [light]?", 124, "Black", WHITE, ease((t - 0.3) / 0.8) * a, 16)
-        d = ImageDraw.Draw(ov)
-        text(d, (C.W / 2, C.H / 2 + 70), "Let's work up to it: 120 years of the fastest machines, on one desert road.",
-             40, "SemiBold", WHITE, ease((t - 2.2) / 0.6) * a)
         out.append(done(im, ov))
     return out
 
@@ -111,35 +109,38 @@ def part_card(num, title, sub, n0=0, seconds=3.8):
         d = ImageDraw.Draw(ov)
         text(d, (C.W / 2, C.H / 2 - 120), f"PART {num} OF 4", 30, "Bold", CYAN, a)
         text(d, (C.W / 2, C.H / 2 - 30), title, 112, "Black", WHITE, a)
-        text(d, (C.W / 2, C.H / 2 + 80), sub, 40, "Medium", WHITE, ease((t - 0.5) / 0.5) * a)
+        if sub: text(d, (C.W / 2, C.H / 2 + 80), sub, 40, "Medium", WHITE, ease((t - 0.5) / 0.5) * a)
         out.append(done(im, ov))
     return out
 
 
-def light_intro():
+def light_intro(T, dur):
     """Parker, then light"""
-    nf = int(7.5 * FPS)
+    nf = int(round(dur * FPS))
+    tl = T["e2"] - 0.3
     out = []
     for i in range(nf):
         t = i / FPS
         im, ov = canvas()
         d = ImageDraw.Draw(ov)
-        text(d, (C.W / 2, C.H / 2 - 30), "Parker is the fastest machine ever built.", 60, "Bold", WHITE, fade(t, 0.2, 2.6))
-        text(d, (C.W / 2, C.H / 2 + 50), "Light is in another league.", 40, "Medium", DIM, fade(t, 1.0, 2.6))
-        a = fade(t, 3.0, 7.5 + 1, 0.5) * min(1.0, (nf - 1 - i) / 8)
+        text(d, (C.W / 2, C.H / 2 - 30), "Parker is the fastest machine ever built.", 60, "Bold", WHITE,
+             fade(t, T["e1"], tl - 0.2))
+        text(d, (C.W / 2, C.H / 2 + 50), "Light is in another league.", 40, "Medium", DIM, fade(t, T["e1"] + 2.8, tl - 0.2))
+        a = fade(t, tl, dur + 1, 0.5) * min(1.0, (nf - 1 - i) / 8)
         glow_text(im, (C.W / 2, C.H / 2 - 110), "LIGHT", 210, "Black", CYAN, a, 28)
-        text(d, (C.W / 2, C.H / 2 + 60), "670,616,629 mph", 76, "Bold", WHITE, fade(t, 3.5, 9))
-        text(d, (C.W / 2, C.H / 2 + 150), "186,282 miles every second", 40, "Medium", DIM, fade(t, 4.2, 9))
+        text(d, (C.W / 2, C.H / 2 + 60), "670,616,629 mph", 76, "Bold", WHITE, fade(t, tl + 0.4, dur + 1))
+        text(d, (C.W / 2, C.H / 2 + 150), "186,282 miles every second", 40, "Medium", DIM, fade(t, T["e2"] + 3.0, dur + 1))
         out.append(done(im, ov) if a > 0 or t < 3 else done(im, ov))
     for i in range(1, 9):                               # last words fade with the rest
         out[-i] = (out[-i].astype(np.float32) * (i / 9)).astype(np.uint8)
     return out
 
 
-def speed_chart():
+def speed_chart(T, dur):
     """the speeds as bars to scale: first against Parker (the planes barely show), then light comes in and the scale
     pulls out until it fits, and Parker shrinks to less than a pixel"""
-    nf = int(11 * FPS)
+    nf = int(round(dur * FPS))
+    tl = T["e5"] + 1.1                                  # light comes in as she says so
     X0, X1 = 640, 1760
     Wd = X1 - X0
     y0, step, bh = 300, 82, 30
@@ -147,7 +148,7 @@ def speed_chart():
     for i in range(nf):
         t = i / FPS
         grow = ease(t / 1.3)
-        u = ease((t - 4.6) / 2.4)
+        u = ease((t - tl - 0.6) / 2.4)
         vmax = math.exp(math.log(430000) * (1 - u) + math.log(LIGHT_MPH) * u)
         im, ov = canvas()
         d = ImageDraw.Draw(ov)
@@ -156,10 +157,10 @@ def speed_chart():
         for r, (name, v) in enumerate(MACHINES + [("Light", LIGHT_MPH)]):
             y = y0 + r * step
             is_light = name == "Light"
-            ra = ease((t - 4.0) / 0.4) * a_all if is_light else a_all
+            ra = ease((t - tl) / 0.4) * a_all if is_light else a_all
             if ra <= 0: continue
             text(d, (X0 - 30, y), name, 34, "SemiBold", WHITE, ra, "rm")
-            w = Wd * v / vmax * (ease((t - 4.0) / 0.6) if is_light else grow)
+            w = Wd * v / vmax * (ease((t - tl) / 0.6) if is_light else grow)
             w_draw = min(w, C.W - X0 + 10)
             col = CYAN if is_light else INK
             if w_draw >= 8:
@@ -186,11 +187,6 @@ def speed_chart():
         text(d, (X0, yb), "0", 24, "Medium", DIM, a_all, "mm")
         text(d, (X1, yb), f"{vmax:,.0f} mph", 24, "Medium", DIM, a_all, "rm")
         d.line((X1, yb - 26, X1, yb - 14), fill=DIM + (int(140 * a_all),), width=2)
-        text(d, (C.W / 2, 950), "Scaled to Parker, the planes barely show.", 40, "SemiBold", WHITE, fade(t, 1.6, 4.2))
-        text(d, (C.W / 2, 930), "Scaled to light, even Parker's bar is less than a pixel wide.", 40, "SemiBold", WHITE,
-             fade(t, 7.2, 12) * a_all)
-        text(d, (C.W / 2, 990), "[Light is 1,560 times faster than Parker.]", 40, "SemiBold", WHITE,
-             fade(t, 8.0, 12) * a_all)
         out.append(done(im, ov))
     return out
 
@@ -214,13 +210,13 @@ def _earth(R):
     return im
 
 
-def earth_laps():
+def earth_laps(T, dur):
     """round the Earth 7.5 times in a second, at real speed (twice), the laps and the second counted"""
-    nf = int(7.5 * FPS)
+    nf = int(round(dur * FPS))
     cx, cy, R = C.W / 2, 560, 200
     Ro = R + 40
     globe = _earth(R)
-    whirls = [(1.0, 2.0), (4.2, 5.2)]
+    whirls = [(T["e7"] + 0.4, T["e7"] + 1.4), (T["e8"] + 0.2, T["e8"] + 1.2)]
     out = []
     for i in range(nf):
         t = i / FPS
@@ -253,18 +249,15 @@ def earth_laps():
         lap_txt = "7½" if u >= 1 else f"{laps:.1f}"
         text(d, (C.W / 2 - 470, cy - 40), lap_txt, 64, "Bold", CYAN, a_all, "rm")
         text(d, (C.W / 2 - 470, cy + 20), "laps of the Earth", 28, "Medium", DIM, a_all, "rm")
-        text(d, (C.W / 2, 870), "One lap of the Earth: [0.13 seconds].", 42, "SemiBold", WHITE, ease((t - 2.4) / 0.5) * a_all)
-        text(d, (C.W / 2, 990), "as if something could steer it round the equator: on its own, light goes straight",
-             24, "Medium", DIM, ease((t - 2.8) / 0.5) * a_all * 0.8)
         out.append(done(im, ov))
     return out
 
 
-def plan(bg):
+def plan(bg, T, dur):
     """over a frame of the race with light, the ladder of lines it leaves: what part 4 will show"""
     import make_race_light as L
     import camera as Cam
-    nf = int(11 * FPS)
+    nf = int(round(dur * FPS))
     rows = []
     for n in range(0, 17):
         (u, v) = L.uv(np.array([Cam.W * 0.5]), L.Z0 + L.DZ * n)[0]
@@ -278,13 +271,13 @@ def plan(bg):
         d.rectangle((0, 0, C.W, C.TOP), fill=(0, 0, 0, 255))
         d.rectangle((0, C.TOP + C.PH, C.W, C.H), fill=(0, 0, 0, 255))
         text(d, (C.W / 2, C.TOP / 2), "Next: the same race, with a pulse of [light] in it.", 48, "Bold", WHITE, a_all)
-        a1 = ease((t - 1.2) / 0.5) * a_all              # on the left, in clear sky: what the lines are
+        a1 = ease((t - T["e12"]) / 0.5) * a_all        # on the left, in clear sky: what the lines are
         top, bot = rows[-1], rows[0]
         if a1 > 0:
             d.rounded_rectangle((28, (top + bot) / 2 - 52, 330, (top + bot) / 2 + 52), 10, fill=(4, 8, 16, int(150 * a1)))
             text(d, (48, (top + bot) / 2 - 20), "one line for each", 30, "SemiBold", WHITE, a1, "lm")
             text(d, (48, (top + bot) / 2 + 20), "lap of the Earth", 30, "SemiBold", CYAN, a1, "lm")
-        a2 = ease((t - 3.5) / 0.5) * a_all
+        a2 = ease((t - T["e12"] - 2.0) / 0.5) * a_all
         if a2 > 0:
             for r, lab in ((rows[0], "where it set off"), (rows[-1], "lap 16")):
                 f = C.font(28, "SemiBold")
@@ -293,22 +286,19 @@ def plan(bg):
                 text(d, (44, r), lab, 28, "SemiBold", WHITE, a2, "lm")
                 d.line((68 + w, r, 380, r), fill=CYAN + (int(255 * a2),), width=3)
                 d.polygon([(380, r - 9), (398, r), (380, r + 9)], fill=CYAN + (int(255 * a2),))
-        a3 = ease((t - 5.5) / 0.5) * a_all
+        a3 = ease((t - T["e12"] - 4.0) / 0.5) * a_all
         text(d, (C.W / 2, rows[-1] - 60), "250 m away, each lap 3 m above the last", 28, "Medium", WHITE, a3)
-        cap = ("It sets off the moment the Wright Flyer appears." if t < 5.5 else
-               "Every lap of the Earth, it passes our road again and leaves a line.")
-        CAPA = fade(t, 0.6, 5.5, 0.3) if t < 5.5 else fade(t, 5.5, 11, 0.3) * a_all
-        fr = done(im, ov)
-        out.append(CAP.draw(fr, cap, CAPA))
+        out.append(done(im, ov))
     return out
 
 
-def time_plan():
+def time_plan(T, dur):
     """how time runs in part 4, drawn as its own frames go: real speed, the first stop, the planes at 48x, 1,000x,
     the second stop, Parker and the finish"""
     import make_race_light as L
-    segs = [("real", 15), ("stop", L.HOLD_PRE + 35 + L.HOLD_POST), ("real", 45), ("slow48", 353), ("slow1000", 27),
-            ("stop", L.HOLD_PRE + 35 + L.HOLD_POST), ("slow1000", 34), ("after", 96)]
+    hA, hB = L.HOLDS[0], L.HOLDS[L.N_PASS - 1]
+    segs = [("real", 15), ("stop", hA[0] + 35 + hA[1]), ("real", 45), ("slow48", 353), ("slow1000", 27),
+            ("stop", hB[0] + 35 + hB[1]), ("slow1000", 34), ("after", 96)]
     total = sum(n for _, n in segs)
     X0, X1, y, h = 150, 1770, 560, 54
     cols = {"real": (210, 214, 222), "slow48": ACCENT, "slow1000": (255, 140, 30), "after": (255, 140, 30), "stop": CYAN}
@@ -316,12 +306,12 @@ def time_plan():
     for kind, n in segs:
         w = (X1 - X0) * n / total
         xs.append((kind, x, x + w)); x += w
-    nf = int(12 * FPS)
+    nf = int(round(dur * FPS))
     out = []
     for i in range(nf):
         t = i / FPS
         a_all = min(1.0, (nf - 1 - i) / 10)
-        head = X0 + (X1 - X0) * ease((t - 0.6) / 3.0)
+        head = X0 + (X1 - X0) * ease((t - T["e14"]) / 3.5)
         im, ov = canvas()
         d = ImageDraw.Draw(ov)
         text(d, (C.W / 2, 175), "How time runs in part 4", 56, "Bold", WHITE, ease(t / 0.4) * a_all)
@@ -353,12 +343,8 @@ def time_plan():
         if af > 0:
             d.line((xf, y - h / 2 - 8, xf, y + h / 2 + 70), fill=WHITE + (int(255 * af),), width=3)
             text(d, (xf, y + h / 2 + 96), "finish", 28, "Bold", WHITE, af)
-        text(d, (C.W / 2, 790), "Even 1,000× slower, [light would cross the picture between two frames].", 40,
-             "SemiBold", WHITE, ease((t - 4.2) / 0.5) * a_all)
-        text(d, (C.W / 2, 860), "So twice the race freezes, and time runs [a million times slower] to watch it pass.", 40,
-             "SemiBold", WHITE, ease((t - 6.6) / 0.5) * a_all)
-        text(d, (C.W / 2, 930), "Then the race carries on from the same moment.", 40, "SemiBold", WHITE,
-             ease((t - 9.0) / 0.5) * a_all)
+        text(d, (C.W / 2, 790), "TIME STOPPED = slowed down a million times", 36, "Bold", CYAN,
+             ease((t - T["e16"] - 2.5) / 0.5) * a_all)
         out.append(done(im, ov))
     return out
 
@@ -370,13 +356,15 @@ def fmt_trip(hours):
     return f"{hours * 3600:.1f} seconds"
 
 
-def moon():
+def moon(T, dur, d_m2):
     """how long each would take to reach the Moon; light going there at its real speed, Earth and Moon to scale"""
-    nf = int(12 * FPS)
+    nf = int(round(dur * FPS))
     ex, mx, yd = 200, 200 + 1520, 330
     re_, rm = 1520 * 3959 / MOON_MI, 1520 * 1080 / MOON_MI
     rows = MACHINES + [("Light", LIGHT_MPH)]
-    trips = [(4.8, 4.8 + MOON_MI / (LIGHT_MPH / 3600)), (8.2, 8.2 + MOON_MI / (LIGHT_MPH / 3600))]
+    trip = MOON_MI / (LIGHT_MPH / 3600)
+    t1 = T["m4"] + 1.0                                  # "Watch." and it goes
+    trips = [(t1, t1 + trip), (t1 + trip + 1.2, t1 + 2 * trip + 1.2)]
     out = []
     for i in range(nf):
         t = i / FPS
@@ -389,7 +377,8 @@ def moon():
         d.ellipse((mx - rm, yd - rm, mx + rm, yd + rm), fill=(190, 190, 185, int(255 * a_all)))
         d.line((ex + re_ + 8, yd, mx - rm - 8, yd), fill=DIM + (int(60 * a_all),), width=1)
         for k, (name, v) in enumerate(rows):
-            a = ease((t - 0.8 - 0.45 * k) / 0.35) * a_all
+            t_row = T["m3"] if name == "Light" else T["m2"] + k * d_m2 / 6.3
+            a = ease((t - t_row) / 0.35) * a_all
             yy = 420 + k * 72
             is_light = name == "Light"
             text(d, (C.W / 2 - 30, yy), name, 38, "SemiBold", WHITE, a, "rm")
@@ -402,14 +391,12 @@ def moon():
                 for rr, al in ((18, 60), (10, 140), (5, 255)):
                     d.ellipse((x - rr, yd - rr, x + rr, yd + rr), fill=(225, 245, 255, int(al * a_all)))
                 text(d, (x, yd - 46), f"{min(t - t0, t1 - t0):.2f} s", 30, "Bold", CYAN, a_all)
-        text(d, (C.W / 2, 980), "That's light going to the Moon at its real speed.", 34, "Medium", DIM,
-             fade(t, 5.6, 13) * a_all)
         out.append(done(im, ov))
     return out
 
 
-def last_card():
-    nf = int(5.5 * FPS)
+def last_card(T, dur):
+    nf = int(round(dur * FPS))
     out = []
     for i in range(nf):
         t = i / FPS
@@ -422,37 +409,119 @@ def last_card():
     return out
 
 
-# ---- the parts, from their cuts, with captions
+# ---- Lily's voice
 
-PART1 = [(100, 170, "Real speed: what a normal camera sees, 25 frames a second."),
-         (170, 261, "Wright Flyer, 1903. [Light is 22 million times faster.]"),
-         (261, 362, "Spitfire, 1943. [Light is 1.8 million times faster.]"),
-         (362, 475, "Bell X-1, 1947, the first faster than sound. [Light: 831,000 times faster.]"),
-         (475, 588, "F-35, 2016. [Light is 546,000 times faster.]"),
-         (588, 714, "X-15, 1967, the fastest crewed aircraft. [Light: 148,000 times faster.]"),
-         (714, 764, "Parker Solar Probe, the fastest machine ever built. Watch closely..."),
-         (765, 800, "One frame, and the camera is gone.")]
-PART2 = [(112, 273, "Now slowed down. The Wright Flyer is slow enough at real speed."),
-         (273, 400, "48× slower: like a camera shooting 1,200 frames a second."),
-         (400, 560, "Spitfire: a mile every 10 seconds. [Light goes 186,282 miles every second.]"),
-         (800, 950, "Bell X-1: a mile every 4½ seconds."),
-         (1080, 1230, "F-35: a mile every 3 seconds."),
-         (1310, 1432, "X-15: 1¼ miles every second. [Light: 186,282.]")]
-PART3 = [(0, 60, "Now a race to the right-hand edge."),
-         (60, 145, "Each starts so that all five finish at the same instant."),
-         (150, 250, "Slowed 48×, so we can see the planes."),
-         (412, 437, "Parker is coming: slowing again, to 1,000×."),
-         (437, 490, "It crosses the whole picture in 1¼ thousandths of a second."),
-         (490, 540, "All five finish in the same 1/25,000 s."),
-         (540, 600, "Its shock wave takes 56 thousandths of a second to reach us.")]
-PARTS = {1: ("history_realtime", 100, 922, PART1), 2: ("history_slow48", 112, 1544, PART2),
-         3: ("history_race_parker", 0, 600, PART3), 4: ("history_race_light", 0, None, [])}
+import re, wave
+import vo_script as V
+
+VO_DIR = os.environ.get("VO_DIR", "/home/user/lot/vo/lily")
+NO_SUB = {"o1", "e1", "e2", "m5"}                       # their words are on the card already
+GAP, LEAD, TAIL = 0.35, 0.5, 0.9                        # s between lines, before the first, after the last
+CROSS = 35                                              # frames a frozen pass takes to cross (make_race_light)
+
+
+def vo_len(name):
+    with wave.open(f"{VO_DIR}/{name}.wav") as w:
+        return w.getnframes() / w.getframerate()
+
+
+def frames_at(seconds):
+    return int(round(seconds * FPS))
+
+
+_VO = {}
+
+
+def vo_audio(name):
+    """a line at the film's rate, at one loudness"""
+    if name not in _VO:
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-i", f"{VO_DIR}/{name}.wav", "-f", "f32le", "-ac", "2", "-ar",
+                              str(S.SR), "-"], capture_output=True, check=True).stdout
+        a = np.frombuffer(raw, np.float32).reshape(-1, 2).astype(np.float64)
+        voiced = a[np.abs(a[:, 0]) > 0.02]
+        rms = np.sqrt(np.mean(voiced ** 2)) if len(voiced) else 0.1
+        _VO[name] = a * min(0.10 / rms, 0.8 / np.abs(a).max())
+    return _VO[name]
+
+
+def chain(names, t0=LEAD, at=None):
+    """the lines one after another: {name: start (s)} and when the last one ends; at: {name: earliest start}"""
+    T, t = {}, t0
+    for n in names:
+        t = max(t, (at or {}).get(n, 0.0))
+        T[n] = t
+        t += vo_len(n) + GAP
+    return T, t - GAP
+
+
+def light_holds():
+    """frames time stands still before and after each frozen pass in part 4, as long as Lily needs: before the
+    first, f1; across and after it, f2 then f3; the same for the last (f6; f7, f8)"""
+    pre_a = max(65, frames_at(0.3 + vo_len("f1") + 0.5))
+    post_a = max(40, frames_at(vo_len("f2") - CROSS / FPS + GAP + vo_len("f3") + 0.5))
+    pre_b = max(65, frames_at(0.3 + vo_len("f6") + 0.5))
+    post_b = max(40, frames_at(vo_len("f7") - CROSS / FPS + GAP + vo_len("f8") + 0.3))
+    return pre_a, post_a, pre_b, post_b
+
+
+os.environ.setdefault("LT_HOLDS", ",".join(str(h) for h in light_holds()))   # before make_race_light is imported
+
+
+# ---- the parts, from their cuts
+
+PART1_SILENT = [(100, 170, "Real speed: what a normal camera sees, 25 frames a second."),   # no voice over the flights
+                (170, 261, "Wright Flyer, 1903. [Light is 22 million times faster.]"),
+                (261, 362, "Spitfire, 1943. [Light is 1.8 million times faster.]"),
+                (362, 475, "Bell X-1, 1947, the first faster than sound. [Light: 831,000 times faster.]"),
+                (475, 588, "F-35, 2016. [Light is 546,000 times faster.]"),
+                (588, 714, "X-15, 1967, the fastest crewed aircraft. [Light: 148,000 times faster.]"),
+                (714, 764, "Parker Solar Probe, the fastest machine ever built. Watch closely...")]
+
+
+def part4_anchors():
+    """part 4's frames shown, and where its lines go in them"""
+    import make_race_light as L
+    js, seq = L.sequence()
+    first = {}
+    for o, (j, clock, phase) in enumerate(seq):
+        k = js[j][0]
+        if phase is None: first.setdefault(k, o)
+        else: first.setdefault((phase[0], phase[1]), o)
+    A, B = 0, L.N_PASS - 1
+    cues = [(first[(A, "pre")] + 8, "f1"), (first[(A, "cross")], "f2"), (first[(A, "cross")], "f3"),
+            (first[80], "f4"), (first[330], "f5"),
+            (first[(B, "pre")] + 8, "f6"), (first[(B, "cross")], "f7"), (first[(B, "cross")], "f8"),
+            (first[474] + 3, "f9"), (first[474] + 3, "f10")]
+    return len(seq), cues, first[(B, "pre")]
+
+
+def part_plan(num):
+    """(cut, first frame, end frame, [(frame, line)] wanted, the frame held if the lines need longer)"""
+    if num == 1: return "history_realtime", 100, 922, [(775, "p1e")], 880
+    if num == 2:
+        return ("history_slow48", 112, 1544, [(300, "p2a"), (800, "p2b"), (1075, "p2c"), (1300, "p2d"), (1440, "p2e")],
+                1490)
+    if num == 3: return "history_race_parker", 0, 600, [(78, "p3a"), (252, "p3b"), (392, "p3c"), (506, "p3d")], 599
+    n_seq, cues, _ = part4_anchors()
+    return "history_race_light_vo", 0, n_seq + 30 + 112, cues, n_seq + 30 + 60
+
+
+def place(k0, k1, wanted, hold_at):
+    """each line at its frame, or after the one before it ends; and the frames to hold at hold_at so the last one
+    is done before the part is (offsets from k0)"""
+    out, end = [], -10 ** 9
+    for k, name in wanted:
+        f = max(k - k0, end + frames_at(GAP))
+        out.append((f, name))
+        end = f + frames_at(vo_len(name))
+    extra = max(0, end + frames_at(TAIL) - (k1 - k0))
+    return out, {hold_at: extra}
 
 
 def frames_of(name, k0, k1):
     """frames k0..k1 of a cut, one at a time (a whole cut in memory would not fit)"""
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-i", f"{OUT}/{name}.mp4", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
-                         stdout=subprocess.PIPE)
+                         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     n, k = C.W * C.H * 3, 0
     while k1 is None or k < k1:
         b = p.stdout.read(n)
@@ -462,23 +531,26 @@ def frames_of(name, k0, k1):
     p.stdout.close(); p.wait()
 
 
-def sound_of(name, k0, k1):
+def sound_of(name, k0, k1, holds):
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", f"{OUT}/{name}.mp4", "-f", "f32le", "-ac", "2", "-ar",
                           str(S.SR), "-"], capture_output=True, check=True).stdout
     a = np.frombuffer(raw, np.float32).reshape(-1, 2).astype(np.float64)
     per = S.SR / FPS
-    a = a[int(k0 * per):] if k1 is None else a[int(k0 * per):int(k1 * per)]
+    a = a[int(k0 * per):int(k1 * per)].copy()
+    a = np.pad(a, ((0, max(0, int((k1 - k0) * per) - len(a))), (0, 0)))
+    for k, extra in sorted(holds.items(), reverse=True):        # held frames: silence
+        i = int((k + 1 - k0) * per)
+        a = np.concatenate([a[:i], np.zeros((int(extra * per), 2)), a[i:]])
     edge = int(0.01 * S.SR)                             # no clicks at the joins
-    a = a.copy()
     a[:edge] *= np.linspace(0, 1, edge)[:, None]; a[-edge:] *= np.linspace(1, 0, edge)[:, None]
     return a
 
 
-def part(num):
-    """a cut's frames with its captions (a generator), and its sound"""
-    name, k0, k1, cues = PARTS[num]
-    gen = (CAP.draw(f, *CAP.at(cues, k0 + i)) for i, f in enumerate(frames_of(name, k0, k1)))
-    return gen, sound_of(name, k0, k1)
+def part_frames(name, k0, k1, holds, silent):
+    for i, f in enumerate(frames_of(name, k0, k1)):
+        k = k0 + i
+        f = CAP.draw(f, *CAP.at(silent, k)) if silent else f
+        for _ in range(1 + holds.get(k, 0)): yield f
 
 
 def pad(n_frames, seed=3):
@@ -513,50 +585,135 @@ def plan_bg():
         if i == j: return fr.copy()
 
 
-def pieces():
-    """the film in order: (name, frames-maker, sound-maker)"""
-    return [("opening", lambda: opening(0), "wind"),
-            ("card1", lambda: part_card(1, "REAL SPEED", "Six machines, 30 to 430,000 mph, as a normal camera sees them.", 0), "wind"),
-            ("part1", lambda: part(1), None),
-            ("card2", lambda: part_card(2, "48× SLOWER", "The same planes, slowed down so you can see them.", 0), "wind"),
-            ("part2", lambda: part(2), None),
-            ("card3", lambda: part_card(3, "THE RACE", "Five machines, timed to reach the finish together.", 0), "wind"),
-            ("part3", lambda: part(3), None),
-            ("light", light_intro, "pad"),
-            ("chart", speed_chart, "pad"),
-            ("earth", earth_laps, "pad"),
-            ("plan", lambda: plan(plan_bg()), "pad"),
-            ("time", time_plan, "pad"),
-            ("card4", lambda: part_card(4, "THE RACE, WITH LIGHT", "Watch the sky.", 0, 3.4), "wind"),
-            ("part4", lambda: part(4), None),
-            ("moon", moon, "pad"),
-            ("end", last_card, "pad")]
+# ---- the film
+
+def card(name, make, lines, dur_min=0.0, at=None, t0=LEAD, tail=TAIL, bed="pad"):
+    T, end = chain(lines, t0, at)
+    dur = max(dur_min, end + tail)
+    return dict(name=name, n=frames_at(dur), cues=[(frames_at(T[l]), l) for l in lines],
+                frames=lambda: iter(make(T, dur)), bed=bed, duck=4.0)
 
 
-if __name__ == "__main__" and sys.argv[1:2] == ["test"]:
+def part_piece(num):
+    name, k0, k1, wanted, hold_at = part_plan(num)
+    cues, holds = place(k0, k1, wanted, hold_at)
+    silent = PART1_SILENT if num == 1 else []
+    return dict(name=f"part{num}", n=(k1 - k0) + sum(holds.values()), cues=cues,
+                frames=lambda: part_frames(name, k0, k1, holds, silent),
+                bed=lambda: sound_of(name, k0, k1, holds), duck=10.0)
+
+
+def chart_card():
+    T, _ = chain(["e3", "e4", "e5"], 0.4)
+    T6 = max(T["e5"] + vo_len("e5") + GAP, T["e5"] + 2.3)            # as Parker shrinks
+    return card("chart", speed_chart, ["e3", "e4", "e5", "e6"], at={"e6": T6}, t0=0.4, tail=1.0)
+
+
+def moon_card():
+    T, end = chain(["m1", "m2", "m3", "m4"], 0.4)
+    trips_end = T["m4"] + 1.0 + 2 * MOON_MI / (LIGHT_MPH / 3600) + 1.2
+    d2 = vo_len("m2")
+    return card("moon", lambda T_, dur: moon(T_, dur, d2), ["m1", "m2", "m3", "m4"], dur_min=trips_end + 0.8, t0=0.4)
+
+
+def film():
+    return [card("opening", lambda T, d: opening(T, d, 0), ["o1", "o2"], dur_min=6.5, t0=0.6, bed="wind"),
+            card("card1", lambda T, d: part_card(1, "REAL SPEED", "", 0, d), ["c1"], 3.8, bed="wind"),
+            part_piece(1),
+            card("card2", lambda T, d: part_card(2, "48× SLOWER", "", 0, d), ["c2"], 3.8, bed="wind"),
+            part_piece(2),
+            card("card3", lambda T, d: part_card(3, "THE RACE", "", 0, d), ["c3"], 3.8, bed="wind"),
+            part_piece(3),
+            card("light", light_intro, ["e1", "e2"], at={"e2": 0.4 + vo_len("e1") + 0.7}, t0=0.4),
+            chart_card(),
+            card("earth", earth_laps, ["e7", "e8", "e9"], t0=0.4),
+            card("plan", lambda T, d: plan(plan_bg(), T, d), ["e10", "e11", "e12", "e13"], t0=0.4),
+            card("time", time_plan, ["e14", "e15", "e16", "e17"], t0=0.4),
+            card("card4", lambda T, d: part_card(4, "THE RACE, WITH LIGHT", "", 0, d), ["c4"], 3.4, bed="wind"),
+            part_piece(4),
+            moon_card(),
+            card("end", last_card, ["m5"], t0=0.6, tail=1.8)]
+
+
+def subtitles(placed):
+    """what she says, shown in the band below the picture a sentence at a time, each for its share of the line"""
+    out = []
+    for f0, name in placed:
+        if name in NO_SUB: continue
+        sents = [x for x in re.split(r"(?<=[.?!])\s+", V.LINES[name][1]) if x]
+        merged = []
+        for x in sents:                                 # a short sentence rides with the next
+            if merged and len(merged[-1]) < 28: merged[-1] += " " + x
+            else: merged.append(x)
+        n = frames_at(vo_len(name))
+        tot = sum(len(x) for x in merged)
+        f = f0
+        for x in merged:
+            g = f + n * len(x) / tot
+            out.append((int(f), int(g) + 6, x))
+            f = g
+    return out
+
+
+def mix(pieces, placed, total):
+    """the pieces' own sound, lowered under her voice (10 dB in the parts, 4 dB under the cards), and her voice"""
+    per = S.SR / FPS
+    bed, depth = [], []
+    for p in pieces:
+        m = int(p["n"] * per)
+        a = p["bed"]() if callable(p["bed"]) else wind(p["n"]) if p["bed"] == "wind" else pad(p["n"])
+        bed.append(np.pad(a, ((0, max(0, m - len(a))), (0, 0)))[:m])
+        depth.append(np.full(m, p["duck"]))
+    bed, depth = np.concatenate(bed), np.concatenate(depth)
+    n = len(bed)
+    vo = np.zeros((n, 2))
+    on = np.zeros(n)
+    for f0, name in placed:
+        a = vo_audio(name)
+        i = int(f0 * per)
+        j = min(n, i + len(a))
+        vo[i:j] += a[:j - i]
+        on[max(0, i - int(0.15 * S.SR)):min(n, j + int(0.35 * S.SR))] = 1
+    k = int(0.15 * S.SR)                                # the ducking eases in and out
+    on = np.convolve(on, np.ones(k) / k, mode="same")
+    g = 1 - on * (1 - 10 ** (-depth / 20))
+    x = bed * g[:, None] + vo
+    ax = np.abs(x)                                      # a soft ceiling
+    return np.where(ax < 0.9, x, np.sign(x) * (0.9 + 0.1 * np.tanh((ax - 0.9) / 0.1)))
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["holds"]:            # for make_race_light.py's film version
+    print(os.environ["LT_HOLDS"])
+elif __name__ == "__main__" and sys.argv[1:2] == ["plan"]:           # where every line falls
+    t = 0
+    for p in film():
+        for f, name in p["cues"]:
+            print(f"{(t + f) / FPS:7.2f} s  {p['name']:8s} {name:4s} {vo_len(name):5.2f} s  {V.LINES[name][1][:70]}")
+        t += p["n"]
+    print(f"{t / FPS:.1f} s in all")
+elif __name__ == "__main__" and sys.argv[1:2] == ["test"]:
     os.makedirs(f"{OUT}/test_film", exist_ok=True)
     import cv2
-    for name, make, snd in pieces():
-        if name not in sys.argv[2:]: continue
-        fr = make()
-        fr = list(fr[0]) if isinstance(fr, tuple) else fr
+    for p in film():
+        if p["name"] not in sys.argv[2:]: continue
+        fr = list(p["frames"]())
         for i in range(0, len(fr), max(1, len(fr) // 8)):
-            cv2.imwrite(f"{OUT}/test_film/{name}_{i:04d}.png", fr[i][..., ::-1])
-        print(name, len(fr), "frames")
+            cv2.imwrite(f"{OUT}/test_film/{p['name']}_{i:04d}.png", fr[i][..., ::-1])
+        print(p["name"], len(fr), "frames, planned", p["n"])
 elif __name__ == "__main__":
-    sink = MC.Sink("history_light_film")
-    audio = []
-    per = S.SR / FPS
-    for name, make, snd in pieces():
-        r = make()
+    pieces = film()
+    placed, t = [], 0
+    for p in pieces:
+        placed += [(t + f, name) for f, name in p["cues"]]
+        t += p["n"]
+    subs = subtitles(placed)
+    sink = MC.Sink(os.environ.get("FILM_NAME", "history_light_film"))
+    for p in pieces:
         n0 = sink.n
-        if isinstance(r, tuple):
-            for f in r[0]: sink.add([f])
-            a = r[1]
-        else:
-            sink.add(r)
-            a = wind(len(r)) if snd == "wind" else pad(len(r))
-        n = sink.n - n0
-        audio.append(np.pad(a, ((0, max(0, int(n * per) - len(a))), (0, 0)))[:int(n * per)])
-        print(name, n / FPS, "s", flush=True)
-    sink.close(np.concatenate(audio))
+        for f in p["frames"]():
+            if sink.n - n0 >= p["n"]: break
+            sink.add([CAP.draw(f, *CAP.at(subs, sink.n))] if CAP.at(subs, sink.n)[0] else [f])
+        while sink.n - n0 < p["n"]:                    # a maker one frame short: hold its last
+            sink.add([f])
+        print(p["name"], p["n"] / FPS, "s", flush=True)
+    sink.close(mix(pieces, placed, t))

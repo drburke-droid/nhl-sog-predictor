@@ -27,6 +27,12 @@ def draw(frame8, text, alpha=1.0, size=38, y=Y_MID):
     f = C.font(size, "SemiBold")
     runs = _runs(text)
     w = sum(d.textlength(t, font=f) for t, _ in runs)
+    if w > C.W - 200 and "[" not in text:              # a long plain line: two lines, as even as the words allow
+        words = text.split()
+        best = min(range(1, len(words)), key=lambda i: abs(d.textlength(" ".join(words[:i]), font=f)
+                                                           - d.textlength(" ".join(words[i:]), font=f)))
+        im2 = draw(frame8, " ".join(words[:best]), alpha, size, y - size * 0.6)
+        return draw(im2, " ".join(words[best:]), alpha, size, y + size * 0.6)
     if w > C.W - 120:                                    # too long for one line at this size
         size = int(size * (C.W - 120) / w); f = C.font(size, "SemiBold")
         w = sum(d.textlength(t, font=f) for t, _ in runs)
