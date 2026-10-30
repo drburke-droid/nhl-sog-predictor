@@ -2,6 +2,9 @@
   python make_cuts.py realtime -> history_realtime.mp4: every machine at real speed, one after the other, no slow motion
   python make_cuts.py pegged   -> history_pegged16.mp4: each machine at real speed, then its replay, every replay at the
                                   same rate (16 times slower, a camera at 400 frames a second)
+  REPLAY48=1 python make_cuts.py slow48 -> history_slow48.mp4: the Wright Flyer at real speed, then every other machine
+                                  only in slow motion, all 48 times slower (a camera at 1,200 frames a second; the replay
+                                  renders at that rate, flight.REPLAY_SUF), with the slow-motion sign (slowmo.py)
 
 Real time at 25 frames a second hides how much faster the fast ones are: the F-35 is in the picture for 89 ms (two or
 three frames), the X-15 for 23 ms (one). Without bending the physics, these cuts make the difference visible:
@@ -16,6 +19,7 @@ would give (1/1,600 s). At 16x the Parker probe is still a single white frame.""
 import cv2, numpy as np, os, subprocess, sys, shutil, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import comp as C, flight as F, fly_fx as FX, fly_sound as S, make_fly as MF, make_film as MFi, parker_comp as PC
+import slowmo as SM
 R_ = "/home/user/lot/render"
 OUT = "/home/user/lot/out"
 WHITE, DIM = MF.WHITE, MF.DIM
@@ -160,12 +164,75 @@ def peg_audio(name, n_frames, seed=7):
     return out + rum
 
 
+def slowed(frames8, tl, t0, lead=0, slam_at=0):
+    """the slow-motion sign on finished frames: tl their [(t, slow)], t0 when the clock starts; the first `lead`
+    frames hold the first moment while the sign comes up"""
+    out = []
+    for k, im in enumerate(frames8):
+        t, slow = tl[max(0, k - lead)] if k >= lead else (tl[0][0], tl[0][1])
+        amt = min(1.0, math.log(1 / slow) / math.log(48.0)) if slow < 0.99 else 0.0
+        im = SM.badge(SM.tint(im, amt), slow, t - t0)
+        out.append(SM.slam(im, 1 / tl[0][1], k - slam_at) if tl[0][1] < 0.99 else im)
+    return out
+
+
+def r48(name, seed0=0, lead=26):
+    """the machine only in slow motion (REPLAY48=1: its replay, 48x slower while it crosses, then ramping back to real
+    speed while its dust settles), held a moment first while the sign comes up; and its sound, played back as slowly"""
+    tl = F.replay(name)
+    assert abs(tl[0][1] - 1 / 48) < 1e-9, "run with REPLAY48=1"
+    amp = SHAKE_PER_KPA * KPA.get(name, 0)
+    t_first = tl[0][0]
+    raw = []
+    for n, (t, slow) in enumerate(tl):
+        bg = C.plate_loop(60 + int((t - t_first) * F.FPS))
+        img = MF.compose(name, n, t, bg, replay=True, expo=0.01 * slow)
+        raw.append(finish(img, seed0 + 9000 + n, MF.lines(name), 1.0, FX.shake_t(name, t) if name in KPA else -1, amp))
+    frames = slowed([raw[0]] * lead + raw, tl, t_first, lead=lead)
+    return frames, slow_audio(name, [t for t, _ in tl], lead)
+
+
+def slow_audio(name, ts, lead):
+    """the real-time sound played back as the frames go (ts: each frame's flight time), after `lead` frames of hush"""
+    rt = S.shot(name, seed=7)
+    n0 = round(F.MACHINES[name]["pre"] * F.FPS)
+    n = len(ts)
+    T = np.arange(int(n / F.FPS * S.SR)) / S.SR
+    tk = np.interp(T * F.FPS, np.arange(n), ts) + n0 / F.FPS
+    a = np.stack([np.interp(tk * S.SR, np.arange(len(rt)), rt[:, c]) for c in (0, 1)], 1)
+    a = np.concatenate([np.zeros((int(lead / F.FPS * S.SR), 2)), a])
+    rum = S.filt(np.random.default_rng(17).standard_normal((len(a), 2)), "bandpass", [30, 110], 2)
+    rum *= 0.012 / (np.sqrt((rum ** 2).mean()) + 1e-9)
+    return a + rum
+
+
 def parker_rt():
     """two seconds of road, the white frame, then nothing (from the finale's own frames)"""
     n0 = round(F.MACHINES["parker"]["pre"] * F.FPS)
     fr = f"{OUT}/frames_parker"
     ims = [cv2.imread(f"{fr}/f{k:04d}.png")[..., ::-1] for k in range(n0 + 1)]
     return ims + PC.lost(1.4)
+
+
+class Sink:
+    """frames straight into the encoder, a segment at a time (frame files for a whole cut would fill the disk)"""
+    def __init__(self, name):
+        self.name, self.n = name, 0
+        self.p = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{C.W}x{C.H}",
+                                   "-r", "25", "-i", "-", "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p",
+                                   f"{OUT}/{name}_video.mp4"], stdin=subprocess.PIPE)
+
+    def add(self, frames):
+        for im in frames:
+            self.p.stdin.write(np.ascontiguousarray(im, np.uint8).tobytes()); self.n += 1
+
+    def close(self, audio):
+        self.p.stdin.close(); self.p.wait()
+        S.write(f"{OUT}/{self.name}.wav", audio)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", f"{OUT}/{self.name}_video.mp4", "-i", f"{OUT}/{self.name}.wav",
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", f"{OUT}/{self.name}.mp4"], check=True)
+        os.remove(f"{OUT}/{self.name}_video.mp4")
+        print(self.name, self.n / 25, "s")
 
 
 def write(frames, audio, name):
@@ -200,8 +267,28 @@ def parker_audio(n_road, n_after):
     return np.concatenate([a, np.stack([crack, crack], 1), np.zeros((int(n_after / F.FPS * sr) - m, 2))])
 
 
+def slow48():
+    MFi.TITLE = ("120 years of speed,", "flying past you,", "48 times slower")
+    out = Sink("history_slow48")
+    title = MFi.title_frames(4.5)
+    out.add(title)
+    audio = [S.wind(int(len(title) / 25 * S.SR), np.random.default_rng(1), 0.035)]
+    f = rt_frames("wright")                    # too slow to slow down: at real speed, with the sign saying so
+    ts = [(t, 1.0) for _, t in F.frames("wright")]
+    out.add(slowed(f, ts, ts[0][0])); audio.append(segment_audio("wright", len(f)))
+    for name in ORDER[1:]:
+        fr, au = r48(name)
+        out.add(fr); audio.append(au * 0.6)
+        print(name, "done", flush=True)
+    card = PC.card(*MFi.END_X15, 4.5)
+    out.add(card); audio.append(np.zeros((int(len(card) / 25 * S.SR), 2)))
+    out.close(mic(np.concatenate(audio), 1.6))
+
+
 if __name__ == "__main__":
     which = sys.argv[1]
+    if which == "slow48":
+        slow48(); sys.exit()
     title = MFi.title_frames()
     frames = list(title)
     audio = [S.wind(int(len(title) / 25 * S.SR), np.random.default_rng(1), 0.035)]

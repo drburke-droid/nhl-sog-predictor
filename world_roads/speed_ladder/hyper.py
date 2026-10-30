@@ -12,7 +12,7 @@ import flight as F
 
 NAME = "x15"
 M_ = F.MACHINES[NAME]
-V, PY, PZ = M_["speed"], F.FLY_Y, M_["alt"]
+V, PY, PZ = M_["speed"], F.lane_y("x15"), M_["alt"]
 E_LINE = 3.0e6                       # J per metre of path
 RHO, P0, C_SOUND = 1.225, 1.013e5, 343.0
 BLAST = (E_LINE / RHO) ** 0.25

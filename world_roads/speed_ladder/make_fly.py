@@ -14,7 +14,7 @@ def fly(name, n, replay=False):
     """the CG for frame n: the render where the machine is in the picture (feathered into the static frame at the edges
     of the part rendered), else the static frame"""
     st = C.props(f"{R_}/fly_{name}/static.npz")
-    p = f"{R_}/fly_{name}{'_replay' if replay else ''}/p{n:04d}.npz"
+    p = f"{R_}/fly_{name}{'_replay' + F.REPLAY_SUF.get(name, '') if replay else ''}/p{n:04d}.npz"
     if not os.path.exists(p): return st
     d = np.load(p)
     out = C.props(p)

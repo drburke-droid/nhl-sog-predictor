@@ -19,10 +19,11 @@ args = [a for a in sys.argv[1:] if a != "--"]
 args = args[args.index(os.path.basename(__file__)) + 1:] if os.path.basename(__file__) in args else args
 NAME = args[0]
 REPLAY = len(args) > 1 and args[1] == "replay"
-args = [NAME] + args[1 + REPLAY:]
+RACE = len(args) > 1 and args[1] == "race"          # the final cut's race (race.py; run with RACE=1)
+args = [NAME] + args[1 + (REPLAY or RACE):]
 rng_ = [int(a) for a in args[1:3]] if len(args) >= 3 else None
 STATIC = f"/home/user/lot/render/fly_{NAME}/static.npz"
-OUT = f"/home/user/lot/render/fly_{NAME}" + ("_replay" if REPLAY else "") + os.environ.get("OUTSUF", "")
+OUT = f"/home/user/lot/render/fly_{NAME}" + ("_replay" if REPLAY else "_race" if RACE else "") + os.environ.get("OUTSUF", "")
 os.makedirs(OUT, exist_ok=True)
 os.makedirs(os.path.dirname(STATIC), exist_ok=True)
 SAMPLES = int(os.environ.get("SAMPLES", "48"))
@@ -30,6 +31,10 @@ EXPO = float(os.environ.get("EXPO", "0.01"))     # 1/100 s; EXPO=0.02 for a 180-
 
 s = S.reset(samples=SAMPLES)
 s.render.use_motion_blur, s.render.motion_blur_shutter = True, 0.25
+s.render.use_persistent_data = os.environ.get("PERSIST", "1") == "1"     # keep the scene's data between frames
+# the plumes by ray marching: the same light as the unbiased volume method, without its 13 s per frame building a
+# density octree (the earlier renders used that; the difference is noise)
+s.cycles.volume_biased = os.environ.get("VOLUME_BIASED", "1") == "1"
 vl = s.view_layers[0]
 vl.use_pass_z = True
 s.render.image_settings.media_type = "MULTI_LAYER_IMAGE"
@@ -153,8 +158,11 @@ def border(rect):
 
 
 # [(frame, t, exposure)]: real time, or the replay's high-speed camera (its exposure a quarter of its frame interval)
-todo = [(n, t, EXPO) for n, t in F.frames(NAME)] if not REPLAY else \
-       [(n, t, EXPO * slow) for n, (t, slow) in enumerate(F.replay(NAME))]
+todo = [(n, t, EXPO) for n, t in F.frames(NAME)] if not (REPLAY or RACE) else \
+       [(n, t, EXPO * slow) for n, (t, slow) in enumerate(F.replay(NAME))] if REPLAY else None
+if RACE:
+    import race as RC
+    todo = [(n, RC.own(NAME, T), EXPO * slow) for n, (T, slow) in enumerate(RC.timeline())]
 if rng_: todo = [x for x in todo if rng_[0] <= x[0] <= rng_[1]]
 if not os.path.exists(STATIC):                            # the static frame first: the others borrow from it
     todo = [next((n, t, EXPO) for n, t in F.frames(NAME) if not F.in_view(NAME, t, EXPO))] + todo
@@ -173,7 +181,9 @@ for n, t, expo in todo:
     place(n, t, F.screen_rect(NAME, t, expo) is not None, expo)
     border(rect if rect and rect != (0, 0, s.render.resolution_x, s.render.resolution_y) else None)
     s.render.filepath = f"{OUT}/tmp_{n:04d}.exr"
+    t1 = time.time()
     bpy.ops.render.render(write_still=True)
+    t2 = time.time()
     save(path, s.render.filepath)
     if s.render.use_border:
         st, d = dict(np.load(STATIC)), dict(np.load(path))
@@ -181,5 +191,5 @@ for n, t, expo in todo:
         for k in ("rgba", "depth"):
             st[k][y0:y1, x0:x1] = d[k][y0:y1, x0:x1]
         np.savez_compressed(path, **st, rect=np.array(rect))
-    print(f"{NAME} {n} t={t:.4f} s {rect} {time.time() - t0:.1f}s", flush=True)
+    print(f"{NAME} {n} t={t:.4f} s {rect} {time.time() - t0:.1f}s (setup {t1 - t0:.1f}, render {t2 - t1:.1f})", flush=True)
 print("ALLDONE", NAME)

@@ -1,7 +1,8 @@
 """Where each machine is, moment by moment, as it crosses the road left to right, and which frames of its shot need it
 rendered. No Blender here, so the compositor and the sound can use it too.
 
-World: road along +y, x to the right, z up, ground z = 0; every machine flies along x at y = FLY_Y."""
+World: road along +y, x to the right, z up, ground z = 0; every machine flies along x at y = FLY_Y (in the final
+cut's race, RACE=1, each in its own lane: RACE_LANES)."""
 import math, sys, os
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -24,8 +25,25 @@ MACHINES = {
 }
 
 
+# the final cut's race (race.py): every machine clears the right edge at the same instant, so none can share a line;
+# each has its own lane, (distance from the camera, height) m: the slow ones nearer and lower, the fast ones farther
+RACE_LANES = {"wright": (13.0, 1.85), "spitfire": (22.0, 6.0), "f35": (32.0, 5.2), "x15": (48.0, 3.3)}
+RACE = os.environ.get("RACE") == "1"
+if RACE:
+    for _n, (_y, _z) in RACE_LANES.items(): MACHINES[_n]["alt"] = _z
+
+
+def lane_y(name):
+    """the distance from the camera the machine flies past at"""
+    return RACE_LANES[name][0] if RACE and name in RACE_LANES else FLY_Y
+
+
 # the slow-motion replay: how much slower than real time while it crosses (a camera running 25 / slow frames a second)
 REPLAY = {"spitfire": 1 / 16, "x1": 1 / 32, "f35": 1 / 48, "x15": 1 / 200, "parker": 1 / 20000}
+REPLAY_SUF = {}                   # a replay's renders are in fly_<name>_replay<suffix>
+if os.environ.get("REPLAY48") == "1":            # the cut with every replay at the same 48 times slower
+    REPLAY_SUF = {k: "_r48" for k, v in REPLAY.items() if abs(v - 1 / 48) > 1e-12}
+    REPLAY = {k: 1 / 48 for k in REPLAY}
 RAMP, TAIL = 50, 15               # frames ramping back to real speed, then frames at real speed
 
 
@@ -63,7 +81,7 @@ def pose(name, t):
         roll = math.radians(1.3) * math.sin(2 * math.pi * t / 3.3 + 1.9)
     elif name == "spitfire":
         roll = math.radians(1.0)
-    return (x, FLY_Y, z), (roll, pitch, 0.0)
+    return (x, lane_y(name), z), (roll, pitch, 0.0)
 
 
 def frames(name):

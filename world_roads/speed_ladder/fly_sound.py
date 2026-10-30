@@ -138,7 +138,7 @@ BOOM = {"x1": dict(dp=1.6, length=0.016), "f35": dict(dp=3.2, length=0.024)}    
 
 def path(name, te):
     m = F.MACHINES[name]
-    return np.stack([m["speed"] * te, np.full(len(te), F.FLY_Y), np.full(len(te), m["alt"])], 1)
+    return np.stack([m["speed"] * te, np.full(len(te), F.lane_y(name)), np.full(len(te), m["alt"])], 1)
 
 
 def heard(name, src, t_src0, n0, dur, over=None):

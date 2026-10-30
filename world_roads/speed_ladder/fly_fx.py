@@ -15,24 +15,25 @@ FX = {"x1": dict(refr=2.2, shake=9.0, trail=1.2),
 _geo = {}
 
 
-def geometry(alt):
+def geometry(alt, fly_y=F.FLY_Y):
     """per pixel: the closest approach of its ray (up to where it meets the ground) to the flight line, where along
     the line that is, and the on-screen direction away from the line"""
-    if alt in _geo: return _geo[alt]
+    key = (alt, fly_y)
+    if key in _geo: return _geo[key]
     R0 = D.Renderer(D.Grid(h=1.0), scale=1.0)
     dirs, org = R0.dirs, R0.org
     dz = dirs[..., 2]
     tg = np.where(dz < -1e-6, -org[2] / np.minimum(dz, -1e-6), np.inf)
-    oy, oz = org[1] - F.FLY_Y, org[2] - alt
+    oy, oz = org[1] - fly_y, org[2] - alt
     ts = -(oy * dirs[..., 1] + oz * dirs[..., 2]) / (dirs[..., 1] ** 2 + dirs[..., 2] ** 2)
     ts = np.clip(ts, 0, tg)
-    py = org[1] + ts * dirs[..., 1] - F.FLY_Y; pz = org[2] + ts * dirs[..., 2] - alt
+    py = org[1] + ts * dirs[..., 1] - fly_y; pz = org[2] + ts * dirs[..., 2] - alt
     dmin = np.sqrt(py ** 2 + pz ** 2).astype(np.float32)
     xs = (org[0] + ts * dirs[..., 0]).astype(np.float32)
     gy, gx = np.gradient(dmin)
     gn = np.sqrt(gx ** 2 + gy ** 2) + 1e-9
-    _geo[alt] = (dmin, xs, (gx / gn).astype(np.float32), (gy / gn).astype(np.float32))
-    return _geo[alt]
+    _geo[key] = (dmin, xs, (gx / gn).astype(np.float32), (gy / gn).astype(np.float32))
+    return _geo[key]
 
 
 _rng = np.random.default_rng(5)
@@ -46,7 +47,7 @@ def displacement(name, t):
     mach = m["speed"] / 343.0
     if mach <= 1: return None
     cot = math.sqrt(mach ** 2 - 1)
-    dmin, xs, gx, gy = geometry(m["alt"])
+    dmin, xs, gx, gy = geometry(m["alt"], F.lane_y(name))
     L = m["box"][0]
     disp = np.zeros((H, W), np.float32)
     if name == "x15":
@@ -114,7 +115,7 @@ def wake_glow(name, t, expo):
     img = np.zeros((H, W, 3), np.float32)
     for a in ages:
         x = xn - m["speed"] * a
-        uv, z = Cam.project([[x, F.FLY_Y, m["alt"]]])
+        uv, z = Cam.project([[x, F.lane_y(name), m["alt"]]])
         if z[0] <= 0: continue
         u, v = uv[0]
         if u < -400 or u > W + 400: continue
@@ -139,5 +140,5 @@ def wake_glow(name, t, expo):
 
 
 def dust_layer(name, n, replay=False):
-    p = f"{R_}/fly_{name}{'_replay' if replay else ''}_dust"
+    p = f"{R_}/fly_{name}{'_replay' if replay else ''}_dust{F.REPLAY_SUF.get(name, '') if replay else ''}"
     return C.dust(f"{p}/d{n:04d}.png", f"{p}/g{n:04d}.png")
