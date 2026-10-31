@@ -34,10 +34,19 @@ COL = np.array([0.82, 0.9, 1.0], np.float32)
 tl = RC.timeline()
 TS = np.array([T for T, _ in tl])
 K_IN = next(k for k, (T, s) in enumerate(tl) if RC.own("parker", T) >= 0)
-K_LAST = K_IN - 3                           # its last pass: three frames (120 us) before Parker comes in
-PASS_T = [TS[K_LAST] - (N_PASS - 1 - n) * LAP for n in range(N_PASS)]
-K_FIRST = int(round(np.interp(PASS_T[0], TS, np.arange(len(TS)))))
-FROZEN = {0: K_FIRST, N_PASS - 1: K_LAST}   # pass -> the frame time stops in
+K_LAST = K_IN + int(os.environ.get("LT_LAST", "8"))   # its last pass: 8 frames (320 us) after Parker comes in, so
+                                            # time stops with Parker in the picture and light passes it
+
+
+def passes(k_last):
+    """the passes' times (17 laps back from the last, in frame k_last), the frame the first falls in, and pass -> the
+    frame time stops in"""
+    pt = [TS[k_last] - (N_PASS - 1 - n) * LAP for n in range(N_PASS)]
+    k_first = int(round(np.interp(pt[0], TS, np.arange(len(TS)))))
+    return pt, k_first, {0: k_first, N_PASS - 1: k_last}
+
+
+PASS_T, K_FIRST, FROZEN = passes(K_LAST)
 PRE, POST = 34, 10                          # frozen frames before the pulse comes in (the sign's time) and after
 
 
@@ -159,14 +168,15 @@ def labels(fr, k, extra=None):
     return C.label(fr, lines, 1.0 - MP.white(k), corner="bl") if lines else fr
 
 
-def jobs():
+def jobs(pt=None, frozen=None):
     """[(k, extra, slow, clock)] in the order shown: the race's frames, with time stopped at the first pass and the
     last: PRE frames, the pulse crossing, POST frames, all in the one frame of the race"""
+    pt, frozen = pt or PASS_T, frozen or FROZEN
     out = []
     for k, (T, s) in enumerate(tl):
-        for n, kf in FROZEN.items():
+        for n, kf in frozen.items():
             if k != kf: continue
-            Tn, dt = PASS_T[n], FREEZE / F.FPS
+            Tn, dt = pt[n], FREEZE / F.FPS
             t0, t1 = seen_at(np.array([XA, XB]), Z0 + DZ * n)        # the pulse first seen, last seen
             for j in range(-PRE, int(math.ceil((t1 - t0) / dt)) + POST):
                 out.append((k, (n, t0 + j * dt), FREEZE, Tn - tl[0][0] + j * dt))
@@ -305,9 +315,11 @@ def cues(js, seq):
         (o(K_FIRST), o(K_FIRST + 95), "Off round the Earth: [7½ laps a second], one line in the sky per lap."),
         (o(130), o(215), "Slowed 48×, [light still laps the Earth every 6½ seconds]."),
         (o(k_x15), o(k_x15 + 40), f"[{laps_at(k_x15)} laps of the Earth] so far, and the finish is close."),
-        (first[(B, "pre")], first[(B, "cross")], "Time stops again: [light is coming round for the 17th time]."),
-        (first[(B, "cross")], first[(B, "post")] + HOLDS[B][1], "[17 laps of the Earth] since the Wright Flyer appeared."),
-        (o(K_LAST), o(k_fin), "Here comes Parker: 430,000 mph."),
+        (o(K_IN - 18), first[(B, "pre")], "Here comes Parker: 430,000 mph."),
+        (first[(B, "pre")], first[(B, "cross")], "Time stops again: Parker stands still, but [light doesn't]."),
+        (first[(B, "cross")], first[(B, "post")] + HOLDS[B][1],
+         "[Its 17th lap: light races past Parker as if it were standing still.]"),
+        (o(K_LAST), o(k_fin), "Parker carries on to the finish."),
         (o(k_fin), o(k_fin + 50), "All five finish together, in the same 1/25,000 s."),
         (o(k_fin + 50), o(len(tl) - 1) + 1 + 30, "Even Parker is [1,560 times slower than light]."),     # into the black
     ]
@@ -374,12 +386,12 @@ def overlay(pick=None):
             n, part, m = phase
             if part == "pre":
                 fr = SM.banner(fr, "TIME STOPPED", "a million times slower, to watch light set off" if n == 0
-                               else "a million times slower: light is coming round again", m, n_hold=40, n_out=10)
+                               else "a million times slower: Parker stands still, light doesn't", m, n_hold=40, n_out=10)
             elif part == "post":
                 h_post = HOLDS[n][1]
                 L = min(h_post, RESUME)                  # the last L frames before the race takes up again
                 fr = SM.banner(fr, "BACK TO REAL SPEED" if n == 0 else "BACK TO 1,000× SLOWER",
-                               "the race carries on where it stopped" if n == 0 else "Parker is three frames away",
+                               "the race carries on where it stopped" if n == 0 else "Parker carries on to the finish",
                                m - (h_post - L), mark="play", n_in=5, n_hold=L - 13, n_out=8, size=96)
         fr = CAP.draw(fr, *CAP.at(cq, o))
         if pick is not None:
@@ -394,7 +406,64 @@ def overlay(pick=None):
         sink.close(MC.mic(audio_seq(js, seq, len(after)), 1.6))
 
 
-if __name__ == "__main__" and sys.argv[1:2] == ["clean"]:
+def reclean(old_last):
+    """after the last pass has moved (from frame old_last to K_LAST): only the frames that change composited again
+    (the new frozen stretch, and the race's frames whose lines or caught streaks differ), the rest taken from the
+    clean file as it is"""
+    from multiprocessing import Pool
+    import subprocess
+    MP.LIGHT = layer
+    opt, _, ofrozen = passes(old_last)
+    old, new = jobs(opt, ofrozen), jobs()
+    dt = FREEZE / F.FPS
+
+    def key(k, extra):
+        if extra is None: return ("race", k)
+        return ("frozen", k, extra[0], round((extra[1] - seen_at(np.array([XA]), Z0 + DZ * extra[0])[0]) / dt))
+
+    def state(k, pt, frozen):
+        T, slow = tl[k]
+        seen = [n for n, Tn in enumerate(pt) if Tn <= T + 1e-12]
+        return seen, [n for n in seen if n not in frozen and abs(pt[n] - T) <= 0.005 * slow]
+
+    where = {key(k, e): i for i, (k, e, s, c) in enumerate(old)}
+    src = []
+    for k, e, s, c in new:
+        i = where.get(key(k, e))
+        if i is not None and e is None and state(k, opt, ofrozen) != state(k, PASS_T, FROZEN): i = None
+        if k >= int(os.environ.get("LT_FORCE_FROM", 10 ** 6)): i = None     # these frames composited again anyway
+        src.append(i)
+    todo = [j for j, i in enumerate(src) if i is None]
+    print("composite again:", len(todo), "of", len(new), flush=True)
+    with Pool(int(os.environ.get("NPROC", "3"))) as pool:
+        made = dict(zip(todo, pool.map(MP.frame, [(new[j][0], new[j][1]) for j in todo], chunksize=1)))
+    p = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{C.W}x{C.H}",
+                          "-r", "25", "-i", "-", "-c:v", "libx264", "-crf", "10", "-preset", "fast", "-pix_fmt",
+                          "yuv420p", CLEAN + ".part.mp4"], stdin=subprocess.PIPE)
+    reader, cache, last = clean_frames(), {}, -1
+    need = {}
+    for j, i in enumerate(src):
+        if i is not None: need[i] = need.get(i, 0) + 1
+    for j, i in enumerate(src):
+        if i is None:
+            fr = made.pop(j)
+        else:
+            while last < i:
+                last += 1; f = next(reader)
+                if last in need: cache[last] = f
+            fr = cache[i]
+            need[i] -= 1
+            if not need[i]: del cache[i]
+        p.stdin.write(np.ascontiguousarray(fr, np.uint8).tobytes())
+    p.stdin.close(); p.wait()
+    for _ in reader: pass
+    os.replace(CLEAN + ".part.mp4", CLEAN)
+    print("reclean done", len(new), flush=True)
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["reclean"]:     # reclean <old last-pass frame> (LT_FORCE_FROM=k)
+    reclean(int(sys.argv[2]))
+elif __name__ == "__main__" and sys.argv[1:2] == ["clean"]:
     clean()
 elif __name__ == "__main__" and sys.argv[1:2] == ["seq"]:          # where things fall in the frames shown
     js, seq = sequence()

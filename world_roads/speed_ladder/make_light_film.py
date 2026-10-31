@@ -296,9 +296,13 @@ def time_plan(T, dur):
     """how time runs in part 4, drawn as its own frames go: real speed, the first stop, the planes at 48x, 1,000x,
     the second stop, Parker and the finish"""
     import make_race_light as L
+    import race as RC
     hA, hB = L.HOLDS[0], L.HOLDS[L.N_PASS - 1]
-    segs = [("real", 15), ("stop", hA[0] + 35 + hA[1]), ("real", 45), ("slow48", 353), ("slow1000", 27),
-            ("stop", hB[0] + 35 + hB[1]), ("slow1000", 34), ("after", 96)]
+    full_slow = next(k for k, (T_, s) in enumerate(L.tl) if abs(s - RC.SLOW) < 1e-9)
+    k_ramp = next(k for k in range(full_slow, len(L.tl)) if L.tl[k][1] < RC.SLOW - 1e-12)
+    k_fin = next(k for k, (T_, s) in enumerate(L.tl) if T_ >= -1e-12)
+    segs = [("real", 15), ("stop", hA[0] + 35 + hA[1]), ("real", 45), ("slow48", k_ramp - 60), ("slow1000", L.K_LAST - k_ramp),
+            ("stop", hB[0] + 35 + hB[1]), ("slow1000", k_fin - L.K_LAST), ("after", len(L.tl) - k_fin)]
     total = sum(n for _, n in segs)
     X0, X1, y, h = 150, 1770, 560, 54
     cols = {"real": (210, 214, 222), "slow48": ACCENT, "slow1000": (255, 140, 30), "after": (255, 140, 30), "stop": CYAN}
@@ -331,7 +335,7 @@ def time_plan(T, dur):
                  (k[3][1], k[3][2], "48× SLOWER", "above", ACCENT, "m"),
                  (k[4][1], k[7][2], "1,000× SLOWER", "above", (255, 140, 30), "m"),
                  (k[1][1], k[1][2], "TIME STOPPED: light sets off", "below", CYAN, "l"),
-                 (k[5][1], k[5][2], "TIME STOPPED: light's 17th lap", "below", CYAN, "r")]
+                 (k[5][1], k[5][2], "TIME STOPPED: light passes Parker", "below", CYAN, "r")]
         for xa, xb, s, where, col, al in notes:
             a = ease((head - xa) / 80) * a_all
             if a <= 0: continue
@@ -489,7 +493,7 @@ def part4_anchors():
         else: first.setdefault((phase[0], phase[1]), o)
     A, B = 0, L.N_PASS - 1
     cues = [(first[(A, "pre")] + 8, "f1"), (first[(A, "cross")], "f2"), (first[(A, "cross")], "f3"),
-            (first[80], "f4"), (first[330], "f5"),
+            (first[80], "f4"), (first[330], "f5"), (first[L.K_IN - 18], "f5b"),
             (first[(B, "pre")] + 8, "f6"), (first[(B, "cross")], "f7"), (first[(B, "cross")], "f8"),
             (first[474] + 3, "f9"), (first[474] + 3, "f10")]
     return len(seq), cues, first[(B, "pre")]

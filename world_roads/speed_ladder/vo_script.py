@@ -101,13 +101,15 @@ LINES = {
            "times, and the Wright Flyer still hasn't crossed the road."),
     "f5": ("Slowed forty-eight times, a lap takes six seconds now.",
            "Slowed 48 times, a lap takes 6 seconds now."),
-    "f6": ("Time stops again. A million times slower, as light comes round for the seventeenth time. This time, look "
-           "near the top of the ladder.",
-           "TIME STOPPED again: a million times slower, as light comes round for the 17th time. This time, look near "
-           "the top of the ladder."),
-    "f7": ("Seventeen laps of the Earth, since the Wright Flyer appeared.",
-           "17 laps of the Earth since the Wright Flyer appeared."),
-    "f8": ("Back to a thousand times slower. Here comes Parker.", "Back to 1,000 times slower. Here comes Parker."),
+    "f5b": ("Here comes Parker.", "Here comes Parker."),
+    "f6": ("Time stops again, a million times slower. Parker is frozen in its tracks, but light isn't. Watch the top of "
+           "the ladder.",
+           "TIME STOPPED again: a million times slower. Parker is frozen in its tracks, but light isn't. Watch the top "
+           "of the ladder."),
+    "f7": ("There goes light, on its seventeenth lap of the Earth, racing past Parker as if it were standing still.",
+           "There goes light, on its 17th lap of the Earth, racing past Parker as if it were standing still."),
+    "f8": ("Back to a thousand times slower. Parker carries on to the finish.",
+           "Back to 1,000 times slower. Parker carries on to the finish."),
     "f9": ("All five finish together. And even Parker is fifteen hundred and sixty times slower than light.",
            "All five finish together. And even Parker is 1,560 times slower than light."),
     "f10": ("While the Wright Flyer crossed one road, light went round the entire world, seventeen times.",

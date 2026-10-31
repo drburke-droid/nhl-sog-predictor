@@ -2,7 +2,7 @@
   ttsenv/bin/python -I vo_tts.py lines.json outdir      (lines.json: {"id": "text", ...}; vo_script.py writes it)
 Two voices: by default Kokoro-82M's bf_lily, offline (model files in /home/user/tts_models); with an ElevenLabs key in
 the environment (ELEVENLABS_API_KEY, or any variable named for it), ElevenLabs' Lily (the premade voice of that name, eleven_multilingual_v2), into its own outdir."""
-import json, os, sys, urllib.request
+import json, os, sys, urllib.error, urllib.request
 import numpy as np
 import soundfile as sf
 
@@ -24,8 +24,11 @@ def elevenlabs(key):
         req = urllib.request.Request("https://api.elevenlabs.io" + path, data=None if body is None else
                                      json.dumps(body).encode(), headers={"xi-api-key": key, "Content-Type":
                                      "application/json"})
-        with urllib.request.urlopen(req, timeout=120) as r:
-            return r.read()
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:                  # say why (quota, permissions): the body has no key
+            raise SystemExit(f"ElevenLabs {e.code} on {path.split('?')[0]}: {e.read()[:400]!r}")
     voices = json.loads(call("/v1/voices"))["voices"]
     vid = next(v["voice_id"] for v in voices if v["name"].split(" ")[0].lower() == "lily")
     settings = {"stability": 0.55, "similarity_boost": 0.75, "style": 0.15, "use_speaker_boost": True}
@@ -39,9 +42,10 @@ def elevenlabs(key):
 
 def api_key():
     """ElevenLabs' key, under whatever name the environment gives it"""
-    for name in ["ELEVENLABS_API_KEY"] + sorted(os.environ):
-        if os.environ.get(name) and ("ELEVEN" in name.upper() or name.upper() == "XI_API_KEY"):
-            return os.environ[name]
+    names = [n for n in ["ELEVENLABS_API_KEY"] + sorted(os.environ)
+             if os.environ.get(n) and ("ELEVEN" in n.upper() or n.upper() == "XI_API_KEY")]
+    names.sort(key=lambda n: not os.environ[n].startswith("sk_"))     # a key, not a key's ID, first
+    return os.environ[names[0]] if names else None
 
 
 def main(lines_path, out):

@@ -98,15 +98,22 @@ it has cooled below ~4,500 K. The finale's own frames predate both; within its 1
 
 `history_race_light.mp4` (40 s; `RACE=1 PARKER=1 OUTSUF=_pk make_race_light.py clean` composites the frames once
 into a near-lossless file, then `make_race_light.py` draws the signs over them): the same race with a pulse of light
-in it. Light goes round the world (40,075 km) in 0.1337 s, 7.5 times a second; counting back 17 laps from a pass just
-before Parker comes in lands on the frame the Wright Flyer comes in, so while the Flyer crosses the picture, light goes
-round 17 times. It flies 250 m out, behind everything, each lap 3 m above the last, and each pass leaves a faint line:
+in it. Light goes round the world (40,075 km) in 0.1337 s, 7.5 times a second; counting back 17 laps from a pass 8
+frames (320 us) after Parker comes in lands on the frame the Wright Flyer comes in, so while the Flyer crosses the
+picture, light goes round 17 times, and its last lap comes round with Parker in the picture. It flies 250 m out, behind everything, each lap 3 m above the last, and each pass leaves a faint line:
 a ladder building in the sky (markers: clear air keeps no trace of light gone by). Light crosses the 384 m-wide
 picture there in 1.3 us, so a pass falls in one frame or none; the shutter is open a quarter of each frame, and catches
 4 of the 16 passes it does not freeze on, as a streak brightest at the right (seen from the camera the pulse seems to
 rush in at 2.5 times the speed of light and leave at 0.6, so it lingers on the right). At its first pass and its last,
 time stops and the pulse crosses a million times slower (a camera at 25 million frames a second), rushing in and
-slowing as it goes; the sound stops with it. The glow stands in for what a pulse scatters toward the camera, and light
+slowing as it goes; the sound stops with it. The last time, Parker has been streaking in at 1,000x for 8 frames and
+stops dead a third of the way across, and light races past it along the top of the ladder: the fastest machine ever
+built, standing still beside light. While the probe is lit, the light's glow and lines (stand-ins and markers, not
+something a camera could record) join the picture at the daylight exposure (`make_race_parker.frame`: they still go
+behind everything, dimmed and bent by all that lies in front, but are not darkened with the exposure the probe's glare
+forces), so the pulse and the ladder stay in view. `make_race_light.py reclean <old frame>` composites again only the
+frames a move of the last pass changes (`LT_FORCE_FROM=k`: every frame from k on as well), the rest kept from the
+clean file. The glow stands in for what a pulse scatters toward the camera, and light
 does not follow the curve of the Earth by itself (round the equator in a fibre, a lap would take 0.20 s).
 The signs keep apart the two ways time is slowed. Slow motion (real speed, 48x, 1,000x) is amber, on a scale from real
 speed to 1,000x, with what each is for ("so we can see the planes", "so we can see Parker"). Time stopped is light's
@@ -117,7 +124,7 @@ few microseconds nothing moves but the grain; the clock keeps its 40 ns a frame)
 the clock and the badge, light's laps of the Earth: one pip for each of the 17, the newest flaring as it comes round.
 Captions in the band below the picture (`captions.py`) say what is going on, light's part in light's colour.
 
-`history_light_film.mp4` (6 min 11 s, narrated; `RACE=1 PARKER=1 OUTSUF=_pk make_light_film.py`): the whole thing as one film,
+`history_light_film.mp4` (6 min 15 s, narrated; `RACE=1 PARKER=1 OUTSUF=_pk make_light_film.py`): the whole thing as one film,
 told toward light, the subject that holds it together. "How fast is light? Let's work up to it." Part 1, real speed
 (`history_realtime.mp4`); part 2, 48x slower (`history_slow48.mp4`); part 3, the race with Parker
 (`history_race_parker.mp4`); each opened by a card, with captions that keep light in view: how many times faster it

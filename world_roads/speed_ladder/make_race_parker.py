@@ -92,8 +92,11 @@ def frame(k, extra=None):
     expo = 0.01 * slow
     tp = RC.own("parker", T)                     # the probe's own time: 0 when it meets the air at the left edge
     img = C.plate_loop(int((T - tl[0][0]) * F.FPS))
-    if LIGHT is not None: img = img + LIGHT(k, extra)
     on = tp > 0
+    li = LIGHT(k, extra) if LIGHT is not None else None
+    if li is not None and not on: img, li = img + li, None
+    # with the probe lit, the light's layer (its glow and lap lines: stand-ins) goes through all that hides or dims
+    # what lies behind, kept apart, and joins at the daylight exposure: the probe's glare would otherwise hide it
     day_frac, B = 1.0, 1.0
     if on:
         ls = PC.lights(tp)
@@ -103,13 +106,20 @@ def frame(k, extra=None):
         day_frac = np.clip(img.mean(-1, keepdims=True) / np.maximum(lit.mean(-1, keepdims=True), 1e-6), 0, 1)
         B = 1 + boost(E, glow)
         L, T_in, T_bg = PC.envelope(tp)
-        img = FX.warp(lit * T_bg[..., None] + L, PC.displacement(tp))
+        dsp = PC.displacement(tp)
+        img = FX.warp(lit * T_bg[..., None] + L, dsp)
+        if li is not None: li = FX.warp(li * (1 + E) * T_bg[..., None], dsp)
         w = PC.wall(tp, ls)
-        if w is not None: img = img * w[1] + w[0]
+        if w is not None:
+            img = img * w[1] + w[0]
+            if li is not None: li = li * w[1]
     for name in MR.FAR_FIRST:
         t = RC.own(name, T)
         dl = MR.dust(name, k)
-        if dl is not None: img = img * (1 - C.SUN_FRACTION * (1 - dl[2]) * day_frac)
+        if dl is not None:
+            sh = 1 - C.SUN_FRACTION * (1 - dl[2]) * day_frac
+            img = img * sh
+            if li is not None: li = li * sh
         p = MR.load(name, k)
         if p is not None:
             p = C.plate_match(p, 5000 + 7919 * MR.FAR_FIRST.index(name) + k)
@@ -117,12 +127,18 @@ def frame(k, extra=None):
                 solid = (p["depth"] < GDIST - 1.0)[..., None]
                 p = dict(p, rgb=np.where(solid, p["rgb"] * B, p["rgb"]), a=np.where(solid, p["a"], p["a"] * day_frac))
             img = C.over_props(img, p)
+            if li is not None: li = li * (1 - p["a"])
         g = FX.wake_glow(name, t, expo)
         if g is not None: img = img + g
-        if dl is not None: img = img * dl[1] + dl[0] * B
-        img = FX.warp(img, FX.displacement(name, t))
+        if dl is not None:
+            img = img * dl[1] + dl[0] * B
+            if li is not None: li = li * dl[1]
+        dsp = FX.displacement(name, t)
+        img = FX.warp(img, dsp)
+        if li is not None: li = FX.warp(li, dsp)
     if on:
         img = img * metered(img)
+        if li is not None: img = img + li
         img = img + glare(img)
         hi = np.clip(img - 0.8, 0, 2.2)                                 # the sensor's own halo round what it clips
         for s_, w in ((6, 0.3), (24, 0.2), (80, 0.1)): img = img + w * cv2.GaussianBlur(hi, (0, 0), s_)
