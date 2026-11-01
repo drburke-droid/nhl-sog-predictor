@@ -30,3 +30,41 @@ for i in 0 1 2 3; do node render.js video $((i*1798)) $(((i+1)*1798)) part$i.mp4
 python mix.py                         # mix_raw.wav
 ffmpeg -f concat -i parts.txt -c copy video.mp4   # then mux with mix_raw.wav through loudnorm
 ```
+
+## Flybys with a real B-2 model (`flyby/`)
+
+The B-2 flies past at real speed over real photographs, the way the Wright Flyer and the rest cross the desert road
+in the speed-ladder film (`speed_ladder/`, branch `claude/wonderful-ritchie-uyd31i`): CG rendered in Blender over the
+photograph's camera and light, its shadow on the ground, motion blur from a 1/100 s shutter, the speed in the corner,
+its sound carried to the camera at the speed of sound. Picture 2.39:1 letterboxed in 1920x1080.
+
+**The model**: FlightGear's B-2 Spirit by Markus Zojer (FGAddon, GPL v2+; `B-2.zip` in the Aircraft-2024 set on the
+FlightGear mirrors), read into Blender by `ac3d.py` (from the speed ladder). `b2_model.py` builds it: gear up and every
+door shut (the model's rest state), gear legs, tyres, lights, instruments and cockpit interior left out, the
+flight-sim livery (white walkway outlines, "0088" serials, logos and credits in the textures) toned to 12% of its
+contrast so the panel lines read only as faint shifts in the gray, satin paint, smoothed within surfaces and sharp
+where panels meet. Real size: 52.2 m span, 21.2 m long. `look.py` renders it from five sides.
+
+**Top-down over Whiteman AFB** (`topdown.py`; `../media/b2_stealth/b2_flyby_topdown_whiteman.mp4`, 6.2 s): the
+B-2's home base, from the USDA's NAIP aerial photograph of 28 June 2022 (0.6 m, public domain; `fetch_naip.py`
+reads the window out of Microsoft Planetary Computer's cloud-optimized copy). The picture is the flight line: the
+runway, the infield, the row of B-2 hangar docks and the ramp, with a real B-2 parked on it. The camera hangs 900 m
+up looking straight down (22.5 mm, 77 degrees across: the ground at 0.75 m a pixel, the photograph's own detail); the
+B-2 passes 166 m below it, 734 m (2,400 ft) up, at 300 mph, heading WNW, straight away from the sun, so its shadow
+runs 390 m ahead of it: the shadow glides over the infield first, the aircraft crosses in about two seconds and
+overtakes its shadow on the screen (it is five times nearer the camera). The sun is the photograph's (117 degrees,
+62 up: the hangars' shadows), the shadow is the mesh projected along it onto the ground with the sun's soft edge
+(3.9 m), and the render's colour is matched to the real B-2 on the ramp (a nadir calibration render; mean sRGB 141,
+146, 163), then desaturated a fifth.
+
+**Sound** (`flyby_sound.py`): four F118 turbofans: the fans' whine (blade-passing tone, buzz-saw tones at shaft
+multiples) loudest ahead, the jets' roar loudest 120-150 degrees aft, each sample carried to the camera at 343 m/s
+(Doppler and swell by themselves), air absorption by range, a ground reflection for cameras on the ground.
+
+```
+sh flyby/fetch_assets.sh
+cd flyby && python topdown.py plate && python topdown.py prep && python topdown.py render \
+  && python topdown.py comp && python flyby_sound.py topdown && python topdown.py mux
+```
+
+The side shot (`side.py`, the Bonneville Salt Flats) is set up and waiting on its plate download.
