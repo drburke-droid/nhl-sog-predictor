@@ -70,3 +70,7 @@ cd flyby && python topdown.py plate && python topdown.py prep && python topdown.
 The side shot (`side.py`): the B-2 over the Bonneville Salt Flats in a 40-degree banked turn toward the camera (seen
 level from the ground a B-2 is edge-on, a sliver; banked, its planform reads), 500 m out and 125 ft up, its paint
 corrected by the top-down shot's calibration, the shot held after it has gone while its roar arrives.
+`../media/b2_stealth/b2_flyby_side_bonneville.mp4` (8.5 s) is composited on the photograph's 1280 px rendition
+(Wikimedia rate-limited the original during this session): `SIDE_PLATE=bonneville_preview_1280.jpg python side.py
+comp`. With the 7198 px original in `$B2_WORK/plates/bonneville_blm_28776016261.jpg`, `python side.py plate && python
+side.py comp && python side.py mux` redoes the picture; the renders don't change (same framing).
