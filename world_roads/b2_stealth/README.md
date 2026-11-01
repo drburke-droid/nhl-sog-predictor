@@ -67,10 +67,29 @@ cd flyby && python topdown.py plate && python topdown.py prep && python topdown.
   && python topdown.py comp && python flyby_sound.py topdown && python topdown.py mux
 ```
 
-The side shot (`side.py`): the B-2 over the Bonneville Salt Flats in a 40-degree banked turn toward the camera (seen
-level from the ground a B-2 is edge-on, a sliver; banked, its planform reads), 500 m out and 125 ft up, its paint
-corrected by the top-down shot's calibration, the shot held after it has gone while its roar arrives.
-`../media/b2_stealth/b2_flyby_side_bonneville.mp4` (8.5 s) is composited on the photograph's 1280 px rendition
-(Wikimedia rate-limited the original during this session): `SIDE_PLATE=bonneville_preview_1280.jpg python side.py
-comp`. With the 7198 px original in `$B2_WORK/plates/bonneville_blm_28776016261.jpg`, `python side.py plate && python
-side.py comp && python side.py mux` redoes the picture; the renders don't change (same framing).
+**Side pass over the Bonneville Salt Flats** (`side.py`; `../media/b2_stealth/b2_flyby_side_bonneville.mp4`, 7.5 s):
+the plate is the BLM's photograph of the flats and the Silver Island Mountains (public domain). The camera is matched
+to it: level (the salt's far edge runs level, and on a flat plain that is eye level), ~30 degrees across (the
+mountains' height for their distance, and the salt crust's size at the foot of the picture), the sun low (~15
+degrees), right of and a little behind the camera (the crust's shadows, the lit faces of the range). The B-2 goes by
+flat out, 630 mph (its published top speed), 65 ft up and 350 m out, crossing the picture in under a second, banked 20
+degrees toward the camera (seen level from the ground a B-2 is edge-on, a sliver; banked, its planform reads), 1/200 s
+shutter, its paint corrected by the top-down shot's calibration. The shot holds after it has gone while the roar
+arrives (~1 s later) and the salt rolls up.
+
+**The salt it tears up** (`debris.py`): at that height (under half its span) it rides in ground effect: ~150 tonnes of
+lift pressing on the air between it and the crust, the air squirting out sideways and back, wingtip vortices hitting
+the ground at once, the jets' wash coming down behind. A parcel model shaped to that, not a fluid simulation (the
+speed ladder has one): 2,600 puffs of dust, each a clump of 24 sub-parcels so the cloud billows, launched from under
+the track just behind the trailing edge, outward, up (a rooster tail and the vortices' columns go higher) and a little
+forward, relaxing to a light breeze, rising while they mix, spreading, heavier grains settling; 2,600 crust chips
+(20-80 cm) and 7,000 bits of grit thrown ballistically (up to ~15 m) and falling back. Each frame they are projected
+through the plate's camera and splatted as soft blobs into optical depth, in front of the track and behind it (the
+aircraft goes between), lit like the plate's own sunlit salt, bluer and darker where thick. The sound adds the salt:
+a crunch and hiss from each stretch of ground as the aircraft passes over it and chips pattering down, each heard
+after its travel time to the camera.
+
+Composited on the photograph's 1280 px rendition (Wikimedia rate-limited the original during this session):
+`SIDE_PLATE=bonneville_preview_1280.jpg python side.py comp`. With the 7198 px original in
+`$B2_WORK/plates/bonneville_blm_28776016261.jpg`, `python side.py plate && python side.py comp && python side.py mux`
+redoes the picture; the renders don't change (same framing).

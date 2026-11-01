@@ -26,14 +26,19 @@ S = dict(
     crop_top_frac=0.0,                            # 2.39:1 crop of the full width, from this far down
     hfov=30.0,                                    # degrees across the picture
     cam_z=1.6,
-    dist=500.0, alt=37.6, mph=300.0, t_pass=2.6, dur=8.5,      # held after it has gone while its roar arrives
-    bank=40.0, aoa=3.0,                           # a banked turn toward the camera: its top faces us
+    # flat out (630 mph, its published top speed) at 65 ft, 350 m out: low enough that the air it shoves down and
+    # aside, and its jets' wash, tear the salt crust up behind it.  Held after it has gone while the roar arrives
+    # and the dust rolls up.
+    dist=350.0, alt=20.0, mph=630.0, t_pass=2.0, dur=7.5,
+    bank=20.0, aoa=2.0,                           # banked 20 degrees toward the camera so its planform shows (the low
+                                                  # wingtip clears the salt by 11 m)
 
     sun_rel_az=120.0, sun_el=15.0,                # sun: degrees right of the view direction, and up
     sun_w=9.0, sun_rgb=(1.0, 0.82, 0.62), sky=(0.48, 0.56, 0.74), sky_w=0.55,
     salt_albedo=0.72,
-    shutter=0.3,
-    haze=0.025,                                   # blend toward the sky over the 500 m to the aircraft
+    shutter=0.15,                                 # 1/200 s: a 1.4 m smear at 630 mph
+    haze=0.018,                                   # blend toward the sky over the 350 m to the aircraft
+    debris=True,                                  # the salt it tears up (debris.py)
     paint_gain=None,   # the model's paint is ~2.1x darker than the real aircraft's (topdown's calibration against
                        # the B-2 on Whiteman's ramp); None reads it from that calibration
 )
@@ -232,9 +237,21 @@ def comp():
     gain = np.array(json.load(open(os.path.join(OUT, "calib.json")))["gain"], dtype=np.float32) * paint_gain()
     sky = plate_lin[int(horizon_row()) - 120:int(horizon_row()) - 60].reshape(-1, 3).mean(0)
     n = int(round(S["dur"] * C.FPS))
+    D = None
+    if S["debris"]:
+        import debris
+        D = debris.Debris(); D.calibrate()
+        hr = int(horizon_row())
+        salt = plate_lin[hr + 12:hr + 90].reshape(-1, 3).mean(0)
     vid = C.Video(os.path.join(OUT, S["name"] + "_silent.mp4"))
     for i in range(n):
+        t = i / C.FPS
         pic = plate_lin.copy()
+        if D is not None:                                # dust and chips beyond the track, behind the aircraft
+            tn, tf = D.tau_layers(t)
+            (cn, an), (cf, af) = D.chips_layer(t, salt)
+            T = np.exp(-tf)[..., None]; pic = pic * T + D.light(tf, salt) * (1 - T)
+            pic = cf + pic * (1 - af[..., None])
         cg = os.path.join(OUT, "cg", f"f{i:04d}.png")
         if os.path.exists(cg):
             rgb, al = C.load_rgba16(cg)
@@ -242,6 +259,9 @@ def comp():
             rgb = rgb * (1 - S["haze"]) + sky * al * S["haze"]
             # the shadow catcher's shadow arrives as black with alpha; the aircraft as colour with alpha
             pic = rgb + pic * (1 - al)
+        if D is not None:                                # and in front of it
+            T = np.exp(-tn)[..., None]; pic = pic * T + D.light(tn, salt) * (1 - T)
+            pic = cn + pic * (1 - an[..., None])
         out = (C.to_srgb(pic) * 255 + 0.5).astype(np.uint8)
         vid.write(C.frame_out(out, f"{S['mph']:.0f} mph", "B-2 Spirit, 1989"))
     vid.close()

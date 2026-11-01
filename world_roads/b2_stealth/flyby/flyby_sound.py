@@ -110,6 +110,39 @@ def wind(n, rng, gain):
     return gain * w * wander(n, rng, 0.3, 0.4)[:, None]
 
 
+def kickup(obs, x_track, y_track, t_over, dur, rng, n_emit=160):
+    """the salt torn up along the track: a burst of crunching and hissing from each stretch of ground as the aircraft
+    passes over it (its jets' wash and the air it shoves aside), chips pattering down for a second or two after,
+    each heard after its own travel time to the camera"""
+    n = int(dur * SR)
+    out = np.zeros((n, 2))
+    L = int(2.2 * SR)
+    tt = np.arange(L) / SR
+    for k in range(n_emit):
+        xk = x_track[0] + (x_track[1] - x_track[0]) * (k + rng.random()) / n_emit
+        P = np.array([xk, y_track, 0.0])
+        r = np.linalg.norm(P - obs)
+        t0 = t_over(xk) + r / C_SOUND
+        burst = shaped_noise(L, rng, lambda f: (f / 900.0) ** 0.5 / (1 + (f / 2500.0) ** 2)) * np.exp(-tt / 0.18)
+        thud = shaped_noise(L, rng, lambda f: 1 / (1 + (f / 120.0) ** 3)) * np.exp(-tt / 0.35)
+        patter = np.zeros(L)
+        for _ in range(rng.integers(6, 16)):                  # chips landing
+            j = int(rng.uniform(0.3, 2.0) * SR)
+            g = rng.uniform(0.2, 1.0)
+            m = min(L - j, int(0.03 * SR))
+            patter[j:j + m] += g * rng.standard_normal(m) * np.exp(-np.arange(m) / (0.006 * SR))
+        sig = (0.9 * burst + 0.8 * thud + 0.25 * patter) / r
+        pan = np.clip(xk / r, -1, 1) * 0.8
+        i0 = int(t0 * SR)
+        if i0 >= n or i0 + L <= 0:
+            continue
+        a0, b0 = max(0, i0), min(n, i0 + L)
+        seg = sig[a0 - i0:b0 - i0]
+        out[a0:b0, 0] += seg * math.cos((pan + 1) * math.pi / 4)
+        out[a0:b0, 1] += seg * math.sin((pan + 1) * math.pi / 4)
+    return out
+
+
 def write(path, x):
     x = np.clip(x, -1, 1)
     with wave.open(path, "wb") as w:
@@ -132,11 +165,15 @@ def shot_sound(shot, seed=7):
         obs = np.array([0.0, 0.0, S["cam_z"]])
         src = lambda te: (M.pose(te)[0], np.array([v, 0, 0]))     # the banked turn's path
         ground, amb = True, 0.012
-    dur = S["dur"]; t_lead = 4.0
+    dur = S["dur"]; t_lead = 14.0         # at Mach 0.8 what is heard at the start left it ~10 s before
     ns = int((dur + t_lead) * SR)
     kinds = [(jet_roar(ns, rng), "jet", 1.0), (fan_whine(ns, rng), "fan", 0.55)]
     x = heard(src, kinds, obs, dur, t_lead, ground=ground)
     x /= np.max(np.abs(x)) + 1e-9
+    if shot == "side" and S.get("debris"):
+        k = kickup(obs, (-260.0, 260.0), S["dist"], lambda xx: S["t_pass"] + xx / v + 0.05, dur, rng)
+        x = x + 0.55 * k / (np.max(np.abs(k)) + 1e-9)
+        x /= np.max(np.abs(x)) + 1e-9
     x = 0.89 * x + wind(len(x), rng, amb)
     fade = np.clip(np.arange(len(x)) / (0.15 * SR), 0, 1) * np.clip((len(x) - np.arange(len(x))) / (0.3 * SR), 0, 1)
     x *= fade[:, None]
