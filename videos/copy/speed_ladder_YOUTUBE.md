@@ -1,7 +1,10 @@
 # YouTube copy: the fastest machines ever built vs. the speed of light
 
-Upload `speed_of_light/fastest_machines_vs_light_speed_6m15s.mp4` (6:15, 1920×1080, 25 fps, narrated by an AI voice,
-subtitles burned in).
+Upload `speed_of_light/fastest_machines_vs_light_speed_f35_open_6m27s.mp4` (6:27, the recommended version: it opens on
+an F-35 at real speed, a blur and a sonic boom, then the same pass 48 times slower) or
+`speed_of_light/fastest_machines_vs_light_speed_6m15s.mp4` (6:15, opens on the title). Both are 1920×1080, 25 fps,
+narrated by an AI voice, with subtitles burned in. The description below fits both; use the chapters for the version you
+upload (the F-35 version's are below).
 
 **A/B/C test.** The thumbnails carry the hook; the titles say plainly what the video is (under 100 characters; the
 first ~70 show in search). Upload all three thumbnails to YouTube's Test & Compare. Start with A: it's the image no
@@ -62,6 +65,25 @@ Method, physics and code: https://github.com/drburke-droid/nhl-sog-predictor/blo
 5:13 Light passes a frozen Parker
 5:48 Getting to the Moon
 ```
+
+**Chapters for the F-35 version** (everything after the cold open moves 12 s later)
+
+```
+0:00 An F-35 at Mach 1.6
+0:12 How fast is light?
+0:25 Part 1: Real speed
+1:19 Part 2: 48× slower
+2:31 Part 3: The race
+3:09 Enter light
+3:40 Around the Earth 7½ times a second
+3:54 How the light race works
+4:46 Part 4: The race, with light
+5:25 Light passes a frozen Parker
+6:00 Getting to the Moon
+```
+
+With the F-35 version, thumbnail B (which has the F-35 in it) matches the first thing viewers see. Still start the
+test with A.
 
 **Tags:** speed of light, how fast is light, Parker Solar Probe, fastest machine ever built, X-15, F-35, Spitfire,
 Wright Flyer, Bell X-1, slow motion, sonic boom, physics, light speed, data visualization

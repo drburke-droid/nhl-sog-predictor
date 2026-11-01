@@ -3,6 +3,11 @@ numbers and names the way they are said; the shown words are the subtitles. She 
 real speed (part 1, the Wright Flyer in part 2, the races' first seconds), so those keep their own sound."""
 
 LINES = {
+    # the cold open (make_light_film.py COLD=1): an F-35 at real speed, then again 48 times slower
+    "h1": ("That was an F-35, at one and a half times the speed of sound, slowed down forty-eight times. Light is over "
+           "half a million times faster.",
+           "That was an F-35, at 1½ times the speed of sound, slowed down 48 times. Light is over half a million times "
+           "faster."),
     # the opening
     "o1": ("How fast is light?", "How fast is light?"),
     "o2": ("It's so fast, it's hard to imagine. So let's work up to it, with a hundred and twenty years of the fastest "

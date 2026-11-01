@@ -607,6 +607,21 @@ def part_piece(num):
                 bed=lambda: sound_of(name, k0, k1, holds), duck=10.0)
 
 
+def cold_open():
+    """the hook: an F-35 at real speed (a blur, then its boom and the dust), then again 48 times slower, Lily saying
+    what it was and how much faster light is"""
+    segs = [("history_realtime", 514, 578), ("history_slow48", 1050, 1292)]
+    n = sum(k1 - k0 for _, k0, k1 in segs)
+    f0 = (578 - 514) + 4                                # as the slow-motion sign comes up
+    cues = [(f0, "h1")]
+    assert f0 + frames_at(vo_len("h1") + 0.5) <= n, "the line runs past the replay"
+
+    def frames():
+        for cut, k0, k1 in segs: yield from part_frames(cut, k0, k1, {}, [])
+    return dict(name="cold", n=n, cues=cues, frames=frames, duck=10.0,
+                bed=lambda: np.concatenate([sound_of(cut, k0, k1, {}) for cut, k0, k1 in segs]))
+
+
 def chart_card():
     T, _ = chain(["e3", "e4", "e5"], 0.4)
     T6 = max(T["e5"] + vo_len("e5") + GAP, T["e5"] + 2.3)            # as Parker shrinks
@@ -621,7 +636,8 @@ def moon_card():
 
 
 def film():
-    return [card("opening", lambda T, d: opening(T, d, 0), ["o1", "o2"], dur_min=6.5, t0=0.6, bed="wind"),
+    cold = [cold_open()] if os.environ.get("COLD") == "1" else []      # COLD=1: open on the F-35
+    return cold + [card("opening", lambda T, d: opening(T, d, 0), ["o1", "o2"], dur_min=6.5, t0=0.6, bed="wind"),
             card("card1", lambda T, d: part_card(1, "REAL SPEED", "", 0, d), ["c1"], 3.8, bed="wind"),
             part_piece(1),
             card("card2", lambda T, d: part_card(2, "48× SLOWER", "", 0, d), ["c2"], 3.8, bed="wind"),

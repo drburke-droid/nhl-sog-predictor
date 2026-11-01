@@ -35,6 +35,7 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 | roomba_at_light_speed_SHORT.mp4 | vertical | 0:50 | Roomba photon, short cut |
 | roomba_at_light_speed_calgary_SHORT.mp4 | vertical | 0:42 | Roomba photon in Calgary |
 | fastest_machines_vs_light_speed_6m15s.mp4 | 16:9 | 6:15 | 120 years of the fastest machines race light down a desert road, narrated (Wright Flyer to Parker Solar Probe; light laps the Earth 17 times, then passes a frozen Parker). Copy: `copy/speed_ladder_YOUTUBE.md`, thumbnails speed_ladder_thumb_A/B/C |
+| fastest_machines_vs_light_speed_f35_open_6m27s.mp4 | 16:9 | 6:27 | The same film opening cold on an F-35 at real speed (a blur, then the boom), replayed 48× slower, before the title. The recommended upload. Same copy and thumbnails |
 
 Left out as superseded or drafts: the first hyperacuity video, the first cut of the world short, the world-roads
 preview, the daytime-only half of the flights film, and the signal-fires film (not speed of light).

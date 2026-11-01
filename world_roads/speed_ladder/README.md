@@ -146,6 +146,9 @@ ends before its line does holds a card or a black frame; part 4's frozen stretch
 explanation (`make_light_film.py holds`, passed to `make_race_light.py` as `LT_HOLDS` with `LT_CAPTIONS=0` and
 `LT_NAME=history_race_light_vo`). The film's own sound dips 10 dB under her voice (4 dB on the cards), and the
 subtitles are her words, a sentence at a time.
+`history_light_film_f35.mp4` (6 min 27 s, `COLD=1 FILM_NAME=history_light_film_f35 make_light_film.py`): the same film
+opening cold on the F-35 at real speed (a blur, its boom, the dust), then the same pass 48 times slower while Lily says
+what it was ("Light is over half a million times faster"), then the title.
 
 Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
 cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
