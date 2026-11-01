@@ -21,17 +21,21 @@ import common as C
 
 S = dict(
     name="side_bonneville",
-    plate_src="bonneville_blm_28776016261.jpg",   # in $B2_WORK/plates (see fetch notes in README)
+    plate_src=os.environ.get("SIDE_PLATE", "bonneville_blm_28776016261.jpg"),   # in $B2_WORK/plates
     horizon_frac=0.3465,                          # far edge of the salt, as a fraction of the photograph's height
     crop_top_frac=0.0,                            # 2.39:1 crop of the full width, from this far down
     hfov=30.0,                                    # degrees across the picture
     cam_z=1.6,
-    dist=500.0, alt=37.6, mph=300.0, t_pass=2.6, dur=5.6,
+    dist=500.0, alt=37.6, mph=300.0, t_pass=2.6, dur=8.5,      # held after it has gone while its roar arrives
+    bank=40.0, aoa=3.0,                           # a banked turn toward the camera: its top faces us
+
     sun_rel_az=120.0, sun_el=15.0,                # sun: degrees right of the view direction, and up
-    sun_w=5.0, sun_rgb=(1.0, 0.84, 0.66), sky=(0.36, 0.52, 0.86), sky_w=1.0,
+    sun_w=9.0, sun_rgb=(1.0, 0.82, 0.62), sky=(0.48, 0.56, 0.74), sky_w=0.55,
     salt_albedo=0.72,
     shutter=0.3,
     haze=0.025,                                   # blend toward the sky over the 500 m to the aircraft
+    paint_gain=None,   # the model's paint is ~2.1x darker than the real aircraft's (topdown's calibration against
+                       # the B-2 on Whiteman's ramp); None reads it from that calibration
 )
 OUT = os.path.join(C.WORK, S["name"])
 PW, PH = C.W, C.PIC_H
@@ -62,8 +66,23 @@ def sun_vec():
     return np.array([math.cos(e) * math.sin(a), math.cos(e) * math.cos(a), math.sin(e)])   # x right, y ahead, z up
 
 
+def omega():
+    """turn rate of a level turn at this bank: g tan(bank) / v (rad/s)"""
+    return 9.81 * math.tan(math.radians(S["bank"])) / v_ms()
+
+
+def pose(t):
+    """-> position (x right, y ahead, z up), heading (rad, anticlockwise from +x).  A level turn to the right
+    (toward the camera), crossing x = 0 at t_pass heading straight across the picture."""
+    t = np.asarray(t, dtype=float)
+    w, v, tau = omega(), v_ms(), t - S["t_pass"]
+    x = v / w * np.sin(w * tau)
+    y = S["dist"] + v / w * (np.cos(w * tau) - 1)
+    return np.stack([x, y, np.full_like(x, S["alt"])], -1), -w * tau
+
+
 def plane_x(t):
-    return v_ms() * (t - S["t_pass"])
+    return pose(t)[0][..., 0]
 
 
 def project(P):
@@ -93,7 +112,7 @@ def scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     root = b2_model.build()
     sc = bpy.context.scene
-    sc.render.engine = "CYCLES"; sc.cycles.device = "CPU"; sc.cycles.samples = 96; sc.cycles.use_denoising = True
+    sc.render.engine = "CYCLES"; sc.cycles.device = "CPU"; sc.cycles.samples = 64; sc.cycles.use_denoising = True
     sc.cycles.use_adaptive_sampling = True
     sc.render.film_transparent = True
     sc.render.resolution_x, sc.render.resolution_y, sc.render.resolution_percentage = PW, PH, 100
@@ -144,9 +163,9 @@ def frames():
     out = []
     blur = v_ms() * S["shutter"] / C.FPS
     for i in range(n):
-        x = plane_x(i / C.FPS)
-        P = np.array([[x + dx, S["dist"] + dy, S["alt"] + dz] for dx in (-14 - blur, 14 + blur) for dy in (-27, 27)
-                      for dz in (-3, 4)])
+        c = pose(i / C.FPS)[0]
+        P = np.array([[c[0] + dx, c[1] + dy, c[2] + dz] for dx in (-16 - blur, 16 + blur) for dy in (-27, 27)
+                      for dz in (-18, 18)])
         Gs = P - (P[:, 2:3] / s[2]) * s                    # shadow on the salt
         u, v = project(np.vstack([P, Gs]))
         u0, u1, v0, v1 = u.min() - 24, u.max() + 24, v.min() - 24, v.max() + 24
@@ -170,17 +189,21 @@ def prep():
     hr = int(horizon_row())
     band = slice(hr + 12, hr + 90)
     r = rgb[band].reshape(-1, 3).mean(0); p = plate[band].reshape(-1, 3).mean(0)
-    gain = float(p.mean() / r.mean())
+    gain = (p / r).tolist()                             # per channel: the CG takes the film's colour cast
     json.dump(dict(render_lin=r.tolist(), plate_lin=p.tolist(), gain=gain), open(os.path.join(OUT, "calib.json"), "w"),
               indent=1)
-    print("salt render", (C.to_srgb(r) * 255).round(1), "plate", (C.to_srgb(p) * 255).round(1), "gain", round(gain, 3))
+    print("salt render", (C.to_srgb(r) * 255).round(1), "plate", (C.to_srgb(p) * 255).round(1), "gain", np.round(gain, 3))
 
 
 def render(start=0, stop=None, step=1):
     bpy, sc, root, cam, g = scene()
     n = int(round(S["dur"] * C.FPS))
-    root.location = (plane_x(0), S["dist"], S["alt"]); root.keyframe_insert("location", frame=0)
-    root.location = (plane_x(n / C.FPS), S["dist"], S["alt"]); root.keyframe_insert("location", frame=n)
+    root.rotation_mode = "XYZ"
+    for f in range(-1, n + 2):                          # a key every frame (and one either side, for the blur)
+        P, psi = pose(f / C.FPS)
+        root.location = tuple(P)
+        root.rotation_euler = (math.radians(S["bank"]), -math.radians(S["aoa"]), float(psi))
+        root.keyframe_insert("location", frame=f); root.keyframe_insert("rotation_euler", frame=f)
     _linear(root)
     sc.frame_start, sc.frame_end = 0, n
     os.makedirs(os.path.join(OUT, "cg"), exist_ok=True)
@@ -197,9 +220,16 @@ def render(start=0, stop=None, step=1):
         print("rendered", i, flush=True)
 
 
+def paint_gain():
+    if S["paint_gain"]:
+        return S["paint_gain"]
+    p = os.path.join(C.WORK, "topdown_whiteman", "calib.json")
+    return float(np.mean(json.load(open(p))["gain"])) if os.path.exists(p) else 2.1
+
+
 def comp():
     plate_lin = C.to_lin(np.asarray(Image.open(os.path.join(OUT, "plate.png"))).astype(np.float32) / 255)
-    gain = json.load(open(os.path.join(OUT, "calib.json")))["gain"]
+    gain = np.array(json.load(open(os.path.join(OUT, "calib.json")))["gain"], dtype=np.float32) * paint_gain()
     sky = plate_lin[int(horizon_row()) - 120:int(horizon_row()) - 60].reshape(-1, 3).mean(0)
     n = int(round(S["dur"] * C.FPS))
     vid = C.Video(os.path.join(OUT, S["name"] + "_silent.mp4"))

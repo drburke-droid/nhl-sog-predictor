@@ -6,8 +6,8 @@ as it passes all come out by themselves. Two sources with their own directivity:
 
 * the fans' whine (blade-passing tone near 2.6 kHz with harmonics, and the buzz-saw tones at multiples of the shaft
   rate that a fan with supersonic blade tips makes): loudest ahead of the aircraft and fading behind it;
-* the jets' roar (broadband, peaking a few hundred hertz): quiet ahead, loudest 120-150 degrees from the nose,
-  so the full roar arrives just after the aircraft has gone by.
+* the jets' roar (broadband, peaking a few hundred hertz): quieter ahead, loudest ~115 degrees from the nose
+  (large turbofans peak 110-130), so the full roar arrives just after the aircraft has gone by.
 
 Air soaks up high frequencies with distance (a low-pass mixed in by range). On the ground (the side shot) the sound
 also reaches the camera off the ground, a few milliseconds later: the two paths beating give a flyby's sweeping
@@ -68,7 +68,7 @@ def directivity(theta, kind):
     """theta: angle between the nose and the line to the listener (0 ahead, pi behind)"""
     if kind == "fan":
         return 0.25 + 0.75 * np.clip(np.cos(theta / 2), 0, 1) ** 2
-    return 0.12 + np.exp(-((theta - math.radians(135)) / math.radians(32)) ** 2)
+    return 0.25 + np.exp(-((theta - math.radians(115)) / math.radians(40)) ** 2)
 
 
 def heard(src_fn, kinds, obs, dur, t_lead=3.0, ground=False, over=2, absorb=True):
@@ -130,8 +130,7 @@ def shot_sound(shot, seed=7):
         import side as M
         S = M.S; v = M.v_ms()
         obs = np.array([0.0, 0.0, S["cam_z"]])
-        src = lambda te: (np.stack([v * (te - S["t_pass"]), np.full(len(te), S["dist"]), np.full(len(te), S["alt"])], 1),
-                          np.array([v, 0, 0]))
+        src = lambda te: (M.pose(te)[0], np.array([v, 0, 0]))     # the banked turn's path
         ground, amb = True, 0.012
     dur = S["dur"]; t_lead = 4.0
     ns = int((dur + t_lead) * SR)

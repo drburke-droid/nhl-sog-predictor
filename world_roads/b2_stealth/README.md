@@ -67,4 +67,6 @@ cd flyby && python topdown.py plate && python topdown.py prep && python topdown.
   && python topdown.py comp && python flyby_sound.py topdown && python topdown.py mux
 ```
 
-The side shot (`side.py`, the Bonneville Salt Flats) is set up and waiting on its plate download.
+The side shot (`side.py`): the B-2 over the Bonneville Salt Flats in a 40-degree banked turn toward the camera (seen
+level from the ground a B-2 is edge-on, a sliver; banked, its planform reads), 500 m out and 125 ft up, its paint
+corrected by the top-down shot's calibration, the shot held after it has gone while its roar arrives.

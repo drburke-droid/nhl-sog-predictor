@@ -45,11 +45,15 @@ def load_rgba16(path):
 
 def label(img, big, small, x=60, y_from_bottom=60):
     """the speed in the corner, as in the speed-ladder flybys: '300 mph' over 'B-2 Spirit, 1989'"""
-    d = ImageDraw.Draw(img)
+    from PIL import ImageFilter
     fb, fs = font("InterDisplay-Bold.otf", 52), font("Inter-Medium.otf", 24)
     yb = BAND + PIC_H - y_from_bottom - 34
-    for dx, dy in ((2, 2),):
-        d.text((x + dx, yb - 52 + dy), big, font=fb, fill=(0, 0, 0, 90))
+    # a soft dark halo so the label reads over bright ground (salt, concrete) as well as dark
+    sh = Image.new("L", img.size, 0); ds = ImageDraw.Draw(sh)
+    ds.text((x, yb - 52), big, font=fb, fill=255); ds.text((x, yb + 8), small, font=fs, fill=255)
+    sh = sh.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(7))
+    img.paste(Image.new("RGB", img.size, (0, 0, 0)), (0, 0), sh.point(lambda p: int(p * 0.55)))
+    d = ImageDraw.Draw(img)
     d.text((x, yb - 52), big, font=fb, fill=(255, 255, 255))
     d.text((x, yb + 8), small, font=fs, fill=(235, 238, 242))
     return img
