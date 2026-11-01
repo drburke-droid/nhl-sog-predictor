@@ -1,0 +1,1105 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+</head><body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+'use strict';
+const W = 1920, H = 1080, TAU = Math.PI * 2, D2R = Math.PI / 180;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+let TL = null;
+
+const C = {
+  bg: '#05090f', text: '#e9f0f8', muted: '#8fa3b9', dim: '#4a5d72',
+  cyan: '#4fd1ff', green: '#46f0a6', amber: '#ffb547', red: '#ff5d5d',
+  violet: '#a18bff', steel: '#7d93ab', edge: '#9fb3c8', white: '#ffffff',
+};
+const F = { ui: 'Inter', disp: '"Inter Display"', mono: '"JetBrains Mono"' };
+
+// ---------- helpers ----------
+function hexA(h, a) { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; }
+const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, d) => clamp((t - a) / d);
+const sm = t => { t = clamp(t); return t * t * (3 - 2 * t); };
+const eo = t => { t = clamp(t); return 1 - Math.pow(1 - t, 3); };
+const eio = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+// fade-in at a, fade-out at b
+const fio = (t, a, b, fi = 0.5, fo = 0.5) => sm(prog(t, a, fi)) * (1 - sm(prog(t, b, fo)));
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const cue = (sc, i) => sc.lines[i].start;
+const cend = (sc, i) => sc.lines[i].end;
+
+function T(s, x, y, o = {}) {
+  const a = o.a ?? 1; if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a;
+  ctx.font = `${o.w || 600} ${o.size || 32}px ${o.f || F.ui}`;
+  ctx.fillStyle = o.c || C.text; ctx.textAlign = o.al || 'left'; ctx.textBaseline = o.bl || 'alphabetic';
+  ctx.letterSpacing = (o.ls || 0) + 'px';
+  if (o.halo) { ctx.lineJoin = 'round'; ctx.lineWidth = o.halo; ctx.strokeStyle = 'rgba(5,9,15,0.92)'; ctx.strokeText(s, x, y); }
+  ctx.fillText(s, x, y); ctx.restore();
+}
+function tw(s, o = {}) { ctx.save(); ctx.font = `${o.w || 600} ${o.size || 32}px ${o.f || F.ui}`; ctx.letterSpacing = (o.ls || 0) + 'px'; const w = ctx.measureText(s).width; ctx.restore(); return w; }
+function glow(x, y, r, col, a) {
+  if (a <= 0.001 || r <= 0) return;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, hexA(col, a)); g.addColorStop(0.35, hexA(col, a * 0.45)); g.addColorStop(1, hexA(col, 0));
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.restore();
+}
+function line(x1, y1, x2, y2, col, lw = 2, a = 1, dash = null) {
+  if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore();
+}
+function arrow(x1, y1, x2, y2, col, lw = 3, head = 16, a = 1, dash = null) {
+  if (a <= 0.001) return;
+  const ang = Math.atan2(y2 - y1, x2 - x1);
+  const bx = x2 - Math.cos(ang) * head * 0.8, by = y2 - Math.sin(ang) * head * 0.8;
+  line(x1, y1, bx, by, col, lw, a, dash);
+  ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = col; ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - Math.cos(ang - 0.42) * head, y2 - Math.sin(ang - 0.42) * head);
+  ctx.lineTo(x2 - Math.cos(ang + 0.42) * head, y2 - Math.sin(ang + 0.42) * head);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function panel(x, y, w, h, a = 1, border = 'rgba(140,180,220,0.18)') {
+  if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; rrect(x, y, w, h, 18);
+  ctx.fillStyle = 'rgba(10,18,30,0.62)'; ctx.fill(); ctx.strokeStyle = border; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
+}
+function tag(s, x, y, col, a = 1, o = {}) {
+  if (a <= 0.001) return;
+  const size = o.size || 20; const padX = 14; const w = tw(s, { f: F.mono, size, w: 700, ls: 2 }) + padX * 2; const h = size + 18;
+  const al = o.al || 'left'; const x0 = al === 'center' ? x - w / 2 : al === 'right' ? x - w : x;
+  ctx.save(); ctx.globalAlpha *= a; rrect(x0, y - h / 2, w, h, h / 2);
+  ctx.fillStyle = hexA(col, 0.14); ctx.fill(); ctx.strokeStyle = hexA(col, 0.7); ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
+  T(s, x0 + padX, y + 1, { f: F.mono, size, w: 700, c: col, ls: 2, bl: 'middle', a });
+}
+function callout(x1, y1, x2, y2, label, col, a, al = 'left') {
+  if (a <= 0.001) return;
+  line(x1, y1, x2, y2, col, 2, a);
+  ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x1, y1, 5, 0, TAU); ctx.fill(); ctx.restore();
+  T(label, x2 + (al === 'left' ? 10 : -10), y2 + 8, { size: 26, w: 600, c: col, al, a, halo: 8 });
+}
+function header(label, a) {
+  if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = C.cyan; ctx.fillRect(96, 78, 6, 30); ctx.restore();
+  T(label, 118, 102, { f: F.mono, size: 24, w: 700, c: C.text, ls: 4, a });
+}
+function polyPath(pts, mx = 1) { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0] * mx, p[1]) : ctx.moveTo(p[0] * mx, p[1])); ctx.closePath(); }
+function wrapLines(text, maxW, font) {
+  ctx.save(); ctx.font = font; const words = text.split(' '); const out = []; let cur = '';
+  for (const w of words) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; }
+  if (cur) out.push(cur);
+  if (out.length === 2) { // balance two lines
+    let best = null; for (let k = 1; k < words.length; k++) { const a = words.slice(0, k).join(' '), b = words.slice(k).join(' '); const m = Math.max(ctx.measureText(a).width, ctx.measureText(b).width); if (m <= maxW && (!best || m < best.m)) best = { m, a, b }; }
+    if (best) { ctx.restore(); return [best.a, best.b]; }
+  }
+  ctx.restore(); return out;
+}
+
+// ---------- ray tracing (2D) ----------
+function polySegs(pts, closed = true) { const s = []; for (let i = 0; i < pts.length - (closed ? 0 : 1); i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; s.push([p[0], p[1], q[0], q[1]]); } return s; }
+function raySeg(p, d, s) {
+  const ex = s[2] - s[0], ey = s[3] - s[1]; const den = d[0] * ey - d[1] * ex; if (Math.abs(den) < 1e-9) return null;
+  const wx = s[0] - p[0], wy = s[1] - p[1]; const t = (wx * ey - wy * ex) / den; const u = (wx * d[1] - wy * d[0]) / den;
+  if (t <= 1e-6 || u < 0 || u > 1) return null; const L = Math.hypot(ex, ey); return { t, n: [ey / L, -ex / L] };
+}
+function trace(o, d, segs, maxB = 8, far = 2600) {
+  const pts = [[o[0], o[1]]]; let p = [o[0], o[1]], dir = [d[0], d[1]], b = 0;
+  for (; b <= maxB; b++) {
+    let best = Infinity, bn = null; for (const s of segs) { const r = raySeg(p, dir, s); if (r && r.t < best) { best = r.t; bn = r.n; } }
+    if (!bn) { pts.push([p[0] + dir[0] * far, p[1] + dir[1] * far]); break; }
+    p = [p[0] + dir[0] * best, p[1] + dir[1] * best]; pts.push(p);
+    const dn = dir[0] * bn[0] + dir[1] * bn[1]; dir = [dir[0] - 2 * dn * bn[0], dir[1] - 2 * dn * bn[1]];
+    p = [p[0] + dir[0] * 0.02, p[1] + dir[1] * 0.02];
+  }
+  return { pts, dir, bounces: pts.length - 2 };
+}
+// draw polyline path up to length L; segStyle(i) -> {c, a, lw}
+function drawPath(pts, L, segStyle, headCol) {
+  let acc = 0, head = null;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p = pts[i], q = pts[i + 1]; const len = Math.hypot(q[0] - p[0], q[1] - p[1]);
+    if (L <= acc) break;
+    const f = Math.min(1, (L - acc) / len); const ex = p[0] + (q[0] - p[0]) * f, ey = p[1] + (q[1] - p[1]) * f;
+    const st = segStyle(i); line(p[0], p[1], ex, ey, st.c, st.lw, st.a);
+    head = [ex, ey, st]; acc += len;
+  }
+  if (head && head[2].a > 0.05 && headCol !== false) glow(head[0], head[1], 16, head[2].c, 0.9 * head[2].a);
+  return head;
+}
+
+// ---------- backgrounds ----------
+let BG, BG_STARS;
+function noiseDither(g, amt) {
+  const id = g.getImageData(0, 0, W, H); const d = id.data; const r = rng(7);
+  for (let i = 0; i < d.length; i += 4) { const n = (r() - 0.5) * amt; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+  g.putImageData(id, 0, 0);
+}
+function makeBg(stars) {
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+  const rg = g.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, W * 0.72);
+  rg.addColorStop(0, stars ? '#0b1626' : '#0d1b2d'); rg.addColorStop(1, 'rgba(5,9,15,0)'); g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  if (stars) {
+    const r = rng(42);
+    for (let i = 0; i < 420; i++) { const x = r() * W, y = r() * H, s = r() < 0.08 ? 1.8 : 1.0, a = 0.15 + r() * 0.55; g.fillStyle = `rgba(210,225,255,${a})`; g.beginPath(); g.arc(x, y, s, 0, TAU); g.fill(); }
+    const hg = g.createLinearGradient(0, H * 0.7, 0, H); hg.addColorStop(0, 'rgba(30,60,110,0)'); hg.addColorStop(1, 'rgba(30,70,130,0.22)'); g.fillStyle = hg; g.fillRect(0, 0, W, H);
+  } else {
+    g.strokeStyle = 'rgba(120,170,220,0.045)'; g.lineWidth = 1;
+    for (let x = 0; x <= W; x += 60) { g.beginPath(); g.moveTo(x + .5, 0); g.lineTo(x + .5, H); g.stroke(); }
+    for (let y = 0; y <= H; y += 60) { g.beginPath(); g.moveTo(0, y + .5); g.lineTo(W, y + .5); g.stroke(); }
+  }
+  const vg = g.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 1.05);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.6)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  noiseDither(g, 5);
+  return c;
+}
+
+// ---------- aircraft ----------
+// B-2 planform (meters). Nose at (0,0), +y is aft. Leading edges swept 33 deg; every trailing-edge
+// segment is parallel to one of the two leading edges.
+const B2P = [[0, 0], [26.2, 17.0], [26.2, 18.2], [19.5, 22.55], [8.56, 15.45], [0, 21.0], [-8.56, 15.45], [-19.5, 22.55], [-26.2, 18.2], [-26.2, 17.0]];
+const B2E = [[0, 1, 'B'], [1, 2, 'T'], [2, 3, 'A'], [3, 4, 'B'], [4, 5, 'A'], [5, 6, 'B'], [6, 7, 'A'], [7, 8, 'B'], [8, 9, 'T'], [9, 0, 'A']];
+const B2BODY = [[0, 0.8], [2.6, 3.2], [5.2, 7], [7.2, 11.5], [7.0, 14.6], [4.5, 18.2], [0, 20.0], [-4.5, 18.2], [-7.0, 14.6], [-7.2, 11.5], [-5.2, 7], [-2.6, 3.2]];
+const B2INL = [[3.4, 8.4], [4.3, 7.2], [5.3, 8.0], [6.3, 7.3], [7.6, 8.9], [7.2, 9.8], [3.8, 9.6]];
+const B2EXH = [[3.1, 14.4], [6.6, 13.4], [7.6, 16.07], [3.0, 19.05]];
+const B2WIN = [[[0.25, 2.55], [1.15, 2.85], [1.05, 3.55], [0.2, 3.35]], [[1.35, 2.95], [2.15, 3.5], [1.85, 4.05], [1.2, 3.7]]];
+const B2CY = 12;
+function b2pt(x, y, s, rot, px, py) { const X = px * s, Y = (py - B2CY) * s; const c = Math.cos(rot), si = Math.sin(rot); return [x + X * c - Y * si, y + X * si + Y * c]; }
+function drawB2Top(x, y, s, rot = 0, o = {}) {
+  const a = o.a ?? 1; if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s); ctx.translate(0, -B2CY);
+  ctx.lineJoin = 'round';
+  polyPath(B2P); const g = ctx.createLinearGradient(0, 0, 0, 22); g.addColorStop(0, '#36404f'); g.addColorStop(1, '#181e28'); ctx.fillStyle = g; ctx.fill();
+  polyPath(B2BODY); const rg = ctx.createRadialGradient(0, 7, 0.5, 0, 10, 12); rg.addColorStop(0, 'rgba(150,170,195,0.30)'); rg.addColorStop(1, 'rgba(150,170,195,0)'); ctx.fillStyle = rg; ctx.fill();
+  ctx.strokeStyle = 'rgba(160,180,205,0.10)'; ctx.lineWidth = 1 / s; polyPath(B2BODY); ctx.stroke();
+  for (const m of [1, -1]) {
+    polyPath(B2INL, m); ctx.fillStyle = '#0d121a'; ctx.fill(); ctx.strokeStyle = o.inl ? hexA(C.cyan, o.inl) : 'rgba(150,170,200,0.25)'; ctx.lineWidth = (o.inl ? 3 : 1) / s; ctx.stroke();
+    polyPath(B2EXH, m); ctx.fillStyle = '#1a212c'; ctx.fill(); ctx.strokeStyle = 'rgba(150,170,200,0.18)'; ctx.lineWidth = 1 / s; ctx.stroke();
+    if (o.hot) { ctx.save(); ctx.globalAlpha *= o.hot; polyPath(B2EXH, m); ctx.fillStyle = 'rgba(255,140,60,0.55)'; ctx.fill(); ctx.restore(); }
+    for (const wpts of B2WIN) { polyPath(wpts, m); ctx.fillStyle = '#0c1522'; ctx.fill(); ctx.strokeStyle = 'rgba(120,160,210,0.35)'; ctx.lineWidth = 0.8 / s; ctx.stroke(); }
+  }
+  if (o.eng) {
+    ctx.save(); ctx.globalAlpha *= o.eng;
+    for (const ex of [4.3, 6.4, -4.3, -6.4]) {
+      ctx.beginPath(); ctx.roundRect(ex - 0.75, 8.8, 1.5, 5.6, 0.75); ctx.fillStyle = 'rgba(255,181,71,0.22)'; ctx.fill();
+      ctx.setLineDash([0.5, 0.35]); ctx.strokeStyle = C.amber; ctx.lineWidth = 2.2 / s; ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.restore();
+  }
+  for (let k = 0; k < B2E.length; k++) {
+    const [i, j, gr] = B2E[k]; const p = B2P[i], q = B2P[j];
+    ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.strokeStyle = 'rgba(170,190,215,0.55)'; ctx.lineWidth = 1.6 / s; ctx.stroke();
+    const ga = o.eg ? o.eg(k, gr) : 0;
+    if (ga > 0.001) {
+      const col = gr === 'A' ? C.cyan : gr === 'B' ? C.amber : C.steel;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = hexA(col, 0.25 * ga); ctx.lineWidth = 16 / s; ctx.lineCap = 'round'; ctx.stroke();
+      ctx.strokeStyle = hexA(col, ga); ctx.lineWidth = 5 / s; ctx.stroke(); ctx.restore();
+    }
+  }
+  ctx.restore();
+}
+// generic conventional bomber, top view (meters, nose at 0, +y aft)
+function drawBomberTop(x, y, s, o = {}) {
+  const a = o.a ?? 1; if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s); ctx.translate(0, -25);
+  const hull = '#59677a', hull2 = '#3b4656';
+  const LE = xx => 17 + (Math.abs(xx) - 1.6) * 0.7;
+  // wings
+  ctx.fillStyle = hull2;
+  for (const m of [1, -1]) {
+    polyPath([[1.6, 16.5], [28.2, LE(28.2)], [28.2, LE(28.2) + 3.6], [1.6, 30]], m); ctx.fill();
+    polyPath([[1.2, 41], [8.5, 46], [8.5, 48], [1.2, 47]], m); ctx.fill();
+  }
+  // engine pods
+  ctx.fillStyle = '#6a788b';
+  for (const px of [8.5, 17.5, -8.5, -17.5]) { const ly = LE(px); ctx.beginPath(); ctx.roundRect(px - 1.1, ly - 4.5, 2.2, 7, 1); ctx.fill(); }
+  // fuselage
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(1.8, 1.2, 2.0, 4, 2.0, 7); ctx.lineTo(2.0, 44); ctx.lineTo(0.8, 49); ctx.lineTo(-0.8, 49); ctx.lineTo(-2.0, 44); ctx.lineTo(-2.0, 7); ctx.bezierCurveTo(-2.0, 4, -1.8, 1.2, 0, 0); ctx.closePath();
+  ctx.fillStyle = hull; ctx.fill();
+  ctx.fillStyle = '#2a3442'; ctx.fillRect(-0.3, 37, 0.6, 12);
+  ctx.restore();
+}
+// generic jet, side view, nose pointing left (meters)
+function drawJetSide(x, y, s, o = {}) {
+  const a = o.a ?? 1; if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = '#5d6b7e'; polyPath([[13, -1.6], [19.5, -1.6], [21.5, -10], [18.2, -10]]); ctx.fill();
+  ctx.fillStyle = '#4a5768'; polyPath([[15, 0], [21, 0], [22, -0.6], [17, -1.2]]); ctx.fill();
+  const g = ctx.createLinearGradient(0, -2.2, 0, 2.2); g.addColorStop(0, '#a9b6c6'); g.addColorStop(1, '#5f6c7e');
+  ctx.beginPath(); ctx.moveTo(-20, 0.3); ctx.bezierCurveTo(-20, -1.6, -17, -2.2, -14, -2.2); ctx.lineTo(16, -2.2); ctx.lineTo(21, -1.3); ctx.lineTo(21, 0.2); ctx.lineTo(15, 2.1); ctx.lineTo(-14, 2.1); ctx.bezierCurveTo(-17.5, 2.1, -20, 1.5, -20, 0.3); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+  ctx.fillStyle = '#3d4858'; polyPath([[-4, 0.8], [3, 0.8], [8, 2.6], [5.5, 2.6]]); ctx.fill();
+  ctx.fillStyle = '#6f7d90'; ctx.beginPath(); ctx.roundRect(-3.5, 1.6, 5.5, 1.9, 0.9); ctx.fill();
+  ctx.fillStyle = '#1b2433'; polyPath([[-18.6, -0.9], [-16.6, -1.6], [-16.2, -0.9]]); ctx.fill();
+  ctx.restore();
+}
+function drawRadarSite(x, y, s, aimAng, a = 1, col = C.cyan) {
+  if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = '#2a3646'; polyPath([[-18, 0], [18, 0], [7, -50], [-7, -50]]); ctx.fill();
+  ctx.strokeStyle = 'rgba(160,190,220,0.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-14, -8); ctx.lineTo(5, -45); ctx.moveTo(14, -8); ctx.lineTo(-5, -45); ctx.stroke();
+  ctx.translate(0, -58); ctx.rotate(aimAng);
+  ctx.beginPath(); ctx.moveTo(-6, -34); ctx.quadraticCurveTo(14, 0, -6, 34); ctx.lineTo(-11, 34); ctx.quadraticCurveTo(8, 0, -11, -34); ctx.closePath(); ctx.fillStyle = '#b8c6d6'; ctx.fill();
+  ctx.strokeStyle = '#8fa3b9'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-2, -26); ctx.lineTo(26, 0); ctx.lineTo(-2, 26); ctx.stroke();
+  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(26, 0, 4, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function ground(y, a = 1) {
+  ctx.save(); ctx.globalAlpha *= a;
+  const r = rng(3); ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(0, y);
+  for (let x = 0; x <= W; x += 40) ctx.lineTo(x, y - 18 * Math.sin(x * 0.004) - 10 * Math.sin(x * 0.011 + 1) - r() * 4);
+  ctx.lineTo(W, H); ctx.closePath();
+  const g = ctx.createLinearGradient(0, y - 30, 0, H); g.addColorStop(0, '#0e1824'); g.addColorStop(1, '#070b11'); ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = 'rgba(120,170,220,0.18)'; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+}
+
+// ---------- radar scope ----------
+function drawScope(cx, cy, R, ang, a, blips, labelA = 1) {
+  if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a;
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R); g.addColorStop(0, '#062a1d'); g.addColorStop(1, '#03150f');
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fillStyle = g; ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.clip();
+  ctx.strokeStyle = hexA(C.green, 0.16); ctx.lineWidth = 1.5;
+  for (let k = 1; k <= 4; k++) { ctx.beginPath(); ctx.arc(cx, cy, R * k / 4, 0, TAU); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R); ctx.stroke();
+  for (let k = 0; k < 48; k++) {
+    const a1 = ang - k * 0.025, a0 = a1 - 0.026; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0 - Math.PI / 2, a1 - Math.PI / 2); ctx.closePath();
+    ctx.fillStyle = hexA(C.green, 0.20 * Math.pow(1 - k / 48, 1.6)); ctx.fill();
+  }
+  line(cx, cy, cx + R * Math.sin(ang), cy - R * Math.cos(ang), C.green, 2.5, 0.9);
+  for (const b of blips) {
+    const bx = cx + R * b.r * Math.sin(b.ang), by = cy - R * b.r * Math.cos(b.ang);
+    const d = ((ang - b.ang) % TAU + TAU) % TAU; const inten = (0.12 + 0.88 * Math.exp(-d / 2.4)) * b.k;
+    glow(bx, by, b.size * 2.4, C.green, inten * 0.8);
+    ctx.fillStyle = hexA('#c8ffe6', Math.min(1, inten)); ctx.beginPath(); ctx.arc(bx, by, Math.max(1.6, b.size * 0.35), 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.strokeStyle = hexA(C.green, 0.55); ctx.lineWidth = 3; ctx.stroke();
+  ctx.restore();
+  for (const b of blips) if (b.label) {
+    const bx = cx + R * b.r * Math.sin(b.ang), by = cy - R * b.r * Math.cos(b.ang);
+    T(b.label, bx + (b.lx || 22), by + (b.ly || 8), { f: F.mono, size: 20, w: 700, c: b.lc || C.green, ls: 2, a: a * labelA * (b.la ?? 1), al: b.lal || 'left' });
+  }
+}
+
+// ---------- icons (drawn in a 120x120 box centered at x,y) ----------
+function iconShape(x, y, s, col, a) {
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = '#2b3443'; polyPath([[-50, 30], [50, 30], [10, -10]]); ctx.fill(); ctx.strokeStyle = C.edge; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+  arrow(x - 55 * s, y - 50 * s, x - 18 * s, y - 2 * s, C.cyan, 3.5 * s, 13 * s, a);
+  arrow(x - 18 * s, y - 2 * s, x + 50 * s, y - 50 * s, col, 3.5 * s, 13 * s, a);
+}
+function iconEdges(x, y, s, col, a) {
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s); ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(-55, 10); for (let k = 0; k < 5; k++) { ctx.lineTo(-55 + 22 * k + 11, k % 2 ? 10 : -14); ctx.lineTo(-55 + 22 * (k + 1), 10); }
+  ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
+  ctx.setLineDash([4, 6]); ctx.strokeStyle = hexA(C.cyan, 0.7); ctx.lineWidth = 2;
+  for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.moveTo(-50 + k * 35, 45); ctx.lineTo(-20 + k * 35, 20); ctx.stroke(); }
+  ctx.restore();
+}
+function iconSkin(x, y, s, col, a) {
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = 'rgba(161,139,255,0.35)'; ctx.fillRect(-55, 8, 110, 18); ctx.fillStyle = '#3a4556'; ctx.fillRect(-55, 26, 110, 16);
+  ctx.strokeStyle = C.cyan; ctx.lineWidth = 3.5; ctx.beginPath();
+  for (let i = 0; i <= 60; i++) { const yy = -50 + i; const amp = 10 * (yy < 8 ? 1 : Math.max(0, 1 - (yy - 8) / 18)); const xx = amp * Math.sin(i * 0.45); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+  ctx.stroke(); glow(0, 18, 26, col, 0.6); ctx.restore();
+}
+function iconEngine(x, y, s, col, a) {
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s); ctx.lineCap = 'round';
+  ctx.strokeStyle = C.edge; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(-50, -40); ctx.bezierCurveTo(-20, -40, -20, 10, 30, 10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-50, -12); ctx.bezierCurveTo(-35, -12, -35, 38, 30, 38); ctx.stroke();
+  ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(34, 6); ctx.lineTo(34, 42); ctx.stroke();
+  for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.moveTo(38, 10 + k * 9); ctx.lineTo(46, 12 + k * 9); ctx.lineWidth = 3; ctx.stroke(); }
+  ctx.restore();
+}
+function card(x, y, w, h, num, title, sub, iconFn, col, a) {
+  if (a <= 0.001) return;
+  panel(x - w / 2, y - h / 2, w, h, a, hexA(col, 0.45));
+  iconFn(x, y - h * 0.16, w / 330, col, a);
+  T(num, x - w / 2 + 22, y - h / 2 + 40, { f: F.mono, size: 22, w: 700, c: col, a });
+  T(title, x, y + h * 0.25, { f: F.disp, size: Math.round(w * 0.13), w: 800, al: 'center', a });
+  if (sub) T(sub, x, y + h * 0.25 + 40, { size: Math.round(w * 0.068), w: 500, c: C.muted, al: 'center', a });
+}
+
+// ---------- big "trick" title card ----------
+function trickCard(lt, sc, n, name) {
+  const out = cue(sc, 1) - 0.4;
+  const a = eo(prog(lt, 0.1, 0.5)) * (1 - sm(prog(lt, out, 0.45)));
+  if (a > 0.001) {
+    const k = 0.94 + 0.06 * eo(prog(lt, 0.1, 0.8));
+    ctx.save(); ctx.translate(960, 520); ctx.scale(k, k); ctx.translate(-960, -520);
+    T(String(n).padStart(2, '0'), 960, 640, { f: F.disp, size: 420, w: 800, c: hexA(C.cyan, 0.08), al: 'center', a });
+    T('TRICK ' + n + ' OF 4', 960, 430, { f: F.mono, size: 28, w: 700, c: C.cyan, al: 'center', ls: 10, a });
+    T(name, 960, 580, { f: F.disp, size: 132, w: 800, al: 'center', a });
+    ctx.restore();
+  }
+  header(`TRICK ${n} · ${name}`, sm(prog(lt, out + 0.15, 0.5)));
+  return out;
+}
+
+// =====================================================================
+// SCENES
+// =====================================================================
+const SC = {};
+
+// ---- 1. Title ----
+const TITLE_BLIPS = [
+  { r: 0.62, ang: -1.0, size: 30, k: 1.0, label: 'AIRLINER', lx: 34 },
+  { r: 0.42, ang: 2.05, size: 6, k: 0.6, label: 'LARGE BIRD' },
+  { r: 0.76, ang: 0.85, size: 6, k: 0.6, label: 'B-2 (claimed)', lc: C.amber },
+];
+const TITLE_SWEEP = 1.5;
+SC.title = (lt, sc) => {
+  const c1 = cue(sc, 1), c2 = cue(sc, 2);
+  const m = eio(prog(lt, c1 - 0.3, 1.6));
+  const x = lerp(960, 560, m), y = lerp(600, 560, m), s = lerp(23, 14, m);
+  const ghost = 1 - 0.75 * sm(prog(lt, c2 + 0.2, 1.6));
+  const rot = Math.sin(lt * 0.35) * 0.012;
+  glow(x, y, s * 30, '#2a5db0', 0.10 * ghost);
+  drawB2Top(x, y, s, rot, { a: eo(prog(lt, 0.2, 1.6)) * ghost });
+  // wingspan dimension
+  const dA = fio(lt, 2.6, c1 - 0.6, 0.6, 0.4);
+  if (dA > 0) {
+    const yy = y + 11.6 * s, xl = x - 26.2 * s, xr = x + 26.2 * s;
+    line(xl, yy - 14, xl, yy + 14, C.amber, 2, dA); line(xr, yy - 14, xr, yy + 14, C.amber, 2, dA);
+    arrow(x - 185, yy, xl + 2, yy, C.amber, 2, 14, dA); arrow(x + 185, yy, xr - 2, yy, C.amber, 2, 14, dA);
+    T('172 FT  ·  52.4 M', x, yy + 9, { f: F.mono, size: 26, w: 700, c: C.amber, al: 'center', ls: 2, a: dA });
+  }
+  // title
+  const tA = eo(prog(lt, 0.5, 1.2)) * (1 - sm(prog(lt, c1 - 0.5, 0.6)));
+  T('HOW THE B-2 SPIRIT', 960, 200, { f: F.mono, size: 34, w: 700, c: C.cyan, al: 'center', ls: 12, a: tA });
+  T('Hides From Radar', 960, 310, { f: F.disp, size: 116, w: 800, al: 'center', a: tA });
+  // scope
+  const sA = eo(prog(lt, c1 + 0.3, 1.0));
+  drawScope(1400, 520, 330, (lt - c1) * TITLE_SWEEP, sA, TITLE_BLIPS, sm(prog(lt, c1 + 1.4, 0.8)));
+  T('RADAR SCOPE', 1400, 160, { f: F.mono, size: 22, w: 700, c: C.green, al: 'center', ls: 6, a: sA * 0.8 });
+  const qA = sm(prog(lt, c2 + 0.4, 0.8));
+  T('?', 560, 600, { f: F.disp, size: 260, w: 800, c: hexA(C.cyan, 0.85), al: 'center', a: qA });
+};
+
+// ---- 2. Radar basics ----
+function radarGeom(sc) {
+  const rx = 300, ry = 822; const te = cue(sc, 1) + 0.6; const ta = cue(sc, 2) + 0.9;
+  const ax = t => 1500 - t * 9, ay = 330;
+  const D = Math.hypot(ax(ta) - rx, ay - ry); const v = D / (ta - te); const tr = ta + D / v;
+  return { rx, ry, te, ta, tr, ax, ay, D, v };
+}
+SC.radar = (lt, sc) => {
+  header('RADAR 101', sm(prog(lt, 0.2, 0.6)));
+  const g = radarGeom(sc); const ax = g.ax(lt), ay = g.ay;
+  ground(880);
+  const aim = Math.atan2(ay - g.ry + 58, ax - g.rx);
+  drawRadarSite(g.rx, 880, 1.2, aim, eo(prog(lt, 0.2, 0.8)));
+  drawJetSide(ax, ay, 8, { a: eo(prog(lt, 0.5, 1.0)) });
+  T('RADAR STATION', g.rx, 940, { f: F.mono, size: 22, w: 700, c: C.muted, al: 'center', ls: 3, a: sm(prog(lt, 0.6, 0.6)) });
+  // outgoing pulse
+  const dirA = Math.atan2(ay - g.ry, g.ax(g.ta) - g.rx);
+  if (lt > g.te) {
+    const r = g.v * (lt - g.te);
+    for (let k = 0; k < 4; k++) {
+      const rr = r - k * 22; if (rr <= 10) continue;
+      const fade = (1 - k * 0.22) * (rr > g.D + 30 ? Math.max(0, 1 - (rr - g.D - 30) / 260) : 1);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = hexA(C.cyan, 0.85 * fade); ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(g.rx, g.ry, rr, dirA - 0.17, dirA + 0.17); ctx.stroke(); ctx.restore();
+    }
+    const lr = Math.min(r, g.D * 0.45);
+    T('RADIO PULSE', g.rx + Math.cos(dirA) * lr + Math.sin(dirA) * 90, g.ry + Math.sin(dirA) * lr - Math.cos(dirA) * 90, { f: F.mono, size: 22, w: 700, c: C.cyan, ls: 3, al: 'center', a: fio(lt, g.te + 0.5, g.ta, 0.5, 0.5) });
+  }
+  // echo
+  if (lt > g.ta) {
+    const r = g.v * (lt - g.ta); const ex = g.ax(g.ta), back = Math.atan2(g.ry - ay, g.rx - ex);
+    glow(ex, ay, 130, C.amber, 0.5 * Math.exp(-(lt - g.ta) * 2.5));
+    for (let k = 0; k < 3; k++) {
+      const rr = r - k * 22; if (rr <= 10 || rr > g.D + 10) continue;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = hexA(C.amber, 0.75 * (1 - k * 0.25)); ctx.lineWidth = 4; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(ex, ay, rr, back - 0.22, back + 0.22); ctx.stroke(); ctx.restore();
+    }
+    const lr = Math.min(r, g.D * 0.5);
+    T('ECHO', ex + Math.cos(back) * lr + 40, ay + Math.sin(back) * lr + 10, { f: F.mono, size: 24, w: 700, c: C.amber, ls: 3, a: fio(lt, g.ta + 0.4, g.tr + 0.2, 0.5, 0.5) });
+  }
+  if (lt > g.tr) glow(g.rx, g.ry - 10, 120, C.green, 0.7 * Math.exp(-(lt - g.tr) * 1.8));
+  // timer HUD
+  const hA = sm(prog(lt, g.te - 0.3, 0.5));
+  if (hA > 0) {
+    panel(1180, 600, 620, 230, hA);
+    const f = clamp((lt - g.te) / (g.tr - g.te)); const us = Math.round(200 * f);
+    T('ECHO DELAY', 1215, 652, { f: F.mono, size: 22, w: 700, c: C.muted, ls: 4, a: hA });
+    T(`${String(us).padStart(3, '0')} µs`, 1215, 720, { f: F.mono, size: 58, w: 700, c: f >= 1 ? C.green : C.text, a: hA });
+    const rA = sm(prog(lt, cue(sc, 3) + 0.8, 0.6));
+    T('RANGE = (LIGHT SPEED × DELAY) ÷ 2', 1215, 770, { f: F.mono, size: 20, w: 600, c: C.muted, ls: 1, a: hA * rA });
+    T('= 30 km', 1215, 808, { f: F.mono, size: 30, w: 700, c: C.green, a: hA * sm(prog(lt, cue(sc, 3) + 2.0, 0.5)) });
+  }
+};
+
+// ---- 3. RCS ----
+const LOGX = v => 380 + (Math.log10(v) + 4) * 165; // 1e-4 .. 1e3 -> 380 .. 1535
+SC.rcs = (lt, sc) => {
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3);
+  header('RADAR CROSS SECTION', sm(prog(lt, 0.2, 0.6)));
+  const iA = fio(lt, 0.4, c1 - 0.3, 0.6, 0.5);
+  T('RCS', 960, 470, { f: F.disp, size: 200, w: 800, al: 'center', a: iA, c: C.text });
+  T('RADAR CROSS SECTION', 960, 540, { f: F.mono, size: 30, w: 700, al: 'center', ls: 8, c: C.cyan, a: iA });
+  T('How big a target looks to radar', 960, 610, { size: 36, w: 500, al: 'center', c: C.muted, a: iA });
+  const out = 1 - sm(prog(lt, c3 - 0.2, 0.6));
+  // B-52
+  const bA = eo(prog(lt, c1, 0.8)) * out;
+  if (bA > 0) {
+    const pulse = 0.85 + 0.15 * Math.sin(lt * 3);
+    glow(560, 400, 330, C.amber, 0.45 * bA * pulse);
+    drawBomberTop(560, 400, 8.5, { a: bA });
+    T('B-52', 560, 175, { f: F.disp, size: 50, w: 800, al: 'center', a: bA });
+    T('≈ 100 m²', 560, 680, { f: F.mono, size: 34, w: 700, c: C.amber, al: 'center', a: bA });
+  }
+  const b2A = eo(prog(lt, c2, 0.8)) * out;
+  if (b2A > 0) {
+    glow(1360, 400, 34, C.amber, 0.55 * b2A);
+    drawB2Top(1360, 400, 9.5, 0, { a: b2A });
+    T('B-2', 1360, 175, { f: F.disp, size: 50, w: 800, al: 'center', a: b2A });
+    T('≈ 0.1 m² or less (est.)', 1360, 680, { f: F.mono, size: 34, w: 700, c: C.green, al: 'center', a: b2A });
+  }
+  // log scale
+  const sA = sm(prog(lt, c1 + 1.5, 0.6)) * out;
+  if (sA > 0) {
+    const y = 820; line(LOGX(1e-4), y, LOGX(1e3), y, C.dim, 3, sA);
+    for (let e = -4; e <= 3; e++) {
+      const x = LOGX(Math.pow(10, e)); line(x, y - 10, x, y + 10, C.dim, 2, sA);
+      const lab = e >= 0 ? String(Math.pow(10, e)) : (e === -1 ? '0.1' : e === -2 ? '0.01' : e === -3 ? '0.001' : '0.0001');
+      T(lab, x, y + 42, { f: F.mono, size: 20, w: 600, c: C.muted, al: 'center', a: sA });
+    }
+    T('RCS, m² (log scale)', LOGX(1e3) + 30, y + 8, { f: F.mono, size: 20, w: 600, c: C.muted, a: sA });
+    const mx = LOGX(100); glow(mx, y, 30, C.amber, 0.8 * sA); ctx.save(); ctx.globalAlpha *= sA; ctx.fillStyle = C.amber; ctx.beginPath(); ctx.arc(mx, y, 9, 0, TAU); ctx.fill(); ctx.restore();
+    const m2 = sm(prog(lt, c2 + 0.6, 0.8)) * sA;
+    if (m2 > 0) {
+      const bx = LOGX(0.1);
+      line(LOGX(0.0005), y, bx, y, C.green, 6, m2 * 0.45);
+      glow(bx, y, 26, C.green, 0.8 * m2); ctx.save(); ctx.globalAlpha *= m2; ctx.fillStyle = C.green; ctx.beginPath(); ctx.arc(bx, y, 9, 0, TAU); ctx.fill(); ctx.restore();
+      const k = eio(prog(lt, c2 + 1.2, 1.2));
+      if (k > 0) { arrow(mx, y - 40, lerp(mx, bx + 8, k), y - 40, C.text, 3, 16, m2); T('1,000× smaller', (mx + bx) / 2, y - 60, { size: 30, w: 700, al: 'center', a: m2 * sm(prog(lt, c2 + 2.0, 0.6)) }); }
+      T('actual value classified', LOGX(0.003), y - 22, { f: F.mono, size: 18, w: 600, c: C.muted, al: 'center', a: m2 * sm(prog(lt, c2 + 3.5, 0.6)) });
+    }
+  }
+  // four tricks
+  const items = [['01', 'Shape', iconShape, C.cyan], ['02', 'Edges', iconEdges, C.amber], ['03', 'Skin', iconSkin, C.violet], ['04', 'Engines', iconEngine, C.green]];
+  items.forEach((it, i) => {
+    const a = eo(prog(lt, c3 + 0.1 + i * 0.22, 0.5));
+    const yy = 510 + 30 * (1 - a);
+    card(375 + i * 390, yy, 330, 360, it[0], it[1], null, it[2], it[3], a);
+  });
+};
+
+// ---- 4. Shape ----
+const SHAPE = (() => {
+  const s = 13, el = 26 * D2R, d = [Math.cos(el), -Math.sin(el)], perp = [Math.sin(el), Math.cos(el)];
+  const mk = (cx, cy, polys) => {
+    const P = polys.map(pl => pl.map(([x, z]) => [cx + x * s, cy - z * s]));
+    const segs = P.flatMap(p => polySegs(p));
+    const rays = [];
+    for (let k = -15; k <= 15; k++) {
+      const o = [cx - d[0] * 620 + perp[0] * k * 16, cy - d[1] * 620 + perp[1] * k * 16];
+      const r = trace(o, d, segs, 6);
+      const cos = -(r.dir[0] * d[0] + r.dir[1] * d[1]);
+      r.echo = r.bounces > 0 && cos > Math.cos(12 * D2R);
+      r.hit = r.bounces > 0;
+      if (r.hit || (k % 4 === 0)) rays.push(r);
+    }
+    return { P, rays, cx, cy };
+  };
+  // conventional, front view (meters; x span, z up)
+  const fus = [[-3.2, -3.4], [3.2, -3.4], [3.2, 2.6], [2.2, 3.4], [-2.2, 3.4], [-3.2, 2.6]];
+  const wingL = [[-27, 2.0], [-3.2, 2.0], [-3.2, 2.8], [-27, 2.5]], wingR = wingL.map(([x, z]) => [-x, z]);
+  const nac = (x) => { const p = []; for (let i = 0; i < 20; i++) { const a = i / 20 * TAU; p.push([x + 1.25 * Math.cos(a), 0.5 + 1.25 * Math.sin(a)]); } return p; };
+  const pyl = x => [[x - 0.25, 1.6], [x + 0.25, 1.6], [x + 0.25, 2.0], [x - 0.25, 2.0]];
+  const fin = [[-0.35, 3.4], [0.35, 3.4], [0.25, 11.5], [-0.25, 11.5]];
+  const stab = [[-9.5, 3.6], [9.5, 3.6], [9.5, 4.0], [-9.5, 4.0]];
+  const conv = mk(500, 520, [fus, wingL, wingR, nac(-10), nac(10), nac(-18), nac(18), pyl(-10), pyl(10), pyl(-18), pyl(18), fin, stab]);
+  conv.kinds = ['fus', 'wing', 'wing', 'nac', 'nac', 'nac', 'nac', 'pyl', 'pyl', 'pyl', 'pyl', 'fin', 'stab'];
+  const top = [[-26.2, 0.2], [-16, 0.55], [-9, 0.9], [-6.5, 1.45], [-3.6, 1.85], [-1.7, 2.5], [0, 2.75], [1.7, 2.5], [3.6, 1.85], [6.5, 1.45], [9, 0.9], [16, 0.55], [26.2, 0.2]];
+  const bot = [[26.2, 0.02], [16, -0.32], [8, -0.58], [3, -0.78], [0, -0.84], [-3, -0.78], [-8, -0.58], [-16, -0.32], [-26.2, 0.02]];
+  const b2 = mk(1420, 520, [top.concat(bot)]);
+  return { conv, b2, d, el };
+})();
+function drawShapePanel(P, lt, tEmit, isB2, a) {
+  const x0 = P.cx - 410, y0 = 190, w = 820, h = 640;
+  panel(x0, y0, w, h, a, isB2 ? hexA(C.green, 0.35) : hexA(C.red, 0.35));
+  if (a <= 0.001) return;
+  T(isB2 ? 'B-2 FLYING WING' : 'CONVENTIONAL AIRCRAFT', P.cx, y0 + 50, { f: F.mono, size: 24, w: 700, c: isB2 ? C.green : C.red, al: 'center', ls: 4, a });
+  T('front view', P.cx, y0 + 82, { size: 22, w: 500, c: C.muted, al: 'center', a });
+  ctx.save(); ctx.globalAlpha *= a; rrect(x0, y0, w, h, 18); ctx.clip();
+  // rays
+  const L = lt > tEmit ? (lt - tEmit) * 560 : 0;
+  if (L > 0) for (const r of P.rays) {
+    const echoCol = isB2 ? C.amber : C.amber;
+    drawPath(r.pts, L, i => i === 0 ? { c: C.cyan, a: r.hit ? 0.55 : 0.16, lw: r.hit ? 2.5 : 1.5 } : (r.echo ? { c: echoCol, a: 0.95, lw: 4 } : { c: '#9fb6cf', a: 0.32, lw: 1.6 }), r.hit ? undefined : false);
+  }
+  // aircraft
+  P.P.forEach((pl, i) => {
+    ctx.beginPath(); pl.forEach((p, j) => j ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+    ctx.fillStyle = isB2 ? '#2c3646' : '#5f6d80'; ctx.fill(); ctx.strokeStyle = isB2 ? 'rgba(170,190,215,0.7)' : 'rgba(200,215,230,0.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+  ctx.restore();
+  // radar icon (bottom-left)
+  const rx = x0 + 70, ry = y0 + h - 40;
+  drawRadarSite(rx, ry, 0.7, -SHAPE.el, a);
+  // echo meter
+  const nEcho = P.rays.filter(r => r.echo).length;
+  const tRet = tEmit + 1.9; const fill = (isB2 ? 0.04 : 0.88) * eo(prog(lt, tRet, 1.2));
+  const mx = x0 + 170, my = y0 + h - 52, mw = w - 210;
+  T('ECHO BACK TO RADAR', mx, my - 12, { f: F.mono, size: 18, w: 700, c: C.muted, ls: 3, a });
+  ctx.save(); ctx.globalAlpha *= a; rrect(mx, my, mw, 16, 8); ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
+  if (fill > 0) { rrect(mx, my, Math.max(16, mw * fill), 16, 8); ctx.fillStyle = isB2 ? C.green : C.amber; ctx.fill(); }
+  ctx.restore();
+  const lab = isB2 ? 'MINIMAL' : 'STRONG'; T(lab, mx + mw, my - 12, { f: F.mono, size: 18, w: 700, c: isB2 ? C.green : C.amber, al: 'right', ls: 3, a: a * sm(prog(lt, tRet + 0.6, 0.5)) });
+}
+SC.shape = (lt, sc) => {
+  const out = trickCard(lt, sc, 1, 'SHAPE');
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3);
+  const aL = sm(prog(lt, out + 0.2, 0.6)), aR = sm(prog(lt, c2 - 0.2, 0.6));
+  drawShapePanel(SHAPE.conv, lt, c1 + 0.6, false, aL);
+  drawShapePanel(SHAPE.b2, lt, c3 + 0.4, true, aR);
+  // conventional callouts
+  const cv = SHAPE.conv; const s = 13;
+  const cA = sm(prog(lt, c1 + 3.0, 0.5)) * aL;
+  callout(cv.cx - 3.2 * s - 3, cv.cy - 2.0 * s + 3, cv.cx - 120, cv.cy + 150, 'Right-angle corner', C.amber, cA, 'right');
+  callout(cv.cx + 0.3 * s, cv.cy - 9 * s, cv.cx + 110, cv.cy - 190, 'Tall vertical tail', C.red, sm(prog(lt, c1 + 4.0, 0.5)) * aL);
+  // B-2 callouts
+  const bx = SHAPE.b2.cx, by = SHAPE.b2.cy;
+  callout(bx, by - 2.9 * s, bx + 40, by - 170, 'No vertical tail', C.green, sm(prog(lt, c2 + 1.0, 0.5)) * aR);
+  callout(bx - 6.5 * s, by - 1.4 * s, bx - 160, by - 120, 'Blended body', C.green, sm(prog(lt, c2 + 2.4, 0.5)) * aR, 'right');
+  callout(bx + 16 * s, by + 0.5 * s, bx + 250, by + 120, 'No right angles', C.green, sm(prog(lt, c2 + 3.6, 0.5)) * aR);
+  T('Deflected away', bx + 250, by + 175, { f: F.mono, size: 22, w: 700, c: '#bcd0e4', ls: 2, al: 'center', halo: 8, a: aR * sm(prog(lt, c3 + 2.2, 0.6)) });
+};
+
+// ---- 5. Edge alignment ----
+function beamPattern(th, m) {
+  // th: radians clockwise from nose; m: 0 = omnidirectional glow, 1 = four narrow spikes
+  const halo = 300 + 26 * Math.sin(4 * th + 0.6) + 18 * Math.sin(7 * th + 1.3) + 30 * Math.cos(2 * th);
+  let sp = 34;
+  for (const a0 of [33, -33, 147, -147]) { let dd = ((th - a0 * D2R) % TAU + TAU) % TAU; if (dd > Math.PI) dd -= TAU; sp += 560 * Math.exp(-Math.pow(dd / 0.045, 2)); }
+  return lerp(halo, sp, m);
+}
+SC.edges = (lt, sc) => {
+  const out = trickCard(lt, sc, 2, 'EDGES');
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3), c4 = cue(sc, 4);
+  const mv = eio(prog(lt, c4 - 0.2, 1.4));
+  const X = lerp(960, 600, mv), Y = lerp(540, 540, mv), S = lerp(16.5, 11.5, mv);
+  const bA = sm(prog(lt, out + 0.1, 0.7));
+  // beam pattern (behind aircraft)
+  const pA = sm(prog(lt, c3 - 0.1, 0.7)) * (1 - 0.65 * mv);
+  if (pA > 0) {
+    const m = eio(prog(lt, c3 + 1.6, 2.4));
+    const k = S / 16.5;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.beginPath();
+    for (let i = 0; i <= 720; i++) { const th = i / 720 * TAU; const r = beamPattern(th, m) * k; const px = X + r * Math.sin(th), py = Y - r * Math.cos(th); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+    ctx.closePath();
+    const g = ctx.createRadialGradient(X, Y, 0, X, Y, 620 * k); g.addColorStop(0, hexA(C.amber, 0.38 * pA)); g.addColorStop(1, hexA(C.amber, 0.04 * pA));
+    ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.6 * pA); ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    const qA = pA * sm(prog(lt, c3 + 4.2, 0.6)) * (1 - mv);
+    if (qA > 0) {
+      ctx.save(); ctx.globalAlpha *= qA; ctx.beginPath(); ctx.moveTo(X, Y - 160); ctx.arc(X, Y - 160, 300, -Math.PI / 2 - 0.42, -Math.PI / 2 + 0.42); ctx.closePath();
+      ctx.fillStyle = hexA(C.green, 0.14); ctx.fill(); ctx.restore();
+      T('QUIET AHEAD', X, Y - 420, { f: F.mono, size: 22, w: 700, c: C.green, al: 'center', ls: 4, a: qA });
+      T('SPIKE', X - 410, Y - 400, { f: F.mono, size: 20, w: 700, c: C.amber, al: 'center', ls: 3, a: qA });
+      T('SPIKE', X + 410, Y - 400, { f: F.mono, size: 20, w: 700, c: C.amber, al: 'center', ls: 3, a: qA });
+    }
+  }
+  // edge highlight logic
+  const one = fio(lt, c1 + 0.8, c2 + 0.2, 0.5, 0.5);
+  const gA = sm(prog(lt, c2 + 1.5, 0.6)), gB = sm(prog(lt, c2 + 4.0, 0.6));
+  const dimEnd = 1 - 0.5 * sm(prog(lt, c3, 0.8));
+  const eg = (k, gr) => (k === 9 ? Math.max(one, gr === 'A' ? gA * dimEnd : 0) : gr === 'A' ? gA * dimEnd : gr === 'B' ? gB * dimEnd : 0);
+  // parallel guide lines
+  const guideA = fio(lt, c2 + 1.8, c3 + 0.3, 0.6, 0.6), guideB = fio(lt, c2 + 4.3, c3 + 0.3, 0.6, 0.6);
+  for (const [gr, ga] of [['A', guideA], ['B', guideB]]) {
+    if (ga <= 0) continue;
+    for (const [i, j, g] of B2E) {
+      if (g !== gr) continue; const p = b2pt(X, Y, S, 0, ...B2P[i]), q = b2pt(X, Y, S, 0, ...B2P[j]);
+      const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+      line(p[0] - ux * 900, p[1] - uy * 900, q[0] + ux * 900, q[1] + uy * 900, gr === 'A' ? C.cyan : C.amber, 1.5, ga * 0.45, [8, 10]);
+    }
+  }
+  drawB2Top(X, Y, S, 0, { a: bA, eg });
+  // single-edge perpendicular beam
+  if (one > 0) {
+    const p = b2pt(X, Y, S, 0, ...B2P[9]), q = b2pt(X, Y, S, 0, ...B2P[0]);
+    const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy); const nx = dy / L, ny = -dx / L; // outward (forward-left)
+    const grow = eo(prog(lt, c1 + 1.4, 1.2)); const len = 380 * grow;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha *= one;
+    const g = ctx.createLinearGradient(p[0], p[1], p[0] + nx * len, p[1] + ny * len); g.addColorStop(0, hexA(C.cyan, 0.45)); g.addColorStop(1, hexA(C.cyan, 0));
+    ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.lineTo(q[0] + nx * len, q[1] + ny * len); ctx.lineTo(p[0] + nx * len, p[1] + ny * len); ctx.closePath(); ctx.fillStyle = g; ctx.fill(); ctx.restore();
+    const mxp = (p[0] + q[0]) / 2, myp = (p[1] + q[1]) / 2;
+    arrow(mxp, myp, mxp + nx * 300 * grow, myp + ny * 300 * grow, C.cyan, 4, 20, one * grow);
+    // right-angle marker
+    const sq = 22; ctx.save(); ctx.globalAlpha *= one * grow; ctx.strokeStyle = C.text; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.moveTo(mxp + dx / L * sq, myp + dy / L * sq); ctx.lineTo(mxp + dx / L * sq + nx * sq, myp + dy / L * sq + ny * sq); ctx.lineTo(mxp + nx * sq, myp + ny * sq); ctx.stroke(); ctx.restore();
+    T('strongest reflection: 90° to the edge', mxp + nx * 320 - 20, myp + ny * 320 - 20, { size: 26, w: 600, c: C.cyan, al: 'left', a: one * sm(prog(lt, c1 + 2.4, 0.5)) });
+  }
+  // labels for groups
+  T('Parallel to left leading edge', 96, 960 - 120, { size: 24, w: 600, c: C.cyan, a: fio(lt, c2 + 2.0, c3, 0.5, 0.5) });
+  T('Parallel to right leading edge', W - 96, 960 - 120, { size: 24, w: 600, c: C.amber, al: 'right', a: fio(lt, c2 + 4.5, c3, 0.5, 0.5) });
+  // doors & panels inset
+  const dA = sm(prog(lt, c4 + 0.6, 0.7));
+  if (dA > 0) {
+    panel(1130, 230, 690, 560, dA);
+    T('DOORS & PANELS', 1475, 290, { f: F.mono, size: 24, w: 700, c: C.text, al: 'center', ls: 4, a: dA });
+    T('zigzag edges, same two angles', 1475, 330, { size: 24, w: 500, c: C.muted, al: 'center', a: dA });
+    const t65 = Math.tan(33 * D2R) * 1; // slope of edges
+    const cx = 1475, cy = 560, hw = 230, hh = 120, n = 4, step = hw * 2 / n, zz = step / 2 * t65;
+    const pts = []; // zigzag top edge (left->right), bottom edge (right->left)
+    for (let i = 0; i <= n; i++) { pts.push([cx - hw + i * step, cy - hh]); if (i < n) pts.push([cx - hw + i * step + step / 2, cy - hh - zz]); }
+    const bpts = []; for (let i = n; i >= 0; i--) { bpts.push([cx - hw + i * step, cy + hh]); if (i > 0) bpts.push([cx - hw + i * step - step / 2, cy + hh - zz]); }
+    ctx.save(); ctx.globalAlpha *= dA; ctx.beginPath(); [...pts, ...bpts].forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+    ctx.fillStyle = '#2a3342'; ctx.fill(); ctx.restore();
+    const segsDraw = arr => { for (let i = 0; i < arr.length - 1; i++) { const p = arr[i], q = arr[i + 1]; const up = (q[1] - p[1]) * (q[0] - p[0]) < 0; line(p[0], p[1], q[0], q[1], up ? C.amber : C.cyan, 4, dA * eo(prog(lt, c4 + 1.0 + i * 0.08, 0.3))); } };
+    segsDraw(pts); segsDraw(bpts);
+    line(cx - hw, cy - hh, cx - hw, cy + hh, C.steel, 2, dA * 0.5); line(cx + hw, cy - hh, cx + hw, cy + hh, C.steel, 2, dA * 0.5);
+    T('illustrative', 1475, 760, { f: F.mono, size: 18, w: 600, c: C.dim, al: 'center', a: dA });
+  }
+};
+
+// ---- 6. RAM ----
+function waveRibbon(A, B, s0, s1, lambda, amp, phase, col, lw, a, ampFn) {
+  // draws the part of the A->B line between arc-length s0 and s1 as a sine wave
+  if (a <= 0.001 || s1 <= s0) return;
+  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+  s0 = Math.max(0, s0); s1 = Math.min(L, s1); if (s1 <= s0) return;
+  ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
+  for (let s = s0, i = 0; s <= s1 + 0.01; s += 2.5, i++) { const am = amp * (ampFn ? ampFn(s) : 1); const w = am * Math.sin(TAU * s / lambda - phase); const x = A[0] + ux * s + nx * w, y = A[1] + uy * s + ny * w; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  ctx.stroke(); ctx.restore();
+}
+SC.ram = (lt, sc) => {
+  const out = trickCard(lt, sc, 3, 'SKIN');
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3), c4 = cue(sc, 4);
+  const xA = 120, xB = 1090, yT = 600, yM = 690, yB = 770;
+  const lA = sm(prog(lt, out + 0.1, 0.7));
+  // layers
+  ctx.save(); ctx.globalAlpha *= lA;
+  const cg = ctx.createLinearGradient(0, yT, 0, yM); cg.addColorStop(0, '#3a2c74'); cg.addColorStop(1, '#251d4d'); ctx.fillStyle = cg; ctx.fillRect(xA, yT, xB - xA, yM - yT);
+  const r = rng(11); ctx.fillStyle = 'rgba(200,180,255,0.25)'; for (let i = 0; i < 260; i++) { ctx.beginPath(); ctx.arc(xA + r() * (xB - xA), yT + 6 + r() * (yM - yT - 12), 1.2 + r() * 1.6, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = '#1e2733'; ctx.fillRect(xA, yM, xB - xA, yB - yM);
+  ctx.save(); ctx.beginPath(); ctx.rect(xA, yM, xB - xA, yB - yM); ctx.clip(); ctx.strokeStyle = 'rgba(150,170,200,0.12)'; ctx.lineWidth = 2;
+  for (let x = xA - 100; x < xB; x += 18) { ctx.beginPath(); ctx.moveTo(x, yB); ctx.lineTo(x + 80, yM); ctx.stroke(); } ctx.restore();
+  ctx.strokeStyle = 'rgba(200,190,255,0.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xA, yT); ctx.lineTo(xB, yT); ctx.stroke();
+  ctx.restore();
+  T('AIR', xA + 20, yT - 22, { f: F.mono, size: 20, w: 700, c: C.muted, ls: 3, a: lA });
+  T('RADAR-ABSORBENT COATING', xA + 20, yT + 52, { f: F.mono, size: 20, w: 700, c: '#d6ccff', ls: 2, a: lA });
+  T('COMPOSITE STRUCTURE', xA + 20, yM + 50, { f: F.mono, size: 20, w: 700, c: C.muted, ls: 2, a: lA });
+  // waves
+  const A = [230, 150], B = [490, yT], Cc = [530, yM], D = [570, yT], O1 = [750, 150], O2 = [830, 150];
+  const LAB = Math.hypot(B[0] - A[0], B[1] - A[1]), LBC = Math.hypot(Cc[0] - B[0], Cc[1] - B[1]);
+  const v = 240, t0 = c1 + 0.3, S = (lt - t0) * v, lam = 54, ph = (lt - t0) * v / lam * TAU;
+  const wA = lA * (1 - 0.6 * sm(prog(lt, c4 - 0.3, 0.6)));
+  if (S > 0) {
+    waveRibbon(A, B, 0, S, lam, 16, ph, C.cyan, 3.5, wA);
+    const s2 = S - LAB;
+    if (s2 > 0) {
+      const inA = s => 0.75 * Math.exp(-s / 160);
+      waveRibbon(B, Cc, 0, s2, lam * 0.6, 16, ph - LAB / lam * TAU, C.cyan, 3, wA, inA);
+      waveRibbon(Cc, D, 0, s2 - LBC, lam * 0.6, 16, ph - (LAB + LBC) / lam * TAU, C.cyan, 3, wA, s => inA(s + LBC));
+      waveRibbon(B, O1, 0, s2, lam, 8, ph - LAB / lam * TAU, C.cyan, 3, wA * 0.9);
+      waveRibbon(D, O2, 0, s2 - 2 * LBC, lam, 8, ph - (LAB + 2 * LBC) / lam * TAU + Math.PI, C.amber, 3, wA * 0.9);
+      // heat
+      const hA = sm(prog(s2, 0, 200)) * (1 - 0.5 * sm(prog(lt, c4, 1)));
+      const fl = 0.8 + 0.2 * Math.sin(lt * 7) * Math.sin(lt * 3.1);
+      glow(530, 650, 150, '#ff7a3d', 0.35 * hA * fl);
+      const hr = rng(5);
+      for (let i = 0; i < 26; i++) { const ph2 = (lt * 0.4 + hr()) % 1; const px = 430 + hr() * 200, py = yM - 8 - ph2 * 70; glow(px, py, 7, '#ff9a55', 0.6 * hA * Math.sin(ph2 * Math.PI)); }
+      T('radio energy → heat', 640, 656, { size: 28, w: 600, c: '#ffb48a', a: hA * sm(prog(lt, c2 + 1.2, 0.6)) * wA });
+    }
+  }
+  T('incoming radar wave', 130, 300, { size: 26, w: 600, c: C.cyan, a: fio(lt, c1 + 0.6, c3, 0.5, 0.5) * lA });
+  const rfA = sm(prog(lt, c3 + 0.6, 0.6)) * wA;
+  T('A', O1[0] - 34, O1[1] + 60, { f: F.mono, size: 30, w: 800, c: C.cyan, a: rfA });
+  T('B', O2[0] + 22, O2[1] + 60, { f: F.mono, size: 30, w: 800, c: C.amber, a: rfA });
+  // right panel: superposition
+  const pA = fio(lt, c3 + 0.4, c4 + 0.2, 0.6, 0.5);
+  if (pA > 0) {
+    panel(1180, 180, 650, 610, pA);
+    T('WHY THE ECHOES CANCEL', 1505, 236, { f: F.mono, size: 22, w: 700, c: C.text, al: 'center', ls: 4, a: pA });
+    const wv = (y, amp, phs, col, lw, a) => { ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); for (let x = 0; x <= 520; x += 3) { const yy = y + amp * Math.sin(x / 70 * TAU - lt * 4 + phs); x ? ctx.lineTo(1245 + x, yy) : ctx.moveTo(1245, yy); } ctx.stroke(); ctx.restore(); };
+    const a1 = sm(prog(lt, c3 + 0.8, 0.6)), a2 = sm(prog(lt, c3 + 2.0, 0.6)), a3 = sm(prog(lt, c3 + 3.8, 0.6));
+    T('A  echo off the top of the coating', 1245, 300, { size: 22, w: 600, c: C.cyan, a: pA * a1 });
+    wv(360, 30, 0, C.cyan, 3.5, pA * a1);
+    T('B  echo off the layer below (half a wave behind)', 1245, 440, { size: 22, w: 600, c: C.amber, a: pA * a2 });
+    wv(500, 30, Math.PI, C.amber, 3.5, pA * a2);
+    T('A + B', 1245, 600, { size: 22, w: 700, c: C.text, a: pA * a3 });
+    wv(660, 3, 0.4, C.text, 3.5, pA * a3);
+    T('≈ nothing', 1765, 600, { size: 22, w: 700, c: C.green, al: 'right', a: pA * a3 });
+    T('Waves cancel', 1505, 755, { f: F.disp, size: 36, w: 800, al: 'center', c: C.green, a: pA * sm(prog(lt, c3 + 4.6, 0.6)) });
+  }
+  // seams
+  const sA = sm(prog(lt, c4 + 0.3, 0.6));
+  if (sA > 0) {
+    panel(1180, 180, 650, 610, sA);
+    T('SEAMS & FASTENERS', 1505, 236, { f: F.mono, size: 22, w: 700, c: C.text, al: 'center', ls: 4, a: sA });
+    const gx = 1245, gy = 290, pw = 170, ph3 = 160, gap = 10;
+    const seal = eio(prog(lt, c4 + 2.6, 1.6));
+    ctx.save(); ctx.globalAlpha *= sA;
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) { rrect(gx + i * (pw + gap), gy + j * (ph3 + gap), pw, ph3, 6); ctx.fillStyle = '#2b3443'; ctx.fill(); }
+    ctx.restore();
+    // glowing gaps, tape sweeping in
+    const hot = sm(prog(lt, c4 + 0.8, 0.6)) * (1 - seal * 0.95);
+    const gaps = [];
+    for (let i = 1; i < 3; i++) gaps.push([gx + i * (pw + gap) - gap / 2, gy, gx + i * (pw + gap) - gap / 2, gy + 2 * ph3 + gap]);
+    gaps.push([gx, gy + ph3 + gap / 2, gx + 3 * pw + 2 * gap, gy + ph3 + gap / 2]);
+    for (const g of gaps) {
+      line(g[0], g[1], g[2], g[3], C.amber, 5, sA * hot);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; line(g[0], g[1], g[2], g[3], C.amber, 18, sA * hot * 0.3); ctx.restore();
+      const tx = lerp(g[0], g[2], seal), ty = lerp(g[1], g[3], seal);
+      line(g[0], g[1], tx, ty, '#3d4859', 14, sA * (seal > 0 ? 1 : 0));
+    }
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) for (const [fx, fy] of [[16, 16], [pw - 16, 16], [16, ph3 - 16], [pw - 16, ph3 - 16]]) {
+      const x = gx + i * (pw + gap) + fx, y = gy + j * (ph3 + gap) + fy;
+      glow(x, y, 14, C.amber, 0.7 * sA * hot); ctx.save(); ctx.globalAlpha *= sA; ctx.fillStyle = seal > 0.5 ? '#3d4859' : '#8b97a8'; ctx.beginPath(); ctx.arc(x, y, 4, 0, TAU); ctx.fill(); ctx.restore();
+    }
+    T('Gaps & fasteners → bright spots', 1505, 700, { size: 26, w: 600, c: C.amber, al: 'center', a: sA * sm(prog(lt, c4 + 1.0, 0.5)) * (1 - seal) });
+    T('Filled & taped → quiet', 1505, 700, { size: 26, w: 600, c: C.green, al: 'center', a: sA * seal });
+  }
+};
+
+// ---- 7. Engines ----
+const ENG = (() => {
+  const x0 = 220, c = 1380, yc = 520;
+  const yt = xn => (xn < 0 || xn > 1) ? 0 : 0.7 * c * (0.2969 * Math.sqrt(xn) - 0.126 * xn - 0.3516 * xn * xn + 0.2843 * xn ** 3 - 0.1036 * xn ** 4);
+  const up = x => yc - 1.3 * yt((x - x0) / c), lo = x => yc + 0.9 * yt((x - x0) / c);
+  const bez = (p0, p1, p2, p3, n = 40) => { const o = []; for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; o.push([u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0], u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]]); } return o; };
+  const iA = 480, iB = 610, fanX = 900;
+  const upperWall = bez([iB, up(iB)], [660, 490], [770, 560], [fanX, 452]);
+  const lowerWall = bez([iA, up(iA)], [530, 560], [720, 650], [fanX, 548]);
+  const upper = [], lower = [];
+  for (let x = x0; x <= x0 + c; x += 6) { upper.push([x, up(x)]); lower.push([x, lo(x)]); }
+  const segs = [...polySegs(upperWall, false), ...polySegs(lowerWall, false), [fanX, 452, fanX, 548]];
+  const dd = [Math.cos(72.5 * D2R), Math.sin(72.5 * D2R)];
+  const fanSeg = [fanX, 452, fanX, 548];
+  const ray = trace([585 - dd[0] * 700, up(585) - 1 - dd[1] * 700], dd, [...segs.slice(0, -1), fanSeg], 12);
+  { const k = ray.pts.findIndex((q, i) => i > 0 && Math.abs(q[0] - fanX) < 0.5 && q[1] >= 452 && q[1] <= 548); if (k > 0) ray.pts = ray.pts.slice(0, k + 1); }
+  // check line of sight inlet->fan
+  return { x0, c, yc, up, lo, iA, iB, fanX, upperWall, lowerWall, upper, lower, ray };
+})();
+function drawFanFace(cx, cy, R, lt, a) {
+  if (a <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= a;
+  ctx.beginPath(); ctx.arc(cx, cy, R * 1.12, 0, TAU); ctx.fillStyle = '#4a5667'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fillStyle = '#0d131c'; ctx.fill();
+  const rot = lt * 2.2; ctx.translate(cx, cy);
+  for (let i = 0; i < 22; i++) {
+    const a0 = rot + i / 22 * TAU; ctx.save(); ctx.rotate(a0);
+    ctx.beginPath(); ctx.moveTo(R * 0.22, -6); ctx.quadraticCurveTo(R * 0.6, -R * 0.05, R * 0.98, -R * 0.18); ctx.lineTo(R * 0.98, R * 0.02); ctx.quadraticCurveTo(R * 0.6, R * 0.08, R * 0.22, 8); ctx.closePath();
+    const g = ctx.createLinearGradient(0, 0, R, 0); g.addColorStop(0, '#9aa7b8'); g.addColorStop(1, '#d4dde8'); ctx.fillStyle = g; ctx.fill(); ctx.restore();
+  }
+  ctx.beginPath(); ctx.arc(0, 0, R * 0.24, 0, TAU); ctx.fillStyle = '#c3ccd8'; ctx.fill();
+  ctx.restore();
+}
+SC.engines = (lt, sc) => {
+  const out = trickCard(lt, sc, 4, 'ENGINES');
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3), c4 = cue(sc, 4);
+  // phase A: conventional fan face
+  const fA = fio(lt, out + 0.1, c2 - 0.3, 0.6, 0.6);
+  if (fA > 0) {
+    const cx = 760, cy = 520;
+    drawFanFace(cx, cy, 210, lt, fA);
+    for (let k = 0; k < 4; k++) {
+      const ph = ((lt - c1) * 0.9 + k / 4) % 1; if (lt < c1 + 0.5) continue;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = hexA(C.amber, 0.8 * fA * (1 - ph)); ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.arc(cx, cy, 240 + ph * 420, 0, TAU); ctx.stroke(); ctx.restore();
+    }
+    glow(cx, cy, 330, C.amber, 0.35 * fA * sm(prog(lt, c1 + 0.5, 0.8)));
+    T('CONVENTIONAL ENGINE INTAKE', 1100, 430, { f: F.mono, size: 24, w: 700, c: C.text, ls: 3, a: fA, halo: 10 });
+    T('Fan blades in plain view', 1100, 480, { size: 30, w: 500, c: C.muted, a: fA, halo: 10 });
+    tag('BRIGHT ECHO', 1100, 545, C.amber, fA * sm(prog(lt, c1 + 1.5, 0.5)), { size: 22 });
+  }
+  // phase B: B-2 cross-section
+  const xA = sm(prog(lt, c2 - 0.1, 0.8));
+  if (xA > 0) {
+    ground(900, xA);
+    // inset: top view with engines
+    const iA = xA * (1 - sm(prog(lt, c3 + 0.5, 0.6)));
+    if (iA > 0) {
+      panel(1460, 140, 380, 250, iA);
+      drawB2Top(1650, 275, 6.2, 0, { a: iA, eng: sm(prog(lt, c2 + 1.0, 0.6)), inl: 0.9 * sm(prog(lt, c2 + 2.4, 0.6)) });
+      T('4 ENGINES, BURIED', 1650, 180, { f: F.mono, size: 18, w: 700, c: C.amber, al: 'center', ls: 3, a: iA * sm(prog(lt, c2 + 1.0, 0.6)) });
+    }
+    const E = ENG;
+    ctx.save(); ctx.globalAlpha *= xA;
+    // wing body
+    ctx.beginPath(); E.upper.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); for (let i = E.lower.length - 1; i >= 0; i--) ctx.lineTo(E.lower[i][0], E.lower[i][1]); ctx.closePath();
+    const g = ctx.createLinearGradient(0, 380, 0, 620); g.addColorStop(0, '#3a4555'); g.addColorStop(1, '#1b222d'); ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = 'rgba(180,200,225,0.6)'; ctx.lineWidth = 2; ctx.stroke();
+    // duct (carve)
+    ctx.beginPath(); E.upperWall.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); for (let i = E.lowerWall.length - 1; i >= 0; i--) ctx.lineTo(E.lowerWall[i][0], E.lowerWall[i][1]); ctx.closePath();
+    ctx.fillStyle = '#0a0e15'; ctx.fill();
+    for (const wl of [E.upperWall, E.lowerWall]) { ctx.beginPath(); wl.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.strokeStyle = hexA(C.violet, 0.9); ctx.lineWidth = 6; ctx.stroke(); }
+    // engine core
+    rrect(E.fanX, 452, 360, 96, 20); ctx.fillStyle = '#4b5667'; ctx.fill();
+    ctx.fillStyle = '#7f8ea2'; ctx.fillRect(E.fanX, 452, 10, 96);
+    for (let k = 0; k < 6; k++) line(E.fanX + 40 + k * 50, 462, E.fanX + 40 + k * 50, 538, 'rgba(20,26,35,0.5)', 3);
+    // exhaust duct rising to upper surface trough
+    ctx.beginPath(); ctx.moveTo(E.fanX + 350, 460); ctx.bezierCurveTo(1340, 455, 1390, E.up(1400) + 6, 1430, E.up(1430) + 2); ctx.lineTo(1500, E.up(1500) + 2);
+    ctx.bezierCurveTo(1420, 520, 1340, 540, E.fanX + 350, 540); ctx.closePath(); ctx.fillStyle = '#0d1219'; ctx.fill();
+    ctx.restore();
+    T('INTAKE ON TOP', E.iA - 60, E.up(E.iA) - 62, { f: F.mono, size: 20, w: 700, c: C.cyan, al: 'right', ls: 3, a: xA * sm(prog(lt, c2 + 2.0, 0.5)) });
+    arrow(E.iA - 50, E.up(E.iA) - 66, E.iA + 14, E.up(E.iA) - 12, C.cyan, 3, 14, xA * sm(prog(lt, c2 + 2.0, 0.5)));
+    T('ENGINE', 1080, 505, { f: F.mono, size: 22, w: 700, c: '#e6edf5', al: 'center', ls: 4, bl: 'middle', a: xA });
+    // ground radar blocked
+    const gA = sm(prog(lt, c2 + 3.6, 0.6)) * (1 - sm(prog(lt, c4 - 0.3, 0.5)));
+    if (gA > 0) {
+      const rx = 330, ry = 900; drawRadarSite(rx, ry, 0.8, -1.1, gA);
+      const tx = (E.iA + E.iB) / 2, ty = E.up(tx); const hitY = E.lo(lerp(rx, tx, 0.93));
+      // find intersection with lower surface along line
+      let hx = rx, hy = ry; for (let f = 0; f <= 1; f += 0.002) { const x = lerp(rx, tx, f), y = lerp(ry - 46, ty, f); if (y <= E.lo(x) && x > E.x0) { hx = x; hy = y; break; } }
+      line(rx, ry - 46, hx, hy, C.cyan, 3, gA, [10, 8]);
+      line(hx - 12, hy - 12 + 26, hx + 12, hy + 12 + 26, C.red, 4, gA); line(hx + 12, hy - 12 + 26, hx - 12, hy + 12 + 26, C.red, 4, gA);
+      T('Ground radar: no line of sight', rx + 40, ry - 10, { size: 24, w: 600, c: C.cyan, a: gA });
+    }
+    // ray bouncing in duct
+    const rA = sm(prog(lt, c3 + 0.4, 0.3)) * (1 - sm(prog(lt, c4 - 0.3, 0.6)));
+    if (rA > 0) {
+      const L = (lt - c3 - 0.5) * 420; const pts = E.ray.pts;
+      const head = drawPath(pts, L, i => ({ c: i === 0 ? C.cyan : C.amber, a: rA * Math.max(0.18, Math.pow(0.68, i)), lw: 4 }));
+      // energy meter
+      let acc = 0, nb = 0; for (let i = 0; i < pts.length - 1; i++) { acc += Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]); if (L > acc) nb++; }
+      nb = Math.min(nb, pts.length - 2);
+      for (let i = 1; i <= nb; i++) { const p = pts[i]; glow(p[0], p[1], 24, '#ff8a4d', 0.7 * rA * Math.pow(0.8, i - 1)); }
+      const energy = Math.round(100 * Math.pow(0.5, nb));
+      panel(1300, 150, 470, 150, rA);
+      T('RADAR ENERGY LEFT', 1330, 200, { f: F.mono, size: 20, w: 700, c: C.muted, ls: 3, a: rA });
+      T(`${energy}%`, 1330, 268, { f: F.mono, size: 54, w: 700, c: energy > 30 ? C.cyan : C.green, a: rA });
+      T('each bounce off the absorbent', 1500, 238, { size: 20, w: 500, c: C.muted, a: rA });
+      T('lining soaks up energy', 1500, 266, { size: 20, w: 500, c: C.muted, a: rA });
+      T('S-SHAPED DUCT', 700, 640, { f: F.mono, size: 22, w: 700, c: C.violet, al: 'center', ls: 4, a: rA });
+      T('no straight path to the fan', 700, 676, { size: 22, w: 500, c: C.muted, al: 'center', a: rA });
+    }
+    // exhaust & IR
+    const xH = sm(prog(lt, c4 + 0.3, 0.8));
+    if (xH > 0) {
+      const r = rng(9);
+      for (let i = 0; i < 46; i++) {
+        const ph = (lt * 0.55 + r()) % 1; const x = 1450 + ph * 420; const y = E.up(Math.min(x, E.x0 + E.c)) - 8 - ph * 30 + Math.sin(lt * 4 + i) * 6 + (r() - 0.5) * 20;
+        glow(x, y, 26 + ph * 34, '#ff7a3d', 0.45 * xH * (1 - ph));
+      }
+      const sx = 1180, sy = 900;
+      ctx.save(); ctx.globalAlpha *= xH; ctx.fillStyle = '#2a3646'; ctx.fillRect(sx - 22, sy - 40, 44, 40); ctx.beginPath(); ctx.arc(sx, sy - 48, 16, 0, TAU); ctx.fillStyle = '#ff7a3d'; ctx.fill(); ctx.restore();
+      const tx = 1620, ty = E.up(1560) - 20;
+      let hx = sx, hy = sy - 60; for (let f = 0; f <= 1; f += 0.002) { const x = lerp(sx, tx, f), y = lerp(sy - 60, ty, f); if (x < E.x0 + E.c && y <= E.lo(x)) { hx = x; hy = y; break; } }
+      line(sx, sy - 60, hx, hy, '#ff9a55', 3, xH, [10, 8]);
+      line(hx - 12, hy + 14, hx + 12, hy + 38, C.red, 4, xH); line(hx + 12, hy + 14, hx - 12, hy + 38, C.red, 4, xH);
+      T('Infrared sensor: exhaust hidden', sx - 40, sy - 10, { size: 24, w: 600, c: '#ffb48a', al: 'right', a: xH });
+      T('HOT EXHAUST, ON TOP', 1650, 360, { f: F.mono, size: 20, w: 700, c: '#ffb48a', al: 'center', ls: 3, a: xH * sm(prog(lt, c4 + 1.0, 0.5)) });
+    }
+  }
+};
+
+// ---- 8. Range math ----
+const MAP = (() => {
+  const path = [[60, 560], [330, 470], [610, 600], [900, 430], [1190, 610], [1470, 450], [1700, 520], [1830, 520]];
+  const sites = [[330, 250], [300, 770], [620, 380], [620, 830], [910, 700], [930, 200], [1200, 340], [1190, 860], [1480, 720], [1490, 230], [1730, 330], [1720, 760]];
+  // catmull-rom sample
+  const pts = [];
+  for (let i = 0; i < path.length - 1; i++) {
+    const p0 = path[Math.max(0, i - 1)], p1 = path[i], p2 = path[i + 1], p3 = path[Math.min(path.length - 1, i + 2)];
+    for (let k = 0; k < 30; k++) { const t = k / 30, t2 = t * t, t3 = t2 * t; pts.push([0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3), 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)]); }
+  }
+  pts.push(path[path.length - 1]);
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  return { pts, cum, sites, R0: 285 };
+})();
+function pathAt(f) { const L = MAP.cum[MAP.cum.length - 1] * clamp(f); let i = 1; while (i < MAP.cum.length - 1 && MAP.cum[i] < L) i++; const a = MAP.cum[i - 1], b = MAP.cum[i]; const t = (L - a) / (b - a || 1); const p = MAP.pts[i - 1], q = MAP.pts[i]; return [lerp(p[0], q[0], t), lerp(p[1], q[1], t), Math.atan2(q[1] - p[1], q[0] - p[0])]; }
+SC.range = (lt, sc) => {
+  header('WHY IT WORKS', sm(prog(lt, 0.2, 0.6)));
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3);
+  const shrink = eio(prog(lt, c2 + 0.6, 3.2));
+  const k = Math.pow(10, -shrink); // range factor
+  const R = MAP.R0 * k;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 130, W, 800); ctx.clip();
+  MAP.sites.forEach((s, i) => {
+    const a = eo(prog(lt, 0.5 + i * 0.12, 0.6));
+    if (a <= 0) return;
+    const g = ctx.createRadialGradient(s[0], s[1], 0, s[0], s[1], R); g.addColorStop(0, hexA(C.red, 0.06 * a)); g.addColorStop(0.85, hexA(C.red, 0.14 * a)); g.addColorStop(1, hexA(C.red, 0.28 * a));
+    ctx.beginPath(); ctx.arc(s[0], s[1], R * a, 0, TAU); ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = hexA(C.red, 0.6 * a); ctx.lineWidth = 2; ctx.stroke();
+  });
+  // route
+  const rA = sm(prog(lt, 1.6, 0.8));
+  const fly = eio(prog(lt, c3 + 0.2, sc.dur - c3 - 1.6));
+  ctx.save(); ctx.globalAlpha *= rA; ctx.setLineDash([14, 12]); ctx.lineWidth = 3;
+  ctx.beginPath(); MAP.pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+  ctx.strokeStyle = shrink > 0.5 ? hexA(C.green, 0.85) : hexA('#ffd0d0', 0.6); ctx.stroke(); ctx.restore();
+  MAP.sites.forEach((s, i) => { const a = eo(prog(lt, 0.5 + i * 0.12, 0.6)); ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = C.red; ctx.beginPath(); ctx.moveTo(s[0], s[1] - 11); ctx.lineTo(s[0] + 10, s[1] + 8); ctx.lineTo(s[0] - 10, s[1] + 8); ctx.closePath(); ctx.fill(); ctx.restore(); });
+  // target
+  const tg = MAP.pts[MAP.pts.length - 1];
+  ctx.save(); ctx.globalAlpha *= rA; ctx.strokeStyle = C.text; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(tg[0] - 40, tg[1], 18, 0, TAU); ctx.moveTo(tg[0] - 68, tg[1]); ctx.lineTo(tg[0] - 12, tg[1]); ctx.moveTo(tg[0] - 40, tg[1] - 28); ctx.lineTo(tg[0] - 40, tg[1] + 28); ctx.stroke(); ctx.restore();
+  // bomber along path
+  if (fly > 0) { const [x, y, a] = pathAt(fly); drawB2Top(x, y, 2.6, a + Math.PI / 2, { a: sm(prog(lt, c3 + 0.2, 0.4)) }); glow(x, y, 40, C.green, 0.25); }
+  ctx.restore();
+  // formula & counters
+  const fA = sm(prog(lt, c1 + 0.4, 0.6));
+  panel(560, 140, 800, 150, fA * 0.95);
+  T('detection range  ∝', 600, 228, { f: F.mono, size: 40, w: 700, c: C.text, a: fA });
+  T('RCS', 1080, 228, { f: F.mono, size: 40, w: 700, c: C.amber, a: fA });
+  T('1/4', 1158, 196, { f: F.mono, size: 26, w: 700, c: C.amber, a: fA });
+  T('signal travels out AND back → 1/r² × 1/r²', 600, 268, { f: F.mono, size: 18, w: 600, c: C.muted, a: fA * sm(prog(lt, c1 + 2.5, 0.6)) });
+  const cA = sm(prog(lt, c2 + 0.2, 0.6));
+  if (cA > 0) {
+    panel(1400, 140, 420, 150, cA * 0.95);
+    const rcs = 100 * Math.pow(10, -4 * shrink);
+    const rcsTxt = rcs >= 1 ? rcs.toFixed(0) : rcs >= 0.1 ? rcs.toFixed(1) : rcs.toFixed(2);
+    T('ECHO (RCS)', 1430, 190, { f: F.mono, size: 18, w: 700, c: C.muted, ls: 3, a: cA });
+    T(`${rcsTxt} m²`, 1430, 236, { f: F.mono, size: 36, w: 700, c: C.amber, a: cA });
+    T('RANGE', 1650, 190, { f: F.mono, size: 18, w: 700, c: C.muted, ls: 3, a: cA });
+    T(`${Math.round(100 * k)}%`, 1650, 236, { f: F.mono, size: 36, w: 700, c: C.red, a: cA });
+    T('÷10,000 echo  →  ÷10 range', 1610, 272, { f: F.mono, size: 16, w: 700, c: C.text, al: 'center', a: cA * sm(prog(lt, c2 + 3.6, 0.5)) });
+  }
+  tag('RADAR SITE', 96, 975 - 60, C.red, sm(prog(lt, 1.2, 0.5)) * (1 - sm(prog(lt, c3 + 2, 0.5))), { size: 18 });
+};
+
+// ---- 9. Limits ----
+SC.limits = (lt, sc) => {
+  header('THE LIMITS', sm(prog(lt, 0.2, 0.6)));
+  const c1 = cue(sc, 1), c2 = cue(sc, 2), c3 = cue(sc, 3);
+  const iA = fio(lt, 0.3, c1 - 0.3, 0.6, 0.5);
+  T('Stealth ≠ invisibility', 960, 560, { f: F.disp, size: 110, w: 800, al: 'center', a: iA });
+  // two wavelength rows
+  const wA = fio(lt, c1 - 0.1, c2 + 0.1, 0.6, 0.6);
+  if (wA > 0) {
+    const rows = [{ y: 330, lam: 22, col: C.cyan, label: 'FIRE-CONTROL RADAR', sub: 'short wavelength (centimeters) · guides missiles', echo: 0 },
+                  { y: 690, lam: 240, col: C.violet, label: 'EARLY-WARNING RADAR', sub: 'long wavelength (meters) · watches wide areas', echo: 1 }];
+    rows.forEach((r, ri) => {
+      const a = wA * sm(prog(lt, c1 + ri * 3.2, 0.6)); if (a <= 0) return;
+      panel(90, r.y - 150, 1740, 300, a);
+      T(r.label, 130, r.y - 100, { f: F.mono, size: 22, w: 700, c: r.col, ls: 4, a });
+      T(r.sub, 130, r.y - 66, { size: 22, w: 500, c: C.muted, a });
+      drawRadarSite(200, r.y + 110, 0.8, 0, a, r.col);
+      const bx = 1350; const t0 = c1 + ri * 3.2 + 0.3; const front = 260 + (lt - t0) * 520;
+      ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = r.col; ctx.lineWidth = 3.5; ctx.beginPath();
+      const xEnd = Math.min(front, bx - 60);
+      for (let x = 260; x <= xEnd; x += 2) { const yy = r.y + 30 * Math.sin(TAU * (x - (lt - t0) * 520) / r.lam); x === 260 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy); }
+      if (xEnd > 262) ctx.stroke(); ctx.restore();
+      drawB2Top(bx, r.y, 5.2, -Math.PI / 2, { a });
+      const hit = lt - t0 - (bx - 60 - 260) / 520;
+      if (hit > 0) {
+        if (!r.echo) {
+          const L = Math.min(hit * 380, 300);
+          arrow(bx - 40, r.y - 20, bx - 40 + L * 0.5, r.y - 20 - L * 0.4, r.col, 3, 14, a * 0.8);
+          arrow(bx - 40, r.y + 20, bx - 40 + L * 0.5, r.y + 20 + L * 0.4, r.col, 3, 14, a * 0.8);
+          tag('DEFLECTED · NO ECHO', 1520, r.y + 110, C.green, a * sm(prog(hit, 0.4, 0.5)), { size: 18 });
+        } else {
+          glow(bx, r.y, 160, C.violet, 0.35 * a * sm(prog(hit, 0, 0.6)));
+          const back = Math.min(hit * 520, bx - 360);
+          ctx.save(); ctx.globalAlpha *= a * 0.55; ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.setLineDash([6, 8]); ctx.beginPath();
+          for (let x = bx - 70; x >= bx - 70 - back; x -= 2) { const yy = r.y + 10 * Math.sin(TAU * (x + (lt) * 520) / r.lam); x === bx - 70 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy); }
+          ctx.stroke(); ctx.restore();
+          tag('FAINT ECHO', 1520, r.y + 110, C.amber, a * sm(prog(hit, 0.6, 0.5)), { size: 18 });
+        }
+      }
+    });
+  }
+  // imprecise
+  const pA = fio(lt, c2 + 0.2, c3 - 0.1, 0.6, 0.5);
+  if (pA > 0) {
+    drawScope(700, 520, 300, (lt - c2) * 1.3, pA, []);
+    { const bx = 829, by = 417, pu = 0.8 + 0.2 * Math.sin(lt * 2.5);
+      glow(bx, by, 150, C.green, 0.5 * pA * pu); glow(bx + 30, by + 20, 90, C.green, 0.3 * pA * pu);
+      ctx.save(); ctx.globalAlpha *= pA; ctx.setLineDash([8, 8]); ctx.strokeStyle = hexA(C.green, 0.7); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(bx, by, 120, 0, TAU); ctx.stroke(); ctx.restore();
+      T('?', bx, by + 26, { f: F.disp, size: 72, w: 800, c: '#c8ffe6', al: 'center', a: pA * 0.9 }); }
+    T('EARLY-WARNING', 700, 180, { f: F.mono, size: 22, w: 700, c: C.violet, al: 'center', ls: 4, a: pA });
+    T('“Something is out there…”', 1100, 470, { size: 36, w: 600, c: C.text, a: pA });
+    T('A big, blurry blob, not a precise', 1100, 530, { size: 30, w: 500, c: C.muted, a: pA * sm(prog(lt, c2 + 1.2, 0.5)) });
+    T('position a missile can use', 1100, 572, { size: 30, w: 500, c: C.muted, a: pA * sm(prog(lt, c2 + 1.2, 0.5)) });
+  }
+  // three extra tactics
+  const items = [
+    ['ROUTE PLANNING', 'fly around known radars', (x, y, a) => { ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = hexA(C.red, 0.7); ctx.lineWidth = 2; for (const [px, py] of [[-30, -10], [35, 25]]) { ctx.beginPath(); ctx.arc(x + px, y + py, 28, 0, TAU); ctx.fillStyle = hexA(C.red, 0.15); ctx.fill(); ctx.stroke(); } ctx.setLineDash([8, 7]); ctx.strokeStyle = C.green; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(x - 75, y + 40); ctx.bezierCurveTo(x - 20, y + 50, x - 10, y - 40, x + 75, y - 40); ctx.stroke(); ctx.restore(); }],
+    ['QUIET EMISSIONS', 'minimal radio & radar use', (x, y, a) => { ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = C.cyan; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(x, y + 45); ctx.lineTo(x, y - 20); ctx.stroke(); for (const r of [22, 40, 58]) { ctx.beginPath(); ctx.arc(x, y - 20, r, -Math.PI * 0.8, -Math.PI * 0.2); ctx.stroke(); } ctx.strokeStyle = C.red; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x - 60, y + 40); ctx.lineTo(x + 60, y - 70); ctx.stroke(); ctx.restore(); }],
+    ['NIGHT MISSIONS', 'dark sky, dark paint', (x, y, a) => { ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = '#dfe8ff'; ctx.beginPath(); ctx.arc(x, y - 10, 40, 0, TAU); ctx.fill(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(x + 20, y - 24, 36, 0, TAU); ctx.fill(); ctx.restore(); for (const [sx, sy] of [[45, -45], [60, 10], [-55, 30]]) glow(x + sx, y + sy, 10, '#dfe8ff', 0.9 * a); }],
+  ];
+  items.forEach((it, i) => {
+    const a = eo(prog(lt, c3 + 0.5 + i * 1.4, 0.6)); if (a <= 0) return;
+    const x = 420 + i * 540, y = 540 + 30 * (1 - a);
+    panel(x - 230, y - 220, 460, 440, a);
+    it[2](x, y - 50, a);
+    T(it[0], x, y + 100, { f: F.mono, size: 26, w: 700, c: C.text, al: 'center', ls: 4, a });
+    T(it[1], x, y + 145, { size: 26, w: 500, c: C.muted, al: 'center', a });
+  });
+};
+
+// ---- 10. Recap ----
+SC.recap = (lt, sc) => {
+  const c0 = cue(sc, 0), e0 = cend(sc, 0), c1 = cue(sc, 1);
+  const items = [['01', 'Shape', 'deflect', iconShape, C.cyan], ['02', 'Edges', 'align', iconEdges, C.amber], ['03', 'Skin', 'absorb', iconSkin, C.violet], ['04', 'Engines', 'hide', iconEngine, C.green]];
+  const up = eio(prog(lt, c1 - 0.2, 1.2));
+  const endA = sm(prog(lt, sc.dur - 4.4, 0.8));
+  items.forEach((it, i) => {
+    const a = eo(prog(lt, c0 + (e0 - c0) * i / 4 - 0.1, 0.45)) * (1 - endA);
+    const x = 375 + i * 390, y = lerp(540, 300, up), sc2 = lerp(1, 0.72, up);
+    card(x, y, 330 * sc2, 380 * sc2, it[0], it[1], it[2], it[3], it[4], a);
+  });
+  // B-2 fly-through with radar scope
+  const fA = sm(prog(lt, c1 + 0.2, 0.8)) * (1 - endA);
+  if (fA > 0) {
+    const f = (lt - c1) / (sc.dur - 4.4 - c1);
+    drawB2Top(lerp(-200, 2100, f), lerp(860, 600, f), 6, Math.PI / 2 - 0.12, { a: fA });
+  }
+  if (endA > 0) {
+    glow(960, 470, 500, '#2a5db0', 0.12 * endA);
+    drawB2Top(960, 420, 15, 0, { a: endA });
+    T('B-2 SPIRIT', 960, 760, { f: F.mono, size: 34, w: 700, c: C.cyan, al: 'center', ls: 14, a: endA });
+    T('Shape · Edges · Skin · Engines', 960, 840, { f: F.disp, size: 56, w: 800, al: 'center', a: endA });
+    T('RCS figures shown are public, unclassified estimates.', 960, 1000, { size: 22, w: 500, c: C.dim, al: 'center', a: endA });
+  }
+};
+
+// =====================================================================
+// captions + main render
+// =====================================================================
+let LINES = [];
+function drawCaption(t) {
+  const L = LINES.find(l => t >= l.a - 0.1 && t <= l.b + 0.35); if (!L) return;
+  const a = sm(prog(t, L.a - 0.1, 0.2)) * (1 - sm(prog(t, L.b + 0.1, 0.25)));
+  if (a <= 0.001) return;
+  const font = '600 34px Inter'; const lines = wrapLines(L.text, 1400, font);
+  ctx.save(); ctx.font = font; const wmax = Math.max(...lines.map(s => ctx.measureText(s).width)); ctx.restore();
+  const lh = 46, h = lines.length * lh + 28, y0 = H - 50 - h;
+  ctx.save(); ctx.globalAlpha = a; rrect(W / 2 - wmax / 2 - 30, y0, wmax + 60, h, 14); ctx.fillStyle = 'rgba(3,6,11,0.78)'; ctx.fill(); ctx.restore();
+  lines.forEach((s, i) => T(s, W / 2, y0 + 14 + lh * (i + 1) - 12, { size: 34, w: 600, al: 'center', a, c: '#f4f7fb' }));
+}
+function render(t) {
+  const scs = TL.scenes; let i = scs.findIndex(s => t >= s.start && t < s.start + s.dur); if (i < 0) i = scs.length - 1;
+  const sc = scs[i], lt = t - sc.start;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([]);
+  ctx.drawImage((sc.id === 'title' || sc.id === 'recap') ? BG_STARS : BG, 0, 0);
+  const z = 1 + 0.018 * (lt / sc.dur);
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2);
+  SC[sc.id](lt, sc);
+  ctx.restore();
+  const fin = i === 0 ? 1.0 : 0.45, fout = i === scs.length - 1 ? 1.6 : 0.45;
+  const fa = Math.max(1 - clamp(lt / fin), clamp((lt - (sc.dur - fout)) / fout));
+  if (fa > 0) { ctx.fillStyle = `rgba(0,0,0,${fa})`; ctx.fillRect(0, 0, W, H); }
+  drawCaption(t);
+}
+// sound-effect cue list (absolute seconds), consumed by the audio mixer
+function sfxEvents() {
+  const ev = []; const S = id => TL.scenes.find(s => s.id === id);
+  { const sc = S('title'); const c1 = cue(sc, 1); const b = TITLE_BLIPS[0]; for (let n = 0; n < 6; n++) { const lt = c1 + ((b.ang % TAU + TAU) % TAU + n * TAU) / TITLE_SWEEP; if (lt > c1 + 0.6 && lt < sc.dur - 0.5) ev.push({ t: sc.start + lt, k: 'blip' }); } }
+  { const sc = S('radar'); const g = radarGeom(sc); ev.push({ t: sc.start + g.te, k: 'ping' }, { t: sc.start + g.ta, k: 'hit' }, { t: sc.start + g.tr, k: 'echo' }); }
+  { const sc = S('shape'); ev.push({ t: sc.start + cue(sc, 1) + 0.6, k: 'ping' }, { t: sc.start + cue(sc, 3) + 0.4, k: 'ping' }, { t: sc.start + cue(sc, 1) + 2.5, k: 'echo' }); }
+  for (const id of ['shape', 'edges', 'ram', 'engines']) { const sc = S(id); ev.push({ t: sc.start + 0.1, k: 'swell' }); }
+  { const sc = S('ram'); ev.push({ t: sc.start + cue(sc, 1) + 0.3, k: 'ping' }); }
+  { const sc = S('limits'); ev.push({ t: sc.start + cue(sc, 1) + 0.3, k: 'ping' }, { t: sc.start + cue(sc, 1) + 3.5, k: 'ping' }); }
+  { const sc = S('recap'); ev.push({ t: sc.start + sc.dur - 4.4, k: 'boom' }); }
+  return ev.sort((a, b) => a.t - b.t);
+}
+async function init(tl) {
+  TL = tl;
+  LINES = TL.scenes.flatMap(s => s.lines.map(l => ({ text: l.text, a: s.start + l.start, b: s.start + l.end })));
+  await Promise.all(['600 34px Inter', '500 30px Inter', '700 30px Inter', '800 100px "Inter Display"', '700 24px "JetBrains Mono"', '600 24px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+  BG = makeBg(false); BG_STARS = makeBg(true);
+  return true;
+}
+window.render = render; window.init = init; window.sfxEvents = sfxEvents;
+</script></body></html>

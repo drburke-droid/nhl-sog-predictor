@@ -1,0 +1,356 @@
+{
+ "fps": 30,
+ "scenes": [
+  {
+   "id": "title",
+   "start": 0.0,
+   "lines": [
+    {
+     "text": "The B-2 Spirit stealth bomber has a wingspan of 172 feet. That's more than half the length of a football field.",
+     "start": 1.6,
+     "end": 8.369,
+     "wav": "00_title.wav",
+     "abs": 1.6
+    },
+    {
+     "text": "Yet on a radar screen, it's said to look no bigger than a large bird.",
+     "start": 8.819,
+     "end": 12.383,
+     "wav": "01_title.wav",
+     "abs": 8.819
+    },
+    {
+     "text": "So how does something this big disappear?",
+     "start": 12.833,
+     "end": 14.644,
+     "wav": "02_title.wav",
+     "abs": 12.833
+    }
+   ],
+   "dur": 15.844
+  },
+  {
+   "id": "radar",
+   "start": 15.844,
+   "lines": [
+    {
+     "text": "To understand stealth, start with radar.",
+     "start": 0.8,
+     "end": 3.377,
+     "wav": "03_radar.wav",
+     "abs": 16.644
+    },
+    {
+     "text": "A radar station sends out a pulse of radio waves.",
+     "start": 3.827,
+     "end": 7.125,
+     "wav": "04_radar.wav",
+     "abs": 19.671
+    },
+    {
+     "text": "When that pulse hits an aircraft, some of the energy bounces back as an echo.",
+     "start": 7.575,
+     "end": 11.963,
+     "wav": "05_radar.wav",
+     "abs": 23.419
+    },
+    {
+     "text": "By timing how long the echo takes to return, the radar knows exactly how far away the target is.",
+     "start": 12.413,
+     "end": 17.707,
+     "wav": "06_radar.wav",
+     "abs": 28.257
+    }
+   ],
+   "dur": 18.707
+  },
+  {
+   "id": "rcs",
+   "start": 34.551,
+   "lines": [
+    {
+     "text": "How strong that echo is depends on the target's radar cross section, or RCS.",
+     "start": 0.6,
+     "end": 5.569,
+     "wav": "07_rcs.wav",
+     "abs": 35.151
+    },
+    {
+     "text": "A conventional bomber like the B-52 has a radar cross section of roughly a hundred square meters.",
+     "start": 6.019,
+     "end": 11.72,
+     "wav": "08_rcs.wav",
+     "abs": 40.57
+    },
+    {
+     "text": "Public estimates put the B-2 at a thousand times smaller, or less. The real number is classified.",
+     "start": 12.17,
+     "end": 18.439,
+     "wav": "09_rcs.wav",
+     "abs": 46.721
+    },
+    {
+     "text": "It gets there with four main tricks.",
+     "start": 18.889,
+     "end": 20.747,
+     "wav": "10_rcs.wav",
+     "abs": 53.44
+    }
+   ],
+   "dur": 21.747
+  },
+  {
+   "id": "shape",
+   "start": 56.298,
+   "lines": [
+    {
+     "text": "Trick one: shape.",
+     "start": 0.6,
+     "end": 1.773,
+     "wav": "11_shape.wav",
+     "abs": 56.898
+    },
+    {
+     "text": "Flat surfaces and right-angle corners act like mirrors, throwing radar energy straight back to where it came from.",
+     "start": 2.223,
+     "end": 8.817,
+     "wav": "12_shape.wav",
+     "abs": 58.521
+    },
+    {
+     "text": "The B-2 has no vertical tail, no boxy fuselage, and almost no right angles.",
+     "start": 9.267,
+     "end": 14.747,
+     "wav": "13_shape.wav",
+     "abs": 65.565
+    },
+    {
+     "text": "Its smooth, blended flying-wing shape deflects incoming waves off to the side, away from the radar that sent them.",
+     "start": 15.197,
+     "end": 21.641,
+     "wav": "14_shape.wav",
+     "abs": 71.495
+    }
+   ],
+   "dur": 23.241
+  },
+  {
+   "id": "edges",
+   "start": 79.538,
+   "lines": [
+    {
+     "text": "Trick two: edge alignment.",
+     "start": 0.6,
+     "end": 2.179,
+     "wav": "15_edges.wav",
+     "abs": 80.138
+    },
+    {
+     "text": "Every edge on an aircraft scatters some energy, strongest in the direction perpendicular to that edge.",
+     "start": 2.629,
+     "end": 8.48,
+     "wav": "16_edges.wav",
+     "abs": 82.167
+    },
+    {
+     "text": "So the designers lined up the B-2's edges along just a few angles. Each segment of the sawtooth trailing edge runs parallel to a leading edge.",
+     "start": 8.93,
+     "end": 17.58,
+     "wav": "17_edges.wav",
+     "abs": 88.469
+    },
+    {
+     "text": "Instead of glowing in every direction, the reflections are squeezed into a few narrow spikes, aimed away from the nose, where threats are most likely to be.",
+     "start": 18.03,
+     "end": 26.122,
+     "wav": "18_edges.wav",
+     "abs": 97.568
+    },
+    {
+     "text": "Even the doors and panels get zigzag edges, for the same reason.",
+     "start": 26.572,
+     "end": 30.357,
+     "wav": "19_edges.wav",
+     "abs": 106.11
+    }
+   ],
+   "dur": 31.757
+  },
+  {
+   "id": "ram",
+   "start": 111.295,
+   "lines": [
+    {
+     "text": "Trick three: radar-absorbent materials.",
+     "start": 0.6,
+     "end": 2.922,
+     "wav": "20_ram.wav",
+     "abs": 111.895
+    },
+    {
+     "text": "Whatever energy the shape can't deflect, the skin tries to soak up.",
+     "start": 3.372,
+     "end": 7.11,
+     "wav": "21_ram.wav",
+     "abs": 114.667
+    },
+    {
+     "text": "The B-2's surface is built from composites and special coatings that turn radio waves into a tiny amount of heat.",
+     "start": 7.56,
+     "end": 13.841,
+     "wav": "22_ram.wav",
+     "abs": 118.856
+    },
+    {
+     "text": "Some layers are tuned so that waves bouncing off the top and the bottom of the coating cancel each other out, like noise-cancelling headphones for radar.",
+     "start": 14.291,
+     "end": 22.267,
+     "wav": "23_ram.wav",
+     "abs": 125.587
+    },
+    {
+     "text": "Even panel seams and fasteners are filled and taped, because a tiny gap can light up on radar.",
+     "start": 22.717,
+     "end": 28.012,
+     "wav": "24_ram.wav",
+     "abs": 134.013
+    }
+   ],
+   "dur": 29.412
+  },
+  {
+   "id": "engines",
+   "start": 140.707,
+   "lines": [
+    {
+     "text": "Trick four: hiding the engines.",
+     "start": 0.6,
+     "end": 2.516,
+     "wav": "25_engines.wav",
+     "abs": 141.307
+    },
+    {
+     "text": "A jet engine's spinning fan blades are one of the brightest radar reflectors on any aircraft.",
+     "start": 2.966,
+     "end": 7.9,
+     "wav": "26_engines.wav",
+     "abs": 143.673
+    },
+    {
+     "text": "On the B-2, all four engines are buried inside the wing, fed by intakes on top, where radars on the ground can't see them.",
+     "start": 8.35,
+     "end": 15.815,
+     "wav": "27_engines.wav",
+     "abs": 149.057
+    },
+    {
+     "text": "Curving, S-shaped ducts mean radar can never see straight down to the fan, and waves that go in get absorbed as they bounce off the lined walls.",
+     "start": 16.265,
+     "end": 23.777,
+     "wav": "28_engines.wav",
+     "abs": 156.972
+    },
+    {
+     "text": "The exhaust leaves through shallow troughs on top of the wing, hiding the hot gases from infrared sensors below.",
+     "start": 24.227,
+     "end": 30.334,
+     "wav": "29_engines.wav",
+     "abs": 164.934
+    }
+   ],
+   "dur": 31.734
+  },
+  {
+   "id": "range",
+   "start": 172.441,
+   "lines": [
+    {
+     "text": "Why go to all this trouble? Because of a quirk in radar physics.",
+     "start": 0.6,
+     "end": 4.327,
+     "wav": "30_range.wav",
+     "abs": 173.041
+    },
+    {
+     "text": "The signal has to travel out and back, so detection range only grows with the fourth root of the radar cross section.",
+     "start": 4.777,
+     "end": 11.116,
+     "wav": "31_range.wav",
+     "abs": 177.217
+    },
+    {
+     "text": "Shrink the echo ten thousand times, and the radar has to be ten times closer to see you.",
+     "start": 11.566,
+     "end": 16.407,
+     "wav": "32_range.wav",
+     "abs": 184.006
+    },
+    {
+     "text": "A wall of overlapping radar coverage turns into scattered islands, with gaps a bomber can slip through.",
+     "start": 16.857,
+     "end": 22.848,
+     "wav": "33_range.wav",
+     "abs": 189.298
+    }
+   ],
+   "dur": 25.448
+  },
+  {
+   "id": "limits",
+   "start": 197.888,
+   "lines": [
+    {
+     "text": "Stealth isn't invisibility.",
+     "start": 0.6,
+     "end": 2.434,
+     "wav": "34_limits.wav",
+     "abs": 198.488
+    },
+    {
+     "text": "Shaping works best against short-wavelength radars, like the ones that guide missiles. Long-wavelength early-warning radars can sometimes pick up a faint return.",
+     "start": 2.884,
+     "end": 12.393,
+     "wav": "35_limits.wav",
+     "abs": 200.773
+    },
+    {
+     "text": "But on their own, those radars are usually too imprecise to guide a weapon.",
+     "start": 12.843,
+     "end": 16.79,
+     "wav": "36_limits.wav",
+     "abs": 210.731
+    },
+    {
+     "text": "So the B-2 also relies on careful route planning, keeping its own radio and radar emissions to a minimum, and flying at night.",
+     "start": 17.24,
+     "end": 24.648,
+     "wav": "37_limits.wav",
+     "abs": 215.129
+    }
+   ],
+   "dur": 26.048
+  },
+  {
+   "id": "recap",
+   "start": 223.936,
+   "lines": [
+    {
+     "text": "Shape. Aligned edges. Absorbent skin. Buried engines.",
+     "start": 0.6,
+     "end": 3.932,
+     "wav": "38_recap.wav",
+     "abs": 224.536
+    },
+    {
+     "text": "Together, they let a 172-foot bomber slip through air defenses with an echo closer to a bird's than a bomber's.",
+     "start": 4.382,
+     "end": 11.29,
+     "wav": "39_recap.wav",
+     "abs": 228.318
+    }
+   ],
+   "dur": 15.79
+  }
+ ],
+ "duration": 239.726
+}
