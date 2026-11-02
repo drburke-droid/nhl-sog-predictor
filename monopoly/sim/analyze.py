@@ -29,7 +29,7 @@ LABEL = {
     'stubborn': 'Stubborn (never trades)',
     'shark': 'Shark (trades by set value)',
     'allin': 'All-In (mortgages to build, jail late)',
-    'champion': 'Champion (combined playbook)',
+    'champion': 'Textbook expert (champion advice, textbook set values)',
 }
 
 

@@ -14,7 +14,7 @@ rules people actually play change things, and what a genetic algorithm finds whe
 | File | What it is |
 |---|---|
 | `monopoly.cpp` | The game engine (C++): standard US board, current card decks, official rules (auctions, even building, 32 houses / 12 hotels, mortgages, bankruptcy), trading (set-for-set swaps and cash buyouts), house-rule switches. ~25 million turns a second on 4 cores. |
-| `markov.py` | Exact long-run square probabilities (Markov chain); reproduces Truman Collins' published table to two decimals. |
+| `markov.py` | Exact long-run square probabilities (Markov chain). Reproduces Truman Collins' published leave-jail table to two decimals; for the stay-in-jail policy it gives 9.39% in jail against Collins' 9.46%. |
 | `experiments.py` | Every experiment; results cached as JSON in `results/<experiment>/`. |
 | `evolve.py` | Genetic algorithm (stage 1: beat three normal players; stage 2: arms race against its own champion). |
 | `analyze.py` | Builds `results/summary.md` (all the tables) and `results/summary.json`. |

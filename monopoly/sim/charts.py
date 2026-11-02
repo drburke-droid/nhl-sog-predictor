@@ -30,7 +30,7 @@ SHORT = {
     'orange': 'Orange only', 'red': 'Red only', 'yellow': 'Yellow only', 'green': 'Green only',
     'darkblue': 'Boardwalk Dreamer', 'prudent': 'Accountant ($300 cushion)', 'threehouses': 'Three-House Rule',
     'houselock': 'House Hoarder', 'jailbird': 'Jailbird', 'smartjail': 'Jail: out early, in late', 'stubborn': 'Never trades',
-    'shark': 'Shark trader', 'allin': 'All-In', 'champion': 'Champion',
+    'shark': 'Shark trader', 'allin': 'All-In', 'champion': 'Textbook expert',
 }
 INK, INK2, MUTED, GRID, SURF = '#0b0b0b', '#52514e', '#8a8984', '#e6e5e0', '#fcfcfb'
 BLUE, ORANGE = '#2a78d6', '#eb6834'
@@ -131,21 +131,41 @@ def chart_worlds(fname):
     worlds = [w for w in worlds if w[0] in S['table']]
     keep = ['railroads', 'darkblue', 'orange', 'nothing', 'stubborn', 'threehouses', 'houselock', 'jailbird', 'prudent', 'allin', 'champion', 'shark']
     data = {w: {r['strategy']: r['win'] for r in S['table'][w]} for w, _ in worlds}
-    fig, ax = plt.subplots(figsize=(10, 6.5))
+    fig, ax = plt.subplots(figsize=(10, 7.5))
     x = list(range(len(worlds)))
+
+    def spread(items, gap):
+        # nudge label positions apart so none sit closer than `gap`, keeping their order
+        items = sorted(items, key=lambda it: it[0])
+        pos = [y for y, _ in items]
+        for _ in range(200):
+            moved = False
+            for i in range(1, len(pos)):
+                if pos[i] - pos[i - 1] < gap:
+                    d = (gap - (pos[i] - pos[i - 1])) / 2
+                    pos[i - 1] -= d; pos[i] += d; moved = True
+            if not moved:
+                break
+        return [(p, lab) for p, (_, lab) in zip(pos, items)]
+
+    right, left = [], []
     for t in keep:
         ys = [data[w].get(t) for w, _ in worlds]
         if None in ys:
             continue
         ax.plot(x, ys, color=MUTED, lw=1.6, marker='o', ms=6)
-        ax.text(x[-1] + 0.06, ys[-1], SHORT[t], va='center', fontsize=9, color=INK)
-        ax.text(x[0] - 0.06, ys[0], '%.0f%%' % ys[0], va='center', ha='right', fontsize=8, color=INK2)
+        right.append((ys[-1], SHORT[t]))
+        left.append((ys[0], '%.1f%%' % ys[0]))
+    for y, lab in spread(right, 1.05):
+        ax.text(x[-1] + 0.08, y, lab, va='center', fontsize=9, color=INK)
+    for y, lab in spread(left, 1.05):
+        ax.text(x[0] - 0.08, y, lab, va='center', ha='right', fontsize=8, color=INK2)
     ax.axhline(25, color=INK2, lw=1, ls=(0, (4, 3)))
     ax.set_xticks(x); ax.set_xticklabels([l for _, l in worlds])
     ax.set_xlim(-0.5, len(worlds) - 0.3)
     ax.set_ylabel('Win rate vs three Yes-Men')
     ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
-    ax.set_title('Change the rules, change the winner', loc='left', fontsize=14, weight='bold', color=INK)
+    ax.set_title('Take away trading and everyone stalls; house rules barely matter', loc='left', fontsize=14, weight='bold', color=INK)
     save(fig, fname)
 
 
@@ -304,6 +324,8 @@ def chart_ecology():
     if not E:
         return
     pool, traj = E['pool'], E['traj']
+    pool = ['Champion (learned values)' if p == 'Champion' else 'Evolved specialist' if p == 'Evolved' else
+            'Evolved generalist (r1)' if p == 'Evolved r1' else p for p in pool]
     gens = [2 * i for i in range(len(traj))]
     final = traj[-1]
     order = sorted(range(len(pool)), key=lambda i: -max(t[i] for t in traj))

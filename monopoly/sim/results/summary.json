@@ -999,7 +999,7 @@
    },
    {
     "strategy": "champion",
-    "label": "Champion (combined playbook)",
+    "label": "Textbook expert (champion advice, textbook set values)",
     "win": 23.471,
     "ci": 0.26268476602221147,
     "draws": 0.006,
@@ -1181,7 +1181,7 @@
   "swaponly": [
    {
     "strategy": "champion",
-    "label": "Champion (combined playbook)",
+    "label": "Textbook expert (champion advice, textbook set values)",
     "win": 24.578,
     "ci": 0.3773925837243122,
     "draws": 15.306000000000001,
@@ -1403,7 +1403,7 @@
   "notrade": [
    {
     "strategy": "champion",
-    "label": "Champion (combined playbook)",
+    "label": "Textbook expert (champion advice, textbook set values)",
     "win": 10.522,
     "ci": 0.2689542132581529,
     "draws": 66.822,
@@ -1675,7 +1675,7 @@
    },
    {
     "strategy": "champion",
-    "label": "Champion (combined playbook)",
+    "label": "Textbook expert (champion advice, textbook set values)",
     "win": 19.48,
     "ci": 0.3471502070101644,
     "draws": 0.004,
@@ -1897,7 +1897,7 @@
    },
    {
     "strategy": "champion",
-    "label": "Champion (combined playbook)",
+    "label": "Textbook expert (champion advice, textbook set values)",
     "win": 20.092,
     "ci": 0.2483492121327869,
     "draws": 0.037,
@@ -2119,7 +2119,7 @@
    },
    {
     "strategy": "champion",
-    "label": "Champion (combined playbook)",
+    "label": "Textbook expert (champion advice, textbook set values)",
     "win": 20.857999999999997,
     "ci": 0.356131928374236,
     "draws": 0.054,

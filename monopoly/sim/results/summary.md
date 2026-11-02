@@ -94,7 +94,7 @@ A set can be completed more than once in a game (it changes hands when its owner
 | Leaves jail early, stays late | 26.7% ± 0.3 | 0.0% | 91% | 100000 |
 | Jailbird (always stays in jail) | 25.8% ± 0.3 | 0.0% | 90% | 100000 |
 | Yes-Man (buy everything, hotels at once) | 25.2% ± 0.3 | 0.0% | 90% | 100000 |
-| Champion (combined playbook) | 23.5% ± 0.3 | 0.0% | 81% | 100000 |
+| Textbook expert (champion advice, textbook set values) | 23.5% ± 0.3 | 0.0% | 81% | 100000 |
 | House Hoarder (4 houses, never hotels) | 23.2% ± 0.3 | 0.1% | 90% | 100000 |
 | Three-House Rule (stops at 3) | 19.6% ± 0.2 | 0.1% | 90% | 100000 |
 | Accountant (keeps $300 back) | 18.7% ± 0.2 | 0.0% | 84% | 100000 |
@@ -117,7 +117,7 @@ A set can be completed more than once in a game (it changes hands when its owner
 
 | Strategy | Win rate | Draws | Completed a set | Games |
 |---|---|---|---|---|
-| Champion (combined playbook) | 24.6% ± 0.4 | 15.3% | 68% | 50000 |
+| Textbook expert (champion advice, textbook set values) | 24.6% ± 0.4 | 15.3% | 68% | 50000 |
 | All-In (mortgages to build, jail late) | 24.2% ± 0.4 | 13.3% | 71% | 50000 |
 | Leaves jail early, stays late | 22.7% ± 0.4 | 13.4% | 71% | 50000 |
 | Jailbird (always stays in jail) | 21.8% ± 0.4 | 13.0% | 69% | 50000 |
@@ -144,7 +144,7 @@ A set can be completed more than once in a game (it changes hands when its owner
 
 | Strategy | Win rate | Draws | Completed a set | Games |
 |---|---|---|---|---|
-| Champion (combined playbook) | 10.5% ± 0.3 | 66.8% | 16% | 50000 |
+| Textbook expert (champion advice, textbook set values) | 10.5% ± 0.3 | 66.8% | 16% | 50000 |
 | Boardwalk Dreamer (Park Place + Boardwalk only) | 8.8% ± 0.2 | 47.7% | 11% | 50000 |
 | Stubborn (never trades) | 8.4% ± 0.2 | 67.2% | 14% | 50000 |
 | Shark (trades by set value) | 8.4% ± 0.2 | 67.2% | 14% | 50000 |
@@ -176,7 +176,7 @@ A set can be completed more than once in a game (it changes hands when its owner
 | Jailbird (always stays in jail) | 25.6% ± 0.4 | 0.0% | 85% | 50000 |
 | Yes-Man (buy everything, hotels at once) | 25.5% ± 0.4 | 0.0% | 85% | 50000 |
 | House Hoarder (4 houses, never hotels) | 23.3% ± 0.4 | 0.1% | 85% | 50000 |
-| Champion (combined playbook) | 19.5% ± 0.3 | 0.0% | 68% | 50000 |
+| Textbook expert (champion advice, textbook set values) | 19.5% ± 0.3 | 0.0% | 68% | 50000 |
 | Three-House Rule (stops at 3) | 19.3% ± 0.3 | 0.1% | 85% | 50000 |
 | Accountant (keeps $300 back) | 18.2% ± 0.3 | 0.0% | 78% | 50000 |
 | Shark (trades by set value) | 17.2% ± 0.3 | 0.0% | 67% | 50000 |
@@ -203,7 +203,7 @@ A set can be completed more than once in a game (it changes hands when its owner
 | Jailbird (always stays in jail) | 25.5% ± 0.3 | 0.0% | 85% | 100000 |
 | Yes-Man (buy everything, hotels at once) | 25.1% ± 0.3 | 0.0% | 86% | 100000 |
 | House Hoarder (4 houses, never hotels) | 23.0% ± 0.3 | 0.6% | 86% | 100000 |
-| Champion (combined playbook) | 20.1% ± 0.2 | 0.0% | 68% | 100000 |
+| Textbook expert (champion advice, textbook set values) | 20.1% ± 0.2 | 0.0% | 68% | 100000 |
 | Accountant (keeps $300 back) | 18.8% ± 0.2 | 0.0% | 79% | 100000 |
 | Three-House Rule (stops at 3) | 18.6% ± 0.2 | 0.4% | 86% | 100000 |
 | Shark (trades by set value) | 18.2% ± 0.2 | 0.0% | 68% | 100000 |
@@ -230,7 +230,7 @@ A set can be completed more than once in a game (it changes hands when its owner
 | Jailbird (always stays in jail) | 25.2% ± 0.4 | 0.0% | 85% | 50000 |
 | Yes-Man (buy everything, hotels at once) | 25.1% ± 0.4 | 0.0% | 86% | 50000 |
 | House Hoarder (4 houses, never hotels) | 22.5% ± 0.4 | 1.1% | 86% | 50000 |
-| Champion (combined playbook) | 20.9% ± 0.4 | 0.1% | 69% | 50000 |
+| Textbook expert (champion advice, textbook set values) | 20.9% ± 0.4 | 0.1% | 69% | 50000 |
 | Accountant (keeps $300 back) | 19.6% ± 0.3 | 0.0% | 80% | 50000 |
 | Shark (trades by set value) | 19.1% ± 0.3 | 0.0% | 68% | 50000 |
 | Three-House Rule (stops at 3) | 18.0% ± 0.3 | 0.8% | 86% | 50000 |
@@ -396,7 +396,7 @@ Value: win rate divided by fair share (1/N). 1.00 = average.
 | Strategy | 2 players | 3 players | 4 players | 5 players | 6 players | 7 players | 8 players |
 |---|---|---|---|---|---|---|---|
 | All-In (mortgages to build, jail late) | 1.06 | 1.06 | 1.11 | 1.12 | 1.12 | 1.08 | 1.09 |
-| Champion (combined playbook) | 1.12 | 0.97 | 0.95 | 0.92 | 0.93 | 0.92 | 0.94 |
+| Textbook expert (champion advice, textbook set values) | 1.12 | 0.97 | 0.95 | 0.92 | 0.93 | 0.92 | 0.94 |
 | Boardwalk Dreamer (Park Place + Boardwalk only) | 0.21 | 0.38 | 0.24 | 0.23 | 0.33 | 0.44 | 0.56 |
 | Yes-Man (buy everything, hotels at once) | 1.00 | 1.00 | 1.02 | 1.01 | 1.00 | 0.99 | 1.01 |
 | Green only | 0.06 | 0.12 | 0.03 | 0.03 | 0.03 | 0.03 | 0.03 |
