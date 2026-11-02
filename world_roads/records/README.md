@@ -51,6 +51,10 @@ records) against the middle of each season's top ten, with how often today's bes
 | `sports_fetch.py` | Fetches Baseball-, Basketball- and Hockey-Reference leaders (the National League from 1876), Pro Football Archives team pages (NFL 1932–98, AFL 1960–69), nflverse season stats (1999 on), World Aquatics' swimming rankings and Wikipedia's swimming record progressions, World Athletics season lists, and Retrosheet game logs (hitting streaks from 1897 → `tables/hitting_streaks.csv`) |
 | `bigfour.py` | One shape for all 74 categories: smoothed medians, return periods at today's level (counting stats scaled to today's schedule), the era-adjusted rarity of every season-leading performance, and the greatest seasons → `tables/allsports.json`, `tables/era_adjusted.csv`, `tables/greatest_seasons.csv` |
 
+For an independent audit, `audit/` holds a brief (`AUDIT.md`), `audit_export.py` (writes every input of the
+ranking to plain CSV) and `audit_recompute.py` (rebuilds the ranking from those CSVs with numpy alone and checks
+it against the pipeline).
+
 Left out as too niche for a greatest-seasons list: the 5000 m and 10,000 m (athletics), and the 200 m
 backstroke, breaststroke and butterfly and the non-Olympic 50 m strokes (swimming). `NICHE` in `bigfour.py`
 and `SWIM` in `sports_fetch.py` put them back.
