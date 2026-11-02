@@ -191,7 +191,49 @@ def exp_ecology(n_games=5000):
         run('ecology', key, [pool[i][1] for i in combo], n_games, tv=tv, **WORLDS['official'])
 
 
-EXPERIMENTS = {'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
+REAL_WORLDS = {
+    'real_official': dict(auctions=1, trading=1),        # swaps only when both complete a set; no cash for a set card
+    'real_family': dict(auctions=0, trading=1, fp=1),    # same trading, no auctions, Free Parking money
+}
+REAL_ROSTER = [
+    ('typical', 'everything;name=Typical player'),
+    ('fan_rr', 'everything;name=Railroad fan;fav=rr'),
+    ('fan_utilities', 'everything;name=Utilities fan;fav=utilities'),
+    ('fan_brown', 'everything;name=Brown fan;fav=brown'),
+    ('fan_lightblue', 'everything;name=Light blue fan;fav=lightblue'),
+    ('fan_pink', 'everything;name=Pink fan;fav=pink'),
+    ('fan_orange', 'everything;name=Orange fan;fav=orange'),
+    ('fan_red', 'everything;name=Red fan;fav=red'),
+    ('fan_yellow', 'everything;name=Yellow fan;fav=yellow'),
+    ('fan_green', 'everything;name=Green fan;fav=green'),
+    ('fan_darkblue', 'everything;name=Boardwalk fan;fav=darkblue'),
+    ('saver_darkblue', 'everything;name=Boardwalk saver;fav=darkblue;hold=400'),
+    ('cautious', 'prudent;name=Keeps $300 back'),
+    ('threehouses', 'threehouses;name=Stops at three houses'),
+    ('houselock', 'houselock;name=Four houses, never hotels'),
+    ('smartjail', 'smartjail;name=Out of jail early, in late'),
+    ('jailbird', 'jailbird;name=Always stays in jail'),
+    ('stubborn', 'stubborn;name=Never trades'),
+    ('allin', 'allin;name=All-In'),
+    ('savvy', 'shark;name=Savvy trader'),
+    ('champion', 'champion;name=Expert playbook'),
+]
+
+
+def exp_realistic(n_games=100000):
+    """Realistic play: everyone buys what they land on; trades only when both players complete a set."""
+    tv = ','.join('%s:%d' % kv for kv in learned_values().items())
+    for world, cfg in REAL_WORLDS.items():
+        for key, spec in REAL_ROSTER:
+            run('realistic', '%s__%s' % (world, key), [spec] + ['everything;name=Typical player'] * 3, n_games, tv=tv, **cfg)
+        for g in GROUPS + ['rr', 'utilities']:
+            spec = 'everything;name=Never buys %s;buy=all-%s' % (g, g)
+            run('realistic', '%s__skip_%s' % (world, g), [spec] + ['everything;name=Typical player'] * 3, n_games, tv=tv, **cfg)
+    for n in (2, 3, 4, 5, 6):
+        run('realistic', 'real_official__length_n%d' % n, ['everything'] * n, n_games, **REAL_WORLDS['real_official'])
+
+
+EXPERIMENTS = {'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
 if __name__ == '__main__':

@@ -3046,6 +3046,322 @@
    "8": 0.7404
   }
  },
+ "realistic": {
+  "real_official": [
+   {
+    "name": "Orange fan",
+    "win": 0.24731,
+    "draws": 0.13057
+   },
+   {
+    "name": "Expert playbook",
+    "win": 0.24576,
+    "draws": 0.13865
+   },
+   {
+    "name": "All-In",
+    "win": 0.24302,
+    "draws": 0.13166
+   },
+   {
+    "name": "Light blue fan",
+    "win": 0.23732,
+    "draws": 0.13055
+   },
+   {
+    "name": "Pink fan",
+    "win": 0.23202,
+    "draws": 0.1302
+   },
+   {
+    "name": "Out of jail early, in late",
+    "win": 0.22745,
+    "draws": 0.13216
+   },
+   {
+    "name": "Never buys utilities",
+    "win": 0.22255,
+    "draws": 0.12971
+   },
+   {
+    "name": "Boardwalk fan",
+    "win": 0.22107,
+    "draws": 0.12733
+   },
+   {
+    "name": "Red fan",
+    "win": 0.22068,
+    "draws": 0.13001
+   },
+   {
+    "name": "Never buys rr",
+    "win": 0.21923,
+    "draws": 0.12707
+   },
+   {
+    "name": "Boardwalk saver",
+    "win": 0.21855,
+    "draws": 0.12918
+   },
+   {
+    "name": "Utilities fan",
+    "win": 0.21841,
+    "draws": 0.13064
+   },
+   {
+    "name": "Typical player",
+    "win": 0.21824,
+    "draws": 0.13058
+   },
+   {
+    "name": "Railroad fan",
+    "win": 0.21808,
+    "draws": 0.1307
+   },
+   {
+    "name": "Never buys green",
+    "win": 0.2178,
+    "draws": 0.1093
+   },
+   {
+    "name": "Always stays in jail",
+    "win": 0.21692,
+    "draws": 0.12929
+   },
+   {
+    "name": "Yellow fan",
+    "win": 0.21489,
+    "draws": 0.12952
+   },
+   {
+    "name": "Never buys yellow",
+    "win": 0.20504,
+    "draws": 0.10805
+   },
+   {
+    "name": "Four houses, never hotels",
+    "win": 0.20382,
+    "draws": 0.13379
+   },
+   {
+    "name": "Green fan",
+    "win": 0.20052,
+    "draws": 0.12844
+   },
+   {
+    "name": "Savvy trader",
+    "win": 0.20014,
+    "draws": 0.13892
+   },
+   {
+    "name": "Never buys red",
+    "win": 0.19616,
+    "draws": 0.1065
+   },
+   {
+    "name": "Brown fan",
+    "win": 0.18977,
+    "draws": 0.13057
+   },
+   {
+    "name": "Never buys pink",
+    "win": 0.18524,
+    "draws": 0.10398
+   },
+   {
+    "name": "Stops at three houses",
+    "win": 0.1789,
+    "draws": 0.13446
+   },
+   {
+    "name": "Never buys lightblue",
+    "win": 0.17882,
+    "draws": 0.10414
+   },
+   {
+    "name": "Never buys orange",
+    "win": 0.17543,
+    "draws": 0.10657
+   },
+   {
+    "name": "Never buys brown",
+    "win": 0.17418,
+    "draws": 0.13757
+   },
+   {
+    "name": "Never buys darkblue",
+    "win": 0.16324,
+    "draws": 0.11851
+   },
+   {
+    "name": "Keeps $300 back",
+    "win": 0.15326,
+    "draws": 0.13351
+   },
+   {
+    "name": "Never trades",
+    "win": 0.06264,
+    "draws": 0.33603
+   }
+  ],
+  "real_family": [
+   {
+    "name": "Orange fan",
+    "win": 0.24413,
+    "draws": 0.1312
+   },
+   {
+    "name": "All-In",
+    "win": 0.2351,
+    "draws": 0.13179
+   },
+   {
+    "name": "Pink fan",
+    "win": 0.22683,
+    "draws": 0.13149
+   },
+   {
+    "name": "Out of jail early, in late",
+    "win": 0.22537,
+    "draws": 0.13202
+   },
+   {
+    "name": "Light blue fan",
+    "win": 0.22415,
+    "draws": 0.13162
+   },
+   {
+    "name": "Red fan",
+    "win": 0.21996,
+    "draws": 0.13134
+   },
+   {
+    "name": "Never buys utilities",
+    "win": 0.21906,
+    "draws": 0.13162
+   },
+   {
+    "name": "Never buys rr",
+    "win": 0.21838,
+    "draws": 0.12948
+   },
+   {
+    "name": "Typical player",
+    "win": 0.21685,
+    "draws": 0.13157
+   },
+   {
+    "name": "Railroad fan",
+    "win": 0.21669,
+    "draws": 0.13167
+   },
+   {
+    "name": "Utilities fan",
+    "win": 0.21659,
+    "draws": 0.13157
+   },
+   {
+    "name": "Boardwalk fan",
+    "win": 0.21607,
+    "draws": 0.12997
+   },
+   {
+    "name": "Yellow fan",
+    "win": 0.21578,
+    "draws": 0.13093
+   },
+   {
+    "name": "Boardwalk saver",
+    "win": 0.21323,
+    "draws": 0.13262
+   },
+   {
+    "name": "Always stays in jail",
+    "win": 0.21134,
+    "draws": 0.12957
+   },
+   {
+    "name": "Never buys green",
+    "win": 0.20828,
+    "draws": 0.1102
+   },
+   {
+    "name": "Four houses, never hotels",
+    "win": 0.203,
+    "draws": 0.13741
+   },
+   {
+    "name": "Green fan",
+    "win": 0.20262,
+    "draws": 0.13056
+   },
+   {
+    "name": "Expert playbook",
+    "win": 0.20245,
+    "draws": 0.14031
+   },
+   {
+    "name": "Never buys yellow",
+    "win": 0.19688,
+    "draws": 0.10874
+   },
+   {
+    "name": "Never buys red",
+    "win": 0.19144,
+    "draws": 0.10902
+   },
+   {
+    "name": "Never buys lightblue",
+    "win": 0.18753,
+    "draws": 0.10703
+   },
+   {
+    "name": "Never buys pink",
+    "win": 0.18675,
+    "draws": 0.1084
+   },
+   {
+    "name": "Savvy trader",
+    "win": 0.18609,
+    "draws": 0.14
+   },
+   {
+    "name": "Brown fan",
+    "win": 0.18012,
+    "draws": 0.1316
+   },
+   {
+    "name": "Never buys orange",
+    "win": 0.17961,
+    "draws": 0.10907
+   },
+   {
+    "name": "Never buys brown",
+    "win": 0.17851,
+    "draws": 0.14049
+   },
+   {
+    "name": "Stops at three houses",
+    "win": 0.17368,
+    "draws": 0.13865
+   },
+   {
+    "name": "Keeps $300 back",
+    "win": 0.17114,
+    "draws": 0.13601
+   },
+   {
+    "name": "Never buys darkblue",
+    "win": 0.157,
+    "draws": 0.11745
+   },
+   {
+    "name": "Never trades",
+    "win": 0.06192,
+    "draws": 0.34037
+   }
+  ]
+ },
  "shark": {
   "textbook": 0.18279,
   "learned": 0.27582,

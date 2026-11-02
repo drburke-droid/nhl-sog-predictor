@@ -126,6 +126,11 @@ struct Strat {
     bool stretch = false;    // ignore reserve to buy a square that completes own set
     double sellPremium = 2.5; // cash buyouts: sells a set-completing piece for this multiple of list price
     double buyPremium = 3.0;  // cash buyouts: pays up to this multiple of list price to complete a set
+    // a favourite (a fan still buys everything, but leans toward these squares)
+    uint64_t fav = 0;         // favourite squares
+    double favBid = 1.0;      // bids up to this multiple of list price for a favourite at auction
+    bool favMortgage = false; // mortgages other property to afford a favourite it lands on
+    int holdFor = 0;          // keeps this much cash back on other purchases while a favourite is unsold
 };
 
 static uint64_t maskFromName(const std::string& w) {
@@ -208,6 +213,10 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "stretch") s.stretch = atoi(v.c_str()) != 0;
         else if (k == "sell") s.sellPremium = atof(v.c_str());
         else if (k == "buyp") s.buyPremium = atof(v.c_str());
+        else if (k == "fav") { s.fav = parseMask(v); s.favBid = 2.0; s.favMortgage = true; }
+        else if (k == "favbid") s.favBid = atof(v.c_str());
+        else if (k == "favmort") s.favMortgage = atoi(v.c_str()) != 0;
+        else if (k == "hold") s.holdFor = atoi(v.c_str());
         else { fprintf(stderr, "unknown key '%s'\n", k.c_str()); exit(1); }
     }
     return s;
@@ -401,12 +410,24 @@ struct Game {
     }
 
     // -------- buying
+    bool favOpen(int p) const {
+        uint64_t f = S[p]->fav;
+        for (int s = 0; f && s < 40; s++) if ((f >> s & 1) && owner[s] < 0) return true;
+        return false;
+    }
+    int reserveFor(int p, int s) const {
+        const Strat& t = *S[p];
+        if (t.fav >> s & 1) return 0;                        // a fan always finds the money for a favourite
+        if (t.stretch && completesSet(p, s)) return 0;
+        return std::max(t.reserve, (t.holdFor && favOpen(p)) ? t.holdFor : 0);
+    }
     int maxBid(int q, int s) const {
         const Strat& t = *S[q]; double f = 0;
         if (t.buy >> s & 1) { f = t.bid; if (completesSet(q, s)) f *= t.setBid; }
+        if (t.fav >> s & 1) f = std::max(f, t.favBid);
         if (t.blockBid > 0 && completesOpp(q, s)) f = std::max(f, t.blockBid);
         if (f <= 0) return 0;
-        int reserve = (t.stretch && completesSet(q, s)) ? 0 : t.reserve;
+        int reserve = reserveFor(q, s);
         int b = std::min((int)(B[s].price * f), P[q].cash - reserve);
         return std::max(0, b);
     }
@@ -428,7 +449,9 @@ struct Game {
     void offer(int p, int s) {
         const Strat& t = *S[p];
         bool want = t.buy >> s & 1;
-        int reserve = (t.stretch && completesSet(p, s)) ? 0 : t.reserve;
+        int reserve = reserveFor(p, s);
+        if (want && t.favMortgage && (t.fav >> s & 1))
+            while (P[p].cash < B[s].price && mortgageOne(p, 0)) {}
         if (want && P[p].cash - B[s].price >= reserve) {
             P[p].cash -= B[s].price; owner[s] = p;
             if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"buy\",\"s\":%d,\"price\":%d}\n", round, p, s, B[s].price);
@@ -588,11 +611,14 @@ struct Game {
                 }
             }
         if (t.buildMax <= 0) return;
+        int order[8], no = 0;  // favourite sets first, then by return
+        for (int k = 0; k < 8; k++) { int g = BUILD_ORDER[k]; if (t.fav >> GSQ[g][0] & 1) order[no++] = g; }
+        for (int k = 0; k < 8; k++) { int g = BUILD_ORDER[k]; if (!(t.fav >> GSQ[g][0] & 1)) order[no++] = g; }
         if (t.bpri == 1) {
             for (int L = 1; L <= t.buildMax; L++)
-                for (int k = 0; k < 8; k++) { int g = BUILD_ORDER[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, L, t.buildReserve)) {} }
+                for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, L, t.buildReserve)) {} }
         } else {
-            for (int k = 0; k < 8; k++) { int g = BUILD_ORDER[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, t.buildMax, t.buildReserve)) {} }
+            for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, t.buildMax, t.buildReserve)) {} }
         }
     }
 
@@ -613,6 +639,7 @@ struct Game {
                 if (!(cntA[gA] >= 1 && cntB[gA] >= 1 && cntA[gA] + cntB[gA] == GSZ[gA])) continue;
                 for (int gB = 0; gB < 8; gB++) {
                     if (gB == gA || !(cntA[gB] >= 1 && cntB[gB] >= 1 && cntA[gB] + cntB[gB] == GSZ[gB])) continue;
+                    if ((S[a]->fav >> GSQ[gB][0] & 1) || (S[b]->fav >> GSQ[gA][0] & 1)) continue;  // fans keep their favourite
                     int faceFromB = 0, faceFromA = 0;  // list price of what each hands over
                     for (int i = 0; i < GSZ[gA]; i++) if (owner[GSQ[gA][i]] == b) faceFromB += B[GSQ[gA][i]].price;
                     for (int i = 0; i < GSZ[gB]; i++) if (owner[GSQ[gB][i]] == a) faceFromA += B[GSQ[gB][i]].price;

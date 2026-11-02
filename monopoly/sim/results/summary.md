@@ -408,6 +408,84 @@ Value: win rate divided by fair share (1/N). 1.00 = average.
 | Stubborn (never trades) | 0.87 | 0.30 | 0.18 | 0.14 | 0.11 | 0.10 | 0.08 |
 | Three-House Rule (stops at 3) | 0.95 | 0.84 | 0.79 | 0.75 | 0.75 | 0.73 | 0.74 |
 
+## Realistic play, official rules (auctions): one player vs three typical players
+
+Everyone buys what they land on. Trades happen only when both players complete a set (cash evens up the printed prices); nobody sells a set-completing card for cash. Fans buy everything too, but will mortgage to buy their favourite, bid up to double for it, build it first and never trade it away. 100,000 games each.
+
+| Player | Wins per 100 games | vs typical player | Games that never end |
+|---|---|---|---|
+| Orange fan | 24.7 | +2.9 | 13% |
+| Expert playbook | 24.6 | +2.8 | 14% |
+| All-In | 24.3 | +2.5 | 13% |
+| Light blue fan | 23.7 | +1.9 | 13% |
+| Pink fan | 23.2 | +1.4 | 13% |
+| Out of jail early, in late | 22.7 | +0.9 | 13% |
+| Never buys utilities | 22.3 | +0.4 | 13% |
+| Boardwalk fan | 22.1 | +0.3 | 13% |
+| Red fan | 22.1 | +0.2 | 13% |
+| Never buys rr | 21.9 | +0.1 | 13% |
+| Boardwalk saver | 21.9 | +0.0 | 13% |
+| Utilities fan | 21.8 | +0.0 | 13% |
+| Typical player | 21.8 | +0.0 | 13% |
+| Railroad fan | 21.8 | -0.0 | 13% |
+| Never buys green | 21.8 | -0.0 | 11% |
+| Always stays in jail | 21.7 | -0.1 | 13% |
+| Yellow fan | 21.5 | -0.3 | 13% |
+| Never buys yellow | 20.5 | -1.3 | 11% |
+| Four houses, never hotels | 20.4 | -1.4 | 13% |
+| Green fan | 20.1 | -1.8 | 13% |
+| Savvy trader | 20.0 | -1.8 | 14% |
+| Never buys red | 19.6 | -2.2 | 11% |
+| Brown fan | 19.0 | -2.8 | 13% |
+| Never buys pink | 18.5 | -3.3 | 10% |
+| Stops at three houses | 17.9 | -3.9 | 13% |
+| Never buys lightblue | 17.9 | -3.9 | 10% |
+| Never buys orange | 17.5 | -4.3 | 11% |
+| Never buys brown | 17.4 | -4.4 | 14% |
+| Never buys darkblue | 16.3 | -5.5 | 12% |
+| Keeps $300 back | 15.3 | -6.5 | 13% |
+| Never trades | 6.3 | -15.6 | 34% |
+
+## Realistic play, house rules (no auctions, Free Parking money): one player vs three typical players
+
+Everyone buys what they land on. Trades happen only when both players complete a set (cash evens up the printed prices); nobody sells a set-completing card for cash. Fans buy everything too, but will mortgage to buy their favourite, bid up to double for it, build it first and never trade it away. 100,000 games each.
+
+| Player | Wins per 100 games | vs typical player | Games that never end |
+|---|---|---|---|
+| Orange fan | 24.4 | +2.7 | 13% |
+| All-In | 23.5 | +1.8 | 13% |
+| Pink fan | 22.7 | +1.0 | 13% |
+| Out of jail early, in late | 22.5 | +0.9 | 13% |
+| Light blue fan | 22.4 | +0.7 | 13% |
+| Red fan | 22.0 | +0.3 | 13% |
+| Never buys utilities | 21.9 | +0.2 | 13% |
+| Never buys rr | 21.8 | +0.2 | 13% |
+| Typical player | 21.7 | +0.0 | 13% |
+| Railroad fan | 21.7 | -0.0 | 13% |
+| Utilities fan | 21.7 | -0.0 | 13% |
+| Boardwalk fan | 21.6 | -0.1 | 13% |
+| Yellow fan | 21.6 | -0.1 | 13% |
+| Boardwalk saver | 21.3 | -0.4 | 13% |
+| Always stays in jail | 21.1 | -0.6 | 13% |
+| Never buys green | 20.8 | -0.9 | 11% |
+| Four houses, never hotels | 20.3 | -1.4 | 14% |
+| Green fan | 20.3 | -1.4 | 13% |
+| Expert playbook | 20.2 | -1.4 | 14% |
+| Never buys yellow | 19.7 | -2.0 | 11% |
+| Never buys red | 19.1 | -2.5 | 11% |
+| Never buys lightblue | 18.8 | -2.9 | 11% |
+| Never buys pink | 18.7 | -3.0 | 11% |
+| Savvy trader | 18.6 | -3.1 | 14% |
+| Brown fan | 18.0 | -3.7 | 13% |
+| Never buys orange | 18.0 | -3.7 | 11% |
+| Never buys brown | 17.9 | -3.8 | 14% |
+| Stops at three houses | 17.4 | -4.3 | 14% |
+| Keeps $300 back | 17.1 | -4.6 | 14% |
+| Never buys darkblue | 15.7 | -6.0 | 12% |
+| Never trades | 6.2 | -15.5 | 34% |
+
+Typical players only, same trading rule: games that never end by table size: 2 players 0%, 3 players 1%, 4 players 13%, 5 players 37%, 6 players 57%
+
 ## Teaching the Shark (one strategy vs three Yes-Men, official rules)
 
 Learned set values: points of win rate a Yes-Man loses by never buying the set, x $100: orange $595, lightblue $584, pink $410, darkblue $246, brown $233, red $168, yellow $46, green $-141

@@ -276,6 +276,37 @@ def main():
             md.append('| %s | ' % LABEL.get(t, t) + ' | '.join(row) + ' |')
         md.append('')
 
+    # ---- realistic play: everyone buys what they land on; trades only when both complete a set
+    real = load('realistic')
+    if real:
+        summary['realistic'] = {}
+        for world, title in (('real_official', 'official rules (auctions)'), ('real_family', 'house rules (no auctions, Free Parking money)')):
+            rows = []
+            for key, d in real.items():
+                w, t = key.split('__', 1)
+                if w != world or t.startswith('length'):
+                    continue
+                p0 = d['players'][0]
+                rows.append((p0['name'], p0['wins'] / d['games'], d['timeouts'] / d['games'], d['games']))
+            if not rows:
+                continue
+            base = next(r[1] for r in rows if r[0] == 'Typical player')
+            rows.sort(key=lambda r: -r[1])
+            summary['realistic'][world] = [dict(name=r[0], win=r[1], draws=r[2]) for r in rows]
+            md += ['## Realistic play, %s: one player vs three typical players' % title, '',
+                   'Everyone buys what they land on. Trades happen only when both players complete a set (cash evens up '
+                   'the printed prices); nobody sells a set-completing card for cash. Fans buy everything too, but will '
+                   'mortgage to buy their favourite, bid up to double for it, build it first and never trade it away. '
+                   '100,000 games each.', '',
+                   '| Player | Wins per 100 games | vs typical player | Games that never end |', '|---|---|---|---|']
+            for name, v, dr, n in rows:
+                md.append('| %s | %.1f | %+.1f | %.0f%% |' % (name, pct(v), pct(v - base), pct(dr)))
+            md.append('')
+        lens = [(int(k.split('_n')[1]), d) for k, d in real.items() if 'length_n' in k]
+        if lens:
+            md += ['Typical players only, same trading rule: games that never end by table size: ' +
+                   ', '.join('%d players %.0f%%' % (n, pct(d['timeouts'] / d['games'])) for n, d in sorted(lens)), '']
+
     # ---- learned shark
     shark = load('shark')
     if shark:
