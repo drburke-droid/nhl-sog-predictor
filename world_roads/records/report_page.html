@@ -79,6 +79,20 @@ figcaption { font-size: 14.5px; color: var(--ink2); max-width: 75ch; line-height
 .multiples .sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .multiples .note { font-size: 14px; color: var(--ink2); line-height: 1.4; margin: 2px 0 0; }
 
+
+.cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.card { background: var(--panel); border-radius: 6px; padding: 12px 14px 12px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.card .ct { font-family: var(--display); font-size: 19px; font-weight: 600; line-height: 1.1; }
+.card .cs { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.card .cr { font-family: var(--mono); font-size: 12.5px; color: var(--ink2); }
+.card .cr b { color: var(--ink); font-weight: 500; font-size: 14px; }
+.card .cn { font-size: 13.5px; line-height: 1.35; color: var(--ink2); border-top: 1px solid var(--rule); padding-top: 6px; margin-top: 2px; }
+.card .cn b { font-family: var(--display); font-size: 22px; font-weight: 700; color: var(--ink); margin-right: 4px; }
+.groupname { font-family: var(--display); font-size: 24px; font-weight: 600; margin: 8px 0 -4px; }
+.note { font-size: 14px; color: var(--ink2); max-width: 80ch; }
+.goat .lead { font-family: var(--display); font-size: clamp(26px, 3.6vw, 34px); font-weight: 600; line-height: 1.15; max-width: 40ch; }
+.divider { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+h2.big { font-size: clamp(36px, 6vw, 56px); }
 .tip { position: fixed; pointer-events: none; z-index: 20; background: var(--panel); color: var(--ink);
   border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; font-family: var(--mono); font-size: 12.5px;
   line-height: 1.45; max-width: 300px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
@@ -120,12 +134,56 @@ ol.timeline li span { font-family: var(--mono); font-size: 13px; color: var(--mu
 
 <main>
   <header class="hero">
-    <div class="eyebrow">World records in 34 Olympic athletics events · data to November 2026</div>
+    <div class="eyebrow">34 athletics events and 20 records from baseball, basketball, hockey and football · data to November 2026</div>
     <h1>Out of Reach</h1>
-    <p class="dek">Some world records sit far above anything athletes produce today. A few stand apart because one athlete went beyond everyone. Others stand apart because a whole era was deeper than today's. This page measures which is which, and puts the strangest of them, the men's long jump, in context.</p>
+    <p class="dek">How far each record sits above what today's best can do, how each event has moved over the years, and which single season, adjusted for its era, was the greatest performance of all.</p>
     <div class="lanes" aria-hidden="true"></div>
   </header>
 
+
+  <section aria-labelledby="every">
+    <div class="prose">
+      <h2 id="every" class="big">Every record, one chart each</h2>
+      <p>Each chart has two lines. The <strong>gold line</strong> is the record: it steps up every time the record is broken. The <strong>blue line</strong> is a typical world-class performance: the middle of each season's top ten, smoothed over five seasons. Where blue keeps climbing toward gold, the event is still improving. Where blue goes flat far below gold, the event has stalled and the record stands apart.</p>
+      <p>The number under each chart answers one question: <strong>at today's level, how often would the best athlete of a season match this record?</strong> It comes from the leading marks of the last 15 seasons.</p>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i class="line" style="background:var(--gold)"></i>the record</span>
+      <span><i class="line" style="background:var(--blue)"></i>middle of each season's top ten, smoothed</span>
+      <span>up is better on every chart</span>
+    </div>
+    <div id="athcards"></div>
+  </section>
+
+  <section aria-labelledby="big4">
+    <div class="prose">
+      <h2 id="big4" class="big">The big four</h2>
+      <p>The same charts for 20 of the best-known records in baseball, basketball, hockey and football. The blue line is the middle of each season's official top ten. For totals such as home runs or goals, the number under each chart compares the record with today's leaders at today's schedule, because seasons used to be shorter.</p>
+    </div>
+    <div id="leaguecards"></div>
+    <p class="note">Baseball counts the American and National Leagues since 1901. Major League Baseball now also recognises the Negro Leagues of 1920–48, whose short schedules make season leaderboards hard to compare; with them, the batting average record is Josh Gibson's .466 (1943). Football's top ten is available from 1999, so its blue line starts there; sacks became an official statistic in 1982. Seasons cut short by strikes, lockouts or the pandemic are left out of the blue line and the numbers.</p>
+  </section>
+
+  <section aria-labelledby="goat" class="goat">
+    <div class="prose">
+      <h2 id="goat" class="big">The greatest performance of all time</h2>
+      <p>Records compete with all of history, so a record from 1904 meets today's very different game. A fairer test measures a season against its own time. For every season-leading performance in these 54 categories, we took the best of everyone else in the 15 seasons around it, with the athlete's own seasons left out, and asked the same question: how often would anyone else of that era have done this?</p>
+      <p class="lead" id="goatlead"></p>
+    </div>
+    <figure>
+      <div class="chart" id="goatchart"></div>
+      <figcaption>The best performance in each category, ranked by how far it stood above everyone else of its era (in standard deviations of their season bests; the label translates this into "once in N seasons"). Totals are compared at the schedule of the season in question.</figcaption>
+    </figure>
+    <div class="prose">
+      <h3>The record is not always the greatest performance</h3>
+      <p>In many categories the most extraordinary season, judged against its own time, is not the one that holds the record.</p>
+    </div>
+    <div class="tablewrap" id="recvsgreat"></div>
+    <div class="prose note" id="goatnotes"></div>
+  </section>
+
+  <hr class="divider">
+  <div class="prose"><div class="eyebrow">Deeper dives</div><h2 class="big" style="margin-top:6px">The athletics records in detail</h2></div>
   <section aria-labelledby="kinds">
     <div class="prose">
       <h2 id="kinds">Three kinds of record</h2>
@@ -235,7 +293,7 @@ ol.timeline li span { font-family: var(--mono); font-size: 13px; color: var(--mu
       <article class="case">
         <div class="tag">Era records · 1987–88</div>
         <h3>Women's shot put, discus and long jump</h3>
-        <p>These are the furthest from today's level of any records: once in thousands of seasons for the shot, a few hundred for the discus and long jump. The depth of those seasons has not returned. 23 women put the shot 20 m in 1987; four to six do now. No woman threw the discus 68 m in 2008–2011. The marks predate random out-of-competition testing (late 1980s), stored samples for re-testing (2005) and the Athlete Biological Passport (2009).</p>
+        <p>These are the furthest from today's level of any athletics records: about once in 1,500 seasons for the shot, a few hundred for the discus and long jump. The depth of those seasons has not returned. 23 women put the shot 20 m in 1987; four to six do now. No woman threw the discus 68 m in 2008–2011. The marks predate random out-of-competition testing (late 1980s), stored samples for re-testing (2005) and the Athlete Biological Passport (2009).</p>
       </article>
       <article class="case">
         <div class="tag">Within reach again · 1983–88</div>
@@ -284,7 +342,12 @@ ol.timeline li span { font-family: var(--mono); font-size: 13px; color: var(--mu
         <li><strong>Return periods.</strong> A Gumbel distribution fitted by moments to the season-leading marks of 2012–2026, then the chance that a season's best reaches the record. Real tails are often lighter than Gumbel's, so the largest figures, if anything, understate how rare the record is. Read them as orders of magnitude.</li>
         <li><strong>Groups.</strong> Out of reach means a return period of 35 seasons or more. An era record is an out-of-reach record set by 2000, in an event whose depth (the season's 10th-best athlete, five-season averages) peaked before 2006 and is still below that peak. A lone outlier is an out-of-reach record in an event whose field is as deep as it has been.</li>
         <li><strong>Records.</strong> The world record lines from <em>The Record and the Rest</em>, built from World Athletics' progressions via Wikipedia, including 2026 records pending ratification.</li>
+        <li><strong>The blue lines.</strong> The median of each season's ten best athletes (athletics: each athlete counted once; leagues: the official leaders), averaged over five seasons centred on each one. In athletics the line starts in the first season in which the all-time lists hold ten athletes (1968–1999, by event); World Athletics' season lists fill the ranks below the all-time lists' cut-offs from 2001. Seasons cut short (strikes, lockouts, the 2020 pandemic season) are left out.</li>
+        <li><strong>The big four.</strong> Season leaders from <a href="https://www.baseball-reference.com/" rel="noopener">Baseball-Reference</a> (American and National Leagues since 1901, with the AL and NL leader pages for batting average and ERA in 1920–48), <a href="https://www.basketball-reference.com/" rel="noopener">Basketball-Reference</a> and <a href="https://www.hockey-reference.com/" rel="noopener">Hockey-Reference</a>; football leaders from Wikipedia's annual-leaders lists (NFL, with the AFL in 1960–69) and top tens from <a href="https://github.com/nflverse/nflverse-data" rel="noopener">nflverse</a> (1999–2025). Hitting streaks were computed game by game from Retrosheet's logs (via Chadwick's retrosplits), following the scoring rule: a game with a hit extends a streak, a game with an at-bat or a sacrifice fly and no hit ends it, and a game of only walks, hit-by-pitches or sacrifice bunts leaves it alone. The computed streaks match the record books (DiMaggio 56, Rose 44, Sisler 41, Cobb 40).</li>
+        <li><strong>Today's schedule.</strong> For totals (home runs, goals, yards) each recent season's leader is scaled to today's schedule before fitting, and so is the record (for example Gretzky's 92 goals in 80 games become 94 in 82). Rates such as batting average or points per game are not scaled.</li>
+        <li><strong>Era-adjusted.</strong> For each season-leading performance: the best of everyone else, season by season, in the 15 seasons centred on it, with the performer's own marks left out and totals scaled to that season's schedule. The same Gumbel fit gives "once in N seasons of its era"; the ranking uses the equivalent number of standard deviations. Athletics performances count from 1960, when the all-time lists become deep enough; a window needs eight seasons with real values. Windows of 11 and 21 seasons give the same leader (Beamon), and Gretzky, Chamberlain and Rojas stay in the top ten under all three.</li>
       </ul>
+      <p>The information used here from Retrosheet was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at <a href="https://www.retrosheet.org" rel="noopener">www.retrosheet.org</a>.</p>
       <p>Sources for the context: the Ward-Smith (1986) altitude and wind estimate and the later field measurements, via <a href="https://ojs.ub.uni-konstanz.de/cpa/article/view/2720" rel="noopener">ISBS Proceedings</a>; the 1991 approach speeds (Fukashiro et al., 1994), via <a href="https://ojs.ub.uni-konstanz.de/cpa/article/view/1985/1853" rel="noopener">ISBS Proceedings</a>; the 1988 wind gauge, via <a href="https://arxiv.org/pdf/physics/9705004" rel="noopener">Mureika (arXiv)</a> and <a href="https://guinnessworldrecords.com/news/2024/8/is-the-womens-100-metre-world-record-truly-unbreakable" rel="noopener">Guinness World Records</a>; the Athlete Biological Passport, via a <a href="https://www.doping.nl/media/kb/3017/CAS%202013_A_3080%20Alemitu%20Bekele-Degfa%20vs%20TAF%20%26%20IAAF%20%28OS%29.pdf" rel="noopener">CAS award</a>; the 2017 proposal, via <a href="https://athleticsweekly.com/news/european-athletics-endorses-plan-for-new-record-ratification-rules-60467" rel="noopener">Athletics Weekly</a>; shoe rules, via <a href="https://runningmagazine.ca/sections/gear/the-latest-shoe-rules-from-world-athletics/" rel="noopener">Running Magazine</a>; 2025–26 marks, via <a href="https://www.letsrun.com/news/2025/09/sydney-mclaughlin-levrone-amazes-once-again-her-47-78-beats-marileidy-paulino-47-98-in-classic-400m-final-at-2025-world-championships/" rel="noopener">LetsRun</a> and <a href="https://www.flotrack.org/articles/16147825-audrey-werro-breaks-records-in-800m-at-diamond-league-zurich" rel="noopener">FloTrack</a>.</p>
     </div>
   </section>
@@ -585,7 +648,169 @@ function ljFacts() {
       <td class="num">${(+r[3]).toFixed(2)}</td></tr>`).join("") + `</tbody></table>`;
 }
 
-function drawAll() { kinds(); score(); slope(); depth(); heat(); ljChart(); }
+
+/* ---------- value formats ---------- */
+const FMT = {
+  time: v => v.toFixed(2),
+  mmss: v => { const m = Math.floor(v / 60), r = v - m * 60; return `${m}:${r.toFixed(2).padStart(5, "0")}`; },
+  metres: v => v.toFixed(2) + " m",
+  ba: v => v.toFixed(3).replace(/^0/, ""),
+  era: v => v.toFixed(2),
+  rate: v => v.toFixed(1),
+  half: v => String(Math.round(v * 2) / 2),
+  count: v => d3.format(",")(Math.round(v)),
+};
+const TICK = {
+  time: v => v.toFixed(1), mmss: v => { const m = Math.floor(v / 60), r = Math.round(v - m * 60); return `${m}:${String(r).padStart(2, "0")}`; },
+  metres: v => (v < 10 ? v.toFixed(1) : v.toFixed(0)), ba: v => v.toFixed(3).replace(/^0/, ""), era: v => v.toFixed(1),
+  rate: v => v.toFixed(0), half: v => v.toFixed(0), count: v => d3.format(",")(Math.round(v)),
+};
+function fmtT(T) {
+  if (T == null) return "–";
+  if (!isFinite(T) || T >= 1e6) return "1,000,000+";
+  if (T < 100) return String(Math.round(T));
+  return d3.format(",")(+d3.format(".2r")(T));
+}
+const EVORDER = ["100m", "200m", "400m", "110mH", "100mH", "400mH", "800m", "1500m", "5000m", "10000m", "HJ", "PV", "LJ", "TJ", "SP", "DT", "JT", "HT"];
+
+/* ---------- one small chart ---------- */
+function cardChart(el, c) {
+  const C = css();
+  el.innerHTML = "";
+  const W = el.clientWidth || 260, H = 128, m = { t: 8, r: 6, b: 18, l: 44 };
+  const x1 = 2027;
+  const rec = c.record_line.slice().sort((a, b) => a[0] - b[0]);
+  const pts = [];
+  rec.forEach((p, i) => { const xx = Math.max(p[0], c.x0); if (i) pts.push([xx, rec[i - 1][1]]); pts.push([xx, p[1]]); });
+  pts.push([x1, rec[rec.length - 1][1]]);
+  const vals = rec.filter(p => p[0] >= c.x0 - 30).map(p => p[1]).concat(c.median.map(p => p[1]));
+  let lo = d3.min(vals), hi = d3.max(vals);
+  const pad = (hi - lo) * 0.08 || Math.abs(hi) * 0.05 || 1; lo -= pad; hi += pad;
+  const x = d3.scaleLinear().domain([c.x0, x1]).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain(c.higher ? [lo, hi] : [hi, lo]).range([H - m.b, m.t]);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", `${c.title}: the record and the middle of each season's top ten, ${c.x0} to 2026`);
+  y.ticks(3).forEach(t => {
+    svg.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(t)).attr("y2", y(t)).attr("stroke", C.rule);
+    svg.append("text").attr("x", m.l - 5).attr("y", y(t) + 3.5).attr("text-anchor", "end").attr("font-size", 9.5)
+      .attr("fill", C.muted).text(TICK[c.fmt](t));
+  });
+  const span = x1 - c.x0, step = span > 90 ? 50 : span > 45 ? 20 : 10;
+  d3.range(Math.ceil(c.x0 / step) * step, 2027, step).forEach(t => svg.append("text").attr("x", x(t)).attr("y", H - 4)
+    .attr("text-anchor", "middle").attr("font-size", 9.5).attr("fill", C.muted).text(t));
+  const ys = v => Math.min(H - m.b, Math.max(m.t, y(v)));
+  svg.append("path").attr("d", d3.line().x(p => x(p[0])).y(p => ys(p[1]))(pts)).attr("fill", "none")
+    .attr("stroke", C.gold).attr("stroke-width", 2.4);
+  if (c.median.length) {
+    const med = c.median;
+    svg.append("path").attr("d", d3.line().defined((p, i) => i === 0 || p[0] - med[i - 1][0] <= 4).x(p => x(p[0]))
+      .y(p => ys(p[1])).curve(d3.curveMonotoneX)(med)).attr("fill", "none").attr("stroke", C.blue).attr("stroke-width", 2.2);
+  }
+  // hover
+  const hl = svg.append("line").attr("y1", m.t).attr("y2", H - m.b).attr("stroke", C.ink2).attr("stroke-width", 1).attr("opacity", 0);
+  svg.append("rect").attr("x", m.l).attr("y", m.t).attr("width", W - m.l - m.r).attr("height", H - m.t - m.b).attr("fill", "transparent")
+    .on("pointermove", e => {
+      const yr = Math.round(x.invert(d3.pointer(e)[0]));
+      const r = rec.filter(p => p[0] < yr + 1).pop();
+      const md = c.median.find(p => p[0] === yr);
+      hl.attr("x1", x(yr)).attr("x2", x(yr)).attr("opacity", 0.6);
+      showTip(e, `<b>${yr}</b><br>Record: ${r ? FMT[c.fmt](r[1]) + (r[2] ? ", " + r[2] : "") : "–"}<br>` +
+        `Middle of the top ten: ${md ? FMT[c.fmt](md[1]) : "–"}`);
+    })
+    .on("pointerleave", () => { hl.attr("opacity", 0); hideTip(); });
+}
+
+function cardHTML(c) {
+  const T = c.today_T;
+  const sub = c.sub ? `<div class="cs">${c.sub}</div>` : "";
+  return `<div class="card"><div class="ct">${c.title}</div>${sub}
+    <div class="cr"><b>${c.record}</b> ${c.record_by}, ${c.record_season}</div>
+    <div class="chart"></div>
+    <div class="cn">Once every <b>${fmtT(T)}</b> seasons at today's level</div></div>`;
+}
+
+function cardSection(id, groups) {
+  const wrap = document.getElementById(id);
+  wrap.innerHTML = "";
+  const all = [];
+  groups.forEach(([name, list]) => {
+    const h = document.createElement("div"); h.className = "groupname"; h.textContent = name; wrap.appendChild(h);
+    const g = document.createElement("div"); g.className = "cardgrid";
+    g.innerHTML = list.map(cardHTML).join(""); wrap.appendChild(g);
+    [...g.querySelectorAll(".chart")].forEach((el, i) => all.push([el, list[i]]));
+  });
+  all.forEach(([el, c]) => cardChart(el, c));
+}
+
+function cards() {
+  const cats = DATA.all.categories;
+  const ath = cats.filter(c => c.sport === "Athletics");
+  const ev = c => c.id.split("_").slice(2).join("_"), sx = c => c.id.split("_")[1];
+  const order = (a, b) => EVORDER.indexOf(ev(a)) - EVORDER.indexOf(ev(b)) || (sx(a) < sx(b) ? -1 : 1);
+  cardSection("athcards", ["Sprints", "Hurdles", "Middle and long distance", "Jumps", "Throws"]
+    .map(g => [g, ath.filter(c => c.group === g).sort(order)]));
+  cardSection("leaguecards", [["Baseball (MLB)", "MLB"], ["Basketball (NBA)", "NBA"], ["Hockey (NHL)", "NHL"], ["Football (NFL)", "NFL"]]
+    .map(([n, k]) => [n, cats.filter(c => c.sport === k)]));
+}
+
+/* ---------- the era-adjusted ranking ---------- */
+function goat() {
+  const C = css(), el = document.getElementById("goatchart"), A = DATA.all;
+  el.innerHTML = "";
+  const rows = A.era_per_category.slice(0, 16);
+  const top = rows[0], second = rows[1];
+  document.getElementById("goatlead").textContent =
+    `Measured that way, the greatest performance in any of these sports is ${top.name}'s ${top.value} in the ${top.category.toLowerCase()}, ${top.season}. ` +
+    `Among the athletes of its era, a performance like it would come along about once in ${fmtT(top.T)} seasons. ` +
+    `Second is ${second.name}'s ${second.value} ${second.category.toLowerCase()} (${second.season}): once in ${fmtT(second.T)}.`;
+  const W = el.clientWidth, narrow = W < 640, rowH = narrow ? 52 : 40, labW = narrow ? 0 : 340, rightW = narrow ? 0 : 150;
+  const H = rows.length * rowH + 40;
+  const x = d3.scaleLinear().domain([0, Math.ceil(top.z)]).range([labW, W - rightW - 4]);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", "The best performance in each category, ranked by how far it stood above its era");
+  d3.range(0, Math.ceil(top.z) + 1, 2).forEach(t => {
+    svg.append("line").attr("x1", x(t)).attr("x2", x(t)).attr("y1", 0).attr("y2", H - 34).attr("stroke", C.rule);
+    svg.append("text").attr("x", x(t)).attr("y", H - 20).attr("text-anchor", "middle").attr("font-size", 10.5).attr("fill", C.muted).text(t);
+  });
+  rows.forEach((r, i) => {
+    const yy = i * rowH + (narrow ? 30 : 8), bh = narrow ? 12 : 18;
+    const ty = narrow ? yy - 20 : yy + 7;
+    svg.append("text").attr("x", 0).attr("y", ty).attr("font-size", 12.5).attr("fill", C.ink).text(r.name);
+    svg.append("text").attr("x", 0).attr("y", ty + 14).attr("font-size", 10.5).attr("fill", C.muted)
+      .text(`${r.value} · ${r.category} · ${r.season}`);
+    svg.append("rect").attr("x", x(0)).attr("y", yy).attr("width", Math.max(2, x(r.z) - x(0))).attr("height", bh).attr("rx", 3)
+      .attr("fill", i === 0 ? C.gold : C.blue).attr("opacity", i === 0 ? 1 : 0.85);
+    svg.append("text").attr("x", narrow ? x(r.z) + 6 : W - rightW + 6).attr("y", yy + bh - 3).attr("font-size", 11).attr("fill", C.ink2)
+      .text(`once in ${fmtT(r.T)}`);
+    svg.append("rect").attr("x", 0).attr("y", yy - (narrow ? 16 : 6)).attr("width", W).attr("height", rowH).attr("fill", "transparent")
+      .on("pointermove", e => showTip(e, `<b>${r.name}</b><br>${r.category} (${r.sport}), ${r.season}: ${r.value}<br>` +
+        `${r.z.toFixed(1)} standard deviations above everyone else's season bests, ${r.n} seasons around it<br>` +
+        `In its era: once in ${fmtT(r.T)} seasons`))
+      .on("pointerleave", hideTip);
+  });
+  svg.append("text").attr("x", x(0)).attr("y", H - 4).attr("font-size", 10.5).attr("fill", C.muted)
+    .text("standard deviations above everyone else of its era →");
+  // record vs greatest (leagues; athletics where the person differs)
+  const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+  const cats = A.categories.filter(c => c.era_best);
+  const row = c => `<tr><td>${c.sport === "Athletics" ? c.title : c.title + " (" + c.sport + ")"}</td>
+    <td>${c.record} · ${c.record_by} · ${c.record_season}</td>
+    <td>${c.era_best.value} · ${c.era_best.name} · ${c.era_best.season}</td>
+    <td class="num">${fmtT(c.era_best.T)}</td></tr>`;
+  const head = `<table><thead><tr><th>Category</th><th>The record</th><th>Greatest season for its era</th><th class="num">Once in … seasons of its era</th></tr></thead><tbody>`;
+  const leagues = cats.filter(c => c.sport !== "Athletics");
+  const athDiff = cats.filter(c => c.sport === "Athletics" && norm(c.record_by) !== norm(c.era_best.name));
+  document.getElementById("recvsgreat").innerHTML = head + leagues.map(row).join("") + `</tbody></table>
+    <details style="margin-top:10px"><summary>Athletics events where the greatest season belongs to someone other than the record holder (${athDiff.length})</summary>
+    <div class="tablewrap">${head}${athDiff.map(row).join("")}</tbody></table></div></details>`;
+  const k = A.checks;
+  document.getElementById("goatnotes").innerHTML = `<p>Beamon's jump came at 2,240 m altitude with a +2.0 m/s tailwind. Take away the largest published estimate of that help, 31 cm, and 8.59 m still stands ${k.beamon_minus_31cm.z.toFixed(1)} standard deviations above his era, which would place it about 20th here.</p>
+    <p>Florence Griffith Joyner is ranked on her uncontested 10.61 (1988). Her official world record, 10.49, would score ${k.fgj_official_1049.z.toFixed(1)} and rank third; its wind reading has been questioned (see the context section below).</p>
+    <p>Some famous seasons score lower than their reputation. Babe Ruth's 54 home runs in 1920 score ${k.ruth_1920.z.toFixed(1)}, because the rest of the league caught up within two seasons. Usain Bolt's 9.58 scores ${k.bolt_958.z.toFixed(1)}, because Tyson Gay and Yohan Blake ran 9.69 in the same era.</p>
+    <p>The measure rewards dominance over one's own contemporaries. It cannot say whether an era was strong or weak, and young events, such as the women's triple jump (Olympic since 1996), have shorter histories to compare against.</p>`;
+}
+
+function drawAll() { cards(); goat(); kinds(); score(); slope(); depth(); heat(); ljChart(); }
 ljFacts();
 drawAll();
 let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawAll, 150); });

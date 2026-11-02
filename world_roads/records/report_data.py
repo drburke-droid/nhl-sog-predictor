@@ -32,6 +32,15 @@ def num(x):
 def main():
     perfs, wind = deep.load_lists()
     S = list(csv.DictReader(open(os.path.join(TABLES, "deep_summary.csv"))))
+    # one set of "today" return periods for the whole page: bigfour.py's (all-time lists plus World
+    # Athletics' season lists below their cut-offs)
+    allp = os.path.join(TABLES, "allsports.json")
+    if os.path.exists(allp):
+        T = {c["id"]: c["today_T"] for c in json.load(open(allp))["categories"]}
+        for s in S:
+            k = f"ath_{s['sex']}_{s['event']}"
+            if k in T and T[k]:
+                s["return_seasons"] = str(T[k])
     seasons = list(csv.DictReader(open(os.path.join(TABLES, "seasons.csv"))))
     score = []
     for s in S:
@@ -113,6 +122,9 @@ def main():
     json.dump(out, open(os.path.join(TABLES, "deep_report.json"), "w"), indent=1, default=str)
     # the page: report_page.html with the data written in
     page = open(os.path.join(HERE, "report_page.html"), encoding="utf-8").read()
+    allp = os.path.join(TABLES, "allsports.json")
+    if os.path.exists(allp):                                 # built by bigfour.py
+        out["all"] = json.load(open(allp))
     page = page.replace("/*__DATA__*/null", json.dumps(out, default=str, separators=(",", ":")))
     open(os.path.join(HERE, "report.html"), "w", encoding="utf-8").write(page)
     from collections import Counter
