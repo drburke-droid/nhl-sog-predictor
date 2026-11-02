@@ -112,50 +112,6 @@
   },
   {
    "sex": "M",
-   "event": "5000m",
-   "name": "5000 metres",
-   "short": "5000 m",
-   "field": false,
-   "record": "12:35.36",
-   "record_by": "Joshua Cheptegei",
-   "record_year": 2020,
-   "premium_now": 0.01274138386851642,
-   "premium_then": 0.024813817315422204,
-   "return_seasons": 17.551825198280213,
-   "group": "within reach",
-   "second": "12:36.73",
-   "second_by": "Hagos Gebrhiwet",
-   "second_year": 2024,
-   "best_now": "12:35.36",
-   "best_now_by": "Joshua Cheptegei",
-   "best_now_year": 2020,
-   "depth_peak": "2022\u20132026",
-   "last_near_year": 2024
-  },
-  {
-   "sex": "M",
-   "event": "10000m",
-   "name": "10,000 metres",
-   "short": "10,000 m",
-   "field": false,
-   "record": "26:11.00",
-   "record_by": "Joshua Cheptegei",
-   "record_year": 2020,
-   "premium_now": 0.022334049426661284,
-   "premium_then": 0.02502202581858537,
-   "return_seasons": 44.064757459408035,
-   "group": "lone outlier",
-   "second": "26:17.53",
-   "second_by": "Kenenisa Bekele",
-   "second_year": 2005,
-   "best_now": "26:11.00",
-   "best_now_by": "Joshua Cheptegei",
-   "best_now_year": 2020,
-   "depth_peak": "2021\u20132025",
-   "last_near_year": 2020
-  },
-  {
-   "sex": "M",
    "event": "110mH",
    "name": "110 m hurdles",
    "short": "110 m H",
@@ -483,50 +439,6 @@
    "best_now_year": 2025,
    "depth_peak": "2022\u20132026",
    "last_near_year": 2025
-  },
-  {
-   "sex": "W",
-   "event": "5000m",
-   "name": "5000 metres",
-   "short": "5000 m",
-   "field": false,
-   "record": "13:58.06",
-   "record_by": "Beatrice Chebet",
-   "record_year": 2025,
-   "premium_now": 0.01800583028128644,
-   "premium_then": 0.01573453465336705,
-   "return_seasons": 18.040030067735067,
-   "group": "within reach",
-   "second": "14:00.21",
-   "second_by": "Gudaf Tsegay",
-   "second_year": 2023,
-   "best_now": "13:58.06",
-   "best_now_by": "Beatrice Chebet",
-   "best_now_year": 2025,
-   "depth_peak": "2022\u20132026",
-   "last_near_year": 2025
-  },
-  {
-   "sex": "W",
-   "event": "10000m",
-   "name": "10,000 metres",
-   "short": "10,000 m",
-   "field": false,
-   "record": "28:54.14",
-   "record_by": "Beatrice Chebet",
-   "record_year": 2024,
-   "premium_now": 0.045546719152323334,
-   "premium_then": 0.0225202172305774,
-   "return_seasons": 19.770219998724958,
-   "group": "within reach",
-   "second": "29:01.03",
-   "second_by": "Letesenbet Gidey",
-   "second_year": 2021,
-   "best_now": "28:54.14",
-   "best_now_by": "Beatrice Chebet",
-   "best_now_year": 2024,
-   "depth_peak": "2021\u20132025",
-   "last_near_year": 2024
   },
   {
    "sex": "W",
@@ -2737,36 +2649,6 @@
   },
   {
    "sex": "M",
-   "event": "5000m",
-   "short": "5000 m",
-   "n": 100,
-   "decades": [
-    0,
-    0,
-    0,
-    10,
-    30,
-    17,
-    43
-   ]
-  },
-  {
-   "sex": "M",
-   "event": "10000m",
-   "short": "10,000 m",
-   "n": 100,
-   "decades": [
-    0,
-    0,
-    0,
-    8,
-    23,
-    32,
-    37
-   ]
-  },
-  {
-   "sex": "M",
    "event": "110mH",
    "short": "110 m H",
    "n": 100,
@@ -2988,36 +2870,6 @@
     11,
     10,
     41
-   ]
-  },
-  {
-   "sex": "W",
-   "event": "5000m",
-   "short": "5000 m",
-   "n": 100,
-   "decades": [
-    0,
-    0,
-    0,
-    6,
-    16,
-    19,
-    59
-   ]
-  },
-  {
-   "sex": "W",
-   "event": "10000m",
-   "short": "10,000 m",
-   "n": 100,
-   "decades": [
-    0,
-    0,
-    1,
-    5,
-    29,
-    16,
-    49
    ]
   },
   {

@@ -1,0 +1,201 @@
+rank,athlete,sport,season,category,value,z,once_in_seasons,seasons_compared,rank_window_7,rank_window_10,rank_window_20,also_led
+1,Wilt Chamberlain,NBA,1961–62,Points per game,50.4,7.731,42727,31,4,4,1,Rebounds per game 25.6
+2,Wayne Gretzky,NHL,1985–86,Assists in a season,163,7.5,31764,30,3,2,3,Points in a season 215
+3,Joe DiMaggio,MLB,1941,Hitting streak,56,7.197,21286,31,7,6,2,Runs batted in 125
+4,Ichiro Suzuki,MLB,2004,Hits in a season,262,5.175,1529,30,17,12,7,Batting average .372
+5,Wilt Chamberlain,NBA,1962–63,Points per game,44.8,5.144,1462,31,23,10,4,Rebounds per game 24.3
+6,Bob Beamon,Athletics,1968,Men's long jump,8.90 m,5.017,1291,23,2,1,5,
+7,Jan Železný,Athletics,1996,Men's javelin,98.48 m,4.985,1216,26,11,13,8,
+8,Wayne Gretzky,NHL,1984–85,Assists in a season,135,4.844,993,30,27,11,14,Points in a season 208; Goals in a season 73
+9,Bob Feller,MLB,1946,Strikeouts by a pitcher,348,4.712,833,31,24,28,23,Wins by a pitcher 26
+10,Dennis Rodman,NBA,1991–92,Rebounds per game,18.7,4.496,628,31,15,9,71,
+11,Katie Ledecky,Swimming,2016,Women's 800 m freestyle,8:04.79,4.473,706,26,10,37,10,Women's 400 m freestyle 3:56.46; Women's 200 m freestyle 1:53.73
+12,Pete Rose,MLB,1978,Hitting streak,44,4.456,597,31,13,41,6,
+13,Yulimar Rojas,Athletics,2022,Women's triple jump,15.74 m,4.363,560,20,36,27,9,
+14,Dan Marino,NFL,1984,Touchdown passes in a season,48,4.345,518,30,5,7,40,"Passing yards in a season 5,084"
+15,Léon Marchand,Swimming,2025,Men's 200 m individual medley,1:52.69,4.338,558,17,12,24,36,Men's 400 m individual medley 4:04.73
+16,Maury Wills,MLB,1962,Stolen bases in a season,104,4.336,510,31,20,8,84,
+17,Dan Marino,NFL,1986,Touchdown passes in a season,44,4.207,433,30,37,55,129,"Passing yards in a season 4,746"
+18,Usain Bolt,Athletics,2009,Men's 100 metres,9.58,4.173,412,31,121,57,11,Men's 200 metres 19.19
+19,Gretchen Walsh,Swimming,2026,Women's 100 m butterfly,54.33,4.166,450,16,1,3,107,
+20,Stephen Curry,NBA,2015–16,Three-pointers made,402,4.088,380,24,58,49,17,Points per game 30.1
+21,Johannes Vetter,Athletics,2020,Men's javelin,97.76 m,4.087,384,22,90,52,16,
+22,Wu Yanyan,Swimming,1997,Women's 200 m individual medley,2:09.72,4.049,440,19,88,35,12,
+23,Dennis Rodman,NBA,1992–93,Rebounds per game,18.3,4.032,343,31,26,18,62,
+24,Summer McIntosh,Swimming,2025,Women's 400 m individual medley,4:23.65,4.031,372,17,30,22,74,Women's 200 m individual medley 2:05.70; Women's 400 m freestyle 3:54.18
+25,Wayne Gretzky,NHL,1981–82,Points in a season,212,3.995,328,30,53,33,19,Assists in a season 120; Goals in a season 92
+26,Yulimar Rojas,Athletics,2021,Women's triple jump,15.67 m,3.988,339,21,79,36,13,
+27,Denny McLain,MLB,1968,Wins by a pitcher,31,3.971,318,30,68,43,25,
+28,Alexander Popov,Swimming,2000,Men's 50 m freestyle,21.64,3.928,356,22,40,72,77,
+29,Katie Ledecky,Swimming,2018,Women's 1500 m freestyle,15:20.48,3.889,333,23,63,30,15,Women's 800 m freestyle 8:07.27; Women's 400 m freestyle 3:57.94
+30,Renaldo Nehemiah,Athletics,1981,Men's 110 m hurdles,12.93,3.836,267,30,83,83,24,
+31,Yaroslava Mahuchikh,Athletics,2024,Women's high jump,2.10 m,3.83,282,18,6,63,20,
+32,Ross Barnes,MLB,1876,Hits in a season,138,3.808,280,16,54,21,90,Batting average .429
+33,Ed Williamson,MLB,1884,Home runs in a season,27,3.798,260,24,100,54,21,
+34,Babe Ruth,MLB,1921,Home runs in a season,59,3.784,249,30,86,67,33,Runs batted in 168; Hitting streak 26
+35,Michael Jordan,NBA,1986–87,Points per game,37.1,3.782,248,31,28,20,85,
+36,Sid Luckman,NFL,1943,Touchdown passes in a season,28,3.77,247,27,87,45,18,"Passing yards in a season 2,194"
+37,Florence Griffith Joyner,Athletics,1988,Women's 100 metres,10.61,3.736,235,29,25,16,30,Women's 200 metres 21.34
+38,Inge de Bruijn,Swimming,2000,Women's 100 m butterfly,56.61,3.723,270,22,80,64,22,Women's 50 m freestyle 24.13; Women's 100 m freestyle 53.77
+39,Kate Douglass,Swimming,2026,Women's 50 m freestyle,23.19,3.69,239,16,130,59,149,
+40,Léon Marchand,Swimming,2023,Men's 400 m individual medley,4:02.50,3.688,269,19,52,29,34,
+41,Anita Wlodarczyk,Athletics,2016,Women's hammer,82.98 m,3.687,223,26,77,58,50,
+42,Wayne Gretzky,NHL,1983–84,Points in a season,205,3.686,219,30,109,71,32,Assists in a season 118; Goals in a season 87
+43,Randy Johnson,MLB,2001,Strikeouts by a pitcher,372,3.678,217,30,59,61,28,Earned run average 2.49
+44,Wayne Gretzky,NHL,1986–87,Assists in a season,121,3.613,199,30,108,65,76,Points in a season 183; Goals in a season 62
+45,Jani Sievinen,Swimming,1994,Men's 200 m individual medley,1:58.16,3.608,257,16,62,130,75,
+46,Adam Peaty,Swimming,2016,Men's 100 m breaststroke,57.13,3.6,220,26,129,82,43,
+47,Randy Johnson,MLB,1999,Strikeouts by a pitcher,364,3.6,196,30,165,100,56,
+48,Summer McIntosh,Swimming,2024,Women's 400 m individual medley,4:24.38,3.597,242,18,42,42,105,Women's 200 m individual medley 2:06.56
+49,Katie Ledecky,Swimming,2015,Women's 1500 m freestyle,15:25.48,3.59,221,24,34,66,27,Women's 800 m freestyle 8:07.39; Women's 400 m freestyle 3:59.13
+50,Jan Železný,Athletics,1993,Men's javelin,95.66 m,3.58,196,23,31,25,49,
+51,Léon Marchand,Swimming,2024,Men's 400 m individual medley,4:02.95,3.569,233,18,81,56,82,Men's 200 m individual medley 1:54.06
+52,Maurice Richard,NHL,1944–45,Goals in a season,50,3.528,178,31,49,34,160,
+53,Sergey Bubka,Athletics,1993,Men's pole vault,6.15 m,3.521,177,30,14,19,31,
+54,Brian Oldfield,Athletics,1975,Men's shot put,22.86 m,3.501,175,25,45,31,188,
+55,Adam Peaty,Swimming,2019,Men's 100 m breaststroke,56.88,3.499,198,23,147,91,38,
+56,Wayne Gretzky,NHL,1990–91,Assists in a season,122,3.491,171,29,143,68,26,Points in a season 163
+57,Sandy Koufax,MLB,1965,Strikeouts by a pitcher,382,3.472,166,31,41,119,138,Wins by a pitcher 26; Earned run average 2.04
+58,Anita Wlodarczyk,Athletics,2017,Women's hammer,82.87 m,3.452,164,25,102,69,29,
+59,Sergey Bubka,Athletics,1994,Men's pole vault,6.14 m,3.444,160,30,22,17,61,
+60,Wayne Gretzky,NHL,1982–83,Assists in a season,125,3.433,158,30,57,23,46,Points in a season 196; Goals in a season 71
+61,Wilt Chamberlain,NBA,1960–61,Points per game,38.4,3.432,158,30,110,93,48,Rebounds per game 27.2
+62,Dennis Rodman,NBA,1994–95,Rebounds per game,16.8,3.412,153,31,71,73,176,
+63,Sam Thompson,MLB,1887,Runs batted in,166,3.412,155,27,209,96,54,Hits in a season 203; Batting average .372
+64,Jonathan Edwards,Athletics,1995,Men's triple jump,18.29 m,3.4,151,31,94,60,67,
+65,Sergey Bubka,Athletics,1991,Men's pole vault,6.12 m,3.369,146,29,19,32,45,
+66,Katinka Hosszú,Swimming,2015,Women's 200 m individual medley,2:06.12,3.347,156,27,169,111,179,Women's 400 m individual medley 4:30.39
+67,Ty Cobb,MLB,1915,Stolen bases in a season,96,3.329,138,30,203,113,35,Batting average .369; Hits in a season 208
+68,Sebastian Coe,Athletics,1981,Men's 800 metres,1:41.73,3.319,136,31,235,116,64,
+69,Stefka Kostadinova,Athletics,1987,Women's high jump,2.09 m,3.314,137,25,233,124,39,
+70,Babe Ruth,MLB,1920,Home runs in a season,54,3.31,134,30,136,99,80,Runs batted in 135
+71,Ted Williams,MLB,1941,Batting average,.406,3.3,132,31,173,95,131,Home runs in a season 37
+72,Elmer Lach,NHL,1944–45,Assists in a season,54,3.295,132,31,239,132,70,Points in a season 80
+73,Bob Gibson,MLB,1968,Earned run average,1.12,3.284,130,31,138,105,59,
+74,Katie Ledecky,Swimming,2014,Women's 1500 m freestyle,15:28.36,3.266,143,24,139,104,51,Women's 800 m freestyle 8:11.00; Women's 400 m freestyle 3:58.37
+75,Wilt Chamberlain,NBA,1959–60,Points per game,37.6,3.262,127,29,60,126,72,Rebounds per game 27.0
+76,Nolan Ryan,MLB,1973,Strikeouts by a pitcher,383,3.259,126,30,74,136,66,
+77,Sergey Bubka,Athletics,1992,Men's pole vault,6.13 m,3.256,126,29,21,40,53,
+78,Lee Evans,Athletics,1968,Men's 400 metres,43.86,3.246,129,20,204,117,88,
+79,Rickey Henderson,MLB,1982,Stolen bases in a season,130,3.227,121,29,144,149,73,
+80,Willie Keeler,MLB,1897,Hitting streak,44,3.219,128,16,32,51,37,Hits in a season 239; Batting average .424
+81,Bob Welch,MLB,1990,Wins by a pitcher,27,3.211,119,29,159,118,81,
+82,Dennis Rodman,NBA,1993–94,Rebounds per game,17.3,3.188,115,31,56,39,125,
+83,Renaldo Nehemiah,Athletics,1979,Men's 110 m hurdles,13.00,3.176,114,28,142,135,42,
+84,Calvin Johnson,NFL,2012,Receiving yards in a season,"1,964",3.141,108,29,101,147,94,
+85,Gabriele Reinsch,Athletics,1988,Women's discus,76.80 m,3.131,106,31,200,144,63,
+86,João Carlos de Oliveira,Athletics,1975,Men's triple jump,17.89 m,3.114,109,19,33,112,79,
+87,Maury Wills,MLB,1965,Stolen bases in a season,94,3.099,102,31,75,157,159,
+88,Johannes Vetter,Athletics,2021,Men's javelin,96.29 m,3.094,105,21,223,160,78,
+89,Armand Duplantis,Athletics,2026,Men's pole vault,6.31 m,3.09,107,17,232,155,44,
+90,Peyton Manning,NFL,2013,Touchdown passes in a season,55,3.066,98,28,293,164,58,"Passing yards in a season 5,477"
+91,Usain Bolt,Athletics,2012,Men's 100 metres,9.63,3.057,97,30,126,195,57,Men's 200 metres 19.32
+92,Inessa Kravets,Athletics,1995,Women's triple jump,15.50 m,3.053,99,22,158,122,173,
+93,Sam Thompson,MLB,1895,Runs batted in,165,3.039,94,31,248,208,60,Home runs in a season 18
+94,George Sisler,MLB,1922,Hitting streak,41,3.033,94,31,76,47,270,Batting average .420
+95,Ted Williams,MLB,1957,Batting average,.388,3.031,93,31,82,86,163,
+96,Javier Sotomayor,Athletics,1993,Men's high jump,2.45 m,3.029,93,31,61,26,65,
+97,Yan Ziyi,Athletics,2026,Women's javelin,71.74 m,3.025,99,16,277,171,140,
+98,Armand Duplantis,Athletics,2025,Men's pole vault,6.30 m,3.024,98,18,267,154,52,
+99,Auston Matthews,NHL,2023–24,Goals in a season,69,3.022,100,15,213,120,167,
+100,Jim Brown,NFL,1958,Rushing yards in a season,"1,527",3.02,92,31,67,46,87,
+101,Sergey Bubka,Athletics,1985,Men's pole vault,6.00 m,3.018,94,23,216,115,194,
+102,Sergey Bubka,Athletics,1987,Men's pole vault,6.03 m,3.015,93,25,201,139,207,
+103,Jürgen Schult,Athletics,1986,Men's discus,74.08 m,3.011,91,31,39,38,68,
+104,Roger Maris,MLB,1961,Home runs in a season,61,2.998,89,31,85,98,171,
+105,Barry Bonds,MLB,2001,Home runs in a season,73,2.994,89,30,228,193,55,
+106,Sergey Bubka,Athletics,1988,Men's pole vault,6.06 m,2.975,88,26,148,88,120,
+107,Jerry Rice,NFL,1995,Receiving yards in a season,"1,848",2.972,87,30,172,153,100,
+108,Jim Hines,Athletics,1968,Men's 100 metres,9.95,2.965,97,12,,,41,
+109,Michael Johnson,Athletics,1999,Men's 400 metres,43.18,2.963,86,31,103,89,97,
+110,Yana Klochkova,Swimming,2000,Women's 400 m individual medley,4:33.59,2.961,97,22,123,79,267,Women's 200 m individual medley 2:10.68
+111,Jay Silvester,Athletics,1971,Men's discus,70.38 m,2.961,89,19,141,102,586,
+112,Sergey Bubka,Athletics,1986,Men's pole vault,6.01 m,2.954,86,24,254,137,211,
+113,Yelena Isinbayeva,Athletics,2005,Women's pole vault,5.01 m,2.934,84,25,105,151,115,
+114,Don Hutson,NFL,1942,Receiving yards in a season,"1,211",2.876,77,26,124,85,89,
+115,Marita Koch,Athletics,1985,Women's 400 metres,47.60,2.865,76,27,285,172,69,Women's 200 metres 21.78
+116,Qu Yunxia,Athletics,1993,Women's 1500 metres,3:50.46,2.863,75,31,310,169,118,
+117,Joe Malone,NHL,1917–18,Goals in a season,44,2.858,80,16,222,156,47,Points in a season 48
+118,Ichiro Suzuki,MLB,2007,Hits in a season,238,2.854,75,29,298,167,132,
+119,Allison Schmitt,Swimming,2012,Women's 200 m freestyle,1:53.61,2.834,78,30,208,158,195,
+120,Summer McIntosh,Swimming,2023,Women's 400 m individual medley,4:25.87,2.826,84,19,167,114,292,Women's 200 m individual medley 2:06.89
+121,Stefka Kostadinova,Athletics,1986,Women's high jump,2.08 m,2.818,72,24,313,189,93,
+122,Michael Johnson,Athletics,1996,Men's 200 metres,19.32,2.817,71,31,29,14,104,Men's 400 metres 43.44
+123,Jani Sievinen,Swimming,1995,Men's 200 m individual medley,1:58.61,2.81,84,17,112,240,256,Men's 400 m individual medley 4:14.75
+124,Randy Johnson,MLB,2000,Strikeouts by a pitcher,347,2.804,70,30,309,178,130,
+125,Kevin Young,Athletics,1992,Men's 400 m hurdles,46.78,2.785,68,31,176,150,244,
+126,George Case,MLB,1943,Stolen bases in a season,61,2.774,67,31,227,128,488,
+127,Jarmila Kratochvílová,Athletics,1983,Women's 800 metres,1:53.28,2.772,67,27,280,211,86,Women's 400 metres 47.99
+128,Yelena Isinbayeva,Athletics,2008,Women's pole vault,5.05 m,2.772,67,28,98,140,108,
+129,Mutaz Essa Barshim,Athletics,2014,Men's high jump,2.43 m,2.77,67,28,322,206,103,
+130,Rod Carew,MLB,1977,Batting average,.388,2.757,65,31,195,224,250,Hits in a season 239
+131,Ian Thorpe,Swimming,2001,Men's 400 m freestyle,3:40.17,2.753,73,23,134,94,128,Men's 200 m freestyle 1:44.06; Men's 800 m freestyle 7:39.16
+132,Ryan Crouser,Athletics,2023,Men's shot put,23.56 m,2.75,68,19,374,231,102,
+133,Hicham El Guerrouj,Athletics,1998,Men's 1500 metres,3:26.00,2.732,63,31,242,255,110,
+134,Nolan Ryan,MLB,1974,Strikeouts by a pitcher,367,2.724,63,30,113,218,126,
+135,Jiang Bo,Athletics,1997,Women's 1500 metres,3:50.98,2.72,62,31,393,256,206,
+136,Ian Thorpe,Swimming,2002,Men's 400 m freestyle,3:40.08,2.72,69,24,175,212,124,Men's 200 m freestyle 1:44.71
+137,Dennis Scott,NBA,1995–96,Three-pointers made,267,2.715,62,30,198,182,174,
+138,Yelena Isinbayeva,Athletics,2009,Women's pole vault,5.06 m,2.713,62,29,145,133,113,
+139,Jim Brown,NFL,1963,Rushing yards in a season,"1,863",2.712,62,31,72,146,91,
+140,Stephen Curry,NBA,2020–21,Three-pointers made,337,2.678,61,19,282,210,83,Points per game 32.0
+141,Drew Brees,NFL,2011,Passing yards in a season,"5,535",2.664,58,30,271,185,112,Touchdown passes in a season 46
+142,Old Hoss Radbourn,MLB,1884,Strikeouts by a pitcher,441,2.661,59,24,211,216,157,Wins by a pitcher 60; Earned run average 1.38
+143,Ichiro Suzuki,MLB,2001,Hits in a season,242,2.658,58,30,166,109,133,Stolen bases in a season 56
+144,Armand Duplantis,Athletics,2024,Men's pole vault,6.26 m,2.658,60,19,364,227,95,
+145,Mark McGwire,MLB,1998,Home runs in a season,70,2.64,56,30,456,265,96,
+146,Ian Crocker,Swimming,2005,Men's 100 m butterfly,50.40,2.639,61,27,146,75,109,
+147,Natalya Lisovskaya,Athletics,1988,Women's shot put,22.55 m,2.634,56,31,182,192,236,
+148,Nadezhda Olizarenko,Athletics,1980,Women's 800 metres,1:53.43,2.632,57,24,326,198,101,
+149,Sammy Baugh,NFL,1947,Passing yards in a season,"2,938",2.615,54,31,417,321,123,Touchdown passes in a season 25
+150,Michael Phelps,Swimming,2007,Men's 400 m individual medley,4:06.22,2.608,58,29,164,110,139,Men's 200 m individual medley 1:54.98; Men's 200 m freestyle 1:43.86; Men's 100 m butterfly 50.77; Men's 100 m freestyle 48.42
+151,Michael Jordan,NBA,1987–88,Points per game,35.0,2.606,54,31,66,84,245,
+152,Trevon Diggs,NFL,2021,Interceptions in a season,11,2.604,56,20,327,234,111,
+153,Ian Thorpe,Swimming,2000,Men's 400 m freestyle,3:40.59,2.588,59,22,276,202,154,
+154,Faina Melnik,Athletics,1973,Women's discus,69.48 m,2.584,55,17,119,80,1723,
+155,Grant Hackett,Swimming,2001,Men's 1500 m freestyle,14:34.56,2.58,58,22,197,237,98,
+156,Lester Hayes,NFL,1980,Interceptions in a season,13,2.574,52,30,431,304,150,
+157,Harry Reynolds,Athletics,1988,Men's 400 metres,43.29,2.571,51,31,43,48,144,
+158,Javier Sotomayor,Athletics,1989,Men's high jump,2.44 m,2.569,52,29,281,262,106,
+159,Sebastian Coe,Athletics,1979,Men's 800 metres,1:42.33,2.564,51,30,467,278,198,Men's 1500 metres 3:32.03
+160,Babe Ruth,MLB,1927,Home runs in a season,60,2.552,50,30,301,213,119,
+161,Federica Pellegrini,Swimming,2009,Women's 200 m freestyle,1:52.98,2.551,53,31,154,127,137,Women's 400 m freestyle 3:59.15
+162,Tatyana Kazankina,Athletics,1980,Women's 1500 metres,3:52.47,2.543,51,23,114,121,180,
+163,Natalya Lisovskaya,Athletics,1987,Women's shot put,22.63 m,2.537,49,31,187,123,215,
+164,Dennis Rodman,NBA,1996–97,Rebounds per game,16.1,2.535,49,31,290,165,316,
+165,Peyton Manning,NFL,2004,Touchdown passes in a season,49,2.53,49,31,339,243,254,
+166,Hugh Duffy,MLB,1894,Batting average,.440,2.53,49,31,297,275,191,Hits in a season 237; Home runs in a season 18
+167,Justin Verlander,MLB,2011,Wins by a pitcher,24,2.526,49,30,229,225,141,Strikeouts by a pitcher 250
+168,Kobe Bryant,NBA,2005–06,Points per game,35.4,2.525,49,31,128,76,359,
+169,Charley Hennigan,NFL,1961,Receiving yards in a season,"1,746",2.524,48,31,306,343,136,
+170,Wayne Gretzky,NHL,1987–88,Assists in a season,109,2.521,48,30,414,300,251,
+171,Sydney McLaughlin-Levrone,Athletics,2024,Women's 400 m hurdles,50.37,2.514,50,18,432,266,92,
+172,DJ LeMahieu,MLB,2020,Batting average,.364,2.512,49,22,174,138,145,
+173,Yulimar Rojas,Athletics,2020,Women's triple jump,15.43 m,2.511,49,22,291,222,146,
+174,Tony Gwynn,MLB,1994,Batting average,.394,2.51,48,31,202,145,161,
+175,Yuriy Sedykh,Athletics,1986,Men's hammer,86.74 m,2.508,48,23,369,267,122,
+176,Peter Snell,Athletics,1962,Men's 800 metres,1:44.30,2.503,50,16,,217,543,
+177,Le Jingyi,Swimming,1994,Women's 100 m freestyle,54.01,2.492,56,16,321,248,121,Women's 50 m freestyle 24.51
+178,Paul Molitor,MLB,1987,Hitting streak,39,2.491,46,31,65,239,169,
+179,Elroy Hirsch,NFL,1951,Receiving yards in a season,"1,495",2.484,46,31,153,303,186,
+180,O.J. Simpson,NFL,1973,Rushing yards in a season,"2,003",2.484,46,30,89,199,99,
+181,Gretchen Walsh,Swimming,2025,Women's 100 m butterfly,54.60,2.482,48,17,9,5,225,Women's 50 m freestyle 23.91
+182,Edwin Moses,Athletics,1980,Men's 400 m hurdles,47.13,2.482,47,25,38,141,182,
+183,Bob Feller,MLB,1940,Strikeouts by a pitcher,261,2.474,45,31,385,253,289,Wins by a pitcher 27
+184,Rogers Hornsby,MLB,1924,Batting average,.424,2.47,45,31,262,221,204,Hits in a season 227
+185,Andre Drummond,NBA,2017–18,Rebounds per game,16.0,2.469,46,24,328,200,151,
+186,Yordanka Donkova,Athletics,1988,Women's 100 m hurdles,12.21,2.457,45,29,441,274,117,
+187,Michael Johnson,Athletics,1995,Men's 400 metres,43.39,2.452,44,31,269,219,142,Men's 200 metres 19.79
+188,David Rudisha,Athletics,2012,Men's 800 metres,1:40.91,2.442,44,30,78,81,156,
+189,Connor McDavid,NHL,2022–23,Points in a season,153,2.441,46,16,294,223,164,Goals in a season 64; Assists in a season 89
+190,Anita Wlodarczyk,Athletics,2015,Women's hammer,81.08 m,2.434,43,27,224,220,327,
+191,Christian Taylor,Athletics,2015,Men's triple jump,18.21 m,2.43,43,27,342,233,389,
+192,Brian Taylor,NBA,1979–80,Three-pointers made,90,2.429,45,16,186,337,687,
+193,Wilson Kipketer,Athletics,1997,Men's 800 metres,1:41.11,2.428,43,31,16,15,193,
+194,Penny Heyns,Swimming,1996,Women's 100 m breaststroke,1:07.02,2.417,49,18,425,313,385,
+195,Brooke Bennett,Swimming,2000,Women's 800 m freestyle,8:19.67,2.415,47,22,245,196,335,Women's 400 m freestyle 4:05.80
+196,Andy Phillip,NBA,1951–52,Assists per game,8.2,2.411,43,21,381,269,621,
+197,Wilt Chamberlain,NBA,1963–64,Points per game,36.9,2.41,42,31,323,235,143,
+198,Katinka Hosszú,Swimming,2016,Women's 200 m individual medley,2:06.58,2.405,45,26,261,318,226,Women's 400 m individual medley 4:26.36; Women's 100 m backstroke 58.45
+199,Ronald Acuña Jr.,MLB,2023,Stolen bases in a season,73,2.401,43,18,439,312,148,Hits in a season 217
+200,John Stockton,NBA,1989–90,Assists per game,14.5,2.396,41,31,177,215,127,

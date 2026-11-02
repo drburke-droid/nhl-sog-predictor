@@ -196,6 +196,7 @@ ol.timeline li span { font-family: var(--mono); font-size: 13px; color: var(--mu
     <div class="prose">
       <h2 id="recgreat" class="big">The record is not always the greatest season</h2>
       <p>In many categories the most extraordinary season, judged against its own time, is not the one that holds the record.</p>
+      <p>A few entries reflect quirks the measure cannot see. Ed Williamson's 27 home runs in 1884 came in the one season when Chicago's Lake Front Park, with fences under 200 feet down the lines, counted balls hit over them as home runs rather than doubles; nearly all of his came at home. The earliest seasons of each league are also measured against later seasons only.</p>
     </div>
     <div class="tablewrap" id="recvsgreat"></div>
   </section>
@@ -839,12 +840,14 @@ function goat() {
   const swing = rows.filter(r => worst(r).rank > 20)
     .map(r => { const m = worst(r); return `${r.name} (${isFinite(m.rank) ? ord(m.rank) : "unranked"} at ±${m.w})`; });
   const andList = a => a.length === 1 ? a[0] : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+  const CLOSE = 0.15, close = uniq.slice(10).filter(r => rows[9].z - r.z <= CLOSE);
   document.getElementById("robustlead").textContent =
     `The window is a choice, so we ranked every season again with ${andList(A.alt_windows.map(String))} seasons either side. ` +
     (stable.length ? `${andList(stable)} ${stable.length === 1 ? "stays" : "stay"} in the top ten under every window. ` : "") +
     (swing.length ? `Others depend more on the window: ${andList(swing)}. ` : "") +
     (lead >= 2 ? `So the top ${lead === 2 ? "two" : lead === 3 ? "three" : lead === 4 ? "four" : lead === 5 ? "five" : lead} hold however the era is drawn; read the order below that as approximate.`
                : `So read the order as approximate: the size of the gaps matters more than the exact ranks.`) +
+    (close.length ? ` Tenth place is close: ${andList(close.map(r => `${r.name} (${r.z.toFixed(2)})`))} ${close.length === 1 ? "sits" : "sit"} within ${CLOSE} standard deviations of ${rows[9].name}'s ${rows[9].z.toFixed(2)}.` : "") +
     (rep10.length ? ` Counting every season rather than one per athlete, ${rep10.map(r => r.name + "'s " + r.season).join(" and ")} would also make the top ten.` : "");
   document.getElementById("robust").innerHTML = `<table><thead><tr><th>Season</th>${ws.map(w => `<th class="num">±${w}</th>`).join("")}</tr></thead><tbody>` +
     rows.map(r => `<tr><td>${r.name}, ${r.season}</td>${ws.map(w => `<td class="num"${w === A.window ? ' style="color:var(--ink)"' : ""}>${ord(rk(r, w))}</td>`).join("")}</tr>`).join("") +
@@ -869,6 +872,7 @@ function goat() {
   const k = A.checks;
   document.getElementById("goatnotes").innerHTML = `<p>Beamon's jump came at 2,240 m altitude with a +2.0 m/s tailwind. Take away the largest published estimate of that help, 31 cm, and 8.59 m stands ${k.beamon_minus_31cm.z.toFixed(1)} standard deviations above his era, about ${ord(k.beamon_minus_31cm.rank)} among all seasons.</p>
     <p>Florence Griffith Joyner is ranked on her uncontested 10.61 (1988). Her official world record, 10.49, would score ${k.fgj_official_1049.z.toFixed(1)} (about ${ord(k.fgj_official_1049.rank)}); its wind reading has been questioned (see the context section below).</p>
+    <p>Don Hutson's 1,211 receiving yards in 1942 more than doubled anyone else's that season (Ray McLean's 571), yet score ${k.hutson_1942.z.toFixed(1)} (about ${ord(k.hutson_1942.rank)}). Passing was about to take over the game: Jim Benton gained 1,067 yards in 1945, and a receiver passed 1,000 in seven of the twelve seasons from 1946. Against that rising line Hutson's season looks less alone than it did at the time.</p>
     <p>Babe Ruth's 54 home runs in 1920 score ${k.ruth_1920.z.toFixed(1)} (about ${ord(k.ruth_1920.rank)}): within a decade, others hit 50 or more. The measure rewards dominance over one's own contemporaries. It cannot say whether an era was strong or weak, and it cannot credit the athlete who changed how a sport was played once others copied him. Seasons near either end of a sport's data, such as the last few years in swimming, are measured against one side only, which is why their ranks move most with the window.</p>`;
 }
 

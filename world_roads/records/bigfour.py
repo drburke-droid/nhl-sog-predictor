@@ -810,7 +810,8 @@ def z_for(cat, year, value, name, window=None):
 CHECKS = [("beamon_minus_31cm", "ath_M_LJ", 1968, 8.59, "Bob Beamon"),
           ("fgj_official_1049", "ath_W_100m", 1988, 10.49, "Florence Griffith-Joyner"),
           ("bolt_958", "ath_M_100m", 2009, 9.58, "Usain Bolt"),
-          ("ruth_1920", "mlb_hr", 1920, 54, "Babe Ruth")]
+          ("ruth_1920", "mlb_hr", 1920, 54, "Babe Ruth"),
+          ("hutson_1942", "nfl_rec_yds", 1942, 1211, "Don Hutson")]
 
 
 PHRASE = {"mlb_streak": "{v}-game hitting streak", "mlb_hr": "{v} home runs", "mlb_ba": "{v} batting average",
