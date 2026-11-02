@@ -42,8 +42,8 @@ is `report.html`, built from `report_page.html` by `report_data.py`.
 
 The page opens with **the ten greatest seasons** in athletics, swimming, baseball, basketball, hockey and
 football, each measured against its own era: everyone else's season bests in the 15 seasons before and after
-it, the trend line through them, and how far above that line the season stood (in standard deviations, and
-as "once in N seasons"). It then charts every record (30 athletics events, 22 swimming events, 22 league
+it, the trend line through them (in swimming with its own level for the 2008–09 suit seasons), and how far
+above that line the season stood (in standard deviations, and as "once in N seasons"). It then charts every record (30 athletics events, 22 swimming events, 22 league
 records) against the middle of each season's top ten, with how often today's best would match it.
 
 | File | What it does |

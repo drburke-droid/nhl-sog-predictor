@@ -16,7 +16,8 @@ leagues: the season's leaders), plus the record line. Then, for every category:
                 (strikes, lockouts, the pandemic) are left out;
 * era-adjusted  for every season-leading performance in history: everyone else's season bests in each of
                 the WINDOW seasons before and after it (the performer's own seasons left out, counting
-                stats scaled to the performance's own schedule), a straight trend line through them, and
+                stats scaled to the performance's own schedule), a straight trend line through them (in
+                swimming with its own level for the 2008–09 suit seasons, SHIFTS), and
                 the performance's distance above that trend at its own season, in standard deviations of
                 the scatter around the line (z), with a Gumbel return period fitted to the same scatter
                 (T). It answers: in its own era, how often would anyone else have done this?
@@ -43,7 +44,7 @@ ALT_WINDOWS = (7, 10, 20)                       # robustness: the same ranking a
 def norm(name):
     s = unicodedata.normalize("NFKD", name)
     s = "".join(c for c in s if not unicodedata.combining(c))
-    return re.sub(r"[^a-z ]", "", s.lower()).strip()
+    return " ".join(re.sub(r"[^a-z ]", "", s.lower()).split())
 
 
 def titlecase_wa(name):
@@ -132,6 +133,26 @@ MEDIAN_SKIP = {"Athletics": {2020}, "Swimming": {2020}}
 NICHE = {"5000m", "10000m"}
 DISPLAY = {"Florence Griffith-Joyner": "Florence Griffith Joyner", "Jan Zelezný": "Jan Železný",
            "Yuriy Syedikh": "Yuriy Sedykh"}
+HOLDERS = {}                       # swimming record holders by norm(name), filled in main()
+
+
+@functools.lru_cache(maxsize=None)
+def disp(name, sport=""):
+    """the name to show: swimmers as the record lists spell them (World Aquatics' "Leon Marchand" and
+    "Cesar Cielo Filho" are the record lists' "Léon Marchand" and "César Cielo")"""
+    if name in DISPLAY:
+        return DISPLAY[name]
+    if sport != "Swimming":
+        return name
+    k = norm(name)
+    if k in HOLDERS:
+        return HOLDERS[k]
+    t = set(k.split())
+    for hk, hn in HOLDERS.items():
+        ht = set(hk.split())
+        if len(ht) >= 2 and ht <= t:
+            return hn
+    return name
 
 
 # ------------------------------------------------------------------ league parsers
@@ -466,8 +487,9 @@ FAMILY_FIRST = {"CHN", "KOR", "PRK"}
 def swim_name(r):
     if r.get("participantCountryCode") in FAMILY_FIRST:
         return f"{(r.get('lastName') or '').title()} {(r.get('firstName') or '').strip()}".strip()
-    last = " ".join(w.capitalize() if w.isupper() else w for w in re.split(r"(?<=[ -])", (r.get("lastName") or "").strip()))
-    last = re.sub(r"(?<=Mc)([a-z])", lambda m: m.group(1).upper(), last.replace(" -", "-"))
+    last = "".join(w.capitalize() if w.isupper() and w.strip() not in ("II", "III", "IV") else w
+                   for w in re.split(r"(?<=[ -])", (r.get("lastName") or "").strip()))
+    last = re.sub(r"(?<=Mc)([a-z])", lambda m: m.group(1).upper(), re.sub(r"\s+", " ", last))
     return f"{(r.get('firstName') or '').strip()} {last}".strip()
 
 
@@ -697,18 +719,32 @@ def today_T(cat):
     return gumbel_T(lead, cat["perf"](rv_today)), rv_today, len(lead)
 
 
-def era_measure(pts, y, x):
+# swimming's full-body polyurethane suits (2008–09, banned from 2010): those seasons get their own level in
+# the trend, so a suit swim is measured against the rest of the field in suits
+SHIFTS = {"Swimming": {2008, 2009}}
+
+
+def era_measure(pts, y, x, shift=()):
     """pts: (season, performance) for everyone else's season bests in the window; x the performance in season
     y. The window can span a changing sport, so each is measured from the straight-line trend through
-    everyone else's bests: z is the distance above the trend in standard deviations of the scatter around it,
-    T the return period from a Gumbel fitted to that scatter."""
+    everyone else's bests (plus a level shift for the seasons in `shift`): z is the distance above the trend in
+    standard deviations of the scatter around it, T the return period from a Gumbel fitted to that scatter."""
     yrs, v = np.array([p[0] for p in pts], float), np.array([p[1] for p in pts], float)
-    a, b = np.polyfit(yrs - y, v, 1)
-    resid = v - (a * (yrs - y) + b)
-    sd = resid.std(ddof=2)
+    cols = [yrs - y, np.ones_like(yrs)]
+    d = np.isin(yrs, list(shift)).astype(float)
+    if shift and 0 < d.sum() and len(yrs) - d.sum() >= 8:
+        cols.append(d)
+    X = np.column_stack(cols)
+    coef = np.linalg.lstsq(X, v, rcond=None)[0]
+    resid = v - X @ coef
+    base = coef[1] + (coef[2] if len(coef) > 2 and y in shift else 0)
+    dof = len(v) - len(coef)
+    if dof < 2:
+        return None, None
+    sd = math.sqrt(float(resid @ resid) / dof)
     if sd <= 0:
         return None, None
-    return (x - b) / sd, gumbel_T(resid, x - b)
+    return (x - base) / sd, gumbel_T(resid, x - base)
 
 
 def era_adjusted(cat, window=None):
@@ -738,7 +774,7 @@ def era_adjusted(cat, window=None):
         # at least eight seasons with a real value: a window filled with cut-offs would look too narrow
         if real < 8:
             continue
-        z, T = era_measure(pts, y, cat["perf"](v))
+        z, T = era_measure(pts, y, cat["perf"](v), SHIFTS.get(cat["sport"], ()))
         if z is not None:
             out.append({"cat": cat["id"], "year": y, "name": name, "value": v, "T": T, "n": len(pts), "z": z})
     return out
@@ -767,7 +803,7 @@ def z_for(cat, year, value, name, window=None):
             pts.append((s, cat["perf"](scale(cat, o, s, tg) if tg else o)))
         elif cat["cutoff"] is not None:
             pts.append((s, cat["perf"](cat["cutoff"])))
-    z, T = era_measure(pts, year, cat["perf"](value))
+    z, T = era_measure(pts, year, cat["perf"](value), SHIFTS.get(cat["sport"], ()))
     return {"z": float(z), "T": T}
 
 
@@ -802,14 +838,14 @@ def athlete_seasons(era_all, by_cat):
     best = {}
     for e in era_all:
         c = by_cat[e["cat"]]
-        k = (c["sport"], norm(DISPLAY.get(e["name"], e["name"])), e["year"])
+        k = (c["sport"], norm(disp(e["name"], c["sport"])), e["year"])
         best.setdefault(k, []).append(e)
     out = []
     for k, es in best.items():
         es.sort(key=lambda e: -e["z"])
         top = es[0]
         c = by_cat[top["cat"]]
-        out.append({"sport": c["sport"], "name": DISPLAY.get(top["name"], top["name"]), "season": season_label(c, top["year"]),
+        out.append({"sport": c["sport"], "name": disp(top["name"], c["sport"]), "season": season_label(c, top["year"]),
                     "year": top["year"], "category": c["title"], "cat": c["id"], "value": fmt_val(c, top["value"]),
                     "phrase": phrase(c, fmt_val(c, top["value"])), "sex": c.get("sex", ""),
                     "z": top["z"], "T": top["T"], "n": top["n"],
@@ -823,6 +859,7 @@ def main():
     cats = categories()
     data, era_all = [], []
     by_cat = {c["id"]: c for c in cats}
+    HOLDERS.update({norm(nm): nm for c in cats if c["sport"] == "Swimming" for _, _, nm in c["record_line"]})
     for cat in cats:
         raw, sm = median_series(cat)
         T, rv_today, n = today_T(cat)
@@ -843,7 +880,7 @@ def main():
             "today_T": T, "today_n": n,
             "record_line": [[round(x, 3), v, nm] for x, v, nm in before[-1:] + [p for p in cat["record_line"] if p[0] >= x0 - 1]],
             "median": [[y, round(v, 4)] for y, v in sm],
-            "era_best": ({"season": season_label(cat, best["year"]), "name": DISPLAY.get(best["name"], best["name"]),
+            "era_best": ({"season": season_label(cat, best["year"]), "name": disp(best["name"], cat["sport"]),
                           "value": fmt_val(cat, best["value"]), "z": best["z"], "T": best["T"]} if best else None),
         })
         print(f"{cat['sport']:9} {cat['title'][:34]:34} record {fmt_val(cat, rv):>9} {rn[:22]:22} "
@@ -852,7 +889,7 @@ def main():
     for e in era_all:
         c = by_cat[e["cat"]]
         rows.append({"category": c["title"], "sport": c["sport"], "season": season_label(c, e["year"]),
-                     "name": DISPLAY.get(e["name"], e["name"]), "value": fmt_val(c, e["value"]), "T": e["T"], "z": e["z"], "n": e["n"],
+                     "name": disp(e["name"], c["sport"]), "value": fmt_val(c, e["value"]), "T": e["T"], "z": e["z"], "n": e["n"],
                      "cat": c["id"]})
     rows.sort(key=lambda r: -r["z"])
     with open(os.path.join(TABLES, "era_adjusted.csv"), "w", newline="") as f:
