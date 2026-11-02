@@ -209,7 +209,8 @@ def main():
     for k in res:
         for kk, v in res[k].items():
             disp.setdefault(kk, v)
-    order = sorted(keys, key=lambda k: -max((res[v][k]["z"] for v in res if k in res[v] and not v.endswith("_cal")), default=-9))
+    order = sorted(keys, key=lambda k: (-max((res[v][k]["z"] for v in res if k in res[v] and not v.endswith("_cal")), default=-9),
+                                        k[0], str(k[1]), k[2]))          # explicit tie-break: same order on every run
     cols = ["sport", "athlete", "season", "category", "value"]
     for key in res:
         cols += [f"{key}_z", f"{key}_rank_all", f"{key}_rank_page"]
