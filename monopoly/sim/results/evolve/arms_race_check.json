@@ -1,0 +1,14 @@
+{
+ "r2_spec": "name=r2;buy=brown+lightblue+pink+orange+red+yellow+darkblue+utilities;reserve=200;bid=2.0;setbid=1.0;blockbid=1.0;build=5;breserve=100;bpri=0;jail=2;m2b=1;stretch=1;sell=6.0;buyp=6.0;trade=shark",
+ "results": {
+  "r1 vs 3x r0": 0.754,
+  "r2 vs 3x r1": 0.33116,
+  "r0 vs 3x r2": 0.25906,
+  "r1 vs 3x r2": 0.65958,
+  "r0 vs 3x Yes-Man": 0.36714,
+  "r1 vs 3x Yes-Man": 0.24352,
+  "r2 vs 3x Yes-Man": 0.3603,
+  "Yes-Man vs 3x r1": 0.2112,
+  "Yes-Man vs 3x r2": 0.6096
+ }
+}

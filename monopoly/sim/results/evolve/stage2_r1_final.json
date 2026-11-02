@@ -1,0 +1,157 @@
+[
+ {
+  "fitness_200k": 0.758105,
+  "genome": {
+   "reserve": 0,
+   "bid": 1.0,
+   "setbid": 1.25,
+   "blockbid": 3.0,
+   "build": 4,
+   "breserve": 0,
+   "bpri": 0,
+   "jail": 1,
+   "m2b": 0,
+   "stretch": 1,
+   "sell": 6.0,
+   "buyp": 1.5,
+   "trade": "shark",
+   "buy": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "spec": "name=evolved;buy=brown+lightblue+pink+orange+red+yellow+green+darkblue+rr+utilities;reserve=0;bid=1.0;setbid=1.25;blockbid=3.0;build=4;breserve=0;bpri=0;jail=1;m2b=0;stretch=1;sell=6.0;buyp=1.5;trade=shark"
+ },
+ {
+  "fitness_200k": 0.758105,
+  "genome": {
+   "reserve": 0,
+   "bid": 1.0,
+   "setbid": 1.25,
+   "blockbid": 3.0,
+   "build": 4,
+   "breserve": 0,
+   "bpri": 0,
+   "jail": 1,
+   "m2b": 0,
+   "stretch": 1,
+   "sell": 6.0,
+   "buyp": 2.5,
+   "trade": "shark",
+   "buy": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "spec": "name=evolved;buy=brown+lightblue+pink+orange+red+yellow+green+darkblue+rr+utilities;reserve=0;bid=1.0;setbid=1.25;blockbid=3.0;build=4;breserve=0;bpri=0;jail=1;m2b=0;stretch=1;sell=6.0;buyp=2.5;trade=shark"
+ },
+ {
+  "fitness_200k": 0.756665,
+  "genome": {
+   "reserve": 0,
+   "bid": 1.0,
+   "setbid": 1.5,
+   "blockbid": 0.8,
+   "build": 5,
+   "breserve": 25,
+   "bpri": 0,
+   "jail": 1,
+   "m2b": 0,
+   "stretch": 1,
+   "sell": 4.0,
+   "buyp": 4.0,
+   "trade": "shark",
+   "buy": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "spec": "name=evolved;buy=brown+lightblue+pink+orange+red+yellow+green+darkblue+rr+utilities;reserve=0;bid=1.0;setbid=1.5;blockbid=0.8;build=5;breserve=25;bpri=0;jail=1;m2b=0;stretch=1;sell=4.0;buyp=4.0;trade=shark"
+ },
+ {
+  "fitness_200k": 0.75665,
+  "genome": {
+   "reserve": 0,
+   "bid": 1.0,
+   "setbid": 1.25,
+   "blockbid": 3.0,
+   "build": 4,
+   "breserve": 25,
+   "bpri": 0,
+   "jail": 1,
+   "m2b": 0,
+   "stretch": 1,
+   "sell": 4.0,
+   "buyp": 1.5,
+   "trade": "shark",
+   "buy": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "spec": "name=evolved;buy=brown+lightblue+pink+orange+red+yellow+green+darkblue+rr+utilities;reserve=0;bid=1.0;setbid=1.25;blockbid=3.0;build=4;breserve=25;bpri=0;jail=1;m2b=0;stretch=1;sell=4.0;buyp=1.5;trade=shark"
+ },
+ {
+  "fitness_200k": 0.75514,
+  "genome": {
+   "reserve": 0,
+   "bid": 1.0,
+   "setbid": 1.0,
+   "blockbid": 2.0,
+   "build": 4,
+   "breserve": 25,
+   "bpri": 0,
+   "jail": 1,
+   "m2b": 0,
+   "stretch": 1,
+   "sell": 6.0,
+   "buyp": 4.0,
+   "trade": "shark",
+   "buy": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true
+   ]
+  },
+  "spec": "name=evolved;buy=brown+lightblue+pink+orange+red+yellow+green+rr+utilities;reserve=0;bid=1.0;setbid=1.0;blockbid=2.0;build=4;breserve=25;bpri=0;jail=1;m2b=0;stretch=1;sell=6.0;buyp=4.0;trade=shark"
+ }
+]
