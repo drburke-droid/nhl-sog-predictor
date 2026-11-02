@@ -6,11 +6,16 @@
     python sports_fetch.py nflverse  # nflverse season stats (1999 on)
     python sports_fetch.py streaks   # Retrosheet game logs (Chadwick retrosplits) -> every player's longest
                                      # hitting streak in every season -> cache/streaks.csv
+    python sports_fetch.py nl_early  # National League leader and standings pages, 1876-1900
+    python sports_fetch.py pfa       # Pro Football Archives team pages, NFL 1932-98 and AFL 1960-69
+                                     # (every player's passing, rushing, receiving, interception and sack line)
+    python sports_fetch.py swim      # World Aquatics season rankings, 11 Olympic pool events a sex, 1994-2026
+    python sports_fetch.py swimwiki  # Wikipedia's swimming world-record progression pages
 
 Everything is cached under cache/ and never fetched twice. sports-reference sites allow about 20 requests a
 minute, so they are fetched one at a time with a 3.5 s pause.
 """
-import os, sys, csv, io, json, time, urllib.parse, urllib.request
+import os, sys, csv, io, json, time, urllib.error, urllib.parse, urllib.request
 from collections import defaultdict
 from fetch import get, UA, CACHE
 
@@ -55,7 +60,7 @@ def wa():
 
 
 # ------------------------------------------------------------------ sports-reference leader pages
-BREF_STATS = ["HR", "batting_avg", "H", "SB", "SO_p", "W", "earned_run_avg"]
+BREF_STATS = ["HR", "batting_avg", "H", "RBI", "SB", "SO_p", "W", "earned_run_avg"]
 
 
 def sref():
@@ -87,6 +92,17 @@ def sref_leagues():
                 print(lg, y, kind, len(txt), flush=True)
 
 
+def nl_early():
+    """the National League before the American League began (1876-1900): leader pages and the standings
+    (for games per team)"""
+    for y in range(1876, 1901):
+        for kind in ("batting-leaders", "pitching-leaders", "standings"):
+            url = (f"https://www.baseball-reference.com/leagues/NL/{y}-{kind}.shtml" if kind != "standings"
+                   else f"https://www.baseball-reference.com/leagues/NL/{y}-standings.shtml")
+            txt = get(url, os.path.join(CACHE, "sref", f"mlb_NL_{y}_{kind.split('-')[0]}.html"), pause=3.5)
+            print("NL", y, kind, len(txt), flush=True)
+
+
 # ------------------------------------------------------------------ NFL
 NFL_WIKI = {
     "pass_yds": "List of NFL annual passing yards leaders",
@@ -116,6 +132,81 @@ def nflverse():
             print(name, len(txt), flush=True)
         except Exception as e:                             # noqa: BLE001
             print(name, "not available:", e, flush=True)
+
+
+BUSY = "request is being verified"              # the site's busy page: slow down, never cache it
+
+
+def pfa_get(url, path):
+    for wait in (0, 20, 120, 600):
+        time.sleep(wait)
+        txt = get(url, path, pause=6.0)
+        if BUSY not in txt:
+            return txt
+        os.remove(path)
+        print("  busy page; waiting before", url, flush=True)
+    raise RuntimeError("still busy: " + url)
+
+
+def pfa_teams(y, lg):
+    import re
+    txt = pfa_get(f"https://www.profootballarchives.com/{y}{lg}.html", os.path.join(CACHE, "pfa", f"{y}{lg}.html"))
+    found = re.findall(rf'href="/?({y}{lg}([a-z]+)\.html)"', txt)
+    return sorted({f for f, t in found if t not in ("draft", "awards")})
+
+
+def pfa():
+    """Pro Football Archives (no robots rules; one page at a time with a 6 s pause, backing off on its busy page)"""
+    seasons = [(y, "nfl") for y in range(1932, 1999)] + [(y, "afl") for y in range(1960, 1970)]
+    for y, lg in seasons:
+        teams = pfa_teams(y, lg)
+        for f in teams:
+            try:
+                pfa_get(f"https://www.profootballarchives.com/{f}", os.path.join(CACHE, "pfa", f))
+            except RuntimeError as e:
+                print("  missing:", e, flush=True)
+        print(y, lg, len(teams), "teams", flush=True)
+
+
+# ------------------------------------------------------------------ swimming
+SWIM = [("50", "FREESTYLE"), ("100", "FREESTYLE"), ("200", "FREESTYLE"), ("400", "FREESTYLE"),
+        ("800", "FREESTYLE"), ("1500", "FREESTYLE"), ("100", "BACKSTROKE"), ("100", "BREASTSTROKE"),
+        ("100", "BUTTERFLY"), ("200", "MEDLEY"), ("400", "MEDLEY")]
+# left out as too niche for a greatest-seasons list: the 200 m backstroke, breaststroke and butterfly, and the
+# non-Olympic 50 m backstroke, breaststroke and butterfly
+
+
+def swim():
+    """World Aquatics' world rankings (long course, each swimmer's season best). The API is slow (about 10 s a
+    list), so one list at a time, newest season first; its lists are thin before the late 1990s."""
+    for y in range(2026, 1993, -1):
+        for g in ("M", "F"):
+            for dist, stroke in SWIM:
+                url = ("https://api.worldaquatics.com/fina/rankings/swimming?" + urllib.parse.urlencode(
+                    {"gender": g, "distance": dist, "stroke": stroke, "poolConfiguration": "LCM", "year": y,
+                     "timesMode": "BEST_TIMES", "pageSize": 100}))
+                path = os.path.join(CACHE, "swim", f"{g}_{dist}_{stroke}_{y}.json")
+                if os.path.exists(path):
+                    continue
+                try:
+                    get(url, path, pause=1.0)
+                except RuntimeError:                       # the API answers 404 for an empty list
+                    os.makedirs(os.path.dirname(path), exist_ok=True)
+                    open(path, "w").write('{"swimmingWorldRankings": [], "missing": true}')
+        print(y, flush=True)
+
+
+SWIM_WIKI = {f"{d}_{s}": f"World record progression {d} metres {s.lower().replace('medley', 'individual medley')}"
+             for d, s in SWIM}
+
+
+def swimwiki():
+    for k, title in SWIM_WIKI.items():
+        q = urllib.parse.urlencode({"action": "parse", "page": title, "format": "json", "prop": "text",
+                                    "redirects": 1, "formatversion": 2})
+        txt = get(f"https://en.wikipedia.org/w/api.php?{q}", os.path.join(CACHE, "swimwiki", f"{k}.json"), pause=4)
+        j = json.loads(txt)
+        print(k, j.get("parse", {}).get("title"), "error" in j, flush=True)
 
 
 # ------------------------------------------------------------------ hitting streaks from game logs
@@ -178,7 +269,7 @@ def streaks():
         w = csv.writer(f)
         if new:
             w.writerow(["year", "player", "streak", "start", "end"])
-        for y in range(1901, 2027):
+        for y in range(1897, 2027):                        # retrosplits' game logs start in 1897
             if y in done:
                 continue
             try:
@@ -195,4 +286,5 @@ def streaks():
 
 
 if __name__ == "__main__":
-    {"wa": wa, "sref": sref, "sref_leagues": sref_leagues, "nflwiki": nflwiki, "nflverse": nflverse, "streaks": streaks}[sys.argv[1]]()
+    {"wa": wa, "sref": sref, "sref_leagues": sref_leagues, "nflwiki": nflwiki, "nflverse": nflverse, "streaks": streaks,
+     "nl_early": nl_early, "pfa": pfa, "swim": swim, "swimwiki": swimwiki}[sys.argv[1]]()

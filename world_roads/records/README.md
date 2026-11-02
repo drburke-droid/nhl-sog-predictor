@@ -40,14 +40,20 @@ is `report.html`, built from `report_page.html` by `report_data.py`.
 | `deep.py` | Season leads, season depth, record premiums, Gumbel return periods, depth peaks → `tables/seasons.csv`, `tables/deep_summary.csv` |
 | `report_data.py` | Groups the records (era record, lone outlier, within reach), builds `tables/deep_report.json` and `report.html` |
 
-The page also charts every athletics event and 20 records from baseball, basketball, hockey and football
-(the record against the middle of each season's top ten, and how often today's best would match the
-record), and ranks the greatest performance of all time adjusted for its era (Bob Beamon's 8.90 m, 1968).
+The page opens with **the ten greatest seasons** in athletics, swimming, baseball, basketball, hockey and
+football, each measured against its own era: everyone else's season bests in the 15 seasons before and after
+it, the trend line through them, and how far above that line the season stood (in standard deviations, and
+as "once in N seasons"). It then charts every record (30 athletics events, 22 swimming events, 22 league
+records) against the middle of each season's top ten, with how often today's best would match it.
 
 | File | What it does |
 |---|---|
-| `sports_fetch.py` | Fetches Baseball-, Basketball- and Hockey-Reference leaders, Wikipedia's NFL leaders, nflverse season stats, World Athletics season lists, and Retrosheet game logs (hitting streaks → `tables/hitting_streaks.csv`) |
-| `bigfour.py` | One shape for all 54 categories: smoothed medians, return periods at today's level (counting stats scaled to today's schedule), era-adjusted rarity of every season-leading performance → `tables/allsports.json`, `tables/era_adjusted.csv` |
+| `sports_fetch.py` | Fetches Baseball-, Basketball- and Hockey-Reference leaders (the National League from 1876), Pro Football Archives team pages (NFL 1932–98, AFL 1960–69), nflverse season stats (1999 on), World Aquatics' swimming rankings and Wikipedia's swimming record progressions, World Athletics season lists, and Retrosheet game logs (hitting streaks from 1897 → `tables/hitting_streaks.csv`) |
+| `bigfour.py` | One shape for all 74 categories: smoothed medians, return periods at today's level (counting stats scaled to today's schedule), the era-adjusted rarity of every season-leading performance, and the greatest seasons → `tables/allsports.json`, `tables/era_adjusted.csv`, `tables/greatest_seasons.csv` |
+
+Left out as too niche for a greatest-seasons list: the 5000 m and 10,000 m (athletics), and the 200 m
+backstroke, breaststroke and butterfly and the non-Olympic 50 m strokes (swimming). `NICHE` in `bigfour.py`
+and `SWIM` in `sports_fetch.py` put them back.
 
 The hitting streaks use Retrosheet data: the information used here was obtained free of charge from and is
 copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.
@@ -58,6 +64,6 @@ Data tables are rebuilt with:
 python fetch.py olympics && python fetch.py records
 python build_records.py > tables/build_records.txt && python parse_olympics.py && python analysis.py
 python fetch.py alltime && python alltime.py && python deep.py
-for j in wa sref sref_leagues nflwiki nflverse streaks; do python sports_fetch.py $j; done
+for j in wa sref sref_leagues nl_early nflwiki nflverse pfa swim swimwiki streaks; do python sports_fetch.py $j; done
 python bigfour.py && python report_data.py
 ```

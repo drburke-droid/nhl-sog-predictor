@@ -43,6 +43,8 @@ def get(url, path, pause=0.7):
                 txt = raw.decode("latin-1")
             break
         except Exception as e:                                   # noqa: BLE001
+            if getattr(e, "code", None) == 404:
+                raise RuntimeError(f"404: {url}") from e
             wait = 2 ** (attempt + 1)
             ra = getattr(e, "headers", None) and e.headers.get("Retry-After")
             if getattr(e, "code", None) == 429:

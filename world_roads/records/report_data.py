@@ -12,6 +12,7 @@ Groups (every record falls in exactly one):
 import os, csv, json, math
 from collections import defaultdict
 import deep, analysis as A
+from bigfour import NICHE                          # events left out as too niche (the 5000 m and 10,000 m)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TABLES = os.path.join(HERE, "tables")
@@ -43,6 +44,7 @@ def main():
                 s["return_seasons"] = str(T[k])
     seasons = list(csv.DictReader(open(os.path.join(TABLES, "seasons.csv"))))
     score = []
+    S = [s for s in S if s["event"] not in NICHE]
     for s in S:
         ev = s["event"]
         peak_end = num(s["depth_peak_5y_end"])
@@ -77,7 +79,7 @@ def main():
     finger = []
     for sex in ("M", "W"):
         for ev in A.ORDER:
-            if (sex, ev) not in perfs or (sex == "M" and ev == "100mH") or (sex == "W" and ev == "110mH"):
+            if (sex, ev) not in perfs or (sex == "M" and ev == "100mH") or (sex == "W" and ev == "110mH") or ev in NICHE:
                 continue
             rows = perfs[(sex, ev)]
             if (sex, ev) in deep.IMPL:
