@@ -36,7 +36,11 @@ def get(url, path, pause=0.7):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=60) as r:
-                txt = r.read().decode("utf-8")
+                raw = r.read()
+            try:
+                txt = raw.decode("utf-8")
+            except UnicodeDecodeError:                          # alltime-athletics pages are Latin-1
+                txt = raw.decode("latin-1")
             break
         except Exception as e:                                   # noqa: BLE001
             wait = 2 ** (attempt + 1)
@@ -139,5 +143,34 @@ def records():
             print(slug, j["parse"]["title"], len(j["parse"]["text"]))
 
 
+# Peter Larsson's all-time lists (alltime-athletics.com): every legal performance down to a deep cut-off,
+# with wind, altitude flag, venue and date. "ok" pages are legal marks; "no" pages are wind-aided (or
+# otherwise not legal) marks, fetched only where wind matters.
+ALLTIME = {
+    ("M", "100m"): "m_100ok", ("M", "200m"): "m_200ok", ("M", "400m"): "m_400ok", ("M", "800m"): "m_800ok",
+    ("M", "1500m"): "m_1500ok", ("M", "5000m"): "m_5000ok", ("M", "10000m"): "m_10kok",
+    ("M", "110mH"): "m_110hok", ("M", "400mH"): "m_400hok", ("M", "HJ"): "mhighok", ("M", "PV"): "mpoleok",
+    ("M", "LJ"): "mlongok", ("M", "TJ"): "mtripok", ("M", "SP"): "mshotok", ("M", "DT"): "mdiscok",
+    ("M", "JT"): "mjaveok", ("M", "JT_old"): "mjaveoldok", ("M", "HT"): "mhammok",
+    ("W", "100m"): "w_100ok", ("W", "200m"): "w_200ok", ("W", "400m"): "w_400ok", ("W", "800m"): "w_800ok",
+    ("W", "1500m"): "w_1500ok", ("W", "5000m"): "w_5000ok", ("W", "10000m"): "w_10kok",
+    ("W", "100mH"): "w_100hok", ("W", "400mH"): "w_400hok", ("W", "HJ"): "whighok", ("W", "PV"): "wpoleok",
+    ("W", "LJ"): "wlongok", ("W", "TJ"): "wtripleok", ("W", "SP"): "wshotok", ("W", "DT"): "wdiscok",
+    ("W", "JT"): "wjaveok", ("W", "JT_old"): "wjaveoldok", ("W", "HT"): "whammok",
+    # wind-aided lists
+    ("M", "100m_w"): "m100mno", ("M", "200m_w"): "m_200no", ("M", "110mH_w"): "m_110hno",
+    ("M", "LJ_w"): "mlongno", ("M", "TJ_w"): "mtripno",
+    ("W", "100m_w"): "w_100no", ("W", "200m_w"): "w_200no", ("W", "100mH_w"): "w_100hno",
+    ("W", "LJ_w"): "wlongno", ("W", "TJ_w"): "wtripleno",
+}
+
+
+def alltime():
+    for (sex, ev), page in ALLTIME.items():
+        txt = get(f"http://www.alltime-athletics.com/{page}.htm", os.path.join(CACHE, "alltime", f"{sex}_{ev}.htm"),
+                  pause=1.5)
+        print(sex, ev, page, len(txt), flush=True)
+
+
 if __name__ == "__main__":
-    {"olympics": olympics, "records": records}[sys.argv[1]]()
+    {"olympics": olympics, "records": records, "alltime": alltime}[sys.argv[1]]()

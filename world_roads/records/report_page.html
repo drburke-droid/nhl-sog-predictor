@@ -1,0 +1,595 @@
+<title>Out of Reach</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: one reading column of prose (68ch) with charts that widen to 1080px; a night-track dark
+   ground by default, a chalk-white light theme. Gold is always the world record, blue the field. */
+:root {
+  color-scheme: dark;
+  --bg: #0f1215;
+  --panel: #161a1f;
+  --ink: #f0efec;
+  --ink2: #b9b8b0;
+  --muted: #85847d;
+  --rule: #262a30;
+  --gold: #c98500;
+  --blue: #3987e5;
+  --track: #3a2522;
+  --seq-lo: #16243a;
+  --seq-hi: #7db2ee;
+  --display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #f6f4ef; --panel: #ece8e0; --ink: #16181b; --ink2: #44474b; --muted: #6f6b63; --rule: #d9d4ca;
+    --gold: #b57800; --blue: #2a78d6; --track: #e8d3cc; --seq-lo: #e3eefb; --seq-hi: #104281;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f4ef; --panel: #ece8e0; --ink: #16181b; --ink2: #44474b; --muted: #6f6b63; --rule: #d9d4ca;
+  --gold: #b57800; --blue: #2a78d6; --track: #e8d3cc; --seq-lo: #e3eefb; --seq-hi: #104281;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 1080px; margin: 0 auto; padding-block: 40px 72px; display: grid; gap: 56px; }
+.prose { max-width: 68ch; }
+.prose p { margin: 0 0 0.9em; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.02; text-wrap: balance; margin: 0; letter-spacing: 0.005em; }
+h1 { font-size: clamp(56px, 11vw, 112px); text-transform: uppercase; letter-spacing: 0.01em; }
+h2 { font-size: clamp(32px, 5vw, 44px); margin-bottom: 14px; }
+h3 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+.eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.dek { font-size: clamp(19px, 2.4vw, 23px); line-height: 1.45; color: var(--ink2); max-width: 60ch; margin: 14px 0 0; }
+a { color: var(--ink); text-decoration-color: var(--muted); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 18px; min-width: 0; }
+
+header.hero { display: grid; gap: 4px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
+.lanes { height: 10px; margin-top: 26px; background:
+  repeating-linear-gradient(90deg, var(--track) 0 64px, transparent 64px 66px); border-radius: 2px; opacity: 0.9; }
+
+.kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.kind { background: var(--panel); border-radius: 6px; padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kind b { font-family: var(--display); font-size: 40px; line-height: 1; font-weight: 700; }
+.kind span.k { font-family: var(--display); font-size: 21px; font-weight: 600; }
+.kind p { margin: 0; color: var(--ink2); font-size: 15px; line-height: 1.45; }
+
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+figcaption { font-size: 14.5px; color: var(--ink2); max-width: 75ch; line-height: 1.5; }
+.chart { width: 100%; min-width: 0; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--mono); fill: var(--ink2); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 12.5px; color: var(--ink2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.legend i.line { width: 18px; height: 3px; border-radius: 2px; vertical-align: 3px; }
+
+.multiples { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px 26px; }
+.multiples h3 { font-size: 20px; margin: 0; }
+.multiples .sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.multiples .note { font-size: 14px; color: var(--ink2); line-height: 1.4; margin: 2px 0 0; }
+
+.tip { position: fixed; pointer-events: none; z-index: 20; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; font-family: var(--mono); font-size: 12.5px;
+  line-height: 1.45; max-width: 300px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+.tip b { font-family: var(--display); font-size: 17px; font-weight: 600; }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.fact { border-top: 2px solid var(--gold); padding-top: 10px; display: grid; gap: 4px; align-content: start; }
+.fact .big { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1; }
+.fact p { margin: 0; font-size: 15px; color: var(--ink2); line-height: 1.45; }
+
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 26px 32px; }
+.case { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.case .tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.case p { margin: 0; font-size: 15.5px; line-height: 1.55; }
+.case .marks { font-family: var(--mono); font-size: 13px; color: var(--ink2); }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; min-width: 100%; }
+th, td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { font-weight: 500; color: var(--muted); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+td.num, th.num { text-align: right; }
+details { border-top: 1px solid var(--rule); padding-top: 10px; }
+summary { cursor: pointer; font-family: var(--mono); font-size: 13px; color: var(--ink2); }
+
+ol.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 80ch; }
+ol.timeline li { display: grid; grid-template-columns: 7.5em 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 15.5px; line-height: 1.45; }
+ol.timeline li span { font-family: var(--mono); font-size: 13px; color: var(--muted); padding-top: 2px; }
+
+.method { font-size: 15px; color: var(--ink2); }
+.method h2 { color: var(--ink); }
+.method ul { padding-left: 1.1em; margin: 0.4em 0 1em; }
+.method li { margin-bottom: 0.4em; }
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  ol.timeline li { grid-template-columns: 1fr; gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<main>
+  <header class="hero">
+    <div class="eyebrow">World records in 34 Olympic athletics events · data to November 2026</div>
+    <h1>Out of Reach</h1>
+    <p class="dek">Some world records sit far above anything athletes produce today. A few stand apart because one athlete went beyond everyone. Others stand apart because a whole era was deeper than today's. This page measures which is which, and puts the strangest of them, the men's long jump, in context.</p>
+    <div class="lanes" aria-hidden="true"></div>
+  </header>
+
+  <section aria-labelledby="kinds">
+    <div class="prose">
+      <h2 id="kinds">Three kinds of record</h2>
+      <p>For every event we compared the world record with what the world's best produce now: each season's leading mark from 2012 to 2026. From the spread of those leads we estimate how often a mark as good as the record would turn up at today's level. Read the results as orders of magnitude. A record that would come up less than once in 35 seasons, longer than any career, counts as out of reach.</p>
+    </div>
+    <div class="kinds" id="kindcards"></div>
+  </section>
+
+  <section aria-labelledby="far">
+    <div class="prose">
+      <h2 id="far">How rare is the record today?</h2>
+      <p>Each dot is a world record, placed by how often a mark that good would turn up at the current level of the event. The further right, the further the record sits above today's best.</p>
+    </div>
+    <figure>
+      <div class="chart" id="score"></div>
+      <figcaption>Return period from a Gumbel (extreme-value) distribution fitted to each event's season-leading marks, 2012–2026, in speed for running events and distance or height for jumps and throws. Hover or tap a dot for the record, today's best and the second-best athlete in history.</figcaption>
+      <details>
+        <summary>Show the table</summary>
+        <div class="tablewrap" id="scoretable"></div>
+      </details>
+    </figure>
+  </section>
+
+  <section aria-labelledby="era">
+    <div class="prose">
+      <h2 id="era">The athlete or the era?</h2>
+      <p>A record can stand apart for two reasons. One athlete may have gone far beyond everyone of their time. Or a whole generation was stronger than today's, and the record is simply that generation's best. Comparing each record with the four seasons before it, and with the last ten, separates the two.</p>
+      <p>Lines that rise belong to events whose field has fallen back since the record was set. Lines that fall belong to events where today's athletes have closed some of the distance.</p>
+    </div>
+    <figure>
+      <div class="legend" aria-hidden="true">
+        <span><i class="line" style="background:var(--gold)"></i>era record</span>
+        <span><i class="line" style="background:var(--ink2)"></i>lone outlier</span>
+      </div>
+      <div class="chart" id="slope"></div>
+      <figcaption>How far each out-of-reach record was ahead of the median season lead of the four seasons before it was set, and of the ten seasons 2017–2026. Percentages are of speed, distance or height.</figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="depth">
+    <div class="prose">
+      <h2 id="depth">Who is still chasing</h2>
+      <p>Depth tells the story the record cannot. Here is how many athletes reached a fixed standard in each season since 1976. In every running event the field is deeper now than it has ever been. In the women's throws and long jump, and the men's high jump and hammer, the deepest seasons came in the 1980s.</p>
+    </div>
+    <figure>
+      <div class="multiples" id="depthcharts"></div>
+      <figcaption>Athletes per season (each counted once) at or beyond the standard shown, legal marks only; jumps and throws include indoor marks. 2020 was the pandemic season, with few competitions.</figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="finger">
+    <div class="prose">
+      <h2 id="finger">When the best marks were set</h2>
+      <p>Take the 100 best athletes in each event's history and note the decade in which each set their best mark. Every running event's list is led by the 2020s. The women's shot put and discus are led by the 1980s. The men's high jump, triple jump and hammer have barely added to their lists this decade.</p>
+    </div>
+    <figure>
+      <div class="chart" id="heat"></div>
+      <figcaption>Of the 100 best athletes in each event, how many set their best mark in each decade. Javelins count only the current implement (men from 1986, women from 1999). Only 87 women have ever put the shot 20 m, the depth of the list used here, so that row counts 87.</figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="lj">
+    <div class="prose">
+      <div class="eyebrow">Spotlight</div>
+      <h2 id="lj">The men's long jump</h2>
+      <p>Mike Powell jumped 8.95 m in Tokyo on 30 August 1991, beating Carl Lewis in the same final. Since that night the best legal jump in the world has been 8.74 m, 21 cm short. The event did not stop producing great jumpers. It stopped producing the kind of jumps that were common for about fifteen years around Lewis and Powell.</p>
+    </div>
+    <figure>
+      <div class="legend" aria-hidden="true">
+        <span><i class="line" style="background:var(--gold)"></i>world record</span>
+        <span><i style="background:var(--blue)"></i>season's best legal jump</span>
+        <span><i style="background:transparent;border:2px solid var(--ink2)"></i>wind-aided, 8.80 m or farther</span>
+      </div>
+      <div class="chart" id="ljchart"></div>
+      <figcaption>The best legal jump of each season (indoor included), 1960–2026, and the world record. A marks altitude above 1,000 m. The two horizontal lines are the average season lead in 1979–93 and 2012–26.</figcaption>
+    </figure>
+    <div class="facts" id="ljfacts"></div>
+    <div class="prose">
+      <h3>What the numbers suggest</h3>
+      <p><strong>Speed.</strong> Biomechanists filmed the 1991 final. Lewis reached 11.06 m/s on the runway and Powell 11.00 m/s; the other finalists ran 10.20 to 10.58 m/s. A jump's length grows roughly with the square of take-off speed, so a few percent of speed is worth twice as much in distance. The 8.80 m jumps came from the fastest approaches ever measured in the event.</p>
+      <p><strong>Where the speed went.</strong> Sprinting has never been deeper: 45 men broke 10.00 s for 100 m in 2026, against none to three a season in the 1980s. Very little of that speed reaches the long jump runway. Only 12 men in history have both jumped 8.20 m and run 10.09 s, and Lewis (9.86 and 8.87) is the only one near the top of both lists.</p>
+      <p><strong>Beamon and altitude.</strong> Bob Beamon's 8.90 m in Mexico City (2,240 m, wind +2.0 m/s) added 55 cm to the record, 6.6% beyond the best marks of the four seasons before. The largest published estimate of the help from thin air and wind is about 31 cm (Ward-Smith, 1986); later measurements of wind effects in real competition found them smaller than that model predicted. Even with the full 31 cm removed, 8.59 m would have broken the old record by 24 cm.</p>
+      <p><strong>Wind.</strong> Only one jump in history has gone farther than 8.95 m, and it does not count: Powell's own 8.99 m in Sestriere in 1992, at altitude with a +4.4 m/s tailwind. The longest wind-aided jumps since are Juan Miguel Echevarría's 8.92 m (+3.3, Havana, 2019) and 8.83 m (+2.1, Stockholm, 2018), just over the legal limit of +2.0.</p>
+    </div>
+    <details>
+      <summary>Men who have long-jumped 8.20 m and run 100 m in 10.09 s or faster</summary>
+      <div class="tablewrap" id="sprintjumpers"></div>
+    </details>
+  </section>
+
+  <section aria-labelledby="ctx">
+    <div class="prose">
+      <h2 id="ctx">The other standouts, in context</h2>
+      <p>Each of these records is ratified and stands in World Athletics' books. The notes below describe conditions and eras, not individuals.</p>
+    </div>
+    <div class="cases">
+      <article class="case">
+        <div class="tag">Lone outliers · 2009</div>
+        <h3>Men's 100 m and 200 m</h3>
+        <p>Usain Bolt's 9.58 and 19.19 stand in the deepest sprint fields there have ever been. At today's level a 9.58 would come up about once in 240 seasons. The closest anyone has come is 9.69, by Tyson Gay (2009) and Yohan Blake (2012); the best of 2017–2026 is Kishane Thompson's 9.75 (2025).</p>
+      </article>
+      <article class="case">
+        <div class="tag">Lone outlier · 1988</div>
+        <h3>Women's 100 m</h3>
+        <p>Florence Griffith Joyner's 10.49 was ratified and stands. The wind gauge read 0.0 m/s while the triple-jump gauge nearby read over 4 m/s. A 1995 report for the IAAF by Nicholas Linthorne found the 100 m gauge misaligned by about 60° and estimated the wind at +5 to +7 m/s. Peter Larsson's all-time list files the mark under "doubtful wind reading". Her 10.61 in the final the next day (+1.2 m/s) is uncontested and ranks joint third in history.</p>
+      </article>
+      <article class="case">
+        <div class="tag">Era records · 1987–88</div>
+        <h3>Women's shot put, discus and long jump</h3>
+        <p>These are the furthest from today's level of any records: once in thousands of seasons for the shot, a few hundred for the discus and long jump. The depth of those seasons has not returned. 23 women put the shot 20 m in 1987; four to six do now. No woman threw the discus 68 m in 2008–2011. The marks predate random out-of-competition testing (late 1980s), stored samples for re-testing (2005) and the Athlete Biological Passport (2009).</p>
+      </article>
+      <article class="case">
+        <div class="tag">Within reach again · 1983–88</div>
+        <h3>Women's 200 m, 400 m and 800 m</h3>
+        <p>Three records from the same era are now being approached, in events whose fields are deeper than ever. Sydney McLaughlin-Levrone ran 47.78 for 400 m in Tokyo in 2025, 0.18 s from Marita Koch's 47.60. Audrey Werro ran 1:53.70 for 800 m in Zürich in 2026, 0.42 s from Jarmila Kratochvílová's 1:53.28. Shericka Jackson's 21.41 (2023) is 0.07 s from 21.34.</p>
+      </article>
+      <article class="case">
+        <div class="tag">Era record · 1993</div>
+        <h3>Men's high jump</h3>
+        <p>Javier Sotomayor's 2.45 m came at the end of the event's deepest stretch. 13 men cleared 2.35 m in 1988; one to three a season have done so since 2024. Mutaz Essa Barshim's 2.43 m (2014) is the closest anyone has come.</p>
+      </article>
+      <article class="case">
+        <div class="tag">Era records · 1986 and 1996</div>
+        <h3>Men's hammer and javelin</h3>
+        <p>Yuriy Sedykh's 86.74 m hammer record dates from a year when Sergey Litvinov also threw 86.04 m. Throws of 80 m peaked at 23 men in 1988, fell to one or two a season in 2015–2020, and are recovering (11 in 2026; Ethan Katzberg's 84.70 m in 2025). Jan Železný's 98.48 m javelin record (1996) is the oldest set with the current implement; Johannes Vetter came within 72 cm of it in 2020.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="time">
+    <div class="prose">
+      <h2 id="time">Rules, testing and equipment</h2>
+      <p>The changes that frame these records, in order.</p>
+    </div>
+    <ol class="timeline">
+      <li><span>1968</span>The Mexico City Games are held at 2,240 m. Thin air helps sprints and horizontal jumps.</li>
+      <li><span>1977</span>Electronic timing becomes compulsory for sprint world records.</li>
+      <li><span>1986</span>The men's javelin is redesigned to fly shorter, and its records restart.</li>
+      <li><span>Late 1980s</span>Random out-of-competition drug testing begins in athletics.</li>
+      <li><span>1999</span>The women's javelin is redesigned, and its records restart.</li>
+      <li><span>2005</span>Samples are stored so they can be re-tested later.</li>
+      <li><span>2009</span>The IAAF adds the Athlete Biological Passport to its testing programme (August).</li>
+      <li><span>2017</span>European Athletics endorses a proposal to recognise only records backed by stored samples and sends it to the IAAF. The world record list is not reset.</li>
+      <li><span>2020</span>Shoe rules limit the stack height of track spikes (20 mm up to 400 m, 25 mm from 800 m).</li>
+      <li><span>2024</span>A single 20 mm limit applies to all track spikes from 1 November.</li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="how" class="method">
+    <div class="prose">
+      <h2 id="how">How this was measured</h2>
+      <ul>
+        <li><strong>Marks.</strong> Every legal performance down to a deep cut-off, from Peter Larsson's all-time lists (<a href="http://www.alltime-athletics.com/" rel="noopener">alltime-athletics.com</a>, read November 2026): 163,664 legal performances across the 34 events. Running events use fully automatic, legal-wind marks. Jumps and throws include indoor marks, which count for world records. Wind-aided marks are used only as context.</li>
+        <li><strong>Seasons.</strong> Calendar years. Because the lists are complete above their cut-offs, each season's leading mark and its count of athletes beyond a standard are exact. Where a season's 10th-best athlete falls below the cut-off, the depth is shown as below it.</li>
+        <li><strong>Performance.</strong> Speed for running events, distance or height for jumps and throws, so a percentage means the same in every event. Jumps and throws grow roughly with the square of speed, so their percentages run about twice those of running events; the return periods do not depend on this.</li>
+        <li><strong>Return periods.</strong> A Gumbel distribution fitted by moments to the season-leading marks of 2012–2026, then the chance that a season's best reaches the record. Real tails are often lighter than Gumbel's, so the largest figures, if anything, understate how rare the record is. Read them as orders of magnitude.</li>
+        <li><strong>Groups.</strong> Out of reach means a return period of 35 seasons or more. An era record is an out-of-reach record set by 2000, in an event whose depth (the season's 10th-best athlete, five-season averages) peaked before 2006 and is still below that peak. A lone outlier is an out-of-reach record in an event whose field is as deep as it has been.</li>
+        <li><strong>Records.</strong> The world record lines from <em>The Record and the Rest</em>, built from World Athletics' progressions via Wikipedia, including 2026 records pending ratification.</li>
+      </ul>
+      <p>Sources for the context: the Ward-Smith (1986) altitude and wind estimate and the later field measurements, via <a href="https://ojs.ub.uni-konstanz.de/cpa/article/view/2720" rel="noopener">ISBS Proceedings</a>; the 1991 approach speeds (Fukashiro et al., 1994), via <a href="https://ojs.ub.uni-konstanz.de/cpa/article/view/1985/1853" rel="noopener">ISBS Proceedings</a>; the 1988 wind gauge, via <a href="https://arxiv.org/pdf/physics/9705004" rel="noopener">Mureika (arXiv)</a> and <a href="https://guinnessworldrecords.com/news/2024/8/is-the-womens-100-metre-world-record-truly-unbreakable" rel="noopener">Guinness World Records</a>; the Athlete Biological Passport, via a <a href="https://www.doping.nl/media/kb/3017/CAS%202013_A_3080%20Alemitu%20Bekele-Degfa%20vs%20TAF%20%26%20IAAF%20%28OS%29.pdf" rel="noopener">CAS award</a>; the 2017 proposal, via <a href="https://athleticsweekly.com/news/european-athletics-endorses-plan-for-new-record-ratification-rules-60467" rel="noopener">Athletics Weekly</a>; shoe rules, via <a href="https://runningmagazine.ca/sections/gear/the-latest-shoe-rules-from-world-athletics/" rel="noopener">Running Magazine</a>; 2025–26 marks, via <a href="https://www.letsrun.com/news/2025/09/sydney-mclaughlin-levrone-amazes-once-again-her-47-78-beats-marileidy-paulino-47-98-in-classic-400m-final-at-2025-world-championships/" rel="noopener">LetsRun</a> and <a href="https://www.flotrack.org/articles/16147825-audrey-werro-breaks-records-in-800m-at-diamond-league-zurich" rel="noopener">FloTrack</a>.</p>
+    </div>
+  </section>
+</main>
+<div class="tip" id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const DATA = /*__DATA__*/null;
+
+const css = () => {
+  const s = getComputedStyle(document.documentElement);
+  const g = k => s.getPropertyValue(k).trim();
+  return { ink: g("--ink"), ink2: g("--ink2"), muted: g("--muted"), rule: g("--rule"), gold: g("--gold"),
+           blue: g("--blue"), bg: g("--bg"), panel: g("--panel"), lo: g("--seq-lo"), hi: g("--seq-hi") };
+};
+const SEX = { M: "Men's", W: "Women's" };
+const evName = d => `${SEX[d.sex]} ${d.field ? d.name.toLowerCase() : d.name}`;
+const surname = s => s;
+const fmtRet = r => r == null ? "–" : r >= 1000 ? "~" + d3.format(",")(+d3.format(".2r")(r)) : "~" + Math.round(r);
+const pct = (v, dp = 1) => v == null ? "–" : (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(dp) + "%";
+const GROUPS = [
+  ["era record", "Era records", "Out of reach, set in an era deeper than today's. The field has fallen back since."],
+  ["lone outlier", "Lone outliers", "Out of reach, in events whose fields are as deep as they have ever been."],
+  ["within reach", "Within reach", "Marks that today's level produces at least once in about 35 seasons."],
+];
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById("tip");
+function showTip(ev, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = ev.clientY - h - pad;
+  tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+}
+const hideTip = () => { tip.hidden = true; };
+document.addEventListener("scroll", hideTip, { passive: true });
+
+/* ---------- kinds ---------- */
+function kinds() {
+  const el = document.getElementById("kindcards");
+  el.innerHTML = GROUPS.map(([g, title, text]) => {
+    const n = DATA.score.filter(d => d.group === g).length;
+    return `<div class="kind"><b>${n}</b><span class="k">${title}</span><p>${text}</p></div>`;
+  }).join("");
+}
+
+/* ---------- 1. scoreboard ---------- */
+function score() {
+  const c = css(), el = document.getElementById("score");
+  el.innerHTML = "";
+  const W = el.clientWidth, narrow = W < 640;
+  const labW = narrow ? 128 : 210, rightW = narrow ? 8 : 200, rowH = narrow ? 30 : 24, gh = 46;
+  const rows = [];
+  let y = 8;
+  GROUPS.forEach(([g, title]) => {
+    rows.push({ head: title, y: y + 22 }); y += gh;
+    DATA.score.filter(d => d.group === g).sort((a, b) => (b.return_seasons || 0) - (a.return_seasons || 0))
+      .forEach(d => { rows.push({ d, y: y + rowH / 2 }); y += rowH; });
+    y += 10;
+  });
+  const H = y + 34;
+  const x = d3.scaleLog().domain([6, 12000]).range([labW, W - rightW]).clamp(true);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", "World records placed by how often a mark that good would come up at today's level");
+  const ticks = [10, 30, 100, 300, 1000, 3000, 10000];
+  svg.append("g").selectAll("line").data(ticks).join("line").attr("x1", x).attr("x2", x).attr("y1", 8).attr("y2", H - 30)
+    .attr("stroke", c.rule).attr("stroke-width", 1);
+  svg.append("g").selectAll("text").data(ticks).join("text").attr("x", x).attr("y", H - 12).attr("text-anchor", "middle")
+    .attr("font-size", 11.5).attr("fill", c.muted).text(d => d3.format(",")(d));
+  svg.append("text").attr("x", labW).attr("y", H + 4).attr("font-size", 11.5).attr("fill", c.muted)
+    .text("once every … seasons, at today's level");
+  // the 35-season line
+  svg.append("line").attr("x1", x(35)).attr("x2", x(35)).attr("y1", 8).attr("y2", H - 30).attr("stroke", c.ink2)
+    .attr("stroke-width", 1.4);
+  svg.append("text").attr("x", x(35) + 5).attr("y", 18).attr("font-size", 11).attr("fill", c.ink2).text("35 seasons");
+  rows.forEach(r => {
+    if (r.head) {
+      svg.append("text").attr("x", 0).attr("y", r.y).attr("font-family", "Barlow Condensed, Arial Narrow, sans-serif")
+        .attr("font-size", 22).attr("font-weight", 600).attr("fill", c.ink).text(r.head);
+      return;
+    }
+    const d = r.d, g = svg.append("g");
+    const name = narrow ? `${d.sex === "M" ? "M" : "W"} ${d.short}` : evName(d);
+    g.append("text").attr("x", 0).attr("y", r.y + 4).attr("font-size", narrow ? 12 : 12.5).attr("fill", c.ink).text(name);
+    g.append("line").attr("x1", labW).attr("x2", x(d.return_seasons)).attr("y1", r.y).attr("y2", r.y)
+      .attr("stroke", c.rule).attr("stroke-width", 2);
+    g.append("circle").attr("cx", x(d.return_seasons)).attr("cy", r.y).attr("r", 6).attr("fill", c.gold)
+      .attr("stroke", c.bg).attr("stroke-width", 2);
+    g.append("text").attr("x", x(d.return_seasons) + 10).attr("y", r.y + 4).attr("font-size", 11.5).attr("fill", c.ink2)
+      .attr("stroke", c.bg).attr("stroke-width", 4).attr("paint-order", "stroke").attr("stroke-linejoin", "round")
+      .text(narrow ? fmtRet(d.return_seasons) : `${fmtRet(d.return_seasons)}   ${d.record} · ${d.record_year}`);
+    g.append("rect").attr("x", 0).attr("y", r.y - rowH / 2).attr("width", W).attr("height", rowH).attr("fill", "transparent")
+      .style("cursor", "default")
+      .on("pointermove", e => showTip(e, `<b>${evName(d)}</b><br>Record ${d.record}, ${d.record_by}, ${d.record_year}<br>` +
+        `Once every ${fmtRet(d.return_seasons)} seasons at today's level<br>` +
+        `${pct(d.premium_now)} on the median season lead, 2017–26<br>` +
+        `Best 2017–26: ${d.best_now} (${d.best_now_by}, ${d.best_now_year})<br>` +
+        `Second-best athlete ever: ${d.second} (${d.second_by}, ${d.second_year})`))
+      .on("pointerleave", hideTip);
+  });
+  // table
+  const t = document.getElementById("scoretable");
+  const rowsT = DATA.score.slice().sort((a, b) => (b.return_seasons || 0) - (a.return_seasons || 0));
+  t.innerHTML = `<table><thead><tr><th>Event</th><th>Record</th><th>Set by</th><th class="num">Year</th>
+    <th class="num">Once every (seasons)</th><th class="num">Vs today's typical lead</th><th>Best 2017–26</th><th>Group</th></tr></thead><tbody>` +
+    rowsT.map(d => `<tr><td>${evName(d)}</td><td>${d.record}</td><td>${d.record_by}</td><td class="num">${d.record_year}</td>
+      <td class="num">${fmtRet(d.return_seasons)}</td><td class="num">${pct(d.premium_now)}</td>
+      <td>${d.best_now} ${d.best_now_by} (${d.best_now_year})</td><td>${d.group}</td></tr>`).join("") + `</tbody></table>`;
+}
+
+/* ---------- 2. slope ---------- */
+function slope() {
+  const c = css(), el = document.getElementById("slope");
+  el.innerHTML = "";
+  const W = el.clientWidth, narrow = W < 640;
+  const data = DATA.score.filter(d => d.group !== "within reach");
+  const H = narrow ? 520 : 470, m = { t: 34, b: 20, l: narrow ? 52 : 110, r: narrow ? 128 : 300 };
+  const x0 = m.l, x1 = W - m.r;
+  const y = d3.scaleLinear().domain([0, d3.max(data, d => Math.max(d.premium_now, d.premium_then)) * 1.05]).range([H - m.b, m.t]);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", "Slope chart: how far each out-of-reach record was ahead when set, and today");
+  y.ticks(5).forEach(t => {
+    svg.append("line").attr("x1", x0).attr("x2", x1).attr("y1", y(t)).attr("y2", y(t)).attr("stroke", c.rule);
+    svg.append("text").attr("x", x0 - 10).attr("y", y(t) + 4).attr("text-anchor", "end").attr("font-size", 11).attr("fill", c.muted)
+      .text(t === 0 ? "0" : "+" + Math.round(t * 100) + "%");
+  });
+  [[x0, "when set"], [x1, "2017–2026"]].forEach(([xx, s]) => {
+    svg.append("line").attr("x1", xx).attr("x2", xx).attr("y1", m.t - 6).attr("y2", H - m.b).attr("stroke", c.muted);
+    svg.append("text").attr("x", xx).attr("y", m.t - 14).attr("text-anchor", "middle").attr("font-size", 12)
+      .attr("fill", c.ink2).text(s);
+  });
+  // labels on the right, pushed apart
+  const lab = data.map(d => ({ d, y: y(d.premium_now) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < lab.length; i++) if (lab[i].y - lab[i - 1].y < 15) lab[i].y = lab[i - 1].y + 15;
+  const over = lab.length ? lab[lab.length - 1].y - (H - m.b) : 0;
+  if (over > 0) lab.forEach(l => l.y -= over);
+  lab.forEach(({ d, y: ly }) => {
+    const era = d.group === "era record", col = era ? c.gold : c.ink2;
+    const g = svg.append("g");
+    g.append("line").attr("x1", x0).attr("x2", x1).attr("y1", y(d.premium_then)).attr("y2", y(d.premium_now))
+      .attr("stroke", col).attr("stroke-width", era ? 2.6 : 1.8).attr("opacity", era ? 1 : 0.85);
+    [[x0, d.premium_then], [x1, d.premium_now]].forEach(([xx, v]) =>
+      g.append("circle").attr("cx", xx).attr("cy", y(v)).attr("r", 4).attr("fill", col).attr("stroke", c.bg).attr("stroke-width", 1.5));
+    g.append("text").attr("x", x1 + 10).attr("y", ly + 4).attr("font-size", 11.5).attr("fill", c.ink)
+      .text(narrow ? `${d.sex} ${d.short}` : `${evName(d)} ${d.record_year}  ${pct(d.premium_now)}`);
+    g.append("line").attr("x1", x0).attr("x2", x1).attr("y1", y(d.premium_then)).attr("y2", y(d.premium_now))
+      .attr("stroke", "transparent").attr("stroke-width", 14)
+      .on("pointermove", e => showTip(e, `<b>${evName(d)}</b><br>${d.record} (${d.record_by}, ${d.record_year})<br>` +
+        `When set: ${pct(d.premium_then)} on the four seasons before<br>Today: ${pct(d.premium_now)} on 2017–26`))
+      .on("pointerleave", hideTip);
+  });
+}
+
+/* ---------- 3. depth multiples ---------- */
+function depth() {
+  const c = css(), wrap = document.getElementById("depthcharts");
+  wrap.innerHTML = "";
+  const boxes = DATA.depth.map(d => {
+    const peak = d.series.reduce((a, b) => (b[1] > a[1] ? b : a));
+    const last = d.series[d.series.length - 1];
+    const box = document.createElement("div");
+    box.innerHTML = `<h3>${d.label}</h3><div class="sub">athletes per season ${d.threshold}</div><div class="chart"></div>
+      <p class="note">Peak: ${peak[1]} in ${peak[0]}. 2026: ${last[1]}.</p>`;
+    wrap.appendChild(box);
+    return box;
+  });
+  DATA.depth.forEach((d, i) => {
+    const el = boxes[i].querySelector(".chart");
+    const W = el.clientWidth || 300, H = 128, m = { t: 8, b: 20, l: 26, r: 4 };
+    const x = d3.scaleBand().domain(d.series.map(s => s[0])).range([m.l, W - m.r]).padding(0.18);
+    const y = d3.scaleLinear().domain([0, Math.max(4, d3.max(d.series, s => s[1]))]).nice(3).range([H - m.b, m.t]);
+    const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+      .attr("aria-label", `${d.label}: athletes per season ${d.threshold}, 1976 to 2026`);
+    y.ticks(3).forEach(t => {
+      svg.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(t)).attr("y2", y(t)).attr("stroke", c.rule);
+      svg.append("text").attr("x", m.l - 5).attr("y", y(t) + 3.5).attr("text-anchor", "end").attr("font-size", 10).attr("fill", c.muted).text(t);
+    });
+    svg.selectAll("rect.b").data(d.series).join("rect").attr("class", "b")
+      .attr("x", s => x(s[0])).attr("width", x.bandwidth()).attr("y", s => y(s[1])).attr("height", s => y(0) - y(s[1]))
+      .attr("rx", Math.min(2, x.bandwidth() / 2)).attr("fill", c.blue);
+    [1980, 2000, 2020].forEach(yr => svg.append("text").attr("x", x(yr) + x.bandwidth() / 2).attr("y", H - 5)
+      .attr("text-anchor", "middle").attr("font-size", 10).attr("fill", c.muted).text(yr));
+    svg.selectAll("rect.h").data(d.series).join("rect").attr("class", "h")
+      .attr("x", s => x(s[0]) - x.step() * x.padding() / 2).attr("width", x.step()).attr("y", m.t).attr("height", H - m.b - m.t)
+      .attr("fill", "transparent")
+      .on("pointermove", (e, s) => showTip(e, `<b>${d.label}, ${s[0]}</b><br>${s[1]} athlete${s[1] === 1 ? "" : "s"} ${d.threshold}`))
+      .on("pointerleave", hideTip);
+  });
+}
+
+/* ---------- 4. era heatmap ---------- */
+function heat() {
+  const c = css(), el = document.getElementById("heat");
+  el.innerHTML = "";
+  const W = el.clientWidth, narrow = W < 640;
+  const rows = DATA.fingerprint, dec = DATA.decades;
+  const labW = narrow ? 92 : 170, cell = Math.min(64, (W - labW) / dec.length), ch = narrow ? 19 : 21, gap = 14;
+  const H = 30 + rows.length * ch + gap;
+  const col = d3.scaleSequential(d3.interpolateLab(c.lo, c.hi)).domain([0, 50]).clamp(true);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${labW + cell * dec.length} ${H}`).attr("role", "img")
+    .attr("aria-label", "Heatmap: the decade in which each event's 100 best athletes set their best marks");
+  dec.forEach((dd, j) => svg.append("text").attr("x", labW + cell * j + cell / 2).attr("y", 16).attr("text-anchor", "middle")
+    .attr("font-size", narrow ? 10 : 11.5).attr("fill", c.ink2).text(narrow ? "'" + dd.slice(2) : dd));
+  rows.forEach((r, i) => {
+    const yy = 26 + i * ch + (r.sex === "W" ? gap : 0);
+    svg.append("text").attr("x", 0).attr("y", yy + ch / 2 + 4).attr("font-size", narrow ? 10.5 : 12).attr("fill", c.ink)
+      .text(narrow ? `${r.sex} ${r.short}` : `${SEX[r.sex]} ${/^\d/.test(r.short) ? r.short : r.short.toLowerCase()}`);
+    r.decades.forEach((v, j) => {
+      const g = svg.append("g");
+      g.append("rect").attr("x", labW + cell * j + 1).attr("y", yy + 1).attr("width", cell - 2).attr("height", ch - 2)
+        .attr("rx", 2).attr("fill", v ? col(v) : c.panel);
+      if (v) g.append("text").attr("x", labW + cell * j + cell / 2).attr("y", yy + ch / 2 + 4).attr("text-anchor", "middle")
+        .attr("font-size", narrow ? 9.5 : 11).attr("fill", v >= 26 ? (d3.lab(col(v)).l > 55 ? "#111" : "#fff") : c.ink2)
+        .attr("font-weight", v >= 30 ? 600 : 400).text(v);
+      g.on("pointermove", e => showTip(e, `<b>${SEX[r.sex]} ${r.short}</b><br>${v} of the ${r.n} best athletes set their best in the ${dec[j]}`))
+        .on("pointerleave", hideTip);
+    });
+  });
+}
+
+/* ---------- 5. long jump ---------- */
+function ljChart() {
+  const c = css(), el = document.getElementById("ljchart"), L = DATA.lj;
+  el.innerHTML = "";
+  const W = el.clientWidth, narrow = W < 640;
+  const H = narrow ? 360 : 430, m = { t: 20, b: 30, l: 48, r: narrow ? 12 : 150 };
+  const x = d3.scaleLinear().domain([1959, 2027.5]).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([8.15, 9.05]).range([H - m.b, m.t]);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", "Men's long jump: season-leading jumps and the world record, 1960 to 2026");
+  [8.2, 8.4, 8.6, 8.8, 9.0].forEach(t => {
+    svg.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(t)).attr("y2", y(t)).attr("stroke", c.rule);
+    svg.append("text").attr("x", m.l - 8).attr("y", y(t) + 4).attr("text-anchor", "end").attr("font-size", 11).attr("fill", c.muted).text(t.toFixed(2));
+  });
+  d3.range(1960, 2030, 10).forEach(t => svg.append("text").attr("x", x(t)).attr("y", H - 8).attr("text-anchor", "middle")
+    .attr("font-size", 11).attr("fill", c.muted).text(t));
+  // era means
+  const mean = (a, b) => d3.mean(L.leads.filter(l => l[0] >= a && l[0] <= b), l => l[1]);
+  [[1979, 1993], [2012, 2026]].forEach(([a, b]) => {
+    const v = mean(a, b);
+    svg.append("line").attr("x1", x(a)).attr("x2", x(b + 0.9)).attr("y1", y(v)).attr("y2", y(v)).attr("stroke", c.ink2).attr("stroke-width", 1.6);
+    svg.append("text").attr("x", x(b + 0.9)).attr("y", y(v) + (a < 2000 ? -7 : 16)).attr("text-anchor", "end").attr("font-size", 11)
+      .attr("fill", c.ink2).text(`${a}–${String(b).slice(2)} average ${v.toFixed(2)}`);
+  });
+  // record step line
+  const rec = L.record.slice().sort((a, b) => a[0] - b[0]);
+  const pts = []; rec.forEach((r, i) => { if (i) pts.push([r[0], rec[i - 1][1]]); pts.push([r[0], r[1]]); });
+  pts.push([2027.3, rec[rec.length - 1][1]]);
+  svg.append("path").attr("d", d3.line().x(p => x(Math.max(p[0], 1959))).y(p => y(Math.max(p[1], 8.15)))(pts))
+    .attr("fill", "none").attr("stroke", c.gold).attr("stroke-width", 3);
+  if (!narrow) svg.append("text").attr("x", x(2027.5) + 8).attr("y", y(8.95) + 4).attr("font-size", 12).attr("fill", c.ink)
+    .text("8.95 Powell, 1991");
+  // season leads
+  svg.append("path").attr("d", d3.line().x(l => x(l[0])).y(l => y(l[1]))(L.leads)).attr("fill", "none")
+    .attr("stroke", c.blue).attr("stroke-width", 1.4).attr("opacity", 0.55);
+  const g = svg.append("g");
+  g.selectAll("circle").data(L.leads).join("circle").attr("cx", l => x(l[0])).attr("cy", l => y(l[1])).attr("r", 4.5)
+    .attr("fill", c.blue).attr("stroke", c.bg).attr("stroke-width", 1.5);
+  g.selectAll("text.a").data(L.leads.filter(l => l[3])).join("text").attr("class", "a").attr("x", l => x(l[0]))
+    .attr("y", l => y(l[1]) - 9).attr("text-anchor", "middle").attr("font-size", 10).attr("fill", c.ink2).text("A");
+  // wind-aided 8.80+
+  const wy = w => +w[3].slice(0, 4) + (+w[3].slice(5, 7) - 0.5) / 12;
+  svg.selectAll("circle.w").data(L.wind880.slice(0, 5)).join("circle").attr("class", "w").attr("cx", w => x(wy(w))).attr("cy", w => y(w[0]))
+    .attr("r", 4.5).attr("fill", "none").attr("stroke", c.ink2).attr("stroke-width", 1.6);
+  // labels for the four 8.80 m legal jumps
+  const lbl = narrow ? [] : [["Beamon 8.90 A, 1968", 1968.9, 8.90, 8, 18], ["Emmiyan 8.86 A", 1987.5, 8.86, -10, -4],
+    ["Lewis 8.87, same final", 1991.5, 8.87, 12, 5]];
+  lbl.forEach(([s, xx, yy, dx, dy]) => svg.append("text").attr("x", x(xx) + dx).attr("y", y(yy) + dy)
+    .attr("text-anchor", dx > 0 ? "start" : "end").attr("font-size", 11).attr("fill", c.ink).text(s));
+  if (!narrow) svg.append("text").attr("x", x(2019.2) - 8).attr("y", y(8.92) + 4).attr("text-anchor", "end")
+    .attr("font-size", 11).attr("fill", c.ink2).text("Echevarría 8.92w");
+  // hover
+  svg.append("g").selectAll("rect").data(L.leads).join("rect").attr("x", l => x(l[0] - 0.5)).attr("width", x(1) - x(0))
+    .attr("y", m.t).attr("height", H - m.b - m.t).attr("fill", "transparent")
+    .on("pointermove", (e, l) => showTip(e, `<b>${l[0]}</b><br>Season's best: ${l[1].toFixed(2)} m${l[3] ? " (altitude)" : ""}<br>${l[2]}`))
+    .on("pointerleave", hideTip);
+}
+
+function ljFacts() {
+  const L = DATA.lj;
+  const since = L.leads.filter(l => l[0] >= 1992);
+  const best = since.reduce((a, b) => (b[1] > a[1] ? b : a));
+  const mean = (a, b) => d3.mean(L.leads.filter(l => l[0] >= a && l[0] <= b), l => l[1]);
+  const facts = [
+    [String(L.over880.length), "legal jumps have ever reached 8.80 m. Two were at altitude; the other two came in the same final, Tokyo 1991."],
+    [best[1].toFixed(2), `is the best legal jump since 1992, reached by Erick Walder (at altitude, 1994) and Dwight Phillips (2009).`],
+    [`${mean(1979, 1993).toFixed(2)} → ${mean(2012, 2026).toFixed(2)}`, "the average world-leading jump, 1979–93 against 2012–26."],
+    ["27 → 260", "seasons between jumps of 8.95 m: at the level of 1979–93, and at today's."],
+  ];
+  document.getElementById("ljfacts").innerHTML = facts.map(([b, t]) =>
+    `<div class="fact"><span class="big mono">${b}</span><p>${t}</p></div>`).join("");
+  document.getElementById("sprintjumpers").innerHTML = `<table><thead><tr><th class="num">Year</th><th>Athlete</th>
+    <th class="num">Long jump</th><th class="num">100 m</th></tr></thead><tbody>` +
+    L.sprint_jumpers.map(r => `<tr><td class="num">${r[0]}</td><td>${r[1]}</td><td class="num">${(+r[2]).toFixed(2)}</td>
+      <td class="num">${(+r[3]).toFixed(2)}</td></tr>`).join("") + `</tbody></table>`;
+}
+
+function drawAll() { kinds(); score(); slope(); depth(); heat(); ljChart(); }
+ljFacts();
+drawAll();
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawAll, 150); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll);
+</script>

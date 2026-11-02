@@ -1,0 +1,3994 @@
+{
+ "score": [
+  {
+   "sex": "M",
+   "event": "100m",
+   "name": "100 metres",
+   "short": "100 m",
+   "field": false,
+   "record": "9.58",
+   "record_by": "Usain Bolt",
+   "record_year": 2009,
+   "premium_now": 0.02087575939990849,
+   "premium_then": 0.018264815752106145,
+   "return_seasons": 237.35023260429477,
+   "group": "lone outlier",
+   "second": "9.69",
+   "second_by": "Tyson Gay",
+   "second_year": 2009,
+   "best_now": "9.75",
+   "best_now_by": "Kishane Thompson",
+   "best_now_year": 2025,
+   "depth_peak": "2021\u20132025",
+   "last_near_year": 2012
+  },
+  {
+   "sex": "M",
+   "event": "200m",
+   "name": "200 metres",
+   "short": "200 m",
+   "field": false,
+   "record": "19.19",
+   "record_by": "Usain Bolt",
+   "record_year": 2009,
+   "premium_now": 0.01693583735977855,
+   "premium_then": 0.022667989896542506,
+   "return_seasons": 49.89001398876534,
+   "group": "lone outlier",
+   "second": "19.26",
+   "second_by": "Yohan Blake",
+   "second_year": 2011,
+   "best_now": "19.31",
+   "best_now_by": "Noah Lyles",
+   "best_now_year": 2022,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2022
+  },
+  {
+   "sex": "M",
+   "event": "400m",
+   "name": "400 metres",
+   "short": "400 m",
+   "field": false,
+   "record": "43.03",
+   "record_by": "Wayde van Niekerk",
+   "record_year": 2016,
+   "premium_now": 0.012897644903653305,
+   "premium_then": 0.016500116198001624,
+   "return_seasons": 14.204147462416044,
+   "group": "within reach",
+   "second": "43.18",
+   "second_by": "Michael Johnson",
+   "second_year": 1999,
+   "best_now": "43.38",
+   "best_now_by": "Samuel Ogazi",
+   "best_now_year": 2026,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "800m",
+   "name": "800 metres",
+   "short": "800 m",
+   "field": false,
+   "record": "1:40.91",
+   "record_by": "David Rudisha",
+   "record_year": 2012,
+   "premium_now": 0.014999772511928189,
+   "premium_then": 0.007520196096509224,
+   "return_seasons": 19.454283440413967,
+   "group": "within reach",
+   "second": "1:41.11",
+   "second_by": "Wilson Kipketer",
+   "second_year": 1997,
+   "best_now": "1:41.11",
+   "best_now_by": "Emmanuel Wanyonyi",
+   "best_now_year": 2024,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "1500m",
+   "name": "1500 metres",
+   "short": "1500 m",
+   "field": false,
+   "record": "3:26.00",
+   "record_by": "Hicham El Guerrouj",
+   "record_year": 1998,
+   "premium_now": 0.011383396704541804,
+   "premium_then": 0.014465905596020345,
+   "return_seasons": 43.12936094107754,
+   "group": "lone outlier",
+   "second": "3:26.34",
+   "second_by": "Bernard Lagat",
+   "second_year": 2001,
+   "best_now": "3:26.73",
+   "best_now_by": "Jakob Ingebrigtsen",
+   "best_now_year": 2024,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "5000m",
+   "name": "5000 metres",
+   "short": "5000 m",
+   "field": false,
+   "record": "12:35.36",
+   "record_by": "Joshua Cheptegei",
+   "record_year": 2020,
+   "premium_now": 0.01274138386851642,
+   "premium_then": 0.024813817315422204,
+   "return_seasons": 17.551825198280213,
+   "group": "within reach",
+   "second": "12:36.73",
+   "second_by": "Hagos Gebrhiwet",
+   "second_year": 2024,
+   "best_now": "12:35.36",
+   "best_now_by": "Joshua Cheptegei",
+   "best_now_year": 2020,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2024
+  },
+  {
+   "sex": "M",
+   "event": "10000m",
+   "name": "10,000 metres",
+   "short": "10,000 m",
+   "field": false,
+   "record": "26:11.00",
+   "record_by": "Joshua Cheptegei",
+   "record_year": 2020,
+   "premium_now": 0.022334049426661284,
+   "premium_then": 0.02502202581858537,
+   "return_seasons": 44.064757459408035,
+   "group": "lone outlier",
+   "second": "26:17.53",
+   "second_by": "Kenenisa Bekele",
+   "second_year": 2005,
+   "best_now": "26:11.00",
+   "best_now_by": "Joshua Cheptegei",
+   "best_now_year": 2020,
+   "depth_peak": "2021\u20132025",
+   "last_near_year": 2020
+  },
+  {
+   "sex": "M",
+   "event": "110mH",
+   "name": "110 m hurdles",
+   "short": "110 m H",
+   "field": false,
+   "record": "12.75",
+   "record_by": "Ja'Kobe Tharp",
+   "record_year": 2026,
+   "premium_now": 0.010586865712524762,
+   "premium_then": 0.00901945543083138,
+   "return_seasons": 17.395831063370977,
+   "group": "within reach",
+   "second": "12.80",
+   "second_by": "Aries Merritt",
+   "second_year": 2012,
+   "best_now": "12.75",
+   "best_now_by": "Ja'Kobe Tharp",
+   "best_now_year": 2026,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "400mH",
+   "name": "400 m hurdles",
+   "short": "400 m H",
+   "field": false,
+   "record": "45.80",
+   "record_by": "Alison dos Santos",
+   "record_year": 2026,
+   "premium_now": 0.013645712081984174,
+   "premium_then": 0.011789215085762583,
+   "return_seasons": 13.940047697262752,
+   "group": "within reach",
+   "second": "45.94",
+   "second_by": "Karsten Warholm",
+   "second_year": 2021,
+   "best_now": "45.80",
+   "best_now_by": "Alison dos Santos",
+   "best_now_year": 2026,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "HJ",
+   "name": "High jump",
+   "short": "High jump",
+   "field": true,
+   "record": "2.45 m",
+   "record_by": "Javier Sotomayor",
+   "record_year": 1993,
+   "premium_now": 0.03375527426160341,
+   "premium_then": 0.02083333333333348,
+   "return_seasons": 53.021814670514644,
+   "group": "era record",
+   "second": "2.43 m",
+   "second_by": "Mutaz Essa Barshim",
+   "second_year": 2014,
+   "best_now": "2.40 m",
+   "best_now_by": "Mutaz Essa Barshim",
+   "best_now_year": 2017,
+   "depth_peak": "1985\u20131989",
+   "last_near_year": 2014
+  },
+  {
+   "sex": "M",
+   "event": "PV",
+   "name": "Pole vault",
+   "short": "Pole vault",
+   "field": true,
+   "record": "6.31 m",
+   "record_by": "Armand Duplantis",
+   "record_year": 2026,
+   "premium_now": 0.018563357546408366,
+   "premium_then": 0.01040832666132907,
+   "return_seasons": 14.263962779964928,
+   "group": "within reach",
+   "second": "6.20 m",
+   "second_by": "Emmanou\u00edl Kar\u00e1lis",
+   "second_year": 2026,
+   "best_now": "6.31 m",
+   "best_now_by": "Armand Duplantis",
+   "best_now_year": 2026,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "LJ",
+   "name": "Long jump",
+   "short": "Long jump",
+   "field": true,
+   "record": "8.95 m",
+   "record_by": "Mike Powell",
+   "record_year": 1991,
+   "premium_now": 0.03768115942028971,
+   "premium_then": 0.025200458190148822,
+   "return_seasons": 259.8753878628667,
+   "group": "lone outlier",
+   "second": "8.90 m",
+   "second_by": "Bob Beamon",
+   "second_year": 1968,
+   "best_now": "8.69 m",
+   "best_now_by": "Tajay Gayle",
+   "best_now_year": 2019,
+   "depth_peak": "1993\u20131997",
+   "last_near_year": 1991
+  },
+  {
+   "sex": "M",
+   "event": "TJ",
+   "name": "Triple jump",
+   "short": "Triple jump",
+   "field": true,
+   "record": "18.29 m",
+   "record_by": "Jonathan Edwards",
+   "record_year": 1995,
+   "premium_now": 0.015546918378678498,
+   "premium_then": 0.028973277074543002,
+   "return_seasons": 23.187223117060757,
+   "group": "within reach",
+   "second": "18.21 m",
+   "second_by": "Christian Taylor",
+   "second_year": 2015,
+   "best_now": "18.18 m",
+   "best_now_by": "Jordan Alejandr D\u00edaz",
+   "best_now_year": 2024,
+   "depth_peak": "1984\u20131988",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "M",
+   "event": "SP",
+   "name": "Shot put",
+   "short": "Shot put",
+   "field": true,
+   "record": "23.56 m",
+   "record_by": "Ryan Crouser",
+   "record_year": 2023,
+   "premium_now": 0.024570558817134325,
+   "premium_then": 0.021239705244906704,
+   "return_seasons": 19.235279076418145,
+   "group": "within reach",
+   "second": "23.23 m",
+   "second_by": "Joseph Kovacs",
+   "second_year": 2022,
+   "best_now": "23.56 m",
+   "best_now_by": "Ryan Crouser",
+   "best_now_year": 2023,
+   "depth_peak": "2021\u20132025",
+   "last_near_year": 2023
+  },
+  {
+   "sex": "M",
+   "event": "DT",
+   "name": "Discus",
+   "short": "Discus",
+   "field": true,
+   "record": "75.56 m",
+   "record_by": "Mykolas Alekna",
+   "record_year": 2025,
+   "premium_now": 0.054350101165143494,
+   "premium_then": 0.054350101165143494,
+   "return_seasons": 24.12259805807344,
+   "group": "within reach",
+   "second": "74.78 m",
+   "second_by": "Matthew Denny",
+   "second_year": 2025,
+   "best_now": "75.56 m",
+   "best_now_by": "Mykolas Alekna",
+   "best_now_year": 2025,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2025
+  },
+  {
+   "sex": "M",
+   "event": "JT",
+   "name": "Javelin",
+   "short": "Javelin",
+   "field": true,
+   "record": "98.48 m",
+   "record_by": "Jan \u017delezn\u00fd",
+   "record_year": 1996,
+   "premium_now": 0.060806807777239236,
+   "premium_then": 0.06799696345298778,
+   "return_seasons": 38.09164366645675,
+   "group": "era record",
+   "second": "97.76 m",
+   "second_by": "Johannes Vetter",
+   "second_year": 2020,
+   "best_now": "97.76 m",
+   "best_now_by": "Johannes Vetter",
+   "best_now_year": 2020,
+   "depth_peak": "1996\u20132000",
+   "last_near_year": 2020
+  },
+  {
+   "sex": "M",
+   "event": "HT",
+   "name": "Hammer",
+   "short": "Hammer",
+   "field": true,
+   "record": "86.74 m",
+   "record_by": "Yuriy Sedykh",
+   "record_year": 1986,
+   "premium_now": 0.05152139653291288,
+   "premium_then": 0.03126857686363094,
+   "return_seasons": 129.62807815271694,
+   "group": "era record",
+   "second": "86.04 m",
+   "second_by": "Sergey Litvinov",
+   "second_year": 1986,
+   "best_now": "84.70 m",
+   "best_now_by": "Ethan Katzberg",
+   "best_now_year": 2025,
+   "depth_peak": "2000\u20132004",
+   "last_near_year": 1986
+  },
+  {
+   "sex": "W",
+   "event": "100m",
+   "name": "100 metres",
+   "short": "100 m",
+   "field": false,
+   "record": "10.49",
+   "record_by": "Florence Griffith Joyner",
+   "record_year": 1988,
+   "premium_now": 0.018104454750913046,
+   "premium_then": 0.03527168732125818,
+   "return_seasons": 42.977167914717086,
+   "group": "lone outlier",
+   "second": "10.54",
+   "second_by": "Elaine Thompson-Herah",
+   "second_year": 2021,
+   "best_now": "10.54",
+   "best_now_by": "Elaine Thompson-Herah",
+   "best_now_year": 2021,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2021
+  },
+  {
+   "sex": "W",
+   "event": "200m",
+   "name": "200 metres",
+   "short": "200 m",
+   "field": false,
+   "record": "21.34",
+   "record_by": "Florence Griffith Joyner",
+   "record_year": 1988,
+   "premium_now": 0.017336389149464226,
+   "premium_then": 0.018040751793257925,
+   "return_seasons": 19.591620163628292,
+   "group": "within reach",
+   "second": "21.41",
+   "second_by": "Shericka Jackson",
+   "second_year": 2023,
+   "best_now": "21.41",
+   "best_now_by": "Shericka Jackson",
+   "best_now_year": 2023,
+   "depth_peak": "2021\u20132025",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "W",
+   "event": "400m",
+   "name": "400 metres",
+   "short": "400 m",
+   "field": false,
+   "record": "47.60",
+   "record_by": "Marita Koch",
+   "record_year": 1985,
+   "premium_now": 0.0212111835065234,
+   "premium_then": 0.0117647058823529,
+   "return_seasons": 24.422456373870453,
+   "group": "within reach",
+   "second": "47.78",
+   "second_by": "Sydney McLaughlin-Levrone",
+   "second_year": 2025,
+   "best_now": "47.78",
+   "best_now_by": "Sydney McLaughlin-Levrone",
+   "best_now_year": 2025,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2025
+  },
+  {
+   "sex": "W",
+   "event": "800m",
+   "name": "800 metres",
+   "short": "800 m",
+   "field": false,
+   "record": "1:53.28",
+   "record_by": "Jarmila Kratochv\u00edlov\u00e1",
+   "record_year": 1983,
+   "premium_now": 0.014962921809334562,
+   "premium_then": 0.02067567567567563,
+   "return_seasons": 21.275009360948776,
+   "group": "within reach",
+   "second": "1:53.43",
+   "second_by": "Nadezhda Olizarenko",
+   "second_year": 1980,
+   "best_now": "1:53.70",
+   "best_now_by": "Audrey Werro",
+   "best_now_year": 2026,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "W",
+   "event": "1500m",
+   "name": "1500 metres",
+   "short": "1500 m",
+   "field": false,
+   "record": "3:48.68",
+   "record_by": "Faith Kipyegon",
+   "record_year": 2025,
+   "premium_now": 0.012371714846186155,
+   "premium_then": 0.004627743549419083,
+   "return_seasons": 11.136202796255523,
+   "group": "within reach",
+   "second": "3:50.07",
+   "second_by": "Genzebe Dibaba",
+   "second_year": 2015,
+   "best_now": "3:48.68",
+   "best_now_by": "Faith Kipyegon",
+   "best_now_year": 2025,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2025
+  },
+  {
+   "sex": "W",
+   "event": "5000m",
+   "name": "5000 metres",
+   "short": "5000 m",
+   "field": false,
+   "record": "13:58.06",
+   "record_by": "Beatrice Chebet",
+   "record_year": 2025,
+   "premium_now": 0.01800583028128644,
+   "premium_then": 0.01573453465336705,
+   "return_seasons": 18.040030067735067,
+   "group": "within reach",
+   "second": "14:00.21",
+   "second_by": "Gudaf Tsegay",
+   "second_year": 2023,
+   "best_now": "13:58.06",
+   "best_now_by": "Beatrice Chebet",
+   "best_now_year": 2025,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2025
+  },
+  {
+   "sex": "W",
+   "event": "10000m",
+   "name": "10,000 metres",
+   "short": "10,000 m",
+   "field": false,
+   "record": "28:54.14",
+   "record_by": "Beatrice Chebet",
+   "record_year": 2024,
+   "premium_now": 0.045546719152323334,
+   "premium_then": 0.0225202172305774,
+   "return_seasons": 19.770219998724958,
+   "group": "within reach",
+   "second": "29:01.03",
+   "second_by": "Letesenbet Gidey",
+   "second_year": 2021,
+   "best_now": "28:54.14",
+   "best_now_by": "Beatrice Chebet",
+   "best_now_year": 2024,
+   "depth_peak": "2021\u20132025",
+   "last_near_year": 2024
+  },
+  {
+   "sex": "W",
+   "event": "100mH",
+   "name": "100 m hurdles",
+   "short": "100 m H",
+   "field": false,
+   "record": "12.09",
+   "record_by": "Masai Russell",
+   "record_year": 2026,
+   "premium_now": 0.013233402542158546,
+   "premium_then": 0.00950369158797737,
+   "return_seasons": 11.701534027352258,
+   "group": "within reach",
+   "second": "12.12",
+   "second_by": "Oluwatobiloba Amusan",
+   "second_year": 2022,
+   "best_now": "12.09",
+   "best_now_by": "Masai Russell",
+   "best_now_year": 2026,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "W",
+   "event": "400mH",
+   "name": "400 m hurdles",
+   "short": "400 m H",
+   "field": false,
+   "record": "50.37",
+   "record_by": "Sydney McLaughlin-Levrone",
+   "record_year": 2024,
+   "premium_now": 0.029051441633446196,
+   "premium_then": 0.021540589917382835,
+   "return_seasons": 21.613839669927483,
+   "group": "within reach",
+   "second": "50.95",
+   "second_by": "Femke Broeders-Bol",
+   "second_year": 2024,
+   "best_now": "50.37",
+   "best_now_by": "Sydney McLaughlin-Levrone",
+   "best_now_year": 2024,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2024
+  },
+  {
+   "sex": "W",
+   "event": "HJ",
+   "name": "High jump",
+   "short": "High jump",
+   "field": true,
+   "record": "2.10 m",
+   "record_by": "Yaroslava Mahuchikh",
+   "record_year": 2024,
+   "premium_now": 0.024390243902439046,
+   "premium_then": 0.024390243902439046,
+   "return_seasons": 41.4538137981202,
+   "group": "lone outlier",
+   "second": "2.09 m",
+   "second_by": "Stefka Kostadinova",
+   "second_year": 1987,
+   "best_now": "2.10 m",
+   "best_now_by": "Yaroslava Mahuchikh",
+   "best_now_year": 2024,
+   "depth_peak": null,
+   "last_near_year": 2024
+  },
+  {
+   "sex": "W",
+   "event": "PV",
+   "name": "Pole vault",
+   "short": "Pole vault",
+   "field": true,
+   "record": "5.06 m",
+   "record_by": "Yelena Isinbayeva",
+   "record_year": 2009,
+   "premium_now": 0.02532928064842932,
+   "premium_then": 0.01810865191146882,
+   "return_seasons": 23.115125503396172,
+   "group": "within reach",
+   "second": "5.03 m",
+   "second_by": "Jennifer Suhr",
+   "second_year": 2016,
+   "best_now": "5.01 m",
+   "best_now_by": "Anzhelika Sidorova",
+   "best_now_year": 2021,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2021
+  },
+  {
+   "sex": "W",
+   "event": "LJ",
+   "name": "Long jump",
+   "short": "Long jump",
+   "field": true,
+   "record": "7.52 m",
+   "record_by": "Galina Chistyakova",
+   "record_year": 1988,
+   "premium_now": 0.051013277428371806,
+   "premium_then": 0.010073875083948858,
+   "return_seasons": 291.7314583938781,
+   "group": "era record",
+   "second": "7.49 m",
+   "second_by": "Jackie Joyner-Kersee",
+   "second_year": 1994,
+   "best_now": "7.30 m",
+   "best_now_by": "Malaika Mihambo",
+   "best_now_year": 2019,
+   "depth_peak": "1984\u20131988",
+   "last_near_year": 1994
+  },
+  {
+   "sex": "W",
+   "event": "TJ",
+   "name": "Triple jump",
+   "short": "Triple jump",
+   "field": true,
+   "record": "15.74 m",
+   "record_by": "Yulimar Rojas",
+   "record_year": 2022,
+   "premium_now": 0.02875816993464042,
+   "premium_then": 0.02075226977950706,
+   "return_seasons": 22.438375886746524,
+   "group": "within reach",
+   "second": "15.50 m",
+   "second_by": "Inessa Kravets",
+   "second_year": 1995,
+   "best_now": "15.74 m",
+   "best_now_by": "Yulimar Rojas",
+   "best_now_year": 2022,
+   "depth_peak": "2004\u20132008",
+   "last_near_year": 2022
+  },
+  {
+   "sex": "W",
+   "event": "SP",
+   "name": "Shot put",
+   "short": "Shot put",
+   "field": true,
+   "record": "22.63 m",
+   "record_by": "Natalya Lisovskaya",
+   "record_year": 1987,
+   "premium_now": 0.09961127308066087,
+   "premium_then": 0.025606163607523325,
+   "return_seasons": 7379.11077568639,
+   "group": "era record",
+   "second": "22.50 m",
+   "second_by": "Helena Fibingerov\u00e1",
+   "second_year": 1977,
+   "best_now": "21.14 m",
+   "best_now_by": "Chase Jackson",
+   "best_now_year": 2026,
+   "depth_peak": "1984\u20131988",
+   "last_near_year": 1988
+  },
+  {
+   "sex": "W",
+   "event": "DT",
+   "name": "Discus",
+   "short": "Discus",
+   "field": true,
+   "record": "76.80 m",
+   "record_by": "Gabriele Reinsch",
+   "record_year": 1988,
+   "premium_now": 0.07570558162336294,
+   "premium_then": 0.042486765304737384,
+   "return_seasons": 355.95182100010635,
+   "group": "era record",
+   "second": "74.56 m",
+   "second_by": "Zdenka Silhav\u00e1",
+   "second_year": 1984,
+   "best_now": "73.52 m",
+   "best_now_by": "Valarie Sion",
+   "best_now_year": 2025,
+   "depth_peak": "1984\u20131988",
+   "last_near_year": 1988
+  },
+  {
+   "sex": "W",
+   "event": "JT",
+   "name": "Javelin",
+   "short": "Javelin",
+   "field": true,
+   "record": "72.28 m",
+   "record_by": "Barbora \u0160pot\u00e1kov\u00e1",
+   "record_year": 2008,
+   "premium_now": 0.0622382247042399,
+   "premium_then": 0.019967543921540765,
+   "return_seasons": 38.65276193594355,
+   "group": "lone outlier",
+   "second": "71.74 m",
+   "second_by": "Yan Ziyi",
+   "second_year": 2026,
+   "best_now": "71.74 m",
+   "best_now_by": "Yan Ziyi",
+   "best_now_year": 2026,
+   "depth_peak": "2015\u20132019",
+   "last_near_year": 2026
+  },
+  {
+   "sex": "W",
+   "event": "HT",
+   "name": "Hammer",
+   "short": "Hammer",
+   "field": true,
+   "record": "82.98 m",
+   "record_by": "Anita W\u0142odarczyk",
+   "record_year": 2016,
+   "premium_now": 0.03666687488287845,
+   "premium_then": 0.049781769877917714,
+   "return_seasons": 15.57327525318884,
+   "group": "within reach",
+   "second": "81.13 m",
+   "second_by": "Camryn Rogers",
+   "second_year": 2026,
+   "best_now": "82.87 m",
+   "best_now_by": "Anita Wlodarczyk",
+   "best_now_year": 2017,
+   "depth_peak": "2022\u20132026",
+   "last_near_year": 2017
+  }
+ ],
+ "depth": [
+  {
+   "sex": "M",
+   "event": "100m",
+   "label": "Men's 100 m",
+   "threshold": "under 10.00",
+   "series": [
+    [
+     1976,
+     0
+    ],
+    [
+     1977,
+     1
+    ],
+    [
+     1978,
+     0
+    ],
+    [
+     1979,
+     0
+    ],
+    [
+     1980,
+     0
+    ],
+    [
+     1981,
+     0
+    ],
+    [
+     1982,
+     0
+    ],
+    [
+     1983,
+     2
+    ],
+    [
+     1984,
+     2
+    ],
+    [
+     1985,
+     1
+    ],
+    [
+     1986,
+     0
+    ],
+    [
+     1987,
+     1
+    ],
+    [
+     1988,
+     3
+    ],
+    [
+     1989,
+     2
+    ],
+    [
+     1990,
+     1
+    ],
+    [
+     1991,
+     7
+    ],
+    [
+     1992,
+     5
+    ],
+    [
+     1993,
+     4
+    ],
+    [
+     1994,
+     7
+    ],
+    [
+     1995,
+     3
+    ],
+    [
+     1996,
+     6
+    ],
+    [
+     1997,
+     10
+    ],
+    [
+     1998,
+     9
+    ],
+    [
+     1999,
+     9
+    ],
+    [
+     2000,
+     7
+    ],
+    [
+     2001,
+     5
+    ],
+    [
+     2002,
+     9
+    ],
+    [
+     2003,
+     8
+    ],
+    [
+     2004,
+     7
+    ],
+    [
+     2005,
+     8
+    ],
+    [
+     2006,
+     11
+    ],
+    [
+     2007,
+     6
+    ],
+    [
+     2008,
+     14
+    ],
+    [
+     2009,
+     11
+    ],
+    [
+     2010,
+     13
+    ],
+    [
+     2011,
+     20
+    ],
+    [
+     2012,
+     19
+    ],
+    [
+     2013,
+     14
+    ],
+    [
+     2014,
+     16
+    ],
+    [
+     2015,
+     27
+    ],
+    [
+     2016,
+     25
+    ],
+    [
+     2017,
+     19
+    ],
+    [
+     2018,
+     21
+    ],
+    [
+     2019,
+     19
+    ],
+    [
+     2020,
+     4
+    ],
+    [
+     2021,
+     24
+    ],
+    [
+     2022,
+     30
+    ],
+    [
+     2023,
+     40
+    ],
+    [
+     2024,
+     36
+    ],
+    [
+     2025,
+     38
+    ],
+    [
+     2026,
+     45
+    ]
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "400m",
+   "label": "Women's 400 m",
+   "threshold": "under 50.00",
+   "series": [
+    [
+     1976,
+     2
+    ],
+    [
+     1977,
+     3
+    ],
+    [
+     1978,
+     1
+    ],
+    [
+     1979,
+     3
+    ],
+    [
+     1980,
+     3
+    ],
+    [
+     1981,
+     2
+    ],
+    [
+     1982,
+     3
+    ],
+    [
+     1983,
+     4
+    ],
+    [
+     1984,
+     11
+    ],
+    [
+     1985,
+     5
+    ],
+    [
+     1986,
+     5
+    ],
+    [
+     1987,
+     5
+    ],
+    [
+     1988,
+     11
+    ],
+    [
+     1989,
+     0
+    ],
+    [
+     1990,
+     1
+    ],
+    [
+     1991,
+     6
+    ],
+    [
+     1992,
+     7
+    ],
+    [
+     1993,
+     4
+    ],
+    [
+     1994,
+     1
+    ],
+    [
+     1995,
+     3
+    ],
+    [
+     1996,
+     6
+    ],
+    [
+     1997,
+     7
+    ],
+    [
+     1998,
+     3
+    ],
+    [
+     1999,
+     6
+    ],
+    [
+     2000,
+     8
+    ],
+    [
+     2001,
+     5
+    ],
+    [
+     2002,
+     3
+    ],
+    [
+     2003,
+     4
+    ],
+    [
+     2004,
+     7
+    ],
+    [
+     2005,
+     6
+    ],
+    [
+     2006,
+     7
+    ],
+    [
+     2007,
+     8
+    ],
+    [
+     2008,
+     5
+    ],
+    [
+     2009,
+     7
+    ],
+    [
+     2010,
+     3
+    ],
+    [
+     2011,
+     5
+    ],
+    [
+     2012,
+     7
+    ],
+    [
+     2013,
+     6
+    ],
+    [
+     2014,
+     2
+    ],
+    [
+     2015,
+     5
+    ],
+    [
+     2016,
+     7
+    ],
+    [
+     2017,
+     5
+    ],
+    [
+     2018,
+     6
+    ],
+    [
+     2019,
+     6
+    ],
+    [
+     2020,
+     0
+    ],
+    [
+     2021,
+     12
+    ],
+    [
+     2022,
+     9
+    ],
+    [
+     2023,
+     13
+    ],
+    [
+     2024,
+     16
+    ],
+    [
+     2025,
+     18
+    ],
+    [
+     2026,
+     17
+    ]
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "800m",
+   "label": "Women's 800 m",
+   "threshold": "under 1:57.00",
+   "series": [
+    [
+     1976,
+     6
+    ],
+    [
+     1977,
+     0
+    ],
+    [
+     1978,
+     5
+    ],
+    [
+     1979,
+     2
+    ],
+    [
+     1980,
+     8
+    ],
+    [
+     1981,
+     1
+    ],
+    [
+     1982,
+     8
+    ],
+    [
+     1983,
+     6
+    ],
+    [
+     1984,
+     7
+    ],
+    [
+     1985,
+     9
+    ],
+    [
+     1986,
+     1
+    ],
+    [
+     1987,
+     6
+    ],
+    [
+     1988,
+     10
+    ],
+    [
+     1989,
+     3
+    ],
+    [
+     1990,
+     3
+    ],
+    [
+     1991,
+     0
+    ],
+    [
+     1992,
+     3
+    ],
+    [
+     1993,
+     7
+    ],
+    [
+     1994,
+     2
+    ],
+    [
+     1995,
+     5
+    ],
+    [
+     1996,
+     2
+    ],
+    [
+     1997,
+     4
+    ],
+    [
+     1998,
+     3
+    ],
+    [
+     1999,
+     4
+    ],
+    [
+     2000,
+     5
+    ],
+    [
+     2001,
+     1
+    ],
+    [
+     2002,
+     3
+    ],
+    [
+     2003,
+     1
+    ],
+    [
+     2004,
+     6
+    ],
+    [
+     2005,
+     2
+    ],
+    [
+     2006,
+     3
+    ],
+    [
+     2007,
+     3
+    ],
+    [
+     2008,
+     6
+    ],
+    [
+     2009,
+     1
+    ],
+    [
+     2010,
+     0
+    ],
+    [
+     2011,
+     1
+    ],
+    [
+     2012,
+     2
+    ],
+    [
+     2013,
+     1
+    ],
+    [
+     2014,
+     0
+    ],
+    [
+     2015,
+     1
+    ],
+    [
+     2016,
+     3
+    ],
+    [
+     2017,
+     5
+    ],
+    [
+     2018,
+     5
+    ],
+    [
+     2019,
+     1
+    ],
+    [
+     2020,
+     0
+    ],
+    [
+     2021,
+     8
+    ],
+    [
+     2022,
+     4
+    ],
+    [
+     2023,
+     4
+    ],
+    [
+     2024,
+     6
+    ],
+    [
+     2025,
+     9
+    ],
+    [
+     2026,
+     12
+    ]
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "LJ",
+   "label": "Men's long jump",
+   "threshold": "8.40 m or farther",
+   "series": [
+    [
+     1976,
+     0
+    ],
+    [
+     1977,
+     0
+    ],
+    [
+     1978,
+     0
+    ],
+    [
+     1979,
+     1
+    ],
+    [
+     1980,
+     1
+    ],
+    [
+     1981,
+     2
+    ],
+    [
+     1982,
+     2
+    ],
+    [
+     1983,
+     1
+    ],
+    [
+     1984,
+     3
+    ],
+    [
+     1985,
+     4
+    ],
+    [
+     1986,
+     3
+    ],
+    [
+     1987,
+     5
+    ],
+    [
+     1988,
+     5
+    ],
+    [
+     1989,
+     3
+    ],
+    [
+     1990,
+     4
+    ],
+    [
+     1991,
+     4
+    ],
+    [
+     1992,
+     5
+    ],
+    [
+     1993,
+     4
+    ],
+    [
+     1994,
+     6
+    ],
+    [
+     1995,
+     7
+    ],
+    [
+     1996,
+     7
+    ],
+    [
+     1997,
+     9
+    ],
+    [
+     1998,
+     4
+    ],
+    [
+     1999,
+     3
+    ],
+    [
+     2000,
+     5
+    ],
+    [
+     2001,
+     2
+    ],
+    [
+     2002,
+     2
+    ],
+    [
+     2003,
+     4
+    ],
+    [
+     2004,
+     3
+    ],
+    [
+     2005,
+     3
+    ],
+    [
+     2006,
+     4
+    ],
+    [
+     2007,
+     3
+    ],
+    [
+     2008,
+     3
+    ],
+    [
+     2009,
+     7
+    ],
+    [
+     2010,
+     3
+    ],
+    [
+     2011,
+     4
+    ],
+    [
+     2012,
+     0
+    ],
+    [
+     2013,
+     2
+    ],
+    [
+     2014,
+     4
+    ],
+    [
+     2015,
+     3
+    ],
+    [
+     2016,
+     5
+    ],
+    [
+     2017,
+     3
+    ],
+    [
+     2018,
+     9
+    ],
+    [
+     2019,
+     4
+    ],
+    [
+     2020,
+     1
+    ],
+    [
+     2021,
+     3
+    ],
+    [
+     2022,
+     2
+    ],
+    [
+     2023,
+     6
+    ],
+    [
+     2024,
+     3
+    ],
+    [
+     2025,
+     1
+    ],
+    [
+     2026,
+     7
+    ]
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "HJ",
+   "label": "Men's high jump",
+   "threshold": "2.35 m or higher",
+   "series": [
+    [
+     1976,
+     0
+    ],
+    [
+     1977,
+     0
+    ],
+    [
+     1978,
+     1
+    ],
+    [
+     1979,
+     0
+    ],
+    [
+     1980,
+     3
+    ],
+    [
+     1981,
+     0
+    ],
+    [
+     1982,
+     0
+    ],
+    [
+     1983,
+     2
+    ],
+    [
+     1984,
+     6
+    ],
+    [
+     1985,
+     11
+    ],
+    [
+     1986,
+     5
+    ],
+    [
+     1987,
+     8
+    ],
+    [
+     1988,
+     13
+    ],
+    [
+     1989,
+     9
+    ],
+    [
+     1990,
+     11
+    ],
+    [
+     1991,
+     9
+    ],
+    [
+     1992,
+     9
+    ],
+    [
+     1993,
+     12
+    ],
+    [
+     1994,
+     7
+    ],
+    [
+     1995,
+     8
+    ],
+    [
+     1996,
+     6
+    ],
+    [
+     1997,
+     5
+    ],
+    [
+     1998,
+     3
+    ],
+    [
+     1999,
+     5
+    ],
+    [
+     2000,
+     7
+    ],
+    [
+     2001,
+     5
+    ],
+    [
+     2002,
+     6
+    ],
+    [
+     2003,
+     3
+    ],
+    [
+     2004,
+     2
+    ],
+    [
+     2005,
+     7
+    ],
+    [
+     2006,
+     5
+    ],
+    [
+     2007,
+     9
+    ],
+    [
+     2008,
+     8
+    ],
+    [
+     2009,
+     5
+    ],
+    [
+     2010,
+     1
+    ],
+    [
+     2011,
+     7
+    ],
+    [
+     2012,
+     7
+    ],
+    [
+     2013,
+     5
+    ],
+    [
+     2014,
+     7
+    ],
+    [
+     2015,
+     6
+    ],
+    [
+     2016,
+     10
+    ],
+    [
+     2017,
+     3
+    ],
+    [
+     2018,
+     6
+    ],
+    [
+     2019,
+     5
+    ],
+    [
+     2020,
+     0
+    ],
+    [
+     2021,
+     7
+    ],
+    [
+     2022,
+     2
+    ],
+    [
+     2023,
+     5
+    ],
+    [
+     2024,
+     3
+    ],
+    [
+     2025,
+     2
+    ],
+    [
+     2026,
+     1
+    ]
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "HT",
+   "label": "Men's hammer",
+   "threshold": "80 m or farther",
+   "series": [
+    [
+     1976,
+     0
+    ],
+    [
+     1977,
+     0
+    ],
+    [
+     1978,
+     2
+    ],
+    [
+     1979,
+     0
+    ],
+    [
+     1980,
+     6
+    ],
+    [
+     1981,
+     2
+    ],
+    [
+     1982,
+     4
+    ],
+    [
+     1983,
+     10
+    ],
+    [
+     1984,
+     12
+    ],
+    [
+     1985,
+     11
+    ],
+    [
+     1986,
+     14
+    ],
+    [
+     1987,
+     15
+    ],
+    [
+     1988,
+     23
+    ],
+    [
+     1989,
+     8
+    ],
+    [
+     1990,
+     13
+    ],
+    [
+     1991,
+     11
+    ],
+    [
+     1992,
+     15
+    ],
+    [
+     1993,
+     12
+    ],
+    [
+     1994,
+     11
+    ],
+    [
+     1995,
+     7
+    ],
+    [
+     1996,
+     8
+    ],
+    [
+     1997,
+     7
+    ],
+    [
+     1998,
+     13
+    ],
+    [
+     1999,
+     13
+    ],
+    [
+     2000,
+     20
+    ],
+    [
+     2001,
+     18
+    ],
+    [
+     2002,
+     19
+    ],
+    [
+     2003,
+     16
+    ],
+    [
+     2004,
+     15
+    ],
+    [
+     2005,
+     9
+    ],
+    [
+     2006,
+     11
+    ],
+    [
+     2007,
+     10
+    ],
+    [
+     2008,
+     14
+    ],
+    [
+     2009,
+     5
+    ],
+    [
+     2010,
+     3
+    ],
+    [
+     2011,
+     8
+    ],
+    [
+     2012,
+     6
+    ],
+    [
+     2013,
+     5
+    ],
+    [
+     2014,
+     4
+    ],
+    [
+     2015,
+     1
+    ],
+    [
+     2016,
+     2
+    ],
+    [
+     2017,
+     2
+    ],
+    [
+     2018,
+     3
+    ],
+    [
+     2019,
+     2
+    ],
+    [
+     2020,
+     2
+    ],
+    [
+     2021,
+     5
+    ],
+    [
+     2022,
+     7
+    ],
+    [
+     2023,
+     6
+    ],
+    [
+     2024,
+     6
+    ],
+    [
+     2025,
+     7
+    ],
+    [
+     2026,
+     11
+    ]
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "LJ",
+   "label": "Women's long jump",
+   "threshold": "7.00 m or farther",
+   "series": [
+    [
+     1976,
+     0
+    ],
+    [
+     1977,
+     0
+    ],
+    [
+     1978,
+     1
+    ],
+    [
+     1979,
+     0
+    ],
+    [
+     1980,
+     4
+    ],
+    [
+     1981,
+     0
+    ],
+    [
+     1982,
+     2
+    ],
+    [
+     1983,
+     5
+    ],
+    [
+     1984,
+     12
+    ],
+    [
+     1985,
+     10
+    ],
+    [
+     1986,
+     12
+    ],
+    [
+     1987,
+     10
+    ],
+    [
+     1988,
+     10
+    ],
+    [
+     1989,
+     5
+    ],
+    [
+     1990,
+     8
+    ],
+    [
+     1991,
+     5
+    ],
+    [
+     1992,
+     7
+    ],
+    [
+     1993,
+     5
+    ],
+    [
+     1994,
+     6
+    ],
+    [
+     1995,
+     1
+    ],
+    [
+     1996,
+     6
+    ],
+    [
+     1997,
+     3
+    ],
+    [
+     1998,
+     3
+    ],
+    [
+     1999,
+     5
+    ],
+    [
+     2000,
+     4
+    ],
+    [
+     2001,
+     3
+    ],
+    [
+     2002,
+     4
+    ],
+    [
+     2003,
+     2
+    ],
+    [
+     2004,
+     4
+    ],
+    [
+     2005,
+     1
+    ],
+    [
+     2006,
+     3
+    ],
+    [
+     2007,
+     4
+    ],
+    [
+     2008,
+     3
+    ],
+    [
+     2009,
+     1
+    ],
+    [
+     2010,
+     3
+    ],
+    [
+     2011,
+     3
+    ],
+    [
+     2012,
+     7
+    ],
+    [
+     2013,
+     5
+    ],
+    [
+     2014,
+     1
+    ],
+    [
+     2015,
+     3
+    ],
+    [
+     2016,
+     5
+    ],
+    [
+     2017,
+     4
+    ],
+    [
+     2018,
+     1
+    ],
+    [
+     2019,
+     3
+    ],
+    [
+     2020,
+     1
+    ],
+    [
+     2021,
+     8
+    ],
+    [
+     2022,
+     5
+    ],
+    [
+     2023,
+     6
+    ],
+    [
+     2024,
+     2
+    ],
+    [
+     2025,
+     5
+    ],
+    [
+     2026,
+     6
+    ]
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "SP",
+   "label": "Women's shot put",
+   "threshold": "20 m or farther",
+   "series": [
+    [
+     1976,
+     12
+    ],
+    [
+     1977,
+     9
+    ],
+    [
+     1978,
+     9
+    ],
+    [
+     1979,
+     11
+    ],
+    [
+     1980,
+     17
+    ],
+    [
+     1981,
+     6
+    ],
+    [
+     1982,
+     15
+    ],
+    [
+     1983,
+     14
+    ],
+    [
+     1984,
+     20
+    ],
+    [
+     1985,
+     13
+    ],
+    [
+     1986,
+     13
+    ],
+    [
+     1987,
+     23
+    ],
+    [
+     1988,
+     20
+    ],
+    [
+     1989,
+     10
+    ],
+    [
+     1990,
+     10
+    ],
+    [
+     1991,
+     7
+    ],
+    [
+     1992,
+     9
+    ],
+    [
+     1993,
+     8
+    ],
+    [
+     1994,
+     7
+    ],
+    [
+     1995,
+     4
+    ],
+    [
+     1996,
+     2
+    ],
+    [
+     1997,
+     4
+    ],
+    [
+     1998,
+     3
+    ],
+    [
+     1999,
+     2
+    ],
+    [
+     2000,
+     4
+    ],
+    [
+     2001,
+     3
+    ],
+    [
+     2002,
+     3
+    ],
+    [
+     2003,
+     4
+    ],
+    [
+     2004,
+     5
+    ],
+    [
+     2005,
+     2
+    ],
+    [
+     2006,
+     2
+    ],
+    [
+     2007,
+     2
+    ],
+    [
+     2008,
+     2
+    ],
+    [
+     2009,
+     4
+    ],
+    [
+     2010,
+     2
+    ],
+    [
+     2011,
+     3
+    ],
+    [
+     2012,
+     3
+    ],
+    [
+     2013,
+     4
+    ],
+    [
+     2014,
+     2
+    ],
+    [
+     2015,
+     3
+    ],
+    [
+     2016,
+     4
+    ],
+    [
+     2017,
+     1
+    ],
+    [
+     2018,
+     2
+    ],
+    [
+     2019,
+     1
+    ],
+    [
+     2020,
+     0
+    ],
+    [
+     2021,
+     2
+    ],
+    [
+     2022,
+     6
+    ],
+    [
+     2023,
+     4
+    ],
+    [
+     2024,
+     6
+    ],
+    [
+     2025,
+     6
+    ],
+    [
+     2026,
+     4
+    ]
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "DT",
+   "label": "Women's discus",
+   "threshold": "68 m or farther",
+   "series": [
+    [
+     1976,
+     5
+    ],
+    [
+     1977,
+     3
+    ],
+    [
+     1978,
+     3
+    ],
+    [
+     1979,
+     3
+    ],
+    [
+     1980,
+     3
+    ],
+    [
+     1981,
+     6
+    ],
+    [
+     1982,
+     11
+    ],
+    [
+     1983,
+     7
+    ],
+    [
+     1984,
+     11
+    ],
+    [
+     1985,
+     8
+    ],
+    [
+     1986,
+     9
+    ],
+    [
+     1987,
+     9
+    ],
+    [
+     1988,
+     16
+    ],
+    [
+     1989,
+     6
+    ],
+    [
+     1990,
+     4
+    ],
+    [
+     1991,
+     3
+    ],
+    [
+     1992,
+     7
+    ],
+    [
+     1993,
+     1
+    ],
+    [
+     1994,
+     2
+    ],
+    [
+     1995,
+     3
+    ],
+    [
+     1996,
+     2
+    ],
+    [
+     1997,
+     3
+    ],
+    [
+     1998,
+     2
+    ],
+    [
+     1999,
+     3
+    ],
+    [
+     2000,
+     3
+    ],
+    [
+     2001,
+     2
+    ],
+    [
+     2002,
+     0
+    ],
+    [
+     2003,
+     1
+    ],
+    [
+     2004,
+     2
+    ],
+    [
+     2005,
+     0
+    ],
+    [
+     2006,
+     1
+    ],
+    [
+     2007,
+     1
+    ],
+    [
+     2008,
+     0
+    ],
+    [
+     2009,
+     0
+    ],
+    [
+     2010,
+     0
+    ],
+    [
+     2011,
+     0
+    ],
+    [
+     2012,
+     3
+    ],
+    [
+     2013,
+     1
+    ],
+    [
+     2014,
+     2
+    ],
+    [
+     2015,
+     2
+    ],
+    [
+     2016,
+     3
+    ],
+    [
+     2017,
+     3
+    ],
+    [
+     2018,
+     2
+    ],
+    [
+     2019,
+     3
+    ],
+    [
+     2020,
+     1
+    ],
+    [
+     2021,
+     3
+    ],
+    [
+     2022,
+     3
+    ],
+    [
+     2023,
+     3
+    ],
+    [
+     2024,
+     3
+    ],
+    [
+     2025,
+     6
+    ],
+    [
+     2026,
+     5
+    ]
+   ]
+  }
+ ],
+ "fingerprint": [
+  {
+   "sex": "M",
+   "event": "100m",
+   "short": "100 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    15,
+    11,
+    22,
+    52
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "200m",
+   "short": "200 m",
+   "n": 100,
+   "decades": [
+    2,
+    2,
+    3,
+    9,
+    12,
+    26,
+    46
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "400m",
+   "short": "400 m",
+   "n": 100,
+   "decades": [
+    2,
+    1,
+    7,
+    21,
+    7,
+    24,
+    38
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "800m",
+   "short": "800 m",
+   "n": 100,
+   "decades": [
+    0,
+    1,
+    8,
+    21,
+    14,
+    26,
+    30
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "1500m",
+   "short": "1500 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    7,
+    10,
+    19,
+    22,
+    42
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "5000m",
+   "short": "5000 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    10,
+    30,
+    17,
+    43
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "10000m",
+   "short": "10,000 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    8,
+    23,
+    32,
+    37
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "110mH",
+   "short": "110 m H",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    3,
+    15,
+    14,
+    21,
+    47
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "400mH",
+   "short": "400 m H",
+   "n": 100,
+   "decades": [
+    0,
+    1,
+    6,
+    16,
+    20,
+    16,
+    41
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "HJ",
+   "short": "High jump",
+   "n": 100,
+   "decades": [
+    0,
+    1,
+    19,
+    23,
+    22,
+    26,
+    9
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "PV",
+   "short": "Pole vault",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    10,
+    22,
+    19,
+    17,
+    32
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "LJ",
+   "short": "Long jump",
+   "n": 100,
+   "decades": [
+    1,
+    1,
+    9,
+    26,
+    22,
+    24,
+    17
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "TJ",
+   "short": "Triple jump",
+   "n": 100,
+   "decades": [
+    0,
+    1,
+    22,
+    20,
+    23,
+    21,
+    13
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "SP",
+   "short": "Shot put",
+   "n": 100,
+   "decades": [
+    1,
+    8,
+    19,
+    6,
+    17,
+    26,
+    23
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "DT",
+   "short": "Discus",
+   "n": 100,
+   "decades": [
+    0,
+    7,
+    23,
+    6,
+    15,
+    16,
+    33
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "JT",
+   "short": "Javelin",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    3,
+    22,
+    21,
+    30,
+    24
+   ]
+  },
+  {
+   "sex": "M",
+   "event": "HT",
+   "short": "Hammer",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    25,
+    22,
+    34,
+    6,
+    13
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "100m",
+   "short": "100 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    9,
+    15,
+    12,
+    19,
+    45
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "200m",
+   "short": "200 m",
+   "n": 100,
+   "decades": [
+    0,
+    3,
+    16,
+    16,
+    6,
+    19,
+    40
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "400m",
+   "short": "400 m",
+   "n": 100,
+   "decades": [
+    0,
+    1,
+    17,
+    15,
+    16,
+    16,
+    35
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "800m",
+   "short": "800 m",
+   "n": 100,
+   "decades": [
+    0,
+    8,
+    32,
+    15,
+    13,
+    7,
+    25
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "1500m",
+   "short": "1500 m",
+   "n": 100,
+   "decades": [
+    0,
+    2,
+    16,
+    20,
+    11,
+    10,
+    41
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "5000m",
+   "short": "5000 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    6,
+    16,
+    19,
+    59
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "10000m",
+   "short": "10,000 m",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    1,
+    5,
+    29,
+    16,
+    49
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "100mH",
+   "short": "100 m H",
+   "n": 100,
+   "decades": [
+    0,
+    1,
+    12,
+    13,
+    17,
+    19,
+    38
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "400mH",
+   "short": "400 m H",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    8,
+    17,
+    21,
+    17,
+    37
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "HJ",
+   "short": "High jump",
+   "n": 100,
+   "decades": [
+    0,
+    2,
+    22,
+    18,
+    23,
+    21,
+    14
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "PV",
+   "short": "Pole vault",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    0,
+    20,
+    33,
+    47
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "LJ",
+   "short": "Long jump",
+   "n": 100,
+   "decades": [
+    0,
+    2,
+    26,
+    17,
+    14,
+    22,
+    19
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "TJ",
+   "short": "Triple jump",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    21,
+    35,
+    23,
+    21
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "SP",
+   "short": "Shot put",
+   "n": 87,
+   "decades": [
+    0,
+    11,
+    37,
+    16,
+    7,
+    5,
+    11
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "DT",
+   "short": "Discus",
+   "n": 100,
+   "decades": [
+    0,
+    8,
+    42,
+    14,
+    6,
+    12,
+    18
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "JT",
+   "short": "Javelin",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    3,
+    33,
+    35,
+    29
+   ]
+  },
+  {
+   "sex": "W",
+   "event": "HT",
+   "short": "Hammer",
+   "n": 100,
+   "decades": [
+    0,
+    0,
+    0,
+    1,
+    21,
+    34,
+    44
+   ]
+  }
+ ],
+ "lj": {
+  "leads": [
+   [
+    1960,
+    8.21,
+    "Ralph Boston",
+    false
+   ],
+   [
+    1961,
+    8.28,
+    "Ralph Boston",
+    false
+   ],
+   [
+    1962,
+    8.31,
+    "Igor Ter-Ovanesyan",
+    false
+   ],
+   [
+    1963,
+    8.33,
+    "Phil Shinnick",
+    false
+   ],
+   [
+    1964,
+    8.34,
+    "Ralph Boston",
+    false
+   ],
+   [
+    1965,
+    8.35,
+    "Ralph Boston",
+    false
+   ],
+   [
+    1966,
+    8.23,
+    "Igor Ter-Ovanesyan",
+    false
+   ],
+   [
+    1967,
+    8.35,
+    "Igor Ter-Ovanesyan",
+    true
+   ],
+   [
+    1968,
+    8.9,
+    "Bob Beamon",
+    true
+   ],
+   [
+    1969,
+    8.211,
+    "Igor Ter-Ovanesyan",
+    false
+   ],
+   [
+    1970,
+    8.35,
+    "Josef Schwarz",
+    false
+   ],
+   [
+    1972,
+    8.34,
+    "Randy Williams",
+    false
+   ],
+   [
+    1973,
+    8.25,
+    "Henry Hines",
+    false
+   ],
+   [
+    1974,
+    8.3,
+    "Arnie Robinson",
+    false
+   ],
+   [
+    1975,
+    8.45,
+    "Nenad Stekic",
+    false
+   ],
+   [
+    1976,
+    8.35,
+    "Arnie Robinson",
+    false
+   ],
+   [
+    1977,
+    8.27,
+    "Nenad Stekic",
+    false
+   ],
+   [
+    1978,
+    8.32,
+    "Nenad Stekic",
+    false
+   ],
+   [
+    1979,
+    8.52,
+    "Larry Myricks",
+    false
+   ],
+   [
+    1980,
+    8.54,
+    "Lutz Dombrowski",
+    false
+   ],
+   [
+    1981,
+    8.62,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1982,
+    8.76,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1983,
+    8.79,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1984,
+    8.79,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1985,
+    8.62,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1986,
+    8.61,
+    "Robert Emmiyan",
+    false
+   ],
+   [
+    1987,
+    8.86,
+    "Robert Emmiyan",
+    true
+   ],
+   [
+    1988,
+    8.76,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1989,
+    8.7,
+    "Larry Myricks",
+    false
+   ],
+   [
+    1990,
+    8.66,
+    "Mike Powell",
+    false
+   ],
+   [
+    1991,
+    8.95,
+    "Mike Powell",
+    false
+   ],
+   [
+    1992,
+    8.68,
+    "Carl Lewis",
+    false
+   ],
+   [
+    1993,
+    8.7,
+    "Mike Powell",
+    false
+   ],
+   [
+    1994,
+    8.74,
+    "Erick Walder",
+    true
+   ],
+   [
+    1995,
+    8.71,
+    "Iv\u00e1n Pedroso",
+    false
+   ],
+   [
+    1996,
+    8.58,
+    "Erick Walder",
+    false
+   ],
+   [
+    1997,
+    8.63,
+    "Iv\u00e1n Pedroso",
+    false
+   ],
+   [
+    1998,
+    8.6,
+    "James Beckford",
+    false
+   ],
+   [
+    1999,
+    8.62,
+    "Iv\u00e1n Pedroso",
+    false
+   ],
+   [
+    2000,
+    8.65,
+    "Iv\u00e1n Pedroso",
+    false
+   ],
+   [
+    2001,
+    8.43,
+    "Iv\u00e1n Pedroso",
+    false
+   ],
+   [
+    2002,
+    8.59,
+    "Miguel Pate",
+    false
+   ],
+   [
+    2003,
+    8.53,
+    "Yago Lamela",
+    false
+   ],
+   [
+    2004,
+    8.6,
+    "Dwight Phillips",
+    false
+   ],
+   [
+    2005,
+    8.6,
+    "Dwight Phillips",
+    false
+   ],
+   [
+    2006,
+    8.56,
+    "Irving Saladino",
+    false
+   ],
+   [
+    2007,
+    8.66,
+    "Louis Ts\u00e1toumas",
+    false
+   ],
+   [
+    2008,
+    8.73,
+    "Irving Saladino",
+    false
+   ],
+   [
+    2009,
+    8.74,
+    "Dwight Phillips",
+    false
+   ],
+   [
+    2010,
+    8.47,
+    "Christian Reif",
+    false
+   ],
+   [
+    2011,
+    8.54,
+    "Mitchell Watt",
+    false
+   ],
+   [
+    2012,
+    8.35,
+    "Greg Rutherford",
+    false
+   ],
+   [
+    2013,
+    8.56,
+    "Aleksandr Menkov",
+    false
+   ],
+   [
+    2014,
+    8.51,
+    "Greg Rutherford",
+    false
+   ],
+   [
+    2015,
+    8.52,
+    "Jeffrey Henderson",
+    false
+   ],
+   [
+    2016,
+    8.58,
+    "Jarrion Lawson",
+    false
+   ],
+   [
+    2017,
+    8.65,
+    "Luvo Manyonga",
+    true
+   ],
+   [
+    2018,
+    8.68,
+    "Juan Miguel Echevarr\u00eda",
+    false
+   ],
+   [
+    2019,
+    8.69,
+    "Tajay Gayle",
+    false
+   ],
+   [
+    2020,
+    8.41,
+    "Juan Miguel Echevarr\u00eda",
+    false
+   ],
+   [
+    2021,
+    8.6,
+    "Milti\u00e1dis Tent\u00f3glou",
+    false
+   ],
+   [
+    2022,
+    8.55,
+    "Milti\u00e1dis Tent\u00f3glou",
+    false
+   ],
+   [
+    2023,
+    8.54,
+    "Wayne Pinnock",
+    false
+   ],
+   [
+    2024,
+    8.65,
+    "Milti\u00e1dis Tent\u00f3glou",
+    false
+   ],
+   [
+    2025,
+    8.46,
+    "Milti\u00e1dis Tent\u00f3glou",
+    false
+   ],
+   [
+    2026,
+    8.66,
+    "Milti\u00e1dis Tent\u00f3glou",
+    false
+   ]
+  ],
+  "record": [
+   [
+    1960.615,
+    8.21,
+    "Ralph Boston"
+   ],
+   [
+    1961.401,
+    8.24,
+    "Ralph Boston"
+   ],
+   [
+    1961.538,
+    8.28,
+    "Ralph Boston"
+   ],
+   [
+    1962.439,
+    8.31,
+    "Igor Ter-Ovanesyan"
+   ],
+   [
+    1963.396,
+    8.33,
+    "Phil Shinnick"
+   ],
+   [
+    1964.7,
+    8.34,
+    "Ralph Boston"
+   ],
+   [
+    1965.407,
+    8.35,
+    "Ralph Boston"
+   ],
+   [
+    1968.798,
+    8.9,
+    "Bob Beamon"
+   ],
+   [
+    1991.661,
+    8.95,
+    "Mike Powell"
+   ]
+  ],
+  "over880": [
+   [
+    8.95,
+    "Mike Powell",
+    "Tokyo",
+    "1991-08-30",
+    false,
+    "+0.3"
+   ],
+   [
+    8.9,
+    "Bob Beamon",
+    "Ciudad de M\u00e9xico",
+    "1968-10-18",
+    true,
+    "+2.0"
+   ],
+   [
+    8.87,
+    "Carl Lewis",
+    "Tokyo",
+    "1991-08-30",
+    false,
+    "-0.2"
+   ],
+   [
+    8.86,
+    "Robert Emmiyan",
+    "Tsakhkadzor",
+    "1987-05-22",
+    true,
+    "+1.9"
+   ]
+  ],
+  "wind880": [
+   [
+    8.99,
+    "Mike Powell",
+    "Sestriere",
+    "1992-07-21",
+    true,
+    "+4.4"
+   ],
+   [
+    8.95,
+    "Mike Powell",
+    "Sestriere",
+    "1994-07-31",
+    true,
+    "+3.9"
+   ],
+   [
+    8.92,
+    "Juan Miguel Echevarr\u00eda",
+    "La Habana",
+    "2019-03-10",
+    false,
+    "+3.3"
+   ],
+   [
+    8.91,
+    "Carl Lewis",
+    "Tokyo",
+    "1991-08-30",
+    false,
+    "+3.0"
+   ],
+   [
+    8.9,
+    "Mike Powell",
+    "Modesto",
+    "1992-05-16",
+    false,
+    "+3.7"
+   ],
+   [
+    8.83,
+    "Juan Miguel Echevarr\u00eda",
+    "Stockholm",
+    "2018-06-10",
+    false,
+    "+2.1"
+   ]
+  ],
+  "over850_per_season": [
+   [
+    1976,
+    0
+   ],
+   [
+    1977,
+    0
+   ],
+   [
+    1978,
+    0
+   ],
+   [
+    1979,
+    1
+   ],
+   [
+    1980,
+    1
+   ],
+   [
+    1981,
+    1
+   ],
+   [
+    1982,
+    2
+   ],
+   [
+    1983,
+    1
+   ],
+   [
+    1984,
+    3
+   ],
+   [
+    1985,
+    1
+   ],
+   [
+    1986,
+    2
+   ],
+   [
+    1987,
+    4
+   ],
+   [
+    1988,
+    2
+   ],
+   [
+    1989,
+    2
+   ],
+   [
+    1990,
+    3
+   ],
+   [
+    1991,
+    4
+   ],
+   [
+    1992,
+    3
+   ],
+   [
+    1993,
+    2
+   ],
+   [
+    1994,
+    4
+   ],
+   [
+    1995,
+    4
+   ],
+   [
+    1996,
+    3
+   ],
+   [
+    1997,
+    2
+   ],
+   [
+    1998,
+    2
+   ],
+   [
+    1999,
+    3
+   ],
+   [
+    2000,
+    1
+   ],
+   [
+    2001,
+    0
+   ],
+   [
+    2002,
+    2
+   ],
+   [
+    2003,
+    1
+   ],
+   [
+    2004,
+    1
+   ],
+   [
+    2005,
+    1
+   ],
+   [
+    2006,
+    1
+   ],
+   [
+    2007,
+    2
+   ],
+   [
+    2008,
+    1
+   ],
+   [
+    2009,
+    4
+   ],
+   [
+    2010,
+    0
+   ],
+   [
+    2011,
+    1
+   ],
+   [
+    2012,
+    0
+   ],
+   [
+    2013,
+    1
+   ],
+   [
+    2014,
+    1
+   ],
+   [
+    2015,
+    1
+   ],
+   [
+    2016,
+    1
+   ],
+   [
+    2017,
+    1
+   ],
+   [
+    2018,
+    2
+   ],
+   [
+    2019,
+    2
+   ],
+   [
+    2020,
+    0
+   ],
+   [
+    2021,
+    2
+   ],
+   [
+    2022,
+    1
+   ],
+   [
+    2023,
+    2
+   ],
+   [
+    2024,
+    1
+   ],
+   [
+    2025,
+    0
+   ],
+   [
+    2026,
+    2
+   ]
+  ],
+  "sprint_jumpers": [
+   [
+    1987,
+    "Brian Cooper",
+    8.22,
+    10.07
+   ],
+   [
+    1989,
+    "Leroy Burrell",
+    8.37,
+    9.85
+   ],
+   [
+    1991,
+    "Carl Lewis",
+    8.87,
+    9.86
+   ],
+   [
+    1994,
+    "Kareem Streete-Thompson",
+    8.63,
+    9.96
+   ],
+   [
+    2009,
+    "Dwight Phillips",
+    8.74,
+    10.06
+   ],
+   [
+    2011,
+    "Ngonidzashe Makusha",
+    8.4,
+    9.89
+   ],
+   [
+    2016,
+    "Jarrion Lawson",
+    8.58,
+    10.03
+   ],
+   [
+    2022,
+    "Matthew Boling",
+    8.25,
+    9.98
+   ],
+   [
+    2023,
+    "Cameron Crump",
+    8.39,
+    9.99
+   ],
+   [
+    2023,
+    "Omar McLeod",
+    8.27,
+    9.99
+   ],
+   [
+    2024,
+    "Cheswill Johnson",
+    8.22,
+    10.02
+   ],
+   [
+    2025,
+    "Emanuel Archibald",
+    8.22,
+    10.09
+   ]
+  ]
+ },
+ "decades": [
+  "1960s",
+  "1970s",
+  "1980s",
+  "1990s",
+  "2000s",
+  "2010s",
+  "2020s"
+ ]
+}

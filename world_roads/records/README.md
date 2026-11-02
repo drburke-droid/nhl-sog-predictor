@@ -29,9 +29,21 @@ The finished video is `videos/athletics/the_record_and_the_rest_7m56s.mp4`. YouT
 | `thumbs.py` | Thumbnails A/B/C |
 | `render_all.sh` | Everything after the data: `./render_all.sh` (1080p) or `./render_all.sh 2` (4K) |
 
+**Out of Reach**, the follow-up analysis: which records sit far above today's best, whether one athlete or
+a whole era put them there, and which events have plateaued (with the men's long jump as the spotlight).
+Built on Peter Larsson's all-time lists (alltime-athletics.com, about 164,000 legal performances); the page
+is `report.html`, built from `report_page.html` by `report_data.py`.
+
+| File | What it does |
+|---|---|
+| `alltime.py` | Parses the cached all-time lists (main and indoor sections; wind-aided lists as context) → `cache/alltime_parsed.csv` |
+| `deep.py` | Season leads, season depth, record premiums, Gumbel return periods, depth peaks → `tables/seasons.csv`, `tables/deep_summary.csv` |
+| `report_data.py` | Groups the records (era record, lone outlier, within reach), builds `tables/deep_report.json` and `report.html` |
+
 Data tables are rebuilt with:
 
 ```
 python fetch.py olympics && python fetch.py records
 python build_records.py > tables/build_records.txt && python parse_olympics.py && python analysis.py
+python fetch.py alltime && python alltime.py && python deep.py && python report_data.py
 ```
