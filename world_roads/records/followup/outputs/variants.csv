@@ -1,0 +1,28 @@
+key,group,label
+A0_original,baseline,"Original published (OLS +/-15, name-based exclusion, first-listed leader)"
+A1_corrected,data,"Corrected data (stable IDs, logged repairs), every tied leader scored"
+A1_w7,window,"Corrected, window +/-7"
+A1_w10,window,"Corrected, window +/-10"
+A1_w20,window,"Corrected, window +/-20"
+A1_flat,trend,"Corrected, flat window (no trend)"
+A1_huber,trend,"Corrected, robust (Huber) trend and MAD scale"
+A2_main,main,"MAIN peer dominance: corrected, +/-15, quadratic trend (OLS near the data's ends) - CV choice within +/-15"
+A2_w7,window,"Corrected, +/-7 quadratic (best cross-validated overall)"
+A2_twosided,edges,"MAIN, ranking only seasons with at least 5 comparison seasons on each side"
+A1_noshift,trend,"Corrected, no swimming suit term"
+B1_allseasons,estimand B,ALL-SEASONS rarity: only the tested season left out (athlete's other seasons kept)
+B2_allseasons_main,estimand B,All-seasons rarity with the main trend
+E1_env_ratio,environment,Big four: value / league per-team-game rate (elasticity 1)
+E2_env_power,environment,"Big four: value / league rate^gamma, gamma estimated and partially pooled"
+E3_main_env,main+env,"MAIN + estimated environment (quadratic +/-15, gamma pooled)"
+F_ratio_field25,"field (handoff model, extended to MLB/NFL)",Big four: ratio environment + proposed field offset at 25% (beta*ln(Nref/N))
+F_ratio_field50,"field (handoff model, extended to MLB/NFL)",Big four: ratio environment + proposed field offset at 50% (beta*ln(Nref/N))
+F_ratio_field100,"field (handoff model, extended to MLB/NFL)",Big four: ratio environment + proposed field offset at 100% (beta*ln(Nref/N))
+F_ratio_field100_normal,"field (handoff model, extended to MLB/NFL)",Big four: ratio environment + field offset with normal-tail growth
+F_ratio_field_estimated,field (estimated),Big four: ratio environment + estimated expansion effect (sport-pooled)
+D1_depth,depth/technology (individual sports),Athletics and swimming: value / median of the season's ranks 2-10 (participation depth; 2020 left out)
+T1_spikes,depth/technology (individual sports),"Athletics running events: separate level for 2020-26 (spike technology), main trend"
+A2_main_catstd,calibration,MAIN standardised within category: (z - category median) / (1.4826 x MAD)
+A0_original_cal,calibration,"A0_original tail-calibrated: -log10 P(a season leader of the category exceeds z), GPD with pooled shape"
+A2_main_cal,calibration,"A2_main tail-calibrated: -log10 P(a season leader of the category exceeds z), GPD with pooled shape"
+E3_main_env_cal,calibration,"E3_main_env tail-calibrated: -log10 P(a season leader of the category exceeds z), GPD with pooled shape"

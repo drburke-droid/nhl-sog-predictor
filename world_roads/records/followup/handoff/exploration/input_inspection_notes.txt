@@ -1,0 +1,184 @@
+counts 74 44952 18561 200 sports cat {'Athletics': 30, 'MLB': 9, 'NBA': 4, 'NFL': 6, 'NHL': 3, 'Swimming': 22} first last observed             min   max  nunique
+sport                         
+Athletics  1955  2202       73
+MLB        1876  2026      151
+NBA        1947  2026       80
+NFL        1932  2025       94
+NHL        1918  2026      108
+Swimming   1994  2026       33
+ALL category list and data coverage, seasons count/min/mid, ranks
+ath_M_100m         55 seasons 1964-2026 list median  10 n1  3 missing [1965, 1966, 1967, 1969, 1970, 1971, 1973, 1974]
+ath_M_200m         59 seasons 1964-2026 list median  10 n1  2 missing [1965, 1966, 1969, 1970]
+ath_M_400m         63 seasons 1960-2026 list median  10 n1  3 missing [1961, 1962, 1963, 1965]
+ath_M_800m         65 seasons 1955-2026 list median  10 n1  2 missing [1956, 1958, 1959, 1960, 1961, 1963, 1965]
+ath_M_1500m        66 seasons 1958-2026 list median  10 n1  4 missing [1959, 1961, 1962]
+ath_M_110mH        60 seasons 1966-2026 list median  10 n1  3 missing [1971]
+ath_M_400mH        56 seasons 1968-2026 list median  10 n1  1 missing [1969, 1970, 1971]
+ath_M_HJ           51 seasons 1976-2026 list median  10 n1  2 missing []
+ath_M_PV           50 seasons 1976-2027 list median  10 n1  3 missing [1977, 1979]
+ath_M_LJ           66 seasons 1960-2026 list median  10 n1  7 missing [1971]
+ath_M_TJ           55 seasons 1968-2026 list median  10 n1  3 missing [1969, 1973, 1974, 1977]
+ath_M_SP           61 seasons 1965-2026 list median  10 n1  5 missing [1969]
+ath_M_DT           59 seasons 1968-2026 list median  10 n1  7 missing []
+ath_M_JT           41 seasons 1986-2026 list median  10 n1  0 missing []
+ath_M_HT           48 seasons 1978-2026 list median  10 n1  0 missing [1979]
+ath_W_100m         54 seasons 1968-2026 list median  10 n1  4 missing [1969, 1970, 1971, 1974, 1975]
+ath_W_200m         56 seasons 1968-2026 list median  10 n1  2 missing [1969, 1970, 1971]
+ath_W_400m         53 seasons 1974-2026 list median  10 n1  0 missing []
+ath_W_800m         56 seasons 1964-2026 list median  10 n1  2 missing [1965, 1966, 1967, 1968, 1969, 1970, 1975]
+ath_W_1500m        54 seasons 1972-2026 list median  10 n1  1 missing [1975]
+ath_W_100mH        53 seasons 1972-2026 list median  10 n1  5 missing [1975, 1977]
+ath_W_400mH        49 seasons 1978-2026 list median  10 n1  3 missing []
+ath_W_HJ           49 seasons 1977-2026 list median  10 n1  2 missing [1981]
+ath_W_PV           32 seasons 1996-2109 list median  10 n1  1 missing [2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 
+ath_W_LJ           50 seasons 1976-2026 list median  10 n1  1 missing [1977]
+ath_W_TJ           38 seasons 1989-2026 list median  10 n1  1 missing []
+ath_W_SP           57 seasons 1969-2026 list median  10 n1  0 missing [1970]
+ath_W_DT           55 seasons 1972-2026 list median  10 n1  0 missing []
+ath_W_JT           28 seasons 1999-2026 list median  10 n1  0 missing []
+ath_W_HT           33 seasons 1995-2202 list median  10 n1  2 missing [2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 
+swim_M_50_fr       33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_100_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_200_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_400_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_800_fr      27 seasons 2000-2026 list median  10 n1  0 missing []
+swim_M_1500_fr     32 seasons 1994-2026 list median  10 n1  0 missing [1997]
+swim_M_100_ba      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_100_br      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_100_bu      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_200_me      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_M_400_me      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_50_fr       33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_100_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_200_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_400_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_800_fr      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_1500_fr     24 seasons 2001-2026 list median  10 n1  0 missing [2002, 2004]
+swim_W_100_ba      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_100_br      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_100_bu      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_200_me      33 seasons 1994-2026 list median  10 n1  0 missing []
+swim_W_400_me      33 seasons 1994-2026 list median  10 n1  0 missing []
+mlb_streak        129 seasons 1897-2025 list median  10 n1  0 missing []
+mlb_rbi           151 seasons 1876-2026 list median  10 n1  0 missing []
+mlb_hr            151 seasons 1876-2026 list median  10 n1  0 missing []
+mlb_ba            151 seasons 1876-2026 list median  10 n1  0 missing []
+mlb_h             151 seasons 1876-2026 list median  10 n1  0 missing []
+mlb_sb            129 seasons 1898-2026 list median  10 n1  0 missing []
+mlb_so            151 seasons 1876-2026 list median  10 n1  0 missing []
+mlb_w             151 seasons 1876-2026 list median  10 n1  0 missing []
+mlb_era           151 seasons 1876-2026 list median  10 n1  0 missing []
+nba_ppg            80 seasons 1947-2026 list median  10 n1  0 missing []
+nba_rpg            76 seasons 1951-2026 list median  10 n1  0 missing []
+nba_apg            80 seasons 1947-2026 list median  10 n1  0 missing []
+nba_3pm            47 seasons 1980-2026 list median  10 n1  0 missing []
+nhl_goals         108 seasons 1918-2026 list median  10 n1  0 missing [2005]
+nhl_assists       108 seasons 1918-2026 list median  10 n1  0 missing [2005]
+nhl_points        108 seasons 1918-2026 list median  10 n1  0 missing [2005]
+nfl_pass_yds       94 seasons 1932-2025 list median  10 n1  0 missing []
+nfl_pass_td        94 seasons 1932-2025 list median  10 n1  0 missing []
+nfl_rush_yds       94 seasons 1932-2025 list median  10 n1  0 missing []
+nfl_rec_yds        94 seasons 1932-2025 list median  10 n1  0 missing []
+nfl_int            86 seasons 1940-2025 list median  10 n1  0 missing []
+nfl_sacks          44 seasons 1982-2025 list median  10 n1  0 missing []
+issue: leaders raw value not >= second after transformation
+leader wrong 0 [] duplicate same year names 3 [('swim_M_100_bu', np.int64(2026), 10, ['Ben Armbruster']), ('swim_M_100_fr', np.int64(2017), 10, ['Gabriel Santos']), ('swim_W_200_me', np.int64(2002), 10, ['Maggie Bowen'])]
+Rank duplicates 0 multiple ranks names 3
+short season mismatch by sport/year               nunique  first
+sport season                
+MLB   1918          2  False
+      1981          2  False
+      1994          2  False
+      2020          2  False
+NBA   1999          2  False
+      2012          2  False
+      2020          2  False
+year flags of short in data
+sport  season
+MLB    1918      60
+       1981      60
+       1994      60
+       2020      60
+NBA    1999      10
+       2012      10
+       2020      10
+NFL    1982      60
+NHL    1995      30
+       2013      30
+       2020      30
+       2021      30
+dtype: int64
+per sport games unique for each year (non-null)
+Series([], )
+strange games schedule values by era
+MLB gms min/max 58.85714285714285 162.0 years [58.85714285714285, 60.0, 64.22222222222223, 78.88888888888889, 82.88888888888889, 83.33333333333333, 97.33333333333331, 107.0, 110.44444444444444, 111.55555555555556, 115.0, 120.0, 122.88888888888889, 126.0, 128.76923076923077, 129.33333333333334, 129.53846153846155, 130.46153846153845, 131.23076923076923, 132.44444444444446, 132.88888888888889, 136.22222222222223, 138.44444444444446, 140.0, 144.0, 149.3846153846154, 150.46153846153845, 154.0, 155.0, 162.0]
+NFL gms min/max 9.0 17.0 years {1932: 12.0, 1933: 11.4, 1934: 12.0, 1935: 11.77777777777778, 1936: 12.0, 1937: 11.0, 1938: 11.0, 1939: 11.0, 1940: 11.0, 1941: 11.0, 1942: 11.0, 1943: 10.0, 1944: 10.0, 1945: 10.0, 1946: 11.0, 1947: 12.0, 1948: 12.0, 1949: 12.0, 1950: 12.0, 1951: 12.0, 1952: 12.0, 1953: 12.0, 1954: 12.0, 1955: 12.0, 1956: 12.0, 1957: 12.0, 1958: 12.0, 1959: 12.0, 1960: 12.761904761904765, 1961: 14.0, 1962: 14.0, 1963: 14.0, 1964: 14.0, 1965: 14.0, 1966: 14.0, 1967: 14.0, 1968: 14.0, 1969: 14.0, 1970: 14.0, 1971: 14.0, 1972: 14.0, 1973: 14.0, 1974: 14.0, 1975: 14.0, 1976: 14.0, 1977: 14.0, 1978: 16.0, 1979: 16.0, 1980: 16.0, 1981: 16.0, 1982: 9.0, 1983: 16.0, 1984: 16.0, 1985: 16.0, 1986: 16.0, 1987: 15.0, 1988: 16.0, 1989: 16.0, 1990: 16.0, 1991: 16.0, 1992: 16.0, 1993: 16.0, 1994: 16.0, 1995: 16.0, 1996: 16.0, 1997: 16.0, 1998: 16.0, 1999: 16.0, 2000: 16.0, 2001: 16.0, 2002: 16.0, 2003: 16.0, 2004: 16.0, 2005: 16.0, 2006: 16.0, 2007: 16.0, 2008: 16.0, 2009: 16.0, 2010: 16.0, 2011: 16.0, 2012: 16.0, 2013: 16.0, 2014: 16.0, 2015: 16.0, 2016: 16.0, 2017: 16.0, 2018: 16.0, 2019: 16.0, 2020: 16.0, 2021: 17.0, 2022: 17.0, 2023: 17.0, 2024: 17.0, 2025: 17.0}
+NBA gms min/max 50.0 82.0 years [50.0, 66.0, 72.0, 82.0]
+NHL gms min/max 18.0 84.0 years [18.0, 22.0, 24.0, 30.0, 36.0, 44.0, 48.0, 50.0, 56.0, 60.0, 70.0, 74.0, 76.0, 78.0, 80.0, 82.0, 84.0]
+top 40 z rows with category duplicates
+ rank                  athlete     sport  season                        category     z
+    1         Wilt Chamberlain       NBA 1961–62                 Points per game 7.731
+    2            Wayne Gretzky       NHL 1985–86             Assists in a season 7.500
+    3             Joe DiMaggio       MLB    1941                  Hitting streak 7.197
+    4            Ichiro Suzuki       MLB    2004                Hits in a season 5.175
+    5         Wilt Chamberlain       NBA 1962–63                 Points per game 5.144
+    6               Bob Beamon Athletics    1968                 Men's long jump 5.017
+    7              Jan Železný Athletics    1996                   Men's javelin 4.985
+    8            Wayne Gretzky       NHL 1984–85             Assists in a season 4.844
+    9               Bob Feller       MLB    1946         Strikeouts by a pitcher 4.712
+   10            Dennis Rodman       NBA 1991–92               Rebounds per game 4.496
+   11            Katie Ledecky  Swimming    2016         Women's 800 m freestyle 4.473
+   12                Pete Rose       MLB    1978                  Hitting streak 4.456
+   13            Yulimar Rojas Athletics    2022             Women's triple jump 4.363
+   14               Dan Marino       NFL    1984    Touchdown passes in a season 4.345
+   15            Léon Marchand  Swimming    2025   Men's 200 m individual medley 4.338
+   16              Maury Wills       MLB    1962        Stolen bases in a season 4.336
+   17               Dan Marino       NFL    1986    Touchdown passes in a season 4.207
+   18               Usain Bolt Athletics    2009                Men's 100 metres 4.173
+   19           Gretchen Walsh  Swimming    2026         Women's 100 m butterfly 4.166
+   20            Stephen Curry       NBA 2015–16             Three-pointers made 4.088
+   21          Johannes Vetter Athletics    2020                   Men's javelin 4.087
+   22                Wu Yanyan  Swimming    1997 Women's 200 m individual medley 4.049
+   23            Dennis Rodman       NBA 1992–93               Rebounds per game 4.032
+   24          Summer McIntosh  Swimming    2025 Women's 400 m individual medley 4.031
+   25            Wayne Gretzky       NHL 1981–82              Points in a season 3.995
+   26            Yulimar Rojas Athletics    2021             Women's triple jump 3.988
+   27             Denny McLain       MLB    1968               Wins by a pitcher 3.971
+   28          Alexander Popov  Swimming    2000            Men's 50 m freestyle 3.928
+   29            Katie Ledecky  Swimming    2018        Women's 1500 m freestyle 3.889
+   30         Renaldo Nehemiah Athletics    1981             Men's 110 m hurdles 3.836
+   31      Yaroslava Mahuchikh Athletics    2024               Women's high jump 3.830
+   32              Ross Barnes       MLB    1876                Hits in a season 3.808
+   33            Ed Williamson       MLB    1884           Home runs in a season 3.798
+   34                Babe Ruth       MLB    1921           Home runs in a season 3.784
+   35           Michael Jordan       NBA 1986–87                 Points per game 3.782
+   36              Sid Luckman       NFL    1943    Touchdown passes in a season 3.770
+   37 Florence Griffith Joyner Athletics    1988              Women's 100 metres 3.736
+   38           Inge de Bruijn  Swimming    2000         Women's 100 m butterfly 3.723
+   39            Kate Douglass  Swimming    2026          Women's 50 m freestyle 3.690
+   40            Léon Marchand  Swimming    2023   Men's 400 m individual medley 3.688
+same performer displayed variants within category normalized
+ath_M_LJ simon ehammer ['+1,7 Simon Ehammer', 'Simon Ehammer']
+ath_M_TJ alexis copello ['+0,5 Alexis Copello', 'Alexis Copello']
+ath_M_TJ jonathan edwards ['+1,1 Jonathan Edwards', 'Jonathan Edwards']
+ath_M_TJ max he ['Max HEß', 'Max Heß']
+ath_M_TJ teddy tamgho ['-0,1 Teddy Tamgho', 'Teddy Tamgho']
+ath_M_SP dragan peric ['Dragan Peric', 'Dragan Perić']
+ath_M_DT andrius gudzius ['Andrius Gudzius', 'Andrius Gudžius']
+ath_M_DT frank casanas ['Frank Casanas', 'Frank Casañas']
+ath_M_DT lukas weihaidinger ['Lukas WEIßHAIDINGER', 'Lukas Weißhaidinger']
+ath_M_DT zoltan kovago ['Zoltán Kovagó', 'Zoltán Kövágó']
+ath_M_JT gatis cakss ['Gatis Cakss', 'Gatis Čakšs']
+ath_M_HT esref apak ['Esref Apak', 'Eşref Apak']
+ath_M_HT nicolas figere ['Nicolas Figere', 'Nicolas Figère']
+ath_M_HT primoz kozmus ['Primoz Kozmus', 'Primož Kozmus']
+ath_W_HJ dora gyorffy ['Dóra Györffy', 'Dóra Győrffy']
+ath_W_HJ marija vukovic ['Marija Vukovic', 'Marija Vuković']
+ath_W_LJ ineta radevica ['Ineta Radevica', 'Ineta Radeviča']
+ath_W_LJ ivana spanovic ['Ivana Spanovic', 'Ivana Španović']
+ath_W_LJ malaika mihambo ['+0,1 Malaika Mihambo', 'Malaika Mihambo']
+ath_W_LJ niki xanthou ['Niki Xanthou', 'Níki Xánthou']
+ath_W_DT andressa de morais ['Andressa De Morais', 'Andressa de Morais']
+ath_W_DT melina robertmichon ['Melina Robert-Michon', 'Mélina Robert-Michon']
+ath_W_DT zaneta glanc ['Zaneta Glanc', 'Żaneta Glanc']
+nfl_rec_yds dj moore ['D.J. Moore', 'DJ Moore']

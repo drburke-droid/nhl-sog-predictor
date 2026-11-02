@@ -1,0 +1,5 @@
+world,field_offset,planted_z_6_teams,planted_z_12_teams,planted_z_30_teams,share_of_unplanted_top10_from_6_team_era,share_of_seasons_in_6_team_era
+A: more independent draws,none (original),2.34,2.64,3.23,0.287,0.333
+A: more independent draws,proposed beta*ln(Nref/N),2.5,2.62,2.95,0.355,0.333
+B: fixed talent pool (dilution),none (original),2.81,2.8,2.68,0.313,0.333
+B: fixed talent pool (dilution),proposed beta*ln(Nref/N),2.71,2.69,2.64,0.372,0.333

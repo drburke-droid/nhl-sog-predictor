@@ -1,0 +1,12 @@
+severity,flag,category,season,rank,name,detail
+high,future_season,ath_M_PV,2027,1,Ernest John Obiena,Out of source snapshot boundary (November 2026); verify year against primary source
+medium,prefixed_name,ath_M_LJ,2025,4,"+1,7 Simon Ehammer",Possible stray wind/measurement prefix corrupting performer identity
+medium,prefixed_name,ath_M_TJ,2002,3,"+1,1 Jonathan Edwards",Possible stray wind/measurement prefix corrupting performer identity
+medium,prefixed_name,ath_M_TJ,2010,7,"+0,5 Alexis Copello",Possible stray wind/measurement prefix corrupting performer identity
+medium,prefixed_name,ath_M_TJ,2013,9,"-0,1 Teddy Tamgho",Possible stray wind/measurement prefix corrupting performer identity
+high,future_season,ath_W_PV,2109,1,Lucy Bryan,Out of source snapshot boundary (November 2026); verify year against primary source
+medium,prefixed_name,ath_W_LJ,2021,9,"+0,1 Malaika Mihambo",Possible stray wind/measurement prefix corrupting performer identity
+high,future_season,ath_W_HT,2202,1,Janee' Kassanavoid,Out of source snapshot boundary (November 2026); verify year against primary source
+medium,duplicate_name_same_category_season,swim_M_100_fr,2017,9;10,Gabriel Santos,2 entries for same displayed performer; check distinct results versus duplicate entry
+medium,duplicate_name_same_category_season,swim_M_100_bu,2026,9;10,Ben Armbruster,2 entries for same displayed performer; check distinct results versus duplicate entry
+medium,duplicate_name_same_category_season,swim_W_200_me,2002,7;8,Maggie Bowen,2 entries for same displayed performer; check distinct results versus duplicate entry

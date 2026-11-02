@@ -1,0 +1,75 @@
+category,sport,title,performance,higher_raw_is_better,is_total_scaled_by_schedule,first_season,last_season,performances_count_from,short_seasons_left_out,level_shift_seasons,cutoff_raw,cutoff_performance,today_seasons,record_raw,record_holder,record_season
+ath_M_100m,Athletics,Men's 100 metres,speed = 100 m / time (s),False,False,1964,2026,1960,,,10.09,9.910802775024777,2012-2026,9.58,Usain Bolt,2009
+ath_M_200m,Athletics,Men's 200 metres,speed = 200 m / time (s),False,False,1964,2026,1960,,,20.39,9.80872976949485,2012-2026,19.19,Usain Bolt,2009
+ath_M_400m,Athletics,Men's 400 metres,speed = 400 m / time (s),False,False,1960,2026,1960,,,45.2,8.849557522123893,2012-2026,43.03,Wayde van Niekerk,2016
+ath_M_800m,Athletics,Men's 800 metres,speed = 800 m / time (s),False,False,1955,2026,1960,,,105.99000000000001,7.547881875648645,2012-2026,100.91,David Rudisha,2012
+ath_M_1500m,Athletics,Men's 1500 metres,speed = 1500 m / time (s),False,False,1958,2026,1960,,,217.99,6.881049589430708,2012-2026,206.0,Hicham El Guerrouj,1998
+ath_M_110mH,Athletics,Men's 110 m hurdles,speed = 110 m / time (s),False,False,1966,2026,1960,,,13.5,8.148148148148149,2012-2026,12.75,Ja'Kobe Tharp,2026
+ath_M_400mH,Athletics,Men's 400 m hurdles,speed = 400 m / time (s),False,False,1968,2026,1960,,,48.99,8.164931618697693,2012-2026,45.8,Alison dos Santos,2026
+ath_M_HJ,Athletics,Men's high jump,the mark itself (m),True,False,1976,2026,1960,,,2.31,2.31,2012-2026,2.45,Javier Sotomayor,1993
+ath_M_PV,Athletics,Men's pole vault,the mark itself (m),True,False,1976,2027,1960,,,5.7,5.7,2012-2026,6.31,Armand Duplantis,2026
+ath_M_LJ,Athletics,Men's long jump,the mark itself (m),True,False,1960,2026,1960,,,8.2,8.2,2012-2026,8.95,Mike Powell,1991
+ath_M_TJ,Athletics,Men's triple jump,the mark itself (m),True,False,1968,2026,1960,,,17.25,17.25,2012-2026,18.29,Jonathan Edwards,1995
+ath_M_SP,Athletics,Men's shot put,the mark itself (m),True,False,1965,2026,1960,,,21.0,21.0,2012-2026,23.56,Ryan Crouser,2023
+ath_M_DT,Athletics,Men's discus,the mark itself (m),True,False,1968,2026,1960,,,67.0,67.0,2012-2026,75.56,Mykolas Alekna,2025
+ath_M_JT,Athletics,Men's javelin,the mark itself (m),True,False,1986,2026,1960,,,85.0,85.0,2012-2026,98.48,Jan Železný,1996
+ath_M_HT,Athletics,Men's hammer,the mark itself (m),True,False,1978,2026,1960,,,80.0,80.0,2012-2026,86.74,Yuriy Sedykh,1986
+ath_W_100m,Athletics,Women's 100 metres,speed = 100 m / time (s),False,False,1968,2026,1960,,,11.09,9.017132551848512,2012-2026,10.49,Florence Griffith Joyner,1988
+ath_W_200m,Athletics,Women's 200 metres,speed = 200 m / time (s),False,False,1968,2026,1960,,,22.59,8.853474988933156,2012-2026,21.34,Florence Griffith Joyner,1988
+ath_W_400m,Athletics,Women's 400 metres,speed = 400 m / time (s),False,False,1974,2026,1960,,,50.99,7.844675426554226,2012-2026,47.6,Marita Koch,1985
+ath_W_800m,Athletics,Women's 800 metres,speed = 800 m / time (s),False,False,1964,2026,1960,,,118.99000000000001,6.723254054962601,2012-2026,113.28,Jarmila Kratochvílová,1983
+ath_W_1500m,Athletics,Women's 1500 metres,speed = 1500 m / time (s),False,False,1972,2026,1960,,,244.99,6.122698885668803,2012-2026,228.68,Faith Kipyegon,2025
+ath_W_100mH,Athletics,Women's 100 m hurdles,speed = 100 m / time (s),False,False,1972,2026,1960,,,12.69,7.880220646178094,2012-2026,12.09,Masai Russell,2026
+ath_W_400mH,Athletics,Women's 400 m hurdles,speed = 400 m / time (s),False,False,1978,2026,1960,,,54.99,7.274049827241316,2012-2026,50.37,Sydney McLaughlin-Levrone,2024
+ath_W_HJ,Athletics,Women's high jump,the mark itself (m),True,False,1977,2026,1960,,,1.98,1.98,2012-2026,2.1,Yaroslava Mahuchikh,2024
+ath_W_PV,Athletics,Women's pole vault,the mark itself (m),True,False,1996,2109,1960,,,4.31,4.31,2012-2026,5.06,Yelena Isinbayeva,2009
+ath_W_LJ,Athletics,Women's long jump,the mark itself (m),True,False,1976,2026,1960,,,6.9,6.9,2012-2026,7.52,Galina Chistyakova,1988
+ath_W_TJ,Athletics,Women's triple jump,the mark itself (m),True,False,1989,2026,1960,,,14.4,14.4,2012-2026,15.74,Yulimar Rojas,2022
+ath_W_SP,Athletics,Women's shot put,the mark itself (m),True,False,1969,2026,1960,,,20.0,20.0,2012-2026,22.63,Natalya Lisovskaya,1987
+ath_W_DT,Athletics,Women's discus,the mark itself (m),True,False,1972,2026,1960,,,65.0,65.0,2012-2026,76.8,Gabriele Reinsch,1988
+ath_W_JT,Athletics,Women's javelin,the mark itself (m),True,False,1999,2026,1960,,,62.0,62.0,2012-2026,72.28,Barbora Špotáková,2008
+ath_W_HT,Athletics,Women's hammer,the mark itself (m),True,False,1995,2202,1960,,,68.0,68.0,2012-2026,82.98,Anita Włodarczyk,2016
+swim_M_50_fr,Swimming,Men's 50 m freestyle,speed = 50 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,20.88,Cameron McEvoy,2026
+swim_M_100_fr,Swimming,Men's 100 m freestyle,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,46.4,Pan Zhanle,2024
+swim_M_200_fr,Swimming,Men's 200 m freestyle,speed = 200 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,102.0,Paul Biedermann,2009
+swim_M_400_fr,Swimming,Men's 400 m freestyle,speed = 400 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,219.96,Lukas Märtens,2025
+swim_M_800_fr,Swimming,Men's 800 m freestyle,speed = 800 m / time (s),False,False,2000,2026,2000,,2008 2009,,,2012-2026,452.12,Zhang Lin,2009
+swim_M_1500_fr,Swimming,Men's 1500 m freestyle,speed = 1500 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,866.79,Johannes Liebmann,2026
+swim_M_100_ba,Swimming,Men's 100 m backstroke,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,51.6,Thomas Ceccon,2022
+swim_M_100_br,Swimming,Men's 100 m breaststroke,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,56.88,Adam Peaty,2019
+swim_M_100_bu,Swimming,Men's 100 m butterfly,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,49.45,Caeleb Dressel,2021
+swim_M_200_me,Swimming,Men's 200 m individual medley,speed = 200 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,112.69,Léon Marchand,2025
+swim_M_400_me,Swimming,Men's 400 m individual medley,speed = 400 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,242.5,Léon Marchand,2023
+swim_W_50_fr,Swimming,Women's 50 m freestyle,speed = 50 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,23.19,Kate Douglass,2026
+swim_W_100_fr,Swimming,Women's 100 m freestyle,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,51.68,Marrit Steenbergen,2026
+swim_W_200_fr,Swimming,Women's 200 m freestyle,speed = 200 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,112.22999999999999,Ariarne Titmus,2024
+swim_W_400_fr,Swimming,Women's 400 m freestyle,speed = 400 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,234.18,Summer McIntosh,2025
+swim_W_800_fr,Swimming,Women's 800 m freestyle,speed = 800 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,484.12,Katie Ledecky,2025
+swim_W_1500_fr,Swimming,Women's 1500 m freestyle,speed = 1500 m / time (s),False,False,2001,2026,2001,,2008 2009,,,2012-2026,920.48,Katie Ledecky,2018
+swim_W_100_ba,Swimming,Women's 100 m backstroke,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,57.13,Regan Smith,2024
+swim_W_100_br,Swimming,Women's 100 m breaststroke,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,64.13,Lilly King,2017
+swim_W_100_bu,Swimming,Women's 100 m butterfly,speed = 100 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,54.33,Gretchen Walsh,2026
+swim_W_200_me,Swimming,Women's 200 m individual medley,speed = 200 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,125.7,Summer McIntosh,2025
+swim_W_400_me,Swimming,Women's 400 m individual medley,speed = 400 m / time (s),False,False,1994,2026,1994,,2008 2009,,,2012-2026,263.65,Summer McIntosh,2025
+mlb_streak,MLB,Hitting streak,the stat itself,True,False,1897,2025,1897,,,,,2011-2025,56.0,Joe DiMaggio,1941
+mlb_rbi,MLB,Runs batted in,the stat itself,True,True,1876,2026,1876,1918 1981 1994 2020,,,,2012-2026,191.0,Hack Wilson,1930
+mlb_hr,MLB,Home runs in a season,the stat itself,True,True,1876,2026,1876,1918 1981 1994 2020,,,,2012-2026,73.0,Barry Bonds,2001
+mlb_ba,MLB,Batting average,the stat itself,True,False,1876,2026,1876,,,,,2012-2026,0.44,Hugh Duffy,1894
+mlb_h,MLB,Hits in a season,the stat itself,True,True,1876,2026,1876,1918 1981 1994 2020,,,,2012-2026,262.0,Ichiro Suzuki,2004
+mlb_sb,MLB,Stolen bases in a season,the stat itself,True,True,1898,2026,1898,1918 1981 1994 2020,,,,2012-2026,130.0,Rickey Henderson,1982
+mlb_so,MLB,Strikeouts by a pitcher,the stat itself,True,True,1876,2026,1876,1918 1981 1994 2020,,,,2012-2026,441.0,Old Hoss Radbourn,1884
+mlb_w,MLB,Wins by a pitcher,the stat itself,True,True,1876,2026,1876,1918 1981 1994 2020,,,,2012-2026,60.0,Old Hoss Radbourn,1884
+mlb_era,MLB,Earned run average,minus the ERA (lower is better),False,False,1876,2026,1876,,,,,2012-2026,0.86,Tim Keefe,1880
+nba_ppg,NBA,Points per game,the stat itself,True,False,1947,2026,1947,,,,,2012-2026,50.4,Wilt Chamberlain,1962
+nba_rpg,NBA,Rebounds per game,the stat itself,True,False,1951,2026,1951,,,,,2012-2026,27.2,Wilt Chamberlain,1961
+nba_apg,NBA,Assists per game,the stat itself,True,False,1947,2026,1947,,,,,2012-2026,14.5,John Stockton,1990
+nba_3pm,NBA,Three-pointers made,the stat itself,True,True,1980,2026,1980,1999 2012 2020,,,,2012-2026,402.0,Stephen Curry,2016
+nhl_goals,NHL,Goals in a season,the stat itself,True,True,1918,2026,1918,1995 2013 2020 2021,,,,2012-2026,92.0,Wayne Gretzky,1982
+nhl_assists,NHL,Assists in a season,the stat itself,True,True,1918,2026,1918,1995 2013 2020 2021,,,,2012-2026,163.0,Wayne Gretzky,1986
+nhl_points,NHL,Points in a season,the stat itself,True,True,1918,2026,1918,1995 2013 2020 2021,,,,2012-2026,215.0,Wayne Gretzky,1986
+nfl_pass_yds,NFL,Passing yards in a season,the stat itself,True,True,1932,2025,1932,1982,,,,2011-2025,5535.0,Drew Brees,2011
+nfl_pass_td,NFL,Touchdown passes in a season,the stat itself,True,True,1932,2025,1932,1982,,,,2011-2025,55.0,Peyton Manning,2013
+nfl_rush_yds,NFL,Rushing yards in a season,the stat itself,True,True,1932,2025,1932,1982,,,,2011-2025,2105.0,Eric Dickerson,1984
+nfl_rec_yds,NFL,Receiving yards in a season,the stat itself,True,True,1932,2025,1932,1982,,,,2011-2025,1964.0,Calvin Johnson,2012
+nfl_int,NFL,Interceptions in a season,the stat itself,True,True,1940,2025,1940,1982,,,,2011-2025,14.0,Dick Lane,1952
+nfl_sacks,NFL,Sacks in a season,the stat itself,True,True,1982,2025,1982,1982,,,,2011-2025,23.0,Myles Garrett,2025

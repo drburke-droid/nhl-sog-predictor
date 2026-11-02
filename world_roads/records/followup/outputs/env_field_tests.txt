@@ -1,0 +1,70 @@
+
+ELASTICITY
+  category=nba_ppg | seasons=79 | first=1948 | last=2026 | elasticity_field_median=0.652 | se_field=0.226 | r2_field=0.097 | elasticity_season_max=1.001 | se_max=0.318 | r2_max=0.114
+  category=nba_rpg | seasons=75 | first=1952 | last=2026 | elasticity_field_median=0.368 | se_field=0.227 | r2_field=0.035 | elasticity_season_max=0.811 | se_max=0.31 | r2_max=0.086
+  category=nba_apg | seasons=77 | first=1950 | last=2026 | elasticity_field_median=1.142 | se_field=0.202 | r2_field=0.298 | elasticity_season_max=0.706 | se_max=0.248 | r2_max=0.098
+  category=nba_3pm | seasons=40 | first=1981 | last=2026 | elasticity_field_median=0.845 | se_field=0.106 | r2_field=0.627 | elasticity_season_max=0.537 | se_max=0.17 | r2_max=0.207
+  category=nhl_goals | seasons=99 | first=1919 | last=2026 | elasticity_field_median=0.986 | se_field=0.089 | r2_field=0.556 | elasticity_season_max=1.152 | se_max=0.16 | r2_max=0.348
+  category=nhl_assists | seasons=99 | first=1919 | last=2026 | elasticity_field_median=0.932 | se_field=0.062 | r2_field=0.698 | elasticity_season_max=0.797 | se_max=0.114 | r2_max=0.336
+  category=nhl_points | seasons=99 | first=1919 | last=2026 | elasticity_field_median=1.009 | se_field=0.083 | r2_field=0.602 | elasticity_season_max=1.087 | se_max=0.128 | r2_max=0.427
+  category=mlb_hr | seasons=139 | first=1877 | last=2026 | elasticity_field_median=0.873 | se_field=0.056 | r2_field=0.64 | elasticity_season_max=0.663 | se_max=0.098 | r2_max=0.25
+  category=mlb_h | seasons=142 | first=1877 | last=2026 | elasticity_field_median=0.975 | se_field=0.076 | r2_field=0.54 | elasticity_season_max=1.241 | se_max=0.155 | r2_max=0.314
+  category=mlb_rbi | seasons=140 | first=1877 | last=2026 | elasticity_field_median=1.032 | se_field=0.068 | r2_field=0.627 | elasticity_season_max=0.881 | se_max=0.102 | r2_max=0.352
+  category=mlb_sb | seasons=116 | first=1899 | last=2026 | elasticity_field_median=0.816 | se_field=0.117 | r2_field=0.298 | elasticity_season_max=1.038 | se_max=0.227 | r2_max=0.155
+  category=mlb_so | seasons=138 | first=1877 | last=2026 | elasticity_field_median=1.026 | se_field=0.066 | r2_field=0.641 | elasticity_season_max=0.879 | se_max=0.137 | r2_max=0.233
+  category=mlb_ba | seasons=150 | first=1877 | last=2026 | elasticity_field_median=0.846 | se_field=0.069 | r2_field=0.505 | elasticity_season_max=0.926 | se_max=0.135 | r2_max=0.241
+  category=mlb_era | seasons=150 | first=1877 | last=2026 | elasticity_field_median=1.244 | se_field=0.071 | r2_field=0.673 | elasticity_season_max=1.588 | se_max=0.173 | r2_max=0.363
+  category=nfl_pass_yds | seasons=91 | first=1933 | last=2025 | elasticity_field_median=1.118 | se_field=0.158 | r2_field=0.361 | elasticity_season_max=1.035 | se_max=0.176 | r2_max=0.28
+  category=nfl_pass_td | seasons=91 | first=1933 | last=2025 | elasticity_field_median=0.771 | se_field=0.153 | r2_field=0.222 | elasticity_season_max=0.776 | se_max=0.22 | r2_max=0.122
+  category=nfl_rush_yds | seasons=91 | first=1933 | last=2025 | elasticity_field_median=1.323 | se_field=0.19 | r2_field=0.352 | elasticity_season_max=1.489 | se_max=0.338 | r2_max=0.179
+  category=nfl_rec_yds | seasons=91 | first=1933 | last=2025 | elasticity_field_median=1.124 | se_field=0.135 | r2_field=0.438 | elasticity_season_max=0.711 | se_max=0.224 | r2_max=0.101
+  category=nfl_int | seasons=83 | first=1941 | last=2025 | elasticity_field_median=0.572 | se_field=0.213 | r2_field=0.082 | elasticity_season_max=0.756 | se_max=0.275 | r2_max=0.086
+  category=nfl_sacks | seasons=42 | first=1984 | last=2025 | elasticity_field_median=0.319 | se_field=0.257 | r2_field=0.037 | elasticity_season_max=0.838 | se_max=0.373 | r2_max=0.112
+
+FIELD SIZE
+  category=nba_ppg | sport=NBA | seasons=79 | expansion_seasons=14 | slope_sd_units_per_dlnN=-0.446 | se=1.137
+  category=nba_rpg | sport=NBA | seasons=75 | expansion_seasons=12 | slope_sd_units_per_dlnN=-2.271 | se=2.208
+  category=nba_apg | sport=NBA | seasons=77 | expansion_seasons=13 | slope_sd_units_per_dlnN=-0.429 | se=1.397
+  category=nba_3pm | sport=NBA | seasons=40 | expansion_seasons=5 | slope_sd_units_per_dlnN=2.131 | se=7.4
+  category=nhl_goals | sport=NHL | seasons=99 | expansion_seasons=17 | slope_sd_units_per_dlnN=2.007 | se=0.908
+  category=nhl_assists | sport=NHL | seasons=99 | expansion_seasons=17 | slope_sd_units_per_dlnN=1.335 | se=0.921
+  category=nhl_points | sport=NHL | seasons=99 | expansion_seasons=17 | slope_sd_units_per_dlnN=2.81 | se=0.886
+  category=mlb_hr | sport=MLB | seasons=142 | expansion_seasons=9 | slope_sd_units_per_dlnN=1.056 | se=0.981
+  category=mlb_h | sport=MLB | seasons=142 | expansion_seasons=9 | slope_sd_units_per_dlnN=1.844 | se=0.973
+  category=mlb_rbi | sport=MLB | seasons=142 | expansion_seasons=9 | slope_sd_units_per_dlnN=2.863 | se=0.955
+  category=mlb_sb | sport=MLB | seasons=120 | expansion_seasons=7 | slope_sd_units_per_dlnN=0.436 | se=1.189
+  category=mlb_so | sport=MLB | seasons=142 | expansion_seasons=9 | slope_sd_units_per_dlnN=3.091 | se=0.95
+  category=mlb_ba | sport=MLB | seasons=150 | expansion_seasons=9 | slope_sd_units_per_dlnN=2.119 | se=0.969
+  category=mlb_era | sport=MLB | seasons=150 | expansion_seasons=9 | slope_sd_units_per_dlnN=0.014 | se=0.985
+  category=nfl_pass_yds | sport=NFL | seasons=91 | expansion_seasons=15 | slope_sd_units_per_dlnN=0.147 | se=1.251
+  category=nfl_pass_td | sport=NFL | seasons=91 | expansion_seasons=15 | slope_sd_units_per_dlnN=-0.639 | se=1.249
+  category=nfl_rush_yds | sport=NFL | seasons=91 | expansion_seasons=15 | slope_sd_units_per_dlnN=0.706 | se=1.249
+  category=nfl_rec_yds | sport=NFL | seasons=91 | expansion_seasons=15 | slope_sd_units_per_dlnN=1.86 | se=1.235
+  category=nfl_int | sport=NFL | seasons=83 | expansion_seasons=13 | slope_sd_units_per_dlnN=-1.058 | se=1.317
+  category=nfl_sacks | sport=NFL | seasons=42 | expansion_seasons=3 | slope_sd_units_per_dlnN=-5.606 | se=12.606
+  category=POOLED | sport=NBA | seasons=271 | expansion_seasons=44 | slope_sd_units_per_dlnN=-0.636 | se=0.807
+  category=POOLED | sport=NHL | seasons=297 | expansion_seasons=51 | slope_sd_units_per_dlnN=2.051 | se=0.52
+  category=POOLED | sport=MLB | seasons=988 | expansion_seasons=61 | slope_sd_units_per_dlnN=1.685 | se=0.375
+  category=POOLED | sport=NFL | seasons=489 | expansion_seasons=76 | slope_sd_units_per_dlnN=0.221 | se=0.559
+
+NBA DENOMINATORS
+  season=1952 | teams=10 | pts_per_team_g=83.7 | pace_league_table=not published | pace_mean_of_estimated_team_paces=95.12 | pace_team_range=90.1-100.0 | shot_opportunities_fga_plus_044fta=95.4
+  season=1962 | teams=9 | pts_per_team_g=118.8 | pace_league_table=not published | pace_mean_of_estimated_team_paces=126.23 | pace_team_range=122.9-131.1 | shot_opportunities_fga_plus_044fta=124.0
+  season=1967 | teams=10 | pts_per_team_g=117.4 | pace_league_table=not published | pace_mean_of_estimated_team_paces=121.6 | pace_team_range=117.7-127.4 | shot_opportunities_fga_plus_044fta=119.0
+  season=1987 | teams=23 | pts_per_team_g=109.9 | pace_league_table=100.8 | pace_mean_of_estimated_team_paces=100.81 | pace_team_range=95.8-106.2 | shot_opportunities_fga_plus_044fta=102.2
+  season=2006 | teams=30 | pts_per_team_g=97.0 | pace_league_table=90.5 | pace_mean_of_estimated_team_paces=90.53 | pace_team_range=86.3-95.8 | shot_opportunities_fga_plus_044fta=90.6
+  season=2026 | teams=30 | pts_per_team_g=115.6 | pace_league_table=99.4 | pace_mean_of_estimated_team_paces=99.35 | pace_team_range=94.8-103.4 | shot_opportunities_fga_plus_044fta=99.4
+
+WILT UNDER EACH DENOMINATOR
+  denominator=none (original) | wilt_1962_z=7.731 | wilt_rank_in_nba_ppg=1 | top3_in_category=Wilt Chamberlain 1962 7.73; Wilt Chamberlain 1963 5.14; Michael Jordan 1987 3.78 | seasons_scored=80
+  denominator=league points per team-game | wilt_1962_z=4.479 | wilt_rank_in_nba_ppg=1 | top3_in_category=Wilt Chamberlain 1962 4.48; Kobe Bryant 2006 3.84; Wilt Chamberlain 1963 3.44 | seasons_scored=80
+  denominator=mean estimated team pace (1951 on) | wilt_1962_z=6.054 | wilt_rank_in_nba_ppg=1 | top3_in_category=Wilt Chamberlain 1962 6.05; Wilt Chamberlain 1963 4.74; Kobe Bryant 2006 3.82 | seasons_scored=76
+  denominator=shot opportunities FGA+0.44FTA | wilt_1962_z=5.753 | wilt_rank_in_nba_ppg=1 | top3_in_category=Wilt Chamberlain 1962 5.75; Wilt Chamberlain 1963 4.53; Kobe Bryant 2006 3.84 | seasons_scored=80
+
+BABE DYE
+  model=original | z=0.849 | x_dye=38.0 | baseline=32.671 | scale=6.276 | n=23 | beta_1925= | comparators_before=60.0 38.33 48.75 42.5 38.75 28.75 27.5 | comparators_after=28.33 22.5 22.5 15.0 29.32 21.14 21.25 17.5 20.0 22.5 14.38 14.38 16.25 16.25 15.0
+  model=scoring only (goals / league goals per team-game) | z=3.77 | x_dye=15.2 | baseline=10.158 | scale=1.338 | n=23 | beta_1925= | comparators_before=12.63 9.28 10.18 10.05 9.79 8.82 10.34 | comparators_after=12.27 11.25 11.84 10.27 9.9 8.81 8.53 7.68 8.3 8.93 6.66 5.84 6.42 6.42 6.02
+  model=scoring + field 50% | z=5.107 | x_dye=17.351 | baseline=12.442 | scale=0.961 | n=23 | beta_1925=2.57 | comparators_before=15.38 13.47 13.22 13.37 13.12 12.16 13.67 | comparators_after=13.88 12.26 12.86 11.16 10.79 9.69 9.5 8.52 9.05 9.66 7.33 6.51 7.04 7.1 6.62
+  model=scoring + field 100% | z=5.503 | x_dye=19.502 | baseline=14.725 | scale=0.868 | n=23 | beta_1925=2.57 | comparators_before=18.12 17.66 16.26 16.69 16.45 15.5 17.0 | comparators_after=15.5 13.28 13.87 12.05 11.68 10.58 10.47 9.36 9.8 10.38 8.0 7.17 7.66 7.78 7.22
+  model=scoring + field 100%, normal-tail growth | z=5.422 | x_dye=18.799 | baseline=13.764 | scale=0.929 | n=23 | beta_1925=2.57 | comparators_before=16.88 15.32 14.89 15.2 14.95 14.0 15.5 | comparators_after=15.04 13.07 13.66 11.87 11.5 10.4 10.23 9.17 9.63 10.22 7.83 7.0 7.5 7.58 7.05
+  model=field 100% only (no scoring) | z=0.411 | x_dye=49.72 | baseline=46.176 | scale=8.618 | n=23 | beta_1925=7.001 | comparators_before=82.67 68.41 67.76 60.7 56.34 46.95 45.09 | comparators_after=36.6 26.96 26.76 19.23 33.39 24.99 25.46 21.29 23.26 25.69 17.81 17.81 19.69 20.02 18.54

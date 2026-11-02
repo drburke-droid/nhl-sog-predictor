@@ -1,0 +1,62 @@
+STRENGTH 0
+Wilt Chamberlain z=4.478 rank=8 cat=nba_ppg
+Wayne Gretzky z=5.195 rank=2 cat=nhl_assists
+Joe DiMaggio z=7.197 rank=1 cat=mlb_streak
+Babe Dye z=3.770 rank=31 cat=nhl_goals
+Stephen Curry z=4.088 rank=17 cat=nba_3pm
+Dennis Rodman z=4.496 rank=7 cat=nba_rpg
+STRENGTH 0.25
+Wilt Chamberlain z=4.972 rank=6 cat=nba_ppg
+Wayne Gretzky z=5.190 rank=2 cat=nhl_assists
+Joe DiMaggio z=7.197 rank=1 cat=mlb_streak
+Babe Dye z=4.350 rank=12 cat=nhl_goals
+Stephen Curry z=4.086 rank=19 cat=nba_3pm
+Dennis Rodman z=4.470 rank=9 cat=nba_rpg
+STRENGTH 0.5
+Wilt Chamberlain z=5.474 rank=2 cat=nba_ppg
+Wayne Gretzky z=5.185 rank=3 cat=nhl_assists
+Joe DiMaggio z=7.197 rank=1 cat=mlb_streak
+Babe Dye z=4.937 rank=7 cat=nhl_goals
+Stephen Curry z=4.084 rank=19 cat=nba_3pm
+Dennis Rodman z=4.443 rank=11 cat=nba_rpg
+STRENGTH 1.0
+Wilt Chamberlain z=6.328 rank=2 cat=nba_ppg
+Wayne Gretzky z=5.169 rank=5 cat=nhl_assists
+Joe DiMaggio z=7.197 rank=1 cat=mlb_streak
+Babe Dye z=5.278 rank=3 cat=nhl_goals
+Stephen Curry z=4.080 rank=19 cat=nba_3pm
+Dennis Rodman z=4.388 rank=11 cat=nba_rpg
+STRENGTH 1.5
+Wilt Chamberlain z=6.646 rank=2 cat=nba_ppg
+Wayne Gretzky z=5.149 rank=4 cat=nhl_assists
+Joe DiMaggio z=7.197 rank=1 cat=mlb_streak
+Babe Dye z=4.160 rank=17 cat=nhl_goals
+Stephen Curry z=4.075 rank=19 cat=nba_3pm
+Dennis Rodman z=4.330 rank=14 cat=nba_rpg
+STRENGTH 2.0
+Wilt Chamberlain z=6.343 rank=2 cat=nba_ppg
+Wayne Gretzky z=5.125 rank=4 cat=nhl_assists
+Joe DiMaggio z=7.197 rank=1 cat=mlb_streak
+Babe Dye z=3.018 rank=66 cat=nhl_goals
+Stephen Curry z=4.071 rank=18 cat=nba_3pm
+Dennis Rodman z=4.271 rank=14 cat=nba_rpg
+
+WINDOW 7
+Wilt Chamberlain z=6.709 rank=3
+Wayne Gretzky z=6.670 rank=4
+Joe DiMaggio z=6.187 rank=7
+
+WINDOW 10
+Wilt Chamberlain z=7.059 rank=3
+Wayne Gretzky z=6.741 rank=4
+Joe DiMaggio z=6.220 rank=5
+
+WINDOW 15
+Wilt Chamberlain z=6.328 rank=2
+Wayne Gretzky z=5.169 rank=5
+Joe DiMaggio z=7.197 rank=1
+
+WINDOW 20
+Wilt Chamberlain z=6.402 rank=2
+Wayne Gretzky z=4.605 rank=7
+Joe DiMaggio z=6.569 rank=1
