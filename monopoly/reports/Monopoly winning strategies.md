@@ -7,9 +7,20 @@
 > never trading, keeping cash back and stopping at three houses all lose; building aggressively wins; orange is
 > the best favourite (+2.9 wins per 100 games). What changes: a railroad or Boardwalk fan does as well as an
 > ordinary player rather than collapsing; never buying green costs nothing rather than helping; never buying dark
-> blue is the costliest gap (-5.5); and 13% of four-player games (57% of six-player games) never finish. The
-> evolution, parasite, arms-race and ecology sections depend on the unrealistic behaviour and have not been
-> re-tested under realistic play.
+> blue is the costliest gap (-5.5); and 13% of four-player games (57% of six-player games) never finish.
+>
+> **Evolution re-run under realistic play** (every player buys what it lands on; set-for-set swaps only): the
+> evolved player wins **31 games in 100** against typical players' 21.8. Its playbook: pick two favourite cheap
+> or middle sets (light blue and orange came out best) and go hard for them (mortgage to buy one, bid up to
+> double at auction); bid above list at auctions generally; keep only $50-100 in hand; build to hotels,
+> mortgaging loose property to do it; leave jail early and stay in late; make every fair set-for-set swap at
+> printed prices. Never trading costs 23 wins per 100, haggling over set value 9.8, stopping at three houses
+> 5.3, having no favourite 4.5. **The parasite, arms-race cycle and ecology findings below do not survive
+> realistic play**: a typical player does worse, not better, against three copies of the evolved player (16.2),
+> the arms race only shuffles the favourite colours, and the population ends up made entirely of evolved
+> players with different favourite pairs. Details: `sim/results/summary.md` ("Realistic evolution") and
+> `research_notes/.../our_simulations.md` section 15. The video plan below was built around the parasite story
+> and needs a new angle if realistic play is the standard.
 
 Under the official rules, the best way to win Monopoly is to buy almost everything you land on and trade for colour sets. Value those sets by what actually wins games (orange and light blue first, green last), bid hard at auctions, build past three houses to hotels with almost no cash held back, mortgage loose property to pay for the building, and leave jail early but stay in late. In our simulations (about 56 million games: 36 million in fixed experiments and 20 million inside a genetic-algorithm search), that playbook wins **33.1%** against three ordinary "buy everything" players, where a fair share is 25%. Evolution found a version that wins **36.7%** by also never buying yellow, green, railroads or utilities. Every popular shortcut loses: railroads only (**0.18%**, about one win in 550), Boardwalk and Park Place only (**6.0%**), orange only (**9.8%**), never trading (**4.4%**), keeping a $300 cushion (**18.7%**) and stopping at three houses (**19.6%**). The bigger finding is that no single best strategy exists. The 36.7% strategy is a parasite: it wins only because ordinary players overpay for the groups it skips. One ordinary player seated with three copies of it wins **71.5%**, and the next round of evolution produced a strategy that beats it but is only average against ordinary players. Published work supports the broad picture. Markov-chain analyses since 1972 rank orange best per dollar, and Perfect Play's October 2026 tournament found that buying broadly, trading and building aggressively win. No existing video covers the arms race, the population ecology, learned versus textbook property values, house rules, or table sizes from 2 to 8. That gap makes a strong video, but only if it leads with "what happens when strategies adapt" rather than with another ranked tournament. Perfect Play's tournament drew about 2.7M views three weeks ago, and a follow-up that only claimed a bigger game count drew about 10,000.
 

@@ -545,17 +545,117 @@ Arms race (each round evolves against three copies of the previous champion):
 
 Each generation, strategies reproduce in proportion to how often they win at tables drawn at random from the current population.
 
-| Strategy | Win rate in an evenly mixed population | Share at start | after 25 gens | after 100 | after 400 |
-|---|---|---|---|---|---|
-| Champion | 41.1% | 9.1% | 66.1% | 71.3% | 71.3% |
-| Evolved | 40.8% | 9.1% | 28.3% | 28.7% | 28.7% |
-| Evolved r1 | 34.3% | 9.1% | 4.6% | 0.0% | 0.0% |
-| All-In | 35.3% | 9.1% | 1.0% | 0.0% | 0.0% |
-| Yes-Man | 31.2% | 9.1% | 0.0% | 0.0% | 0.0% |
-| Three-House | 28.1% | 9.1% | 0.0% | 0.0% | 0.0% |
-| Accountant | 22.6% | 9.1% | 0.0% | 0.0% | 0.0% |
-| Boardwalk Dreamer | 10.2% | 9.1% | 0.0% | 0.0% | 0.0% |
-| Never trades | 14.3% | 9.1% | 0.0% | 0.0% | 0.0% |
-| Railroad Tycoon | 0.3% | 9.1% | 0.0% | 0.0% | 0.0% |
-| Orange only | 8.3% | 9.1% | 0.0% | 0.0% | 0.0% |
+| Strategy | Win rate in an evenly mixed population | Share at start | after 10 gens | after 25 | after 100 | after 400 |
+|---|---|---|---|---|---|---|
+| Champion | 41.1% | 9.1% | 46.0% | 66.1% | 71.3% | 71.3% |
+| Evolved | 40.8% | 9.1% | 29.7% | 28.3% | 28.7% | 28.7% |
+| Evolved r1 | 34.3% | 9.1% | 11.6% | 4.6% | 0.0% | 0.0% |
+| All-In | 35.3% | 9.1% | 8.6% | 1.0% | 0.0% | 0.0% |
+| Yes-Man | 31.2% | 9.1% | 2.8% | 0.0% | 0.0% | 0.0% |
+| Three-House | 28.1% | 9.1% | 1.4% | 0.0% | 0.0% | 0.0% |
+| Accountant | 22.6% | 9.1% | 0.1% | 0.0% | 0.0% | 0.0% |
+| Boardwalk Dreamer | 10.2% | 9.1% | 0.0% | 0.0% | 0.0% | 0.0% |
+| Never trades | 14.3% | 9.1% | 0.0% | 0.0% | 0.0% | 0.0% |
+| Orange only | 8.3% | 9.1% | 0.0% | 0.0% | 0.0% | 0.0% |
+| Railroad Tycoon | 0.3% | 9.1% | 0.0% | 0.0% | 0.0% | 0.0% |
+
+## Realistic evolution (everyone buys what they land on; set-for-set swaps only)
+
+Genetic algorithm, 24 strategies x 25 generations; fitness = wins against three typical players (16,000 games each). A typical player wins about 21.8 games in 100 here (13 in 100 never finish).
+
+| Generation | Best | Median |
+|---|---|---|
+| 0 | 26.1% | 6.5% |
+| 1 | 26.9% | 16.4% |
+| 2 | 28.5% | 22.8% |
+| 3 | 28.5% | 24.7% |
+| 4 | 30.2% | 25.6% |
+| 5 | 29.9% | 25.7% |
+| 6 | 30.0% | 27.8% |
+| 7 | 31.0% | 27.1% |
+| 8 | 31.3% | 27.7% |
+| 9 | 31.3% | 28.1% |
+| 10 | 31.0% | 27.2% |
+| 11 | 31.2% | 28.8% |
+| 12 | 30.8% | 28.5% |
+| 13 | 31.1% | 27.5% |
+| 14 | 31.0% | 29.3% |
+| 15 | 31.5% | 28.3% |
+| 16 | 31.4% | 28.8% |
+| 17 | 31.4% | 28.9% |
+| 18 | 31.3% | 28.4% |
+| 19 | 31.3% | 29.9% |
+| 20 | 30.9% | 28.7% |
+| 21 | 31.2% | 28.8% |
+| 22 | 30.9% | 29.1% |
+| 23 | 31.4% | 27.9% |
+| 24 | 31.4% | 28.2% |
+
+Top five re-tested on 200,000 games each:
+
+- 31.0%: {"favourites": ["lightblue", "orange"], "hold": 0, "favbid": 2.0, "favmort": 1, "reserve": 50, "bid": 2.0, "setbid": 3.0, "blockbid": 1.5, "build": 5, "breserve": 100, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+- 31.0%: {"favourites": ["lightblue", "orange"], "hold": 0, "favbid": 2.0, "favmort": 1, "reserve": 50, "bid": 2.0, "setbid": 1.5, "blockbid": 3.0, "build": 5, "breserve": 100, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+- 31.0%: {"favourites": ["lightblue", "orange"], "hold": 0, "favbid": 2.0, "favmort": 1, "reserve": 50, "bid": 1.5, "setbid": 1.5, "blockbid": 1.5, "build": 5, "breserve": 50, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 0, "trade": "fair"}
+- 30.9%: {"favourites": ["lightblue", "orange"], "hold": 0, "favbid": 1.5, "favmort": 1, "reserve": 100, "bid": 1.5, "setbid": 3.0, "blockbid": 0.0, "build": 5, "breserve": 50, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+- 30.1%: {"favourites": ["lightblue", "orange"], "hold": 0, "favbid": 2.0, "favmort": 1, "reserve": 25, "bid": 2.0, "setbid": 1.5, "blockbid": 2.0, "build": 5, "breserve": 200, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+
+Undo one habit at a time (100,000 games each; evolved = 31.3%):
+
+| Change | Win rate | Difference |
+|---|---|---|
+| never trades | 8.3% | -23.0 |
+| savvy trading | 21.5% | -9.8 |
+| three houses | 26.0% | -5.3 |
+| no favourites | 26.7% | -4.5 |
+| no mortgage to build | 27.4% | -3.8 |
+| list price bids | 28.7% | -2.5 |
+| leave jail always | 29.8% | -1.4 |
+| stay jail always | 30.0% | -1.2 |
+| no build reserve | 30.8% | -0.5 |
+| no cash reserve | 31.5% | +0.2 |
+
+Mirror and arms-race checks (first-named player against three copies of the second):
+
+| Table | First player wins | Each of the three wins | Never finish |
+|---|---|---|---|
+| allin vs 3 evolved | 17.8% | 21.1% | 19% |
+| four evolved | 18.8% | 18.7% | 25% |
+| r0 vs 3 r1 | 22.1% | 18.8% | 22% |
+| r0 vs 3 r2 | 24.4% | 18.2% | 21% |
+| r0 vs 3 typical | 31.1% | 18.5% | 13% |
+| r1 vs 3 r0 | 21.3% | 19.0% | 22% |
+| r1 vs 3 r2 | 25.7% | 18.6% | 19% |
+| r1 vs 3 typical | 30.6% | 18.7% | 13% |
+| r2 vs 3 r0 | 19.4% | 19.6% | 22% |
+| r2 vs 3 r1 | 22.1% | 19.6% | 19% |
+| r2 vs 3 typical | 28.1% | 19.5% | 13% |
+| typical vs 3 evolved | 16.2% | 21.6% | 19% |
+| typical vs 3 r0 | 16.3% | 21.6% | 19% |
+| typical vs 3 r1 | 16.7% | 21.5% | 19% |
+| typical vs 3 r2 | 18.1% | 21.2% | 18% |
+
+Arms race (each round evolves against three copies of the previous champion):
+
+- round 0: {"favourites": ["lightblue", "orange"], "hold": 0, "favbid": 2.0, "favmort": 1, "reserve": 50, "bid": 2.0, "setbid": 3.0, "blockbid": 1.5, "build": 5, "breserve": 100, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+- round 1 (wins 21.2% against three of the previous champion): {"favourites": ["pink", "orange"], "hold": 0, "favbid": 3.0, "favmort": 0, "reserve": 50, "bid": 1.2, "setbid": 3.0, "blockbid": 2.0, "build": 5, "breserve": 100, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+- round 2 (wins 22.1% against three of the previous champion): {"favourites": ["lightblue", "red"], "hold": 0, "favbid": 3.0, "favmort": 1, "reserve": 100, "bid": 1.5, "setbid": 3.0, "blockbid": 1.5, "build": 5, "breserve": 50, "bpri": 0, "jail": 2, "m2b": 1, "stretch": 1, "trade": "fair"}
+
+## Realistic ecology: a population of realistic players evolving (all 1365 four-seat tables, 4,000 games each)
+
+Each generation, strategies reproduce in proportion to how often they win at tables drawn at random from the current population.
+
+| Strategy | Win rate in an evenly mixed population | Share at start | after 10 gens | after 25 | after 100 | after 400 |
+|---|---|---|---|---|---|---|
+| Evolved r0 | 26.5% | 8.3% | 30.5% | 41.3% | 47.5% | 47.7% |
+| Evolved r1 | 26.8% | 8.3% | 32.2% | 38.9% | 38.2% | 38.2% |
+| Evolved r2 | 25.2% | 8.3% | 19.6% | 18.1% | 14.4% | 14.2% |
+| All-In | 21.7% | 8.3% | 5.4% | 1.0% | 0.0% | 0.0% |
+| Boardwalk saver | 20.3% | 8.3% | 2.5% | 0.2% | 0.0% | 0.0% |
+| Orange fan | 21.7% | 8.3% | 4.4% | 0.4% | 0.0% | 0.0% |
+| Railroad fan | 20.0% | 8.3% | 2.2% | 0.1% | 0.0% | 0.0% |
+| Typical player | 19.9% | 8.3% | 2.1% | 0.1% | 0.0% | 0.0% |
+| Stops at three houses | 16.6% | 8.3% | 0.4% | 0.0% | 0.0% | 0.0% |
+| Expert playbook | 18.0% | 8.3% | 0.5% | 0.0% | 0.0% | 0.0% |
+| Keeps $300 back | 14.3% | 8.3% | 0.1% | 0.0% | 0.0% | 0.0% |
+| Never trades | 6.3% | 8.3% | 0.0% | 0.0% | 0.0% | 0.0% |
 

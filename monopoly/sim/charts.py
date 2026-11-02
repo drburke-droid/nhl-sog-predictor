@@ -319,13 +319,15 @@ def chart_setwin():
     save(fig, 'set_completed_win.png')
 
 
-def chart_ecology():
-    E = S.get('ecology')
+OLD_ECO_NAMES = {'Champion': 'Champion (learned values)', 'Evolved': 'Evolved specialist', 'Evolved r1': 'Evolved generalist (r1)'}
+
+
+def chart_ecology(key='ecology', fname='ecology.png', title='Let a population of Monopoly players evolve', rename=OLD_ECO_NAMES):
+    E = S.get(key)
     if not E:
         return
     pool, traj = E['pool'], E['traj']
-    pool = ['Champion (learned values)' if p == 'Champion' else 'Evolved specialist' if p == 'Evolved' else
-            'Evolved generalist (r1)' if p == 'Evolved r1' else p for p in pool]
+    pool = [rename.get(p, p) for p in pool]
     gens = [2 * i for i in range(len(traj))]
     final = traj[-1]
     order = sorted(range(len(pool)), key=lambda i: -max(t[i] for t in traj))
@@ -343,31 +345,32 @@ def chart_ecology():
     ax.set_xlabel('Generation'); ax.set_ylabel('Share of the population (%)')
     ax.legend(frameon=False, loc='upper left', ncol=1, fontsize=9)
     ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
-    ax.set_title('Let a population of Monopoly players evolve', loc='left', fontsize=14, weight='bold', color=INK)
+    ax.set_title(title, loc='left', fontsize=14, weight='bold', color=INK)
     fig.text(0.02, -0.03, 'Grey: %s.' % ', '.join(pool[i] for i in range(len(pool)) if i not in hl), fontsize=8.5, color=INK2)
-    save(fig, 'ecology.png')
+    save(fig, fname)
 
 
-def chart_evolution():
-    H = S.get('evolve_history')
+def chart_evolution(key='evolve_history', fname='evolution.png', ylabel='Win rate vs three Yes-Men (%)', fair=25,
+                    title='Evolving a Monopoly strategy', fair_label='fair share 25%'):
+    H = S.get(key)
     if not H:
         return
     fig, ax = plt.subplots(figsize=(8.5, 4.5))
     ax.plot([h[0] for h in H], [100 * h[1] for h in H], color=BLUE, lw=2.2, marker='o', ms=4, label='best strategy')
     ax.plot([h[0] for h in H], [100 * h[2] for h in H], color=MUTED, lw=1.6, label='median strategy')
-    ax.axhline(25, color=INK2, lw=1, ls=(0, (4, 3)))
-    ax.text(H[-1][0], 25.5, 'fair share 25%', ha='right', fontsize=9, color=INK2)
-    ax.set_xlabel('Generation'); ax.set_ylabel('Win rate vs three Yes-Men (%)')
+    ax.axhline(fair, color=INK2, lw=1, ls=(0, (4, 3)))
+    ax.text(H[-1][0], fair + 0.5, fair_label, ha='right', fontsize=9, color=INK2)
+    ax.set_xlabel('Generation'); ax.set_ylabel(ylabel)
     ax.legend(frameon=False, loc='lower right')
     ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
-    ax.set_title('Evolving a Monopoly strategy', loc='left', fontsize=14, weight='bold', color=INK)
-    save(fig, 'evolution.png')
+    ax.set_title(title, loc='left', fontsize=14, weight='bold', color=INK)
+    save(fig, fname)
 
 
-def chart_ablation():
+def chart_ablation(exp='ablation', fname='ablation.png', title="Which of evolution's habits matter?"):
     import glob
     rows = []
-    for p in glob.glob(os.path.join(RES, 'ablation', '*.json')):
+    for p in glob.glob(os.path.join(RES, exp, '*.json')):
         d = json.load(open(p))
         rows.append((d['key'], 100 * d['players'][0]['wins'] / d['games']))
     if not rows:
@@ -377,23 +380,36 @@ def chart_ablation():
            'plus_utilities': 'also buys utilities', 'buy_everything': 'buys everything', 'no_reserve': 'keeps no cash back',
            'no_blocking': 'never bids to block', 'list_price_bids': 'bids only list price', 'leave_jail_always': 'always leaves jail at once',
            'stay_jail_always': 'always stays in jail', 'fair_trader': 'trades at list price', 'no_mortgage_to_build': 'never mortgages to build',
-           'three_houses': 'stops at three houses', 'cheap_buyouts': 'pays at most 2.5x for a set piece'}
+           'three_houses': 'stops at three houses', 'cheap_buyouts': 'pays at most 2.5x for a set piece',
+           'no_favourites': 'has no favourite colour', 'no_cash_reserve': 'keeps no cash back', 'hotels': 'builds hotels',
+           'no_build_reserve': 'keeps no cash when building', 'fair_trading': 'evens up swaps at printed prices',
+           'savvy_trading': 'evens up swaps by set value', 'never_trades': 'never trades'}
     rows = sorted([(k, v - base) for k, v in rows if k != 'evolved'], key=lambda r: r[1])
     fig, ax = plt.subplots(figsize=(8.5, 5.5))
-    ax.barh(range(len(rows)), [v for _, v in rows], color=ORANGE, height=0.62)
+    ax.barh(range(len(rows)), [v for _, v in rows], color=[ORANGE if v < 0 else BLUE for _, v in rows], height=0.62)
     ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab.get(k, k) for k, _ in rows])
     for i, (_, v) in enumerate(rows):
-        ax.text(v - 0.15, i, '%+.1f' % v, va='center', ha='right', fontsize=9, color=INK)
+        ax.text(v + (-0.15 if v < 0 else 0.15), i, '%+.1f' % v, va='center', ha='right' if v < 0 else 'left', fontsize=9, color=INK)
     ax.axvline(0, color=INK2, lw=1)
-    ax.set_xlim(min(v for _, v in rows) - 1.8, 0.6)
+    ax.set_xlim(min(min(v for _, v in rows), 0) - 1.8, max(max(v for _, v in rows), 0) + 1.2)
     ax.set_xlabel('Change in win rate (points) from the evolved strategy\'s %.1f%%' % base)
     ax.grid(axis='x', color=GRID, lw=0.8); ax.set_axisbelow(True)
-    ax.set_title('Which of evolution\'s habits matter?', loc='left', fontsize=14, weight='bold', color=INK)
-    save(fig, 'ablation.png')
+    ax.set_title(title, loc='left', fontsize=14, weight='bold', color=INK)
+    save(fig, fname)
 
 
 if __name__ == '__main__':
     chart_ecology(); chart_evolution(); chart_ablation()
+    real_names = {}
+    lin = os.path.join(RES, 'evolve_real', 'stage2_lineage.json')
+    if os.path.exists(lin):
+        for l in json.load(open(lin)):
+            favs = ' + '.join(GNAME.get(f, f).lower() for f in l['plain']['favourites']) or 'no favourite'
+            real_names['Evolved r%d' % l['round']] = 'Evolved (%s fan)' % favs
+    chart_ecology('real_ecology', 'ecology_realistic.png', 'Realistic players: which habits survive?', real_names)
+    chart_evolution('real_evolve_history', 'evolution_realistic.png', 'Wins per 100 games vs three typical players', 21.8,
+                    'Evolving a realistic Monopoly player', 'typical player 21.8')
+    chart_ablation('real_ablation', 'ablation_realistic.png', "Which of the realistic evolved player's habits matter?")
     chart_board('leave'); chart_board('stay')
     if 'table' in S:
         for w, t in (('official', 'Official rules: one strategy vs three Yes-Men'), ('family', 'Family house rules: one strategy vs three Yes-Men'),

@@ -1,0 +1,14 @@
+real_ablation evolved                                  win 31.27%  draws 13.3%
+real_ablation no_favourites                            win 26.73%  draws 13.0%
+real_ablation no_cash_reserve                          win 31.46%  draws 13.3%
+real_ablation list_price_bids                          win 28.75%  draws 13.6%
+real_ablation three_houses                             win 25.96%  draws 13.8%
+real_ablation no_build_reserve                         win 30.82%  draws 13.3%
+real_ablation leave_jail_always                        win 29.83%  draws 13.2%
+real_ablation stay_jail_always                         win 30.03%  draws 13.0%
+real_ablation no_mortgage_to_build                     win 27.45%  draws 13.4%
+real_ablation savvy_trading                            win 21.47%  draws 15.6%
+real_ablation never_trades                             win 8.31%  draws 34.4%
+real_mirror  typical_vs_3_evolved                     win 16.24%  draws 18.8%
+real_mirror  allin_vs_3_evolved                       win 17.84%  draws 18.9%
+real_mirror  four_evolved                             win 18.83%  draws 25.1%

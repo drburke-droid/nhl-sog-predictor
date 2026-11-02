@@ -233,7 +233,75 @@ def exp_realistic(n_games=100000):
         run('realistic', 'real_official__length_n%d' % n, ['everything'] * n, n_games, **REAL_WORLDS['real_official'])
 
 
-EXPERIMENTS = {'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
+def exp_real_evolution(n_games=100000):
+    """Follow-ups to evolve_real.py: ablation, mirror test, arms-race cross-checks, ecology (realistic play)."""
+    import evolve_real as er
+    ev = os.path.join(RES, 'evolve_real')
+    best = json.load(open(os.path.join(ev, 'stage1_final.json')))[0]['genome']
+    cfg = dict(REAL_WORLDS['real_official'], tv=','.join('%s:%d' % kv for kv in er.TV.items()))
+    typ = er.TYPICAL
+    # ablation: undo one habit at a time
+    def variant(**kw):
+        g = json.loads(json.dumps(best))
+        g.update(kw)
+        return g
+    variants = {
+        'evolved': best,
+        'no_favourites': variant(fav=[False] * 10),
+        'no_cash_reserve': variant(reserve=0, hold=0),
+        'list_price_bids': variant(bid=1.0, setbid=1.0, blockbid=0.0, favbid=1.0),
+        'hotels': variant(build=5),
+        'three_houses': variant(build=3),
+        'no_build_reserve': variant(breserve=0),
+        'leave_jail_always': variant(jail=0),
+        'stay_jail_always': variant(jail=1),
+        'no_mortgage_to_build': variant(m2b=0),
+        'fair_trading': variant(trade='fair'),
+        'savvy_trading': variant(trade='shark'),
+        'never_trades': variant(trade='none'),
+    }
+    for k, g in variants.items():
+        if k != 'evolved' and g == best:
+            continue
+        run('real_ablation', k, [er.spec(g, 'Evolved')] + [typ] * 3, n_games, **cfg)
+    # mirror test: one player against three copies of the evolved champion
+    ev_spec = er.spec(best, 'Evolved')
+    run('real_mirror', 'typical_vs_3_evolved', [typ] + [ev_spec] * 3, n_games, **cfg)
+    run('real_mirror', 'allin_vs_3_evolved', ['allin;name=All-In'] + [ev_spec] * 3, n_games, **cfg)
+    run('real_mirror', 'four_evolved', [ev_spec] * 4, n_games, **cfg)
+
+def exp_real_race(n_games=100000):
+    """Arms-race cross-checks and the realistic ecology (run after evolve_real.py stage2)."""
+    import evolve_real as er
+    ev = os.path.join(RES, 'evolve_real')
+    best = json.load(open(os.path.join(ev, 'stage1_final.json')))[0]['genome']
+    cfg = dict(REAL_WORLDS['real_official'], tv=','.join('%s:%d' % kv for kv in er.TV.items()))
+    typ = er.TYPICAL
+    # arms race cross-checks
+    lin_path = os.path.join(ev, 'stage2_lineage.json')
+    lin = json.load(open(lin_path)) if os.path.exists(lin_path) else []
+    specs = {l['round']: er.spec(l['genome'], 'r%d' % l['round']) for l in lin}
+    for a_, b_ in itertools.permutations(sorted(specs), 2):
+        run('real_mirror', 'r%d_vs_3_r%d' % (a_, b_), [specs[a_]] + [specs[b_]] * 3, n_games // 2, **cfg)
+    for r_, sp in specs.items():
+        run('real_mirror', 'r%d_vs_3_typical' % r_, [sp] + [typ] * 3, n_games // 2, **cfg)
+        run('real_mirror', 'typical_vs_3_r%d' % r_, [typ] + [sp] * 3, n_games // 2, **cfg)
+    # ecology: every four-seat table from a pool of realistic players
+    pool = [('Typical player', typ), ('All-In', 'allin;name=All-In'), ('Expert playbook', 'champion;name=Expert playbook'),
+            ('Keeps $300 back', 'prudent;name=Keeps $300 back'), ('Stops at three houses', 'threehouses;name=Stops at three houses'),
+            ('Never trades', 'stubborn;name=Never trades'), ('Railroad fan', 'everything;name=Railroad fan;fav=rr'),
+            ('Orange fan', 'everything;name=Orange fan;fav=orange'),
+            ('Boardwalk saver', 'everything;name=Boardwalk saver;fav=darkblue;hold=400')]
+    for r_ in sorted(specs):
+        pool.append(('Evolved r%d' % r_, er.spec(lin[r_]['genome'], 'Evolved r%d' % r_)))
+    if not specs:
+        pool.append(('Evolved r0', er.spec(best, 'Evolved r0')))
+    json.dump([nm for nm, _ in pool], open(os.path.join(RES, 'real_ecology_pool.json'), 'w'))
+    for combo in itertools.combinations_with_replacement(range(len(pool)), 4):
+        run('real_ecology', 'm' + '_'.join(str(i) for i in combo), [pool[i][1] for i in combo], 4000, **cfg)
+
+
+EXPERIMENTS = {'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
 if __name__ == '__main__':

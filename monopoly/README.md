@@ -17,6 +17,7 @@ rules people actually play change things, and what a genetic algorithm finds whe
 | `markov.py` | Exact long-run square probabilities (Markov chain). Reproduces Truman Collins' published leave-jail table to two decimals; for the stay-in-jail policy it gives 9.39% in jail against Collins' 9.46%. |
 | `experiments.py` | Every experiment; results cached as JSON in `results/<experiment>/`. |
 | `evolve.py` | Genetic algorithm (stage 1: beat three normal players; stage 2: arms race against its own champion). |
+| `evolve_real.py` | The same under realistic play: every player buys what it lands on, set-for-set swaps only; genes limited to choices real players make (favourite colours, cash kept back, bids, building, jail, how to even up a swap). |
 | `analyze.py` | Builds `results/summary.md` (all the tables) and `results/summary.json`. |
 | `charts.py` | Draws `results/charts/*.png`. |
 | `results/sample_games/*.jsonl` | Turn-by-turn event logs of single games (for animating a real game). |
@@ -29,7 +30,9 @@ g++ -O2 -std=c++17 -pthread -o monopoly monopoly.cpp
 python3 markov.py
 python3 experiments.py length duel table skip h2h players shark   # about an hour on 4 cores
 python3 evolve.py stage1 25 && python3 evolve.py stage2 3
-python3 experiments.py ablation ecology
+python3 experiments.py ablation ecology realistic
+python3 evolve_real.py stage1 25 && python3 evolve_real.py stage2 2
+python3 experiments.py real_evolution real_race
 python3 analyze.py && python3 charts.py
 ```
 

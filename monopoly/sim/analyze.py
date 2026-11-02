@@ -353,54 +353,119 @@ def main():
         md.append('')
 
     # ---- ecology: replicator dynamics over every 4-seat table
-    eco = load('ecology')
-    pool_path = os.path.join(RES, 'ecology_pool.json')
-    if eco and os.path.exists(pool_path):
-        pool = json.load(open(pool_path))
-        k = len(pool)
-        W = {}
-        for key, d in eco.items():
-            combo = tuple(int(x) for x in key[1:].split('_'))
-            acc = {}
-            for seat, i in enumerate(combo):
-                acc.setdefault(i, []).append(d['players'][seat]['wins'] / d['games'])
-            W[combo] = {i: sum(v) / len(v) for i, v in acc.items()}
-        import itertools
-        others = list(itertools.combinations_with_replacement(range(k), 3))
-        coef = {}
-        for m in others:
-            c = [m.count(j) for j in range(k)]
-            coef[m] = (math.factorial(3) / math.prod(math.factorial(x) for x in c), c)
-        def fitness(x):
-            f = [0.0] * k
-            for i in range(k):
-                for m in others:
-                    mult, c = coef[m]
-                    pm = mult * math.prod(x[j] ** c[j] for j in range(k) if c[j])
-                    if pm == 0:
-                        continue
-                    T = tuple(sorted(m + (i,)))
-                    f[i] += pm * W.get(T, {}).get(i, 0)
-            return f
-        x = [1.0 / k] * k
-        traj = [x[:]]
-        for gen in range(400):
-            f = fitness(x)
-            mean = sum(a * b for a, b in zip(x, f))
-            x = [a * b / mean for a, b in zip(x, f)]
-            traj.append(x[:])
-        f0 = fitness([1.0 / k] * k)
-        summary['ecology'] = {'pool': pool, 'traj': traj[::2], 'fitness_uniform': f0}
-        md += ['## Ecology: a population of players evolving (replicator dynamics over all %d four-seat tables, 5,000-10,000 games each)' % len(W), '',
-               'Each generation, strategies reproduce in proportion to how often they win at tables drawn at random from the current population.', '',
-               '| Strategy | Win rate in an evenly mixed population | Share at start | after 25 gens | after 100 | after 400 |', '|---|---|---|---|---|---|']
-        for i in sorted(range(k), key=lambda i: -traj[-1][i]):
-            md.append('| %s | %.1f%% | %.1f%% | %.1f%% | %.1f%% | %.1f%% |' % (pool[i], pct(f0[i]), pct(traj[0][i]), pct(traj[25][i]), pct(traj[100][i]), pct(traj[-1][i])))
-        md.append('')
+    ecology_section(md, summary, 'ecology', 'ecology_pool.json', 'ecology',
+                    'Ecology: a population of players evolving (replicator dynamics over all %d four-seat tables, 5,000-10,000 games each)')
+
+    # ---- realistic evolution
+    real_evolution_section(md, summary)
+    ecology_section(md, summary, 'real_ecology', 'real_ecology_pool.json', 'real_ecology',
+                    'Realistic ecology: a population of realistic players evolving (all %d four-seat tables, 4,000 games each)')
 
     open(os.path.join(RES, 'summary.md'), 'w').write('\n'.join(md) + '\n')
     json.dump(summary, open(os.path.join(RES, 'summary.json'), 'w'), indent=1, default=str)
     print('\n'.join(md))
+
+
+def ecology_section(md, summary, exp, pool_file, key, title):
+    import itertools
+    eco = load(exp)
+    pool_path = os.path.join(RES, pool_file)
+    if not eco or not os.path.exists(pool_path):
+        return
+    pool = json.load(open(pool_path))
+    k = len(pool)
+    W = {}
+    for name, d in eco.items():
+        combo = tuple(int(x) for x in name[1:].split('_'))
+        acc = {}
+        for seat, i in enumerate(combo):
+            acc.setdefault(i, []).append(d['players'][seat]['wins'] / d['games'])
+        W[combo] = {i: sum(v) / len(v) for i, v in acc.items()}
+    others = list(itertools.combinations_with_replacement(range(k), 3))
+    coef = {}
+    for m in others:
+        c = [m.count(j) for j in range(k)]
+        coef[m] = (math.factorial(3) / math.prod(math.factorial(x) for x in c), c)
+
+    def fitness(x):
+        f = [0.0] * k
+        for i in range(k):
+            for m in others:
+                mult, c = coef[m]
+                pm = mult * math.prod(x[j] ** c[j] for j in range(k) if c[j])
+                if pm == 0:
+                    continue
+                f[i] += pm * W.get(tuple(sorted(m + (i,))), {}).get(i, 0)
+        return f
+    x = [1.0 / k] * k
+    traj = [x[:]]
+    for gen in range(400):
+        f = fitness(x)
+        mean = sum(a * b for a, b in zip(x, f))
+        x = [a * b / mean for a, b in zip(x, f)]
+        traj.append(x[:])
+    f0 = fitness([1.0 / k] * k)
+    summary[key] = {'pool': pool, 'traj': traj[::2], 'fitness_uniform': f0, 'tables': len(W)}
+    md += ['## ' + title % len(W), '',
+           'Each generation, strategies reproduce in proportion to how often they win at tables drawn at random from the current population.', '',
+           '| Strategy | Win rate in an evenly mixed population | Share at start | after 10 gens | after 25 | after 100 | after 400 |',
+           '|---|---|---|---|---|---|---|']
+    for i in sorted(range(k), key=lambda i: (-traj[-1][i], -f0[i])):
+        md.append('| %s | %.1f%% | %.1f%% | %.1f%% | %.1f%% | %.1f%% | %.1f%% |' % (
+            pool[i], pct(f0[i]), pct(traj[0][i]), pct(traj[10][i]), pct(traj[25][i]), pct(traj[100][i]), pct(traj[-1][i])))
+    md.append('')
+
+
+def real_evolution_section(md, summary):
+    ev = os.path.join(RES, 'evolve_real')
+    hp = os.path.join(ev, 'stage1_history.json')
+    if not os.path.exists(hp):
+        return
+    hist = json.load(open(hp))
+    summary['real_evolve_history'] = [(h['gen'], h['best'], h['median']) for h in hist]
+    md += ['## Realistic evolution (everyone buys what they land on; set-for-set swaps only)', '',
+           'Genetic algorithm, 24 strategies x %d generations; fitness = wins against three typical players '
+           '(16,000 games each). A typical player wins about 21.8 games in 100 here (13 in 100 never finish).' % len(hist), '',
+           '| Generation | Best | Median |', '|---|---|---|']
+    for h in hist:
+        md.append('| %d | %.1f%% | %.1f%% |' % (h['gen'], pct(h['best']), pct(h['median'])))
+    fp = os.path.join(ev, 'stage1_final.json')
+    if os.path.exists(fp):
+        fin = json.load(open(fp))
+        summary['real_evolve_final'] = fin
+        md += ['', 'Top five re-tested on 200,000 games each:', '']
+        for f in fin:
+            md.append('- %.1f%%: %s' % (pct(f['fitness_200k']), json.dumps(f['plain'])))
+    abl = load('real_ablation')
+    if abl:
+        base = abl['evolved']['players'][0]['wins'] / abl['evolved']['games']
+        rows = sorted(((k, d['players'][0]['wins'] / d['games']) for k, d in abl.items() if k != 'evolved'), key=lambda r: r[1])
+        summary['real_ablation'] = {'evolved': base, **{k: v for k, v in rows}}
+        md += ['', 'Undo one habit at a time (100,000 games each; evolved = %.1f%%):' % pct(base), '',
+               '| Change | Win rate | Difference |', '|---|---|---|']
+        for k, v in rows:
+            md.append('| %s | %.1f%% | %+.1f |' % (k.replace('_', ' '), pct(v), pct(v - base)))
+    mir = load('real_mirror')
+    if mir:
+        summary['real_mirror'] = {}
+        md += ['', 'Mirror and arms-race checks (first-named player against three copies of the second):', '',
+               '| Table | First player wins | Each of the three wins | Never finish |', '|---|---|---|---|']
+        for k in sorted(mir):
+            d = mir[k]
+            p = d['players']
+            v0 = p[0]['wins'] / d['games']
+            vo = sum(x['wins'] for x in p[1:]) / 3 / d['games']
+            summary['real_mirror'][k] = v0
+            md.append('| %s | %.1f%% | %.1f%% | %.0f%% |' % (k.replace('_', ' '), pct(v0), pct(vo), pct(d['timeouts'] / d['games'])))
+    lp = os.path.join(ev, 'stage2_lineage.json')
+    if os.path.exists(lp):
+        lin = json.load(open(lp))
+        summary['real_lineage'] = lin
+        md += ['', 'Arms race (each round evolves against three copies of the previous champion):', '']
+        for l in lin:
+            md.append('- round %d%s: %s' % (l['round'], (' (wins %.1f%% against three of the previous champion)' % pct(l['vs_previous_200k']))
+                                            if 'vs_previous_200k' in l else '', json.dumps(l['plain'])))
+    md.append('')
 
 
 def group_of(i):

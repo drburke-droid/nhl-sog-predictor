@@ -1,0 +1,262 @@
+[
+ {
+  "fitness_200k": 0.310205,
+  "genome": {
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 50,
+   "bid": 2.0,
+   "setbid": 3.0,
+   "blockbid": 1.5,
+   "build": 5,
+   "breserve": 100,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair",
+   "fav": [
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "spec": "name=evolved;buy=all;fav=lightblue+orange;hold=0;favbid=2.0;favmort=1;reserve=50;bid=2.0;setbid=3.0;blockbid=1.5;build=5;breserve=100;bpri=0;jail=2;m2b=1;stretch=1;trade=fair",
+  "plain": {
+   "favourites": [
+    "lightblue",
+    "orange"
+   ],
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 50,
+   "bid": 2.0,
+   "setbid": 3.0,
+   "blockbid": 1.5,
+   "build": 5,
+   "breserve": 100,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair"
+  }
+ },
+ {
+  "fitness_200k": 0.310205,
+  "genome": {
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 50,
+   "bid": 2.0,
+   "setbid": 1.5,
+   "blockbid": 3.0,
+   "build": 5,
+   "breserve": 100,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair",
+   "fav": [
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "spec": "name=evolved;buy=all;fav=lightblue+orange;hold=0;favbid=2.0;favmort=1;reserve=50;bid=2.0;setbid=1.5;blockbid=3.0;build=5;breserve=100;bpri=0;jail=2;m2b=1;stretch=1;trade=fair",
+  "plain": {
+   "favourites": [
+    "lightblue",
+    "orange"
+   ],
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 50,
+   "bid": 2.0,
+   "setbid": 1.5,
+   "blockbid": 3.0,
+   "build": 5,
+   "breserve": 100,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair"
+  }
+ },
+ {
+  "fitness_200k": 0.31,
+  "genome": {
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 50,
+   "bid": 1.5,
+   "setbid": 1.5,
+   "blockbid": 1.5,
+   "build": 5,
+   "breserve": 50,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 0,
+   "trade": "fair",
+   "fav": [
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "spec": "name=evolved;buy=all;fav=lightblue+orange;hold=0;favbid=2.0;favmort=1;reserve=50;bid=1.5;setbid=1.5;blockbid=1.5;build=5;breserve=50;bpri=0;jail=2;m2b=1;stretch=0;trade=fair",
+  "plain": {
+   "favourites": [
+    "lightblue",
+    "orange"
+   ],
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 50,
+   "bid": 1.5,
+   "setbid": 1.5,
+   "blockbid": 1.5,
+   "build": 5,
+   "breserve": 50,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 0,
+   "trade": "fair"
+  }
+ },
+ {
+  "fitness_200k": 0.30872,
+  "genome": {
+   "hold": 0,
+   "favbid": 1.5,
+   "favmort": 1,
+   "reserve": 100,
+   "bid": 1.5,
+   "setbid": 3.0,
+   "blockbid": 0.0,
+   "build": 5,
+   "breserve": 50,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair",
+   "fav": [
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "spec": "name=evolved;buy=all;fav=lightblue+orange;hold=0;favbid=1.5;favmort=1;reserve=100;bid=1.5;setbid=3.0;blockbid=0.0;build=5;breserve=50;bpri=0;jail=2;m2b=1;stretch=1;trade=fair",
+  "plain": {
+   "favourites": [
+    "lightblue",
+    "orange"
+   ],
+   "hold": 0,
+   "favbid": 1.5,
+   "favmort": 1,
+   "reserve": 100,
+   "bid": 1.5,
+   "setbid": 3.0,
+   "blockbid": 0.0,
+   "build": 5,
+   "breserve": 50,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair"
+  }
+ },
+ {
+  "fitness_200k": 0.301245,
+  "genome": {
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 25,
+   "bid": 2.0,
+   "setbid": 1.5,
+   "blockbid": 2.0,
+   "build": 5,
+   "breserve": 200,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair",
+   "fav": [
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "spec": "name=evolved;buy=all;fav=lightblue+orange;hold=0;favbid=2.0;favmort=1;reserve=25;bid=2.0;setbid=1.5;blockbid=2.0;build=5;breserve=200;bpri=0;jail=2;m2b=1;stretch=1;trade=fair",
+  "plain": {
+   "favourites": [
+    "lightblue",
+    "orange"
+   ],
+   "hold": 0,
+   "favbid": 2.0,
+   "favmort": 1,
+   "reserve": 25,
+   "bid": 2.0,
+   "setbid": 1.5,
+   "blockbid": 2.0,
+   "build": 5,
+   "breserve": 200,
+   "bpri": 0,
+   "jail": 2,
+   "m2b": 1,
+   "stretch": 1,
+   "trade": "fair"
+  }
+ }
+]

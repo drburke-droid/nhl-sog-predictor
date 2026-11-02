@@ -258,3 +258,50 @@ _swaponly), rules_change_winner.png, skip_one_group_official.png (and _family), 
 duel_matrix_b3.png, royale_3.png, royale_4.png, royale_8.png, h2h_matrix_official.png, h2h_matrix_family.png,
 players.png, game_length.png, evolution.png, ablation.png, ecology.png, set_completed_win.png.
 Sample turn-by-turn game logs for animation: monopoly/sim/results/sample_games/*.jsonl.
+
+### 15. Realistic play (user's rules) and the evolution re-run
+Realistic play: every player buys what it lands on; the only trades are set-for-set swaps (each player completes
+a set, cash evens up the printed prices); nobody sells a set-completing card for cash. "Fans" buy everything too
+but lean toward a favourite (mortgage to buy it, bid up to double for it, build it first, never trade it away).
+Typical player vs three typical players: 21.8 wins per 100 games; 13 in 100 four-player games never finish
+(57 in 100 six-player games) because a colour gets split three ways and no two-player swap can fix it.
+One player vs three typical players (100,000 games each, official rules): Orange fan 24.7, All-In 24.3,
+Light blue fan 23.7, Pink fan 23.2, out of jail early/in late 22.7, Boardwalk fan 22.1, Red fan 22.1,
+Boardwalk saver ($400 held while dark blue unsold) 21.9, Railroad fan 21.8, Yellow fan 21.5, four houses never
+hotels 20.4, Green fan 20.1, Brown fan 19.0, stops at three houses 17.9, keeps $300 back 15.3, never trades 6.3.
+Never buying one group: dark blue -5.5, brown -4.4, orange -4.3, light blue -3.9, pink -3.3, red -2.2,
+yellow -1.3, green 0.0, railroads +0.1, utilities +0.4. House rules (no auctions, Free Parking money) give the
+same order of fans (orange best 24.4, brown worst 18.0).
+
+Evolution under realistic play (`sim/evolve_real.py`): every player buys what it lands on; genes are only real
+choices: up to two favourite groups and how hard to chase them, cash kept back, auction bids, when to stop
+building, mortgaging to build, jail timing, and how to even up a swap (printed prices, set value, or never trade).
+24 strategies x 25 generations, fitness = wins against three typical players (16,000 games each).
+- Best rose from 26.1 (random) to about 31 by generation 7 and plateaued. All five finalists, re-tested on
+  200,000 games each (30.1-31.0), agree: favourites **light blue and orange**; mortgage other property to buy a
+  favourite and bid up to 2x list for one at auction; bid up to 1.5-2x list on other lots at auction (more to
+  complete a set); keep only $50-100; build to hotels; mortgage loose property to build; out of jail early, in
+  late; even up swaps at printed prices (do not haggle over set value).
+- Evolved realistic player: **31.0 wins per 100** vs 21.8 for a typical player (about 42% more wins).
+- Undo one habit (100,000 games each, evolved 31.3): never trades 8.3 (-23.0); evens up swaps by set value
+  instead of printed price 21.5 (-9.8: haggling kills deals, so fewer sets get made); stops at three houses 26.0
+  (-5.3); no favourite colours 26.7 (-4.5); never mortgages to build 27.4 (-3.8); bids only list price 28.7
+  (-2.5); always leaves jail 29.8 (-1.4); always stays in jail 30.0 (-1.2); keeps no cash when building 30.8
+  (-0.5); keeps no cash back when buying 31.5 (+0.2, no effect).
+- **Not a parasite under realistic play**: a typical player seated with three copies of it wins 16.2 per 100
+  (less than its usual 21.8); an All-In wins 17.8. Four copies at one table: 18.8 each, 25 in 100 never finish.
+- Arms race (each round evolves against three copies of the last champion, 12 generations): round 1 = same
+  playbook with favourites pink + orange (21.2 vs three round-0 players, where about 18.8 is par); round 2 =
+  same playbook with favourites light blue + red (22.1 vs three round-1). No cycle: only the favourite pair
+  drifts. Cross-checks (50,000 games each): against typical players round 0/1/2 win 31.1/30.6/28.1; a typical
+  player against three of each wins 16.3/16.7/18.1; evolved variants against each other sit near par, with a
+  small bonus for the odd one out whose favourites nobody else at the table is chasing (e.g. round 1 vs three
+  round 2: 25.7, par about 20).
+- Realistic ecology (12 players, all 1,365 four-seat tables, 4,000 games each): evenly mixed win rates:
+  evolved pink+orange 26.8, evolved light blue+orange 26.5, evolved light blue+red 25.2, All-In 21.7, Orange fan
+  21.7, Boardwalk saver 20.3, Railroad fan 20.0, typical 19.9, Expert playbook (haggles by set value) 18.0,
+  stops at three houses 16.6, keeps $300 back 14.3, never trades 6.3. Population end state: the three evolved
+  players only, 48% light blue+orange, 38% pink+orange, 14% light blue+red; everyone else extinct by about
+  generation 25-50. Different favourite pairs coexist because players do better when their favourites are not
+  contested. Charts: `charts/evolution_realistic.png`, `charts/ablation_realistic.png`,
+  `charts/ecology_realistic.png`.
