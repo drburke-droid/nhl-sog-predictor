@@ -1,0 +1,1504 @@
+== M 100m  legend={'': 'ratified', '#fec': 'not ratified', '#ffd0bd': 'rescinded'}  switch=1968-10-14  rows=99 line=78 dropped=10
+     dropped [rescinded] 10.3 Lennart Strandberg 1936-09-26
+     dropped [not ratified] 10.06 Bob Hayes 1964-10-15
+     dropped [not ratified] 10.03 Jim Hines 1968-06-20
+     dropped [not ratified] 10.02 Charles Greene 1968-10-13
+     dropped [rescinded] 9.83 Ben Johnson 1987-08-30
+     dropped [not ratified] 9.93 Carl Lewis 1987-08-30
+     dropped [not ratified] 9.93 Carl Lewis 1988-08-17
+     dropped [not ratified] 9.79 Ben Johnson 1988-09-24
+     dropped [rescinded] 9.78 Tim Montgomery 2002-09-14
+     dropped [rescinded] 9.77 Justin Gatlin 2006-05-12
+     1891-07-04          10.8  pre    Luther Cary
+     1892-09-25          10.8  pre    Cecil Lee  (=)
+     1893-08-04          10.8  pre    Étienne De Ré  (=)
+     1895-04-13          10.8  pre    L. Atcherley  (=)
+     1895-08-28          10.8  pre    Harry Beaton  (=)
+     1896-08-09          10.8  pre    Harald Anderson-Arbin  (=)
+     1898-09-11          10.8  pre    Isaac Westergren  (=)
+     1899-09-10          10.8  pre    Isaac Westergren  (=)
+     1900-07-14          10.8  pre    Frank Jarvis  (=)
+     1900-07-14          10.8  pre    Walter Tewksbury  (=)
+     1900-09-23          10.8  pre    Carl Ljung  (=)
+     1900-10-06          10.8  pre    Walter Tewksbury  (=)
+     1903-06-14          10.8  pre    André Passat  (=)
+     1903-06-14          10.8  pre    Louis Kuhn  (=)
+     1903-07-05          10.8  pre    Harald Grønfeldt  (=)
+     1903-08-09          10.8  pre    Eric Frick  (=)
+     1906-08-26          10.6  pre    Knut Lindberg
+     1911-07-09          10.5  pre    Emil Ketterer
+     1911-08-13          10.5  pre    Richard Rau  (=)
+     1912-05-12          10.5  pre    Richard Rau  (=)
+     1912-05-26          10.5  pre    Erwin Kern  (=)
+     1912-07-06          10.6  hand   Donald Lippincott
+     1920-09-16          10.6  hand   Jackson Scholz  (=)
+     1921-04-23          10.4  hand   Charley Paddock
+     1929-08-08          10.4  hand   Eddie Tolan  (=)
+     1929-08-25          10.4  hand   Eddie Tolan  (=)
+     1930-08-09          10.3  hand   Percy Williams
+     1932-08-01          10.3  hand   Eddie Tolan  (=)
+     1933-08-12          10.3  hand   Ralph Metcalfe  (=)
+     1934-08-06          10.3  hand   Eulace Peacock  (=)
+     1934-08-26          10.3  hand   Chris Berger  (=)
+     1934-09-15          10.3  hand   Ralph Metcalfe  (=)
+     1934-09-23          10.3  hand   Ralph Metcalfe  (=)
+     1935-06-15          10.3  hand   Takayoshi Yoshioka  (=)
+     1936-06-20          10.2  hand   Jesse Owens
+     1941-06-06          10.2  hand   Harold Davis  (=)
+     1948-05-15          10.2  hand   Lloyd LaBeach  (=)
+     1948-07-09          10.2  hand   Barney Ewell  (=)
+     1951-08-25          10.2  hand   McDonald Bailey  (=)
+     1954-10-31          10.2  hand   Heinz Fütterer  (=)
+     1956-05-19          10.2  hand   Bobby Morrow  (=)
+     1956-06-01          10.2  hand   Ira Murchison  (=)
+     1956-06-22          10.2  hand   Bobby Morrow  (=)
+     1956-06-29          10.2  hand   Ira Murchison  (=)
+     1956-06-29          10.2  hand   Bobby Morrow  (=)
+     1956-08-03          10.1  hand   Willie Williams
+     1956-08-04          10.1  hand   Ira Murchison  (=)
+     1956-10-20          10.1  hand   Leamon King  (=)
+     1956-10-27          10.1  hand   Leamon King  (=)
+     1959-04-18          10.1  hand   Ray Norton  (=)
+     1960-06-21          10.0  hand   Armin Hary
+     1960-07-15          10.0  hand   Harry Jerome  (=)
+     1964-08-15          10.0  hand   Horacio Esteves  (=)
+     1964-10-15          10.0  hand   Bob Hayes  (=)
+     1967-05-27          10.0  hand   Jim Hines  (=)
+     1967-06-17          10.0  hand   Enrique Figuerola  (=)
+     1968-04-02          10.0  hand   Paul Nash  (=)
+     1968-05-31          10.0  hand   Oliver Ford  (=)
+     1968-06-20          10.0  hand   Charles Greene  (=)
+     1968-06-20          10.0  hand   Roger Bambuck  (=)
+     1968-06-20           9.9  hand   Jim Hines
+     1968-06-20           9.9  hand   Ronnie Ray Smith  (=)
+     1968-06-20           9.9  hand   Charles Greene  (=)
+     1968-10-14          9.95  auto   Jim Hines
+     1983-07-03          9.93  auto   Calvin Smith
+     1988-09-24          9.92  auto   Carl Lewis
+     1991-06-14          9.90  auto   Leroy Burrell
+     1991-08-25          9.86  auto   Carl Lewis
+     1994-07-06          9.85  auto   Leroy Burrell
+     1996-07-27          9.84  auto   Donovan Bailey
+     1999-06-16          9.79  auto   Maurice Greene
+     2005-06-14          9.77  auto   Asafa Powell
+     2006-06-11          9.77  auto   Asafa Powell  (=)
+     2006-08-18          9.77  auto   Asafa Powell  (=)
+     2007-09-09          9.74  auto   Asafa Powell
+     2008-05-31          9.72  auto   Usain Bolt
+     2008-08-16          9.69  auto   Usain Bolt
+     2009-08-16          9.58  auto   Usain Bolt
+== W 100m  legend={'#d6ecf3': 'ratified', '': 'not ratified'}  switch=1968-10-15  rows=65 line=36 dropped=20
+     dropped [not ratified] 12.7 (110y) Emmi Haux 1923-05-21
+     dropped [not ratified] 12.8 Marie Mejzlíková 1923-05-13
+     dropped [not ratified] 12.4 Leni Schmidt 1925-08-30
+     dropped [not ratified] 12.2 (110y) Leni Junker 1925-09-13
+     dropped [not ratified] 12.2 Leni Junker 1926-08-29
+     dropped [not ratified] 12.1 (110y) Gertrud Gladitsch 1927-07-03
+     dropped [not ratified] 12.0 Betty Robinson 1928-06-02
+     dropped [not ratified] 12.0 Leni Junker 1931-08-01
+     dropped [not ratified] 11.9 Hilda Strike 1932-08-02
+     dropped [not ratified] 11.9 Käthe Krauß 1934-08-11
+     dropped [not ratified] 11.9 Helen Stephens 1935-04-10
+     dropped [not ratified] 11.8 Helen Stephens 1935-06-01
+     dropped [not ratified] 11.5 Helen Stephens 1936-08-10
+     dropped [not ratified] 11.5 Lulu Mae Hymes 1939-05-06
+     dropped [not ratified] 11.5 Rowena Harrison 1939-05-06
+     dropped [not ratified] 11.5 Fanny Blankers-Koen 1943-09-05
+     dropped [not ratified] 11.1 Wyomia Tyus 1968-04-21
+     dropped [not ratified] 11.1 Margaret Bailes 1968-08-18
+     dropped [not ratified] 11.1 Barbara Ferrell 1968-10-14
+     dropped [not ratified] 10.9 Renate Stecher (née Meißner) 1973-06-30
+     1922-08-05          13.6  hand   Marie Mejzlíková
+     1922-08-20          12.8  hand   Mary Lines
+     1926-08-22          12.4  hand   Gundel Wittmann
+     1928-05-20          12.2  hand   Kinue Hitomi
+     1928-07-02          12.0  hand   Myrtle Cook
+     1930-08-31          12.0  hand   Tollien Schuurman  (=)
+     1932-06-05          11.9  hand   Tollien Schuurman
+     1932-08-01          11.9  hand   Stanisława Walasiewicz  (=)
+     1933-09-17          11.8  hand   Stanisława Walasiewicz
+     1934-08-26          11.7  hand   Stanisława Walasiewicz
+     1935-06-08          11.6  hand   Helen Stephens
+     1937-08-01          11.6  hand   Stanisława Walasiewicz  (=)
+     1948-06-13          11.5  hand   Fanny Blankers-Koen
+     1952-07-22          11.5  hand   Marjorie Jackson  (=)
+     1952-10-04          11.4  hand   Marjorie Jackson
+     1955-08-04          11.3  hand   Shirley Strickland
+     1958-09-13          11.3  hand   Vera Krepkina  (=)
+     1960-09-02          11.3  hand   Wilma Rudolph  (=)
+     1961-07-19          11.2  hand   Wilma Rudolph
+     1964-10-15          11.2  hand   Wyomia Tyus  (=)
+     1965-07-09          11.1  hand   Ewa Kłobukowska
+     1965-07-09          11.1  hand   Irena Kirszenstein  (=)
+     1965-07-31          11.1  hand   Wyomia Tyus  (=)
+     1967-07-02          11.1  hand   Barbara Ferrell  (=)
+     1968-08-15          11.1  hand   Lyudmila Samotyosova  (=)
+     1968-10-14          11.1  hand   Irena Szewińska  (=)
+     1968-10-15         11.07  auto   Wyomia Tyus
+     1972-09-02         11.07  auto   Renate Stecher (née Meißner)  (=)
+     1976-06-13         11.04  auto   Inge Helten
+     1976-07-25         11.01  auto   Annegret Richter
+     1977-07-01         10.88  auto   Marlies Oelsner
+     1982-07-09         10.88  auto   Marlies Göhr  (=)
+     1983-06-08         10.81  auto   Marlies Göhr
+     1983-07-03         10.79  auto   Evelyn Ashford
+     1984-08-22         10.76  auto   Evelyn Ashford
+     1988-07-16         10.49  auto   Florence Griffith Joyner
+== M 200m  legend={}  switch=1968-10-16  rows=25 line=22 dropped=0
+     1951-05-26        20.6 y  hand   Andy Stanfield
+     1952-06-28          20.6  hand   Andy Stanfield  (=)
+     1956-06-23          20.6  hand   Thane Baker  (=)
+     1956-11-27          20.6  hand   Bobby Morrow  (=)
+     1958-10-01          20.6  hand   Manfred Germar  (=)
+     1960-03-19        20.6 y  hand   Ray Norton  (=)
+     1960-04-30          20.6  hand   Ray Norton  (=)
+     1960-05-28        20.5 y  hand   Peter Radford
+     1960-07-02          20.5  hand   Stone Johnson  (=)
+     1960-07-02          20.5  hand   Ray Norton  (=)
+     1960-09-03          20.5  hand   Livio Berruti  (=)
+     1960-09-03          20.5  hand   Livio Berruti  (=)
+     1962-06-23        20.5 y  hand   Paul Drayton  (=)
+     1963-03-23        20.3 y  hand   Henry Carr
+     1964-04-04        20.2 y  hand   Henry Carr
+     1966-06-11        20.0 y  hand   Tommie Smith
+     1968-10-16       19.83 A  auto   Tommie Smith
+     1979-09-12       19.72 A  auto   Pietro Mennea
+     1996-06-23         19.66  auto   Michael Johnson
+     1996-08-01         19.32  auto   Michael Johnson
+     2008-08-20         19.30  auto   Usain Bolt
+     2009-08-20         19.19  auto   Usain Bolt
+== W 200m  legend={}  switch=1974-06-13  rows=28 line=27 dropped=0
+     1922-08-20        27.8 +  hand   Alice Cast
+     1922-09-23        26.8 y  hand   Mary Lines
+     1924-08-20        26.2 y  hand   Eileen Edwards
+     1926-10-03          26.0  hand   Eileen Edwards
+     1927-06-12          25.4  hand   Eileen Edwards
+     1933-08-13          24.6  hand   Tollien Schuurman
+     1935-08-04          23.6  hand   Stanislawa Walasiewicz
+     1952-07-25          23.6  hand   Marjorie Jackson  (=)
+     1952-07-25          23.4  hand   Marjorie Jackson
+     1956-09-16          23.2  hand   Betty Cuthbert
+     1960-03-07        23.2 y  hand   Betty Cuthbert  (=)
+     1960-07-09          22.9  hand   Wilma Rudolph
+     1964-02-22        22.9 y  hand   Margaret Burvill  (=)
+     1965-08-08          22.7  hand   Irena Szewińska
+     1968-10-18        22.5 A  hand   Irena Szewińska
+     1970-07-12          22.4  hand   Chi Cheng
+     1972-09-07          22.4  hand   Renate Stecher  (=)
+     1973-07-21          22.1  hand   Renate Stecher
+     1974-06-13         22.21  auto   Irena Szewińska
+     1978-05-28         22.06  auto   Marita Koch
+     1979-06-03         22.02  auto   Marita Koch
+     1979-06-10         21.71  auto   Marita Koch
+     1984-07-21         21.71  auto   Marita Koch  (=)
+     1986-06-29         21.71  auto   Heike Drechsler  (=)
+     1986-08-29         21.71  auto   Heike Drechsler  (=)
+     1988-09-29         21.56  auto   Florence Griffith Joyner
+     1988-09-29         21.34  auto   Florence Griffith Joyner
+== M 400m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=1968-10-18  rows=27 line=24 dropped=1
+     dropped [?#ffd0bd] 47.6 Eric Liddell 1924-07-11
+     1895-06-15        48.5 y  hand   Edgar Bredin
+     1900-09-29        47.8 y  hand   Maxie Long
+     1916-05-27        47.4 y  hand   Ted Meredith
+     1928-05-12          47.0  hand   Emerson Spencer
+     1932-03-26        46.4 y  hand   Ben Eastman
+     1932-08-05          46.2  hand   Bill Carr
+     1936-06-19          46.1  hand   Archie Williams
+     1939-08-12          46.0  hand   Rudolf Harbig
+     1941-06-06          46.0  hand   Grover Klemmer  (=)
+     1948-06-05        46.0 y  hand   Herb McKenley  (=)
+     1948-07-02          45.9  hand   Herb McKenley
+     1950-08-22          45.8  hand   George Rhoden
+     1955-03-18        45.4 A  hand   Lou Jones
+     1956-06-30          45.2  hand   Lou Jones
+     1960-09-06          44.9  hand   Otis Davis
+     1960-09-06          44.9  hand   Carl Kaufmann  (=)
+     1963-05-25        44.9 y  hand   Adolph Plummer  (=)
+     1964-09-12          44.9  hand   Mike Larrabee  (=)
+     1967-05-20        44.5 +  hand   Tommie Smith
+     1968-09-14        44.1 A  hand   Larry James
+     1968-10-18       43.86 A  auto   Lee Evans
+     1988-08-17         43.29  auto   Butch Reynolds
+     1999-08-26         43.18  auto   Michael Johnson
+     2016-08-14         43.03  auto   Wayde van Niekerk
+== W 400m  legend={}  switch=1974-09-04  rows=26 line=26 dropped=0
+     1957-01-06        57.0 y  hand   Marlene Mathews
+     1957-02-16        57.0 y  hand   Marise Chamberlain  (=)
+     1957-02-24        56.3 y  hand   Nancy Boyle
+     1957-05-10          55.2  hand   Polina Lazareva
+     1957-06-08          54.0  hand   Mariya Itkina
+     1957-07-06          53.6  hand   Mariya Itkina
+     1959-09-12        53.4 +  hand   Mariya Itkina
+     1962-09-14          53.4  hand   Mariya Itkina  (=)
+     1962-10-23          51.9  hand   Shin Geum-Dan
+     1969-09-18          51.7  hand   Nicole Duclos
+     1969-09-18          51.7  hand   Colette Besson  (=)
+     1970-07-23          51.0  hand   Marilyn Neufville
+     1972-07-04          51.0  hand   Monika Zehrt  (=)
+     1974-06-22          49.9  hand   Irena Szewińska
+     1974-09-04         50.14  auto   Riitta Salin
+     1976-05-09         49.77  auto   Christina Brehmer
+     1976-06-22         49.75  auto   Irena Szewińska
+     1976-07-29         49.29  auto   Irena Szewińska
+     1978-07-02         49.19  auto   Marita Koch
+     1978-08-19         49.03  auto   Marita Koch
+     1978-08-31         48.94  auto   Marita Koch
+     1979-07-29         48.89  auto   Marita Koch
+     1979-08-04         48.60  auto   Marita Koch
+     1982-09-08         48.16  auto   Marita Koch
+     1983-08-10         47.99  auto   Jarmila Kratochvílová
+     1985-10-06        47.60*  auto   Marita Koch
+== M 800m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=50 line=50 dropped=0
+     1830-07-01       2:06.0y  pre    A. Wood
+     1857-04-25       2:05.0y  pre    J. Blackwood
+     1859-11-25       2:04.0y  pre    Wiliam Way
+     1861-06-27       2:03.0y  pre    Charlie Grey
+     1865-12-16       2:03.0y  pre    Percy Thornton  (=)
+     1865-12-16       2:02.5y  pre    Percy Thornton
+     1867-03-23       2:02.4y  pre    Francis Pelham
+     1867-06-26       2:01.0y  pre    Kinross Gair
+     1872-03-27       2:01.0y  pre    George Templer  (=)
+     1872-03-27       2:01.0y  pre    Thomas Christie  (=)
+     1873-03-26       1:59.8y  pre    Arthur Pelham
+     1876-06-05       1:59.5y  pre    Walter Slade
+     1876-06-06       1:58.8y  pre    Walter Slade
+     1876-06-10       1:58.2y  pre    Walter Slade
+     1876-10-07       1:57.5y  pre    Frederic Elborough
+     1880-07-17       1:56.2y  pre    Lawrence Myers
+     1881-07-02       1:55.8y  pre    Lawrence Myers
+     1881-10-08       1:55.6y  pre    Lawrence Myers
+     1882-09-16       1:55.6y  pre    Lawrence Myers  (=)
+     1884-07-07       1:55.4y  pre    Lawrence Myers
+     1885-10-03       1:55.4y  pre    Lawrence Myers  (=)
+     1888-03-09       1:54.6y  pre    Francis Cross
+     1891-09-19       1:54.5y  pre    Walter Dohm
+     1895-09-21       1:53.4y  pre    Charles Kilpatrick
+     1908-07-21        1:52.8  pre    Melvin Sheppard
+     1909-09-15       1:52.1y  pre    Emilio Lunghi
+     1912-07-08       1:51.9+  main   Ted Meredith ( USA )
+     1926-07-03       1:51.6y  main   Otto Peltzer ( GER )
+     1928-07-14        1:50.6  main   Sera Martin ( FRA )
+     1932-08-02        1:49.8  main   Tommy Hampson ( GBR )
+     1934-06-16       1:49.8y  main   Ben Eastman ( USA )  (=)
+     1936-08-20        1:49.7  main   Glenn Cunningham ( USA )
+     1937-07-11       1:49.6y  main   Elroy Robinson ( USA )
+     1938-08-20       1:48.4+  main   Sydney Wooderson ( GBR )
+     1939-07-15        1:46.6  main   Rudolf Harbig ( GER )
+     1955-08-03        1:45.7  main   Roger Moens ( BEL )
+     1962-02-03       1:44.3+  main   Peter Snell ( NZL )
+     1968-10-15        1:44.3  main   Ralph Doubell ( AUS )  (=)
+     1972-07-01        1:44.3  main   Dave Wottle ( USA )  (=)
+     1973-06-27        1:43.7  main   Marcello Fiasconaro ( ITA )
+     1976-07-25        1:43.5  main   Alberto Juantorena ( CUB )
+     1977-08-21        1:43.4  main   Alberto Juantorena ( CUB )
+     1979-07-05        1:42.4  main   Sebastian Coe ( GBR )
+     1981-06-10       1:41.73  main   Sebastian Coe ( GBR )
+     1997-07-07       1:41.73  main   Wilson Kipketer ( DEN )  (=)
+     1997-08-13       1:41.24  main   Wilson Kipketer ( DEN )
+     1997-08-24       1:41.11  main   Wilson Kipketer ( DEN )
+     2010-08-22       1:41.09  main   David Rudisha ( KEN )
+     2010-08-29       1:41.01  main   David Rudisha ( KEN )
+     2012-08-09       1:40.91  main   David Rudisha ( KEN )
+== W 800m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=31 line=27 dropped=0
+     1922-08-20       2:30.4+  main   Georgette Lenoir ( FRA )
+     1922-08-30       2:26.6y  main   Mary Lines ( GBR )
+     1927-08-07        2:23.8  main   Lina Radke ( GER )
+     1928-06-16        2:20.4  main   Inga Gentzel ( SWE )
+     1928-07-01        2:19.6  main   Lina Radke ( GER )
+     1928-08-02        2:16.8  main   Lina Radke ( GER )
+     1934-06-14      2:16.4 *  main   Zdeněk Koubek ( CSK )
+     1934-07-01      2:12.4 *  main   Zdeněk Koubek ( CSK )
+     1951-07-26        2:12.2  main   Valentina Pomogayeva ( URS )
+     1951-08-26        2:12.0  main   Nina Otkalenko ( URS )
+     1952-06-15        2:08.5  main   Nina Otkalenko ( URS )
+     1953-08-27        2:07.3  main   Nina Otkalenko ( URS )
+     1954-09-16        2:06.6  main   Nina Otkalenko ( URS )
+     1955-09-24        2:05.0  main   Nina Otkalenko ( URS )
+     1960-07-03        2:04.3  main   Lyudmila Shevtsova ( URS )
+     1960-09-07        2:04.3  main   Lyudmila Shevtsova ( URS )  (=)
+     1962-03-03       2:01.2+  main   Dixie Willis ( AUS )
+     1964-10-20        2:01.1  main   Ann Packer ( GBR )
+     1967-06-28        2:01.0  main   Judy Pollock ( AUS )
+     1968-07-20        2:00.5  main   Vera Nikolic ( YUG )
+     1971-07-11        1:58.5  main   Hildegard Falck ( FRG )
+     1973-08-24        1:57.5  main   Svetla Zlateva ( BUL )
+     1976-06-12        1:56.0  main   Valentina Gerasimova ( URS )
+     1976-07-26        1:54.9  main   Tatyana Kazankina ( URS )
+     1980-06-12        1:54.9  main   Nadezhda Olizarenko ( URS )  (=)
+     1980-07-27        1:53.5  main   Nadezhda Olizarenko ( URS )
+     1983-07-26       1:53.28  main   Jarmila Kratochvílová ( TCH )
+== M 1500m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=50 line=50 dropped=0
+     1892-07-01    4:24 3 ⁄ 5  pre    J. Borel ( FRA )
+     1893-05-28          4:21  pre    Fernand Meiers ( FRA )
+     1894-07-22    4:19 4 ⁄ 5  pre    Felix Bourdier ( FRA )
+     1895-05-12    4:18 2 ⁄ 5  pre    Albin Lermusiaux ( FRA )
+     1895-05-26    4:16 4 ⁄ 5  pre    Michel Soalhat ( FRA )
+     1895-08-26    4:15 3 ⁄ 5  pre    Thomas Conneff ( USA )
+     1896-06-26    4:10 2 ⁄ 5  pre    Albin Lermusiaux ( FRA )
+     1900-05-30          4:09  pre    John Bray ( USA )
+     1900-07-15    4:06 1 ⁄ 5  pre    Charles Bennett ( GBR )
+     1904-09-03    4:05 2 ⁄ 5  pre    James Lightbody ( USA )
+     1908-05-30    3:59 4 ⁄ 5  pre    Harold Wilson ( GBR )
+     1912-05-26    3:59 1 ⁄ 5  pre    Abel Kiviat ( USA )  (=)
+     1912-06-01    3:56 4 ⁄ 5  pre    Abel Kiviat ( USA )
+     1912-06-08        3:55.8  main   Abel Kiviat ( USA )
+     1917-08-05        3:54.7  main   John Zander ( SWE )
+     1924-06-19        3:52.6  main   Paavo Nurmi ( FIN )
+     1926-09-11        3:51.0  main   Otto Peltzer ( GER )
+     1930-10-05        3:49.2  main   Jules Ladoumegue ( FRA )
+     1933-09-09        3:49.2  main   Luigi Beccali ( ITA )  (=)
+     1933-09-17        3:49.0  main   Luigi Beccali ( ITA )
+     1934-06-30        3:48.8  main   Bill Bonthron ( USA )
+     1936-08-06        3:47.8  main   Jack Lovelock ( NZL )
+     1941-08-10        3:47.6  main   Gunder Hägg ( SWE )
+     1942-07-17        3:45.8  main   Gunder Hägg ( SWE )
+     1943-08-17        3:45.0  main   Arne Andersson ( SWE )
+     1944-07-07        3:43.0  main   Gunder Hägg ( SWE )
+     1947-07-15        3:43.0  main   Lennart Strand ( SWE )  (=)
+     1952-06-29        3:43.0  main   Werner Lueg ( FRG )  (=)
+     1954-06-04       3:42.8+  main   Wes Santee ( USA )
+     1954-06-21       3:41.8+  main   John Landy ( AUS )
+     1955-07-28        3:40.8  main   Sándor Iharos ( HUN )
+     1955-09-06        3:40.8  main   László Tábori ( HUN )  (=)
+     1955-09-06        3:40.8  main   Gunnar Nielsen ( DEN )  (=)
+     1956-08-03        3:40.6  main   István Rózsavölgyi ( HUN )
+     1957-07-11        3:40.2  main   Olavi Salsola ( FIN )
+     1957-07-12        3:38.1  main   Stanislav Jungwirth ( TCH )
+     1958-08-28        3:36.0  main   Herb Elliott ( AUS )
+     1960-09-06        3:35.6  main   Herb Elliott ( AUS )
+     1967-07-08        3:33.1  main   Jim Ryun ( USA )
+     1974-02-02        3:32.2  main   Filbert Bayi ( TAN )
+     1979-08-15        3:32.1  main   Sebastian Coe ( GBR )
+     1980-07-15        3:32.1  main   Steve Ovett ( GBR )  (=)
+     1980-08-27        3:31.4  main   Steve Ovett ( GBR )
+     1983-08-28       3:31.24  main   Sydney Maree ( USA )
+     1983-09-04       3:30.77  main   Steve Ovett ( GBR )
+     1985-07-16       3:29.67  main   Steve Cram ( GBR )
+     1985-08-23       3:29.46  main   Saïd Aouita ( MAR )
+     1992-09-06       3:28.86  main   Noureddine Morceli ( ALG )
+     1995-07-12       3:27.37  main   Noureddine Morceli ( ALG )
+     1998-07-14       3:26.00  main   Hicham El Guerrouj ( MAR )
+== W 1500m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=17 line=17 dropped=0
+     1967-06-03       4:17.3+  main   Anne Smith ( GBR )
+     1967-10-24        4:15.6  main   Maria Gommers ( NED )
+     1969-07-02        4:12.4  main   Paola Pigni ( ITA )
+     1969-09-20        4:10.7  main   Jaroslava Jehličková ( CZE )
+     1971-08-15        4:09.6  main   Karin Burneleit ( GDR )
+     1972-07-18        4:06.9  main   Ludmila Bragina ( URS )
+     1972-09-04        4:06.5  main   Ludmila Bragina ( URS )
+     1972-09-07        4:05.1  main   Ludmila Bragina ( URS )
+     1972-09-09        4:01.4  main   Ludmila Bragina ( URS )
+     1976-06-28        3:56.0  main   Tatyana Kazankina ( URS )
+     1980-07-06        3:55.0  main   Tatyana Kazankina ( URS )
+     1980-08-03       3:52.47  main   Tatyana Kazankina ( URS )
+     1993-09-11       3:50.46  main   Qu Yunxia ( CHN )
+     2015-07-17       3:50.07  main   Genzebe Dibaba ( ETH )
+     2023-06-02       3:49.11  main   Faith Kipyegon ( KEN )
+     2024-07-07       3:49.04  main   Faith Kipyegon ( KEN )
+     2025-07-05       3:48.68  main   Faith Kipyegon ( KEN )
+== M 5000m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=40 line=40 dropped=0
+     1897-10-31       16:34.6  pre    George Touquet-Daunis ( FRA )
+     1899-05-22       16:29.2  pre    George Touquet-Daunis ( FRA )
+     1900-07-22       15:29.8  pre    Charles Bennett ( GBR )
+     1904-06-13       14:59.0  pre    Alfred Shrubb ( GBR )
+     1912-07-10       14:36.6  main   Hannes Kolehmainen ( FIN )
+     1922-09-12       14:35.4  main   Paavo Nurmi ( FIN )
+     1924-06-19       14:28.2  main   Paavo Nurmi ( FIN )
+     1932-06-19       14:17.0  main   Lauri Lehtinen ( FIN )
+     1939-06-16       14:08.8  main   Taisto Mäki ( FIN )
+     1942-09-20       13:58.2  main   Gunder Hägg ( SWE )
+     1954-05-30       13:57.2  main   Emil Zátopek ( TCH )
+     1954-08-29       13:56.6  main   Vladimir Kuts ( URS )
+     1954-10-13       13:51.6  main   Chris Chataway ( GBR )
+     1954-10-23       13:51.2  main   Vladimir Kuts ( URS )
+     1955-09-10       13:50.8  main   Sandor Iharos ( HUN )
+     1955-09-18       13:46.8  main   Vladimir Kuts ( URS )
+     1955-10-23       13:40.6  main   Sandor Iharos ( HUN )
+     1956-06-19       13:36.8  main   Gordon Pirie ( GBR )
+     1957-10-13       13:35.0  main   Vladimir Kuts ( URS )
+     1965-01-16       13:34.8  main   Ron Clarke ( AUS )
+     1965-02-01       13:33.6  main   Ron Clarke ( AUS )
+     1965-06-04       13:25.8  main   Ron Clarke ( AUS )
+     1965-11-30       13:24.2  main   Kipchoge Keino ( KEN )
+     1966-07-05       13:16.6  main   Ron Clarke ( AUS )
+     1972-09-14       13:16.4  main   Lasse Virén ( FIN )
+     1972-09-20       13:13.0  main   Emiel Puttemans ( BEL )
+     1977-07-05       13:12.9  main   Dick Quax ( NZL )
+     1978-04-08       13:08.4  main   Henry Rono ( KEN )
+     1981-09-13      13:06.20  main   Henry Rono ( KEN )
+     1982-07-07      13:00.41  main   David Moorcroft ( GBR )
+     1985-07-27      13:00.40  main   Saïd Aouita ( MAR )
+     1987-07-27      12:58.39  main   Saïd Aouita ( MAR )
+     1994-06-04      12:56.96  main   Haile Gebrselassie ( ETH )
+     1995-06-08      12:55.30  main   Moses Kiptanui ( KEN )
+     1995-08-16      12:44.39  main   Haile Gebrselassie ( ETH )
+     1997-08-13      12:41.86  main   Haile Gebrselassie ( ETH )
+     1997-08-22      12:39.74  main   Daniel Komen ( KEN )
+     1998-06-13      12:39.36  main   Haile Gebrselassie ( ETH )
+     2004-05-31      12:37.35  main   Kenenisa Bekele ( ETH )
+     2020-08-14      12:35.36  main   Joshua Cheptegei ( UGA )
+== W 5000m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=18 line=17 dropped=1
+     dropped [rescinded] 15:01.83 Zola Budd ( RSA ) 1984-01-05
+     1981-09-13      15:14.51  main   Paula Fudge ( GBR )
+     1982-03-17      15:13.22  main   Anne Audain ( NZL )
+     1982-06-05      15:08.26  main   Mary Tabb ( USA )
+     1984-06-28      14:58.89  main   Ingrid Kristiansen ( NOR )
+     1985-08-26      14:48.07  main   Zola Budd ( GBR )
+     1986-08-05      14:37.33  main   Ingrid Kristiansen ( NOR )
+     1995-07-22      14:36.45  main   Fernanda Ribeiro ( POR )
+     1997-10-21      14:31.27  main   Dong Yanmei ( CHN )
+     1997-10-23      14:28.09  main   Jiang Bo ( CHN )
+     2004-06-11      14:24.68  main   Elvan Abeylegesse ( TUR )
+     2006-06-03      14:24.53  main   Meseret Defar ( ETH )
+     2007-06-15      14:16.63  main   Meseret Defar ( ETH )
+     2008-06-06      14:11.15  main   Tirunesh Dibaba ( ETH )
+     2020-10-07      14:06.62  main   Letesenbet Gidey ( ETH )
+     2023-06-09      14:05.20  main   Faith Kipyegon ( KEN )
+     2023-09-17      14:00.21  main   Gudaf Tsegay ( ETH )
+     2025-07-05      13:58.06  main   Beatrice Chebet ( KEN )
+== M 10000m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=44 line=44 dropped=0
+     1847-04-05       32:35.0  pre    William Howitt ( GBR )
+     1882-03-25       32:09.0  pre    Walter George ( GBR )
+     1884-04-07       31:53.4  pre    Walter George ( GBR )
+     1884-07-28       31:40.0  pre    Walter George ( GBR )
+     1885-09-28       31:23.1  pre    William Cummings ( GBR )
+     1904-11-05       31:02.4  pre    Alfred Shrubb ( GBR )
+     1911-11-16       30:58.8  main   Jean Bouin ( FRA )
+     1921-06-22       30:40.2  main   Paavo Nurmi ( FIN )
+     1924-05-25       30:35.4  main   Ville Ritola ( FIN )
+     1924-07-06       30:23.2  main   Ville Ritola ( FIN )
+     1924-08-31       30:06.2  main   Paavo Nurmi ( FIN )
+     1937-07-18       30:05.6  main   Ilmari Salminen ( FIN )
+     1938-09-29       30:02.0  main   Taisto Mäki ( FIN )
+     1939-09-17       29:52.6  main   Taisto Mäki ( FIN )
+     1944-08-25       29:35.4  main   Viljo Heino ( FIN )
+     1949-06-11       29:28.2  main   Emil Zátopek ( TCH )
+     1949-09-01       29:27.2  main   Viljo Heino ( FIN )
+     1949-10-22       29:21.2  main   Emil Zátopek ( TCH )
+     1950-08-04       29:02.6  main   Emil Zátopek ( TCH )
+     1953-11-01       29:01.6  main   Emil Zátopek ( TCH )
+     1954-06-01       28:54.2  main   Emil Zátopek ( TCH )
+     1956-07-15       28:42.8  main   Sandor Iharos ( HUN )
+     1956-09-11       28:30.4  main   Vladimir Kuts ( URS )
+     1960-10-15       28:18.8  main   Pyotr Bolotnikov ( URS )
+     1962-08-11       28:18.2  main   Pyotr Bolotnikov ( URS )
+     1963-12-18       28:15.6  main   Ron Clarke ( AUS )
+     1965-07-14       27:39.4  main   Ron Clarke ( AUS )
+     1972-09-03       27:38.4  main   Lasse Virén ( FIN )
+     1973-07-13       27:30.8  main   David Bedford ( GBR )
+     1977-06-30       27:30.5  main   Samson Kimobwa ( KEN )
+     1978-06-11       27:22.4  main   Henry Rono ( KEN )
+     1984-07-02      27:13.81  main   Fernando Mamede ( POR )
+     1989-08-18      27:08.23  main   Arturo Barrios ( MEX )
+     1993-07-05      27:07.91  main   Richard Chelimo ( KEN )
+     1993-07-10      26:58.38  main   Yobes Ondieki ( KEN )
+     1994-07-22      26:52.23  main   William Sigei ( KEN )
+     1995-06-05      26:43.53  main   Haile Gebrselassie ( ETH )
+     1996-08-23      26:38.08  main   Salah Hissou ( MAR )
+     1997-07-04      26:31.32  main   Haile Gebrselassie ( ETH )
+     1997-08-22      26:27.85  main   Paul Tergat ( KEN )
+     1998-06-01      26:22.75  main   Haile Gebrselassie ( ETH )
+     2004-06-08      26:20.31  main   Kenenisa Bekele ( ETH )
+     2005-08-26      26:17.53  main   Kenenisa Bekele ( ETH )
+     2020-10-07      26:11.00  main   Joshua Cheptegei ( UGA )
+== W 10000m  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=12 line=12 dropped=0
+     1981-10-19      32:17.20  main   Yelena Sipatova ( URS )
+     1982-07-16       31:35.3  main   Mary Decker-Slaney ( USA )
+     1983-05-29      31:35.01  main   Lyudmila Baranova ( URS )
+     1983-09-07      31:27.58  main   Raisa Sadreydinova ( URS )
+     1984-06-24      31:13.78  main   Olga Bondarenko ( URS )
+     1985-07-27      30:59.42  main   Ingrid Kristiansen ( NOR )
+     1986-07-05      30:13.74  main   Ingrid Kristiansen ( NOR )
+     1993-09-08      29:31.78  main   Wang Junxia ( CHN )
+     2016-08-12      29:17.45  main   Almaz Ayana ( ETH )
+     2021-06-06      29:06.82  main   Sifan Hassan ( NED )
+     2021-06-08      29:01.03  main   Letesenbet Gidey ( ETH )
+     2024-05-25      28:54.14  main   Beatrice Chebet ( KEN )
+== M 110mH  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=1972-09-07  rows=44 line=39 dropped=0
+     1908-07-25          15.0  hand   Forrest Smithson
+     1920-08-17          15.0  hand   Harold Barron  (=)
+     1920-08-17          15.0  hand   Earl Thomson  (=)
+     1920-08-18          14.8  hand   Earl Thomson
+     1927-09-18          14.8  hand   Sten Pettersson  (=)
+     1928-07-31          14.6  hand   George Weightman-Smith
+     1929-08-25          14.4  hand   Eric Wennström
+     1931-09-05          14.4  hand   Bengt Sjöstedt  (=)
+     1932-06-23          14.4  hand   Percy Beard  (=)
+     1932-07-17          14.4  hand   Jack Keller  (=)
+     1932-08-02          14.4  hand   George Saling  (=)
+     1933-08-12          14.4  hand   John Morriss  (=)
+     1933-09-08          14.4  hand   John Morriss  (=)
+     1934-07-26          14.3  hand   Percy Beard
+     1934-08-06          14.2  hand   Percy Beard
+     1935-08-02          14.2  hand   Alvin Moreau  (=)
+     1936-06-19        14.1 w  hand   Forrest Towns
+     1936-08-06          14.1  hand   Forrest Towns  (=)
+     1936-08-27          13.7  hand   Forrest Towns
+     1941-06-29          13.7  hand   Fred Wolcott  (=)
+     1950-06-24          13.6  hand   Richard Attlesey
+     1950-07-10          13.5  hand   Richard Attlesey
+     1956-06-22          13.4  hand   Jack Davis
+     1959-07-07          13.2  hand   Martin Lauer
+     1960-08-21          13.2  hand   Lee Calhoun  (=)
+     1967-07-16          13.2  hand   Earl McCullouch  (=)
+     1969-07-04          13.2  hand   Willie Davenport  (=)
+     1972-09-07         13.24  auto   Rod Milburn
+     1977-08-21         13.21  auto   Alejandro Casañas
+     1979-04-14         13.16  auto   Renaldo Nehemiah
+     1979-05-06         13.00  auto   Renaldo Nehemiah
+     1981-08-19         12.93  auto   Renaldo Nehemiah
+     1989-08-16         12.92  auto   Roger Kingdom
+     1993-08-20         12.91  auto   Colin Jackson
+     2004-08-27         12.91  auto   Liu Xiang  (=)
+     2006-07-11         12.88  auto   Liu Xiang
+     2008-06-12         12.87  auto   Dayron Robles
+     2012-09-07         12.80  auto   Aries Merritt
+     2026-06-10         12.75  auto   Ja'Kobe Tharp
+== W 100mH  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=1972-09-08  rows=24 line=23 dropped=0
+     1969-06-20        13.3 h  hand   Karin Balzer ( GDR )
+     1969-06-20        13.3 h  hand   Teresa Sukniewicz ( POL )  (=)
+     1969-07-27        13.0 h  hand   Karin Balzer ( GDR )
+     1969-09-05        12.9 h  hand   Karin Balzer ( GDR )
+     1970-06-20        12.8 h  hand   Teresa Sukniewicz ( POL )
+     1970-07-12        12.8 h  hand   Chi Cheng ( TPE )  (=)
+     1970-07-26        12.7 h  hand   Karin Balzer ( GDR )
+     1970-09-20        12.7 h  hand   Teresa Sukniewicz ( POL )  (=)
+     1971-07-25        12.7 h  hand   Karin Balzer ( GDR )  (=)
+     1971-07-31        12.6 h  hand   Karin Balzer ( GDR )
+     1972-06-15        12.5 h  hand   Annelie Ehrhardt ( GDR )
+     1972-06-28        12.5 h  hand   Pamela Ryan ( AUS )  (=)
+     1972-09-08         12.59  auto   Annelie Ehrhardt ( GDR )
+     1978-06-10         12.48  auto   Grażyna Rabsztyn ( POL )
+     1980-06-13         12.36  auto   Grażyna Rabsztyn ( POL )
+     1986-08-17         12.35  auto   Yordanka Donkova ( BUL )
+     1986-08-17         12.29  auto   Yordanka Donkova ( BUL )
+     1986-09-07         12.26  auto   Yordanka Donkova ( BUL )
+     1987-08-08         12.25  auto   Ginka Zagorcheva ( BUL )
+     1988-08-20         12.21  auto   Yordanka Donkova ( BUL )
+     2016-07-22         12.20  auto   Kendra Harrison ( USA )
+     2022-07-24         12.12  auto   Tobi Amusan ( NGR )
+     2026-08-27         12.09  auto   Masai Russell ( USA )
+== M 400mH  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=1976-07-25  rows=24 line=24 dropped=0
+     1908-07-22          55.0  hand   Charles Bacon ( USA )
+     1920-08-16          54.0  hand   Frank Loomis ( USA )
+     1925-10-04          53.8  hand   Sten Pettersson ( SWE )
+     1927-07-02         52.6y  hand   John Gibson ( USA )
+     1928-07-04          52.0  hand   Morgan Taylor ( USA )
+     1932-08-01          52.0  hand   Glenn Hardin ( USA )  (=)
+     1934-06-30          51.8  hand   Glenn Hardin ( USA )
+     1934-07-26          50.6  hand   Glenn Hardin ( USA )
+     1953-09-20          50.4  hand   Yuriy Lituyev ( USSR )
+     1956-06-29          49.5  hand   Glenn Davis ( USA )
+     1958-08-06          49.2  hand   Glenn Davis ( USA )
+     1962-09-14          49.2  hand   Salvatore Morale ( ITA )  (=)
+     1964-09-13          49.1  hand   Rex Cawley ( USA )
+     1968-09-11          48.8  hand   Geoff Vanderstock ( USA )
+     1968-10-15          48.1  hand   David Hemery ( GBR )
+     1972-09-02          47.8  hand   John Akii-Bua ( UGA )
+     1976-07-25         47.64  auto   Edwin Moses ( USA )
+     1977-06-11         47.45  auto   Edwin Moses ( USA )
+     1980-07-03         47.13  auto   Edwin Moses ( USA )
+     1983-08-31         47.02  auto   Edwin Moses ( USA )
+     1992-08-06         46.78  auto   Kevin Young ( USA )
+     2021-07-01         46.70  auto   Karsten Warholm ( NOR )
+     2021-08-03         45.94  auto   Karsten Warholm ( NOR )
+     2026-08-27         45.80  auto   Alison dos Santos ( BRA )
+== W 400mH  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=24 line=24 dropped=0
+     1974-07-13         56.51  main   Krystyna Kacperczyk
+     1977-06-26         55.74  main   Tatyana Storozheva
+     1977-08-13         55.63  main   Karin Rossley
+     1978-08-18         55.44  main   Krystyna Kacperczyk
+     1978-08-19         55.31  main   Tatyana Zelentsova
+     1978-09-02         54.89  main   Tatyana Zelentsova
+     1979-07-27         54.78  main   Marina Makeyeva
+     1980-05-18         54.28  main   Karin Rossley
+     1983-06-11         54.02  main   Anna Ambrazienė
+     1984-06-22         53.58  main   Margarita Ponomaryova
+     1985-09-22         53.55  main   Sabine Busch
+     1986-08-30         53.32  main   Marina Stepanova
+     1986-09-17         52.94  main   Marina Stepanova
+     1993-08-19         52.74  main   Sally Gunnell
+     1995-08-11         52.61  main   Kim Batten
+     2003-08-08         52.34  main   Yuliya Pechonkina
+     2019-07-28         52.20  main   Dalilah Muhammad
+     2019-10-04         52.16  main   Dalilah Muhammad
+     2021-06-27         51.90  main   Sydney McLaughlin
+     2021-08-04         51.46  main   Sydney McLaughlin
+     2022-06-25         51.41  main   Sydney McLaughlin-Levrone
+     2022-07-22         50.68  main   Sydney McLaughlin-Levrone
+     2024-06-30         50.65  main   Sydney McLaughlin-Levrone
+     2024-08-08         50.37  main   Sydney McLaughlin-Levrone
+== M HJ  legend={'': 'ratified', '#ffd0bd': 'rescinded'}  switch=None  rows=78 line=70 dropped=1
+     dropped [rescinded] 2.42 m ( 7 ft 11 + 1 ⁄ 4 in) i Carlo Thränhardt ( FRG ) 1988-02-26
+     1827-09-26  1.575 m (5 ft 2 in)  pre    Adam Wilson ( GBR )
+     1829-07-24  1.60 m ( 5 ft 2 + 3 ⁄ 4 in)  pre    Thomas Anderson ( GBR )
+     1837-05-06  1.60 m ( 5 ft 2 + 3 ⁄ 4 in)  pre    John Pattison ( GBR )  (=)
+     1839-08-05  1.675 m ( 5 ft 5 + 3 ⁄ 4 in)  pre    Richard Armstrong ( GBR )
+     1850-04-01  1.675 m ( 5 ft 5 + 3 ⁄ 4 in)  pre    Thomas Roper ( GBR )  (=)
+     1850-09-21  1.675 m ( 5 ft 5 + 3 ⁄ 4 in)  pre    Francis Temple ( GBR )  (=)
+     1857-03-17  1.675 m ( 5 ft 5 + 3 ⁄ 4 in)  pre    Hanmer Webb ( GBR )  (=)
+     1860-03-15  1.675 m ( 5 ft 5 + 3 ⁄ 4 in)  pre    Henry Powell ( GBR )  (=)
+     1860-03-27  1.70 m ( 5 ft 6 + 3 ⁄ 4 in)  pre    Robert Burton ( GBR )
+     1864-07-09  1.70 m ( 5 ft 6 + 3 ⁄ 4 in)  pre    Tom Mitchell ( GBR )  (=)
+     1866-03-05  1.725 m ( 5 ft 7 + 3 ⁄ 4 in)  pre    John Roupell ( GBR )
+     1866-03-23  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  pre    John Roupell ( GBR )
+     1866-03-23  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  pre    Thomas Little ( GBR )  (=)
+     1866-11-26  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  pre    J.A. Harwood ( GBR )  (=)
+     1866-11-26  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  pre    Herbert Brooks ( GBR )  (=)
+     1867-04-12  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  pre    Thomas Little ( GBR )  (=)
+     1870-04-09  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  pre    Ronald Mitchell ( GBR )  (=)
+     1871-04-03  1.755 m (5 ft 9 in)  pre    Ronald Mitchell ( GBR )
+     1873-07-07  1.785 m ( 5 ft 10 + 1 ⁄ 4 in)  pre    Tom Davin ( IRE )
+     1874-03-30  1.80 m ( 5 ft 10 + 3 ⁄ 4 in)  pre    Marshall Brooks ( GBR )
+     1875-03-22  1.80 m ( 5 ft 10 + 3 ⁄ 4 in)  pre    Michael Glazebrook ( GBR )  (=)
+     1876-03-17  1.83 m (6 ft 0 in)  pre    Marshall Brooks ( GBR )
+     1876-04-07  1.89 m ( 6 ft 2 + 1 ⁄ 4 in)  pre    Marshall Brooks ( GBR )
+     1880-07-05  1.90 m ( 6 ft 2 + 3 ⁄ 4 in)  pre    Patrick Davin ( IRE )
+     1887-08-15  1.91 m (6 ft 3 in)  pre    William Page ( USA )
+     1887-10-07  1.93 m ( 6 ft 3 + 3 ⁄ 4 in)  pre    William Page ( USA )
+     1890-08-06  1.968 m ( 6 ft 5 + 1 ⁄ 4 in)  pre    George Rowdon ( GBR )
+     1895-09-21  1.97 m ( 6 ft 5 + 1 ⁄ 2 in)  pre    Michael Sweeney ( USA )
+     1912-03-29  1.98 m ( 6 ft 5 + 3 ⁄ 4 in)  pre    George Horine ( USA )
+     1912-05-15  6 ft 6 in (1.98 m)  pre    George Horine ( USA )  (=)
+     1912-05-18  2.00 m ( 6 ft 6 + 1 ⁄ 2 in)  main   George Horine ( USA )
+     1914-05-02  2.01 m (6 ft 7 in)  main   Edward Beeson ( USA )
+     1924-05-27  2.03 m ( 6 ft 7 + 3 ⁄ 4 in)  main   Harold Osborn ( USA )
+     1933-05-13  2.04 m ( 6 ft 8 + 1 ⁄ 4 in)  main   Walter Marty ( USA )
+     1934-04-28  2.06 m (6 ft 9 in)  main   Walter Marty ( USA )
+     1936-07-12  2.07 m ( 6 ft 9 + 1 ⁄ 4 in)  main   Cornelius Johnson ( USA )
+     1936-07-12  2.07 m ( 6 ft 9 + 1 ⁄ 4 in)  main   Dave Albritton ( USA )  (=)
+     1937-08-12  2.09 m ( 6 ft 10 + 1 ⁄ 4 in)  main   Mel Walker ( USA )
+     1941-06-17  2.11 m (6 ft 11 in)  main   Lester Steers ( USA )
+     1953-06-27  2.12 m ( 6 ft 11 + 1 ⁄ 4 in)  main   Walt Davis ( USA )
+     1956-06-29  2.15 m ( 7 ft 1 ⁄ 2 in)  main   Charles Dumas ( USA )
+     1957-07-13  2.16 m (7 ft 1 in)  main   Yuriy Stepanov ( URS )
+     1960-04-30  2.17 m ( 7 ft 1 + 1 ⁄ 4 in)  main   John Thomas ( USA )
+     1960-05-21  2.17 m ( 7 ft 1 + 1 ⁄ 4 in)  main   John Thomas ( USA )  (=)
+     1960-06-24  2.18 m ( 7 ft 1 + 3 ⁄ 4 in)  main   John Thomas ( USA )
+     1960-07-01  2.22 m ( 7 ft 3 + 1 ⁄ 4 in)  main   John Thomas ( USA )
+     1961-06-18  2.23 m ( 7 ft 3 + 3 ⁄ 4 in)  main   Valeriy Brumel ( URS )
+     1961-07-16  2.24 m (7 ft 4 in)  main   Valeriy Brumel ( URS )
+     1961-08-31  2.25 m ( 7 ft 4 + 1 ⁄ 2 in)  main   Valeriy Brumel ( URS )
+     1962-07-22  2.26 m ( 7 ft 4 + 3 ⁄ 4 in)  main   Valeriy Brumel ( URS )
+     1962-09-29  2.27 m ( 7 ft 5 + 1 ⁄ 4 in)  main   Valeriy Brumel ( URS )
+     1963-07-21  2.28 m ( 7 ft 5 + 3 ⁄ 4 in)  main   Valeriy Brumel ( URS )
+     1971-07-03  2.29 m (7 ft 6 in)  main   Pat Matzdorf ( USA )
+     1973-07-11  2.30 m ( 7 ft 6 + 1 ⁄ 2 in)  main   Dwight Stones ( USA )
+     1976-06-05  2.31 m ( 7 ft 6 + 3 ⁄ 4 in)  main   Dwight Stones ( USA )
+     1976-08-04  2.32 m ( 7 ft 7 + 1 ⁄ 4 in)  main   Dwight Stones ( USA )
+     1977-06-02  2.33 m ( 7 ft 7 + 1 ⁄ 2 in)  main   Vladimir Yashchenko ( URS )
+     1978-06-16  2.34 m (7 ft 8 in)  main   Vladimir Yashchenko ( URS )
+     1980-05-25  2.35 m ( 7 ft 8 + 1 ⁄ 2 in)  main   Jacek Wszoła ( POL )
+     1980-05-26  2.35 m ( 7 ft 8 + 1 ⁄ 2 in)  main   Dietmar Mögenburg ( FRG )  (=)
+     1980-08-01  2.36 m ( 7 ft 8 + 3 ⁄ 4 in)  main   Gerd Wessig ( GDR )
+     1983-06-11  2.37 m ( 7 ft 9 + 1 ⁄ 4 in)  main   Zhu Jianhua ( CHN )
+     1983-09-22  2.38 m ( 7 ft 9 + 1 ⁄ 2 in)  main   Zhu Jianhua ( CHN )
+     1984-06-10  2.39 m (7 ft 10 in)  main   Zhu Jianhua ( CHN )
+     1985-08-11  2.40 m ( 7 ft 10 + 1 ⁄ 4 in)  main   Rudolf Povarnitsyn ( URS )
+     1985-09-04  2.41 m ( 7 ft 10 + 3 ⁄ 4 in)  main   Igor Paklin ( URS )
+     1987-06-30  2.42 m ( 7 ft 11 + 1 ⁄ 4 in)  main   Patrik Sjöberg ( SWE )
+     1988-09-08  2.43 m ( 7 ft 11 + 1 ⁄ 2 in)  main   Javier Sotomayor ( CUB )
+     1989-07-29  2.44 m (8 ft 0 in)  main   Javier Sotomayor ( CUB )
+     1993-07-27  2.45 m ( 8 ft 1 ⁄ 4 in)  main   Javier Sotomayor ( CUB )
+== W HJ  legend={}  switch=None  rows=57 line=57 dropped=0
+     1922-05-20  1.46 m ( 4 ft 9 + 1 ⁄ 4 in)  main   Nancy Voorhees ( USA )
+     1923-05-26  1.485 m ( 4 ft 10 + 1 ⁄ 4 in)  main   Elizabeth Stine ( USA )
+     1923-08-06  1.485 m ( 4 ft 10 + 1 ⁄ 4 in)  main   Sophie Eliott-Lynn ( GBR )  (=)
+     1925-07-11  1.524 m (5 ft 0 in)  main   Phyllis Green ( GBR )
+     1926-08-02  1.552 m (5 ft 1 in)  main   Phyllis Green ( GBR )
+     1926-09-06  1.58 m (5 ft 2 in)  main   Ethel Catherwood ( CAN )
+     1928-07-03  1.58 m (5 ft 2 in)  main   Lien Gisolf ( NED )  (=)
+     1928-08-05  1.595 m ( 5 ft 2 + 3 ⁄ 4 in)  main   Ethel Catherwood ( CAN )
+     1929-08-18  1.605 m (5 ft 3 in)  main   Lien Gisolf ( NED )
+     1932-06-12  1.62 m ( 5 ft 3 + 3 ⁄ 4 in)  main   Lien Gisolf ( NED )
+     1932-08-07  1.65 m ( 5 ft 4 + 3 ⁄ 4 in)  main   Jean Shiley ( USA )
+     1932-08-07  1.65 m ( 5 ft 4 + 3 ⁄ 4 in)  main   Mildred Didrikson ( USA )  (=)
+     1939-05-29  1.66 m ( 5 ft 5 + 1 ⁄ 4 in)  main   Dorothy Odam ( GBR )
+     1941-03-29  1.66 m ( 5 ft 5 + 1 ⁄ 4 in)  main   Esther van Heerden ( South Africa )  (=)
+     1941-07-27  1.66 m ( 5 ft 5 + 1 ⁄ 4 in)  main   Ilsebill Pfenning ( SUI )  (=)
+     1943-05-30  1.71 m ( 5 ft 7 + 1 ⁄ 4 in)  main   Fanny Blankers-Koen ( NED )
+     1951-07-07  1.72 m ( 5 ft 7 + 1 ⁄ 2 in)  main   Sheila Lerwill ( GBR )
+     1954-05-22  1.73 m (5 ft 8 in)  main   Aleksandra Chudina ( URS )
+     1956-05-05  1.74 m ( 5 ft 8 + 1 ⁄ 2 in)  main   Thelma Hopkins ( GBR )
+     1956-07-14  1.75 m ( 5 ft 8 + 3 ⁄ 4 in)  main   Iolanda Balaș ( ROM )
+     1956-12-01  1.76 m ( 5 ft 9 + 1 ⁄ 4 in)  main   Mildred McDaniel ( USA )
+     1957-10-13  1.76 m ( 5 ft 9 + 1 ⁄ 4 in)  main   Iolanda Balaş ( ROM )  (=)
+     1957-11-17  1.77 m ( 5 ft 9 + 1 ⁄ 2 in)  main   Zheng Fengrong ( CHN )
+     1958-06-07  1.78 m (5 ft 10 in)  main   Iolanda Balaş ( ROM )
+     1958-06-22  1.80 m ( 5 ft 10 + 3 ⁄ 4 in)  main   Iolanda Balaş ( ROM )
+     1958-07-31  1.81 m ( 5 ft 11 + 1 ⁄ 4 in)  main   Iolanda Balaş ( ROM )
+     1958-10-04  1.82 m ( 5 ft 11 + 1 ⁄ 2 in)  main   Iolanda Balaş ( ROM )
+     1958-10-18  1.83 m (6 ft 0 in)  main   Iolanda Balaş ( ROM )
+     1959-09-21  1.84 m ( 6 ft 1 ⁄ 4 in)  main   Iolanda Balaş ( ROM )
+     1960-06-06  1.85 m ( 6 ft 3 ⁄ 4 in)  main   Iolanda Balaş ( ROM )
+     1960-07-10  1.86 m (6 ft 1 in)  main   Iolanda Balaş ( ROM )
+     1961-04-15  1.87 m ( 6 ft 1 + 1 ⁄ 2 in)  main   Iolanda Balaş ( ROM )
+     1961-06-18  1.88 m (6 ft 2 in)  main   Iolanda Balaş ( ROM )
+     1961-07-08  1.90 m ( 6 ft 2 + 3 ⁄ 4 in)  main   Iolanda Balaş ( ROM )
+     1961-07-16  1.91 m (6 ft 3 in)  main   Iolanda Balaş ( ROM )
+     1971-09-04  1.92 m ( 6 ft 3 + 1 ⁄ 2 in)  main   Ilona Gusenbauer ( AUT )
+     1972-09-04  1.92 m ( 6 ft 3 + 1 ⁄ 2 in)  main   Ulrike Meyfarth ( FRG )  (=)
+     1972-09-24  1.94 m ( 6 ft 4 + 1 ⁄ 4 in)  main   Yordanka Blagoeva ( BUL )
+     1974-08-24  1.94 m ( 6 ft 4 + 1 ⁄ 4 in)  main   Rosemarie Witschas ( GDR )  (=)
+     1974-09-08  1.95 m ( 6 ft 4 + 3 ⁄ 4 in)  main   Rosemarie Ackermann ( GDR )
+     1976-05-08  1.96 m (6 ft 5 in)  main   Rosemarie Ackermann ( GDR )
+     1977-07-03  1.96 m (6 ft 5 in)  main   Rosemarie Ackermann ( GDR )  (=)
+     1977-08-14  1.97 m ( 6 ft 5 + 1 ⁄ 2 in)  main   Rosemarie Ackermann ( GDR )
+     1977-08-26  1.97 m ( 6 ft 5 + 1 ⁄ 2 in)  main   Rosemarie Ackermann ( GDR )  (=)
+     1977-08-26  2.00 m ( 6 ft 6 + 1 ⁄ 2 in)  main   Rosemarie Ackermann ( GDR )
+     1978-08-04  2.01 m (6 ft 7 in)  main   Sara Simeoni ( ITA )
+     1978-08-31  2.01 m (6 ft 7 in)  main   Sara Simeoni ( ITA )  (=)
+     1982-09-08  2.02 m ( 6 ft 7 + 1 ⁄ 2 in)  main   Ulrike Meyfarth ( FRG )
+     1983-08-21  2.03 m ( 6 ft 7 + 3 ⁄ 4 in)  main   Ulrike Meyfarth ( FRG )
+     1983-08-21  2.03 m ( 6 ft 7 + 3 ⁄ 4 in)  main   Tamara Bykova ( URS )  (=)
+     1983-08-25  2.04 m ( 6 ft 8 + 1 ⁄ 4 in)  main   Tamara Bykova ( URS )
+     1984-06-22  2.05 m ( 6 ft 8 + 1 ⁄ 2 in)  main   Tamara Bykova ( URS )
+     1984-07-20  2.07 m ( 6 ft 9 + 1 ⁄ 4 in)  main   Lyudmila Andonova ( BUL )
+     1986-05-25  2.07 m ( 6 ft 9 + 1 ⁄ 4 in)  main   Stefka Kostadinova ( BUL )  (=)
+     1986-05-31  2.08 m ( 6 ft 9 + 3 ⁄ 4 in)  main   Stefka Kostadinova ( BUL )
+     1987-08-30  2.09 m ( 6 ft 10 + 1 ⁄ 4 in)  main   Stefka Kostadinova ( BUL )
+     2024-07-07  2.10 m ( 6 ft 10 + 1 ⁄ 2 in)  main   Yaroslava Mahuchikh ( UKR )
+== M PV  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=124 line=123 dropped=0
+     1849-10-06  3.15 m (10 ft 4 in)  main   Francis Temple
+     1868-06-19  3.21 m ( 10 ft 6 + 1 ⁄ 4 in)  main   Robert Mitchell
+     1872-08-31  3.225 m ( 10 ft 6 + 3 ⁄ 4 in)  main   Edwin Woodburn
+     1873-06-02  3.225 m ( 10 ft 6 + 3 ⁄ 4 in)  main   Edwin Woodburn  (=)
+     1873-07-07  3.225 m ( 10 ft 6 + 3 ⁄ 4 in)  main   William Kelsey  (=)
+     1873-07-07  3.225 m ( 10 ft 6 + 3 ⁄ 4 in)  main   John Wigfull  (=)
+     1874-03-30  3.225 m ( 10 ft 6 + 3 ⁄ 4 in)  main   Edwin Woodburn  (=)
+     1875-07-05  3.225 m ( 10 ft 6 + 3 ⁄ 4 in)  main   John Wigfull  (=)
+     1876-03-30  3.38 m (11 ft 1 in)  main   A. Hammond
+     1876-07-21  3.38 m (11 ft 1 in)  main   Edwin Woodburn  (=)
+     1879-09-19  3.42 m ( 11 ft 2 + 1 ⁄ 2 in)  main   Thomas Ray
+     1881-07-16  3.43 m (11 ft 3 in)  main   Thomas Ray
+     1882-08-12  3.455 m (11 ft 4 in)  main   Thomas Ray
+     1883-06-16  3.455 m (11 ft 4 in)  main   Thomas Ray  (=)
+     1883-08-18  3.465 m ( 11 ft 4 + 1 ⁄ 4 in)  main   Thomas Ray
+     1885-08-20  3.48 m (11 ft 5 in)  main   Thomas Ray
+     1886-08-13  3.485 m (11 ft 5 in)  main   Thomas Ray
+     1887-08-18  3.505 m ( 11 ft 5 + 3 ⁄ 4 in)  main   Thomas Ray
+     1887-08-19  3.52 m ( 11 ft 6 + 1 ⁄ 2 in)  main   Thomas Ray
+     1888-06-02  3.53 m ( 11 ft 6 + 3 ⁄ 4 in)  main   Ernest Stones
+     1888-09-22  3.555 m ( 11 ft 7 + 3 ⁄ 4 in)  main   Thomas Ray
+     1889-08-23  3.57 m ( 11 ft 8 + 1 ⁄ 2 in)  main   Ernest Stones
+     1891-07-04  3.58 m ( 11 ft 8 + 3 ⁄ 4 in)  main   Richard Dickenson
+     1898-06-16  3.62 m ( 11 ft 10 + 1 ⁄ 2 in)  main   Raymond Clapp
+     1904-04-23  3.69 m ( 12 ft 1 + 1 ⁄ 4 in)  main   Norman Dole
+     1904-06-26  3.69 m ( 12 ft 1 + 1 ⁄ 4 in)  main   Fernand Gonder  (=)
+     1905-06-04  3.74 m (12 ft 3 in)  main   Fernand Gonder
+     1906-06-02  3.78 m ( 12 ft 4 + 3 ⁄ 4 in)  main   Leroy Samse
+     1907-05-18  3.79 m (12 ft 5 in)  main   Walter Dray
+     1908-04-25  3.82 m ( 12 ft 6 + 1 ⁄ 4 in)  main   Walter Dray
+     1908-06-06  3.855 m ( 12 ft 7 + 3 ⁄ 4 in)  main   Alfred Gilbert
+     1908-06-12  3.86 m ( 12 ft 7 + 3 ⁄ 4 in)  main   Alfred Gilbert
+     1908-06-13  3.90 m ( 12 ft 9 + 1 ⁄ 2 in)  main   Walter Dray
+     1910-04-30  3.91 m ( 12 ft 9 + 3 ⁄ 4 in)  main   Leland Scott
+     1910-05-27  3.93 m ( 12 ft 10 + 1 ⁄ 2 in)  main   Leland Scott
+     1912-06-01  3.985 m ( 13 ft 3 ⁄ 4 in)  main   Robert Gardner
+     1912-06-08  4.02 m ( 13 ft 2 + 1 ⁄ 4 in)  main   Marc Wright
+     1920-08-20  4.09 m (13 ft 5 in)  main   Frank Foss
+     1922-09-22  4.12 m (13 ft 6 in)  main   Charles Hoff
+     1923-07-22  4.21 m ( 13 ft 9 + 1 ⁄ 2 in)  main   Charles Hoff
+     1925-08-13  4.23 m ( 13 ft 10 + 1 ⁄ 2 in)  main   Charles Hoff
+     1925-09-27  4.25 m ( 13 ft 11 + 1 ⁄ 4 in)  main   Charles Hoff
+     1927-05-28  4.27 m (14 ft 0 in)  main   Sabin Carr
+     1928-04-28  4.30 m ( 14 ft 1 + 1 ⁄ 4 in)  main   Lee Barnes
+     1932-07-16  4.37 m (14 ft 4 in)  main   William Graber
+     1935-06-01  4.39 m ( 14 ft 4 + 3 ⁄ 4 in)  main   Keith Brown
+     1936-07-04  4.43 m ( 14 ft 6 + 1 ⁄ 4 in)  main   George Varoff
+     1937-05-29  4.54 m ( 14 ft 10 + 1 ⁄ 2 in)  main   Bill Sefton
+     1937-05-29  4.54 m ( 14 ft 10 + 1 ⁄ 2 in)  main   Earle Meadows  (=)
+     1940-06-29  4.60 m (15 ft 1 in)  main   Cornelius Warmerdam
+     1941-06-26  4.72 m ( 15 ft 5 + 3 ⁄ 4 in)  main   Cornelius Warmerdam
+     1942-05-23  4.77 m ( 15 ft 7 + 3 ⁄ 4 in)  main   Cornelius Warmerdam
+     1957-04-27  4.78 m (15 ft 8 in)  main   Robert Gutowski
+     1960-07-02  4.80 m ( 15 ft 8 + 3 ⁄ 4 in)  main   Don Bragg
+     1961-05-20  4.83 m (15 ft 10 in)  main   George Davies
+     1962-03-31  4.89 m ( 16 ft 1 ⁄ 2 in)  main   John Uelses
+     1962-04-28  4.93 m (16 ft 2 in)  main   Dave Tork
+     1962-06-22  4.94 m ( 16 ft 2 + 1 ⁄ 4 in)  main   Pentti Nikula
+     1963-04-27  5.00 m ( 16 ft 4 + 3 ⁄ 4 in)  main   Brian Sternberg
+     1963-06-07  5.08 m (16 ft 8 in)  main   Brian Sternberg
+     1963-08-05  5.13 m ( 16 ft 9 + 3 ⁄ 4 in)  main   John Pennel
+     1963-08-24  5.20 m ( 17 ft 1 ⁄ 2 in)  main   John Pennel
+     1964-06-13  5.23 m ( 17 ft 1 + 3 ⁄ 4 in)  main   Fred Hansen
+     1964-07-25  5.28 m ( 17 ft 3 + 3 ⁄ 4 in)  main   Fred Hansen
+     1966-05-14  5.32 m ( 17 ft 5 + 1 ⁄ 4 in)  main   Bob Seagren
+     1966-07-23  5.34 m (17 ft 6 in)  main   John Pennel
+     1967-06-10  5.36 m (17 ft 7 in)  main   Bob Seagren
+     1967-06-23  5.38 m ( 17 ft 7 + 3 ⁄ 4 in)  main   Paul Wilson
+     1968-09-12  5.41 m ( 17 ft 8 + 3 ⁄ 4 in) A  main   Bob Seagren
+     1969-06-21  5.44 m (17 ft 10 in)  main   John Pennel
+     1970-06-17  5.45 m ( 17 ft 10 + 1 ⁄ 2 in)  main   Wolfgang Nordwig
+     1970-09-03  5.46 m ( 17 ft 10 + 3 ⁄ 4 in)  main   Wolfgang Nordwig
+     1970-10-24  5.49 m (18 ft 0 in)  main   Christos Papanikolaou
+     1972-04-08  5.51 m ( 18 ft 3 ⁄ 4 in)  main   Kjell Isaksson
+     1972-04-15  5.54 m (18 ft 2 in)  main   Kjell Isaksson
+     1972-06-12  5.55 m ( 18 ft 2 + 1 ⁄ 2 in)  main   Kjell Isaksson
+     1972-07-02  5.63 m ( 18 ft 5 + 1 ⁄ 2 in)  main   Bob Seagren
+     1975-03-28  5.65 m ( 18 ft 6 + 1 ⁄ 4 in)  main   David Roberts
+     1976-05-29  5.67 m (18 ft 7 in)  main   Earl Bell
+     1976-06-22  5.70 m ( 18 ft 8 + 1 ⁄ 4 in)  main   David Roberts
+     1980-05-11  5.72 m (18 ft 9 in)  main   Władysław Kozakiewicz
+     1980-06-01  5.75 m ( 18 ft 10 + 1 ⁄ 4 in)  main   Thierry Vigneron
+     1980-06-29  5.75 m ( 18 ft 10 + 1 ⁄ 4 in)  main   Thierry Vigneron  (=)
+     1980-07-17  5.77 m (18 ft 11 in)  main   Philippe Houvion
+     1980-07-30  5.78 m ( 18 ft 11 + 1 ⁄ 2 in)  main   Władysław Kozakiewicz
+     1981-06-20  5.80 m ( 19 ft 1 ⁄ 4 in)  main   Thierry Vigneron
+     1981-06-26  5.81 m ( 19 ft 1 ⁄ 2 in)  main   Vladimir Polyakov
+     1983-08-28  5.82 m (19 ft 1 in)  main   Pierre Quinon
+     1983-09-01  5.83 m ( 19 ft 1 + 1 ⁄ 2 in)  main   Thierry Vigneron
+     1984-05-26  5.85 m ( 19 ft 2 + 1 ⁄ 4 in)  main   Sergey Bubka
+     1984-06-02  5.88 m ( 19 ft 3 + 1 ⁄ 4 in)  main   Sergey Bubka
+     1984-07-13  5.90 m ( 19 ft 4 + 1 ⁄ 4 in)  main   Sergey Bubka
+     1984-08-31  5.91 m ( 19 ft 4 + 1 ⁄ 2 in)  main   Thierry Vigneron
+     1984-08-31  5.94 m ( 19 ft 5 + 3 ⁄ 4 in)  main   Sergey Bubka
+     1985-07-13  6.00 m (19 ft 8 in)  main   Sergey Bubka
+     1986-07-08  6.01 m ( 19 ft 8 + 1 ⁄ 2 in)  main   Sergey Bubka
+     1987-06-23  6.03 m ( 19 ft 9 + 1 ⁄ 4 in)  main   Sergey Bubka
+     1988-06-09  6.05 m (19 ft 10 in)  main   Sergey Bubka
+     1988-07-10  6.06 m ( 19 ft 10 + 1 ⁄ 2 in)  main   Sergey Bubka
+     1991-05-06  6.07 m ( 19 ft 10 + 3 ⁄ 4 in)  main   Sergey Bubka
+     1991-06-09  6.08 m ( 19 ft 11 + 1 ⁄ 4 in)  main   Sergey Bubka
+     1991-07-08  6.09 m ( 19 ft 11 + 3 ⁄ 4 in)  main   Sergey Bubka
+     1991-08-05  6.10 m (20 ft 0 in)  main   Sergey Bubka
+     1992-06-13  6.11 m ( 20 ft 1 ⁄ 2 in)  main   Sergey Bubka
+     1992-08-30  6.12 m ( 20 ft 3 ⁄ 4 in)  main   Sergey Bubka
+     1992-09-19  6.13 m ( 20 ft 1 + 1 ⁄ 4 in)  main   Sergey Bubka
+     1993-02-21  Notes: ^ The numbered occurrence of the athlete breaking the world record, in other words "#7" would indicate the 7th time the athlete broke the world record. ^ "From 2000, IAAF Rule 260.18s (formerly 260.6.a) was amended to say world records (as opposed to indoor world records) can be set in a facility 'with or without a roof.' So far, only one event - the women's pole vault - has been affected by this change, which was not applied retrospectively." Sergey Bubka set an indoor record of 6.15 m (20 ft 2 in) on February 21, 1993, in excess of the outdoor record, before this rule came into effect. Lavillenie's indoor world record was set after the rule came into effect, and thus since it exceeded Bubka's 6.14 m ( 20 ft 1 + 1 ⁄ 2 in) set outdoors, it also became the outright world record, the first indoor mark to do so in this event.  main   Notes: ^ The numbered occurrence of the 
+     2014-02-15  6.16 m ( 20 ft 2 + 1 ⁄ 2 in) i  main   Renaud Lavillenie
+     2020-02-08  6.17 m ( 20 ft 2 + 3 ⁄ 4 in) i  main   Armand Duplantis
+     2020-02-15  6.18 m ( 20 ft 3 + 1 ⁄ 4 in) i  main   Armand Duplantis
+     2022-03-07  6.19 m ( 20 ft 3 + 1 ⁄ 2 in) i  main   Armand Duplantis
+     2022-03-20  6.20 m (20 ft 4 in) i  main   Armand Duplantis
+     2022-07-24  6.21 m ( 20 ft 4 + 1 ⁄ 4 in)  main   Armand Duplantis
+     2023-02-25  6.22 m ( 20 ft 4 + 3 ⁄ 4 in) i  main   Armand Duplantis
+     2023-09-17  6.23 m ( 20 ft 5 + 1 ⁄ 4 in)  main   Armand Duplantis
+     2024-04-20  6.24 m ( 20 ft 5 + 1 ⁄ 2 in)  main   Armand Duplantis
+     2024-08-05  6.25 m (20 ft 6 in)  main   Armand Duplantis
+     2024-08-25  6.26 m ( 20 ft 6 + 1 ⁄ 4 in)  main   Armand Duplantis
+     2025-02-28  6.27 m ( 20 ft 6 + 3 ⁄ 4 in) i  main   Armand Duplantis
+     2025-06-15  6.28 m (20 ft 7 in)  main   Armand Duplantis
+     2025-08-12  6.29 m ( 20 ft 7 + 1 ⁄ 2 in)  main   Armand Duplantis
+     2025-09-15  6.30 m (20 ft 8 in)  main   Armand Duplantis
+     2026-03-12  6.31 m ( 20 ft 8 + 1 ⁄ 4 in) i  main   Armand Duplantis
+== W PV  legend={}  switch=None  rows=119 line=117 dropped=0
+     UNPARSED '5 ft 7 3 ⁄ 4 in (1.72 m)' None 
+     1910-05-14  4 ft 9 in (1.44 m)  pre    Ruth Spencer
+     1911-05-15  4 ft 10 in (1.47 m)  pre    Ruth Spencer
+     1911-05-15  4 ft 11 in (1.49 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 0 in (1.52 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 1 in (1.54 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 2 in (1.57 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 3 in (1.6 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 4 in (1.62 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 5 in (1.65 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 6 in (1.67 m)  pre    Ruth Spencer
+     1911-05-15  5 ft 7 in (1.7 m)  pre    Ruth Spencer
+     1915-04-03  5 ft 8 in (1.72 m)  pre    Hazel Hutaff
+     1915-04-03  5 ft 9 in (1.75 m)  pre    Hazel Hutaff
+     1915-04-03  5 ft 9 3 ⁄ 4 in (1.77 m)  pre    Hazel Hutaff
+     1915-04-13  5 ft 10 in (1.77 m)  pre    Lois Tatum  (=)
+     1915-04-13  =5 ft 10 in (1.77 m)  pre    Emma Lee King  (=)
+     1915-04-13  6 ft 0 1 ⁄ 2 in (1.84 m)  pre    Lois Tatum
+     1915-05-13  =6 ft 0 1 ⁄ 2 in (1.84 m)  pre    Eva Fisk  (=)
+     1915-05-13  6 ft 1 in (1.85 m)  pre    Eva Fisk
+     1915-05-13  6 ft 3 in (1.9 m)  pre    Eva Fisk
+     1915-06-06  =6 ft 3 in (1.9 m)  pre    Mildred Carl  (=)
+     1915-06-06  6 ft 4 in (1.93 m)  pre    Mildred Carl
+     1915-06-06  6 ft 5 in (1.95 m)  pre    Mildred Carl
+     1915-06-06  6 ft 6 in (1.98 m)  pre    Mildred Carl
+     1915-06-06  6 ft 7 in (2 m)  pre    Mildred Carl
+     1915-06-06  6 ft 8 in (2.03 m)  pre    Mildred Carl
+     1915-06-06  6 ft 9 in (2.05 m)  pre    Mildred Carl
+     1915-06-06  6 ft 10 in (2.08 m)  pre    Mildred Carl
+     1915-06-06  6 ft 11 in (2.1 m)  pre    Mildred Carl
+     1915-06-06  7 ft 0 in (2.13 m)  pre    Mildred Carl
+     1915-06-06  7 ft 1 in (2.15 m)  pre    Mildred Carl
+     1915-06-06  7 ft 2 in (2.18 m)  pre    Mildred Carl
+     1919-06-03  7 ft 3 in (2.2 m)  pre    Mildred Carl
+     1921-07-17  2.25 m ( 7 ft 4 + 1 ⁄ 2 in)  pre    Elva Hintze
+     1921-07-17  2.30 m ( 7 ft 6 + 1 ⁄ 2 in)  pre    Helene Henneke
+     1921-07-17  2.35 m ( 7 ft 8 + 1 ⁄ 2 in)  pre    Helene Henneke
+     1924-09-07  =2.35 m ( 7 ft 8 + 1 ⁄ 2 in)  pre    Yelena Goldobina  (=)
+     1935-08-26  2.53 m ( 8 ft 3 + 1 ⁄ 2 in)  pre    Zoya Romanova
+     1952-07-06  8 ft 6 in (2.59 m)  pre    Diane Bragg
+     1969-01-08  =8 ft 6 in (2.59 m)  pre    Brenda Walker  (=)
+     1978-02-10  8 ft 6 1 ⁄ 2 in (2.6 m) i  pre    Irene Spieker
+     1979-02-09  8 ft 7 in (2.61 m) i  pre    Irene Spieker
+     1979-02-09  9 ft 0 in (2.74 m) i  pre    Irene Spieker
+     1979-02-09  9 ft 7 in (2.92 m) i  pre    Irene Spieker
+     1979-02-09  10 ft 0 1 ⁄ 4 in (3.05 m) i  pre    Irene Spieker
+     1983-06-11  10 ft 6 in (3.2 m)  pre    Jana Edwards
+     1983-06-18  10 ft 7 in (3.22 m)  pre    Jana Edwards
+     1983-06-18  11 ft 1 in (3.37 m)  pre    Jana Edwards
+     1983-07-23  11 ft 6 in (3.5 m)  pre    Jana Edwards
+     1983-07-23  11 ft 9 1 ⁄ 2 in (3.59 m)  pre    Jana Edwards
+     1988-04-20  3.72 m ( 12 ft 2 + 1 ⁄ 4 in)  pre    Zhang Chunzhen
+     1988-05-04  3.73 m ( 12 ft 2 + 3 ⁄ 4 in)  pre    Shao Jingmen
+     1988-06-10  3.75 m ( 12 ft 3 + 1 ⁄ 2 in)  pre    Zhang Chunzhen
+     1989-04-22  3.76 m (12 ft 4 in)  pre    Zhou Minxin
+     1989-09-09  3.8 m ( 12 ft 5 + 1 ⁄ 2 in)  pre    Zhang Chunzhen
+     1990-03-24  3.81 m (12 ft 6 in)  pre    Zhang Chunzhen
+     1991-03-24  3.83 m ( 12 ft 6 + 3 ⁄ 4 in)  pre    Sun Caiyun
+     1991-03-24  =3.83 m ( 12 ft 6 + 3 ⁄ 4 in)  pre    Zhang Chunzhen  (=)
+     1991-03-24  4.00 m ( 13 ft 1 + 1 ⁄ 4 in)  pre    Zhang Chunzhen
+     1991-06-05  4.02 m ( 13 ft 2 + 1 ⁄ 4 in)  pre    Zhang Chunzhen
+     1991-08-10  4.05 m ( 13 ft 3 + 1 ⁄ 4 in)  pre    Zhang Chunzhen
+     1992-05-21  4.05 m ( 13 ft 3 + 1 ⁄ 4 in)  main   Sun Caiyun
+     1995-05-18  4.08 m ( 13 ft 4 + 1 ⁄ 2 in)  main   Sun Caiyun
+     1995-05-18  4.08 m ( 13 ft 4 + 1 ⁄ 2 in)  main   Zhong Guiqing  (=)
+     1995-05-21  4.10 m ( 13 ft 5 + 1 ⁄ 4 in)  main   Daniela Bártová
+     1995-06-18  4.12 m (13 ft 6 in)  main   Daniela Bártová
+     1995-06-24  4.13 m ( 13 ft 6 + 1 ⁄ 2 in)  main   Daniela Bártová
+     1995-07-02  4.14 m ( 13 ft 6 + 3 ⁄ 4 in)  main   Daniela Bártová
+     1995-07-06  4.15 m ( 13 ft 7 + 1 ⁄ 4 in)  main   Daniela Bártová
+     1995-07-14  4.16 m ( 13 ft 7 + 3 ⁄ 4 in)  main   Daniela Bártová
+     1995-07-15  4.17 m (13 ft 8 in)  main   Daniela Bártová
+     1995-08-05  4.18 m ( 13 ft 8 + 1 ⁄ 2 in)  main   Andrea Müller
+     1995-08-18  4.20 m ( 13 ft 9 + 1 ⁄ 4 in)  main   Daniela Bártová
+     1995-08-22  4.21 m ( 13 ft 9 + 1 ⁄ 2 in)  main   Daniela Bártová
+     1995-09-11  4.22 m (13 ft 10 in)  main   Daniela Bártová
+     1995-11-30  4.25 m ( 13 ft 11 + 1 ⁄ 4 in)  main   Emma George
+     1995-12-17  4.28 m ( 14 ft 1 ⁄ 2 in)  main   Emma George
+     1996-01-28  4.30 m ( 14 ft 1 + 1 ⁄ 4 in)  main   Emma George
+     1996-01-28  4.41 m ( 14 ft 5 + 1 ⁄ 2 in)  main   Emma George
+     1996-06-29  4.42 m (14 ft 6 in)  main   Emma George
+     1996-07-14  4.45 m (14 ft 7 in)  main   Emma George
+     1997-02-08  4.50 m (14 ft 9 in)  main   Emma George
+     1997-02-20  4.55 m (14 ft 11 in)  main   Emma George
+     1998-02-21  4.57 m ( 14 ft 11 + 3 ⁄ 4 in)  main   Emma George
+     1998-03-14  4.58 m ( 15 ft 1 ⁄ 4 in)  main   Emma George
+     1998-03-21  4.59 m ( 15 ft 1 ⁄ 2 in)  main   Emma George
+     1999-02-20  4.60 m (15 ft 1 in)  main   Emma George
+     1999-08-21  4.60 m (15 ft 1 in)  main   Stacy Dragila  (=)
+     2000-02-19  i 4.60 m (15 ft 1 in)  main   Stacy Dragila  (=)
+     2000-03-03  i 4.62 m ( 15 ft 1 + 3 ⁄ 4 in)  main   Stacy Dragila
+     2000-07-23  4.63 m ( 15 ft 2 + 1 ⁄ 4 in)  main   Stacy Dragila
+     2001-02-02  i 4.63 m ( 15 ft 2 + 1 ⁄ 4 in)  main   Stacy Dragila  (=)
+     2001-02-11  i 4.64 m ( 15 ft 2 + 1 ⁄ 2 in)  main   Svetlana Feofanova
+     2001-02-17  i 4.66 m ( 15 ft 3 + 1 ⁄ 4 in)  main   Stacy Dragila
+     2001-02-17  i 4.70 m (15 ft 5 in)  main   Stacy Dragila
+     2001-04-27  4.70 m (15 ft 5 in)  main   Stacy Dragila  (=)
+     2001-06-09  4.71 m ( 15 ft 5 + 1 ⁄ 4 in)  main   Stacy Dragila
+     2001-06-09  4.81 m ( 15 ft 9 + 1 ⁄ 4 in)  main   Stacy Dragila
+     2003-07-13  4.82 m ( 15 ft 9 + 3 ⁄ 4 in)  main   Yelena Isinbayeva
+     2004-02-15  i 4.83 m (15 ft 10 in)  main   Yelena Isinbayeva
+     2004-02-22  i 4.85 m ( 15 ft 10 + 3 ⁄ 4 in)  main   Svetlana Feofanova
+     2004-03-06  i 4.86 m ( 15 ft 11 + 1 ⁄ 4 in)  main   Yelena Isinbayeva
+     2004-06-27  4.87 m ( 15 ft 11 + 1 ⁄ 2 in)  main   Yelena Isinbayeva
+     2004-07-04  4.88 m (16 ft 0 in)  main   Svetlana Feofanova
+     2004-07-25  4.89 m ( 16 ft 1 ⁄ 2 in)  main   Yelena Isinbayeva
+     2004-07-30  4.90 m ( 16 ft 3 ⁄ 4 in)  main   Yelena Isinbayeva
+     2004-08-24  4.91 m ( 16 ft 1 + 1 ⁄ 4 in)  main   Yelena Isinbayeva
+     2004-09-03  4.92 m ( 16 ft 1 + 1 ⁄ 2 in)  main   Yelena Isinbayeva
+     2005-07-05  4.93 m (16 ft 2 in)  main   Yelena Isinbayeva
+     2005-07-16  4.95 m ( 16 ft 2 + 3 ⁄ 4 in)  main   Yelena Isinbayeva
+     2005-07-22  4.96 m ( 16 ft 3 + 1 ⁄ 4 in)  main   Yelena Isinbayeva
+     2005-07-22  5.00 m ( 16 ft 4 + 3 ⁄ 4 in)  main   Yelena Isinbayeva
+     2005-08-09  5.01 m (16 ft 5 in)  main   Yelena Isinbayeva
+     2008-07-11  5.03 m (16 ft 6 in)  main   Yelena Isinbayeva
+     2008-07-29  5.04 m ( 16 ft 6 + 1 ⁄ 4 in)  main   Yelena Isinbayeva
+     2008-08-18  5.05 m ( 16 ft 6 + 3 ⁄ 4 in)  main   Yelena Isinbayeva
+     2009-08-28  5.06 m (16 ft 7 in)  main   Yelena Isinbayeva
+== M LJ  legend={}  switch=None  rows=19 line=18 dropped=0
+     1901-08-05  7.61 m ( 24 ft 11 + 1 ⁄ 2 in)  main   Peter O'Connor ( IRE )
+     1921-07-23  7.69 m ( 25 ft 2 + 3 ⁄ 4 in)  main   Edward Gourdin ( USA )
+     1924-07-07  7.76 m ( 25 ft 5 + 1 ⁄ 2 in)  main   Robert LeGendre ( USA )
+     1925-06-13  7.89 m ( 25 ft 10 + 1 ⁄ 2 in)  main   DeHart Hubbard ( USA )
+     1928-07-07  7.90 m (25 ft 11 in)  main   Edward Hamm ( USA )
+     1928-09-09  7.93 m (26 ft 0 in)  main   Sylvio Cator ( HAI )
+     1931-10-27  7.98 m (26 ft 2 in)  main   Chuhei Nambu ( JPN )
+     1935-05-25  8.13 m (26 ft 8 in)  main   Jesse Owens ( USA )
+     1960-08-12  8.21 m (26 ft 11 in)  main   Ralph Boston ( USA )
+     1961-05-27  8.24 m ( 27 ft 1 ⁄ 4 in)  main   Ralph Boston ( USA )
+     1961-07-16  8.28 m ( 27 ft 1 + 3 ⁄ 4 in)  main   Ralph Boston ( USA )
+     1962-06-10  8.31 m (27 ft 3 in) A  main   Igor Ter-Ovanesyan ( URS )
+     1963-05-25  8.33 m ( 27 ft 3 + 3 ⁄ 4 in)  main   Phil Shinnick ( USA )
+     1964-09-12  8.34 m ( 27 ft 4 + 1 ⁄ 4 in)  main   Ralph Boston ( USA )
+     1965-05-29  8.35 m ( 27 ft 4 + 1 ⁄ 2 in)  main   Ralph Boston ( USA )
+     1967-10-19  8.35 m ( 27 ft 4 + 1 ⁄ 2 in) A  main   Igor Ter-Ovanesyan ( URS )  (=)
+     1968-10-18  8.90 m ( 29 ft 2 + 1 ⁄ 4 in) A  main   Bob Beamon ( USA )
+     1991-08-30  8.95 m ( 29 ft 4 + 1 ⁄ 4 in)  main   Mike Powell ( USA )
+== W LJ  legend={}  switch=None  rows=36 line=36 dropped=0
+     1922-08-06  5.16 m (16 ft 11 in)  main   Marie Mejzlíková II ( TCH )
+     1923-09-23  5.30 m ( 17 ft 4 + 1 ⁄ 2 in)  main   Marie Mejzlíková II ( TCH )
+     1926-08-02  5.485 m ( 17 ft 11 + 3 ⁄ 4 in)  main   Muriel Gunn ( GBR )
+     1926-08-28  5.50 m ( 18 ft 1 ⁄ 2 in)  main   Kinue Hitomi ( JPN )
+     1927-08-01  5.575 m ( 18 ft 3 + 1 ⁄ 4 in)  main   Muriel Gunn ( GBR )
+     1928-05-20  5.98 m ( 19 ft 7 + 1 ⁄ 4 in)  main   Kinue Hitomi ( JPN )
+     1939-07-30  6.12 m ( 20 ft 3 ⁄ 4 in)  main   Christel Schulz ( GER )
+     1943-09-19  6.25 m (20 ft 6 in)  main   Fanny Blankers-Koen ( NED )
+     1954-02-20  6.28 m (20 ft 7 in)  main   Yvette Williams ( NZL )
+     1955-09-11  6.28 m (20 ft 7 in)  main   Galina Vinogradova ( URS )  (=)
+     1955-11-18  6.31 m ( 20 ft 8 + 1 ⁄ 4 in)  main   Galina Vinogradova ( URS )
+     1956-08-20  6.35 m (20 ft 10 in)  main   Elżbieta Krzesińska ( POL )
+     1956-11-27  6.35 m (20 ft 10 in)  main   Elżbieta Krzesińska ( POL )  (=)
+     1960-08-07  6.40 m ( 20 ft 11 + 3 ⁄ 4 in)  main   Hildrun Claus ( GDR )
+     1961-06-23  6.42 m ( 21 ft 3 ⁄ 4 in)  main   Hildrun Claus ( GDR )
+     1961-07-16  6.48 m (21 ft 3 in)  main   Tatyana Shchelkanova ( URS )
+     1962-06-10  6.53 m (21 ft 5 in)  main   Tatyana Shchelkanova ( URS )
+     1964-07-04  6.70 m ( 21 ft 11 + 3 ⁄ 4 in)  main   Tatyana Shchelkanova ( URS )
+     1964-10-14  6.76 m (22 ft 2 in)  main   Mary Rand ( GBR )
+     1968-10-14  6.82 m ( 22 ft 4 + 1 ⁄ 2 in) A  main   Viorica Viscopoleanu ( ROU )
+     1970-09-03  6.84 m ( 22 ft 5 + 1 ⁄ 4 in)  main   Heide Rosendahl ( FRG )
+     1976-05-09  6.92 m ( 22 ft 8 + 1 ⁄ 4 in)  main   Angela Voigt ( GDR )
+     1976-05-19  6.99 m (22 ft 11 in)  main   Siegrun Siegl ( GDR )
+     1978-08-18  7.07 m ( 23 ft 2 + 1 ⁄ 4 in)  main   Vilma Bardauskiené ( URS )
+     1978-08-29  7.09 m (23 ft 3 in)  main   Vilma Bardauskiené ( URS )
+     1982-08-01  7.15 m ( 23 ft 5 + 1 ⁄ 4 in)  main   Anişoara Cuşmir ( ROU )
+     1982-08-01  7.20 m ( 23 ft 7 + 1 ⁄ 4 in)  main   Valy Ionescu ( ROU )
+     1983-05-15  7.21 m ( 23 ft 7 + 3 ⁄ 4 in)  main   Anişoara Cuşmir ( ROU )
+     1983-06-04  7.27 m (23 ft 10 in)  main   Anişoara Cuşmir ( ROU )
+     1983-06-04  7.43 m ( 24 ft 4 + 1 ⁄ 2 in)  main   Anişoara Cuşmir ( ROU )
+     1985-09-22  7.44 m ( 24 ft 4 + 3 ⁄ 4 in)  main   Heike Drechsler ( GDR )
+     1986-06-21  7.45 m ( 24 ft 5 + 1 ⁄ 4 in)  main   Heike Drechsler ( GDR )
+     1986-07-03  7.45 m ( 24 ft 5 + 1 ⁄ 4 in)  main   Heike Drechsler ( GDR )  (=)
+     1987-08-13  7.45 m ( 24 ft 5 + 1 ⁄ 4 in)  main   Jackie Joyner-Kersee ( USA )  (=)
+     1988-06-11  7.45 m ( 24 ft 5 + 1 ⁄ 4 in)  main   Galina Chistyakova ( URS )  (=)
+     1988-06-11  7.52 m (24 ft 8 in)  main   Galina Chistyakova ( URS )
+== M TJ  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=27 line=27 dropped=0
+     1911-05-30  15.52 m (50 ft 11 in)  main   Dan Ahearn ( USA )
+     1924-07-12  15.52 m (50 ft 11 in)  main   Nick Winter ( AUS )  (=)
+     1931-10-27  15.58 m ( 51 ft 1 + 1 ⁄ 4 in)  main   Mikio Oda ( JPN )
+     1932-08-04  15.72 m ( 51 ft 6 + 3 ⁄ 4 in)  main   Chuhei Nambu ( JPN )
+     1935-12-14  15.78 m ( 51 ft 9 + 1 ⁄ 4 in)  main   Jack Metcalfe ( AUS )
+     1936-08-06  16.00 m ( 52 ft 5 + 3 ⁄ 4 in)  main   Naoto Tajima ( JPN )
+     1950-12-03  16.00 m ( 52 ft 5 + 3 ⁄ 4 in)  main   Adhemar da Silva ( BRA )  (=)
+     1951-09-30  16.01 m ( 52 ft 6 + 1 ⁄ 4 in)  main   Adhemar da Silva ( BRA )
+     1952-07-23  16.12 m ( 52 ft 10 + 1 ⁄ 2 in)  main   Adhemar da Silva ( BRA )
+     1952-07-23  16.22 m ( 53 ft 2 + 1 ⁄ 2 in)  main   Adhemar da Silva ( BRA )
+     1953-07-19  16.23 m ( 53 ft 2 + 3 ⁄ 4 in)  main   Leonid Shcherbakov ( URS )
+     1955-03-16  16.56 m ( 54 ft 3 + 3 ⁄ 4 in) A  main   Adhemar da Silva ( BRA )
+     1958-07-28  16.59 m (54 ft 5 in)  main   Oleg Ryakhovskiy ( URS )
+     1959-05-03  16.70 m ( 54 ft 9 + 1 ⁄ 4 in)  main   Oleg Fyodoseyev ( URS )
+     1960-08-05  17.03 m ( 55 ft 10 + 1 ⁄ 4 in)  main   Józef Szmidt ( POL )
+     1968-10-16  17.10 m (56 ft 1 in) A  main   Giuseppe Gentile ( ITA )
+     1968-10-17  17.22 m ( 56 ft 5 + 3 ⁄ 4 in) A  main   Giuseppe Gentile ( ITA )
+     1968-10-17  17.23 m ( 56 ft 6 + 1 ⁄ 4 in) A  main   Viktor Sanyeyev ( URS )
+     1968-10-17  17.27 m ( 56 ft 7 + 3 ⁄ 4 in) A  main   Nelson Prudêncio ( BRA )
+     1968-10-17  17.39 m ( 57 ft 1 ⁄ 2 in) A  main   Viktor Sanyeyev ( URS )
+     1971-08-05  17.40 m (57 ft 1 in) A  main   Pedro Pérez ( CUB )
+     1972-10-17  17.44 m ( 57 ft 2 + 1 ⁄ 2 in)  main   Viktor Sanyeyev ( URS )
+     1975-10-15  17.89 m ( 58 ft 8 + 1 ⁄ 4 in) A  main   João Carlos de Oliveira ( BRA )
+     1985-06-16  17.97 m ( 58 ft 11 + 1 ⁄ 4 in)  main   Willie Banks ( USA )
+     1995-07-18  17.98 m ( 58 ft 11 + 3 ⁄ 4 in)  main   Jonathan Edwards ( GBR )
+     1995-08-07  18.16 m ( 59 ft 6 + 3 ⁄ 4 in)  main   Jonathan Edwards ( GBR )
+     1995-08-07  18.29 m (60 ft 0 in)  main   Jonathan Edwards ( GBR )
+== W TJ  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=27 line=27 dropped=0
+     1922-05-13  10.32 m ( 33 ft 10 + 1 ⁄ 4 in)  pre    Elizabeth Stine ( USA )
+     1923-07-23  10.50 m ( 34 ft 5 + 1 ⁄ 4 in)  pre    Adrienne Kaenel ( SUI )
+     1926-10-17  11.62 m ( 38 ft 1 + 1 ⁄ 4 in)  pre    Kinue Hitomi ( JPN )
+     1939-10-21  11.66 m (38 ft 3 in)  pre    Rie Yamaguchi ( JPN )
+     1959-06-18  12.22 m (40 ft 1 in)  pre    Mary Bignal ( GBR )
+     1981-05-09  12.43 m ( 40 ft 9 + 1 ⁄ 4 in)  pre    Terri Turner ( USA )
+     1982-05-07  12.47 m ( 40 ft 10 + 3 ⁄ 4 in)  pre    Terri Turner ( USA )
+     1983-05-06  12.51 m ( 41 ft 1 ⁄ 2 in)  pre    Melody Smith ( USA )
+     1983-05-07  12.98 m (42 ft 7 in)  pre    Easter Gabriel ( USA )
+     1984-03-24  13.15 m ( 43 ft 1 + 1 ⁄ 2 in)  pre    Terri Turner ( USA )
+     1984-04-13  13.21 m (43 ft 4 in)  pre    Terri Turner ( USA )
+     1985-05-30  13.58 m ( 44 ft 6 + 1 ⁄ 2 in)  pre    Wendy Brown ( USA )
+     1986-06-05  13.68 m ( 44 ft 10 + 1 ⁄ 2 in)  pre    Esmeralda Garcia ( BRA )
+     1987-05-02  13.71 m ( 44 ft 11 + 3 ⁄ 4 in)  pre    Wendy Brown ( USA )
+     1987-05-17  13.73 m ( 45 ft 1 ⁄ 2 in)  pre    Flora Hyacinth ( ISV )
+     1987-06-06  13.78 m ( 45 ft 2 + 1 ⁄ 2 in)  pre    Sheila Hudson ( USA )
+     1987-06-26  13.85 m ( 45 ft 5 + 1 ⁄ 4 in)  pre    Sheila Hudson ( USA )
+     1987-10-11  14.04 m ( 46 ft 3 ⁄ 4 in)  pre    Li Huirong ( CHN )
+     1988-04-23  14.16 m ( 46 ft 5 + 1 ⁄ 4 in)  pre    Li Huirong ( CHN )
+     1989-07-02  14.52 m ( 47 ft 7 + 1 ⁄ 2 in)  pre    Galina Chistyakova ( URS )
+     1990-08-25  14.54 m ( 47 ft 8 + 1 ⁄ 4 in)  main   Li Huirong ( CHN )
+     1991-06-10  14.95 m ( 49 ft 1 ⁄ 2 in)  main   Inessa Kravets ( URS )
+     1993-06-18  14.97 m ( 49 ft 1 + 1 ⁄ 4 in)  main   Iolanda Chen ( RUS )
+     1993-08-21  15.09 m (49 ft 6 in)  main   Anna Biryukova ( RUS )
+     1995-08-10  15.50 m (50 ft 10 in)  main   Inessa Kravets ( UKR )
+     2021-08-01  15.67 m ( 51 ft 4 + 3 ⁄ 4 in)  main   Yulimar Rojas ( VEN )
+     2022-03-20  15.74 m ( 51 ft 7 + 1 ⁄ 2 in)  main   Yulimar Rojas ( VEN )
+== M SP  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=54 line=53 dropped=1
+     dropped [not ratified] 22.86 m Brian Oldfield ( USA ) 1975-05-10
+     1909-08-21       15.54 m  main   Ralph Rose ( USA )
+     1928-05-06       15.79 m  main   Emil Hirschfeld ( GER )
+     1928-07-29       15.87 m  main   John Kuck ( USA )
+     1928-08-26       16.04 m  main   Emil Hirschfeld ( GER )
+     1931-10-04       16.04 m  main   František Douda ( TCH )  (=)
+     1932-06-29       16.05 m  main   Zygmunt Heljasz ( POL )
+     1932-08-27       16.16 m  main   Leo Sexton ( USA )
+     1932-09-24       16.20 m  main   František Douda ( TCH )
+     1934-04-21       16.48 m  main   John Lyman ( USA )
+     1934-04-27       16.80 m  main   Jack Torrance ( USA )
+     1934-06-30       16.89 m  main   Jack Torrance ( USA )
+     1934-08-05       17.40 m  main   Jack Torrance ( USA )
+     1948-04-17       17.68 m  main   Charlie Fonville ( USA )
+     1949-07-28       17.79 m  main   Jim Fuchs ( USA )
+     1950-04-29       17.82 m  main   Jim Fuchs ( USA )
+     1950-08-20       17.90 m  main   Jim Fuchs ( USA )
+     1950-08-22       17.95 m  main   Jim Fuchs ( USA )
+     1953-05-09       18.00 m  main   Parry O'Brien ( USA )
+     1953-06-05       18.04 m  main   Parry O'Brien ( USA )
+     1954-05-08       18.42 m  main   Parry O'Brien ( USA )
+     1954-05-21       18.43 m  main   Parry O'Brien ( USA )
+     1954-06-11       18.54 m  main   Parry O'Brien ( USA )
+     1956-05-05       18.62 m  main   Parry O'Brien ( USA )
+     1956-06-15       18.69 m  main   Parry O'Brien ( USA )
+     1956-09-03       19.06 m  main   Parry O'Brien ( USA )
+     1956-11-01       19.25 m  main   Parry O'Brien ( USA )
+     1959-03-28       19.25 m  main   Dallas Long ( USA )  (=)
+     1959-08-01       19.30 m  main   Parry O'Brien ( USA )
+     1960-03-05       19.38 m  main   Dallas Long ( USA )
+     1960-03-19       19.45 m  main   Bill Nieder ( USA )
+     1960-03-26       19.67 m  main   Dallas Long ( USA )
+     1960-04-02       19.99 m  main   Bill Nieder ( USA )
+     1960-08-12       20.06 m  main   Bill Nieder ( USA )
+     1962-05-18       20.08 m  main   Dallas Long ( USA )
+     1964-04-04       20.10 m  main   Dallas Long ( USA )
+     1964-05-29       20.20 m  main   Dallas Long ( USA )
+     1964-07-25       20.68 m  main   Dallas Long ( USA )
+     1965-05-08       21.52 m  main   Randy Matson ( USA )
+     1967-04-23       21.78 m  main   Randy Matson ( USA )
+     1973-05-05       21.82 m  main   Al Feuerbach ( USA )
+     1976-02-21       21.85 m  main   Terry Albritton ( USA )
+     1976-06-10       22.00 m  main   Aleksandr Baryshnikov ( URS )
+     1978-07-06       22.15 m  main   Udo Beyer ( GDR )
+     1983-06-25       22.22 m  main   Udo Beyer ( GDR )
+     1985-09-22       22.62 m  main   Ulf Timmermann ( GDR )
+     1986-08-20       22.64 m  main   Udo Beyer ( GDR )
+     1987-08-12       22.72 m  main   Alessandro Andrei ( ITA )
+     1987-08-12       22.84 m  main   Alessandro Andrei ( ITA )
+     1987-08-12       22.91 m  main   Alessandro Andrei ( ITA )
+     1988-05-22       23.06 m  main   Ulf Timmermann ( GDR )
+     1990-05-20       23.12 m  main   Randy Barnes ( USA )
+     2021-06-18       23.37 m  main   Ryan Crouser ( USA )
+     2023-05-27       23.56 m  main   Ryan Crouser ( USA )
+== W SP  legend={'': 'ratified', '#fec': 'not ratified', '#ffd0bd': 'rescinded'}  switch=None  rows=51 line=50 dropped=1
+     dropped [not ratified] 11.57 m Lilli Henoch ( GER ) 1925-08-16
+     1924-07-14       10.15 m  main   Violette Gouraud-Morris ( FRA )
+     1927-05-28       10.84 m  main   Ruth Lange ( GER )
+     1927-08-06       11.32 m  main   Ruth Lange ( GER )
+     1928-06-03       11.52 m  main   Ruth Lange ( GER )
+     1928-07-15       11.96 m  main   Grete Heublein ( GER )
+     1929-07-21       12.85 m  main   Grete Heublein ( GER )
+     1931-06-28       12.88 m  main   Grete Heublein ( GER )
+     1931-08-16       13.70 m  main   Grete Heublein ( GER )
+     1934-07-15       14.38 m  main   Gisela Mauermayer ( GER )
+     1948-08-04       14.59 m  main   Tatyana Sevryukova ( URS )
+     1949-10-30       14.86 m  main   Klavdia Tochonova ( URS )
+     1950-11-09       15.02 m  main   Anna Andreyeva ( URS )
+     1952-07-26       15.28 m  main   Galina Zybina ( URS )
+     1952-09-20       15.37 m  main   Galina Zybina ( URS )
+     1952-10-01       15.42 m  main   Galina Zybina ( URS )
+     1953-10-09       16.20 m  main   Galina Zybina ( URS )
+     1954-09-14       16.28 m  main   Galina Zybina ( URS )
+     1955-09-05       16.28 m  main   Galina Zybina ( URS )  (=)
+     1955-11-15       16.67 m  main   Galina Zybina ( URS )
+     1956-10-13       16.76 m  main   Galina Zybina ( URS )
+     1959-04-26       17.25 m  main   Tamara Press ( URS )
+     1960-07-16       17.42 m  main   Tamara Press ( URS )
+     1960-08-13       17.78 m  main   Tamara Press ( URS )
+     1962-06-10       18.55 m  main   Tamara Press ( URS )
+     1962-09-12       18.55 m  main   Tamara Press ( URS )  (=)
+     1965-09-19       18.59 m  main   Tamara Press ( URS )
+     1968-04-28       18.67 m  main   Nadezhda Chizhova ( URS )
+     1968-09-22       18.87 m  main   Margitta Gummel ( GDR )
+     1968-10-20       19.07 m  main   Margitta Gummel ( GDR )
+     1968-10-20       19.61 m  main   Margitta Gummel ( GDR )
+     1969-05-30       19.72 m  main   Nadezhda Chizhova ( URS )
+     1969-07-13       20.09 m  main   Nadezhda Chizhova ( URS )
+     1969-09-11       20.10 m  main   Margitta Gummel ( GDR )
+     1969-09-16       20.10 m  main   Nadezhda Chizhova ( URS )  (=)
+     1969-09-16       20.43 m  main   Nadezhda Chizhova ( URS )
+     1971-08-29       20.43 m  main   Nadezhda Chizhova ( URS )  (=)
+     1972-05-19       20.63 m  main   Nadezhda Chizhova ( URS )
+     1972-09-07       21.03 m  main   Nadezhda Chizhova ( URS )
+     1973-08-28       21.20 m  main   Nadezhda Chizhova ( URS )
+     1975-08-06       21.60 m  main   Marianne Adam ( GDR )
+     1976-05-30       21.67 m  main   Marianne Adam ( GDR )
+     1976-07-03       21.87 m  main   Ivanka Khristova ( BUL )
+     1976-07-04       21.89 m  main   Ivanka Khristova ( BUL )
+     1976-09-26       21.99 m  main   Helena Fibingerová ( TCH )
+     1977-08-20       22.32 m  main   Helena Fibingerová ( TCH )
+     1980-05-02       22.36 m  main   Ilona Slupianek ( GDR )
+     1980-05-11       22.45 m  main   Ilona Slupianek ( GDR )
+     1984-05-27       22.53 m  main   Natalya Lisovskaya ( URS )
+     1987-06-07       22.60 m  main   Natalya Lisovskaya ( URS )
+     1987-06-07       22.63 m  main   Natalya Lisovskaya ( URS )
+== M DT  legend={'': 'ratified', '#fef6e7': 'not ratified', '#fee7e6': 'rescinded', '#cef6f5': 'pending'}  switch=None  rows=45 line=45 dropped=0
+     1912-05-27  47.58 m (156 ft 1 in)  main   James Duncan ( USA )
+     1924-09-14  47.61 m ( 156 ft 2 + 1 ⁄ 4 in)  main   Thomas Lieb ( USA )
+     1925-05-02  47.89 m ( 157 ft 1 + 1 ⁄ 4 in)  main   Glenn Hartranft ( USA )
+     1926-04-03  48.20 m ( 158 ft 1 + 1 ⁄ 2 in)  main   Bud Houser ( USA )
+     1929-03-09  49.90 m ( 163 ft 8 + 1 ⁄ 2 in)  main   Eric Krenz ( USA )
+     1930-05-17  51.03 m (167 ft 5 in)  main   Eric Krenz ( USA )
+     1930-08-23  51.73 m ( 169 ft 8 + 1 ⁄ 2 in)  main   Paul Jessup ( USA )
+     1934-08-25  52.42 m ( 171 ft 11 + 3 ⁄ 4 in)  main   Harald Andersson ( SWE )
+     1935-04-28  53.10 m ( 174 ft 2 + 1 ⁄ 2 in)  main   Willy Schröder ( GER )
+     1941-06-20  53.26 m ( 174 ft 8 + 3 ⁄ 4 in)  main   Archie Harris ( USA )
+     1941-10-26  53.34 m (175 ft 0 in)  main   Adolfo Consolini ( ITA )
+     1946-04-14  54.23 m (177 ft 11 in)  main   Adolfo Consolini ( ITA )
+     1946-06-08  54.93 m ( 180 ft 2 + 1 ⁄ 2 in)  main   Bob Fitch ( USA )
+     1948-10-10  55.33 m ( 181 ft 6 + 1 ⁄ 4 in)  main   Adolfo Consolini ( ITA )
+     1949-07-09  56.46 m ( 185 ft 2 + 3 ⁄ 4 in)  main   Fortune Gordien ( USA )
+     1949-08-14  56.97 m ( 186 ft 10 + 3 ⁄ 4 in)  main   Fortune Gordien ( USA )
+     1953-06-20  57.93 m ( 190 ft 1 ⁄ 2 in)  main   Sim Iness ( USA )
+     1953-07-11  58.10 m ( 190 ft 7 + 1 ⁄ 4 in)  main   Fortune Gordien ( USA )
+     1953-08-22  59.28 m ( 194 ft 5 + 3 ⁄ 4 in)  main   Fortune Gordien ( USA )
+     1959-06-14  59.91 m ( 196 ft 6 + 1 ⁄ 2 in)  main   Edmund Piątkowski ( POL )
+     1960-08-12  59.91 m ( 196 ft 6 + 1 ⁄ 2 in)  main   Rink Babka ( USA )  (=)
+     1961-08-11  60.56 m ( 198 ft 8 + 1 ⁄ 4 in)  main   Jay Silvester ( USA )
+     1961-08-20  60.72 m ( 199 ft 2 + 1 ⁄ 2 in)  main   Jay Silvester ( USA )
+     1962-05-18  61.10 m ( 200 ft 5 + 1 ⁄ 2 in)  main   Al Oerter ( USA )
+     1962-06-04  61.64 m ( 202 ft 2 + 3 ⁄ 4 in)  main   Vladimir Trusenyev ( USSR )
+     1962-07-01  62.45 m ( 204 ft 10 + 1 ⁄ 2 in)  main   Al Oerter ( USA )
+     1963-04-27  62.62 m ( 205 ft 5 + 1 ⁄ 4 in)  main   Al Oerter ( USA )
+     1964-04-25  62.94 m ( 206 ft 5 + 3 ⁄ 4 in)  main   Al Oerter ( USA )
+     1964-08-02  64.55 m ( 211 ft 9 + 1 ⁄ 4 in)  main   Ludvik Danek ( TCH )
+     1965-10-12  65.22 m ( 213 ft 11 + 1 ⁄ 2 in)  main   Ludvik Danek ( TCH )
+     1968-05-25  66.54 m ( 218 ft 3 + 1 ⁄ 2 in)  main   Jay Silvester ( USA )
+     1968-09-18  68.40 m ( 224 ft 4 + 3 ⁄ 4 in) A  main   Jay Silvester ( USA )
+     1972-07-05  68.40 m ( 224 ft 4 + 3 ⁄ 4 in)  main   Ricky Bruch ( SWE )  (=)
+     1975-03-14  68.48 m (224 ft 8 in)  main   John van Reenen ( RSA )
+     1975-05-03  69.08 m ( 226 ft 7 + 1 ⁄ 2 in)  main   John Powell ( USA )
+     1976-04-24  69.18 m ( 226 ft 11 + 1 ⁄ 2 in)  main   Mac Wilkins ( USA )
+     1976-05-01  69.80 m (229 ft 0 in)  main   Mac Wilkins ( USA )
+     1976-05-01  70.24 m ( 230 ft 5 + 1 ⁄ 4 in)  main   Mac Wilkins ( USA )
+     1976-05-01  70.86 m ( 232 ft 5 + 3 ⁄ 4 in)  main   Mac Wilkins ( USA )
+     1978-08-09  71.16 m ( 233 ft 5 + 1 ⁄ 2 in)  main   Wolfgang Schmidt ( GDR )
+     1983-05-29  71.86 m (235 ft 9 in)  main   Yuriy Dumchev ( USSR )
+     1986-06-06  74.08 m ( 243 ft 1 ⁄ 2 in)  main   Jürgen Schult ( GDR )
+     2024-04-14  74.35 m (243 ft 11 in)  main   Mykolas Alekna ( LTU )
+     2025-04-13  74.89 m ( 245 ft 8 + 1 ⁄ 4 in)  main   Mykolas Alekna ( LTU )
+     2025-04-13  75.56 m ( 247 ft 10 + 3 ⁄ 4 in)  main   Mykolas Alekna ( LTU )
+== W DT  legend={'': 'ratified', '#fec': 'not ratified', '#ffd0bd': 'rescinded'}  switch=None  rows=57 line=55 dropped=2
+     dropped [not ratified] 24.90 m ( 81 ft 8 + 1 ⁄ 4 in) Lilli Henoch ( GER ) 1922-10-01
+     dropped [not ratified] 26.62 m (87 ft 4 in) Lilli Henoch ( GER ) 1923-07-08
+     1923-09-23  27.39 m ( 89 ft 10 + 1 ⁄ 4 in)  main   Yvonne Tembouret ( FRA )
+     1924-07-14  27.70 m ( 90 ft 10 + 1 ⁄ 2 in)  main   Lucie Petit ( FRA )
+     1924-07-21  28.325 m (92 ft 11 in)  main   Lucie Petit-Daigré ( BEL )
+     1924-09-14  30.225 m ( 99 ft 1 + 3 ⁄ 4 in)  main   Lucienne Velu ( FRA )
+     1925-10-11  31.15 m ( 102 ft 2 + 1 ⁄ 4 in)  main   Maria Vidlaková ( TCH )
+     1926-05-23  34.15 m ( 112 ft 1 ⁄ 4 in)  main   Halina Konopacka ( POL )
+     1926-08-22  38.34 m ( 125 ft 9 + 1 ⁄ 4 in)  main   Milly Reuter ( GER )
+     1927-09-04  39.18 m ( 128 ft 6 + 1 ⁄ 2 in)  main   Halina Konopacka ( POL )
+     1928-07-31  39.62 m ( 129 ft 11 + 3 ⁄ 4 in)  main   Halina Konopacka ( POL )
+     1932-05-15  40.345 m ( 132 ft 4 + 1 ⁄ 4 in)  main   Jadwiga Wajs ( POL )
+     1932-05-16  40.39 m (132 ft 6 in)  main   Jadwiga Wajs ( POL )
+     1932-06-19  40.84 m ( 133 ft 11 + 3 ⁄ 4 in)  main   Grete Heublein ( GER )
+     1932-06-19  42.43 m ( 139 ft 2 + 1 ⁄ 4 in)  main   Jadwiga Wajs ( POL )
+     1933-07-15  43.08 m (141 ft 4 in)  main   Jadwiga Wajs ( POL )
+     1934-08-11  43.795 m (143 ft 8 in)  main   Jadwiga Wajs ( POL )
+     1935-06-02  44.34 m ( 145 ft 5 + 1 ⁄ 2 in)  main   Gisela Mauermayer ( GER )
+     1935-06-04  44.76 m (146 ft 10 in)  main   Gisela Mauermayer ( GER )
+     1935-06-23  45.53 m ( 149 ft 4 + 1 ⁄ 2 in)  main   Gisela Mauermayer ( GER )
+     1935-06-29  46.10 m ( 151 ft 2 + 3 ⁄ 4 in)  main   Gisela Mauermayer ( GER )
+     1935-08-25  47.12 m (154 ft 7 in)  main   Gisela Mauermayer ( GER )
+     1936-07-11  48.31 m ( 158 ft 5 + 3 ⁄ 4 in)  main   Gisela Mauermayer ( GER )
+     1948-08-08  53.25 m ( 174 ft 8 + 1 ⁄ 4 in)  main   Nina Dumbadze ( URS )
+     1951-05-27  53.37 m (175 ft 1 in)  main   Nina Dumbadze ( URS )
+     1952-08-09  53.61 m ( 175 ft 10 + 1 ⁄ 2 in)  main   Nina Romashkova ( URS )
+     1952-10-18  57.04 m ( 187 ft 1 + 1 ⁄ 2 in)  main   Nina Dumbadze ( URS )
+     1960-09-12  57.15 m (187 ft 6 in)  main   Tamara Press ( URS )
+     1961-07-15  57.43 m (188 ft 5 in)  main   Tamara Press ( URS )
+     1961-09-01  58.06 m ( 190 ft 5 + 3 ⁄ 4 in)  main   Tamara Press ( URS )
+     1961-09-20  58.98 m (193 ft 6 in)  main   Tamara Press ( URS )
+     1963-05-18  59.29 m ( 194 ft 6 + 1 ⁄ 4 in)  main   Tamara Press ( URS )
+     1965-08-11  59.70 m ( 195 ft 10 + 1 ⁄ 4 in)  main   Tamara Press ( URS )
+     1967-11-05  61.26 m ( 200 ft 11 + 3 ⁄ 4 in)  main   Liesel Westermann ( FRG )
+     1968-05-26  61.64 m ( 202 ft 2 + 3 ⁄ 4 in)  main   Christine Spielberg ( GDR )
+     1968-07-24  62.54 m (205 ft 2 in)  main   Liesel Westermann ( FRG )
+     1969-06-18  62.70 m ( 205 ft 8 + 1 ⁄ 2 in)  main   Liesel Westermann ( FRG )
+     1969-09-27  63.96 m (209 ft 10 in)  main   Liesel Westermann ( FRG )
+     1971-08-12  64.22 m ( 210 ft 8 + 1 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1971-09-04  64.88 m ( 212 ft 10 + 1 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1972-05-31  65.42 m ( 214 ft 7 + 1 ⁄ 2 in)  main   Faina Melnik ( URS )
+     1972-06-24  65.48 m ( 214 ft 9 + 3 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1972-08-04  66.76 m ( 219 ft 1 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1972-09-23  67.32 m ( 220 ft 10 + 1 ⁄ 4 in)  main   Argentina Menis ( ROU )
+     1973-05-25  67.44 m (221 ft 3 in)  main   Faina Melnik ( URS )
+     1973-07-10  67.58 m ( 221 ft 8 + 1 ⁄ 2 in)  main   Faina Melnik ( URS )
+     1973-09-07  69.48 m ( 227 ft 11 + 1 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1974-05-27  69.90 m ( 229 ft 3 + 3 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1975-08-20  70.20 m ( 230 ft 3 + 3 ⁄ 4 in)  main   Faina Melnik ( URS )
+     1976-04-24  70.50 m ( 231 ft 3 + 1 ⁄ 2 in)  main   Faina Melnik ( URS )
+     1978-08-12  70.72 m ( 232 ft 1 ⁄ 4 in)  main   Evelin Jahl ( GDR )
+     1980-05-10  71.50 m ( 234 ft 6 + 3 ⁄ 4 in)  main   Evelin Jahl ( GDR )
+     1980-07-13  71.80 m ( 235 ft 6 + 3 ⁄ 4 in)  main   Mariya Petkova ( BUL )
+     1983-05-22  73.26 m ( 240 ft 4 + 1 ⁄ 4 in)  main   Galina Savinkova ( URS )
+     1984-08-17  73.36 m (240 ft 8 in)  main   Irina Meszynski ( GDR )
+     1984-08-26  74.56 m ( 244 ft 7 + 1 ⁄ 4 in)  main   Zdeňka Šilhavá ( TCH )
+     1988-07-09  76.80 m ( 251 ft 11 + 1 ⁄ 2 in)  main   Gabriele Reinsch ( GDR )
+== M JT  legend={}  switch=None  rows=13 line=9 dropped=0
+     UNPARSED '89.66 *' 1990-07-14 Jan Železný ( TCH )
+     UNPARSED '90.98 *' 1990-07-20 Steve Backley ( GBR )
+     UNPARSED '91.98 *' 1991-05-06 Seppo Räty ( FIN )
+     UNPARSED '96.96 *' 1991-06-02 Seppo Räty ( FIN )
+     1986-09-21         85.74  main   Klaus Tafelmeier ( FRG )
+     1987-05-31         87.66  main   Jan Železný ( TCH )
+     1990-03-24         89.10  main   Patrik Bodén ( SWE )
+     1990-07-02         89.58  main   Steve Backley ( GBR )
+     1990-07-02         89.58  main   Steve Backley ( GBR )  (=)
+     1992-01-25         91.46  main   Steve Backley ( GBR )
+     1993-04-06         95.54  main   Jan Železný ( CZE )
+     1993-08-29         95.66  main   Jan Železný ( CZE )
+     1996-05-25         98.48  main   Jan Železný ( CZE )
+== M JT_old  legend={}  switch=None  rows=34 line=34 dropped=0
+     1912-09-29         62.32  main   Eric Lemming ( SWE )
+     1919-08-25         66.10  main   Jonni Myyrä ( FIN )
+     1924-10-12         66.62  main   Gunnar Lindström ( SWE )
+     1927-10-08         69.88  main   Eino Penttilä ( FIN )
+     1928-08-15         71.01  main   Erik Lundqvist ( SWE )
+     1930-08-08         71.57  main   Matti Järvinen ( FIN )
+     1930-08-17         71.70  main   Matti Järvinen ( FIN )
+     1930-08-31         71.88  main   Matti Järvinen ( FIN )
+     1930-09-14         72.93  main   Matti Järvinen ( FIN )
+     1932-06-27         74.02  main   Matti Järvinen ( FIN )
+     1933-05-25         74.28  main   Matti Järvinen ( FIN )
+     1933-06-07         74.61  main   Matti Järvinen ( FIN )
+     1933-06-15         76.10  main   Matti Järvinen ( FIN )
+     1934-09-07         76.66  main   Matti Järvinen ( FIN )
+     1936-06-18         77.23  main   Matti Järvinen ( FIN )
+     1938-08-25         77.87  main   Yrjö Nikkanen ( FIN )
+     1938-10-16         78.70  main   Yrjö Nikkanen ( FIN )
+     1953-08-08         80.41  main   Bud Held ( USA )
+     1955-05-21         81.75  main   Bud Held ( USA )
+     1956-06-24         83.56  main   Soini Nikkinen ( FIN )
+     1956-06-30         83.66  main   Janusz Sidło ( POL )
+     1956-11-26         85.71  main   Egil Danielsen ( NOR )
+     1959-06-05         86.04  main   Albert Cantello ( USA )
+     1961-06-01         86.74  main   Carlo Lievore ( ITA )
+     1964-07-01         87.12  main   Terje Pedersen ( NOR )
+     1964-09-02         91.72  main   Terje Pedersen ( NOR )
+     1968-06-23         91.98  main   Jānis Lūsis ( URS )
+     1969-06-18         92.70  main   Jorma Kinnunen ( FIN )
+     1972-07-06         93.80  main   Jānis Lūsis ( URS )
+     1973-05-05         94.08  main   Klaus Wolfermann ( FRG )
+     1976-07-25         94.58  main   Miklós Németh ( HUN )
+     1980-04-23         96.72  main   Ferenc Paragi ( HUN )
+     1983-05-15         99.72  main   Tom Petranoff ( USA )
+     1984-07-20        104.80  main   Uwe Hohn ( GDR )
+== W JT  legend={}  switch=None  rows=6 line=6 dropped=0
+     1999-08-28         67.09  main   Mirela Maniani
+     2000-06-30         68.22  main   Trine Hattestad
+     2000-07-28         69.48  main   Trine Hattestad
+     2001-07-01         71.54  main   Osleidys Menéndez
+     2005-08-14         71.70  main   Osleidys Menéndez
+     2008-09-13         72.28  main   Barbora Špotáková
+== W JT_old  legend={}  switch=None  rows=42 line=42 dropped=0
+     1922-08-06         25.01  main   Božena Šrámková
+     1922-08-13        25.325  main   Božena Šrámková
+     1924-05-25         27.24  main   Marie Janderová
+     1927-06-12        37.575  main   Guschi Hargus
+     1928-08-18         38.39  main   Guschi Hargus
+     1930-07-12         40.27  main   Ellen Braumüller
+     1931-08-02         42.28  main   Ellen Braumüller
+     1932-06-12         44.64  main   Ellen Braumüller
+     1932-06-18        46.745  main   Nan Gindele
+     1942-06-21         47.24  main   Anneliese Steinheuer
+     1947-06-29         48.21  main   Herma Bauma
+     1948-09-12         48.63  main   Herma Bauma
+     1949-07-25         49.59  main   Natalya Smirnitskaya
+     1949-08-05         53.41  main   Natalya Smirnitskaya
+     1954-02-05         53.56  main   Nadezhda Konyayeva
+     1954-05-22         55.11  main   Nadezhda Konyayeva
+     1954-08-06         55.48  main   Nadezhda Konyayeva
+     1958-06-01         55.73  main   Dana Zátopková
+     1958-07-24         57.40  main   Anna Pazera
+     1958-10-30         57.49  main   Birutė Zalogaitytė
+     1960-05-03         57.92  main   Elvīra Ozoliņa
+     1960-06-04         59.55  main   Elvīra Ozoliņa
+     1963-07-03         59.78  main   Elvīra Ozoliņa
+     1964-10-16         62.40  main   Yelena Gorchakova
+     1972-06-11         62.70  main   Ewa Gryziecka
+     1972-06-11         65.06  main   Ruth Fuchs
+     1973-09-07         66.10  main   Ruth Fuchs
+     1974-09-03         67.22  main   Ruth Fuchs
+     1976-07-10         69.12  main   Ruth Fuchs
+     1977-09-11         69.32  main   Kate Schmidt
+     1979-06-13         69.52  main   Ruth Fuchs
+     1980-04-29         69.96  main   Ruth Fuchs
+     1980-07-12         70.08  main   Tatyana Biryulina
+     1981-08-15         71.88  main   Antoaneta Todorova
+     1982-07-29         72.40  main   Tiina Lillak
+     1982-09-26         74.20  main   Sofia Sakorafa
+     1983-06-13         74.76  main   Tiina Lillak
+     1985-06-04         75.26  main   Petra Felke
+     1985-06-04         75.40  main   Petra Felke
+     1986-08-28         77.44  main   Fatima Whitbread
+     1987-07-29         78.90  main   Petra Felke
+     1988-09-09         80.00  main   Petra Felke
+== M HT  legend={'#d6ecf3': 'ratified', '#ffd0bd': 'not ratified'}  switch=None  rows=51 line=45 dropped=6
+     dropped [not ratified] 59.56 m (195 ft 4 in) Pat O'Callaghan 1937-08-22
+     dropped [not ratified] 58.13 m (190 ft 8 in) Erwin Blask 1938-08-07
+     dropped [not ratified] 58.24 m (191 ft 0 in) Karl Hein 1938-08-21
+     dropped [not ratified] 65.95 m (216 ft 4 in) Cliff Blair 1956-07-04
+     dropped [not ratified] 66.71 m (218 ft 10 in) Hal Connolly 1956-10-03
+     dropped [not ratified] 66.85 m (219 ft 3 in) Mikhail Krivonosov 1956-10-22
+     1913-08-17  57.77 m (189 ft 6 in)  main   Patrick Ryan
+     1938-08-27  59.00 m (193 ft 6 in)  main   Erwin Blask
+     1948-07-14  59.02 m (193 ft 7 in)  main   Imre Németh
+     1949-09-04  59.57 m (195 ft 5 in)  main   Imre Németh
+     1950-05-19  59.88 m (196 ft 5 in)  main   Imre Németh
+     1952-07-24  60.34 m (197 ft 11 in)  main   József Csermák
+     1952-09-14  61.25 m (200 ft 11 in)  main   Sverre Strandli
+     1953-09-05  62.36 m (204 ft 7 in)  main   Sverre Strandli
+     1954-08-29  63.34 m (207 ft 9 in)  main   Mikhail Krivonosov
+     1954-12-12  64.05 m (210 ft 1 in)  main   Stanislav Nenashev
+     1955-08-04  64.33 m (211 ft 0 in)  main   Mikhail Krivonosov
+     1955-09-19  64.52 m (211 ft 8 in)  main   Mikhail Krivonosov
+     1956-04-25  65.85 m (216 ft 0 in)  main   Mikhail Krivonosov
+     1956-07-08  66.38 m (217 ft 9 in)  main   Mikhail Krivonosov
+     1956-10-22  67.32 m (220 ft 10 in)  main   Mikhail Krivonosov
+     1956-11-02  68.54 m (224 ft 10 in)  main   Hal Connolly
+     1958-06-20  68.68 m (225 ft 3 in)  main   Hal Connolly
+     1960-08-12  70.33 m (230 ft 8 in)  main   Hal Connolly
+     1962-07-21  70.67 m (231 ft 10 in)  main   Hal Connolly
+     1965-05-29  71.06 m (233 ft 1 in)  main   Hal Connolly
+     1965-06-20  71.26 m (233 ft 9 in)  main   Hal Connolly
+     1965-09-04  73.74 m (241 ft 11 in)  main   Gyula Zsivótzky
+     1968-09-14  73.76 m (241 ft 11 in)  main   Gyula Zsivótzky
+     1969-06-15  74.52 m (244 ft 5 in)  main   Romuald Klim
+     1969-09-20  74.68 m (245 ft 0 in)  main   Anatoliy Bondarchuk
+     1969-10-12  75.48 m (247 ft 7 in)  main   Anatoliy Bondarchuk
+     1971-09-04  76.40 m (250 ft 7 in)  main   Walter Schmidt
+     1974-07-04  76.60 m (251 ft 3 in)  main   Reinhard Theimer
+     1974-09-11  76.66 m (251 ft 6 in)  main   Aleksei Spiridonov
+     1975-05-19  76.70 m (251 ft 7 in)  main   Karl-Hans Riehm
+     1975-05-19  77.56 m (254 ft 5 in)  main   Karl-Hans Riehm
+     1975-05-19  78.50 m (257 ft 6 in)  main   Karl-Hans Riehm
+     1975-08-14  79.30 m (260 ft 2 in)  main   Walter Schmidt
+     1978-07-09  80.14 m (262 ft 11 in)  main   Boris Zaichuk
+     1978-08-06  80.32 m (263 ft 6 in)  main   Karl-Hans Riehm
+     1980-05-16  80.38 m (263 ft 8 in)  main   Yuriy Sedykh
+     1980-05-16  80.46 m (263 ft 11 in)  main   Jüri Tamm
+     1980-05-16  80.64 m (264 ft 6 in)  main   Yuriy Sedykh
+     1980-05-24  81.66 m (267 ft 10 in)  main   Sergey Litvinov
+     1980-07-31  81.80 m (268 ft 4 in)  main   Yuriy Sedykh
+     1982-06-04  83.98 m (275 ft 6 in)  main   Sergey Litvinov
+     1983-06-21  84.14 m (276 ft 0 in)  main   Sergey Litvinov
+     1984-07-03  86.34 m (283 ft 3 in)  main   Yuriy Sedykh
+     1986-06-22  86.66 m (284 ft 3 in)  main   Yuriy Sedykh
+     1986-08-30  86.74 m (284 ft 6 in)  main   Yuriy Sedykh
+== W HT  legend={}  switch=None  rows=25 line=25 dropped=0
+     1994-02-23  66.84 m (219 ft 3 in)  main   Olga Kuzenkova ( RUS )
+     1995-03-04  66.86 m (219 ft 4 in)  main   Mihaela Melinte ( ROM )
+     1995-05-24  67.00 m (219 ft 9 in)  main   Olga Kuzenkova ( RUS )
+     1995-06-05  68.14 m (223 ft 6 in)  main   Olga Kuzenkova ( RUS )
+     1995-06-18  68.16 m (223 ft 7 in)  main   Olga Kuzenkova ( RUS )
+     1996-05-12  69.42 m (227 ft 9 in)  main   Mihaela Melinte ( ROM )
+     1997-03-08  69.58 m (228 ft 3 in)  main   Mihaela Melinte ( ROM )
+     1997-06-22  71.22 m (233 ft 7 in)  main   Olga Kuzenkova ( RUS )
+     1997-06-22  73.10 m (239 ft 9 in)  main   Olga Kuzenkova ( RUS )
+     1998-07-16  73.14 m (239 ft 11 in)  main   Mihaela Melinte ( ROM )
+     1999-05-13  75.29 m (247 ft 0 in)  main   Mihaela Melinte ( ROM )
+     1999-05-13  75.97 m (249 ft 2 in)  main   Mihaela Melinte ( ROM )
+     1999-08-29  76.05 m (249 ft 6 in)  main   Mihaela Melinte ( ROM )
+     1999-08-29  76.07 m (249 ft 6 in)  main   Mihaela Melinte ( ROM )
+     2005-07-15  77.06 m (252 ft 9 in)  main   Tatyana Lysenko ( RUS )
+     2006-06-12  77.26 m (253 ft 5 in)  main   Gulfiya Khanafeyeva ( RUS )
+     2006-06-24  77.41 m (253 ft 11 in)  main   Tatyana Lysenko ( RUS )
+     2006-08-15  77.80 m (255 ft 2 in)  main   Tatyana Lysenko ( RUS )
+     2009-08-22  77.96 m (255 ft 9 in)  main   Anita Włodarczyk ( POL )
+     2010-06-06  78.30 m (256 ft 10 in)  main   Anita Włodarczyk ( POL )
+     2011-05-21  79.42 m (260 ft 6 in)  main   Betty Heidler ( GER )
+     2014-08-31  79.58 m (261 ft 1 in)  main   Anita Włodarczyk ( POL )
+     2015-08-01  81.08 m (266 ft 0 in)  main   Anita Włodarczyk ( POL )
+     2016-08-15  82.29 m (269 ft 11 in)  main   Anita Włodarczyk ( POL )
+     2016-08-28  82.98 m (272 ft 2 in)  main   Anita Włodarczyk ( POL )
+rows 1419

@@ -1,8 +1,14 @@
 # Videos for social media
 
-Every eye video and every speed-of-light video we finished, renamed so the file says what it is.
+Every eye video, every speed-of-light video and the athletics film we finished, renamed so the file says what it is.
 SHORT in a name means vertical 1080x1920 (Shorts, Reels, TikTok); everything else is 16:9 for YouTube.
 Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags already written are in `copy/`.
+
+## athletics/
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| the_record_and_the_rest_7m56s.mp4 | 16:9, 1080p | 7:56 | World records in 34 Olympic events against the top eight of every Olympic final since 1896: how much each improved, and how close the field gets. Built in `world_roads/records` (method: `ACCURACY.md`). Copy: `copy/records_YOUTUBE.md`, thumbnails records_thumb_A/B/C |
 
 ## eye/
 

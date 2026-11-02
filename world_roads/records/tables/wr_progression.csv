@@ -1,0 +1,1420 @@
+sex,event,date,mark,raw,athlete,kind,status,equalled
+M,100m,1891-07-04,10.8,10.8,Luther Cary,pre,unofficial,False
+M,100m,1892-09-25,10.8,10.8,Cecil Lee,pre,unofficial,True
+M,100m,1893-08-04,10.8,10.8,Étienne De Ré,pre,unofficial,True
+M,100m,1895-04-13,10.8,10.8,L. Atcherley,pre,unofficial,True
+M,100m,1895-08-28,10.8,10.8,Harry Beaton,pre,unofficial,True
+M,100m,1896-08-09,10.8,10.8,Harald Anderson-Arbin,pre,unofficial,True
+M,100m,1898-09-11,10.8,10.8,Isaac Westergren,pre,unofficial,True
+M,100m,1899-09-10,10.8,10.8,Isaac Westergren,pre,unofficial,True
+M,100m,1900-07-14,10.8,10.8,Frank Jarvis,pre,unofficial,True
+M,100m,1900-07-14,10.8,10.8,Walter Tewksbury,pre,unofficial,True
+M,100m,1900-09-23,10.8,10.8,Carl Ljung,pre,unofficial,True
+M,100m,1900-10-06,10.8,10.8,Walter Tewksbury,pre,unofficial,True
+M,100m,1903-06-14,10.8,10.8,André Passat,pre,unofficial,True
+M,100m,1903-06-14,10.8,10.8,Louis Kuhn,pre,unofficial,True
+M,100m,1903-07-05,10.8,10.8,Harald Grønfeldt,pre,unofficial,True
+M,100m,1903-08-09,10.8,10.8,Eric Frick,pre,unofficial,True
+M,100m,1906-08-26,10.6,10.6,Knut Lindberg,pre,unofficial,False
+M,100m,1911-07-09,10.5,10.5,Emil Ketterer,pre,unofficial,False
+M,100m,1911-08-13,10.5,10.5,Richard Rau,pre,unofficial,True
+M,100m,1912-05-12,10.5,10.5,Richard Rau,pre,unofficial,True
+M,100m,1912-05-26,10.5,10.5,Erwin Kern,pre,unofficial,True
+M,100m,1912-07-06,10.6,10.6,Donald Lippincott,hand,ratified,False
+M,100m,1920-09-16,10.6,10.6,Jackson Scholz,hand,ratified,True
+M,100m,1921-04-23,10.4,10.4,Charley Paddock,hand,ratified,False
+M,100m,1929-08-08,10.4,10.4,Eddie Tolan,hand,ratified,True
+M,100m,1929-08-25,10.4,10.4,Eddie Tolan,hand,ratified,True
+M,100m,1930-08-09,10.3,10.3,Percy Williams,hand,ratified,False
+M,100m,1932-08-01,10.3,10.3,Eddie Tolan,hand,ratified,True
+M,100m,1933-08-12,10.3,10.3,Ralph Metcalfe,hand,ratified,True
+M,100m,1934-08-06,10.3,10.3,Eulace Peacock,hand,ratified,True
+M,100m,1934-08-26,10.3,10.3,Chris Berger,hand,ratified,True
+M,100m,1934-09-15,10.3,10.3,Ralph Metcalfe,hand,ratified,True
+M,100m,1934-09-23,10.3,10.3,Ralph Metcalfe,hand,ratified,True
+M,100m,1935-06-15,10.3,10.3,Takayoshi Yoshioka,hand,ratified,True
+M,100m,1936-06-20,10.2,10.2,Jesse Owens,hand,ratified,False
+M,100m,1941-06-06,10.2,10.2,Harold Davis,hand,ratified,True
+M,100m,1948-05-15,10.2,10.2,Lloyd LaBeach,hand,ratified,True
+M,100m,1948-07-09,10.2,10.2,Barney Ewell,hand,ratified,True
+M,100m,1951-08-25,10.2,10.2,McDonald Bailey,hand,ratified,True
+M,100m,1954-10-31,10.2,10.2,Heinz Fütterer,hand,ratified,True
+M,100m,1956-05-19,10.2,10.2,Bobby Morrow,hand,ratified,True
+M,100m,1956-06-01,10.2,10.2,Ira Murchison,hand,ratified,True
+M,100m,1956-06-22,10.2,10.2,Bobby Morrow,hand,ratified,True
+M,100m,1956-06-29,10.2,10.2,Ira Murchison,hand,ratified,True
+M,100m,1956-06-29,10.2,10.2,Bobby Morrow,hand,ratified,True
+M,100m,1956-08-03,10.1,10.1,Willie Williams,hand,ratified,False
+M,100m,1956-08-04,10.1,10.1,Ira Murchison,hand,ratified,True
+M,100m,1956-10-20,10.1,10.1,Leamon King,hand,ratified,True
+M,100m,1956-10-27,10.1,10.1,Leamon King,hand,ratified,True
+M,100m,1959-04-18,10.1,10.1,Ray Norton,hand,ratified,True
+M,100m,1960-06-21,10.0,10.0,Armin Hary,hand,ratified,False
+M,100m,1960-07-15,10.0,10.0,Harry Jerome,hand,ratified,True
+M,100m,1964-08-15,10.0,10.0,Horacio Esteves,hand,ratified,True
+M,100m,1964-10-15,10.0,10.0,Bob Hayes,hand,ratified,True
+M,100m,1967-05-27,10.0,10.0,Jim Hines,hand,ratified,True
+M,100m,1967-06-17,10.0,10.0,Enrique Figuerola,hand,ratified,True
+M,100m,1968-04-02,10.0,10.0,Paul Nash,hand,ratified,True
+M,100m,1968-05-31,10.0,10.0,Oliver Ford,hand,ratified,True
+M,100m,1968-06-20,10.0,10.0,Charles Greene,hand,ratified,True
+M,100m,1968-06-20,10.0,10.0,Roger Bambuck,hand,ratified,True
+M,100m,1968-06-20,9.9,9.9,Jim Hines,hand,ratified,False
+M,100m,1968-06-20,9.9,9.9,Ronnie Ray Smith,hand,ratified,True
+M,100m,1968-06-20,9.9,9.9,Charles Greene,hand,ratified,True
+M,100m,1968-10-14,9.95,9.95,Jim Hines,auto,ratified,False
+M,100m,1983-07-03,9.93,9.93,Calvin Smith,auto,ratified,False
+M,100m,1988-09-24,9.92,9.92,Carl Lewis,auto,ratified,False
+M,100m,1991-06-14,9.9,9.90,Leroy Burrell,auto,ratified,False
+M,100m,1991-08-25,9.86,9.86,Carl Lewis,auto,ratified,False
+M,100m,1994-07-06,9.85,9.85,Leroy Burrell,auto,ratified,False
+M,100m,1996-07-27,9.84,9.84,Donovan Bailey,auto,ratified,False
+M,100m,1999-06-16,9.79,9.79,Maurice Greene,auto,ratified,False
+M,100m,2005-06-14,9.77,9.77,Asafa Powell,auto,ratified,False
+M,100m,2006-06-11,9.77,9.77,Asafa Powell,auto,ratified,True
+M,100m,2006-08-18,9.77,9.77,Asafa Powell,auto,ratified,True
+M,100m,2007-09-09,9.74,9.74,Asafa Powell,auto,ratified,False
+M,100m,2008-05-31,9.72,9.72,Usain Bolt,auto,ratified,False
+M,100m,2008-08-16,9.69,9.69,Usain Bolt,auto,ratified,False
+M,100m,2009-08-16,9.58,9.58,Usain Bolt,auto,ratified,False
+W,100m,1922-08-05,13.6,13.6,Marie Mejzlíková,hand,ratified,False
+W,100m,1922-08-20,12.8,12.8,Mary Lines,hand,ratified,False
+W,100m,1926-08-22,12.4,12.4,Gundel Wittmann,hand,ratified,False
+W,100m,1928-05-20,12.2,12.2,Kinue Hitomi,hand,ratified,False
+W,100m,1928-07-02,12.0,12.0,Myrtle Cook,hand,ratified,False
+W,100m,1930-08-31,12.0,12.0,Tollien Schuurman,hand,ratified,True
+W,100m,1932-06-05,11.9,11.9,Tollien Schuurman,hand,ratified,False
+W,100m,1932-08-01,11.9,11.9,Stanisława Walasiewicz,hand,ratified,True
+W,100m,1933-09-17,11.8,11.8,Stanisława Walasiewicz,hand,ratified,False
+W,100m,1934-08-26,11.7,11.7,Stanisława Walasiewicz,hand,ratified,False
+W,100m,1935-06-08,11.6,11.6,Helen Stephens,hand,ratified,False
+W,100m,1937-08-01,11.6,11.6,Stanisława Walasiewicz,hand,ratified,True
+W,100m,1948-06-13,11.5,11.5,Fanny Blankers-Koen,hand,ratified,False
+W,100m,1952-07-22,11.5,11.5,Marjorie Jackson,hand,ratified,True
+W,100m,1952-10-04,11.4,11.4,Marjorie Jackson,hand,ratified,False
+W,100m,1955-08-04,11.3,11.3,Shirley Strickland,hand,ratified,False
+W,100m,1958-09-13,11.3,11.3,Vera Krepkina,hand,ratified,True
+W,100m,1960-09-02,11.3,11.3,Wilma Rudolph,hand,ratified,True
+W,100m,1961-07-19,11.2,11.2,Wilma Rudolph,hand,ratified,False
+W,100m,1964-10-15,11.2,11.2,Wyomia Tyus,hand,ratified,True
+W,100m,1965-07-09,11.1,11.1,Ewa Kłobukowska,hand,ratified,False
+W,100m,1965-07-09,11.1,11.1,Irena Kirszenstein,hand,ratified,True
+W,100m,1965-07-31,11.1,11.1,Wyomia Tyus,hand,ratified,True
+W,100m,1967-07-02,11.1,11.1,Barbara Ferrell,hand,ratified,True
+W,100m,1968-08-15,11.1,11.1,Lyudmila Samotyosova,hand,ratified,True
+W,100m,1968-10-14,11.1,11.1,Irena Szewińska,hand,ratified,True
+W,100m,1968-10-15,11.07,11.07,Wyomia Tyus,auto,ratified,False
+W,100m,1972-09-02,11.07,11.07,Renate Stecher (née Meißner),auto,ratified,True
+W,100m,1976-06-13,11.04,11.04,Inge Helten,auto,ratified,False
+W,100m,1976-07-25,11.01,11.01,Annegret Richter,auto,ratified,False
+W,100m,1977-07-01,10.88,10.88,Marlies Oelsner,auto,ratified,False
+W,100m,1982-07-09,10.88,10.88,Marlies Göhr,auto,ratified,True
+W,100m,1983-06-08,10.81,10.81,Marlies Göhr,auto,ratified,False
+W,100m,1983-07-03,10.79,10.79,Evelyn Ashford,auto,ratified,False
+W,100m,1984-08-22,10.76,10.76,Evelyn Ashford,auto,ratified,False
+W,100m,1988-07-16,10.49,10.49,Florence Griffith Joyner,auto,ratified,False
+M,200m,1951-05-26,20.6,20.6 y,Andy Stanfield,hand,ratified,False
+M,200m,1952-06-28,20.6,20.6,Andy Stanfield,hand,ratified,True
+M,200m,1956-06-23,20.6,20.6,Thane Baker,hand,ratified,True
+M,200m,1956-11-27,20.6,20.6,Bobby Morrow,hand,ratified,True
+M,200m,1958-10-01,20.6,20.6,Manfred Germar,hand,ratified,True
+M,200m,1960-03-19,20.6,20.6 y,Ray Norton,hand,ratified,True
+M,200m,1960-04-30,20.6,20.6,Ray Norton,hand,ratified,True
+M,200m,1960-05-28,20.5,20.5 y,Peter Radford,hand,ratified,False
+M,200m,1960-07-02,20.5,20.5,Stone Johnson,hand,ratified,True
+M,200m,1960-07-02,20.5,20.5,Ray Norton,hand,ratified,True
+M,200m,1960-09-03,20.5,20.5,Livio Berruti,hand,ratified,True
+M,200m,1960-09-03,20.5,20.5,Livio Berruti,hand,ratified,True
+M,200m,1962-06-23,20.5,20.5 y,Paul Drayton,hand,ratified,True
+M,200m,1963-03-23,20.3,20.3 y,Henry Carr,hand,ratified,False
+M,200m,1964-04-04,20.2,20.2 y,Henry Carr,hand,ratified,False
+M,200m,1966-06-11,20.0,20.0 y,Tommie Smith,hand,ratified,False
+M,200m,1968-10-16,19.83,19.83 A,Tommie Smith,auto,ratified,False
+M,200m,1979-09-12,19.72,19.72 A,Pietro Mennea,auto,ratified,False
+M,200m,1996-06-23,19.66,19.66,Michael Johnson,auto,ratified,False
+M,200m,1996-08-01,19.32,19.32,Michael Johnson,auto,ratified,False
+M,200m,2008-08-20,19.3,19.30,Usain Bolt,auto,ratified,False
+M,200m,2009-08-20,19.19,19.19,Usain Bolt,auto,ratified,False
+W,200m,1922-08-20,27.8,27.8 +,Alice Cast,hand,ratified,False
+W,200m,1922-09-23,26.8,26.8 y,Mary Lines,hand,ratified,False
+W,200m,1924-08-20,26.2,26.2 y,Eileen Edwards,hand,ratified,False
+W,200m,1926-10-03,26.0,26.0,Eileen Edwards,hand,ratified,False
+W,200m,1927-06-12,25.4,25.4,Eileen Edwards,hand,ratified,False
+W,200m,1933-08-13,24.6,24.6,Tollien Schuurman,hand,ratified,False
+W,200m,1935-08-04,23.6,23.6,Stanislawa Walasiewicz,hand,ratified,False
+W,200m,1952-07-25,23.6,23.6,Marjorie Jackson,hand,ratified,True
+W,200m,1952-07-25,23.4,23.4,Marjorie Jackson,hand,ratified,False
+W,200m,1956-09-16,23.2,23.2,Betty Cuthbert,hand,ratified,False
+W,200m,1960-03-07,23.2,23.2 y,Betty Cuthbert,hand,ratified,True
+W,200m,1960-07-09,22.9,22.9,Wilma Rudolph,hand,ratified,False
+W,200m,1964-02-22,22.9,22.9 y,Margaret Burvill,hand,ratified,True
+W,200m,1965-08-08,22.7,22.7,Irena Szewińska,hand,ratified,False
+W,200m,1968-10-18,22.5,22.5 A,Irena Szewińska,hand,ratified,False
+W,200m,1970-07-12,22.4,22.4,Chi Cheng,hand,ratified,False
+W,200m,1972-09-07,22.4,22.4,Renate Stecher,hand,ratified,True
+W,200m,1973-07-21,22.1,22.1,Renate Stecher,hand,ratified,False
+W,200m,1974-06-13,22.21,22.21,Irena Szewińska,auto,ratified,False
+W,200m,1978-05-28,22.06,22.06,Marita Koch,auto,ratified,False
+W,200m,1979-06-03,22.02,22.02,Marita Koch,auto,ratified,False
+W,200m,1979-06-10,21.71,21.71,Marita Koch,auto,ratified,False
+W,200m,1984-07-21,21.71,21.71,Marita Koch,auto,ratified,True
+W,200m,1986-06-29,21.71,21.71,Heike Drechsler,auto,ratified,True
+W,200m,1986-08-29,21.71,21.71,Heike Drechsler,auto,ratified,True
+W,200m,1988-09-29,21.56,21.56,Florence Griffith Joyner,auto,ratified,False
+W,200m,1988-09-29,21.34,21.34,Florence Griffith Joyner,auto,ratified,False
+M,400m,1895-06-15,48.5,48.5 y,Edgar Bredin,hand,ratified,False
+M,400m,1900-09-29,47.8,47.8 y,Maxie Long,hand,ratified,False
+M,400m,1916-05-27,47.4,47.4 y,Ted Meredith,hand,ratified,False
+M,400m,1928-05-12,47.0,47.0,Emerson Spencer,hand,ratified,False
+M,400m,1932-03-26,46.4,46.4 y,Ben Eastman,hand,ratified,False
+M,400m,1932-08-05,46.2,46.2,Bill Carr,hand,ratified,False
+M,400m,1936-06-19,46.1,46.1,Archie Williams,hand,ratified,False
+M,400m,1939-08-12,46.0,46.0,Rudolf Harbig,hand,ratified,False
+M,400m,1941-06-06,46.0,46.0,Grover Klemmer,hand,ratified,True
+M,400m,1948-06-05,46.0,46.0 y,Herb McKenley,hand,ratified,True
+M,400m,1948-07-02,45.9,45.9,Herb McKenley,hand,ratified,False
+M,400m,1950-08-22,45.8,45.8,George Rhoden,hand,ratified,False
+M,400m,1955-03-18,45.4,45.4 A,Lou Jones,hand,ratified,False
+M,400m,1956-06-30,45.2,45.2,Lou Jones,hand,ratified,False
+M,400m,1960-09-06,44.9,44.9,Otis Davis,hand,ratified,False
+M,400m,1960-09-06,44.9,44.9,Carl Kaufmann,hand,ratified,True
+M,400m,1963-05-25,44.9,44.9 y,Adolph Plummer,hand,ratified,True
+M,400m,1964-09-12,44.9,44.9,Mike Larrabee,hand,ratified,True
+M,400m,1967-05-20,44.5,44.5 +,Tommie Smith,hand,ratified,False
+M,400m,1968-09-14,44.1,44.1 A,Larry James,hand,ratified,False
+M,400m,1968-10-18,43.86,43.86 A,Lee Evans,auto,ratified,False
+M,400m,1988-08-17,43.29,43.29,Butch Reynolds,auto,ratified,False
+M,400m,1999-08-26,43.18,43.18,Michael Johnson,auto,ratified,False
+M,400m,2016-08-14,43.03,43.03,Wayde van Niekerk,auto,ratified,False
+W,400m,1957-01-06,57.0,57.0 y,Marlene Mathews,hand,ratified,False
+W,400m,1957-02-16,57.0,57.0 y,Marise Chamberlain,hand,ratified,True
+W,400m,1957-02-24,56.3,56.3 y,Nancy Boyle,hand,ratified,False
+W,400m,1957-05-10,55.2,55.2,Polina Lazareva,hand,ratified,False
+W,400m,1957-06-08,54.0,54.0,Mariya Itkina,hand,ratified,False
+W,400m,1957-07-06,53.6,53.6,Mariya Itkina,hand,ratified,False
+W,400m,1959-09-12,53.4,53.4 +,Mariya Itkina,hand,ratified,False
+W,400m,1962-09-14,53.4,53.4,Mariya Itkina,hand,ratified,True
+W,400m,1962-10-23,51.9,51.9,Shin Geum-Dan,hand,ratified,False
+W,400m,1969-09-18,51.7,51.7,Nicole Duclos,hand,ratified,False
+W,400m,1969-09-18,51.7,51.7,Colette Besson,hand,ratified,True
+W,400m,1970-07-23,51.0,51.0,Marilyn Neufville,hand,ratified,False
+W,400m,1972-07-04,51.0,51.0,Monika Zehrt,hand,ratified,True
+W,400m,1974-06-22,49.9,49.9,Irena Szewińska,hand,ratified,False
+W,400m,1974-09-04,50.14,50.14,Riitta Salin,auto,ratified,False
+W,400m,1976-05-09,49.77,49.77,Christina Brehmer,auto,ratified,False
+W,400m,1976-06-22,49.75,49.75,Irena Szewińska,auto,ratified,False
+W,400m,1976-07-29,49.29,49.29,Irena Szewińska,auto,ratified,False
+W,400m,1978-07-02,49.19,49.19,Marita Koch,auto,ratified,False
+W,400m,1978-08-19,49.03,49.03,Marita Koch,auto,ratified,False
+W,400m,1978-08-31,48.94,48.94,Marita Koch,auto,ratified,False
+W,400m,1979-07-29,48.89,48.89,Marita Koch,auto,ratified,False
+W,400m,1979-08-04,48.6,48.60,Marita Koch,auto,ratified,False
+W,400m,1982-09-08,48.16,48.16,Marita Koch,auto,ratified,False
+W,400m,1983-08-10,47.99,47.99,Jarmila Kratochvílová,auto,ratified,False
+W,400m,1985-10-06,47.6,47.60*,Marita Koch,auto,ratified,False
+M,800m,1830-07-01,126.0,2:06.0y,A. Wood,pre,unofficial,False
+M,800m,1857-04-25,125.0,2:05.0y,J. Blackwood,pre,unofficial,False
+M,800m,1859-11-25,124.0,2:04.0y,Wiliam Way,pre,unofficial,False
+M,800m,1861-06-27,123.0,2:03.0y,Charlie Grey,pre,unofficial,False
+M,800m,1865-12-16,123.0,2:03.0y,Percy Thornton,pre,unofficial,True
+M,800m,1865-12-16,122.5,2:02.5y,Percy Thornton,pre,unofficial,False
+M,800m,1867-03-23,122.4,2:02.4y,Francis Pelham,pre,unofficial,False
+M,800m,1867-06-26,121.0,2:01.0y,Kinross Gair,pre,unofficial,False
+M,800m,1872-03-27,121.0,2:01.0y,George Templer,pre,unofficial,True
+M,800m,1872-03-27,121.0,2:01.0y,Thomas Christie,pre,unofficial,True
+M,800m,1873-03-26,119.8,1:59.8y,Arthur Pelham,pre,unofficial,False
+M,800m,1876-06-05,119.5,1:59.5y,Walter Slade,pre,unofficial,False
+M,800m,1876-06-06,118.8,1:58.8y,Walter Slade,pre,unofficial,False
+M,800m,1876-06-10,118.2,1:58.2y,Walter Slade,pre,unofficial,False
+M,800m,1876-10-07,117.5,1:57.5y,Frederic Elborough,pre,unofficial,False
+M,800m,1880-07-17,116.2,1:56.2y,Lawrence Myers,pre,unofficial,False
+M,800m,1881-07-02,115.8,1:55.8y,Lawrence Myers,pre,unofficial,False
+M,800m,1881-10-08,115.6,1:55.6y,Lawrence Myers,pre,unofficial,False
+M,800m,1882-09-16,115.6,1:55.6y,Lawrence Myers,pre,unofficial,True
+M,800m,1884-07-07,115.4,1:55.4y,Lawrence Myers,pre,unofficial,False
+M,800m,1885-10-03,115.4,1:55.4y,Lawrence Myers,pre,unofficial,True
+M,800m,1888-03-09,114.6,1:54.6y,Francis Cross,pre,unofficial,False
+M,800m,1891-09-19,114.5,1:54.5y,Walter Dohm,pre,unofficial,False
+M,800m,1895-09-21,113.4,1:53.4y,Charles Kilpatrick,pre,unofficial,False
+M,800m,1908-07-21,112.8,1:52.8,Melvin Sheppard,pre,unofficial,False
+M,800m,1909-09-15,112.1,1:52.1y,Emilio Lunghi,pre,unofficial,False
+M,800m,1912-07-08,111.9,1:51.9+,Ted Meredith ( USA ),main,ratified,False
+M,800m,1926-07-03,111.6,1:51.6y,Otto Peltzer ( GER ),main,ratified,False
+M,800m,1928-07-14,110.6,1:50.6,Sera Martin ( FRA ),main,ratified,False
+M,800m,1932-08-02,109.8,1:49.8,Tommy Hampson ( GBR ),main,ratified,False
+M,800m,1934-06-16,109.8,1:49.8y,Ben Eastman ( USA ),main,ratified,True
+M,800m,1936-08-20,109.7,1:49.7,Glenn Cunningham ( USA ),main,ratified,False
+M,800m,1937-07-11,109.6,1:49.6y,Elroy Robinson ( USA ),main,ratified,False
+M,800m,1938-08-20,108.4,1:48.4+,Sydney Wooderson ( GBR ),main,ratified,False
+M,800m,1939-07-15,106.6,1:46.6,Rudolf Harbig ( GER ),main,ratified,False
+M,800m,1955-08-03,105.7,1:45.7,Roger Moens ( BEL ),main,ratified,False
+M,800m,1962-02-03,104.3,1:44.3+,Peter Snell ( NZL ),main,ratified,False
+M,800m,1968-10-15,104.3,1:44.3,Ralph Doubell ( AUS ),main,ratified,True
+M,800m,1972-07-01,104.3,1:44.3,Dave Wottle ( USA ),main,ratified,True
+M,800m,1973-06-27,103.7,1:43.7,Marcello Fiasconaro ( ITA ),main,ratified,False
+M,800m,1976-07-25,103.5,1:43.5,Alberto Juantorena ( CUB ),main,ratified,False
+M,800m,1977-08-21,103.4,1:43.4,Alberto Juantorena ( CUB ),main,ratified,False
+M,800m,1979-07-05,102.4,1:42.4,Sebastian Coe ( GBR ),main,ratified,False
+M,800m,1981-06-10,101.72999999999999,1:41.73,Sebastian Coe ( GBR ),main,ratified,False
+M,800m,1997-07-07,101.72999999999999,1:41.73,Wilson Kipketer ( DEN ),main,ratified,True
+M,800m,1997-08-13,101.24000000000001,1:41.24,Wilson Kipketer ( DEN ),main,ratified,False
+M,800m,1997-08-24,101.11,1:41.11,Wilson Kipketer ( DEN ),main,ratified,False
+M,800m,2010-08-22,101.09,1:41.09,David Rudisha ( KEN ),main,ratified,False
+M,800m,2010-08-29,101.00999999999999,1:41.01,David Rudisha ( KEN ),main,ratified,False
+M,800m,2012-08-09,100.91,1:40.91,David Rudisha ( KEN ),main,ratified,False
+W,800m,1922-08-20,150.4,2:30.4+,Georgette Lenoir ( FRA ),main,ratified,False
+W,800m,1922-08-30,146.6,2:26.6y,Mary Lines ( GBR ),main,ratified,False
+W,800m,1927-08-07,143.8,2:23.8,Lina Radke ( GER ),main,ratified,False
+W,800m,1928-06-16,140.4,2:20.4,Inga Gentzel ( SWE ),main,ratified,False
+W,800m,1928-07-01,139.6,2:19.6,Lina Radke ( GER ),main,ratified,False
+W,800m,1928-08-02,136.8,2:16.8,Lina Radke ( GER ),main,ratified,False
+W,800m,1934-06-14,136.4,2:16.4 *,Zdeněk Koubek ( CSK ),main,ratified,False
+W,800m,1934-07-01,132.4,2:12.4 *,Zdeněk Koubek ( CSK ),main,ratified,False
+W,800m,1951-07-26,132.2,2:12.2,Valentina Pomogayeva ( URS ),main,ratified,False
+W,800m,1951-08-26,132.0,2:12.0,Nina Otkalenko ( URS ),main,ratified,False
+W,800m,1952-06-15,128.5,2:08.5,Nina Otkalenko ( URS ),main,ratified,False
+W,800m,1953-08-27,127.3,2:07.3,Nina Otkalenko ( URS ),main,ratified,False
+W,800m,1954-09-16,126.6,2:06.6,Nina Otkalenko ( URS ),main,ratified,False
+W,800m,1955-09-24,125.0,2:05.0,Nina Otkalenko ( URS ),main,ratified,False
+W,800m,1960-07-03,124.3,2:04.3,Lyudmila Shevtsova ( URS ),main,ratified,False
+W,800m,1960-09-07,124.3,2:04.3,Lyudmila Shevtsova ( URS ),main,ratified,True
+W,800m,1962-03-03,121.2,2:01.2+,Dixie Willis ( AUS ),main,ratified,False
+W,800m,1964-10-20,121.1,2:01.1,Ann Packer ( GBR ),main,ratified,False
+W,800m,1967-06-28,121.0,2:01.0,Judy Pollock ( AUS ),main,ratified,False
+W,800m,1968-07-20,120.5,2:00.5,Vera Nikolic ( YUG ),main,ratified,False
+W,800m,1971-07-11,118.5,1:58.5,Hildegard Falck ( FRG ),main,ratified,False
+W,800m,1973-08-24,117.5,1:57.5,Svetla Zlateva ( BUL ),main,ratified,False
+W,800m,1976-06-12,116.0,1:56.0,Valentina Gerasimova ( URS ),main,ratified,False
+W,800m,1976-07-26,114.9,1:54.9,Tatyana Kazankina ( URS ),main,ratified,False
+W,800m,1980-06-12,114.9,1:54.9,Nadezhda Olizarenko ( URS ),main,ratified,True
+W,800m,1980-07-27,113.5,1:53.5,Nadezhda Olizarenko ( URS ),main,ratified,False
+W,800m,1983-07-26,113.28,1:53.28,Jarmila Kratochvílová ( TCH ),main,ratified,False
+M,1500m,1892-07-01,264.0,4:24 3 ⁄ 5,J. Borel ( FRA ),pre,unofficial,False
+M,1500m,1893-05-28,261.0,4:21,Fernand Meiers ( FRA ),pre,unofficial,False
+M,1500m,1894-07-22,259.0,4:19 4 ⁄ 5,Felix Bourdier ( FRA ),pre,unofficial,False
+M,1500m,1895-05-12,258.0,4:18 2 ⁄ 5,Albin Lermusiaux ( FRA ),pre,unofficial,False
+M,1500m,1895-05-26,256.0,4:16 4 ⁄ 5,Michel Soalhat ( FRA ),pre,unofficial,False
+M,1500m,1895-08-26,255.0,4:15 3 ⁄ 5,Thomas Conneff ( USA ),pre,unofficial,False
+M,1500m,1896-06-26,250.0,4:10 2 ⁄ 5,Albin Lermusiaux ( FRA ),pre,unofficial,False
+M,1500m,1900-05-30,249.0,4:09,John Bray ( USA ),pre,unofficial,False
+M,1500m,1900-07-15,246.0,4:06 1 ⁄ 5,Charles Bennett ( GBR ),pre,unofficial,False
+M,1500m,1904-09-03,245.0,4:05 2 ⁄ 5,James Lightbody ( USA ),pre,unofficial,False
+M,1500m,1908-05-30,239.0,3:59 4 ⁄ 5,Harold Wilson ( GBR ),pre,unofficial,False
+M,1500m,1912-05-26,239.0,3:59 1 ⁄ 5,Abel Kiviat ( USA ),pre,unofficial,True
+M,1500m,1912-06-01,236.0,3:56 4 ⁄ 5,Abel Kiviat ( USA ),pre,unofficial,False
+M,1500m,1912-06-08,235.8,3:55.8,Abel Kiviat ( USA ),main,ratified,False
+M,1500m,1917-08-05,234.7,3:54.7,John Zander ( SWE ),main,ratified,False
+M,1500m,1924-06-19,232.6,3:52.6,Paavo Nurmi ( FIN ),main,ratified,False
+M,1500m,1926-09-11,231.0,3:51.0,Otto Peltzer ( GER ),main,ratified,False
+M,1500m,1930-10-05,229.2,3:49.2,Jules Ladoumegue ( FRA ),main,ratified,False
+M,1500m,1933-09-09,229.2,3:49.2,Luigi Beccali ( ITA ),main,ratified,True
+M,1500m,1933-09-17,229.0,3:49.0,Luigi Beccali ( ITA ),main,ratified,False
+M,1500m,1934-06-30,228.8,3:48.8,Bill Bonthron ( USA ),main,ratified,False
+M,1500m,1936-08-06,227.8,3:47.8,Jack Lovelock ( NZL ),main,ratified,False
+M,1500m,1941-08-10,227.6,3:47.6,Gunder Hägg ( SWE ),main,ratified,False
+M,1500m,1942-07-17,225.8,3:45.8,Gunder Hägg ( SWE ),main,ratified,False
+M,1500m,1943-08-17,225.0,3:45.0,Arne Andersson ( SWE ),main,ratified,False
+M,1500m,1944-07-07,223.0,3:43.0,Gunder Hägg ( SWE ),main,ratified,False
+M,1500m,1947-07-15,223.0,3:43.0,Lennart Strand ( SWE ),main,ratified,True
+M,1500m,1952-06-29,223.0,3:43.0,Werner Lueg ( FRG ),main,ratified,True
+M,1500m,1954-06-04,222.8,3:42.8+,Wes Santee ( USA ),main,ratified,False
+M,1500m,1954-06-21,221.8,3:41.8+,John Landy ( AUS ),main,ratified,False
+M,1500m,1955-07-28,220.8,3:40.8,Sándor Iharos ( HUN ),main,ratified,False
+M,1500m,1955-09-06,220.8,3:40.8,László Tábori ( HUN ),main,ratified,True
+M,1500m,1955-09-06,220.8,3:40.8,Gunnar Nielsen ( DEN ),main,ratified,True
+M,1500m,1956-08-03,220.6,3:40.6,István Rózsavölgyi ( HUN ),main,ratified,False
+M,1500m,1957-07-11,220.2,3:40.2,Olavi Salsola ( FIN ),main,ratified,False
+M,1500m,1957-07-12,218.1,3:38.1,Stanislav Jungwirth ( TCH ),main,ratified,False
+M,1500m,1958-08-28,216.0,3:36.0,Herb Elliott ( AUS ),main,ratified,False
+M,1500m,1960-09-06,215.6,3:35.6,Herb Elliott ( AUS ),main,ratified,False
+M,1500m,1967-07-08,213.1,3:33.1,Jim Ryun ( USA ),main,ratified,False
+M,1500m,1974-02-02,212.2,3:32.2,Filbert Bayi ( TAN ),main,ratified,False
+M,1500m,1979-08-15,212.1,3:32.1,Sebastian Coe ( GBR ),main,ratified,False
+M,1500m,1980-07-15,212.1,3:32.1,Steve Ovett ( GBR ),main,ratified,True
+M,1500m,1980-08-27,211.4,3:31.4,Steve Ovett ( GBR ),main,ratified,False
+M,1500m,1983-08-28,211.24,3:31.24,Sydney Maree ( USA ),main,ratified,False
+M,1500m,1983-09-04,210.77,3:30.77,Steve Ovett ( GBR ),main,ratified,False
+M,1500m,1985-07-16,209.67000000000002,3:29.67,Steve Cram ( GBR ),main,ratified,False
+M,1500m,1985-08-23,209.46,3:29.46,Saïd Aouita ( MAR ),main,ratified,False
+M,1500m,1992-09-06,208.86,3:28.86,Noureddine Morceli ( ALG ),main,ratified,False
+M,1500m,1995-07-12,207.37,3:27.37,Noureddine Morceli ( ALG ),main,ratified,False
+M,1500m,1998-07-14,206.0,3:26.00,Hicham El Guerrouj ( MAR ),main,ratified,False
+W,1500m,1967-06-03,257.3,4:17.3+,Anne Smith ( GBR ),main,ratified,False
+W,1500m,1967-10-24,255.6,4:15.6,Maria Gommers ( NED ),main,ratified,False
+W,1500m,1969-07-02,252.4,4:12.4,Paola Pigni ( ITA ),main,ratified,False
+W,1500m,1969-09-20,250.7,4:10.7,Jaroslava Jehličková ( CZE ),main,ratified,False
+W,1500m,1971-08-15,249.6,4:09.6,Karin Burneleit ( GDR ),main,ratified,False
+W,1500m,1972-07-18,246.9,4:06.9,Ludmila Bragina ( URS ),main,ratified,False
+W,1500m,1972-09-04,246.5,4:06.5,Ludmila Bragina ( URS ),main,ratified,False
+W,1500m,1972-09-07,245.1,4:05.1,Ludmila Bragina ( URS ),main,ratified,False
+W,1500m,1972-09-09,241.4,4:01.4,Ludmila Bragina ( URS ),main,ratified,False
+W,1500m,1976-06-28,236.0,3:56.0,Tatyana Kazankina ( URS ),main,ratified,False
+W,1500m,1980-07-06,235.0,3:55.0,Tatyana Kazankina ( URS ),main,ratified,False
+W,1500m,1980-08-03,232.47,3:52.47,Tatyana Kazankina ( URS ),main,ratified,False
+W,1500m,1993-09-11,230.46,3:50.46,Qu Yunxia ( CHN ),main,ratified,False
+W,1500m,2015-07-17,230.07,3:50.07,Genzebe Dibaba ( ETH ),main,ratified,False
+W,1500m,2023-06-02,229.11,3:49.11,Faith Kipyegon ( KEN ),main,ratified,False
+W,1500m,2024-07-07,229.04,3:49.04,Faith Kipyegon ( KEN ),main,ratified,False
+W,1500m,2025-07-05,228.68,3:48.68,Faith Kipyegon ( KEN ),main,ratified,False
+M,5000m,1897-10-31,994.6,16:34.6,George Touquet-Daunis ( FRA ),pre,unofficial,False
+M,5000m,1899-05-22,989.2,16:29.2,George Touquet-Daunis ( FRA ),pre,unofficial,False
+M,5000m,1900-07-22,929.8,15:29.8,Charles Bennett ( GBR ),pre,unofficial,False
+M,5000m,1904-06-13,899.0,14:59.0,Alfred Shrubb ( GBR ),pre,unofficial,False
+M,5000m,1912-07-10,876.6,14:36.6,Hannes Kolehmainen ( FIN ),main,ratified,False
+M,5000m,1922-09-12,875.4,14:35.4,Paavo Nurmi ( FIN ),main,ratified,False
+M,5000m,1924-06-19,868.2,14:28.2,Paavo Nurmi ( FIN ),main,ratified,False
+M,5000m,1932-06-19,857.0,14:17.0,Lauri Lehtinen ( FIN ),main,ratified,False
+M,5000m,1939-06-16,848.8,14:08.8,Taisto Mäki ( FIN ),main,ratified,False
+M,5000m,1942-09-20,838.2,13:58.2,Gunder Hägg ( SWE ),main,ratified,False
+M,5000m,1954-05-30,837.2,13:57.2,Emil Zátopek ( TCH ),main,ratified,False
+M,5000m,1954-08-29,836.6,13:56.6,Vladimir Kuts ( URS ),main,ratified,False
+M,5000m,1954-10-13,831.6,13:51.6,Chris Chataway ( GBR ),main,ratified,False
+M,5000m,1954-10-23,831.2,13:51.2,Vladimir Kuts ( URS ),main,ratified,False
+M,5000m,1955-09-10,830.8,13:50.8,Sandor Iharos ( HUN ),main,ratified,False
+M,5000m,1955-09-18,826.8,13:46.8,Vladimir Kuts ( URS ),main,ratified,False
+M,5000m,1955-10-23,820.6,13:40.6,Sandor Iharos ( HUN ),main,ratified,False
+M,5000m,1956-06-19,816.8,13:36.8,Gordon Pirie ( GBR ),main,ratified,False
+M,5000m,1957-10-13,815.0,13:35.0,Vladimir Kuts ( URS ),main,ratified,False
+M,5000m,1965-01-16,814.8,13:34.8,Ron Clarke ( AUS ),main,ratified,False
+M,5000m,1965-02-01,813.6,13:33.6,Ron Clarke ( AUS ),main,ratified,False
+M,5000m,1965-06-04,805.8,13:25.8,Ron Clarke ( AUS ),main,ratified,False
+M,5000m,1965-11-30,804.2,13:24.2,Kipchoge Keino ( KEN ),main,ratified,False
+M,5000m,1966-07-05,796.6,13:16.6,Ron Clarke ( AUS ),main,ratified,False
+M,5000m,1972-09-14,796.4,13:16.4,Lasse Virén ( FIN ),main,ratified,False
+M,5000m,1972-09-20,793.0,13:13.0,Emiel Puttemans ( BEL ),main,ratified,False
+M,5000m,1977-07-05,792.9,13:12.9,Dick Quax ( NZL ),main,ratified,False
+M,5000m,1978-04-08,788.4,13:08.4,Henry Rono ( KEN ),main,ratified,False
+M,5000m,1981-09-13,786.2,13:06.20,Henry Rono ( KEN ),main,ratified,False
+M,5000m,1982-07-07,780.41,13:00.41,David Moorcroft ( GBR ),main,ratified,False
+M,5000m,1985-07-27,780.4,13:00.40,Saïd Aouita ( MAR ),main,ratified,False
+M,5000m,1987-07-27,778.39,12:58.39,Saïd Aouita ( MAR ),main,ratified,False
+M,5000m,1994-06-04,776.96,12:56.96,Haile Gebrselassie ( ETH ),main,ratified,False
+M,5000m,1995-06-08,775.3,12:55.30,Moses Kiptanui ( KEN ),main,ratified,False
+M,5000m,1995-08-16,764.39,12:44.39,Haile Gebrselassie ( ETH ),main,ratified,False
+M,5000m,1997-08-13,761.86,12:41.86,Haile Gebrselassie ( ETH ),main,ratified,False
+M,5000m,1997-08-22,759.74,12:39.74,Daniel Komen ( KEN ),main,ratified,False
+M,5000m,1998-06-13,759.36,12:39.36,Haile Gebrselassie ( ETH ),main,ratified,False
+M,5000m,2004-05-31,757.35,12:37.35,Kenenisa Bekele ( ETH ),main,ratified,False
+M,5000m,2020-08-14,755.36,12:35.36,Joshua Cheptegei ( UGA ),main,ratified,False
+W,5000m,1981-09-13,914.51,15:14.51,Paula Fudge ( GBR ),main,ratified,False
+W,5000m,1982-03-17,913.22,15:13.22,Anne Audain ( NZL ),main,ratified,False
+W,5000m,1982-06-05,908.26,15:08.26,Mary Tabb ( USA ),main,ratified,False
+W,5000m,1984-06-28,898.89,14:58.89,Ingrid Kristiansen ( NOR ),main,ratified,False
+W,5000m,1985-08-26,888.07,14:48.07,Zola Budd ( GBR ),main,ratified,False
+W,5000m,1986-08-05,877.33,14:37.33,Ingrid Kristiansen ( NOR ),main,ratified,False
+W,5000m,1995-07-22,876.45,14:36.45,Fernanda Ribeiro ( POR ),main,ratified,False
+W,5000m,1997-10-21,871.27,14:31.27,Dong Yanmei ( CHN ),main,ratified,False
+W,5000m,1997-10-23,868.09,14:28.09,Jiang Bo ( CHN ),main,ratified,False
+W,5000m,2004-06-11,864.68,14:24.68,Elvan Abeylegesse ( TUR ),main,ratified,False
+W,5000m,2006-06-03,864.53,14:24.53,Meseret Defar ( ETH ),main,ratified,False
+W,5000m,2007-06-15,856.63,14:16.63,Meseret Defar ( ETH ),main,ratified,False
+W,5000m,2008-06-06,851.15,14:11.15,Tirunesh Dibaba ( ETH ),main,ratified,False
+W,5000m,2020-10-07,846.62,14:06.62,Letesenbet Gidey ( ETH ),main,ratified,False
+W,5000m,2023-06-09,845.2,14:05.20,Faith Kipyegon ( KEN ),main,ratified,False
+W,5000m,2023-09-17,840.21,14:00.21,Gudaf Tsegay ( ETH ),main,ratified,False
+W,5000m,2025-07-05,838.06,13:58.06,Beatrice Chebet ( KEN ),main,ratified,False
+M,10000m,1847-04-05,1955.0,32:35.0,William Howitt ( GBR ),pre,unofficial,False
+M,10000m,1882-03-25,1929.0,32:09.0,Walter George ( GBR ),pre,unofficial,False
+M,10000m,1884-04-07,1913.4,31:53.4,Walter George ( GBR ),pre,unofficial,False
+M,10000m,1884-07-28,1900.0,31:40.0,Walter George ( GBR ),pre,unofficial,False
+M,10000m,1885-09-28,1883.1,31:23.1,William Cummings ( GBR ),pre,unofficial,False
+M,10000m,1904-11-05,1862.4,31:02.4,Alfred Shrubb ( GBR ),pre,unofficial,False
+M,10000m,1911-11-16,1858.8,30:58.8,Jean Bouin ( FRA ),main,ratified,False
+M,10000m,1921-06-22,1840.2,30:40.2,Paavo Nurmi ( FIN ),main,ratified,False
+M,10000m,1924-05-25,1835.4,30:35.4,Ville Ritola ( FIN ),main,ratified,False
+M,10000m,1924-07-06,1823.2,30:23.2,Ville Ritola ( FIN ),main,ratified,False
+M,10000m,1924-08-31,1806.2,30:06.2,Paavo Nurmi ( FIN ),main,ratified,False
+M,10000m,1937-07-18,1805.6,30:05.6,Ilmari Salminen ( FIN ),main,ratified,False
+M,10000m,1938-09-29,1802.0,30:02.0,Taisto Mäki ( FIN ),main,ratified,False
+M,10000m,1939-09-17,1792.6,29:52.6,Taisto Mäki ( FIN ),main,ratified,False
+M,10000m,1944-08-25,1775.4,29:35.4,Viljo Heino ( FIN ),main,ratified,False
+M,10000m,1949-06-11,1768.2,29:28.2,Emil Zátopek ( TCH ),main,ratified,False
+M,10000m,1949-09-01,1767.2,29:27.2,Viljo Heino ( FIN ),main,ratified,False
+M,10000m,1949-10-22,1761.2,29:21.2,Emil Zátopek ( TCH ),main,ratified,False
+M,10000m,1950-08-04,1742.6,29:02.6,Emil Zátopek ( TCH ),main,ratified,False
+M,10000m,1953-11-01,1741.6,29:01.6,Emil Zátopek ( TCH ),main,ratified,False
+M,10000m,1954-06-01,1734.2,28:54.2,Emil Zátopek ( TCH ),main,ratified,False
+M,10000m,1956-07-15,1722.8,28:42.8,Sandor Iharos ( HUN ),main,ratified,False
+M,10000m,1956-09-11,1710.4,28:30.4,Vladimir Kuts ( URS ),main,ratified,False
+M,10000m,1960-10-15,1698.8,28:18.8,Pyotr Bolotnikov ( URS ),main,ratified,False
+M,10000m,1962-08-11,1698.2,28:18.2,Pyotr Bolotnikov ( URS ),main,ratified,False
+M,10000m,1963-12-18,1695.6,28:15.6,Ron Clarke ( AUS ),main,ratified,False
+M,10000m,1965-07-14,1659.4,27:39.4,Ron Clarke ( AUS ),main,ratified,False
+M,10000m,1972-09-03,1658.4,27:38.4,Lasse Virén ( FIN ),main,ratified,False
+M,10000m,1973-07-13,1650.8,27:30.8,David Bedford ( GBR ),main,ratified,False
+M,10000m,1977-06-30,1650.5,27:30.5,Samson Kimobwa ( KEN ),main,ratified,False
+M,10000m,1978-06-11,1642.4,27:22.4,Henry Rono ( KEN ),main,ratified,False
+M,10000m,1984-07-02,1633.81,27:13.81,Fernando Mamede ( POR ),main,ratified,False
+M,10000m,1989-08-18,1628.23,27:08.23,Arturo Barrios ( MEX ),main,ratified,False
+M,10000m,1993-07-05,1627.91,27:07.91,Richard Chelimo ( KEN ),main,ratified,False
+M,10000m,1993-07-10,1618.38,26:58.38,Yobes Ondieki ( KEN ),main,ratified,False
+M,10000m,1994-07-22,1612.23,26:52.23,William Sigei ( KEN ),main,ratified,False
+M,10000m,1995-06-05,1603.53,26:43.53,Haile Gebrselassie ( ETH ),main,ratified,False
+M,10000m,1996-08-23,1598.08,26:38.08,Salah Hissou ( MAR ),main,ratified,False
+M,10000m,1997-07-04,1591.32,26:31.32,Haile Gebrselassie ( ETH ),main,ratified,False
+M,10000m,1997-08-22,1587.85,26:27.85,Paul Tergat ( KEN ),main,ratified,False
+M,10000m,1998-06-01,1582.75,26:22.75,Haile Gebrselassie ( ETH ),main,ratified,False
+M,10000m,2004-06-08,1580.31,26:20.31,Kenenisa Bekele ( ETH ),main,ratified,False
+M,10000m,2005-08-26,1577.53,26:17.53,Kenenisa Bekele ( ETH ),main,ratified,False
+M,10000m,2020-10-07,1571.0,26:11.00,Joshua Cheptegei ( UGA ),main,ratified,False
+W,10000m,1981-10-19,1937.2,32:17.20,Yelena Sipatova ( URS ),main,ratified,False
+W,10000m,1982-07-16,1895.3,31:35.3,Mary Decker-Slaney ( USA ),main,ratified,False
+W,10000m,1983-05-29,1895.01,31:35.01,Lyudmila Baranova ( URS ),main,ratified,False
+W,10000m,1983-09-07,1887.58,31:27.58,Raisa Sadreydinova ( URS ),main,ratified,False
+W,10000m,1984-06-24,1873.78,31:13.78,Olga Bondarenko ( URS ),main,ratified,False
+W,10000m,1985-07-27,1859.42,30:59.42,Ingrid Kristiansen ( NOR ),main,ratified,False
+W,10000m,1986-07-05,1813.74,30:13.74,Ingrid Kristiansen ( NOR ),main,ratified,False
+W,10000m,1993-09-08,1771.78,29:31.78,Wang Junxia ( CHN ),main,ratified,False
+W,10000m,2016-08-12,1757.45,29:17.45,Almaz Ayana ( ETH ),main,ratified,False
+W,10000m,2021-06-06,1746.82,29:06.82,Sifan Hassan ( NED ),main,ratified,False
+W,10000m,2021-06-08,1741.03,29:01.03,Letesenbet Gidey ( ETH ),main,ratified,False
+W,10000m,2024-05-25,1734.14,28:54.14,Beatrice Chebet ( KEN ),main,ratified,False
+M,110mH,1908-07-25,15.0,15.0,Forrest Smithson,hand,ratified,False
+M,110mH,1920-08-17,15.0,15.0,Harold Barron,hand,ratified,True
+M,110mH,1920-08-17,15.0,15.0,Earl Thomson,hand,ratified,True
+M,110mH,1920-08-18,14.8,14.8,Earl Thomson,hand,ratified,False
+M,110mH,1927-09-18,14.8,14.8,Sten Pettersson,hand,ratified,True
+M,110mH,1928-07-31,14.6,14.6,George Weightman-Smith,hand,ratified,False
+M,110mH,1929-08-25,14.4,14.4,Eric Wennström,hand,ratified,False
+M,110mH,1931-09-05,14.4,14.4,Bengt Sjöstedt,hand,ratified,True
+M,110mH,1932-06-23,14.4,14.4,Percy Beard,hand,ratified,True
+M,110mH,1932-07-17,14.4,14.4,Jack Keller,hand,ratified,True
+M,110mH,1932-08-02,14.4,14.4,George Saling,hand,ratified,True
+M,110mH,1933-08-12,14.4,14.4,John Morriss,hand,ratified,True
+M,110mH,1933-09-08,14.4,14.4,John Morriss,hand,ratified,True
+M,110mH,1934-07-26,14.3,14.3,Percy Beard,hand,ratified,False
+M,110mH,1934-08-06,14.2,14.2,Percy Beard,hand,ratified,False
+M,110mH,1935-08-02,14.2,14.2,Alvin Moreau,hand,ratified,True
+M,110mH,1936-06-19,14.1,14.1 w,Forrest Towns,hand,ratified,False
+M,110mH,1936-08-06,14.1,14.1,Forrest Towns,hand,ratified,True
+M,110mH,1936-08-27,13.7,13.7,Forrest Towns,hand,ratified,False
+M,110mH,1941-06-29,13.7,13.7,Fred Wolcott,hand,ratified,True
+M,110mH,1950-06-24,13.6,13.6,Richard Attlesey,hand,ratified,False
+M,110mH,1950-07-10,13.5,13.5,Richard Attlesey,hand,ratified,False
+M,110mH,1956-06-22,13.4,13.4,Jack Davis,hand,ratified,False
+M,110mH,1959-07-07,13.2,13.2,Martin Lauer,hand,ratified,False
+M,110mH,1960-08-21,13.2,13.2,Lee Calhoun,hand,ratified,True
+M,110mH,1967-07-16,13.2,13.2,Earl McCullouch,hand,ratified,True
+M,110mH,1969-07-04,13.2,13.2,Willie Davenport,hand,ratified,True
+M,110mH,1972-09-07,13.24,13.24,Rod Milburn,auto,ratified,False
+M,110mH,1977-08-21,13.21,13.21,Alejandro Casañas,auto,ratified,False
+M,110mH,1979-04-14,13.16,13.16,Renaldo Nehemiah,auto,ratified,False
+M,110mH,1979-05-06,13.0,13.00,Renaldo Nehemiah,auto,ratified,False
+M,110mH,1981-08-19,12.93,12.93,Renaldo Nehemiah,auto,ratified,False
+M,110mH,1989-08-16,12.92,12.92,Roger Kingdom,auto,ratified,False
+M,110mH,1993-08-20,12.91,12.91,Colin Jackson,auto,ratified,False
+M,110mH,2004-08-27,12.91,12.91,Liu Xiang,auto,ratified,True
+M,110mH,2006-07-11,12.88,12.88,Liu Xiang,auto,ratified,False
+M,110mH,2008-06-12,12.87,12.87,Dayron Robles,auto,ratified,False
+M,110mH,2012-09-07,12.8,12.80,Aries Merritt,auto,ratified,False
+M,110mH,2026-06-10,12.75,12.75,Ja'Kobe Tharp,auto,ratified,False
+W,100mH,1969-06-20,13.3,13.3 h,Karin Balzer ( GDR ),hand,ratified,False
+W,100mH,1969-06-20,13.3,13.3 h,Teresa Sukniewicz ( POL ),hand,ratified,True
+W,100mH,1969-07-27,13.0,13.0 h,Karin Balzer ( GDR ),hand,ratified,False
+W,100mH,1969-09-05,12.9,12.9 h,Karin Balzer ( GDR ),hand,ratified,False
+W,100mH,1970-06-20,12.8,12.8 h,Teresa Sukniewicz ( POL ),hand,ratified,False
+W,100mH,1970-07-12,12.8,12.8 h,Chi Cheng ( TPE ),hand,ratified,True
+W,100mH,1970-07-26,12.7,12.7 h,Karin Balzer ( GDR ),hand,ratified,False
+W,100mH,1970-09-20,12.7,12.7 h,Teresa Sukniewicz ( POL ),hand,ratified,True
+W,100mH,1971-07-25,12.7,12.7 h,Karin Balzer ( GDR ),hand,ratified,True
+W,100mH,1971-07-31,12.6,12.6 h,Karin Balzer ( GDR ),hand,ratified,False
+W,100mH,1972-06-15,12.5,12.5 h,Annelie Ehrhardt ( GDR ),hand,ratified,False
+W,100mH,1972-06-28,12.5,12.5 h,Pamela Ryan ( AUS ),hand,ratified,True
+W,100mH,1972-09-08,12.59,12.59,Annelie Ehrhardt ( GDR ),auto,ratified,False
+W,100mH,1978-06-10,12.48,12.48,Grażyna Rabsztyn ( POL ),auto,ratified,False
+W,100mH,1980-06-13,12.36,12.36,Grażyna Rabsztyn ( POL ),auto,ratified,False
+W,100mH,1986-08-17,12.35,12.35,Yordanka Donkova ( BUL ),auto,ratified,False
+W,100mH,1986-08-17,12.29,12.29,Yordanka Donkova ( BUL ),auto,ratified,False
+W,100mH,1986-09-07,12.26,12.26,Yordanka Donkova ( BUL ),auto,ratified,False
+W,100mH,1987-08-08,12.25,12.25,Ginka Zagorcheva ( BUL ),auto,ratified,False
+W,100mH,1988-08-20,12.21,12.21,Yordanka Donkova ( BUL ),auto,ratified,False
+W,100mH,2016-07-22,12.2,12.20,Kendra Harrison ( USA ),auto,ratified,False
+W,100mH,2022-07-24,12.12,12.12,Tobi Amusan ( NGR ),auto,ratified,False
+W,100mH,2026-08-27,12.09,12.09,Masai Russell ( USA ),auto,pending,False
+M,400mH,1908-07-22,55.0,55.0,Charles Bacon ( USA ),hand,ratified,False
+M,400mH,1920-08-16,54.0,54.0,Frank Loomis ( USA ),hand,ratified,False
+M,400mH,1925-10-04,53.8,53.8,Sten Pettersson ( SWE ),hand,ratified,False
+M,400mH,1927-07-02,52.6,52.6y,John Gibson ( USA ),hand,ratified,False
+M,400mH,1928-07-04,52.0,52.0,Morgan Taylor ( USA ),hand,ratified,False
+M,400mH,1932-08-01,52.0,52.0,Glenn Hardin ( USA ),hand,ratified,True
+M,400mH,1934-06-30,51.8,51.8,Glenn Hardin ( USA ),hand,ratified,False
+M,400mH,1934-07-26,50.6,50.6,Glenn Hardin ( USA ),hand,ratified,False
+M,400mH,1953-09-20,50.4,50.4,Yuriy Lituyev ( USSR ),hand,ratified,False
+M,400mH,1956-06-29,49.5,49.5,Glenn Davis ( USA ),hand,ratified,False
+M,400mH,1958-08-06,49.2,49.2,Glenn Davis ( USA ),hand,ratified,False
+M,400mH,1962-09-14,49.2,49.2,Salvatore Morale ( ITA ),hand,ratified,True
+M,400mH,1964-09-13,49.1,49.1,Rex Cawley ( USA ),hand,ratified,False
+M,400mH,1968-09-11,48.8,48.8,Geoff Vanderstock ( USA ),hand,ratified,False
+M,400mH,1968-10-15,48.1,48.1,David Hemery ( GBR ),hand,ratified,False
+M,400mH,1972-09-02,47.8,47.8,John Akii-Bua ( UGA ),hand,ratified,False
+M,400mH,1976-07-25,47.64,47.64,Edwin Moses ( USA ),auto,ratified,False
+M,400mH,1977-06-11,47.45,47.45,Edwin Moses ( USA ),auto,ratified,False
+M,400mH,1980-07-03,47.13,47.13,Edwin Moses ( USA ),auto,ratified,False
+M,400mH,1983-08-31,47.02,47.02,Edwin Moses ( USA ),auto,ratified,False
+M,400mH,1992-08-06,46.78,46.78,Kevin Young ( USA ),auto,ratified,False
+M,400mH,2021-07-01,46.7,46.70,Karsten Warholm ( NOR ),auto,ratified,False
+M,400mH,2021-08-03,45.94,45.94,Karsten Warholm ( NOR ),auto,ratified,False
+M,400mH,2026-08-27,45.8,45.80,Alison dos Santos ( BRA ),auto,pending,False
+W,400mH,1974-07-13,56.51,56.51,Krystyna Kacperczyk,main,ratified,False
+W,400mH,1977-06-26,55.74,55.74,Tatyana Storozheva,main,ratified,False
+W,400mH,1977-08-13,55.63,55.63,Karin Rossley,main,ratified,False
+W,400mH,1978-08-18,55.44,55.44,Krystyna Kacperczyk,main,ratified,False
+W,400mH,1978-08-19,55.31,55.31,Tatyana Zelentsova,main,ratified,False
+W,400mH,1978-09-02,54.89,54.89,Tatyana Zelentsova,main,ratified,False
+W,400mH,1979-07-27,54.78,54.78,Marina Makeyeva,main,ratified,False
+W,400mH,1980-05-18,54.28,54.28,Karin Rossley,main,ratified,False
+W,400mH,1983-06-11,54.02,54.02,Anna Ambrazienė,main,ratified,False
+W,400mH,1984-06-22,53.58,53.58,Margarita Ponomaryova,main,ratified,False
+W,400mH,1985-09-22,53.55,53.55,Sabine Busch,main,ratified,False
+W,400mH,1986-08-30,53.32,53.32,Marina Stepanova,main,ratified,False
+W,400mH,1986-09-17,52.94,52.94,Marina Stepanova,main,ratified,False
+W,400mH,1993-08-19,52.74,52.74,Sally Gunnell,main,ratified,False
+W,400mH,1995-08-11,52.61,52.61,Kim Batten,main,ratified,False
+W,400mH,2003-08-08,52.34,52.34,Yuliya Pechonkina,main,ratified,False
+W,400mH,2019-07-28,52.2,52.20,Dalilah Muhammad,main,ratified,False
+W,400mH,2019-10-04,52.16,52.16,Dalilah Muhammad,main,ratified,False
+W,400mH,2021-06-27,51.9,51.90,Sydney McLaughlin,main,ratified,False
+W,400mH,2021-08-04,51.46,51.46,Sydney McLaughlin,main,ratified,False
+W,400mH,2022-06-25,51.41,51.41,Sydney McLaughlin-Levrone,main,ratified,False
+W,400mH,2022-07-22,50.68,50.68,Sydney McLaughlin-Levrone,main,ratified,False
+W,400mH,2024-06-30,50.65,50.65,Sydney McLaughlin-Levrone,main,ratified,False
+W,400mH,2024-08-08,50.37,50.37,Sydney McLaughlin-Levrone,main,ratified,False
+M,HJ,1827-09-26,1.575,1.575 m (5 ft 2 in),Adam Wilson ( GBR ),pre,unofficial,False
+M,HJ,1829-07-24,1.6,1.60 m ( 5 ft 2 + 3 ⁄ 4 in),Thomas Anderson ( GBR ),pre,unofficial,False
+M,HJ,1837-05-06,1.6,1.60 m ( 5 ft 2 + 3 ⁄ 4 in),John Pattison ( GBR ),pre,unofficial,True
+M,HJ,1839-08-05,1.675,1.675 m ( 5 ft 5 + 3 ⁄ 4 in),Richard Armstrong ( GBR ),pre,unofficial,False
+M,HJ,1850-04-01,1.675,1.675 m ( 5 ft 5 + 3 ⁄ 4 in),Thomas Roper ( GBR ),pre,unofficial,True
+M,HJ,1850-09-21,1.675,1.675 m ( 5 ft 5 + 3 ⁄ 4 in),Francis Temple ( GBR ),pre,unofficial,True
+M,HJ,1857-03-17,1.675,1.675 m ( 5 ft 5 + 3 ⁄ 4 in),Hanmer Webb ( GBR ),pre,unofficial,True
+M,HJ,1860-03-15,1.675,1.675 m ( 5 ft 5 + 3 ⁄ 4 in),Henry Powell ( GBR ),pre,unofficial,True
+M,HJ,1860-03-27,1.7,1.70 m ( 5 ft 6 + 3 ⁄ 4 in),Robert Burton ( GBR ),pre,unofficial,False
+M,HJ,1864-07-09,1.7,1.70 m ( 5 ft 6 + 3 ⁄ 4 in),Tom Mitchell ( GBR ),pre,unofficial,True
+M,HJ,1866-03-05,1.725,1.725 m ( 5 ft 7 + 3 ⁄ 4 in),John Roupell ( GBR ),pre,unofficial,False
+M,HJ,1866-03-23,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),John Roupell ( GBR ),pre,unofficial,False
+M,HJ,1866-03-23,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),Thomas Little ( GBR ),pre,unofficial,True
+M,HJ,1866-11-26,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),J.A. Harwood ( GBR ),pre,unofficial,True
+M,HJ,1866-11-26,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),Herbert Brooks ( GBR ),pre,unofficial,True
+M,HJ,1867-04-12,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),Thomas Little ( GBR ),pre,unofficial,True
+M,HJ,1870-04-09,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),Ronald Mitchell ( GBR ),pre,unofficial,True
+M,HJ,1871-04-03,1.755,1.755 m (5 ft 9 in),Ronald Mitchell ( GBR ),pre,unofficial,False
+M,HJ,1873-07-07,1.785,1.785 m ( 5 ft 10 + 1 ⁄ 4 in),Tom Davin ( IRE ),pre,unofficial,False
+M,HJ,1874-03-30,1.8,1.80 m ( 5 ft 10 + 3 ⁄ 4 in),Marshall Brooks ( GBR ),pre,unofficial,False
+M,HJ,1875-03-22,1.8,1.80 m ( 5 ft 10 + 3 ⁄ 4 in),Michael Glazebrook ( GBR ),pre,unofficial,True
+M,HJ,1876-03-17,1.83,1.83 m (6 ft 0 in),Marshall Brooks ( GBR ),pre,unofficial,False
+M,HJ,1876-04-07,1.89,1.89 m ( 6 ft 2 + 1 ⁄ 4 in),Marshall Brooks ( GBR ),pre,unofficial,False
+M,HJ,1880-07-05,1.9,1.90 m ( 6 ft 2 + 3 ⁄ 4 in),Patrick Davin ( IRE ),pre,unofficial,False
+M,HJ,1887-08-15,1.91,1.91 m (6 ft 3 in),William Page ( USA ),pre,unofficial,False
+M,HJ,1887-10-07,1.93,1.93 m ( 6 ft 3 + 3 ⁄ 4 in),William Page ( USA ),pre,unofficial,False
+M,HJ,1890-08-06,1.968,1.968 m ( 6 ft 5 + 1 ⁄ 4 in),George Rowdon ( GBR ),pre,unofficial,False
+M,HJ,1895-09-21,1.97,1.97 m ( 6 ft 5 + 1 ⁄ 2 in),Michael Sweeney ( USA ),pre,unofficial,False
+M,HJ,1912-03-29,1.98,1.98 m ( 6 ft 5 + 3 ⁄ 4 in),George Horine ( USA ),pre,unofficial,False
+M,HJ,1912-05-15,1.98,6 ft 6 in (1.98 m),George Horine ( USA ),pre,unofficial,True
+M,HJ,1912-05-18,2.0,2.00 m ( 6 ft 6 + 1 ⁄ 2 in),George Horine ( USA ),main,ratified,False
+M,HJ,1914-05-02,2.01,2.01 m (6 ft 7 in),Edward Beeson ( USA ),main,ratified,False
+M,HJ,1924-05-27,2.03,2.03 m ( 6 ft 7 + 3 ⁄ 4 in),Harold Osborn ( USA ),main,ratified,False
+M,HJ,1933-05-13,2.04,2.04 m ( 6 ft 8 + 1 ⁄ 4 in),Walter Marty ( USA ),main,ratified,False
+M,HJ,1934-04-28,2.06,2.06 m (6 ft 9 in),Walter Marty ( USA ),main,ratified,False
+M,HJ,1936-07-12,2.07,2.07 m ( 6 ft 9 + 1 ⁄ 4 in),Cornelius Johnson ( USA ),main,ratified,False
+M,HJ,1936-07-12,2.07,2.07 m ( 6 ft 9 + 1 ⁄ 4 in),Dave Albritton ( USA ),main,ratified,True
+M,HJ,1937-08-12,2.09,2.09 m ( 6 ft 10 + 1 ⁄ 4 in),Mel Walker ( USA ),main,ratified,False
+M,HJ,1941-06-17,2.11,2.11 m (6 ft 11 in),Lester Steers ( USA ),main,ratified,False
+M,HJ,1953-06-27,2.12,2.12 m ( 6 ft 11 + 1 ⁄ 4 in),Walt Davis ( USA ),main,ratified,False
+M,HJ,1956-06-29,2.15,2.15 m ( 7 ft 1 ⁄ 2 in),Charles Dumas ( USA ),main,ratified,False
+M,HJ,1957-07-13,2.16,2.16 m (7 ft 1 in),Yuriy Stepanov ( URS ),main,ratified,False
+M,HJ,1960-04-30,2.17,2.17 m ( 7 ft 1 + 1 ⁄ 4 in),John Thomas ( USA ),main,ratified,False
+M,HJ,1960-05-21,2.17,2.17 m ( 7 ft 1 + 1 ⁄ 4 in),John Thomas ( USA ),main,ratified,True
+M,HJ,1960-06-24,2.18,2.18 m ( 7 ft 1 + 3 ⁄ 4 in),John Thomas ( USA ),main,ratified,False
+M,HJ,1960-07-01,2.22,2.22 m ( 7 ft 3 + 1 ⁄ 4 in),John Thomas ( USA ),main,ratified,False
+M,HJ,1961-06-18,2.23,2.23 m ( 7 ft 3 + 3 ⁄ 4 in),Valeriy Brumel ( URS ),main,ratified,False
+M,HJ,1961-07-16,2.24,2.24 m (7 ft 4 in),Valeriy Brumel ( URS ),main,ratified,False
+M,HJ,1961-08-31,2.25,2.25 m ( 7 ft 4 + 1 ⁄ 2 in),Valeriy Brumel ( URS ),main,ratified,False
+M,HJ,1962-07-22,2.26,2.26 m ( 7 ft 4 + 3 ⁄ 4 in),Valeriy Brumel ( URS ),main,ratified,False
+M,HJ,1962-09-29,2.27,2.27 m ( 7 ft 5 + 1 ⁄ 4 in),Valeriy Brumel ( URS ),main,ratified,False
+M,HJ,1963-07-21,2.28,2.28 m ( 7 ft 5 + 3 ⁄ 4 in),Valeriy Brumel ( URS ),main,ratified,False
+M,HJ,1971-07-03,2.29,2.29 m (7 ft 6 in),Pat Matzdorf ( USA ),main,ratified,False
+M,HJ,1973-07-11,2.3,2.30 m ( 7 ft 6 + 1 ⁄ 2 in),Dwight Stones ( USA ),main,ratified,False
+M,HJ,1976-06-05,2.31,2.31 m ( 7 ft 6 + 3 ⁄ 4 in),Dwight Stones ( USA ),main,ratified,False
+M,HJ,1976-08-04,2.32,2.32 m ( 7 ft 7 + 1 ⁄ 4 in),Dwight Stones ( USA ),main,ratified,False
+M,HJ,1977-06-02,2.33,2.33 m ( 7 ft 7 + 1 ⁄ 2 in),Vladimir Yashchenko ( URS ),main,ratified,False
+M,HJ,1978-06-16,2.34,2.34 m (7 ft 8 in),Vladimir Yashchenko ( URS ),main,ratified,False
+M,HJ,1980-05-25,2.35,2.35 m ( 7 ft 8 + 1 ⁄ 2 in),Jacek Wszoła ( POL ),main,ratified,False
+M,HJ,1980-05-26,2.35,2.35 m ( 7 ft 8 + 1 ⁄ 2 in),Dietmar Mögenburg ( FRG ),main,ratified,True
+M,HJ,1980-08-01,2.36,2.36 m ( 7 ft 8 + 3 ⁄ 4 in),Gerd Wessig ( GDR ),main,ratified,False
+M,HJ,1983-06-11,2.37,2.37 m ( 7 ft 9 + 1 ⁄ 4 in),Zhu Jianhua ( CHN ),main,ratified,False
+M,HJ,1983-09-22,2.38,2.38 m ( 7 ft 9 + 1 ⁄ 2 in),Zhu Jianhua ( CHN ),main,ratified,False
+M,HJ,1984-06-10,2.39,2.39 m (7 ft 10 in),Zhu Jianhua ( CHN ),main,ratified,False
+M,HJ,1985-08-11,2.4,2.40 m ( 7 ft 10 + 1 ⁄ 4 in),Rudolf Povarnitsyn ( URS ),main,ratified,False
+M,HJ,1985-09-04,2.41,2.41 m ( 7 ft 10 + 3 ⁄ 4 in),Igor Paklin ( URS ),main,ratified,False
+M,HJ,1987-06-30,2.42,2.42 m ( 7 ft 11 + 1 ⁄ 4 in),Patrik Sjöberg ( SWE ),main,ratified,False
+M,HJ,1988-09-08,2.43,2.43 m ( 7 ft 11 + 1 ⁄ 2 in),Javier Sotomayor ( CUB ),main,ratified,False
+M,HJ,1989-07-29,2.44,2.44 m (8 ft 0 in),Javier Sotomayor ( CUB ),main,ratified,False
+M,HJ,1993-07-27,2.45,2.45 m ( 8 ft 1 ⁄ 4 in),Javier Sotomayor ( CUB ),main,ratified,False
+W,HJ,1922-05-20,1.46,1.46 m ( 4 ft 9 + 1 ⁄ 4 in),Nancy Voorhees ( USA ),main,ratified,False
+W,HJ,1923-05-26,1.485,1.485 m ( 4 ft 10 + 1 ⁄ 4 in),Elizabeth Stine ( USA ),main,ratified,False
+W,HJ,1923-08-06,1.485,1.485 m ( 4 ft 10 + 1 ⁄ 4 in),Sophie Eliott-Lynn ( GBR ),main,ratified,True
+W,HJ,1925-07-11,1.524,1.524 m (5 ft 0 in),Phyllis Green ( GBR ),main,ratified,False
+W,HJ,1926-08-02,1.552,1.552 m (5 ft 1 in),Phyllis Green ( GBR ),main,ratified,False
+W,HJ,1926-09-06,1.58,1.58 m (5 ft 2 in),Ethel Catherwood ( CAN ),main,ratified,False
+W,HJ,1928-07-03,1.58,1.58 m (5 ft 2 in),Lien Gisolf ( NED ),main,ratified,True
+W,HJ,1928-08-05,1.595,1.595 m ( 5 ft 2 + 3 ⁄ 4 in),Ethel Catherwood ( CAN ),main,ratified,False
+W,HJ,1929-08-18,1.605,1.605 m (5 ft 3 in),Lien Gisolf ( NED ),main,ratified,False
+W,HJ,1932-06-12,1.62,1.62 m ( 5 ft 3 + 3 ⁄ 4 in),Lien Gisolf ( NED ),main,ratified,False
+W,HJ,1932-08-07,1.65,1.65 m ( 5 ft 4 + 3 ⁄ 4 in),Jean Shiley ( USA ),main,ratified,False
+W,HJ,1932-08-07,1.65,1.65 m ( 5 ft 4 + 3 ⁄ 4 in),Mildred Didrikson ( USA ),main,ratified,True
+W,HJ,1939-05-29,1.66,1.66 m ( 5 ft 5 + 1 ⁄ 4 in),Dorothy Odam ( GBR ),main,ratified,False
+W,HJ,1941-03-29,1.66,1.66 m ( 5 ft 5 + 1 ⁄ 4 in),Esther van Heerden ( South Africa ),main,ratified,True
+W,HJ,1941-07-27,1.66,1.66 m ( 5 ft 5 + 1 ⁄ 4 in),Ilsebill Pfenning ( SUI ),main,ratified,True
+W,HJ,1943-05-30,1.71,1.71 m ( 5 ft 7 + 1 ⁄ 4 in),Fanny Blankers-Koen ( NED ),main,ratified,False
+W,HJ,1951-07-07,1.72,1.72 m ( 5 ft 7 + 1 ⁄ 2 in),Sheila Lerwill ( GBR ),main,ratified,False
+W,HJ,1954-05-22,1.73,1.73 m (5 ft 8 in),Aleksandra Chudina ( URS ),main,ratified,False
+W,HJ,1956-05-05,1.74,1.74 m ( 5 ft 8 + 1 ⁄ 2 in),Thelma Hopkins ( GBR ),main,ratified,False
+W,HJ,1956-07-14,1.75,1.75 m ( 5 ft 8 + 3 ⁄ 4 in),Iolanda Balaș ( ROM ),main,ratified,False
+W,HJ,1956-12-01,1.76,1.76 m ( 5 ft 9 + 1 ⁄ 4 in),Mildred McDaniel ( USA ),main,ratified,False
+W,HJ,1957-10-13,1.76,1.76 m ( 5 ft 9 + 1 ⁄ 4 in),Iolanda Balaş ( ROM ),main,ratified,True
+W,HJ,1957-11-17,1.77,1.77 m ( 5 ft 9 + 1 ⁄ 2 in),Zheng Fengrong ( CHN ),main,ratified,False
+W,HJ,1958-06-07,1.78,1.78 m (5 ft 10 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1958-06-22,1.8,1.80 m ( 5 ft 10 + 3 ⁄ 4 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1958-07-31,1.81,1.81 m ( 5 ft 11 + 1 ⁄ 4 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1958-10-04,1.82,1.82 m ( 5 ft 11 + 1 ⁄ 2 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1958-10-18,1.83,1.83 m (6 ft 0 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1959-09-21,1.84,1.84 m ( 6 ft 1 ⁄ 4 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1960-06-06,1.85,1.85 m ( 6 ft 3 ⁄ 4 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1960-07-10,1.86,1.86 m (6 ft 1 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1961-04-15,1.87,1.87 m ( 6 ft 1 + 1 ⁄ 2 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1961-06-18,1.88,1.88 m (6 ft 2 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1961-07-08,1.9,1.90 m ( 6 ft 2 + 3 ⁄ 4 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1961-07-16,1.91,1.91 m (6 ft 3 in),Iolanda Balaş ( ROM ),main,ratified,False
+W,HJ,1971-09-04,1.92,1.92 m ( 6 ft 3 + 1 ⁄ 2 in),Ilona Gusenbauer ( AUT ),main,ratified,False
+W,HJ,1972-09-04,1.92,1.92 m ( 6 ft 3 + 1 ⁄ 2 in),Ulrike Meyfarth ( FRG ),main,ratified,True
+W,HJ,1972-09-24,1.94,1.94 m ( 6 ft 4 + 1 ⁄ 4 in),Yordanka Blagoeva ( BUL ),main,ratified,False
+W,HJ,1974-08-24,1.94,1.94 m ( 6 ft 4 + 1 ⁄ 4 in),Rosemarie Witschas ( GDR ),main,ratified,True
+W,HJ,1974-09-08,1.95,1.95 m ( 6 ft 4 + 3 ⁄ 4 in),Rosemarie Ackermann ( GDR ),main,ratified,False
+W,HJ,1976-05-08,1.96,1.96 m (6 ft 5 in),Rosemarie Ackermann ( GDR ),main,ratified,False
+W,HJ,1977-07-03,1.96,1.96 m (6 ft 5 in),Rosemarie Ackermann ( GDR ),main,ratified,True
+W,HJ,1977-08-14,1.97,1.97 m ( 6 ft 5 + 1 ⁄ 2 in),Rosemarie Ackermann ( GDR ),main,ratified,False
+W,HJ,1977-08-26,1.97,1.97 m ( 6 ft 5 + 1 ⁄ 2 in),Rosemarie Ackermann ( GDR ),main,ratified,True
+W,HJ,1977-08-26,2.0,2.00 m ( 6 ft 6 + 1 ⁄ 2 in),Rosemarie Ackermann ( GDR ),main,ratified,False
+W,HJ,1978-08-04,2.01,2.01 m (6 ft 7 in),Sara Simeoni ( ITA ),main,ratified,False
+W,HJ,1978-08-31,2.01,2.01 m (6 ft 7 in),Sara Simeoni ( ITA ),main,ratified,True
+W,HJ,1982-09-08,2.02,2.02 m ( 6 ft 7 + 1 ⁄ 2 in),Ulrike Meyfarth ( FRG ),main,ratified,False
+W,HJ,1983-08-21,2.03,2.03 m ( 6 ft 7 + 3 ⁄ 4 in),Ulrike Meyfarth ( FRG ),main,ratified,False
+W,HJ,1983-08-21,2.03,2.03 m ( 6 ft 7 + 3 ⁄ 4 in),Tamara Bykova ( URS ),main,ratified,True
+W,HJ,1983-08-25,2.04,2.04 m ( 6 ft 8 + 1 ⁄ 4 in),Tamara Bykova ( URS ),main,ratified,False
+W,HJ,1984-06-22,2.05,2.05 m ( 6 ft 8 + 1 ⁄ 2 in),Tamara Bykova ( URS ),main,ratified,False
+W,HJ,1984-07-20,2.07,2.07 m ( 6 ft 9 + 1 ⁄ 4 in),Lyudmila Andonova ( BUL ),main,ratified,False
+W,HJ,1986-05-25,2.07,2.07 m ( 6 ft 9 + 1 ⁄ 4 in),Stefka Kostadinova ( BUL ),main,ratified,True
+W,HJ,1986-05-31,2.08,2.08 m ( 6 ft 9 + 3 ⁄ 4 in),Stefka Kostadinova ( BUL ),main,ratified,False
+W,HJ,1987-08-30,2.09,2.09 m ( 6 ft 10 + 1 ⁄ 4 in),Stefka Kostadinova ( BUL ),main,ratified,False
+W,HJ,2024-07-07,2.1,2.10 m ( 6 ft 10 + 1 ⁄ 2 in),Yaroslava Mahuchikh ( UKR ),main,ratified,False
+M,PV,1849-10-06,3.15,3.15 m (10 ft 4 in),Francis Temple,main,ratified,False
+M,PV,1868-06-19,3.21,3.21 m ( 10 ft 6 + 1 ⁄ 4 in),Robert Mitchell,main,ratified,False
+M,PV,1872-08-31,3.225,3.225 m ( 10 ft 6 + 3 ⁄ 4 in),Edwin Woodburn,main,ratified,False
+M,PV,1873-06-02,3.225,3.225 m ( 10 ft 6 + 3 ⁄ 4 in),Edwin Woodburn,main,ratified,True
+M,PV,1873-07-07,3.225,3.225 m ( 10 ft 6 + 3 ⁄ 4 in),William Kelsey,main,ratified,True
+M,PV,1873-07-07,3.225,3.225 m ( 10 ft 6 + 3 ⁄ 4 in),John Wigfull,main,ratified,True
+M,PV,1874-03-30,3.225,3.225 m ( 10 ft 6 + 3 ⁄ 4 in),Edwin Woodburn,main,ratified,True
+M,PV,1875-07-05,3.225,3.225 m ( 10 ft 6 + 3 ⁄ 4 in),John Wigfull,main,ratified,True
+M,PV,1876-03-30,3.38,3.38 m (11 ft 1 in),A. Hammond,main,ratified,False
+M,PV,1876-07-21,3.38,3.38 m (11 ft 1 in),Edwin Woodburn,main,ratified,True
+M,PV,1879-09-19,3.42,3.42 m ( 11 ft 2 + 1 ⁄ 2 in),Thomas Ray,main,ratified,False
+M,PV,1881-07-16,3.43,3.43 m (11 ft 3 in),Thomas Ray,main,ratified,False
+M,PV,1882-08-12,3.455,3.455 m (11 ft 4 in),Thomas Ray,main,ratified,False
+M,PV,1883-06-16,3.455,3.455 m (11 ft 4 in),Thomas Ray,main,ratified,True
+M,PV,1883-08-18,3.465,3.465 m ( 11 ft 4 + 1 ⁄ 4 in),Thomas Ray,main,ratified,False
+M,PV,1885-08-20,3.48,3.48 m (11 ft 5 in),Thomas Ray,main,ratified,False
+M,PV,1886-08-13,3.485,3.485 m (11 ft 5 in),Thomas Ray,main,ratified,False
+M,PV,1887-08-18,3.505,3.505 m ( 11 ft 5 + 3 ⁄ 4 in),Thomas Ray,main,ratified,False
+M,PV,1887-08-19,3.52,3.52 m ( 11 ft 6 + 1 ⁄ 2 in),Thomas Ray,main,ratified,False
+M,PV,1888-06-02,3.53,3.53 m ( 11 ft 6 + 3 ⁄ 4 in),Ernest Stones,main,ratified,False
+M,PV,1888-09-22,3.555,3.555 m ( 11 ft 7 + 3 ⁄ 4 in),Thomas Ray,main,ratified,False
+M,PV,1889-08-23,3.57,3.57 m ( 11 ft 8 + 1 ⁄ 2 in),Ernest Stones,main,ratified,False
+M,PV,1891-07-04,3.58,3.58 m ( 11 ft 8 + 3 ⁄ 4 in),Richard Dickenson,main,ratified,False
+M,PV,1898-06-16,3.62,3.62 m ( 11 ft 10 + 1 ⁄ 2 in),Raymond Clapp,main,ratified,False
+M,PV,1904-04-23,3.69,3.69 m ( 12 ft 1 + 1 ⁄ 4 in),Norman Dole,main,ratified,False
+M,PV,1904-06-26,3.69,3.69 m ( 12 ft 1 + 1 ⁄ 4 in),Fernand Gonder,main,ratified,True
+M,PV,1905-06-04,3.74,3.74 m (12 ft 3 in),Fernand Gonder,main,ratified,False
+M,PV,1906-06-02,3.78,3.78 m ( 12 ft 4 + 3 ⁄ 4 in),Leroy Samse,main,ratified,False
+M,PV,1907-05-18,3.79,3.79 m (12 ft 5 in),Walter Dray,main,ratified,False
+M,PV,1908-04-25,3.82,3.82 m ( 12 ft 6 + 1 ⁄ 4 in),Walter Dray,main,ratified,False
+M,PV,1908-06-06,3.855,3.855 m ( 12 ft 7 + 3 ⁄ 4 in),Alfred Gilbert,main,ratified,False
+M,PV,1908-06-12,3.86,3.86 m ( 12 ft 7 + 3 ⁄ 4 in),Alfred Gilbert,main,ratified,False
+M,PV,1908-06-13,3.9,3.90 m ( 12 ft 9 + 1 ⁄ 2 in),Walter Dray,main,ratified,False
+M,PV,1910-04-30,3.91,3.91 m ( 12 ft 9 + 3 ⁄ 4 in),Leland Scott,main,ratified,False
+M,PV,1910-05-27,3.93,3.93 m ( 12 ft 10 + 1 ⁄ 2 in),Leland Scott,main,ratified,False
+M,PV,1912-06-01,3.985,3.985 m ( 13 ft 3 ⁄ 4 in),Robert Gardner,main,ratified,False
+M,PV,1912-06-08,4.02,4.02 m ( 13 ft 2 + 1 ⁄ 4 in),Marc Wright,main,ratified,False
+M,PV,1920-08-20,4.09,4.09 m (13 ft 5 in),Frank Foss,main,ratified,False
+M,PV,1922-09-22,4.12,4.12 m (13 ft 6 in),Charles Hoff,main,ratified,False
+M,PV,1923-07-22,4.21,4.21 m ( 13 ft 9 + 1 ⁄ 2 in),Charles Hoff,main,ratified,False
+M,PV,1925-08-13,4.23,4.23 m ( 13 ft 10 + 1 ⁄ 2 in),Charles Hoff,main,ratified,False
+M,PV,1925-09-27,4.25,4.25 m ( 13 ft 11 + 1 ⁄ 4 in),Charles Hoff,main,ratified,False
+M,PV,1927-05-28,4.27,4.27 m (14 ft 0 in),Sabin Carr,main,ratified,False
+M,PV,1928-04-28,4.3,4.30 m ( 14 ft 1 + 1 ⁄ 4 in),Lee Barnes,main,ratified,False
+M,PV,1932-07-16,4.37,4.37 m (14 ft 4 in),William Graber,main,ratified,False
+M,PV,1935-06-01,4.39,4.39 m ( 14 ft 4 + 3 ⁄ 4 in),Keith Brown,main,ratified,False
+M,PV,1936-07-04,4.43,4.43 m ( 14 ft 6 + 1 ⁄ 4 in),George Varoff,main,ratified,False
+M,PV,1937-05-29,4.54,4.54 m ( 14 ft 10 + 1 ⁄ 2 in),Bill Sefton,main,ratified,False
+M,PV,1937-05-29,4.54,4.54 m ( 14 ft 10 + 1 ⁄ 2 in),Earle Meadows,main,ratified,True
+M,PV,1940-06-29,4.6,4.60 m (15 ft 1 in),Cornelius Warmerdam,main,ratified,False
+M,PV,1941-06-26,4.72,4.72 m ( 15 ft 5 + 3 ⁄ 4 in),Cornelius Warmerdam,main,ratified,False
+M,PV,1942-05-23,4.77,4.77 m ( 15 ft 7 + 3 ⁄ 4 in),Cornelius Warmerdam,main,ratified,False
+M,PV,1957-04-27,4.78,4.78 m (15 ft 8 in),Robert Gutowski,main,ratified,False
+M,PV,1960-07-02,4.8,4.80 m ( 15 ft 8 + 3 ⁄ 4 in),Don Bragg,main,ratified,False
+M,PV,1961-05-20,4.83,4.83 m (15 ft 10 in),George Davies,main,ratified,False
+M,PV,1962-03-31,4.89,4.89 m ( 16 ft 1 ⁄ 2 in),John Uelses,main,ratified,False
+M,PV,1962-04-28,4.93,4.93 m (16 ft 2 in),Dave Tork,main,ratified,False
+M,PV,1962-06-22,4.94,4.94 m ( 16 ft 2 + 1 ⁄ 4 in),Pentti Nikula,main,ratified,False
+M,PV,1963-04-27,5.0,5.00 m ( 16 ft 4 + 3 ⁄ 4 in),Brian Sternberg,main,ratified,False
+M,PV,1963-06-07,5.08,5.08 m (16 ft 8 in),Brian Sternberg,main,ratified,False
+M,PV,1963-08-05,5.13,5.13 m ( 16 ft 9 + 3 ⁄ 4 in),John Pennel,main,ratified,False
+M,PV,1963-08-24,5.2,5.20 m ( 17 ft 1 ⁄ 2 in),John Pennel,main,ratified,False
+M,PV,1964-06-13,5.23,5.23 m ( 17 ft 1 + 3 ⁄ 4 in),Fred Hansen,main,ratified,False
+M,PV,1964-07-25,5.28,5.28 m ( 17 ft 3 + 3 ⁄ 4 in),Fred Hansen,main,ratified,False
+M,PV,1966-05-14,5.32,5.32 m ( 17 ft 5 + 1 ⁄ 4 in),Bob Seagren,main,ratified,False
+M,PV,1966-07-23,5.34,5.34 m (17 ft 6 in),John Pennel,main,ratified,False
+M,PV,1967-06-10,5.36,5.36 m (17 ft 7 in),Bob Seagren,main,ratified,False
+M,PV,1967-06-23,5.38,5.38 m ( 17 ft 7 + 3 ⁄ 4 in),Paul Wilson,main,ratified,False
+M,PV,1968-09-12,5.41,5.41 m ( 17 ft 8 + 3 ⁄ 4 in) A,Bob Seagren,main,ratified,False
+M,PV,1969-06-21,5.44,5.44 m (17 ft 10 in),John Pennel,main,ratified,False
+M,PV,1970-06-17,5.45,5.45 m ( 17 ft 10 + 1 ⁄ 2 in),Wolfgang Nordwig,main,ratified,False
+M,PV,1970-09-03,5.46,5.46 m ( 17 ft 10 + 3 ⁄ 4 in),Wolfgang Nordwig,main,ratified,False
+M,PV,1970-10-24,5.49,5.49 m (18 ft 0 in),Christos Papanikolaou,main,ratified,False
+M,PV,1972-04-08,5.51,5.51 m ( 18 ft 3 ⁄ 4 in),Kjell Isaksson,main,ratified,False
+M,PV,1972-04-15,5.54,5.54 m (18 ft 2 in),Kjell Isaksson,main,ratified,False
+M,PV,1972-06-12,5.55,5.55 m ( 18 ft 2 + 1 ⁄ 2 in),Kjell Isaksson,main,ratified,False
+M,PV,1972-07-02,5.63,5.63 m ( 18 ft 5 + 1 ⁄ 2 in),Bob Seagren,main,ratified,False
+M,PV,1975-03-28,5.65,5.65 m ( 18 ft 6 + 1 ⁄ 4 in),David Roberts,main,ratified,False
+M,PV,1976-05-29,5.67,5.67 m (18 ft 7 in),Earl Bell,main,ratified,False
+M,PV,1976-06-22,5.7,5.70 m ( 18 ft 8 + 1 ⁄ 4 in),David Roberts,main,ratified,False
+M,PV,1980-05-11,5.72,5.72 m (18 ft 9 in),Władysław Kozakiewicz,main,ratified,False
+M,PV,1980-06-01,5.75,5.75 m ( 18 ft 10 + 1 ⁄ 4 in),Thierry Vigneron,main,ratified,False
+M,PV,1980-06-29,5.75,5.75 m ( 18 ft 10 + 1 ⁄ 4 in),Thierry Vigneron,main,ratified,True
+M,PV,1980-07-17,5.77,5.77 m (18 ft 11 in),Philippe Houvion,main,ratified,False
+M,PV,1980-07-30,5.78,5.78 m ( 18 ft 11 + 1 ⁄ 2 in),Władysław Kozakiewicz,main,ratified,False
+M,PV,1981-06-20,5.8,5.80 m ( 19 ft 1 ⁄ 4 in),Thierry Vigneron,main,ratified,False
+M,PV,1981-06-26,5.81,5.81 m ( 19 ft 1 ⁄ 2 in),Vladimir Polyakov,main,ratified,False
+M,PV,1983-08-28,5.82,5.82 m (19 ft 1 in),Pierre Quinon,main,ratified,False
+M,PV,1983-09-01,5.83,5.83 m ( 19 ft 1 + 1 ⁄ 2 in),Thierry Vigneron,main,ratified,False
+M,PV,1984-05-26,5.85,5.85 m ( 19 ft 2 + 1 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1984-06-02,5.88,5.88 m ( 19 ft 3 + 1 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1984-07-13,5.9,5.90 m ( 19 ft 4 + 1 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1984-08-31,5.91,5.91 m ( 19 ft 4 + 1 ⁄ 2 in),Thierry Vigneron,main,ratified,False
+M,PV,1984-08-31,5.94,5.94 m ( 19 ft 5 + 3 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1985-07-13,6.0,6.00 m (19 ft 8 in),Sergey Bubka,main,ratified,False
+M,PV,1986-07-08,6.01,6.01 m ( 19 ft 8 + 1 ⁄ 2 in),Sergey Bubka,main,ratified,False
+M,PV,1987-06-23,6.03,6.03 m ( 19 ft 9 + 1 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1988-06-09,6.05,6.05 m (19 ft 10 in),Sergey Bubka,main,ratified,False
+M,PV,1988-07-10,6.06,6.06 m ( 19 ft 10 + 1 ⁄ 2 in),Sergey Bubka,main,ratified,False
+M,PV,1991-05-06,6.07,6.07 m ( 19 ft 10 + 3 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1991-06-09,6.08,6.08 m ( 19 ft 11 + 1 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1991-07-08,6.09,6.09 m ( 19 ft 11 + 3 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1991-08-05,6.1,6.10 m (20 ft 0 in),Sergey Bubka,main,ratified,False
+M,PV,1992-06-13,6.11,6.11 m ( 20 ft 1 ⁄ 2 in),Sergey Bubka,main,ratified,False
+M,PV,1992-08-30,6.12,6.12 m ( 20 ft 3 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1992-09-19,6.13,6.13 m ( 20 ft 1 + 1 ⁄ 4 in),Sergey Bubka,main,ratified,False
+M,PV,1993-02-21,6.15,"Notes: ^ The numbered occurrence of the athlete breaking the world record, in other words ""#7"" would indicate the 7th time the athlete broke the world record. ^ ""From 2000, IAAF Rule 260.18s (formerly 260.6.a) was amended to say world records (as opposed to indoor world records) can be set in a facility 'with or without a roof.' So far, only one event - the women's pole vault - has been affected by this change, which was not applied retrospectively."" Sergey Bubka set an indoor record of 6.15 m (20 ft 2 in) on February 21, 1993, in excess of the outdoor record, before this rule came into effect. Lavillenie's indoor world record was set after the rule came into effect, and thus since it exceeded Bubka's 6.14 m ( 20 ft 1 + 1 ⁄ 2 in) set outdoors, it also became the outright world record, the first indoor mark to do so in this event.","Notes: ^ The numbered occurrence of the athlete breaking the world record, in other words ""#7"" would indicate the 7th time the athlete broke the world record. ^ ""From 2000, IAAF Rule 260.18s (formerly 260.6.a) was amended to say world records (as opposed to indoor world records) can be set in a facility 'with or without a roof.' So far, only one event - the women's pole vault - has been affected by this change, which was not applied retrospectively."" Sergey Bubka set an indoor record of 6.15 m (20 ft 2 in) on February 21, 1993, in excess of the outdoor record, before this rule came into effect. Lavillenie's indoor world record was set after the rule came into effect, and thus since it exceeded Bubka's 6.14 m ( 20 ft 1 + 1 ⁄ 2 in) set outdoors, it also became the outright world record, the first indoor mark to do so in this event.",main,ratified,False
+M,PV,2014-02-15,6.16,6.16 m ( 20 ft 2 + 1 ⁄ 2 in) i,Renaud Lavillenie,main,ratified,False
+M,PV,2020-02-08,6.17,6.17 m ( 20 ft 2 + 3 ⁄ 4 in) i,Armand Duplantis,main,ratified,False
+M,PV,2020-02-15,6.18,6.18 m ( 20 ft 3 + 1 ⁄ 4 in) i,Armand Duplantis,main,ratified,False
+M,PV,2022-03-07,6.19,6.19 m ( 20 ft 3 + 1 ⁄ 2 in) i,Armand Duplantis,main,ratified,False
+M,PV,2022-03-20,6.2,6.20 m (20 ft 4 in) i,Armand Duplantis,main,ratified,False
+M,PV,2022-07-24,6.21,6.21 m ( 20 ft 4 + 1 ⁄ 4 in),Armand Duplantis,main,ratified,False
+M,PV,2023-02-25,6.22,6.22 m ( 20 ft 4 + 3 ⁄ 4 in) i,Armand Duplantis,main,ratified,False
+M,PV,2023-09-17,6.23,6.23 m ( 20 ft 5 + 1 ⁄ 4 in),Armand Duplantis,main,ratified,False
+M,PV,2024-04-20,6.24,6.24 m ( 20 ft 5 + 1 ⁄ 2 in),Armand Duplantis,main,ratified,False
+M,PV,2024-08-05,6.25,6.25 m (20 ft 6 in),Armand Duplantis,main,ratified,False
+M,PV,2024-08-25,6.26,6.26 m ( 20 ft 6 + 1 ⁄ 4 in),Armand Duplantis,main,ratified,False
+M,PV,2025-02-28,6.27,6.27 m ( 20 ft 6 + 3 ⁄ 4 in) i,Armand Duplantis,main,ratified,False
+M,PV,2025-06-15,6.28,6.28 m (20 ft 7 in),Armand Duplantis,main,ratified,False
+M,PV,2025-08-12,6.29,6.29 m ( 20 ft 7 + 1 ⁄ 2 in),Armand Duplantis,main,ratified,False
+M,PV,2025-09-15,6.3,6.30 m (20 ft 8 in),Armand Duplantis,main,ratified,False
+M,PV,2026-03-12,6.31,6.31 m ( 20 ft 8 + 1 ⁄ 4 in) i,Armand Duplantis,main,ratified,False
+W,PV,1910-05-14,1.44,4 ft 9 in (1.44 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.47,4 ft 10 in (1.47 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.49,4 ft 11 in (1.49 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.52,5 ft 0 in (1.52 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.54,5 ft 1 in (1.54 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.57,5 ft 2 in (1.57 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.6,5 ft 3 in (1.6 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.62,5 ft 4 in (1.62 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.65,5 ft 5 in (1.65 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.67,5 ft 6 in (1.67 m),Ruth Spencer,pre,unofficial,False
+W,PV,1911-05-15,1.7,5 ft 7 in (1.7 m),Ruth Spencer,pre,unofficial,False
+W,PV,1915-04-03,1.72,5 ft 8 in (1.72 m),Hazel Hutaff,pre,unofficial,False
+W,PV,1915-04-03,1.75,5 ft 9 in (1.75 m),Hazel Hutaff,pre,unofficial,False
+W,PV,1915-04-03,1.77,5 ft 9 3 ⁄ 4 in (1.77 m),Hazel Hutaff,pre,unofficial,False
+W,PV,1915-04-13,1.77,5 ft 10 in (1.77 m),Lois Tatum,pre,unofficial,True
+W,PV,1915-04-13,1.77,=5 ft 10 in (1.77 m),Emma Lee King,pre,unofficial,True
+W,PV,1915-04-13,1.84,6 ft 0 1 ⁄ 2 in (1.84 m),Lois Tatum,pre,unofficial,False
+W,PV,1915-05-13,1.84,=6 ft 0 1 ⁄ 2 in (1.84 m),Eva Fisk,pre,unofficial,True
+W,PV,1915-05-13,1.85,6 ft 1 in (1.85 m),Eva Fisk,pre,unofficial,False
+W,PV,1915-05-13,1.9,6 ft 3 in (1.9 m),Eva Fisk,pre,unofficial,False
+W,PV,1915-06-06,1.9,=6 ft 3 in (1.9 m),Mildred Carl,pre,unofficial,True
+W,PV,1915-06-06,1.93,6 ft 4 in (1.93 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,1.95,6 ft 5 in (1.95 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,1.98,6 ft 6 in (1.98 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.0,6 ft 7 in (2 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.03,6 ft 8 in (2.03 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.05,6 ft 9 in (2.05 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.08,6 ft 10 in (2.08 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.1,6 ft 11 in (2.1 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.13,7 ft 0 in (2.13 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.15,7 ft 1 in (2.15 m),Mildred Carl,pre,unofficial,False
+W,PV,1915-06-06,2.18,7 ft 2 in (2.18 m),Mildred Carl,pre,unofficial,False
+W,PV,1919-06-03,2.2,7 ft 3 in (2.2 m),Mildred Carl,pre,unofficial,False
+W,PV,1921-07-17,2.25,2.25 m ( 7 ft 4 + 1 ⁄ 2 in),Elva Hintze,pre,unofficial,False
+W,PV,1921-07-17,2.3,2.30 m ( 7 ft 6 + 1 ⁄ 2 in),Helene Henneke,pre,unofficial,False
+W,PV,1921-07-17,2.35,2.35 m ( 7 ft 8 + 1 ⁄ 2 in),Helene Henneke,pre,unofficial,False
+W,PV,1924-09-07,2.35,=2.35 m ( 7 ft 8 + 1 ⁄ 2 in),Yelena Goldobina,pre,unofficial,True
+W,PV,1935-08-26,2.53,2.53 m ( 8 ft 3 + 1 ⁄ 2 in),Zoya Romanova,pre,unofficial,False
+W,PV,1952-07-06,2.59,8 ft 6 in (2.59 m),Diane Bragg,pre,unofficial,False
+W,PV,1969-01-08,2.59,=8 ft 6 in (2.59 m),Brenda Walker,pre,unofficial,True
+W,PV,1978-02-10,2.6,8 ft 6 1 ⁄ 2 in (2.6 m) i,Irene Spieker,pre,unofficial,False
+W,PV,1979-02-09,2.61,8 ft 7 in (2.61 m) i,Irene Spieker,pre,unofficial,False
+W,PV,1979-02-09,2.74,9 ft 0 in (2.74 m) i,Irene Spieker,pre,unofficial,False
+W,PV,1979-02-09,2.92,9 ft 7 in (2.92 m) i,Irene Spieker,pre,unofficial,False
+W,PV,1979-02-09,3.05,10 ft 0 1 ⁄ 4 in (3.05 m) i,Irene Spieker,pre,unofficial,False
+W,PV,1983-06-11,3.2,10 ft 6 in (3.2 m),Jana Edwards,pre,unofficial,False
+W,PV,1983-06-18,3.22,10 ft 7 in (3.22 m),Jana Edwards,pre,unofficial,False
+W,PV,1983-06-18,3.37,11 ft 1 in (3.37 m),Jana Edwards,pre,unofficial,False
+W,PV,1983-07-23,3.5,11 ft 6 in (3.5 m),Jana Edwards,pre,unofficial,False
+W,PV,1983-07-23,3.59,11 ft 9 1 ⁄ 2 in (3.59 m),Jana Edwards,pre,unofficial,False
+W,PV,1988-04-20,3.72,3.72 m ( 12 ft 2 + 1 ⁄ 4 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1988-05-04,3.73,3.73 m ( 12 ft 2 + 3 ⁄ 4 in),Shao Jingmen,pre,unofficial,False
+W,PV,1988-06-10,3.75,3.75 m ( 12 ft 3 + 1 ⁄ 2 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1989-04-22,3.76,3.76 m (12 ft 4 in),Zhou Minxin,pre,unofficial,False
+W,PV,1989-09-09,3.8,3.8 m ( 12 ft 5 + 1 ⁄ 2 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1990-03-24,3.81,3.81 m (12 ft 6 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1991-03-24,3.83,3.83 m ( 12 ft 6 + 3 ⁄ 4 in),Sun Caiyun,pre,unofficial,False
+W,PV,1991-03-24,3.83,=3.83 m ( 12 ft 6 + 3 ⁄ 4 in),Zhang Chunzhen,pre,unofficial,True
+W,PV,1991-03-24,4.0,4.00 m ( 13 ft 1 + 1 ⁄ 4 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1991-06-05,4.02,4.02 m ( 13 ft 2 + 1 ⁄ 4 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1991-08-10,4.05,4.05 m ( 13 ft 3 + 1 ⁄ 4 in),Zhang Chunzhen,pre,unofficial,False
+W,PV,1992-05-21,4.05,4.05 m ( 13 ft 3 + 1 ⁄ 4 in),Sun Caiyun,main,ratified,False
+W,PV,1995-05-18,4.08,4.08 m ( 13 ft 4 + 1 ⁄ 2 in),Sun Caiyun,main,ratified,False
+W,PV,1995-05-18,4.08,4.08 m ( 13 ft 4 + 1 ⁄ 2 in),Zhong Guiqing,main,ratified,True
+W,PV,1995-05-21,4.1,4.10 m ( 13 ft 5 + 1 ⁄ 4 in),Daniela Bártová,main,ratified,False
+W,PV,1995-06-18,4.12,4.12 m (13 ft 6 in),Daniela Bártová,main,ratified,False
+W,PV,1995-06-24,4.13,4.13 m ( 13 ft 6 + 1 ⁄ 2 in),Daniela Bártová,main,ratified,False
+W,PV,1995-07-02,4.14,4.14 m ( 13 ft 6 + 3 ⁄ 4 in),Daniela Bártová,main,ratified,False
+W,PV,1995-07-06,4.15,4.15 m ( 13 ft 7 + 1 ⁄ 4 in),Daniela Bártová,main,ratified,False
+W,PV,1995-07-14,4.16,4.16 m ( 13 ft 7 + 3 ⁄ 4 in),Daniela Bártová,main,ratified,False
+W,PV,1995-07-15,4.17,4.17 m (13 ft 8 in),Daniela Bártová,main,ratified,False
+W,PV,1995-08-05,4.18,4.18 m ( 13 ft 8 + 1 ⁄ 2 in),Andrea Müller,main,ratified,False
+W,PV,1995-08-18,4.2,4.20 m ( 13 ft 9 + 1 ⁄ 4 in),Daniela Bártová,main,ratified,False
+W,PV,1995-08-22,4.21,4.21 m ( 13 ft 9 + 1 ⁄ 2 in),Daniela Bártová,main,ratified,False
+W,PV,1995-09-11,4.22,4.22 m (13 ft 10 in),Daniela Bártová,main,ratified,False
+W,PV,1995-11-30,4.25,4.25 m ( 13 ft 11 + 1 ⁄ 4 in),Emma George,main,ratified,False
+W,PV,1995-12-17,4.28,4.28 m ( 14 ft 1 ⁄ 2 in),Emma George,main,ratified,False
+W,PV,1996-01-28,4.3,4.30 m ( 14 ft 1 + 1 ⁄ 4 in),Emma George,main,ratified,False
+W,PV,1996-01-28,4.41,4.41 m ( 14 ft 5 + 1 ⁄ 2 in),Emma George,main,ratified,False
+W,PV,1996-06-29,4.42,4.42 m (14 ft 6 in),Emma George,main,ratified,False
+W,PV,1996-07-14,4.45,4.45 m (14 ft 7 in),Emma George,main,ratified,False
+W,PV,1997-02-08,4.5,4.50 m (14 ft 9 in),Emma George,main,ratified,False
+W,PV,1997-02-20,4.55,4.55 m (14 ft 11 in),Emma George,main,ratified,False
+W,PV,1998-02-21,4.57,4.57 m ( 14 ft 11 + 3 ⁄ 4 in),Emma George,main,ratified,False
+W,PV,1998-03-14,4.58,4.58 m ( 15 ft 1 ⁄ 4 in),Emma George,main,ratified,False
+W,PV,1998-03-21,4.59,4.59 m ( 15 ft 1 ⁄ 2 in),Emma George,main,ratified,False
+W,PV,1999-02-20,4.6,4.60 m (15 ft 1 in),Emma George,main,ratified,False
+W,PV,1999-08-21,4.6,4.60 m (15 ft 1 in),Stacy Dragila,main,ratified,True
+W,PV,2000-02-19,4.6,i 4.60 m (15 ft 1 in),Stacy Dragila,main,ratified,True
+W,PV,2000-03-03,4.62,i 4.62 m ( 15 ft 1 + 3 ⁄ 4 in),Stacy Dragila,main,ratified,False
+W,PV,2000-07-23,4.63,4.63 m ( 15 ft 2 + 1 ⁄ 4 in),Stacy Dragila,main,ratified,False
+W,PV,2001-02-02,4.63,i 4.63 m ( 15 ft 2 + 1 ⁄ 4 in),Stacy Dragila,main,ratified,True
+W,PV,2001-02-11,4.64,i 4.64 m ( 15 ft 2 + 1 ⁄ 2 in),Svetlana Feofanova,main,ratified,False
+W,PV,2001-02-17,4.66,i 4.66 m ( 15 ft 3 + 1 ⁄ 4 in),Stacy Dragila,main,ratified,False
+W,PV,2001-02-17,4.7,i 4.70 m (15 ft 5 in),Stacy Dragila,main,ratified,False
+W,PV,2001-04-27,4.7,4.70 m (15 ft 5 in),Stacy Dragila,main,ratified,True
+W,PV,2001-06-09,4.71,4.71 m ( 15 ft 5 + 1 ⁄ 4 in),Stacy Dragila,main,ratified,False
+W,PV,2001-06-09,4.81,4.81 m ( 15 ft 9 + 1 ⁄ 4 in),Stacy Dragila,main,ratified,False
+W,PV,2003-07-13,4.82,4.82 m ( 15 ft 9 + 3 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-02-15,4.83,i 4.83 m (15 ft 10 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-02-22,4.85,i 4.85 m ( 15 ft 10 + 3 ⁄ 4 in),Svetlana Feofanova,main,ratified,False
+W,PV,2004-03-06,4.86,i 4.86 m ( 15 ft 11 + 1 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-06-27,4.87,4.87 m ( 15 ft 11 + 1 ⁄ 2 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-07-04,4.88,4.88 m (16 ft 0 in),Svetlana Feofanova,main,ratified,False
+W,PV,2004-07-25,4.89,4.89 m ( 16 ft 1 ⁄ 2 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-07-30,4.9,4.90 m ( 16 ft 3 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-08-24,4.91,4.91 m ( 16 ft 1 + 1 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2004-09-03,4.92,4.92 m ( 16 ft 1 + 1 ⁄ 2 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2005-07-05,4.93,4.93 m (16 ft 2 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2005-07-16,4.95,4.95 m ( 16 ft 2 + 3 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2005-07-22,4.96,4.96 m ( 16 ft 3 + 1 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2005-07-22,5.0,5.00 m ( 16 ft 4 + 3 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2005-08-09,5.01,5.01 m (16 ft 5 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2008-07-11,5.03,5.03 m (16 ft 6 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2008-07-29,5.04,5.04 m ( 16 ft 6 + 1 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2008-08-18,5.05,5.05 m ( 16 ft 6 + 3 ⁄ 4 in),Yelena Isinbayeva,main,ratified,False
+W,PV,2009-08-28,5.06,5.06 m (16 ft 7 in),Yelena Isinbayeva,main,ratified,False
+M,LJ,1901-08-05,7.61,7.61 m ( 24 ft 11 + 1 ⁄ 2 in),Peter O'Connor ( IRE ),main,ratified,False
+M,LJ,1921-07-23,7.69,7.69 m ( 25 ft 2 + 3 ⁄ 4 in),Edward Gourdin ( USA ),main,ratified,False
+M,LJ,1924-07-07,7.76,7.76 m ( 25 ft 5 + 1 ⁄ 2 in),Robert LeGendre ( USA ),main,ratified,False
+M,LJ,1925-06-13,7.89,7.89 m ( 25 ft 10 + 1 ⁄ 2 in),DeHart Hubbard ( USA ),main,ratified,False
+M,LJ,1928-07-07,7.9,7.90 m (25 ft 11 in),Edward Hamm ( USA ),main,ratified,False
+M,LJ,1928-09-09,7.93,7.93 m (26 ft 0 in),Sylvio Cator ( HAI ),main,ratified,False
+M,LJ,1931-10-27,7.98,7.98 m (26 ft 2 in),Chuhei Nambu ( JPN ),main,ratified,False
+M,LJ,1935-05-25,8.13,8.13 m (26 ft 8 in),Jesse Owens ( USA ),main,ratified,False
+M,LJ,1960-08-12,8.21,8.21 m (26 ft 11 in),Ralph Boston ( USA ),main,ratified,False
+M,LJ,1961-05-27,8.24,8.24 m ( 27 ft 1 ⁄ 4 in),Ralph Boston ( USA ),main,ratified,False
+M,LJ,1961-07-16,8.28,8.28 m ( 27 ft 1 + 3 ⁄ 4 in),Ralph Boston ( USA ),main,ratified,False
+M,LJ,1962-06-10,8.31,8.31 m (27 ft 3 in) A,Igor Ter-Ovanesyan ( URS ),main,ratified,False
+M,LJ,1963-05-25,8.33,8.33 m ( 27 ft 3 + 3 ⁄ 4 in),Phil Shinnick ( USA ),main,ratified,False
+M,LJ,1964-09-12,8.34,8.34 m ( 27 ft 4 + 1 ⁄ 4 in),Ralph Boston ( USA ),main,ratified,False
+M,LJ,1965-05-29,8.35,8.35 m ( 27 ft 4 + 1 ⁄ 2 in),Ralph Boston ( USA ),main,ratified,False
+M,LJ,1967-10-19,8.35,8.35 m ( 27 ft 4 + 1 ⁄ 2 in) A,Igor Ter-Ovanesyan ( URS ),main,ratified,True
+M,LJ,1968-10-18,8.9,8.90 m ( 29 ft 2 + 1 ⁄ 4 in) A,Bob Beamon ( USA ),main,ratified,False
+M,LJ,1991-08-30,8.95,8.95 m ( 29 ft 4 + 1 ⁄ 4 in),Mike Powell ( USA ),main,ratified,False
+W,LJ,1922-08-06,5.16,5.16 m (16 ft 11 in),Marie Mejzlíková II ( TCH ),main,ratified,False
+W,LJ,1923-09-23,5.3,5.30 m ( 17 ft 4 + 1 ⁄ 2 in),Marie Mejzlíková II ( TCH ),main,ratified,False
+W,LJ,1926-08-02,5.485,5.485 m ( 17 ft 11 + 3 ⁄ 4 in),Muriel Gunn ( GBR ),main,ratified,False
+W,LJ,1926-08-28,5.5,5.50 m ( 18 ft 1 ⁄ 2 in),Kinue Hitomi ( JPN ),main,ratified,False
+W,LJ,1927-08-01,5.575,5.575 m ( 18 ft 3 + 1 ⁄ 4 in),Muriel Gunn ( GBR ),main,ratified,False
+W,LJ,1928-05-20,5.98,5.98 m ( 19 ft 7 + 1 ⁄ 4 in),Kinue Hitomi ( JPN ),main,ratified,False
+W,LJ,1939-07-30,6.12,6.12 m ( 20 ft 3 ⁄ 4 in),Christel Schulz ( GER ),main,ratified,False
+W,LJ,1943-09-19,6.25,6.25 m (20 ft 6 in),Fanny Blankers-Koen ( NED ),main,ratified,False
+W,LJ,1954-02-20,6.28,6.28 m (20 ft 7 in),Yvette Williams ( NZL ),main,ratified,False
+W,LJ,1955-09-11,6.28,6.28 m (20 ft 7 in),Galina Vinogradova ( URS ),main,ratified,True
+W,LJ,1955-11-18,6.31,6.31 m ( 20 ft 8 + 1 ⁄ 4 in),Galina Vinogradova ( URS ),main,ratified,False
+W,LJ,1956-08-20,6.35,6.35 m (20 ft 10 in),Elżbieta Krzesińska ( POL ),main,ratified,False
+W,LJ,1956-11-27,6.35,6.35 m (20 ft 10 in),Elżbieta Krzesińska ( POL ),main,ratified,True
+W,LJ,1960-08-07,6.4,6.40 m ( 20 ft 11 + 3 ⁄ 4 in),Hildrun Claus ( GDR ),main,ratified,False
+W,LJ,1961-06-23,6.42,6.42 m ( 21 ft 3 ⁄ 4 in),Hildrun Claus ( GDR ),main,ratified,False
+W,LJ,1961-07-16,6.48,6.48 m (21 ft 3 in),Tatyana Shchelkanova ( URS ),main,ratified,False
+W,LJ,1962-06-10,6.53,6.53 m (21 ft 5 in),Tatyana Shchelkanova ( URS ),main,ratified,False
+W,LJ,1964-07-04,6.7,6.70 m ( 21 ft 11 + 3 ⁄ 4 in),Tatyana Shchelkanova ( URS ),main,ratified,False
+W,LJ,1964-10-14,6.76,6.76 m (22 ft 2 in),Mary Rand ( GBR ),main,ratified,False
+W,LJ,1968-10-14,6.82,6.82 m ( 22 ft 4 + 1 ⁄ 2 in) A,Viorica Viscopoleanu ( ROU ),main,ratified,False
+W,LJ,1970-09-03,6.84,6.84 m ( 22 ft 5 + 1 ⁄ 4 in),Heide Rosendahl ( FRG ),main,ratified,False
+W,LJ,1976-05-09,6.92,6.92 m ( 22 ft 8 + 1 ⁄ 4 in),Angela Voigt ( GDR ),main,ratified,False
+W,LJ,1976-05-19,6.99,6.99 m (22 ft 11 in),Siegrun Siegl ( GDR ),main,ratified,False
+W,LJ,1978-08-18,7.07,7.07 m ( 23 ft 2 + 1 ⁄ 4 in),Vilma Bardauskiené ( URS ),main,ratified,False
+W,LJ,1978-08-29,7.09,7.09 m (23 ft 3 in),Vilma Bardauskiené ( URS ),main,ratified,False
+W,LJ,1982-08-01,7.15,7.15 m ( 23 ft 5 + 1 ⁄ 4 in),Anişoara Cuşmir ( ROU ),main,ratified,False
+W,LJ,1982-08-01,7.2,7.20 m ( 23 ft 7 + 1 ⁄ 4 in),Valy Ionescu ( ROU ),main,ratified,False
+W,LJ,1983-05-15,7.21,7.21 m ( 23 ft 7 + 3 ⁄ 4 in),Anişoara Cuşmir ( ROU ),main,ratified,False
+W,LJ,1983-06-04,7.27,7.27 m (23 ft 10 in),Anişoara Cuşmir ( ROU ),main,ratified,False
+W,LJ,1983-06-04,7.43,7.43 m ( 24 ft 4 + 1 ⁄ 2 in),Anişoara Cuşmir ( ROU ),main,ratified,False
+W,LJ,1985-09-22,7.44,7.44 m ( 24 ft 4 + 3 ⁄ 4 in),Heike Drechsler ( GDR ),main,ratified,False
+W,LJ,1986-06-21,7.45,7.45 m ( 24 ft 5 + 1 ⁄ 4 in),Heike Drechsler ( GDR ),main,ratified,False
+W,LJ,1986-07-03,7.45,7.45 m ( 24 ft 5 + 1 ⁄ 4 in),Heike Drechsler ( GDR ),main,ratified,True
+W,LJ,1987-08-13,7.45,7.45 m ( 24 ft 5 + 1 ⁄ 4 in),Jackie Joyner-Kersee ( USA ),main,ratified,True
+W,LJ,1988-06-11,7.45,7.45 m ( 24 ft 5 + 1 ⁄ 4 in),Galina Chistyakova ( URS ),main,ratified,True
+W,LJ,1988-06-11,7.52,7.52 m (24 ft 8 in),Galina Chistyakova ( URS ),main,ratified,False
+M,TJ,1911-05-30,15.52,15.52 m (50 ft 11 in),Dan Ahearn ( USA ),main,ratified,False
+M,TJ,1924-07-12,15.52,15.52 m (50 ft 11 in),Nick Winter ( AUS ),main,ratified,True
+M,TJ,1931-10-27,15.58,15.58 m ( 51 ft 1 + 1 ⁄ 4 in),Mikio Oda ( JPN ),main,ratified,False
+M,TJ,1932-08-04,15.72,15.72 m ( 51 ft 6 + 3 ⁄ 4 in),Chuhei Nambu ( JPN ),main,ratified,False
+M,TJ,1935-12-14,15.78,15.78 m ( 51 ft 9 + 1 ⁄ 4 in),Jack Metcalfe ( AUS ),main,ratified,False
+M,TJ,1936-08-06,16.0,16.00 m ( 52 ft 5 + 3 ⁄ 4 in),Naoto Tajima ( JPN ),main,ratified,False
+M,TJ,1950-12-03,16.0,16.00 m ( 52 ft 5 + 3 ⁄ 4 in),Adhemar da Silva ( BRA ),main,ratified,True
+M,TJ,1951-09-30,16.01,16.01 m ( 52 ft 6 + 1 ⁄ 4 in),Adhemar da Silva ( BRA ),main,ratified,False
+M,TJ,1952-07-23,16.12,16.12 m ( 52 ft 10 + 1 ⁄ 2 in),Adhemar da Silva ( BRA ),main,ratified,False
+M,TJ,1952-07-23,16.22,16.22 m ( 53 ft 2 + 1 ⁄ 2 in),Adhemar da Silva ( BRA ),main,ratified,False
+M,TJ,1953-07-19,16.23,16.23 m ( 53 ft 2 + 3 ⁄ 4 in),Leonid Shcherbakov ( URS ),main,ratified,False
+M,TJ,1955-03-16,16.56,16.56 m ( 54 ft 3 + 3 ⁄ 4 in) A,Adhemar da Silva ( BRA ),main,ratified,False
+M,TJ,1958-07-28,16.59,16.59 m (54 ft 5 in),Oleg Ryakhovskiy ( URS ),main,ratified,False
+M,TJ,1959-05-03,16.7,16.70 m ( 54 ft 9 + 1 ⁄ 4 in),Oleg Fyodoseyev ( URS ),main,ratified,False
+M,TJ,1960-08-05,17.03,17.03 m ( 55 ft 10 + 1 ⁄ 4 in),Józef Szmidt ( POL ),main,ratified,False
+M,TJ,1968-10-16,17.1,17.10 m (56 ft 1 in) A,Giuseppe Gentile ( ITA ),main,ratified,False
+M,TJ,1968-10-17,17.22,17.22 m ( 56 ft 5 + 3 ⁄ 4 in) A,Giuseppe Gentile ( ITA ),main,ratified,False
+M,TJ,1968-10-17,17.23,17.23 m ( 56 ft 6 + 1 ⁄ 4 in) A,Viktor Sanyeyev ( URS ),main,ratified,False
+M,TJ,1968-10-17,17.27,17.27 m ( 56 ft 7 + 3 ⁄ 4 in) A,Nelson Prudêncio ( BRA ),main,ratified,False
+M,TJ,1968-10-17,17.39,17.39 m ( 57 ft 1 ⁄ 2 in) A,Viktor Sanyeyev ( URS ),main,ratified,False
+M,TJ,1971-08-05,17.4,17.40 m (57 ft 1 in) A,Pedro Pérez ( CUB ),main,ratified,False
+M,TJ,1972-10-17,17.44,17.44 m ( 57 ft 2 + 1 ⁄ 2 in),Viktor Sanyeyev ( URS ),main,ratified,False
+M,TJ,1975-10-15,17.89,17.89 m ( 58 ft 8 + 1 ⁄ 4 in) A,João Carlos de Oliveira ( BRA ),main,ratified,False
+M,TJ,1985-06-16,17.97,17.97 m ( 58 ft 11 + 1 ⁄ 4 in),Willie Banks ( USA ),main,ratified,False
+M,TJ,1995-07-18,17.98,17.98 m ( 58 ft 11 + 3 ⁄ 4 in),Jonathan Edwards ( GBR ),main,ratified,False
+M,TJ,1995-08-07,18.16,18.16 m ( 59 ft 6 + 3 ⁄ 4 in),Jonathan Edwards ( GBR ),main,ratified,False
+M,TJ,1995-08-07,18.29,18.29 m (60 ft 0 in),Jonathan Edwards ( GBR ),main,ratified,False
+W,TJ,1922-05-13,10.32,10.32 m ( 33 ft 10 + 1 ⁄ 4 in),Elizabeth Stine ( USA ),pre,unofficial,False
+W,TJ,1923-07-23,10.5,10.50 m ( 34 ft 5 + 1 ⁄ 4 in),Adrienne Kaenel ( SUI ),pre,unofficial,False
+W,TJ,1926-10-17,11.62,11.62 m ( 38 ft 1 + 1 ⁄ 4 in),Kinue Hitomi ( JPN ),pre,unofficial,False
+W,TJ,1939-10-21,11.66,11.66 m (38 ft 3 in),Rie Yamaguchi ( JPN ),pre,unofficial,False
+W,TJ,1959-06-18,12.22,12.22 m (40 ft 1 in),Mary Bignal ( GBR ),pre,unofficial,False
+W,TJ,1981-05-09,12.43,12.43 m ( 40 ft 9 + 1 ⁄ 4 in),Terri Turner ( USA ),pre,unofficial,False
+W,TJ,1982-05-07,12.47,12.47 m ( 40 ft 10 + 3 ⁄ 4 in),Terri Turner ( USA ),pre,unofficial,False
+W,TJ,1983-05-06,12.51,12.51 m ( 41 ft 1 ⁄ 2 in),Melody Smith ( USA ),pre,unofficial,False
+W,TJ,1983-05-07,12.98,12.98 m (42 ft 7 in),Easter Gabriel ( USA ),pre,unofficial,False
+W,TJ,1984-03-24,13.15,13.15 m ( 43 ft 1 + 1 ⁄ 2 in),Terri Turner ( USA ),pre,unofficial,False
+W,TJ,1984-04-13,13.21,13.21 m (43 ft 4 in),Terri Turner ( USA ),pre,unofficial,False
+W,TJ,1985-05-30,13.58,13.58 m ( 44 ft 6 + 1 ⁄ 2 in),Wendy Brown ( USA ),pre,unofficial,False
+W,TJ,1986-06-05,13.68,13.68 m ( 44 ft 10 + 1 ⁄ 2 in),Esmeralda Garcia ( BRA ),pre,unofficial,False
+W,TJ,1987-05-02,13.71,13.71 m ( 44 ft 11 + 3 ⁄ 4 in),Wendy Brown ( USA ),pre,unofficial,False
+W,TJ,1987-05-17,13.73,13.73 m ( 45 ft 1 ⁄ 2 in),Flora Hyacinth ( ISV ),pre,unofficial,False
+W,TJ,1987-06-06,13.78,13.78 m ( 45 ft 2 + 1 ⁄ 2 in),Sheila Hudson ( USA ),pre,unofficial,False
+W,TJ,1987-06-26,13.85,13.85 m ( 45 ft 5 + 1 ⁄ 4 in),Sheila Hudson ( USA ),pre,unofficial,False
+W,TJ,1987-10-11,14.04,14.04 m ( 46 ft 3 ⁄ 4 in),Li Huirong ( CHN ),pre,unofficial,False
+W,TJ,1988-04-23,14.16,14.16 m ( 46 ft 5 + 1 ⁄ 4 in),Li Huirong ( CHN ),pre,unofficial,False
+W,TJ,1989-07-02,14.52,14.52 m ( 47 ft 7 + 1 ⁄ 2 in),Galina Chistyakova ( URS ),pre,unofficial,False
+W,TJ,1990-08-25,14.54,14.54 m ( 47 ft 8 + 1 ⁄ 4 in),Li Huirong ( CHN ),main,ratified,False
+W,TJ,1991-06-10,14.95,14.95 m ( 49 ft 1 ⁄ 2 in),Inessa Kravets ( URS ),main,ratified,False
+W,TJ,1993-06-18,14.97,14.97 m ( 49 ft 1 + 1 ⁄ 4 in),Iolanda Chen ( RUS ),main,ratified,False
+W,TJ,1993-08-21,15.09,15.09 m (49 ft 6 in),Anna Biryukova ( RUS ),main,ratified,False
+W,TJ,1995-08-10,15.5,15.50 m (50 ft 10 in),Inessa Kravets ( UKR ),main,ratified,False
+W,TJ,2021-08-01,15.67,15.67 m ( 51 ft 4 + 3 ⁄ 4 in),Yulimar Rojas ( VEN ),main,ratified,False
+W,TJ,2022-03-20,15.74,15.74 m ( 51 ft 7 + 1 ⁄ 2 in),Yulimar Rojas ( VEN ),main,ratified,False
+M,SP,1909-08-21,15.54,15.54 m,Ralph Rose ( USA ),main,ratified,False
+M,SP,1928-05-06,15.79,15.79 m,Emil Hirschfeld ( GER ),main,ratified,False
+M,SP,1928-07-29,15.87,15.87 m,John Kuck ( USA ),main,ratified,False
+M,SP,1928-08-26,16.04,16.04 m,Emil Hirschfeld ( GER ),main,ratified,False
+M,SP,1931-10-04,16.04,16.04 m,František Douda ( TCH ),main,ratified,True
+M,SP,1932-06-29,16.05,16.05 m,Zygmunt Heljasz ( POL ),main,ratified,False
+M,SP,1932-08-27,16.16,16.16 m,Leo Sexton ( USA ),main,ratified,False
+M,SP,1932-09-24,16.2,16.20 m,František Douda ( TCH ),main,ratified,False
+M,SP,1934-04-21,16.48,16.48 m,John Lyman ( USA ),main,ratified,False
+M,SP,1934-04-27,16.8,16.80 m,Jack Torrance ( USA ),main,ratified,False
+M,SP,1934-06-30,16.89,16.89 m,Jack Torrance ( USA ),main,ratified,False
+M,SP,1934-08-05,17.4,17.40 m,Jack Torrance ( USA ),main,ratified,False
+M,SP,1948-04-17,17.68,17.68 m,Charlie Fonville ( USA ),main,ratified,False
+M,SP,1949-07-28,17.79,17.79 m,Jim Fuchs ( USA ),main,ratified,False
+M,SP,1950-04-29,17.82,17.82 m,Jim Fuchs ( USA ),main,ratified,False
+M,SP,1950-08-20,17.9,17.90 m,Jim Fuchs ( USA ),main,ratified,False
+M,SP,1950-08-22,17.95,17.95 m,Jim Fuchs ( USA ),main,ratified,False
+M,SP,1953-05-09,18.0,18.00 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1953-06-05,18.04,18.04 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1954-05-08,18.42,18.42 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1954-05-21,18.43,18.43 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1954-06-11,18.54,18.54 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1956-05-05,18.62,18.62 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1956-06-15,18.69,18.69 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1956-09-03,19.06,19.06 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1956-11-01,19.25,19.25 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1959-03-28,19.25,19.25 m,Dallas Long ( USA ),main,ratified,True
+M,SP,1959-08-01,19.3,19.30 m,Parry O'Brien ( USA ),main,ratified,False
+M,SP,1960-03-05,19.38,19.38 m,Dallas Long ( USA ),main,ratified,False
+M,SP,1960-03-19,19.45,19.45 m,Bill Nieder ( USA ),main,ratified,False
+M,SP,1960-03-26,19.67,19.67 m,Dallas Long ( USA ),main,ratified,False
+M,SP,1960-04-02,19.99,19.99 m,Bill Nieder ( USA ),main,ratified,False
+M,SP,1960-08-12,20.06,20.06 m,Bill Nieder ( USA ),main,ratified,False
+M,SP,1962-05-18,20.08,20.08 m,Dallas Long ( USA ),main,ratified,False
+M,SP,1964-04-04,20.1,20.10 m,Dallas Long ( USA ),main,ratified,False
+M,SP,1964-05-29,20.2,20.20 m,Dallas Long ( USA ),main,ratified,False
+M,SP,1964-07-25,20.68,20.68 m,Dallas Long ( USA ),main,ratified,False
+M,SP,1965-05-08,21.52,21.52 m,Randy Matson ( USA ),main,ratified,False
+M,SP,1967-04-23,21.78,21.78 m,Randy Matson ( USA ),main,ratified,False
+M,SP,1973-05-05,21.82,21.82 m,Al Feuerbach ( USA ),main,ratified,False
+M,SP,1976-02-21,21.85,21.85 m,Terry Albritton ( USA ),main,ratified,False
+M,SP,1976-06-10,22.0,22.00 m,Aleksandr Baryshnikov ( URS ),main,ratified,False
+M,SP,1978-07-06,22.15,22.15 m,Udo Beyer ( GDR ),main,ratified,False
+M,SP,1983-06-25,22.22,22.22 m,Udo Beyer ( GDR ),main,ratified,False
+M,SP,1985-09-22,22.62,22.62 m,Ulf Timmermann ( GDR ),main,ratified,False
+M,SP,1986-08-20,22.64,22.64 m,Udo Beyer ( GDR ),main,ratified,False
+M,SP,1987-08-12,22.72,22.72 m,Alessandro Andrei ( ITA ),main,ratified,False
+M,SP,1987-08-12,22.84,22.84 m,Alessandro Andrei ( ITA ),main,ratified,False
+M,SP,1987-08-12,22.91,22.91 m,Alessandro Andrei ( ITA ),main,ratified,False
+M,SP,1988-05-22,23.06,23.06 m,Ulf Timmermann ( GDR ),main,ratified,False
+M,SP,1990-05-20,23.12,23.12 m,Randy Barnes ( USA ),main,ratified,False
+M,SP,2021-06-18,23.37,23.37 m,Ryan Crouser ( USA ),main,ratified,False
+M,SP,2023-05-27,23.56,23.56 m,Ryan Crouser ( USA ),main,ratified,False
+W,SP,1924-07-14,10.15,10.15 m,Violette Gouraud-Morris ( FRA ),main,ratified,False
+W,SP,1927-05-28,10.84,10.84 m,Ruth Lange ( GER ),main,ratified,False
+W,SP,1927-08-06,11.32,11.32 m,Ruth Lange ( GER ),main,ratified,False
+W,SP,1928-06-03,11.52,11.52 m,Ruth Lange ( GER ),main,ratified,False
+W,SP,1928-07-15,11.96,11.96 m,Grete Heublein ( GER ),main,ratified,False
+W,SP,1929-07-21,12.85,12.85 m,Grete Heublein ( GER ),main,ratified,False
+W,SP,1931-06-28,12.88,12.88 m,Grete Heublein ( GER ),main,ratified,False
+W,SP,1931-08-16,13.7,13.70 m,Grete Heublein ( GER ),main,ratified,False
+W,SP,1934-07-15,14.38,14.38 m,Gisela Mauermayer ( GER ),main,ratified,False
+W,SP,1948-08-04,14.59,14.59 m,Tatyana Sevryukova ( URS ),main,ratified,False
+W,SP,1949-10-30,14.86,14.86 m,Klavdia Tochonova ( URS ),main,ratified,False
+W,SP,1950-11-09,15.02,15.02 m,Anna Andreyeva ( URS ),main,ratified,False
+W,SP,1952-07-26,15.28,15.28 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1952-09-20,15.37,15.37 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1952-10-01,15.42,15.42 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1953-10-09,16.2,16.20 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1954-09-14,16.28,16.28 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1955-09-05,16.28,16.28 m,Galina Zybina ( URS ),main,ratified,True
+W,SP,1955-11-15,16.67,16.67 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1956-10-13,16.76,16.76 m,Galina Zybina ( URS ),main,ratified,False
+W,SP,1959-04-26,17.25,17.25 m,Tamara Press ( URS ),main,ratified,False
+W,SP,1960-07-16,17.42,17.42 m,Tamara Press ( URS ),main,ratified,False
+W,SP,1960-08-13,17.78,17.78 m,Tamara Press ( URS ),main,ratified,False
+W,SP,1962-06-10,18.55,18.55 m,Tamara Press ( URS ),main,ratified,False
+W,SP,1962-09-12,18.55,18.55 m,Tamara Press ( URS ),main,ratified,True
+W,SP,1965-09-19,18.59,18.59 m,Tamara Press ( URS ),main,ratified,False
+W,SP,1968-04-28,18.67,18.67 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1968-09-22,18.87,18.87 m,Margitta Gummel ( GDR ),main,ratified,False
+W,SP,1968-10-20,19.07,19.07 m,Margitta Gummel ( GDR ),main,ratified,False
+W,SP,1968-10-20,19.61,19.61 m,Margitta Gummel ( GDR ),main,ratified,False
+W,SP,1969-05-30,19.72,19.72 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1969-07-13,20.09,20.09 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1969-09-11,20.1,20.10 m,Margitta Gummel ( GDR ),main,ratified,False
+W,SP,1969-09-16,20.1,20.10 m,Nadezhda Chizhova ( URS ),main,ratified,True
+W,SP,1969-09-16,20.43,20.43 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1971-08-29,20.43,20.43 m,Nadezhda Chizhova ( URS ),main,ratified,True
+W,SP,1972-05-19,20.63,20.63 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1972-09-07,21.03,21.03 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1973-08-28,21.2,21.20 m,Nadezhda Chizhova ( URS ),main,ratified,False
+W,SP,1975-08-06,21.6,21.60 m,Marianne Adam ( GDR ),main,ratified,False
+W,SP,1976-05-30,21.67,21.67 m,Marianne Adam ( GDR ),main,ratified,False
+W,SP,1976-07-03,21.87,21.87 m,Ivanka Khristova ( BUL ),main,ratified,False
+W,SP,1976-07-04,21.89,21.89 m,Ivanka Khristova ( BUL ),main,ratified,False
+W,SP,1976-09-26,21.99,21.99 m,Helena Fibingerová ( TCH ),main,ratified,False
+W,SP,1977-08-20,22.32,22.32 m,Helena Fibingerová ( TCH ),main,ratified,False
+W,SP,1980-05-02,22.36,22.36 m,Ilona Slupianek ( GDR ),main,ratified,False
+W,SP,1980-05-11,22.45,22.45 m,Ilona Slupianek ( GDR ),main,ratified,False
+W,SP,1984-05-27,22.53,22.53 m,Natalya Lisovskaya ( URS ),main,ratified,False
+W,SP,1987-06-07,22.6,22.60 m,Natalya Lisovskaya ( URS ),main,ratified,False
+W,SP,1987-06-07,22.63,22.63 m,Natalya Lisovskaya ( URS ),main,ratified,False
+M,DT,1912-05-27,47.58,47.58 m (156 ft 1 in),James Duncan ( USA ),main,ratified,False
+M,DT,1924-09-14,47.61,47.61 m ( 156 ft 2 + 1 ⁄ 4 in),Thomas Lieb ( USA ),main,ratified,False
+M,DT,1925-05-02,47.89,47.89 m ( 157 ft 1 + 1 ⁄ 4 in),Glenn Hartranft ( USA ),main,ratified,False
+M,DT,1926-04-03,48.2,48.20 m ( 158 ft 1 + 1 ⁄ 2 in),Bud Houser ( USA ),main,ratified,False
+M,DT,1929-03-09,49.9,49.90 m ( 163 ft 8 + 1 ⁄ 2 in),Eric Krenz ( USA ),main,ratified,False
+M,DT,1930-05-17,51.03,51.03 m (167 ft 5 in),Eric Krenz ( USA ),main,ratified,False
+M,DT,1930-08-23,51.73,51.73 m ( 169 ft 8 + 1 ⁄ 2 in),Paul Jessup ( USA ),main,ratified,False
+M,DT,1934-08-25,52.42,52.42 m ( 171 ft 11 + 3 ⁄ 4 in),Harald Andersson ( SWE ),main,ratified,False
+M,DT,1935-04-28,53.1,53.10 m ( 174 ft 2 + 1 ⁄ 2 in),Willy Schröder ( GER ),main,ratified,False
+M,DT,1941-06-20,53.26,53.26 m ( 174 ft 8 + 3 ⁄ 4 in),Archie Harris ( USA ),main,ratified,False
+M,DT,1941-10-26,53.34,53.34 m (175 ft 0 in),Adolfo Consolini ( ITA ),main,ratified,False
+M,DT,1946-04-14,54.23,54.23 m (177 ft 11 in),Adolfo Consolini ( ITA ),main,ratified,False
+M,DT,1946-06-08,54.93,54.93 m ( 180 ft 2 + 1 ⁄ 2 in),Bob Fitch ( USA ),main,ratified,False
+M,DT,1948-10-10,55.33,55.33 m ( 181 ft 6 + 1 ⁄ 4 in),Adolfo Consolini ( ITA ),main,ratified,False
+M,DT,1949-07-09,56.46,56.46 m ( 185 ft 2 + 3 ⁄ 4 in),Fortune Gordien ( USA ),main,ratified,False
+M,DT,1949-08-14,56.97,56.97 m ( 186 ft 10 + 3 ⁄ 4 in),Fortune Gordien ( USA ),main,ratified,False
+M,DT,1953-06-20,57.93,57.93 m ( 190 ft 1 ⁄ 2 in),Sim Iness ( USA ),main,ratified,False
+M,DT,1953-07-11,58.1,58.10 m ( 190 ft 7 + 1 ⁄ 4 in),Fortune Gordien ( USA ),main,ratified,False
+M,DT,1953-08-22,59.28,59.28 m ( 194 ft 5 + 3 ⁄ 4 in),Fortune Gordien ( USA ),main,ratified,False
+M,DT,1959-06-14,59.91,59.91 m ( 196 ft 6 + 1 ⁄ 2 in),Edmund Piątkowski ( POL ),main,ratified,False
+M,DT,1960-08-12,59.91,59.91 m ( 196 ft 6 + 1 ⁄ 2 in),Rink Babka ( USA ),main,ratified,True
+M,DT,1961-08-11,60.56,60.56 m ( 198 ft 8 + 1 ⁄ 4 in),Jay Silvester ( USA ),main,ratified,False
+M,DT,1961-08-20,60.72,60.72 m ( 199 ft 2 + 1 ⁄ 2 in),Jay Silvester ( USA ),main,ratified,False
+M,DT,1962-05-18,61.1,61.10 m ( 200 ft 5 + 1 ⁄ 2 in),Al Oerter ( USA ),main,ratified,False
+M,DT,1962-06-04,61.64,61.64 m ( 202 ft 2 + 3 ⁄ 4 in),Vladimir Trusenyev ( USSR ),main,ratified,False
+M,DT,1962-07-01,62.45,62.45 m ( 204 ft 10 + 1 ⁄ 2 in),Al Oerter ( USA ),main,ratified,False
+M,DT,1963-04-27,62.62,62.62 m ( 205 ft 5 + 1 ⁄ 4 in),Al Oerter ( USA ),main,ratified,False
+M,DT,1964-04-25,62.94,62.94 m ( 206 ft 5 + 3 ⁄ 4 in),Al Oerter ( USA ),main,ratified,False
+M,DT,1964-08-02,64.55,64.55 m ( 211 ft 9 + 1 ⁄ 4 in),Ludvik Danek ( TCH ),main,ratified,False
+M,DT,1965-10-12,65.22,65.22 m ( 213 ft 11 + 1 ⁄ 2 in),Ludvik Danek ( TCH ),main,ratified,False
+M,DT,1968-05-25,66.54,66.54 m ( 218 ft 3 + 1 ⁄ 2 in),Jay Silvester ( USA ),main,ratified,False
+M,DT,1968-09-18,68.4,68.40 m ( 224 ft 4 + 3 ⁄ 4 in) A,Jay Silvester ( USA ),main,ratified,False
+M,DT,1972-07-05,68.4,68.40 m ( 224 ft 4 + 3 ⁄ 4 in),Ricky Bruch ( SWE ),main,ratified,True
+M,DT,1975-03-14,68.48,68.48 m (224 ft 8 in),John van Reenen ( RSA ),main,ratified,False
+M,DT,1975-05-03,69.08,69.08 m ( 226 ft 7 + 1 ⁄ 2 in),John Powell ( USA ),main,ratified,False
+M,DT,1976-04-24,69.18,69.18 m ( 226 ft 11 + 1 ⁄ 2 in),Mac Wilkins ( USA ),main,ratified,False
+M,DT,1976-05-01,69.8,69.80 m (229 ft 0 in),Mac Wilkins ( USA ),main,ratified,False
+M,DT,1976-05-01,70.24,70.24 m ( 230 ft 5 + 1 ⁄ 4 in),Mac Wilkins ( USA ),main,ratified,False
+M,DT,1976-05-01,70.86,70.86 m ( 232 ft 5 + 3 ⁄ 4 in),Mac Wilkins ( USA ),main,ratified,False
+M,DT,1978-08-09,71.16,71.16 m ( 233 ft 5 + 1 ⁄ 2 in),Wolfgang Schmidt ( GDR ),main,ratified,False
+M,DT,1983-05-29,71.86,71.86 m (235 ft 9 in),Yuriy Dumchev ( USSR ),main,ratified,False
+M,DT,1986-06-06,74.08,74.08 m ( 243 ft 1 ⁄ 2 in),Jürgen Schult ( GDR ),main,ratified,False
+M,DT,2024-04-14,74.35,74.35 m (243 ft 11 in),Mykolas Alekna ( LTU ),main,ratified,False
+M,DT,2025-04-13,74.89,74.89 m ( 245 ft 8 + 1 ⁄ 4 in),Mykolas Alekna ( LTU ),main,ratified,False
+M,DT,2025-04-13,75.56,75.56 m ( 247 ft 10 + 3 ⁄ 4 in),Mykolas Alekna ( LTU ),main,ratified,False
+W,DT,1923-09-23,27.39,27.39 m ( 89 ft 10 + 1 ⁄ 4 in),Yvonne Tembouret ( FRA ),main,ratified,False
+W,DT,1924-07-14,27.7,27.70 m ( 90 ft 10 + 1 ⁄ 2 in),Lucie Petit ( FRA ),main,ratified,False
+W,DT,1924-07-21,28.325,28.325 m (92 ft 11 in),Lucie Petit-Daigré ( BEL ),main,ratified,False
+W,DT,1924-09-14,30.225,30.225 m ( 99 ft 1 + 3 ⁄ 4 in),Lucienne Velu ( FRA ),main,ratified,False
+W,DT,1925-10-11,31.15,31.15 m ( 102 ft 2 + 1 ⁄ 4 in),Maria Vidlaková ( TCH ),main,ratified,False
+W,DT,1926-05-23,34.15,34.15 m ( 112 ft 1 ⁄ 4 in),Halina Konopacka ( POL ),main,ratified,False
+W,DT,1926-08-22,38.34,38.34 m ( 125 ft 9 + 1 ⁄ 4 in),Milly Reuter ( GER ),main,ratified,False
+W,DT,1927-09-04,39.18,39.18 m ( 128 ft 6 + 1 ⁄ 2 in),Halina Konopacka ( POL ),main,ratified,False
+W,DT,1928-07-31,39.62,39.62 m ( 129 ft 11 + 3 ⁄ 4 in),Halina Konopacka ( POL ),main,ratified,False
+W,DT,1932-05-15,40.345,40.345 m ( 132 ft 4 + 1 ⁄ 4 in),Jadwiga Wajs ( POL ),main,ratified,False
+W,DT,1932-05-16,40.39,40.39 m (132 ft 6 in),Jadwiga Wajs ( POL ),main,ratified,False
+W,DT,1932-06-19,40.84,40.84 m ( 133 ft 11 + 3 ⁄ 4 in),Grete Heublein ( GER ),main,ratified,False
+W,DT,1932-06-19,42.43,42.43 m ( 139 ft 2 + 1 ⁄ 4 in),Jadwiga Wajs ( POL ),main,ratified,False
+W,DT,1933-07-15,43.08,43.08 m (141 ft 4 in),Jadwiga Wajs ( POL ),main,ratified,False
+W,DT,1934-08-11,43.795,43.795 m (143 ft 8 in),Jadwiga Wajs ( POL ),main,ratified,False
+W,DT,1935-06-02,44.34,44.34 m ( 145 ft 5 + 1 ⁄ 2 in),Gisela Mauermayer ( GER ),main,ratified,False
+W,DT,1935-06-04,44.76,44.76 m (146 ft 10 in),Gisela Mauermayer ( GER ),main,ratified,False
+W,DT,1935-06-23,45.53,45.53 m ( 149 ft 4 + 1 ⁄ 2 in),Gisela Mauermayer ( GER ),main,ratified,False
+W,DT,1935-06-29,46.1,46.10 m ( 151 ft 2 + 3 ⁄ 4 in),Gisela Mauermayer ( GER ),main,ratified,False
+W,DT,1935-08-25,47.12,47.12 m (154 ft 7 in),Gisela Mauermayer ( GER ),main,ratified,False
+W,DT,1936-07-11,48.31,48.31 m ( 158 ft 5 + 3 ⁄ 4 in),Gisela Mauermayer ( GER ),main,ratified,False
+W,DT,1948-08-08,53.25,53.25 m ( 174 ft 8 + 1 ⁄ 4 in),Nina Dumbadze ( URS ),main,ratified,False
+W,DT,1951-05-27,53.37,53.37 m (175 ft 1 in),Nina Dumbadze ( URS ),main,ratified,False
+W,DT,1952-08-09,53.61,53.61 m ( 175 ft 10 + 1 ⁄ 2 in),Nina Romashkova ( URS ),main,ratified,False
+W,DT,1952-10-18,57.04,57.04 m ( 187 ft 1 + 1 ⁄ 2 in),Nina Dumbadze ( URS ),main,ratified,False
+W,DT,1960-09-12,57.15,57.15 m (187 ft 6 in),Tamara Press ( URS ),main,ratified,False
+W,DT,1961-07-15,57.43,57.43 m (188 ft 5 in),Tamara Press ( URS ),main,ratified,False
+W,DT,1961-09-01,58.06,58.06 m ( 190 ft 5 + 3 ⁄ 4 in),Tamara Press ( URS ),main,ratified,False
+W,DT,1961-09-20,58.98,58.98 m (193 ft 6 in),Tamara Press ( URS ),main,ratified,False
+W,DT,1963-05-18,59.29,59.29 m ( 194 ft 6 + 1 ⁄ 4 in),Tamara Press ( URS ),main,ratified,False
+W,DT,1965-08-11,59.7,59.70 m ( 195 ft 10 + 1 ⁄ 4 in),Tamara Press ( URS ),main,ratified,False
+W,DT,1967-11-05,61.26,61.26 m ( 200 ft 11 + 3 ⁄ 4 in),Liesel Westermann ( FRG ),main,ratified,False
+W,DT,1968-05-26,61.64,61.64 m ( 202 ft 2 + 3 ⁄ 4 in),Christine Spielberg ( GDR ),main,ratified,False
+W,DT,1968-07-24,62.54,62.54 m (205 ft 2 in),Liesel Westermann ( FRG ),main,ratified,False
+W,DT,1969-06-18,62.7,62.70 m ( 205 ft 8 + 1 ⁄ 2 in),Liesel Westermann ( FRG ),main,ratified,False
+W,DT,1969-09-27,63.96,63.96 m (209 ft 10 in),Liesel Westermann ( FRG ),main,ratified,False
+W,DT,1971-08-12,64.22,64.22 m ( 210 ft 8 + 1 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1971-09-04,64.88,64.88 m ( 212 ft 10 + 1 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1972-05-31,65.42,65.42 m ( 214 ft 7 + 1 ⁄ 2 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1972-06-24,65.48,65.48 m ( 214 ft 9 + 3 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1972-08-04,66.76,66.76 m ( 219 ft 1 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1972-09-23,67.32,67.32 m ( 220 ft 10 + 1 ⁄ 4 in),Argentina Menis ( ROU ),main,ratified,False
+W,DT,1973-05-25,67.44,67.44 m (221 ft 3 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1973-07-10,67.58,67.58 m ( 221 ft 8 + 1 ⁄ 2 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1973-09-07,69.48,69.48 m ( 227 ft 11 + 1 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1974-05-27,69.9,69.90 m ( 229 ft 3 + 3 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1975-08-20,70.2,70.20 m ( 230 ft 3 + 3 ⁄ 4 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1976-04-24,70.5,70.50 m ( 231 ft 3 + 1 ⁄ 2 in),Faina Melnik ( URS ),main,ratified,False
+W,DT,1978-08-12,70.72,70.72 m ( 232 ft 1 ⁄ 4 in),Evelin Jahl ( GDR ),main,ratified,False
+W,DT,1980-05-10,71.5,71.50 m ( 234 ft 6 + 3 ⁄ 4 in),Evelin Jahl ( GDR ),main,ratified,False
+W,DT,1980-07-13,71.8,71.80 m ( 235 ft 6 + 3 ⁄ 4 in),Mariya Petkova ( BUL ),main,ratified,False
+W,DT,1983-05-22,73.26,73.26 m ( 240 ft 4 + 1 ⁄ 4 in),Galina Savinkova ( URS ),main,ratified,False
+W,DT,1984-08-17,73.36,73.36 m (240 ft 8 in),Irina Meszynski ( GDR ),main,ratified,False
+W,DT,1984-08-26,74.56,74.56 m ( 244 ft 7 + 1 ⁄ 4 in),Zdeňka Šilhavá ( TCH ),main,ratified,False
+W,DT,1988-07-09,76.8,76.80 m ( 251 ft 11 + 1 ⁄ 2 in),Gabriele Reinsch ( GDR ),main,ratified,False
+M,JT,1986-09-21,85.74,85.74,Klaus Tafelmeier ( FRG ),main,ratified,False
+M,JT,1987-05-31,87.66,87.66,Jan Železný ( TCH ),main,ratified,False
+M,JT,1990-03-24,89.1,89.10,Patrik Bodén ( SWE ),main,ratified,False
+M,JT,1990-07-02,89.58,89.58,Steve Backley ( GBR ),main,ratified,False
+M,JT,1990-07-02,89.58,89.58,Steve Backley ( GBR ),main,ratified,True
+M,JT,1992-01-25,91.46,91.46,Steve Backley ( GBR ),main,ratified,False
+M,JT,1993-04-06,95.54,95.54,Jan Železný ( CZE ),main,ratified,False
+M,JT,1993-08-29,95.66,95.66,Jan Železný ( CZE ),main,ratified,False
+M,JT,1996-05-25,98.48,98.48,Jan Železný ( CZE ),main,ratified,False
+M,JT_old,1912-09-29,62.32,62.32,Eric Lemming ( SWE ),main,ratified,False
+M,JT_old,1919-08-25,66.1,66.10,Jonni Myyrä ( FIN ),main,ratified,False
+M,JT_old,1924-10-12,66.62,66.62,Gunnar Lindström ( SWE ),main,ratified,False
+M,JT_old,1927-10-08,69.88,69.88,Eino Penttilä ( FIN ),main,ratified,False
+M,JT_old,1928-08-15,71.01,71.01,Erik Lundqvist ( SWE ),main,ratified,False
+M,JT_old,1930-08-08,71.57,71.57,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1930-08-17,71.7,71.70,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1930-08-31,71.88,71.88,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1930-09-14,72.93,72.93,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1932-06-27,74.02,74.02,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1933-05-25,74.28,74.28,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1933-06-07,74.61,74.61,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1933-06-15,76.1,76.10,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1934-09-07,76.66,76.66,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1936-06-18,77.23,77.23,Matti Järvinen ( FIN ),main,ratified,False
+M,JT_old,1938-08-25,77.87,77.87,Yrjö Nikkanen ( FIN ),main,ratified,False
+M,JT_old,1938-10-16,78.7,78.70,Yrjö Nikkanen ( FIN ),main,ratified,False
+M,JT_old,1953-08-08,80.41,80.41,Bud Held ( USA ),main,ratified,False
+M,JT_old,1955-05-21,81.75,81.75,Bud Held ( USA ),main,ratified,False
+M,JT_old,1956-06-24,83.56,83.56,Soini Nikkinen ( FIN ),main,ratified,False
+M,JT_old,1956-06-30,83.66,83.66,Janusz Sidło ( POL ),main,ratified,False
+M,JT_old,1956-11-26,85.71,85.71,Egil Danielsen ( NOR ),main,ratified,False
+M,JT_old,1959-06-05,86.04,86.04,Albert Cantello ( USA ),main,ratified,False
+M,JT_old,1961-06-01,86.74,86.74,Carlo Lievore ( ITA ),main,ratified,False
+M,JT_old,1964-07-01,87.12,87.12,Terje Pedersen ( NOR ),main,ratified,False
+M,JT_old,1964-09-02,91.72,91.72,Terje Pedersen ( NOR ),main,ratified,False
+M,JT_old,1968-06-23,91.98,91.98,Jānis Lūsis ( URS ),main,ratified,False
+M,JT_old,1969-06-18,92.7,92.70,Jorma Kinnunen ( FIN ),main,ratified,False
+M,JT_old,1972-07-06,93.8,93.80,Jānis Lūsis ( URS ),main,ratified,False
+M,JT_old,1973-05-05,94.08,94.08,Klaus Wolfermann ( FRG ),main,ratified,False
+M,JT_old,1976-07-25,94.58,94.58,Miklós Németh ( HUN ),main,ratified,False
+M,JT_old,1980-04-23,96.72,96.72,Ferenc Paragi ( HUN ),main,ratified,False
+M,JT_old,1983-05-15,99.72,99.72,Tom Petranoff ( USA ),main,ratified,False
+M,JT_old,1984-07-20,104.8,104.80,Uwe Hohn ( GDR ),main,ratified,False
+W,JT,1999-08-28,67.09,67.09,Mirela Maniani,main,ratified,False
+W,JT,2000-06-30,68.22,68.22,Trine Hattestad,main,ratified,False
+W,JT,2000-07-28,69.48,69.48,Trine Hattestad,main,ratified,False
+W,JT,2001-07-01,71.54,71.54,Osleidys Menéndez,main,ratified,False
+W,JT,2005-08-14,71.7,71.70,Osleidys Menéndez,main,ratified,False
+W,JT,2008-09-13,72.28,72.28,Barbora Špotáková,main,ratified,False
+W,JT_old,1922-08-06,25.01,25.01,Božena Šrámková,main,ratified,False
+W,JT_old,1922-08-13,25.325,25.325,Božena Šrámková,main,ratified,False
+W,JT_old,1924-05-25,27.24,27.24,Marie Janderová,main,ratified,False
+W,JT_old,1927-06-12,37.575,37.575,Guschi Hargus,main,ratified,False
+W,JT_old,1928-08-18,38.39,38.39,Guschi Hargus,main,ratified,False
+W,JT_old,1930-07-12,40.27,40.27,Ellen Braumüller,main,ratified,False
+W,JT_old,1931-08-02,42.28,42.28,Ellen Braumüller,main,ratified,False
+W,JT_old,1932-06-12,44.64,44.64,Ellen Braumüller,main,ratified,False
+W,JT_old,1932-06-18,46.745,46.745,Nan Gindele,main,ratified,False
+W,JT_old,1942-06-21,47.24,47.24,Anneliese Steinheuer,main,ratified,False
+W,JT_old,1947-06-29,48.21,48.21,Herma Bauma,main,ratified,False
+W,JT_old,1948-09-12,48.63,48.63,Herma Bauma,main,ratified,False
+W,JT_old,1949-07-25,49.59,49.59,Natalya Smirnitskaya,main,ratified,False
+W,JT_old,1949-08-05,53.41,53.41,Natalya Smirnitskaya,main,ratified,False
+W,JT_old,1954-02-05,53.56,53.56,Nadezhda Konyayeva,main,ratified,False
+W,JT_old,1954-05-22,55.11,55.11,Nadezhda Konyayeva,main,ratified,False
+W,JT_old,1954-08-06,55.48,55.48,Nadezhda Konyayeva,main,ratified,False
+W,JT_old,1958-06-01,55.73,55.73,Dana Zátopková,main,ratified,False
+W,JT_old,1958-07-24,57.4,57.40,Anna Pazera,main,ratified,False
+W,JT_old,1958-10-30,57.49,57.49,Birutė Zalogaitytė,main,ratified,False
+W,JT_old,1960-05-03,57.92,57.92,Elvīra Ozoliņa,main,ratified,False
+W,JT_old,1960-06-04,59.55,59.55,Elvīra Ozoliņa,main,ratified,False
+W,JT_old,1963-07-03,59.78,59.78,Elvīra Ozoliņa,main,ratified,False
+W,JT_old,1964-10-16,62.4,62.40,Yelena Gorchakova,main,ratified,False
+W,JT_old,1972-06-11,62.7,62.70,Ewa Gryziecka,main,ratified,False
+W,JT_old,1972-06-11,65.06,65.06,Ruth Fuchs,main,ratified,False
+W,JT_old,1973-09-07,66.1,66.10,Ruth Fuchs,main,ratified,False
+W,JT_old,1974-09-03,67.22,67.22,Ruth Fuchs,main,ratified,False
+W,JT_old,1976-07-10,69.12,69.12,Ruth Fuchs,main,ratified,False
+W,JT_old,1977-09-11,69.32,69.32,Kate Schmidt,main,ratified,False
+W,JT_old,1979-06-13,69.52,69.52,Ruth Fuchs,main,ratified,False
+W,JT_old,1980-04-29,69.96,69.96,Ruth Fuchs,main,ratified,False
+W,JT_old,1980-07-12,70.08,70.08,Tatyana Biryulina,main,ratified,False
+W,JT_old,1981-08-15,71.88,71.88,Antoaneta Todorova,main,ratified,False
+W,JT_old,1982-07-29,72.4,72.40,Tiina Lillak,main,ratified,False
+W,JT_old,1982-09-26,74.2,74.20,Sofia Sakorafa,main,ratified,False
+W,JT_old,1983-06-13,74.76,74.76,Tiina Lillak,main,ratified,False
+W,JT_old,1985-06-04,75.26,75.26,Petra Felke,main,ratified,False
+W,JT_old,1985-06-04,75.4,75.40,Petra Felke,main,ratified,False
+W,JT_old,1986-08-28,77.44,77.44,Fatima Whitbread,main,ratified,False
+W,JT_old,1987-07-29,78.9,78.90,Petra Felke,main,ratified,False
+W,JT_old,1988-09-09,80.0,80.00,Petra Felke,main,ratified,False
+M,HT,1913-08-17,57.77,57.77 m (189 ft 6 in),Patrick Ryan,main,ratified,False
+M,HT,1938-08-27,59.0,59.00 m (193 ft 6 in),Erwin Blask,main,ratified,False
+M,HT,1948-07-14,59.02,59.02 m (193 ft 7 in),Imre Németh,main,ratified,False
+M,HT,1949-09-04,59.57,59.57 m (195 ft 5 in),Imre Németh,main,ratified,False
+M,HT,1950-05-19,59.88,59.88 m (196 ft 5 in),Imre Németh,main,ratified,False
+M,HT,1952-07-24,60.34,60.34 m (197 ft 11 in),József Csermák,main,ratified,False
+M,HT,1952-09-14,61.25,61.25 m (200 ft 11 in),Sverre Strandli,main,ratified,False
+M,HT,1953-09-05,62.36,62.36 m (204 ft 7 in),Sverre Strandli,main,ratified,False
+M,HT,1954-08-29,63.34,63.34 m (207 ft 9 in),Mikhail Krivonosov,main,ratified,False
+M,HT,1954-12-12,64.05,64.05 m (210 ft 1 in),Stanislav Nenashev,main,ratified,False
+M,HT,1955-08-04,64.33,64.33 m (211 ft 0 in),Mikhail Krivonosov,main,ratified,False
+M,HT,1955-09-19,64.52,64.52 m (211 ft 8 in),Mikhail Krivonosov,main,ratified,False
+M,HT,1956-04-25,65.85,65.85 m (216 ft 0 in),Mikhail Krivonosov,main,ratified,False
+M,HT,1956-07-08,66.38,66.38 m (217 ft 9 in),Mikhail Krivonosov,main,ratified,False
+M,HT,1956-10-22,67.32,67.32 m (220 ft 10 in),Mikhail Krivonosov,main,ratified,False
+M,HT,1956-11-02,68.54,68.54 m (224 ft 10 in),Hal Connolly,main,ratified,False
+M,HT,1958-06-20,68.68,68.68 m (225 ft 3 in),Hal Connolly,main,ratified,False
+M,HT,1960-08-12,70.33,70.33 m (230 ft 8 in),Hal Connolly,main,ratified,False
+M,HT,1962-07-21,70.67,70.67 m (231 ft 10 in),Hal Connolly,main,ratified,False
+M,HT,1965-05-29,71.06,71.06 m (233 ft 1 in),Hal Connolly,main,ratified,False
+M,HT,1965-06-20,71.26,71.26 m (233 ft 9 in),Hal Connolly,main,ratified,False
+M,HT,1965-09-04,73.74,73.74 m (241 ft 11 in),Gyula Zsivótzky,main,ratified,False
+M,HT,1968-09-14,73.76,73.76 m (241 ft 11 in),Gyula Zsivótzky,main,ratified,False
+M,HT,1969-06-15,74.52,74.52 m (244 ft 5 in),Romuald Klim,main,ratified,False
+M,HT,1969-09-20,74.68,74.68 m (245 ft 0 in),Anatoliy Bondarchuk,main,ratified,False
+M,HT,1969-10-12,75.48,75.48 m (247 ft 7 in),Anatoliy Bondarchuk,main,ratified,False
+M,HT,1971-09-04,76.4,76.40 m (250 ft 7 in),Walter Schmidt,main,ratified,False
+M,HT,1974-07-04,76.6,76.60 m (251 ft 3 in),Reinhard Theimer,main,ratified,False
+M,HT,1974-09-11,76.66,76.66 m (251 ft 6 in),Aleksei Spiridonov,main,ratified,False
+M,HT,1975-05-19,76.7,76.70 m (251 ft 7 in),Karl-Hans Riehm,main,ratified,False
+M,HT,1975-05-19,77.56,77.56 m (254 ft 5 in),Karl-Hans Riehm,main,ratified,False
+M,HT,1975-05-19,78.5,78.50 m (257 ft 6 in),Karl-Hans Riehm,main,ratified,False
+M,HT,1975-08-14,79.3,79.30 m (260 ft 2 in),Walter Schmidt,main,ratified,False
+M,HT,1978-07-09,80.14,80.14 m (262 ft 11 in),Boris Zaichuk,main,ratified,False
+M,HT,1978-08-06,80.32,80.32 m (263 ft 6 in),Karl-Hans Riehm,main,ratified,False
+M,HT,1980-05-16,80.38,80.38 m (263 ft 8 in),Yuriy Sedykh,main,ratified,False
+M,HT,1980-05-16,80.46,80.46 m (263 ft 11 in),Jüri Tamm,main,ratified,False
+M,HT,1980-05-16,80.64,80.64 m (264 ft 6 in),Yuriy Sedykh,main,ratified,False
+M,HT,1980-05-24,81.66,81.66 m (267 ft 10 in),Sergey Litvinov,main,ratified,False
+M,HT,1980-07-31,81.8,81.80 m (268 ft 4 in),Yuriy Sedykh,main,ratified,False
+M,HT,1982-06-04,83.98,83.98 m (275 ft 6 in),Sergey Litvinov,main,ratified,False
+M,HT,1983-06-21,84.14,84.14 m (276 ft 0 in),Sergey Litvinov,main,ratified,False
+M,HT,1984-07-03,86.34,86.34 m (283 ft 3 in),Yuriy Sedykh,main,ratified,False
+M,HT,1986-06-22,86.66,86.66 m (284 ft 3 in),Yuriy Sedykh,main,ratified,False
+M,HT,1986-08-30,86.74,86.74 m (284 ft 6 in),Yuriy Sedykh,main,ratified,False
+W,HT,1994-02-23,66.84,66.84 m (219 ft 3 in),Olga Kuzenkova ( RUS ),main,ratified,False
+W,HT,1995-03-04,66.86,66.86 m (219 ft 4 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1995-05-24,67.0,67.00 m (219 ft 9 in),Olga Kuzenkova ( RUS ),main,ratified,False
+W,HT,1995-06-05,68.14,68.14 m (223 ft 6 in),Olga Kuzenkova ( RUS ),main,ratified,False
+W,HT,1995-06-18,68.16,68.16 m (223 ft 7 in),Olga Kuzenkova ( RUS ),main,ratified,False
+W,HT,1996-05-12,69.42,69.42 m (227 ft 9 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1997-03-08,69.58,69.58 m (228 ft 3 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1997-06-22,71.22,71.22 m (233 ft 7 in),Olga Kuzenkova ( RUS ),main,ratified,False
+W,HT,1997-06-22,73.1,73.10 m (239 ft 9 in),Olga Kuzenkova ( RUS ),main,ratified,False
+W,HT,1998-07-16,73.14,73.14 m (239 ft 11 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1999-05-13,75.29,75.29 m (247 ft 0 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1999-05-13,75.97,75.97 m (249 ft 2 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1999-08-29,76.05,76.05 m (249 ft 6 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,1999-08-29,76.07,76.07 m (249 ft 6 in),Mihaela Melinte ( ROM ),main,ratified,False
+W,HT,2005-07-15,77.06,77.06 m (252 ft 9 in),Tatyana Lysenko ( RUS ),main,ratified,False
+W,HT,2006-06-12,77.26,77.26 m (253 ft 5 in),Gulfiya Khanafeyeva ( RUS ),main,ratified,False
+W,HT,2006-06-24,77.41,77.41 m (253 ft 11 in),Tatyana Lysenko ( RUS ),main,ratified,False
+W,HT,2006-08-15,77.8,77.80 m (255 ft 2 in),Tatyana Lysenko ( RUS ),main,ratified,False
+W,HT,2009-08-22,77.96,77.96 m (255 ft 9 in),Anita Włodarczyk ( POL ),main,ratified,False
+W,HT,2010-06-06,78.3,78.30 m (256 ft 10 in),Anita Włodarczyk ( POL ),main,ratified,False
+W,HT,2011-05-21,79.42,79.42 m (260 ft 6 in),Betty Heidler ( GER ),main,ratified,False
+W,HT,2014-08-31,79.58,79.58 m (261 ft 1 in),Anita Włodarczyk ( POL ),main,ratified,False
+W,HT,2015-08-01,81.08,81.08 m (266 ft 0 in),Anita Włodarczyk ( POL ),main,ratified,False
+W,HT,2016-08-15,82.29,82.29 m (269 ft 11 in),Anita Włodarczyk ( POL ),main,ratified,False
+W,HT,2016-08-28,82.98,82.98 m (272 ft 2 in),Anita Włodarczyk ( POL ),main,ratified,False
