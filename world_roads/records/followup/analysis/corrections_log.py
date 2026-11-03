@@ -126,6 +126,24 @@ def main():
         add(code="ID", status="applied", sport=sport, category=cat, season="", item=item,
             original_value="one name key (the original left both out as 'the performer')", revised_value="two athletes",
             evidence=ev, source_url=url, record_level_impact=fmt(cat) if not cat.endswith(("etc.", "_*")) else "see the per-category rows")
+    # original-name aliases across leader boards (review round 2): one Reference ID under two names
+    v2rows = [r for r in csv.DictReader(open(os.path.join(F, "data", "v2", "season_lists_v2.csv"), encoding="utf-8"))
+              if r["orig_rank"] and r["category"].startswith("mlb_")]
+    al = defaultdict(lambda: defaultdict(set))
+    for r in v2rows:
+        al[r["athlete_id"]][G.norm(r["name_raw"])].add((r["category"], r["season"]))
+    for aid, names in sorted(al.items()):
+        if len(names) > 1:
+            same_season = sorted({s for n in names for (_, s) in names[n]} & set.intersection(*[{s for (_, s) in v} for v in names.values()]))
+            add(code="ALIAS", status="applied", sport="MLB", category="several", season=";".join(same_season),
+                item=" / ".join(sorted(names)), original_value="two name keys (two athletes in the original's one-entry-per-athlete-season step)",
+                revised_value=f"one athlete ({aid})",
+                evidence="Baseball-Reference shows the same player ID under two display names on different leader boards",
+                source_url=f"https://www.baseball-reference.com/players/{aid[4]}/{aid[4:]}.shtml",
+                record_level_impact=(("both names appear in top-ten lists of " + ", ".join(same_season) + "; the original split him into two "
+                                      "athlete-seasons only where both names LED a category in one season (outputs/identity_crosswalk_log.csv: "
+                                      "Aaron 1956, Witt 2025). Exclusion within a category was unaffected (one name per category).")
+                                     if same_season else "names never share a season; exclusion within a category unaffected"))
     add(code="C7", status="applied", sport="NBA", category="nba_apg", season="1947-1948", item="BAA assists, 1946-47 and 1947-48",
         original_value="league assists 6.9 and 7.0 per team-game", revised_value="seasons left out of assist comparisons",
         evidence="18.6 per team-game in 1948-49: a 2.7-fold jump in one season reflects how assists were credited, not play; dividing by it made Ernie Calverley 1946-47 look like the 2nd-greatest season of all",

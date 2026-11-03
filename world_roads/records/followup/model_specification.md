@@ -93,21 +93,33 @@ is not an observed frequency and is not used for ranking.
 
 ## 4. Choosing the window and trend
 
-**Procedure** (`analysis/cv_window.py`).
-1. For every category and season s, predict the season's best mark M_s (totals per team-game) from the other seasons
-   in the window, with s itself left out.
-2. Score the predictive N(f(0), σ̂²) by the continuous ranked probability score:
+**Current: `analysis/cv_comparator.py`, revised in review round 2.**
 
-       CRPS = σ̂ [ z(2Φ(z) − 1) + 2φ(z) − 1/√π ]
+**Target.** For every scored candidate i in season y, predict the quantity the baseline stands in for: the best
+performance by anyone other than i in season y (C_y^(i), the runner-up).
+- The temporal block {y−1, y, y+1} is withheld from i's comparator series.
+- The trend is fitted to the rest of the window, with the same exclusion rules as the score.
+- The prediction N(f(0), σ̂²) is scored by CRPS divided by the candidate's unit (the median absolute season-to-season
+  change of its comparator series), and by the coverage of its central 90% interval.
 
-3. Divide by the category's median absolute season-to-season change, so that categories count equally.
+**Weighting.** All three are reported: per prediction, equal per category, and equal per sport.
 
-**Rule, fixed before looking at any athlete.** Keep the brief's ±15 window and use the trend with the lowest mean
-CRPS within it. That is `quad_safe` (0.785, against 0.858 for the original `ols`). The best overall is ±7
-`quad_safe` (0.739), which is reported as variant `A2_w7`.
+**Decision rule** (fixed before results):
+1. Split the categories once into a selection half and a test half (seeded, stratified by sport).
+2. Within the brief's ±15 window, take the trend with the lowest equal-category CRPS on the selection half.
+3. Measure its improvement over the original straight line on the test half. The 90% interval comes from a two-level
+   bootstrap: categories, then 5-season blocks within a category.
 
-**Coverage.** Every trended model under-covers its nominal 90% interval (85–88%). Season maxima are heavier-tailed
-than normal, which is why section 7 exists.
+**Results** (`outputs/cv_comparator_scores.csv`, `outputs/cv_comparator_decision.json`).
+- **Chosen within ±15:** `quad_safe`.
+- **Test-half improvement over ±15 `ols`:** 0.057 (90%: 0.025 to 0.100).
+- **All three weightings** rank ±15 `quad_safe` above ±15 `ols`.
+- **Best overall on the selection half:** ±10 `quad_safe`; ±7 `quad` is close behind.
+- **±15 is an editorial constraint** from the brief, not the globally best window.
+- **Coverage.** The 90% intervals cover only 78–83%. z is a standardization, not a calibrated normal quantile.
+
+**Earlier version (`analysis/cv_window.py`, kept for comparison).** It predicted whole-season maxima rather than the
+candidate-specific comparator. It chose the same trend within ±15, but its target was not the one the score uses.
 
 ## 5. Scoring and opportunity environment (`analysis/context.py`)
 
@@ -191,52 +203,111 @@ g_sport · sd_c · ln(N_ref/N_s).
 
 Field size is therefore reported only as sensitivity, never in the main model.
 
-## 7. Cross-category tail calibration (`analysis/calibrate.py`)
+## 7. Cross-category tail calibration (`analysis/calibrate.py`): a sensitivity model
 
-**Why.** z is not equally rare in every category: hitting-streak leaders, for example, are often more than 3 sd above
-trend.
+**Why.** z is not equally rare in every category, so each season leader's z is converted to:
 
-**Fit.** For each category c, take the leaders' z above the category's 75th percentile u_c (at least 6 exceedances)
-and fit a generalized Pareto distribution by maximum likelihood:
+    p = P(a season leader of category c exceeds z)
 
-    P(Z − u_c > y | Z > u_c) = (1 + ξ_c y / σ_c)^(−1/ξ_c)
+The leader being calibrated is left out of its own category's fit.
 
-**Pooling.** The shape ξ_c is partially pooled across categories with the same DerSimonian–Laird estimator as in
-section 5, using the standard errors from the numerical Hessian. The scale σ_c is then refitted with ξ_c* fixed,
-leaving out the leader being calibrated.
+**The model.** Let u_c be the category's q-quantile of leader z (q = 0.75 by default), and n_c and k_c the numbers of
+leaders and of exceedances.
 
-**Output:**
+**Primary (used by every `*_cal` ranking): pooled-exponential tail.**
 
-    p = (k_c/n_c) (1 + ξ_c* (z − u_c)/σ_c)^(−1/ξ_c*)   for z > u_c ;   p = empirical exceedance share otherwise
+    p = (k_c/n_c) · exp(−(z − u_c)/s_c)        for z > u_c
+    p = empirical share of the category's leaders ≥ z    otherwise
 
-The calibrated score [`*_cal`] is −log10 p.
+s_c is the mean excess above u_c, without the target. It is partially pooled across categories on the log scale by
+DerSimonian–Laird, with se(log s_c) = 1/√k_c. This is the Gumbel-domain assumption the original z already makes.
 
-**Multiple chances.** `expected_count` = p × (number of category-seasons) estimates how many seasons this rare the
-whole dataset would hold by chance. It addresses the fact that 30 athletics categories give more chances than 3 NHL
-categories.
+**Sensitivity: generalized Pareto (GPD).**
 
-**What p is.** A model-based probability within the category, with large uncertainty at the extremes, not an
-observed frequency.
+    p = (k_c/n_c) (1 + ξ_c (z − u_c)/s_c)^(−1/ξ_c)
 
-## 8. Uncertainty (`analysis/calibrate.py: bootstrap`)
+- **Shape.** ξ_c is the bounded MLE (−0.5 to 0.5) with se = (1 + ξ)/√k, partially pooled across categories.
+- **Scale.** s_c is refitted with ξ_c fixed.
+- **Support.** With ξ < 0 the GPD has an upper endpoint u_c − s_c/ξ_c. A leader beyond it gets p = 0 and is flagged
+  "beyond fitted support". That flag is evidence against the fit, not a probability of zero.
 
-**Moving-block bootstrap of comparison seasons.**
-- **Blocks:** length 3, circular, drawn per category over its whole history, so neighbouring seasons stay together.
-- **Replicates:** B = 300.
-- **Each replicate:** reweight every window's comparison seasons by how often they were drawn, refit by weighted
-  least squares, rescore every leader and rerank.
-- **Output:** P(top ten) and the 5–95% range of each athlete's page rank. A rank beyond 200 is recorded as 201.
+**Validation and sensitivity** (all in `outputs/`).
 
-**What it covers.** Estimation uncertainty in the baseline and scale, with temporal dependence.
+**Leave-one-out tail coverage** (`calibration_tail_coverage.csv`). If a family is calibrated, about t·N leaders should
+get p ≤ t. On the main model:
 
-**What it does not cover:**
-- measurement error in the leader's own value;
-- data errors;
-- the choice of model.
+| t | Expected | Exponential | GPD |
+|---|---|---|---|
+| 0.002 | 9.9 | 8 | 52 |
+| 0.001 | 4.9 | 5 | 32 |
 
-Model choice is covered separately by the **specification ensemble** (`outputs/spec_ensemble.csv`). This is the share
-of 16 pre-declared specifications that put each athlete in the top ten: windows 7, 10, 15 and 20, trends `ols` and
-`quad_safe`, and environment none or estimated, all on corrected data under estimand A.
+The exponential tail tracks the expected counts down to t = 0.001. The GPD is anti-conservative and is rejected as
+a calibrator. Below p ≈ 0.001, neither model can be checked against the data.
+
+**Threshold and family** (`calibration_sensitivity.csv`). The calibration is rerun for q = 0.60 to 0.85 with both
+families.
+- Beamon's exponential p ranges from 1.2e-5 to 1.3e-4 across thresholds.
+- Under the GPD, Beamon (every q) and DiMaggio (q ≥ 0.75) are beyond the fitted support.
+- The exponential values reproduce the round-2 reviewer's independent table.
+
+**Interval for p** (`calibrated_*.csv`). Resample the category's other leaders 300 times and refit u and s.
+
+**Expected count and Poisson P(≥1).**
+- **E = p × N**, where N is the number of scored records of that model: 4,943 for `A2_main`, 4,940 for `E3_main_env`.
+  Tied co-leaders count as records.
+- **P(≥1) = 1 − e^−E** is shown for orientation only. Scores share athletes, seasons and categories, so this is not a
+  family-wise test, and E < 1 is not a significance threshold.
+
+**Empirical null** (`empirical_null_top30.csv`).
+- **How it's built.** Every non-target comparison season s (|s − y| ≥ 2) is withheld with its neighbours and predicted
+  from the rest of the same window. The standardized errors show what z looks like for an ordinary season's best.
+- **Excluding the target.** Draws whose comparison value is held by the athlete being calibrated are excluded.
+- **Its limit.** It counts distinct category-seasons at or above a leader's z, so it bounds p only down to about
+  1/4,660.
+
+**What p is.** A model-based tail probability within the category, for putting categories on one footing. It is not
+an observed frequency and not a family-wise significance level.
+
+## 8. Uncertainty (`analysis/calibrate.py`)
+
+**Block bootstrap of comparison seasons** (`bootstrap`).
+- **Blocks:** moving blocks of 3 seasons, circular, per category over its whole history.
+- **Each refit:** reweight every window's comparison seasons by how often they were drawn, refit by weighted least
+  squares, rescore every leader and rerank.
+- **Replicates:** B = 1,000 for `A2_main` and `E3_main_env`, 500 for `A1_corrected`.
+
+**What the output is: a frequency conditional on the model.** It is the share of refits in which the athlete's best
+season ranks in the top ten. It is not an inferential probability that the season is truly top ten. Its Monte Carlo
+SE is √(f(1−f)/B), for example ±0.016 at f = 0.5 with B = 1,000.
+
+**What it covers.** Estimation uncertainty in the baseline and scale, with temporal dependence. It does not cover
+measurement error in the leader's own value, data errors, or the choice of model.
+
+**Model-averaged bootstrap** (`model_averaged_bootstrap`, 800 draws). Each draw first picks one of the 16
+pre-declared specifications at random (window 7/10/15/20, trend `ols`/`quad_safe`, environment none or estimated),
+then one block resample. Its frequencies include specification uncertainty within that set.
+
+**Specification ensemble** (`spec_ensemble.csv`). The share of the 16 specifications whose point estimate puts the
+athlete in the top ten. This is a different statement from the bootstrap frequencies and is reported separately.
+
+## 8a. Identity across versions (`analysis/run_all.py: crosswalk, ranks`)
+
+**Ranking.** Original-data variants are ranked with their own name-based identities, so the published ranking is
+reproduced exactly.
+
+**Joining.** Their records are then mapped to the stable IDs of `data/v2` through each row's original
+(category, season, rank).
+
+**Flags** (`rankings_sensitivity.csv: id_status`; the log is `identity_crosswalk_log.csv`):
+
+| Flag | Meaning |
+|---|---|
+| `collapsed` | Two original name keys map to one person in the same season: Hank/Henry Aaron 1956, Bobby Witt/Bobby Witt Jr. 2025. |
+| `removed_in_v2` | Ernie Calverley's 1947 and 1948 assists (definition break) and Ernest John Obiena 2027 (quarantined date). |
+| `original_only` | The record exists only in the original. |
+| `corrected_only` | The record exists only in the corrected data, for example a co-leader newly scored. |
+
+The tests assert that more than 4,000 athlete-seasons carry both scores (there are 4,032).
 
 ## 9. Assumptions and limitations (all models)
 

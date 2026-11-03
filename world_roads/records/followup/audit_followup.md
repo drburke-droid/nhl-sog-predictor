@@ -22,6 +22,13 @@ Every number below comes from `outputs/` and can be regenerated with `make_all.s
 - **No numerical error in the handoff's scripts.** The problems below are in data and design, plus three wrong NHL
   team counts.
 
+**Round 2** (independent peer review, 2–3 November 2026). Two defects in this follow-up were found and fixed:
+- **The sensitivity table did not join** original and corrected scores.
+- **The calibration was labelled GPD** but computed an exponential tail.
+
+The cross-validation now targets the comparator the score actually uses, the bootstrap is reported as a conditional
+frequency, and several claims below have been narrowed. Point by point: `REVIEW_RESPONSE.md`.
+
 ## Ranked findings (largest effect on the top ten first)
 
 ### 1. The estimand decides more than any adjustment (judgment call)
@@ -142,18 +149,28 @@ per-player possession figures exist for 1961–62, and none were invented.
 
 ### 4. The ±15 straight line is not the best baseline (judgment call, decided by cross-validation)
 
-**Cross-validation.** Predicting each season's best from its window, scored by mean CRPS (lower is better;
-`outputs/cv_window_trend.csv`):
+**Cross-validation on the quantity the score uses** (`analysis/cv_comparator.py`, revised in round 2).
+- **Target.** For each scored candidate, predict the best non-candidate performance in the target season (the
+  runner-up) with the block {y−1, y, y+1} withheld.
+- **Split.** Categories are split into a selection half and a test half.
+- **Weighting.** Results are reported per prediction, per category and per sport.
 
-| Model | Mean CRPS |
-|---|---|
-| Original: straight line, ±15 | 0.858 |
-| Quadratic, with a straight line near the data's ends, ±15 | 0.785 |
-| Same, ±7 (best overall) | 0.739 |
-| Flat, ±15 | 0.962 |
+| Model | Selection half (equal category) | Test half (equal category) |
+|---|---|---|
+| Original: straight line, ±15 | 0.870 | 0.987 |
+| Quadratic, straight near the data's ends, ±15 (main) | 0.857 | 0.931 |
+| Same, ±10 (best overall on the selection half) | 0.842 | 0.910 |
+| Quadratic, ±7 | 0.844 | 0.890 |
 
-**Main model (`A2_main`).** The rule was fixed before looking at athletes: keep the brief's ±15 and use the best
-trend within it.
+- **Main trend confirmed out of sample.** The main trend's improvement over the original line on the held-out
+  categories is 0.057 CRPS units (90% interval 0.025 to 0.100, two-level bootstrap over categories and 5-season
+  blocks).
+- **Weighting doesn't change the answer.** All three weightings rank it above the straight line.
+- **±15 is an editorial constraint** from the brief, not the best window. ±10 and ±7 predict better.
+- **Coverage.** The 90% intervals cover only 78–83%. z is a standardization, not a calibrated normal quantile.
+- **The earlier season-maxima version** (`cv_window.py`) chose the same trend but had the wrong target.
+
+**Main model (`A2_main`).**
 
 | Season | Original | Main model |
 |---|---|---|
@@ -167,41 +184,55 @@ trend within it.
 Beamon rises because the long-jump comparators were flat at about 8.2–8.35 m from 1960 to 1978 and only rose in
 1979–83. A straight line through that overstates the scatter.
 
-**Fix:** adopt the cross-validated trend within the brief's window, and report ±7 as a sensitivity.
+**Fix:** adopt the cross-validated trend within the brief's window, and report ±10 and ±7 as sensitivities.
 
-### 5. Comparing z across categories needs calibration; "once in N" is not a frequency (error in presentation)
+### 5. Calibrating across categories is a sensitivity model; "once in N" is not a frequency (error in presentation)
 
-**Why calibrate.**
-- **z isn't a normal probability.** Trended models cover only 85–88% of a nominal 90% interval, and z behaves
-  differently from one category to another.
-- **Tail shape.** Fitted shapes suggest leader excesses are lighter-tailed than exponential (pooled shape −0.30),
-  so the exponential calibration below is conservative.
-- **The Gumbel "once in 42,727 seasons"** for Wilt extrapolates from about 30 residuals. It should not be
-  presented as an observed frequency.
+**What z is.** The 90% intervals cover only 78–83%, and z behaves differently from one category to another. The
+original's Gumbel "once in 42,727 seasons" extrapolates from about 30 residuals and is not an observed frequency.
 
-**The calibration.** An exponential tail per category with a partially pooled scale, leaving each leader out
-(`outputs/calibrated_*.csv`).
-- **Main model:** Beamon, DiMaggio, Wilt, Gretzky, Železný, Ichiro, Marino, Feller, Rodman, Wills.
-- **Main model with environment:** Beamon, DiMaggio, Wilt, Železný, Gretzky, Curry, Ruth 1920, Vance 1924,
-  Ichiro, Rodman 1993.
+**The calibration actually used.** Round 2 found the documents described a GPD while the code computed an exponential
+tail; the labels now match the code. For each category, an exponential tail is fitted above the 75th percentile of
+leader z, with its scale partially pooled across categories, leaving the leader out. GPD shapes are diagnostics only.
 
-**The multiple-chances check.** The expected number of seasons this rare among all 4,943 category-seasons:
+**Checks** (`outputs/calibration_tail_coverage.csv`, `outputs/calibration_sensitivity.csv`).
+- **Leave-one-out coverage.** If the model is calibrated, about t × N leaders should get p ≤ t. For the exponential
+  tail, the observed counts track that down to t = 0.001: 5 against 4.9 expected; at t = 0.002, 8 against 9.9.
+- **The GPD fails it.** It gives 32 against 4.9 at t = 0.001, and calls Beamon (and, for q ≥ 0.75, DiMaggio)
+  impossible. It is rejected as a calibrator.
+- **Below p ≈ 0.001** no model can be checked against these data.
+- **Threshold sensitivity.** Beamon's exponential p ranges from 1.2e-5 to 1.3e-4 for q between 0.60 and 0.85. These
+  values reproduce the reviewer's independent table exactly.
 
-| Season | Expected count |
-|---|---|
-| Beamon | 0.31 |
-| DiMaggio | 0.63 |
-| Wilt | 1.9 |
-| Železný | 3.4 |
-| Gretzky | 3.5 |
+**Main model with environment** (N = 4,940 scored records, tied co-leaders counted):
 
-Only Beamon and DiMaggio stay below one occurrence after allowing for the many chances that 74 categories give.
+| Season | p (exponential) | 90% interval (resampling) | E = p × N | Poisson P(≥1) |
+|---|---|---|---|---|
+| Beamon 1968 | 6.3e-5 | 4.0e-5 – 8.4e-5 | 0.31 | 0.27 |
+| DiMaggio 1941 | 1.3e-4 | 5.8e-5 – 2.3e-4 | 0.63 | 0.47 |
+| Wilt 1961–62 | 3.8e-4 | 2.1e-4 – 6.0e-4 | 1.9 | 0.85 |
+| Železný 1996 | 6.9e-4 | 3.6e-4 – 1.2e-3 | 3.4 | 0.97 |
+| Gretzky 1985–86 | 7.2e-4 | 4.1e-4 – 1.1e-3 | 3.5 | 0.97 |
 
-**Fix:** replace "once in N seasons" with a calibrated, labelled probability, or drop it.
+**How to read this.**
+- **E below 1 is not a significance test.** Under an independent-Poisson reading, about one chance in four (Beamon)
+  and one in two (DiMaggio) of at least one season this extreme somewhere in the dataset.
+- **The scores aren't independent.** They share athletes, seasons and categories, so this is illustrative, not a
+  family-wise test.
+- **What it does show.** Beamon and DiMaggio are the hardest seasons to explain as the expected extremes of a
+  ~4,900-score search. The others are within what such a search produces.
+
+**Empirical null** (`outputs/empirical_null_top30.csv`). Withheld ordinary comparison seasons are scored like leaders.
+It can only bound p down to about 1/4,660, and its upper tail contains the other great seasons seen from other
+athletes' windows.
+
+**Fix:**
+- Replace "once in N seasons" with a labelled, model-based probability, given with its threshold and model range.
+- Don't present it as an observed frequency or a significance level.
 
 ### 6. Data defects, verified against the source pages (error)
 
-Full list: `outputs/sources_and_corrections.csv`, 163 rows with source, original and revised values, status and
+Full list: `outputs/sources_and_corrections.csv`, 172 rows with source, original and revised values, status and
 score effect.
 
 | Defect | Detail | Effect |
@@ -212,37 +243,52 @@ score effect.
 | **Name-based identity** | Different people were treated as one: two Adrian Petersons, two Eddie Johnsons, Mike Dunleavy Sr. and Jr., Syl Apps Sr. and Jr., Wallace Spearmon Sr. and Jr., two Calvin Smiths. | Stable IDs fix it. Crosswalks keep one person as one across source changes (167 football players across 1998/1999; Retrosheet to Baseball-Reference IDs). |
 | **NBA assists 1946–48** | Recorded under a different definition: 6.9–7.0 per team-game, against 18.6 in 1948–49. | Dividing by them made Ernie Calverley 1946–47 the second-greatest season of all (5.97). Those seasons are now excluded. |
 | **Ties** | 237 ties for first were decided by row order. | Every tied leader is now scored (285 more scores). |
+| **One player under two names** | Found in round 2: 9 baseball players appear under two display names on different leader boards (Hank/Henry Aaron, Joe/"Shoeless" Joe Jackson, Cal Ripken/Cal Ripken Jr., Bobby Witt/Bobby Witt Jr. and others). | The original split one player into two athlete-seasons where both names led a category in the same season (Aaron 1956, Witt 2025). Exclusion within a category was unaffected. Stable IDs fix it. |
 
 **Effect on the published top ten:** none. The changes are concentrated in men's pole vault and a few others.
 
 **Unresolved:** 46 athletics same-name cases with inconsistent birth dates (kept as one person, as in the
 original), 2 swimming merges based on a missing birth date, and Paul Moss 1933 (383 vs 283 yards).
 
-### 7. Only four seasons are robust; places 5–10 are not settled by the data (fact, from resampling)
+### 7. Four seasons separate from the rest; places 5–10 are not settled (fact, from resampling, conditional on the models)
 
-**Bootstrap.** Moving blocks of comparison seasons, 300 replicates (`top10_robustness.md`, `figures/fig2_*`).
-
-| Season | P(top ten), main model | P(top ten), with environment |
-|---|---|---|
-| Wilt | 0.97 | 0.87 |
-| Gretzky | 0.89 | 0.57 |
-| DiMaggio | 0.86 | 0.83 |
-| Beamon | 0.77 | 0.76 |
-
-Everyone else is at or below 0.43 under the main model (Železný 0.43, Feller 0.34, Ledecky 0.29, Rodman 0.26,
-Wills 0.23).
-
-**Specification ensemble.** Of 16 pre-declared specifications:
+**Specification ensemble** (point estimates; `outputs/spec_ensemble.csv`). Of 16 pre-declared specifications:
 - Beamon, Gretzky, Wilt and DiMaggio are in the top ten in all 16.
-- Železný 11, Ichiro 10, Rodman 9, Walsh 8 (a one-sided window), Marino and Ledecky 7.
+- Železný 11, Ichiro 10, Rodman 9, Walsh 8 (a one-sided, possibly incomplete season), Marino and Ledecky 7.
+
+**Resampling** (a separate statement). Each refit block-resamples the comparison seasons (blocks of 3) and reranks.
+The figure is the share of refits in which the athlete's best season is in the top ten.
+- It is **conditional on the model**, not a probability that the season is truly top ten.
+- The Monte Carlo SE is at most ±0.016.
+- The model-averaged column also draws one of the 16 specifications in each of 800 draws.
+
+| Season | Main model (B = 1,000) | Main + environment (B = 1,000) | Model-averaged (800) |
+|---|---|---|---|
+| Wilt 1961–62 | 0.98 | 0.88 | 0.81 |
+| Gretzky 1985–86 | 0.92 | 0.61 | 0.67 |
+| DiMaggio 1941 | 0.84 | 0.80 | 0.56 |
+| Beamon 1968 | 0.76 | 0.74 | 0.77 |
+| Next highest | Železný 0.43 | Vance 0.41, Železný 0.39 | Walsh 0.32, Ledecky 0.30 |
+
+**Reading.**
+- **These four are clearly separated from everyone else**, but not settled in absolute terms. Under the environment
+  model, or once the specification is allowed to vary, one of them (Gretzky, DiMaggio) misses the top ten in roughly
+  a third to almost half of the draws.
+- **Places 5–10 are not determined** by these data.
 
 ### 8. One-sided windows at the ends of the data (judgment call)
 
 **Recent and earliest seasons are compared with one side only.** Gretchen Walsh 2026 is #1 at ±7 (8 comparison
 seasons) but #107 at ±20. Ross Barnes 1876 and Tim Keefe 1880 sit at the other end.
 
-**Fix:** flag one-sided scores. `A2_twosided` ranks only seasons with at least 5 comparison seasons on each side;
-its top ten equals the main model's.
+**Incomplete seasons.** On 2 November 2026 the 2026 swimming "season" is a calendar year to date: the long-course
+season may not be complete. It applies to Walsh, Douglass, McEvoy, Steenbergen and Liebmann 2026.
+
+**Fix:**
+- Flag one-sided scores (`one_sided_window_main`) and possibly incomplete seasons (`incomplete_season`) in
+  `rankings_sensitivity.csv` and the calibrated tables.
+- `A2_twosided` ranks only seasons with at least 5 comparison seasons on each side. Its top ten equals the main
+  model's.
 
 ### 9. Robust (Huber) trend with a median-absolute-deviation scale inflates z (judgment call: don't use)
 
@@ -281,23 +327,31 @@ for track spikes (`T1_spikes`) leaves the top ten unchanged.
 
 ## For a documentary or website audience
 
-**Robust takeaways**, which hold in every model tested here:
-- Four seasons stand apart from their eras under the "dominance over rivals" question: Wilt Chamberlain 1961–62,
+**What holds up best in this analysis** (to say with the method named, not as a final verdict):
+- **Four seasons stand furthest above their eras** on the "dominance over rivals" question: Wilt Chamberlain 1961–62,
   Wayne Gretzky 1985–86, Joe DiMaggio 1941 and Bob Beamon 1968.
-- In every model, Wilt is the most dominant NBA scoring season and Gretzky the most dominant NHL assist season.
-  DiMaggio's 56 games stays near the top under every adjustment, because no league denominator applies to it.
-- Beamon and DiMaggio are the only seasons rare enough to survive the "so many categories, someone had to be extreme"
-  check.
+  - They are the only seasons in the top ten under all 16 specifications tested.
+  - When the comparison seasons are resampled, each is in the top ten in 56–98% of refits under the main models and
+    the model-averaged bootstrap. Under the original straight-line trend Beamon falls to 44%. No other season reaches
+    45% in any of these.
+- **Within their sports, in every model tested:** Wilt's 50.4 points a game is the most dominant NBA scoring season,
+  and Gretzky's 163 assists the most dominant NHL assist season. DiMaggio's 56 games barely moves under any adjustment,
+  because no league denominator applies to a hitting streak.
+- **Beamon and DiMaggio are the hardest to explain as chance.** Under a calibrated tail model they are the hardest
+  seasons to explain as the expected extremes of a ~4,900-score search. That is a model-based statement with a wide
+  range (Beamon's probability varies ten-fold with the tail threshold), not a proof that they "beat the odds".
 
-**Method-sensitive points**, to present with the method named:
+**What depends on the method**, to present with the method named:
 - **The order of the top four.** It depends on the trend form and the environment adjustment.
-- **Places 5–10.** No pair of seasons there is reliably separated: their bootstrap rank ranges overlap heavily.
-- **"Measured against his own other seasons"** demotes Gretzky to about #20 and Wilt to #4.
-- **Adjusting for scoring environments** lifts Babe Ruth 1920 and Stephen Curry 2015–16 into the top ten and
+- **Places 5–10.** No season there is reliably separated: their resampled rank ranges overlap heavily.
+- **"Measured against his own other seasons"** (all-seasons rarity) demotes Gretzky to about #20 and Wilt to #4.
+- **Adjusting for scoring environments** lifts Babe Ruth 1920 and Stephen Curry 2015–16 toward the top ten and
   lowers Gretzky.
 - **League-size "corrections"** can make a 1920s hockey season look historic. That says more about the correction
   than about the season.
+- **2026 swimming seasons** are compared with one side only and may be incomplete.
 
 **Avoid:**
 - "Once in 42,727 seasons" and similar figures. They are model extrapolations, not observed frequencies.
-- A single definitive top-ten order.
+- Claims of statistical significance from expected counts below one.
+- A single definitive top-ten order, or a single "greatest season".

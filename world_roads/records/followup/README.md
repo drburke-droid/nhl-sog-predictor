@@ -12,7 +12,8 @@ overwrites them.
 | `top10_robustness.md` | The top ten under every model, with bootstrap ranges, the specification ensemble and figures |
 | `model_specification.md` | The equations, estimands, assumptions and limits of every model |
 | `outputs/sources_and_corrections.csv` | Every data repair, verified fact and unresolved warning, with sources and score effects |
-| `outputs/rankings_sensitivity.csv` | Every athlete-season in any variant (8,315 rows, 86 columns): the original score and every labelled variant's z and ranks |
+| `outputs/rankings_sensitivity.csv` | Every athlete-season in any variant, one row per (sport, stable athlete ID, season) (4,281 rows): the original score and every labelled variant's z and ranks, with `id_status` (matched / collapsed / removed_in_v2 / original_only / corrected_only) |
+| `REVIEW_RESPONSE.md` | Round-2 peer review: each point, what was changed, and the result |
 
 ## Commands
 
@@ -21,15 +22,18 @@ Run these from this folder (`followup/`):
 
 ```
 python tests/test_reproduction.py     # 15 checks: original scores to 1e-9, published ranking, handoff numbers, invariances
-python analysis/cv_window.py v2       # window/trend cross-validation          -> outputs/cv_window_trend.csv
+python analysis/cv_comparator.py      # cross-validation on the candidate's own comparator, 3 weightings, held-out test half
+python analysis/cv_window.py v2       # superseded season-maxima version, kept for comparison
 python analysis/env_field_tests.py v2 # environment elasticities, field size, NBA denominators, Babe Dye
 python analysis/beta_diagnostics.py   # fit, ties and coverage of the rank-tail beta
 python analysis/simulate.py           # field-size simulations (about 10 s)
-python analysis/run_all.py            # every variant, calibration, ensemble, bootstrap (B=300; 20-30 min)
-python analysis/run_all.py --quick    #   the same with B=40, about 2 min
+python analysis/run_all.py            # every variant, calibration (+ sensitivity, intervals, coverage, null),
+                                      # ensemble, bootstraps (B=1000; model-averaged B=800): about 75 min
+python analysis/run_all.py --quick    #   the same with B=40 and no p intervals, about 7 min
 python analysis/corrections_log.py    # outputs/sources_and_corrections.csv
 python analysis/plots.py              # figures/*.png
 python analysis/report.py             # top10_robustness.md
+python tests/test_round2.py           # round-2 checks: identity join, calibration vs the reviewer's table, CV decision, labels
 ```
 
 `make_all.sh` runs them in order. Every script uses paths relative to its own location.
@@ -72,7 +76,7 @@ the same way.
 | `F_ratio_field25/50/100`, `_normal`, `_estimated` | Field-size offsets (handoff model extended to MLB/NFL; normal-tail; estimated) |
 | `D1_depth` | Athletics and swimming relative to the season's depth (median of ranks 2–10) |
 | `T1_spikes` | Athletics running events with a separate 2020–26 level (spike technology) |
-| `A2_main_catstd`, `*_cal` | Category-standardised and tail-calibrated versions |
+| `A2_main_catstd`, `*_cal` | Category-standardised; and calibrated with a pooled-exponential category tail (a sensitivity model; GPD only as a diagnostic) |
 
 Each key has three columns: `_z` (score), `_rank_all` (rank among all athlete-seasons) and `_rank_page` (rank with
 each athlete's best season only; blank for an athlete's other seasons).

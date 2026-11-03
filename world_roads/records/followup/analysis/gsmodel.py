@@ -238,7 +238,7 @@ def score(data, spec=Spec(), ctx=None, cats=None, details=False):
                 x = transform(lead.perf, cat, m["sport"], y, spec, ctx)
                 if x is None:
                     continue
-                pts, real = [], 0
+                pts, real, pids = [], 0, []
                 for s in range(y - spec.window, y + spec.window + 1):
                     if s in m["short"] or s not in S:
                         continue
@@ -253,11 +253,13 @@ def score(data, spec=Spec(), ctx=None, cats=None, details=False):
                         if m["scaled"] and not (spec.env == "depth" and cat in ctx.env_cats):
                             p = p * gy / o.games
                         pts.append((s, p))
+                        pids.append(o.id)
                         real += 1
                     elif m["cut"] is not None and s >= m["first"]:
                         c = transform(m["cut"], cat, m["sport"], s, spec, ctx)
                         if c is not None:
                             pts.append((s, c))
+                            pids.append("cutoff")
                 if real < spec.min_real:
                     continue
                 fb = fit_baseline(pts, y, shift, spec.trend)
@@ -275,6 +277,7 @@ def score(data, spec=Spec(), ctx=None, cats=None, details=False):
                        "before": before, "after": after, "edge": min(before, after) < 5}
                 if details:
                     rec["pts"] = pts
+                    rec["pids"] = pids             # who holds each comparison value ("cutoff" = list cut-off)
                     rec["resid"] = resid
                 out.append(rec)
     return out

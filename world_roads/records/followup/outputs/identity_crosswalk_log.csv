@@ -1,0 +1,6 @@
+variant,sport,season,stable_id,name_a,z_a,name_b,z_b
+A0_original,MLB,1956,ref:aaronha01,Hank Aaron,-0.3721,Henry Aaron,-0.8098
+A0_original,MLB,2025,ref:wittbo02,Bobby Witt,-0.3115,Bobby Witt Jr.,-1.1317
+A0_original,NBA,1947,ref:calveer01,Ernie Calverley,-0.3847,(removed in v2),
+A0_original,NBA,1948,ref:calveer01,Ernie Calverley,-1.6471,(removed in v2),
+A0_original,Athletics,2027,ath:ernest john obiena,Ernest John Obiena,-2.6561,(removed in v2),

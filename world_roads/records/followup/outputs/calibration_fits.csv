@@ -1,4 +1,4 @@
-model,category,threshold_z,leaders,exceedances,mean_excess_scale,scale_pooled,gpd_xi_bounded,gpd_xi_se,gpd_xi_pooled,gpd_xi_pooled_mean,gpd_xi_tau2
+model,category,threshold_z,leaders,exceedances,exp_mean_excess_scale,exp_scale_pooled,gpd_xi_bounded_diagnostic,gpd_xi_se,gpd_xi_pooled_diagnostic,gpd_xi_pooled_mean,gpd_xi_tau2
 A0_original,ath_M_100m,0.676,54,14,0.855,0.854,1.0,0.535,-0.31,-0.333,0.005
 A0_original,ath_M_200m,0.627,59,15,1.041,0.895,-0.45,0.142,-0.356,-0.333,0.005
 A0_original,ath_M_400m,0.683,63,16,1.0,0.888,-0.39,0.152,-0.343,-0.333,0.005

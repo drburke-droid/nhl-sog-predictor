@@ -1,0 +1,31 @@
+athlete,season,category,z,null_category_seasons_at_or_above_z_other_athletes,distinct_null_category_seasons,empirical_share,examples
+Bob Beamon,1968,ath_M_LJ,7.802,4,4660,0.00086,mlb_hr 1920; mlb_streak 1941; nfl_pass_td 1943; swim_M_50_fr 2009
+Wilt Chamberlain,1962,nba_ppg,7.664,5,4660,0.0011,ath_M_LJ 1968; mlb_hr 1920; mlb_streak 1941; nfl_pass_td 1943
+Wayne Gretzky,1986,nhl_assists,7.53,5,4660,0.0011,ath_M_LJ 1968; mlb_hr 1920; mlb_streak 1941; nfl_pass_td 1943
+Joe DiMaggio,1941,mlb_streak,7.011,6,4660,0.0013,ath_M_LJ 1968; mlb_hr 1920; mlb_hr 1921; nfl_pass_td 1943
+Jan Železný,1996,ath_M_JT,5.948,18,4660,0.0039,ath_M_100m 1968; ath_M_LJ 1968; ath_M_SP 1975; ath_W_400mH 2022
+Bob Feller,1946,mlb_so,5.399,24,4660,0.0052,ath_M_100m 1968; ath_M_400m 1968; ath_M_400mH 2021; ath_M_LJ 1968
+Dennis Rodman,1992,nba_rpg,5.282,27,4660,0.0058,ath_M_100m 1968; ath_M_200m 2011; ath_M_400m 1968; ath_M_400mH 2021
+Ichiro Suzuki,2004,mlb_h,5.1,32,4660,0.0069,ath_M_100m 1968; ath_M_200m 2011; ath_M_400m 1968; ath_M_400mH 2021
+Dan Marino,1984,nfl_pass_td,5.031,35,4660,0.0075,ath_M_100m 1968; ath_M_200m 2011; ath_M_400m 1968; ath_M_400mH 2021
+Katie Ledecky,2016,swim_W_800_fr,4.857,45,4660,0.0097,ath_M_100m 1968; ath_M_200m 2011; ath_M_400m 1968; ath_M_400mH 2021
+Yulimar Rojas,2021,ath_W_TJ,4.692,53,4660,0.011,ath_M_100m 1968; ath_M_100m 2009; ath_M_200m 2011; ath_M_400m 1968
+Maury Wills,1962,mlb_sb,4.684,52,4660,0.011,ath_M_100m 1968; ath_M_100m 2009; ath_M_200m 2011; ath_M_400m 1968
+Brian Oldfield,1975,ath_M_SP,4.543,64,4660,0.014,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Sergey Bubka,1993,ath_M_PV,4.446,68,4660,0.015,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Michael Jordan,1987,nba_ppg,4.348,76,4660,0.016,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Léon Marchand,2025,swim_M_200_me,4.338,76,4660,0.016,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Pete Rose,1978,mlb_streak,4.334,76,4660,0.016,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Johannes Vetter,2020,ath_M_JT,4.295,79,4660,0.017,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Stephen Curry,2016,nba_3pm,4.275,80,4660,0.017,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Alexander Popov,2000,swim_M_50_fr,4.236,84,4660,0.018,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Gretchen Walsh,2026,swim_W_100_bu,4.166,95,4660,0.02,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Wu Yanyan,1997,swim_W_200_me,4.049,105,4660,0.023,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Armand Duplantis,2025,ath_M_PV,4.039,109,4660,0.023,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Summer McIntosh,2025,swim_W_400_me,4.031,108,4660,0.023,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Maurice Richard,1945,nhl_goals,4.022,112,4660,0.024,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Usain Bolt,2009,ath_M_100m,4.02,111,4660,0.024,ath_M_100m 1968; ath_M_200m 1996; ath_M_200m 2011; ath_M_400m 1968
+Bobby Orr,1971,nhl_assists,3.915,120,4660,0.026,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Florence Griffith Joyner,1988,ath_W_100m,3.903,122,4660,0.026,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Babe Ruth,1921,mlb_hr,3.896,120,4660,0.026,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996
+Yaroslava Mahuchikh,2024,ath_W_HJ,3.83,133,4660,0.029,ath_M_100m 1968; ath_M_100m 2009; ath_M_100m 2012; ath_M_200m 1996

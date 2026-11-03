@@ -85,15 +85,15 @@ def fig_bootstrap(key="E3_main_env", title="MAIN + environment"):
         if hi > 60:
             ax.annotate("", xy=(62, i), xytext=(58, i), arrowprops=dict(arrowstyle="->", color=BLUE, lw=1.5))
         ax.plot(md, i, "o", color=BLUE, ms=6, mec=SURF, mew=1.5)
-        ax.text(64, i, f"P(top 10) {float(r['p_top10']):.0%}", va="center", fontsize=8.5, color=INK2)
+        ax.text(64, i, f"top 10 in {float(r['top10_frequency_in_refits']):.0%}", va="center", fontsize=8.5, color=INK2)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([f"{r['athlete']} {r['season']} ({r['sport']})" for r in rows], fontsize=8.5)
     ax.invert_yaxis()
     ax.axvline(10.5, color=ORANGE, lw=1.2, ls="--")
     ax.text(10.8, len(rows) - 0.5, "top-ten line", color=INK2, fontsize=8.5)
     ax.set_xlim(0, 76)
-    ax.set_xlabel("rank of the athlete's best season (median and 5-95% range over block-bootstrap replicates)")
-    ax.set_title(f"{title}: how sure is the order?", loc="left", fontsize=11)
+    ax.set_xlabel("rank of the athlete's best season: median and 5-95% range over block-bootstrap refits\n(a frequency conditional on the model, not a probability of being truly top ten)")
+    ax.set_title(f"{title}: rank stability when comparison seasons are resampled", loc="left", fontsize=10.5)
     fig.tight_layout()
     fig.savefig(os.path.join(FIG, f"fig2_bootstrap_{key}.png"), dpi=150)
     plt.close(fig)
@@ -181,7 +181,7 @@ if __name__ == "__main__":
         fig_elasticity()
     if os.path.exists(os.path.join(OUT, "top10_by_variant.csv")):
         fig_rank_heatmap()
-    for k, t in (("E3_main_env", "MAIN + environment"), ("A2_main", "MAIN (no environment adjustment)")):
+    for k, t in (("E3_main_env", "Main + environment"), ("A2_main", "Main model")):
         if os.path.exists(os.path.join(OUT, f"bootstrap_{k}.csv")):
             fig_bootstrap(k, t)
     print(sorted(os.listdir(FIG)))

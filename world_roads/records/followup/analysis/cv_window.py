@@ -5,8 +5,12 @@
 For every category and season s, predict the season's best mark M_s from the other seasons in the window
 (s itself left out), with each trend form, and score the predictive distribution N(baseline, scale) with
 the continuous ranked probability score (CRPS, lower is better) and the coverage of the central 90%
-interval. Values are standardised by each category's median absolute season-to-season change, so all
-categories count equally. The decision rule, fixed before looking at any athlete: the lowest mean CRPS.
+interval. Values are divided by each category's median absolute season-to-season change, which puts them in
+common units; the mean is per prediction, so categories with longer histories weigh more.
+
+SUPERSEDED (review round 2): this script predicts whole-season maxima, not the candidate-specific comparator
+that the score uses. analysis/cv_comparator.py does that, with all three weightings and a held-out test half.
+Kept for comparison; it chose the same trend within +/-15.
 """
 import csv, math, os, sys
 from collections import defaultdict

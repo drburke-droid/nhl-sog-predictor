@@ -23,6 +23,6 @@ F_ratio_field_estimated,field (estimated),Big four: ratio environment + estimate
 D1_depth,depth/technology (individual sports),Athletics and swimming: value / median of the season's ranks 2-10 (participation depth; 2020 left out)
 T1_spikes,depth/technology (individual sports),"Athletics running events: separate level for 2020-26 (spike technology), main trend"
 A2_main_catstd,calibration,MAIN standardised within category: (z - category median) / (1.4826 x MAD)
-A0_original_cal,calibration,"A0_original tail-calibrated: -log10 P(a season leader of the category exceeds z), GPD with pooled shape"
-A2_main_cal,calibration,"A2_main tail-calibrated: -log10 P(a season leader of the category exceeds z), GPD with pooled shape"
-E3_main_env_cal,calibration,"E3_main_env tail-calibrated: -log10 P(a season leader of the category exceeds z), GPD with pooled shape"
+A0_original_cal,calibration (exponential tail),A0_original calibrated with a pooled-EXPONENTIAL category tail (sensitivity model): -log10 P(a season leader of the category exceeds z); GPD shapes are diagnostics only
+A2_main_cal,calibration (exponential tail),A2_main calibrated with a pooled-EXPONENTIAL category tail (sensitivity model): -log10 P(a season leader of the category exceeds z); GPD shapes are diagnostics only
+E3_main_env_cal,calibration (exponential tail),E3_main_env calibrated with a pooled-EXPONENTIAL category tail (sensitivity model): -log10 P(a season leader of the category exceeds z); GPD shapes are diagnostics only
