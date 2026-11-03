@@ -149,6 +149,10 @@ subtitles are her words, a sentence at a time.
 `history_light_film_f35.mp4` (6 min 27 s, `COLD=1 FILM_NAME=history_light_film_f35 make_light_film.py`): the same film
 opening cold on the F-35 at real speed (a blur, its boom, the dust), then the same pass 48 times slower while Lily says
 what it was ("Light is over half a million times faster"), then the title.
+`planes_real_speed_SHORT.mp4` (21 s, vertical, `make_short_planes.py`): no light, just the five planes at real speed,
+slowest first, each pass composited again without the film's signs. The picture's middle sits in a 1080x1920 frame
+with the year, name and speed above it and how long the plane was in the picture below. It ends on the X-15: the
+fastest crewed plane ever flown is from 1967.
 
 Shock waves bend the light (`fly_fx.displacement`) as optics says they must: each shock shell is the edge of a weak
 cylindrical lens. The density jump across it (Rankine-Hugoniot, from the pressure at that radius) raises the air's
