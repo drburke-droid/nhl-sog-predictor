@@ -20,6 +20,11 @@ CG aircraft over a real desert road; the X-1 and F-35 fly at their record Mach n
 #aviation #planes #F35
 ```
 
+**Cover:** `speed_of_light/thumbnails/aviation_short_cover.png` (1080×1920): the title, then the five planes
+stacked as a timeline, 1903 to 1967, each with its year and speed. In the YouTube app's upload screen, open the
+Short's thumbnail (cover) option. If it lets you add an image, use this one. If it only offers a frame from the video,
+pick the opening title (0:01) or the end card ("…is from 1967", 0:19).
+
 **On upload**
 
 * Set the Short's **related video** to the full film: it puts a link to it under the Short, the best way to send
