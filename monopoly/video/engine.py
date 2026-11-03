@@ -6,6 +6,7 @@ placed by phrase: cue("Lizzie Magie") is the moment that phrase starts, estimate
 code re-times itself when the real audio arrives.
 """
 import math
+import json
 import os
 import subprocess
 import sys
@@ -78,16 +79,23 @@ class Scene:
         real, self.audio = audio_length(name)
         self.speech = real if real else len(self.words) / WPM * 60
         self.dur = self.lead_in + self.speech + self.tail
+        wj = os.path.join(AUDIO, name + '.words.json')
+        self.timing = [w[1] for w in json.load(open(wj))] if self.audio and os.path.exists(wj) else None
         self.grain = [np.random.default_rng(k).normal(0, 3.0, (H // 2, W // 2)).astype(np.float32) for k in range(6)]
 
     def cue(self, phrase, offset=0.0):
-        """Seconds into the scene when `phrase` starts being spoken (estimated from word position)."""
+        """Seconds into the scene when `phrase` starts being spoken (from align.py's word timings, else estimated)."""
         flat = ' '.join(self.words).lower()
         i = flat.find(phrase.lower())
         if i < 0:
             raise KeyError('phrase not in narration: %r' % phrase)
-        k = len(flat[:i].split())
-        return self.lead_in + self.speech * k / len(self.words) + offset
+        return self.word_time(len(flat[:i].split())) + offset
+
+    def word_time(self, k):
+        """Seconds into the scene when word k starts."""
+        if self.timing and len(self.timing) == len(self.words):
+            return self.lead_in + self.timing[k]
+        return self.lead_in + self.speech * k / len(self.words)
 
     def captions(self):
         """Sentence-sized caption chunks with start and end times."""
@@ -96,8 +104,8 @@ class Scene:
         out, k = [], 0
         for p in parts:
             n = len(p.split())
-            t0 = self.lead_in + self.speech * k / len(self.words)
-            t1 = self.lead_in + self.speech * (k + n) / len(self.words)
+            t0 = self.word_time(k)
+            t1 = self.word_time(k + n) if k + n < len(self.words) else self.lead_in + self.speech
             out.append((t0, t1, p)); k += n
         return out
 
