@@ -597,7 +597,150 @@ def chart_playbook():
     save(fig, 'playbook_by_table_size.png')
 
 
+def chart_final():
+    """The charts for the video: realistic play with endgame deals, with auctions (house-rule numbers in the plan)."""
+    E = S.get('endgame', {}).get('with_auctions')
+    if not E:
+        return
+    w = lambda k: E[k]['win']
+    base = w('buy_always')
+    note = ('Everyone buys what they land on; set-for-set swaps; endgame deals when the board locks up. '
+            'One player vs three typical players, 100,000 games per bar.')
+    bars([('Always buy', w('buy_always')), ('Mortgage to buy a card\nthat completes or blocks a set', w('mortgage_to_buy_set_cards')),
+          ('Pass if it would leave\nyou under $100', w('pass_if_left_under_100')), ('...under $200', w('pass_if_left_under_200')),
+          ('...under $300', w('pass_if_left_under_300')), ('...under $500', w('pass_if_left_under_500'))],
+         'Buy it or pass?', 'final_buy.png', base=base, note=note)
+    bars([('Bid up to half the price', w('bid_half_price')), ('Bid up to 3/4 of the price', w('bid_3_quarters')),
+          ('Bid up to the printed price', w('buy_always')), ('Bid up to 1.5x the price', w('bid_1_5x'))],
+         'Someone passes: how high do you bid at the auction?', 'final_auction.png', base=base, note=note)
+    bars([('Make every fair set-for-set swap', w('buy_always')), ('Only swap if your set\nis at least as good', w('picky_trader')),
+          ('Only swap when you have\n$400 to build with', w('trade_only_with_400')), ('Haggle over which set\nis worth more', w('haggler')),
+          ('In a stalled game, never sell\nthe card that finishes a set', w('endgame_never_sell')),
+          ('In a stalled game, pay up to\n5x for the card you need', w('endgame_pay_up')), ('Never trade', w('never_trade'))],
+         'Trading for a full set', 'final_trade.png', base=base, note=note)
+    rr = [('Never buy railroads', 'never_buy_railroads'), ('Buy them when you land', 'buy_always'),
+          ('Chase them (mortgage, bid double)', 'railroad_fan'), ('Also trade for the last one', 'railroad_trader'),
+          ('Chase them and trade for them', 'railroad_collector')]
+    bars([(lab, w(k)) for lab, k in rr], 'Should you go for all four railroads?', 'final_railroads.png', base=base, note=note,
+         extra={lab: '   (owns all four in %.0f%% of games)' % E[k]['all_rr'] for lab, k in rr})
+    jl = [('Always pay and leave', 'buy_always'), ('Try one roll, then pay', 'jail_roll_first'), ('Always stay and roll', 'jail_stay'),
+          ('Stay if houses are just past jail', 'jail_zone'), ('Stay once 4 or fewer\nproperties are unsold', 'jail_unsold'),
+          ('Stay once anyone has houses', 'jail_houses')]
+    bars([(lab, w(k)) for lab, k in jl], 'Jail: pay to leave or stay and roll?', 'final_jail.png', base=base, note=note,
+         extra={lab: '   (first to go broke %.1f%%)' % E[k]['first_out'] for lab, k in jl})
+    st = [('one house', 'stop_1'), ('two houses', 'stop_2'), ('three houses', 'stop_3'), ('four houses', 'stop_4'), ('hotels', 'buy_always')]
+    bars([(lab, w(k)) for lab, k in st], 'Stop building at...', 'final_stop.png', base=base, note=note)
+    # spend or save: two panels
+    keeps = [0, 50, 100, 200, 300, 500, 1000]
+    kk = lambda r: 'buy_always' if r == 0 else 'keep_%d' % r
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), sharex=True)
+    for ax, key, lab, col in ((axes[0], 'win', 'Wins per 100 games', BLUE), (axes[1], 'first_out', 'First player to go broke (%)', ORANGE)):
+        ys = [E[kk(r)][key] for r in keeps]
+        ax.plot(keeps, ys, color=col, lw=2.2, marker='o', ms=5)
+        for x, y in zip(keeps, ys):
+            if x in (0, 300, 1000):
+                ax.text(x, y + (0.5 if key == 'win' else 0.15), '%.1f' % y, ha='center', fontsize=9, color=INK)
+        ax.set_ylabel(lab); ax.set_xlabel('Cash kept in hand when building ($)')
+        ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    axes[0].set_title('Saving cash costs wins...', loc='left', fontsize=13, weight='bold', color=INK)
+    axes[1].set_title('...and does not make you safer', loc='left', fontsize=13, weight='bold', color=INK)
+    fig.text(0.01, -0.04, note, fontsize=8.5, color=INK2)
+    fig.tight_layout()
+    save(fig, 'final_building_cash.png')
+    # what each decision is worth
+    rows = [('Trade: make fair swaps vs never trade', base - w('never_trade')),
+            ('Build: spend your cash vs keep $300 back', base - w('keep_300')),
+            ('Trade: even up at printed prices vs haggle', base - w('haggler')),
+            ('Owe money: mortgage first vs sell houses first', base - w('sell_houses_before_mortgaging')),
+            ('Build: hotels vs stop at three houses', base - w('stop_3')),
+            ('Railroads: chase and trade for all four vs just buy them', w('railroad_collector') - base),
+            ('Auctions: bid to 1.5x vs printed price', w('bid_1_5x') - base),
+            ('Build: mortgage spare property to build', w('mortgage_to_build') - base),
+            ('Buy: always vs pass when under $300', base - w('pass_if_left_under_300')),
+            ('Jail: stay once anyone has houses vs always leave', w('jail_houses') - base),
+            ('Buy: mortgage to buy a set card', w('mortgage_to_buy_set_cards') - base)]
+    rows.sort(key=lambda r: r[1])
+    fig, ax = plt.subplots(figsize=(9.5, 0.5 * len(rows) + 1.4))
+    ax.barh(range(len(rows)), [v for _, v in rows], color=[BLUE if v > 0 else ORANGE for _, v in rows], height=0.6)
+    for i, (_, v) in enumerate(rows):
+        ax.text(max(v, 0) + 0.2, i, '%+.1f' % v, va='center', fontsize=9.5, color=INK)
+    ax.set_yticks(range(len(rows))); ax.set_yticklabels([l for l, _ in rows])
+    ax.set_xlim(min(0, min(v for _, v in rows)) - 0.5, max(v for _, v in rows) * 1.15)
+    ax.set_xlabel('Extra wins per 100 games from the better choice')
+    ax.grid(axis='x', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax.set_title('What each decision is worth', loc='left', fontsize=13, weight='bold', color=INK)
+    fig.text(0.01, -0.03, note, fontsize=8, color=INK2)
+    save(fig, 'final_values.png')
+    # playbook by table size
+    ns = [2, 3, 4, 5, 6]
+    pbv = [E['playbook'] ['win'] if n == 4 else E['playbook_n%d' % n]['win'] for n in ns]
+    typ = [E['typical_n%d' % n]['win'] for n in ns]
+    import numpy as np
+    x = np.arange(len(ns))
+    fig, ax = plt.subplots(figsize=(8.5, 4.4))
+    ax.bar(x - 0.19, typ, width=0.36, color=MUTED, label='Typical player')
+    ax.bar(x + 0.19, pbv, width=0.36, color=BLUE, label='Playbook player')
+    for i in range(len(ns)):
+        ax.text(x[i] - 0.19, typ[i] + 0.8, '%.1f' % typ[i], ha='center', fontsize=9, color=INK)
+        ax.text(x[i] + 0.19, pbv[i] + 0.8, '%.1f' % pbv[i], ha='center', fontsize=9, color=INK)
+    ax.set_xticks(x); ax.set_xticklabels(['%d players' % n for n in ns])
+    ax.set_ylabel('Wins per 100 games'); ax.legend(frameon=False)
+    ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax.set_title('Same dice, better decisions', loc='left', fontsize=13, weight='bold', color=INK)
+    fig.text(0.01, -0.03, 'Playbook player vs typical players at every other seat; typical bars = one typical player at an all-typical table.', fontsize=8.5, color=INK2)
+    save(fig, 'final_playbook.png')
+    # two-set scenario
+    P = S.get('endgame_pairs')
+    if P:
+        order = ['lightblue', 'pink', 'orange', 'brown', 'red', 'yellow', 'darkblue', 'green']
+        n = len(order)
+        A = np.full((n, n), np.nan)
+        for i, a in enumerate(order):
+            for j, b in enumerate(order):
+                if a != b:
+                    key = '%s+%s' % (a, b) if '%s+%s' % (a, b) in P else '%s+%s' % (b, a)
+                    A[i, j] = 100 * P[key]['%s first' % a]
+        seq = LinearSegmentedColormap.from_list('seq', ['#eef4fc', '#86b6ef', '#2a78d6', '#104281'])
+        fig, ax = plt.subplots(figsize=(8.4, 7.4))
+        ax.imshow(A, cmap=seq, vmin=55, vmax=90)
+        for i in range(n):
+            for j in range(n):
+                if not np.isnan(A[i, j]):
+                    ax.text(j, i, '%.0f' % A[i, j], ha='center', va='center', fontsize=9.5,
+                            color='#ffffff' if A[i, j] > 76 else INK, weight='bold' if A[i, j] >= A[j, i] else 'normal')
+        ax.set_xticks(range(n)); ax.set_xticklabels([GNAME[g] for g in order], rotation=40, ha='right')
+        ax.set_yticks(range(n)); ax.set_yticklabels([GNAME[g] for g in order])
+        ax.set_ylabel('Build this set first'); ax.set_xlabel('...when your other set is')
+        ax.tick_params(length=0)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+        ax.set_title('Two sets: which gets the houses first?', loc='left', fontsize=13, weight='bold', color=INK)
+        fig.text(0.02, -0.02, 'Wins per 100 games. Bold = the better choice of the pair. Mid-game: every property already bought, $1,000 each, '
+                 'three typical opponents, endgame deals on, 20,000 games per cell.', fontsize=8.5, color=INK2)
+        save(fig, 'final_which_first.png')
+        best_max, best_staged, spread, wrong = [], [], [], []
+        for key, v in P.items():
+            a, b = key.split('+'); fa, fb = v['%s first' % a], v['%s first' % b]
+            first, other = (a, b) if fa >= fb else (b, a)
+            best_max.append(max(fa, fb)); wrong.append(min(fa, fb))
+            best_staged.append(v['%s to 3, then %s' % (first, other)]); spread.append(v['spread'])
+        rows = [('Better set first,\nall the way to hotels', best_max), ('Better set to 3 houses,\nthen the other, then hotels', best_staged),
+                ('One house on every lot,\nthen two, then three...', spread), ('Wrong set first,\nall the way to hotels', wrong)]
+        vals = [100 * sum(r) / len(r) for _, r in rows]
+        fig, ax = plt.subplots(figsize=(8.5, 4.2))
+        ax.barh(range(len(rows))[::-1], vals, color=[BLUE, BLUE, ORANGE, MUTED], height=0.6)
+        for i, v in zip(range(len(rows))[::-1], vals):
+            ax.text(v + 0.4, i, '%.1f' % v, va='center', fontsize=10, color=INK)
+        ax.set_yticks(range(len(rows))[::-1]); ax.set_yticklabels([l for l, _ in rows])
+        ax.set_xlim(0, max(vals) + 9)
+        ax.set_xlabel('Wins per 100 games, average over all 28 pairs of sets ($1,000 each)')
+        ax.grid(axis='x', color=GRID, lw=0.8); ax.set_axisbelow(True)
+        ax.set_title('Max one set, or one house on everything?', loc='left', fontsize=13, weight='bold', color=INK)
+        save(fig, 'final_max_vs_spread.png')
+
+
 if __name__ == '__main__':
+    chart_final()
     chart_controls(); chart_decision_values(); chart_playbook()
     chart_building(); chart_pairs(1000); chart_pairs(500)
     chart_ecology(); chart_evolution(); chart_ablation()

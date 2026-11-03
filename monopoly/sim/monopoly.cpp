@@ -243,6 +243,9 @@ static Strat parseStrat(const std::string& spec) {
 struct Config {
     bool auctions = true, trading = false, freeParking = false, go400 = false, buyouts = false, deal = false;
     int maxRounds = 1000, startCash = 1500;
+    int endgame = 0;  // >0: once nearly everything is owned and this many rounds pass with no new set, trade or bankruptcy,
+                      // players start selling set cards for cash and buying up cards split between players
+
     std::vector<std::pair<int, int>> give;  // (slot, group) handed out before the first roll
 };
 
@@ -254,7 +257,7 @@ struct Stats {
     std::vector<double> netAtEnd, rent;
     std::array<double, 40> rentSq{}, landSq{};
     std::array<long, 10> winnerFirstMono{}, firstMonoAny{};
-    long trades = 0;
+    long trades = 0, endgameDeals = 0;
     double roundsSum = 0; std::vector<long> roundsHist;      // finished games, by 10-round bins
     long turnsTotal = 0;
     void init(int np) {
@@ -264,7 +267,7 @@ struct Stats {
         netAtEnd.assign(n, 0); rent.assign(n, 0); roundsHist.assign(101, 0);
     }
     void add(const Stats& o) {
-        games += o.games; timeouts += o.timeouts; trades += o.trades; roundsSum += o.roundsSum; turnsTotal += o.turnsTotal;
+        games += o.games; timeouts += o.timeouts; trades += o.trades; endgameDeals += o.endgameDeals; roundsSum += o.roundsSum; turnsTotal += o.turnsTotal;
         for (int i = 0; i < n; i++) {
             wins[i] += o.wins[i]; nwWins[i] += o.nwWins[i]; seatWins[i] += o.seatWins[i]; seatGames[i] += o.seatGames[i];
             gotMono[i] += o.gotMono[i]; winWithMono[i] += o.winWithMono[i]; netAtEnd[i] += o.netAtEnd[i]; rent[i] += o.rent[i];
@@ -303,7 +306,7 @@ struct Game {
     const Config& cfg; Rng rng; int n; std::vector<const Strat*> S; Player P[8];
     int owner[40], houses[40]; bool mort[40];
     int bankHouses = 32, bankHotels = 12, pot = 0, round = 0, aliveCount = 0;
-    Deck chance, chest; Stats* st; FILE* log = nullptr; long turns = 0; bool transferring = false;
+    Deck chance, chest; Stats* st; FILE* log = nullptr; long turns = 0; bool transferring = false; long lastProgress = 0;
 
     Game(const Config& c, uint64_t seed, std::vector<const Strat*> strats, Stats* stats)
         : cfg(c), n((int)strats.size()), S(strats), st(stats) { rng.seed(seed); }
@@ -333,6 +336,7 @@ struct Game {
         if (!P[p].rrAll && !transferring && hasSet(p, 8)) P[p].rrAll = true;  // collected, not inherited from a bankrupt
         for (int g = 0; g < 8; g++) if (!(P[p].monoMask >> g & 1) && hasSet(p, g)) {
             P[p].monoMask |= 1 << g;
+            lastProgress = turns;
             if (P[p].firstMono < 0) P[p].firstMono = g;
             if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"set\",\"g\":\"%s\"}\n", round, p, GROUP_NAME[g]);
         }
@@ -407,6 +411,7 @@ struct Game {
         return true;
     }
     void bankrupt(int p, int cred) {
+        lastProgress = turns;
         if (aliveCount == n) st->firstOut[p]++;
         st->busted[p]++;
         if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"bankrupt\",\"to\":%d}\n", round, p, cred);
@@ -722,12 +727,40 @@ struct Game {
             if (bestGA < 0) continue;
             for (int i = 0; i < GSZ[bestGA]; i++) { int s = GSQ[bestGA][i]; if (owner[s] == b) owner[s] = a; }
             for (int i = 0; i < GSZ[bestGB]; i++) { int s = GSQ[bestGB][i]; if (owner[s] == a) owner[s] = b; }
-            P[a].cash -= bestC; P[b].cash += bestC; st->trades++;
+            P[a].cash -= bestC; P[b].cash += bestC; st->trades++; lastProgress = turns;
             if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"trade\",\"with\":%d,\"gets\":\"%s\",\"gives\":\"%s\",\"cash\":%d}\n",
                              round, a, b, GROUP_NAME[bestGA], GROUP_NAME[bestGB], bestC);
             updateMono(a); updateMono(b);
         }
-        if (cfg.buyouts) tryBuyouts(a);
+        bool stall = stalled();
+        if (cfg.buyouts || stall) tryBuyouts(a);
+        if (stall) tryConsolidate(a);
+    }
+    // counted in turns, so the first chance at an endgame deal goes to whoever is next, not always to the first seat
+    bool stalled() const { return cfg.endgame > 0 && unownedCount() <= 2 && turns - lastProgress >= (long)cfg.endgame * aliveCount; }
+    // endgame: buy one card of a colour that is split between several players, so a set can be put together
+    void tryConsolidate(int a) {
+        int bestG = -1, bestB = -1, bestS = -1; double bestKey = -1;
+        for (int g = 0; g < 8; g++) {
+            int mine = countOwned(a, g);
+            if (mine == 0 || mine == GSZ[g]) continue;
+            int holders = 0, seen[8] = {0}; bool unowned = false;
+            for (int i = 0; i < GSZ[g]; i++) { int o = owner[GSQ[g][i]]; if (o < 0) unowned = true; else if (o != a && !seen[o]) { seen[o] = 1; holders++; } }
+            if (unowned || holders < 2) continue;  // one holder: an ordinary buyout handles it
+            for (int i = 0; i < GSZ[g]; i++) {
+                int s = GSQ[g][i], b = owner[s];
+                if (b < 0 || b == a || !P[b].alive || S[b]->trade == 0 || S[b]->sellPremium <= 0) continue;
+                if (countOwned(b, g) > mine) continue;  // nobody sells to a player with fewer cards of the colour than they have
+                double key = (double)mine / GSZ[g] * 10 - countOwned(b, g);
+                if (key > bestKey) { bestKey = key; bestG = g; bestB = b; bestS = s; }
+            }
+        }
+        if (bestG < 0) return;
+        int price = (int)std::ceil(S[bestB]->sellPremium * B[bestS].price);
+        if (S[a]->buyPremium * B[bestS].price < price || P[a].cash - price < S[a]->reserve) return;
+        owner[bestS] = a; P[a].cash -= price; P[bestB].cash += price; st->trades++; st->endgameDeals++;
+        if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"endgame_buy\",\"from\":%d,\"s\":%d,\"cash\":%d}\n", round, a, bestB, bestS, price);
+        updateMono(a);
     }
     // a completes a colour set by buying the missing pieces, all held by one player, for cash
     void tryBuyouts(int a) {
@@ -746,7 +779,8 @@ struct Game {
             int price = (int)std::ceil(ask);
             if (will < ask || P[a].cash - price < S[a]->reserve) continue;
             for (int i = 0; i < GSZ[g]; i++) { int s = GSQ[g][i]; if (owner[s] == b) owner[s] = a; }
-            P[a].cash -= price; P[b].cash += price; st->trades++;
+            P[a].cash -= price; P[b].cash += price; st->trades++; lastProgress = turns;
+            if (!cfg.buyouts) st->endgameDeals++;
             if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"buyout\",\"from\":%d,\"gets\":\"%s\",\"cash\":%d}\n", round, a, b, GROUP_NAME[g], price);
             updateMono(a);
         }
@@ -913,6 +947,7 @@ int main(int argc, char** argv) {
         else if (a == "--go400") cfg.go400 = atoi(nx().c_str());
         else if (a == "--buyouts") cfg.buyouts = atoi(nx().c_str());
         else if (a == "--deal") cfg.deal = atoi(nx().c_str());
+        else if (a == "--endgame") cfg.endgame = atoi(nx().c_str());
         else if (a == "--maxrounds") cfg.maxRounds = atoi(nx().c_str());
         else if (a == "--cash") cfg.startCash = atoi(nx().c_str());
         else if (a == "--horizon") horizon = atof(nx().c_str());
@@ -965,8 +1000,8 @@ int main(int argc, char** argv) {
     const Stats& s = total; long fin = s.games - s.timeouts;
     printf("{\"games\":%ld,\"timeouts\":%ld,\"finished\":%ld,\"avg_rounds_finished\":%.2f,\"trades\":%ld,\"turns\":%ld,",
            s.games, s.timeouts, fin, fin ? s.roundsSum / fin : 0.0, s.trades, s.turnsTotal);
-    printf("\"config\":{\"auctions\":%d,\"trading\":%d,\"fp\":%d,\"go400\":%d,\"buyouts\":%d,\"maxrounds\":%d,\"cash\":%d},",
-           cfg.auctions, cfg.trading, cfg.freeParking, cfg.go400, cfg.buyouts, cfg.maxRounds, cfg.startCash);
+    printf("\"endgame_deals\":%ld,\"config\":{\"auctions\":%d,\"trading\":%d,\"fp\":%d,\"go400\":%d,\"buyouts\":%d,\"endgame\":%d,\"maxrounds\":%d,\"cash\":%d},",
+           s.endgameDeals, cfg.auctions, cfg.trading, cfg.freeParking, cfg.go400, cfg.buyouts, cfg.endgame, cfg.maxRounds, cfg.startCash);
     printf("\"players\":[");
     for (int i = 0; i < np; i++) {
         printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"first_out\":%ld,\"busted\":%ld,\"all_rr\":%ld,\"all_rr_win\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",

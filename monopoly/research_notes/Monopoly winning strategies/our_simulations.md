@@ -334,3 +334,26 @@ one level at a time across both).
   +3.4); pink and orange either way.
 Charts: building_cash.png, building_stop.png, building_which_first_1000.png (and _500),
 building_max_vs_spread_1000.png (and _500).
+
+### 17. Endgame deals and the final numbers for the video
+User's review: stalled real games start their endgame with trades that give players full sets. Modelled as an
+endgame rule (`--endgame 10`): once two or fewer properties are unowned and 10 rounds' worth of turns pass with
+no new set, trade or bankruptcy, the player whose turn it is may buy the card(s) that finish a set from the one
+player holding them (seller asks 2.5x printed price, buyer pays up to 3x), or buy one card of a colour split
+between several players (from a holder with no more of that colour than the buyer). Never-traders take no part.
+Counted in turns so the first chance rotates (counting in rounds gave the first seat 32.5% vs 9.3% for the last
+at six players). Result: games always finish (0.00-0.01% after 1,000 rounds), about 50 rounds on average, 2.7
+endgame deals per four-player game (4.3 at six); seat wins with four typical players 27.8/25.9/24.3/22.1.
+Final numbers (100,000 games each, one player vs three typical players; with auctions / without): typical 25.1 /
+25.1; pass if left under $100 25.3/25.5, $200 25.2/25.6, $300 24.6/25.1, $500 22.7/23.2; pass under $300 except
+set cards 25.1/25.7; mortgage to buy set cards 25.4/25.1; bids half 24.1, 3/4 24.2, 1.5x 26.5, 2x to block 25.8;
+never trade 4.9/4.9; picky 25.6/25.4; only trade with $400 25.1/25.1; haggler 21.4/20.8; endgame never sell
+24.2/24.5 (first out 28.7%); endgame pay up to 5x 25.1/25.1; never buy railroads 24.8/24.9; railroad fan 25.1/25.0;
+railroad trader 26.6/26.2; railroad collector 27.0/26.4 (all four in 28% of games, won 53%); keep $50/100/200/300/
+500/1000 when building 23.6/22.4/19.3/16.3/10.9/3.2 (first out 25.5-33.5%); worst-rent reserve 13.2/13.7; stop at
+1/2/3/4 houses 0.1/4.4/19.6/23.2; mortgage to build 28.0/27.8; sell houses before mortgaging 19.1/19.4; jail: roll
+first 25.0, stay 25.1/24.9, zone 26.1/26.0, unsold 26.5/26.4, smart 26.5/26.4, anyone has houses 26.5/26.5 (first
+out 23.0%); evolved 35.7/33.2; playbook 32.6/30.2 (2 players 58.5/52.6 vs 50.5, 3: 40.8/38.8 vs 33.4, 5: 25.8/23.8
+vs 20.1, 6: 20.5/19.3 vs 16.8); typical vs three playbook 20.7/20.9. Two sets ($1,000, endgame on): better set first
+75.7, three-each 75.7, spread 65.8 (best in 0 of 28), wrong first 67.6; orange+green 84.3 vs 63.3.
+Charts: `final_*.png`. Plan: `reports/Video plan - decisions you control.md` (revision 2).

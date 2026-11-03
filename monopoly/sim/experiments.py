@@ -415,7 +415,53 @@ def exp_playbook(n_games=100000):
         run('playbook', 'official__typical_n%d' % n, [typ] * n, n_games // 2, tv=tv, **off)
 
 
-EXPERIMENTS = {'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
+END_WORLDS = {
+    'with_auctions': dict(auctions=1, trading=1, endgame=10),     # official rules + endgame deals when the board locks up
+    'no_auctions': dict(auctions=0, trading=1, endgame=10),       # same, but unbought property just stays unsold
+}
+END_EXTRA = [
+    ('endgame_never_sell', 'everything;sell=0'),   # when the game stalls, never sells a set card for cash
+    ('endgame_pay_up', 'everything;buyp=5'),       # when the game stalls, pays up to 5x for a card that finishes a set
+]
+END_BUILD = [('keep_%d' % r, 'everything;breserve=%d' % r) for r in (50, 100, 200, 300, 500, 1000)] + [
+    ('danger_1', 'everything;danger=1'), ('stop_1', 'everything;build=1'), ('stop_2', 'everything;build=2'),
+    ('stop_3', 'everything;build=3'), ('stop_4', 'everything;build=4'), ('mortgage_to_build', 'everything;m2b=1'),
+    ('order_cheap', 'everything;border=cheap'), ('order_dear', 'everything;border=dear'), ('spread', 'everything;bpri=spread'),
+    ('staged', 'everything;bpri=staged')]
+AUCTION_ONLY = ('bid_half_price', 'bid_3_quarters', 'bid_1_5x', 'bid_2x', 'bid_2x_to_block')
+
+
+def exp_endgame(n_games=100000, n_scen=20000):
+    """The video's final numbers: realistic play plus endgame deals, with and without auctions."""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    variants = CONTROL_VARIANTS + END_EXTRA + END_BUILD
+    best = json.load(open(os.path.join(RES, 'evolve_real', 'stage1_final.json')))[0]['genome']
+    for world, cfg in END_WORLDS.items():
+        for k, sp in variants:
+            if world == 'no_auctions' and k in AUCTION_ONLY:
+                continue
+            run('endgame', '%s__%s' % (world, k), [sp.replace('everything', 'everything;name=%s' % k, 1)] + [typ] * 3, n_games, tv=tv, **cfg)
+        run('endgame', '%s__playbook' % world, [PLAYBOOK] + [typ] * 3, n_games, tv=tv, **cfg)
+        run('endgame', '%s__playbook_keep_100' % world, [PLAYBOOK + ';breserve=100'] + [typ] * 3, n_games, tv=tv, **cfg)
+        run('endgame', '%s__typical_vs_3_playbook' % world, [typ] + [PLAYBOOK] * 3, n_games, tv=tv, **cfg)
+        run('endgame', '%s__evolved' % world, [er.spec(best, 'Evolved')] + [typ] * 3, n_games, tv=tv, **cfg)
+        for n in (2, 3, 4, 5, 6):
+            run('endgame', '%s__typical_n%d' % (world, n), [typ] * n, n_games // 2, tv=tv, **cfg)
+            if n != 4:
+                run('endgame', '%s__playbook_n%d' % (world, n), [PLAYBOOK] + [typ] * (n - 1), n_games // 2, tv=tv, **cfg)
+    # two complete sets, mid-game, $1,000 each, with endgame deals
+    for a_, b_ in itertools.combinations(GROUPS, 2):
+        give = '0:%s,0:%s' % (a_, b_)
+        for k, sp in (('first_%s' % a_, 'everything;first=%s' % a_), ('first_%s' % b_, 'everything;first=%s' % b_),
+                      ('spread', 'everything;bpri=spread'),
+                      ('staged_%s' % a_, 'everything;bpri=staged;first=%s' % a_), ('staged_%s' % b_, 'everything;bpri=staged;first=%s' % b_)):
+            run('endgame_pairs', 'c1000__%s__%s__%s' % (a_, b_, k), [sp.replace('everything;', 'everything;name=%s;' % k)] + [typ] * 3,
+                n_scen, give=give, deal=1, cash=1000, tv=tv, **END_WORLDS['with_auctions'])
+
+
+EXPERIMENTS = {'endgame': exp_endgame, 'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
 if __name__ == '__main__':

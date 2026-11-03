@@ -394,6 +394,46 @@ def main():
             md.append('| %s | %.1f |' % (k.replace('__', ': ').replace('_', ' '), summary['playbook'][k]))
         md.append('')
 
+    # ---- final numbers for the video: realistic play + endgame deals, with and without auctions
+    eg = load('endgame')
+    if eg:
+        out = {}
+        for key, d in eg.items():
+            world, k = key.split('__', 1)
+            p0 = d['players'][0]; n = d['games']
+            out.setdefault(world, {})[k] = dict(win=pct(p0['wins'] / n), first_out=pct(p0['first_out'] / n), all_rr=pct(p0['all_rr'] / n),
+                                                all_rr_win=pct(p0['all_rr_win'] / max(1, p0['all_rr'])), draws=pct(d['timeouts'] / n),
+                                                rounds=d['avg_rounds_finished'], endgame_deals=d.get('endgame_deals', 0) / n,
+                                                seat=[pct(x / n) for x in d['seat_wins']])
+        summary['endgame'] = out
+        keys = sorted(set(out.get('with_auctions', {})) | set(out.get('no_auctions', {})))
+        md += ['## Final numbers for the video: realistic play with endgame deals', '',
+               'Everyone buys what they land on and makes fair set-for-set swaps. When nearly everything is owned and 10 rounds pass '
+               'with no new set, trade or bankruptcy, players start endgame deals: selling a set-finishing card for cash (2.5x the '
+               'printed price; buyers pay up to 3x) and buying up cards of a colour split between several players. One player vs '
+               'three typical players, 100,000 games per line (table-size lines 50,000).', '',
+               '| Choice | Wins per 100, with auctions | First to go broke | Without auctions | First to go broke |', '|---|---|---|---|---|']
+        for k in keys:
+            a_ = out.get('with_auctions', {}).get(k); b_ = out.get('no_auctions', {}).get(k)
+            md.append('| %s | %s | %s | %s | %s |' % (k.replace('_', ' '), '%.1f' % a_['win'] if a_ else '', '%.1f%%' % a_['first_out'] if a_ else '',
+                                                      '%.1f' % b_['win'] if b_ else '', '%.1f%%' % b_['first_out'] if b_ else ''))
+        md.append('')
+    egp = load('endgame_pairs')
+    if egp:
+        import itertools
+        res = {}
+        for a_, b_ in itertools.combinations(GROUPS, 2):
+            g = lambda k: egp['c1000__%s__%s__%s' % (a_, b_, k)]['players'][0]['wins'] / egp['c1000__%s__%s__%s' % (a_, b_, k)]['games']
+            res['%s+%s' % (a_, b_)] = {'%s first' % a_: g('first_' + a_), '%s first' % b_: g('first_' + b_),
+                                      '%s to 3, then %s' % (a_, b_): g('staged_' + a_), '%s to 3, then %s' % (b_, a_): g('staged_' + b_),
+                                      'spread': g('spread')}
+        summary['endgame_pairs'] = res
+        md += ['## Final: two complete sets, which first and max or spread (endgame deals on, $1,000 each, 20,000 games per cell)', '',
+               '| Your two sets | A first | B first | A to 3 then B | B to 3 then A | Spread | Best |', '|---|---|---|---|---|---|---|']
+        for pair, v in res.items():
+            md.append('| %s | %s | %s |' % (pair, ' | '.join('%.1f' % pct(x) for x in v.values()), max(v, key=v.get)))
+        md.append('')
+
     # ---- learned shark
     shark = load('shark')
     if shark:

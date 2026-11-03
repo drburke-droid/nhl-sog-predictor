@@ -679,6 +679,106 @@ Spec: `buy everything; bid up to 1.5x list at auction; mortgage to buy a card th
 | official: typical n6 | 7.4 |
 | official: typical vs 3 playbook | 19.2 |
 
+## Final numbers for the video: realistic play with endgame deals
+
+Everyone buys what they land on and makes fair set-for-set swaps. When nearly everything is owned and 10 rounds pass with no new set, trade or bankruptcy, players start endgame deals: selling a set-finishing card for cash (2.5x the printed price; buyers pay up to 3x) and buying up cards of a colour split between several players. One player vs three typical players, 100,000 games per line (table-size lines 50,000).
+
+| Choice | Wins per 100, with auctions | First to go broke | Without auctions | First to go broke |
+|---|---|---|---|---|
+| bid 1 5x | 26.5 | 24.6% |  |  |
+| bid 2x | 26.5 | 24.6% |  |  |
+| bid 2x to block | 25.8 | 24.8% |  |  |
+| bid 3 quarters | 24.2 | 25.4% |  |  |
+| bid half price | 24.1 | 25.6% |  |  |
+| buy always | 25.1 | 25.1% | 25.1 | 25.1% |
+| danger 1 | 13.2 | 27.6% | 13.7 | 27.5% |
+| endgame never sell | 24.2 | 28.7% | 24.5 | 28.7% |
+| endgame pay up | 25.1 | 25.1% | 25.1 | 25.1% |
+| evolved | 35.7 | 20.8% | 33.2 | 21.3% |
+| haggler | 21.4 | 26.7% | 20.8 | 26.5% |
+| jail houses | 26.5 | 23.0% | 26.5 | 22.8% |
+| jail roll first | 25.0 | 24.4% | 25.1 | 24.4% |
+| jail smart | 26.5 | 22.9% | 26.4 | 22.8% |
+| jail stay | 25.1 | 23.8% | 24.9 | 24.0% |
+| jail unsold | 26.5 | 23.1% | 26.4 | 22.9% |
+| jail zone | 26.1 | 23.6% | 26.0 | 23.6% |
+| keep 100 | 22.4 | 25.8% | 22.3 | 25.8% |
+| keep 1000 | 3.2 | 33.5% | 3.4 | 33.3% |
+| keep 200 | 19.3 | 26.7% | 19.4 | 26.6% |
+| keep 300 | 16.3 | 27.8% | 16.4 | 27.7% |
+| keep 50 | 23.6 | 25.5% | 23.6 | 25.5% |
+| keep 500 | 10.9 | 29.9% | 11.1 | 29.6% |
+| mortgage to build | 28.0 | 26.0% | 27.8 | 25.9% |
+| mortgage to buy anything | 25.2 | 25.3% | 24.7 | 25.5% |
+| mortgage to buy set cards | 25.4 | 25.0% | 25.1 | 25.2% |
+| never buy railroads | 24.8 | 27.0% | 24.9 | 26.9% |
+| never trade | 4.9 | 34.8% | 4.9 | 34.6% |
+| order cheap | 25.2 | 25.0% | 25.2 | 25.0% |
+| order dear | 24.6 | 25.2% | 24.5 | 25.2% |
+| pass if left under 100 | 25.3 | 24.6% | 25.5 | 24.4% |
+| pass if left under 200 | 25.2 | 24.0% | 25.6 | 23.8% |
+| pass if left under 300 | 24.6 | 23.7% | 25.1 | 23.3% |
+| pass if left under 500 | 22.7 | 23.5% | 23.2 | 22.9% |
+| pass if under 300 except set cards | 25.1 | 23.6% | 25.7 | 23.2% |
+| picky trader | 25.6 | 24.5% | 25.4 | 24.6% |
+| playbook | 32.6 | 22.8% | 30.2 | 23.0% |
+| playbook keep 100 | 32.6 | 22.2% | 30.0 | 22.7% |
+| playbook n2 | 58.5 | 41.5% | 52.6 | 47.4% |
+| playbook n3 | 40.8 | 31.8% | 38.8 | 31.9% |
+| playbook n5 | 25.8 | 18.0% | 23.8 | 18.1% |
+| playbook n6 | 20.5 | 15.1% | 19.3 | 15.1% |
+| railroad collector | 27.0 | 24.2% | 26.4 | 24.5% |
+| railroad fan | 25.1 | 25.0% | 25.0 | 25.2% |
+| railroad trader | 26.6 | 24.4% | 26.2 | 24.4% |
+| sell houses before mortgaging | 19.1 | 28.5% | 19.4 | 28.3% |
+| spread | 24.4 | 25.2% | 24.4 | 25.2% |
+| staged | 25.2 | 25.1% | 25.2 | 25.1% |
+| stop 1 | 0.1 | 33.4% | 0.1 | 33.3% |
+| stop 2 | 4.4 | 29.8% | 4.2 | 29.8% |
+| stop 3 | 19.6 | 26.6% | 19.4 | 26.6% |
+| stop 4 | 23.2 | 25.7% | 23.0 | 25.7% |
+| trade only with 200 | 24.9 | 25.1% | 25.1 | 25.1% |
+| trade only with 400 | 25.1 | 24.8% | 25.1 | 24.8% |
+| typical n2 | 50.5 | 49.5% | 50.4 | 49.6% |
+| typical n3 | 33.4 | 33.6% | 33.4 | 33.4% |
+| typical n4 | 25.2 | 25.0% | 25.1 | 25.0% |
+| typical n5 | 20.1 | 19.8% | 20.1 | 19.8% |
+| typical n6 | 16.8 | 16.6% | 16.8 | 16.5% |
+| typical vs 3 playbook | 20.7 | 25.5% | 20.9 | 26.7% |
+
+## Final: two complete sets, which first and max or spread (endgame deals on, $1,000 each, 20,000 games per cell)
+
+| Your two sets | A first | B first | A to 3 then B | B to 3 then A | Spread | Best |
+|---|---|---|---|---|---|---|
+| brown+lightblue | 61.7 | 69.2 | 61.7 | 65.7 | 61.3 | lightblue first |
+| brown+pink | 61.5 | 70.0 | 63.6 | 69.7 | 62.0 | pink first |
+| brown+orange | 73.3 | 81.6 | 76.4 | 81.3 | 73.1 | orange first |
+| brown+red | 62.2 | 66.1 | 63.4 | 67.1 | 61.0 | red to 3, then brown |
+| brown+yellow | 61.8 | 65.5 | 63.4 | 66.8 | 61.4 | yellow to 3, then brown |
+| brown+green | 57.3 | 55.0 | 57.5 | 56.0 | 53.4 | brown to 3, then green |
+| brown+darkblue | 64.9 | 63.9 | 66.3 | 66.0 | 63.8 | brown to 3, then darkblue |
+| lightblue+pink | 79.6 | 76.0 | 76.2 | 76.6 | 68.9 | lightblue first |
+| lightblue+orange | 85.8 | 85.2 | 85.2 | 85.7 | 77.8 | lightblue first |
+| lightblue+red | 79.3 | 70.5 | 76.6 | 72.2 | 66.4 | lightblue first |
+| lightblue+yellow | 78.8 | 69.6 | 76.8 | 71.9 | 66.8 | lightblue first |
+| lightblue+green | 76.5 | 60.2 | 73.4 | 61.3 | 63.4 | lightblue first |
+| lightblue+darkblue | 80.5 | 68.3 | 78.5 | 71.5 | 70.4 | lightblue first |
+| pink+orange | 81.4 | 86.3 | 83.0 | 86.1 | 72.8 | orange first |
+| pink+red | 75.7 | 70.6 | 76.3 | 72.8 | 62.2 | pink to 3, then red |
+| pink+yellow | 76.2 | 69.9 | 76.9 | 72.4 | 63.5 | pink to 3, then yellow |
+| pink+green | 74.5 | 58.0 | 74.5 | 60.6 | 55.5 | pink first |
+| pink+darkblue | 80.2 | 68.3 | 80.4 | 72.4 | 68.3 | pink to 3, then darkblue |
+| orange+red | 85.3 | 74.8 | 85.6 | 77.6 | 72.6 | orange to 3, then red |
+| orange+yellow | 85.1 | 73.8 | 85.3 | 76.6 | 72.3 | orange to 3, then yellow |
+| orange+green | 84.3 | 63.3 | 84.2 | 65.9 | 67.2 | orange first |
+| orange+darkblue | 88.3 | 73.4 | 88.2 | 77.5 | 79.0 | orange first |
+| red+yellow | 70.8 | 70.6 | 72.9 | 72.9 | 61.8 | yellow to 3, then red |
+| red+green | 69.3 | 57.7 | 71.1 | 60.3 | 57.2 | red to 3, then green |
+| red+darkblue | 76.6 | 68.3 | 77.8 | 72.8 | 68.3 | red to 3, then darkblue |
+| yellow+green | 69.0 | 58.9 | 70.9 | 61.2 | 58.9 | yellow to 3, then green |
+| yellow+darkblue | 75.2 | 68.1 | 76.7 | 72.3 | 68.5 | yellow to 3, then darkblue |
+| green+darkblue | 66.2 | 67.1 | 68.4 | 71.0 | 63.7 | darkblue to 3, then green |
+
 ## Teaching the Shark (one strategy vs three Yes-Men, official rules)
 
 Learned set values: points of win rate a Yes-Man loses by never buying the set, x $100: orange $595, lightblue $584, pink $410, darkblue $246, brown $233, red $168, yellow $46, green $-141

@@ -1,6 +1,15 @@
-# Video plan for review: the Monopoly decisions you actually control
+# Video plan for review (revision 2): the Monopoly decisions you actually control
 
-Status: draft for review, nothing filmed or rendered. Replaces `Video plan.md` (kept for reference).
+Status: draft for review, nothing filmed or rendered.
+
+Changes since revision 1, following your review:
+- **Endless games**: stalled games now go into an endgame where players start making deals that hand someone a
+  full set (details below). Every simulated game now finishes, and every number in this plan was re-run with
+  that endgame in place.
+- **Computer-evolved player**: cut to one short, plain-English aside.
+- **One video**: all five decisions stay in, building included.
+- **Auctions**: kept as the main rules; every decision also lists what changes without auctions.
+- **Length**: about 13 minutes.
 
 ## The niche
 
@@ -8,224 +17,299 @@ There are plenty of videos about which squares get landed on and which colour is
 can't choose where you land. What you *can* choose:
 
 1. **Buy it or pass** when you land on an unowned property (and how much to bid if it goes to auction).
-2. **When to trade**: in a real game, mainly a swap that finishes a set for both players.
+2. **When to trade**: in a real game, mostly a swap that finishes a set for both players, and later the
+   endgame deals that break a stalled board.
 3. **Whether to go for all four railroads.**
 4. **When and where to build**: spend or save, how far, which set first, hotels on one set or a house on
    everything, and what to do when you owe money.
 5. **Jail**: pay and leave, or stay and roll.
 
-This video takes those five decisions one at a time, tests every common answer in simulated games, and
-says how many games each choice wins or loses you. It finishes with a "playbook player" who makes every
-best choice and never picks a colour.
+The video takes those five one at a time, tests each common answer over 100,000 simulated games, and says how
+many games in 100 each choice wins or loses you. It ends with a "playbook player" who makes every best choice
+and never picks a colour.
 
 ## How the simulation plays (one slide, about 40 seconds)
 
-- Standard US board, current cards, official rules; the board maths matches Truman Collins' published
-  tables, which is the credibility line.
+- Standard US board, current cards, official rules. The board maths matches Truman Collins' published tables,
+  which is the credibility line.
 - Everyone buys what they land on if they can afford it.
-- The only trades are swaps where both players finish a set ("I give you the card that completes yours if
-  you give me the card that completes mine"), with cash evening up the printed prices. Nobody sells a
-  set-finishing card for cash.
-- To test a choice, one player makes that choice and the other three are "typical players". A typical player
-  buys what it lands on, makes any fair swap, builds as far as its cash goes and pays to leave jail.
-  **A typical player wins 21.8 games in 100.** About 13 in 100 four-player games never finish: a colour gets
-  split three ways and no two-person swap can fix it.
-- Each result below is 100,000 games. Every key result was also re-run with no auctions and Free Parking
-  money (common house rules); the figures are noted where they differ.
+- Trades are swaps where both players finish a set: "I'll give you the card that completes yours if you give
+  me the card that completes mine." Cash evens up the printed prices.
+- **The endgame.** When nearly every property is owned and 10 rounds go by with no new set, trade or
+  bankruptcy, the board has locked up. Players then start making deals that give someone a full set:
+  - selling the card that finishes another player's set for cash (asking 2.5 times the printed price; buyers
+    will pay up to 3 times);
+  - buying up stray cards of a colour that's split between several players, so the colour can come together.
 
-## The five decisions: what we found
+  A typical four-player game sees about 2 to 3 such deals. With this endgame every game finishes (it averages
+  about 50 rounds); without it, 13 in 100 four-player games and 57 in 100 six-player games never ended.
+- To test a choice, one player makes it and the other three are "typical players". A typical player buys what
+  it lands on, makes any fair swap, builds as far as its cash goes and pays to leave jail.
+  **A typical player wins 25.1 games in 100**, which is a fair share at a four-player table.
+- Every result is 100,000 games, run twice: with auctions (official rules) and without them (an unbought
+  property just stays unsold).
 
-Wins per 100 games against three typical players (typical = 21.8).
+## The five decisions
 
-### 1. Buy it or pass? (chart `decision_buy.png`, `decision_auction.png`)
+Wins per 100 games against three typical players. A typical player wins 25.1 with auctions and 25.1 without.
 
-| Choice | Wins |
-|---|---|
-| Always buy | 21.8 |
-| Pass if buying would leave you under $100 | 21.5 |
-| ...under $200 | 20.9 |
-| ...under $300 | 20.1 |
-| ...under $500 | 17.6 |
-| Mortgage something to buy a card that completes or blocks a set | 22.3 |
+### 1. Buy it or pass? (charts `final_buy.png`, `final_auction.png`)
 
-- **Answer: always buy.** Passing to protect your cash costs games, and the more cautious you are the more
-  it costs. Mortgaging to grab a set-finishing (or set-blocking) card helps a little (+0.5).
-- **If someone else passes and it goes to auction, bid up to 1.5x the printed price**: 23.7 vs 21.8 for
-  stopping at the printed price; lowballing at half price gives 20.5. (Only applies if you play auctions.)
-- Why: every property is a future trading chip. You need cards to make swaps.
+| Choice | With auctions | Without auctions |
+|---|---|---|
+| Always buy | 25.1 | 25.1 |
+| Pass if buying would leave you under $100 | 25.3 | 25.5 |
+| ...under $200 | 25.2 | 25.6 |
+| ...under $300 | 24.6 | 25.1 |
+| ...under $500 | 22.7 | 23.2 |
+| Pass if under $300, but always buy a card that finishes or blocks a set | 25.1 | 25.7 |
+| Mortgage something to buy a card that finishes or blocks a set | 25.4 | 25.1 |
 
-### 2. When to trade for a set (chart `decision_trade.png`)
+- **Answer: buy it, unless it would leave you almost broke.** Keeping a small cushion when *buying* (around
+  $100-200) is harmless, and it makes you a little less likely to be first to go broke (24.0% vs 25.1% at
+  $200). Passing to keep $500 back costs 2.4 games in 100. Never pass on a card that finishes or blocks a set.
+- **Without auctions, passing is cheaper.** A property you pass on just sits unsold instead of going to an
+  opponent at auction, so "keep about $300, but always buy set cards" is slightly ahead (25.7).
+- **At auction, bid up to 1.5 times the printed price** (26.5 vs 25.1 at the printed price). Lowballing at
+  half price gives 24.1. Bidding high only to block someone's set gives 25.8. Without auctions this choice
+  never comes up.
+- Why it works: every property is a trading chip. You need cards to make swaps.
 
-| Choice | Wins |
-|---|---|
-| Make every fair set-for-set swap | 21.8 |
-| Only swap if your set is at least as good as theirs | 22.0 |
-| Only swap when you have $400 to build with straight away | 22.0 |
-| Haggle: demand extra cash when their set is "worth more" | 16.4 |
-| Never trade | 6.3 |
+### 2. When to trade (chart `final_trade.png`)
+
+| Choice | With auctions | Without auctions |
+|---|---|---|
+| Make every fair set-for-set swap | 25.1 | 25.1 |
+| Only swap if your set is at least as good as theirs | 25.6 | 25.4 |
+| Only swap when you have $400 to build with straight away | 25.1 | 25.1 |
+| Haggle: demand extra cash when their set is "worth more" | 21.4 | 20.8 |
+| Endgame: never sell the card that finishes someone's set | 24.2 | 24.5 |
+| Endgame: willing to pay up to 5x for the card you need | 25.1 | 25.1 |
+| Never trade | 4.9 | 4.9 |
 
 - **Answer: make the swap as soon as it's on the table, at printed prices.** Waiting until you can afford
-  houses, or holding out for the better set, makes no real difference. Haggling costs 5.4 wins because the
-  other player walks away and neither of you gets a set. Refusing to trade is the worst decision in the game
-  (-15.6).
-- For a strong player, being picky actually hurts: the best player we found drops from 31.3 to 26.4 if it
-  refuses swaps that give the other player the better set.
-- House rules: the same (picky 21.2, wait for $400 22.2).
+  houses changes nothing. Turning down swaps that hand the other player the better set helps only a little
+  (+0.5). Haggling costs about 4 games in 100: the other player walks away and neither of you gets a set.
+  Refusing to trade at all is the worst decision in the game: **4.9 wins in 100, a fifth of a fair share.**
+- **When the game stalls, take the deal.** Refusing to sell the card that finishes someone's set costs about
+  a game in 100, and you become much more likely to go broke first (28.7% vs 25.1%). The cash lets you build
+  on what you have. Paying above the going price doesn't help.
+- Same with or without auctions.
 
-### 3. Should you go for all four railroads? (chart `decision_railroads.png`)
+### 3. Should you go for all four railroads? (chart `final_railroads.png`)
 
-| Choice | Wins | Owns all four railroads |
-|---|---|---|
-| Never buy railroads | 21.9 | 2% of games |
-| Buy them when you land on them | 21.8 | 4% |
-| Chase them: mortgage to buy, bid double at auction | 21.8 | 5% |
-| Also trade for the last one (swap a colour card for the railroad that completes your four) | 23.6 | 25% |
-| Chase them and trade for them | 24.2 | 26% |
+| Choice | With auctions | Without auctions | How often it owns all four |
+|---|---|---|---|
+| Never buy railroads | 24.8 | 24.9 | 2% of games |
+| Buy them when you land on them | 25.1 | 25.1 | 4% |
+| Chase them: mortgage to buy, bid double at auction | 25.1 | 25.0 | 4% |
+| Also trade for the last one (a colour card for the railroad that completes your four) | 26.6 | 26.2 | 27% |
+| Chase them and trade for them | 27.0 | 26.4 | 28% |
 
-- **Answer: only if you're willing to trade for them.** Buying railroads on your own almost never gets you
-  all four, and it changes nothing. Trading for the fourth one (a fair swap: they finish a colour set, you
-  finish your railroads) gets you all four in a quarter of games and adds 2.3 wins in 100. When the collector
-  holds all four it wins 54 of those games. House rules: 23.0.
-- Side note: skipping railroads entirely doesn't change your wins, but you're more likely to be the first to
-  go broke (23.3% vs 21.8%). They are steady income, not a winning plan.
+- **Answer: only if you're willing to trade for them.** Buying railroads on their own almost never gets you
+  all four, and it changes nothing. Trading for the fourth (a fair swap: they finish a colour set, you finish
+  your railroads) gets you all four in more than 1 game in 4 and adds about 2 games in 100. A player holding
+  all four wins about 53 of those games.
+- Skipping railroads entirely barely changes your wins, but you're more likely to be first to go broke (27.0%
+  vs 25.1%). They're steady income, not a winning plan by themselves.
 
-### 4. When and where to build (charts `building_cash.png`, `building_stop.png`, `building_which_first_1000.png`, `building_max_vs_spread_1000.png`)
+### 4. When and where to build (charts `final_building_cash.png`, `final_stop.png`, `final_which_first.png`, `final_max_vs_spread.png`)
 
-**Spend it or keep some back?**
+**Spend it or keep some back when building?**
 
-| Cash you keep in hand when building | Wins | First to go broke |
-|---|---|---|
-| $0 | 21.8 | 21.8% |
-| $100 | 20.0 | 22.2% |
-| $300 | 16.0 | 23.6% |
-| $500 | 12.5 | 24.9% |
-| $1,000 | 7.1 | 27.0% |
-| Enough to pay the biggest rent on the board | 14.0 | 23.2% |
+| Cash you keep in hand when building | Wins (with auctions) | First to go broke | Wins (without auctions) |
+|---|---|---|---|
+| $0 | 25.1 | 25.1% | 25.1 |
+| $50 | 23.6 | 25.5% | 23.6 |
+| $100 | 22.4 | 25.8% | 22.3 |
+| $200 | 19.3 | 26.7% | 19.4 |
+| $300 | 16.3 | 27.8% | 16.4 |
+| $500 | 10.9 | 29.9% | 11.1 |
+| $1,000 | 3.2 | 33.5% | 3.4 |
+| Enough to pay the biggest rent on the board | 13.2 | 27.6% | 13.7 |
 
-- **Answer: spend it.** Keeping cash back doesn't make you safer: the more you keep, the *more* likely you
-  are to be the first to go broke. Houses bring the cash in; cash in hand earns nothing, and in a pinch you can
-  mortgage or sell houses back. Mortgaging spare properties to pay for houses adds 1.6 (23.4).
-- **How far to build:** one house 0.1, two 4.9, three 17.9, four 20.4, hotels 21.8. The third house is the big
-  jump, but stopping there costs 3.9.
-- **You own two sets: which first?** (mid-game test: every property already bought, $1,000 each, all 28 pairs
-  of sets). Build the set with the cheaper houses first. Orange and light blue beat every other set (and tie
-  with each other); pink next; red ties with yellow, and dark blue with green. Brown only goes first ahead of
-  green and dark blue. Getting it wrong costs up to 20 wins in 100 (orange + green: orange first 84, green
-  first 65).
-- **Hotels on one set, or a house on everything?** Never spread one house across everything: it was the
-  best choice in 0 of 56 situations, and on average (67.1) it did worse than building the *wrong* set first
-  (68.8). Building one set up first: 76.2. Cheap sets (light blue, $50 houses): straight to hotels. Expensive
-  sets ($150-200 houses): three houses on each set first, then hotels. Pink and orange: either way works.
-- **You owe money you don't have: mortgage or sell houses?** Mortgage your spare properties first; sell
-  houses last. Selling houses first drops you to 17.3 (-4.5) and makes you more likely to go broke first
-  (24.3%). House rules: 18.3.
+- **Answer: spend it on houses.** This is the biggest surprise in the video. Keeping cash back doesn't make
+  you safer: the more you keep, the *more* likely you are to be first to go broke. Houses bring cash in, cash
+  in hand earns nothing, and in a pinch you can mortgage or sell houses back.
+- **Mortgage your spare properties to pay for houses**: 28.0 (27.8 without auctions), worth about 3 games in
+  100.
+- **(Contrast for the narration:** a small cushion is fine when *buying* a property, but not when *building*.
+  The difference is that houses pay you back and a property on its own barely does.)
+- **How far to build:** one house 0.1, two 4.4, three 19.6, four 23.2, hotels 25.1. The third house is the big
+  jump, but stopping there costs 5.5. Same without auctions.
+- **You own two sets: which one first?** Mid-game test: every property already bought, $1,000 each, all 28
+  pairs of sets. Build the set with the cheaper houses first:
+  - light blue and orange first (they tie with each other), then pink;
+  - red ties with yellow, and dark blue with green;
+  - brown goes first only ahead of dark blue or green, and only just.
 
-### 5. Jail: pay to leave, or stay and roll? (chart `decision_jail.png`)
+  Picking wrong costs up to 21 games in 100: orange + green gives 84 with orange first, 63 with green first.
+- **Hotels on one set, or a house on everything?** Never spread one house across everything. It was the
+  best choice in 0 of 28 pairs, and on average (65.8) it did worse than building the *wrong* set first (67.6).
+  Building one set up first: 75.7.
+  - Cheap set first (light blue): go straight to hotels (+0.6 to +3.5 over the alternative).
+  - Expensive set first (red, yellow, dark blue): three houses on both sets, then hotels (+1.0 to +3.9).
+  - Pink or orange first: either way works.
+- **You owe money you don't have: mortgage or sell houses?** Mortgage spare properties first and sell houses
+  last. Selling houses first drops you to 19.1 (19.4 without auctions), a loss of 6 games in 100, and makes you
+  more likely to go broke first (28.5%).
 
-| Choice | Wins | First to go broke |
-|---|---|---|
-| Always pay and leave | 21.8 | 21.8% |
-| Try one roll for doubles, then pay | 21.6 | 21.2% |
-| Always stay as long as you can | 21.7 | 20.4% |
-| Stay if an opponent has houses on the stretch just past jail (St. Charles to Illinois) | 22.5 | 20.7% |
-| Stay once four or fewer properties are unsold | 22.7 | 19.9% |
-| Stay once anyone has houses | 22.9 | 19.6% |
+### 5. Jail: pay to leave, or stay and roll? (chart `final_jail.png`)
 
-- **Answer: get out early while there is property to buy; once anyone has houses, stay in.** It is the
-  smallest of the five decisions (+1.1), but it also makes you less likely to go broke first (19.6% vs 21.8%).
-  Always staying, or "try a roll first", gains nothing. House rules: same (22.5 for the early/late rule).
+| Choice | With auctions | Without auctions | First to go broke |
+|---|---|---|---|
+| Always pay and leave | 25.1 | 25.1 | 25.1% |
+| Try one roll for doubles, then pay | 25.0 | 25.1 | 24.4% |
+| Always stay as long as you can | 25.1 | 24.9 | 23.8% |
+| Stay if an opponent has houses on the stretch just past jail (St. Charles to Illinois) | 26.1 | 26.0 | 23.6% |
+| Stay once four or fewer properties are unsold | 26.5 | 26.4 | 23.1% |
+| Stay once anyone has houses | 26.5 | 26.5 | 23.0% |
 
-## The payoff: the playbook player (chart `playbook_by_table_size.png`, `decision_values.png`)
+- **Answer: get out early while there's property to buy; once anyone has houses, stay in.** It's worth about
+  1.4 games in 100, and you're less likely to be first to go broke (23.0% vs 25.1%). Always staying, or trying
+  one roll first, gains nothing. Same without auctions.
 
-One player who makes every best choice above and never picks a favourite colour: always buys (mortgages for
-a set card), bids up to 1.5x at auction, makes every fair swap including for railroads, spends its cash on
-houses (mortgaging spare property), builds the cheaper set first to hotels, mortgages before selling houses,
-and stays in jail once anyone has houses.
+## Short aside: what if the computer designs its own player? (about 20 seconds)
 
-| Table | Typical player | Playbook player |
-|---|---|---|
-| 2 players | 50.4 | 58.6 |
-| 3 players | 33.3 | 41.1 |
-| 4 players | 21.8 | **28.8** (29.1 if it keeps about $100) |
-| 5 players | 12.7 | 16.3 |
-| 6 players | 7.4 | 9.1 |
-| 4 players, house rules (no auctions, Free Parking money) | 21.7 | 25.0 |
+Plain-English version for the narration: "We also let the computer invent a player by trial and error. It
+started with 24 random players, kept the ones that won most, mixed and tweaked their habits, and repeated that
+25 times. It ended up with the same habits as our playbook, plus one extra: it picked two favourite colours,
+light blue and orange, and went hard for them. It wins about 36 games in 100 (33 without auctions)." Put this
+just before the playbook reveal and don't dwell on how it works.
 
-Same dice, a third more wins. Sit a typical player down with three playbook players and the typical player
-wins 19.2 instead of 21.8, so it isn't a trick that only works on weak players.
+## The payoff: the playbook player (charts `final_playbook.png`, `final_values.png`)
 
-What each decision is worth (`decision_values.png`), better choice vs the common alternative:
-trade at all +15.6; spend vs keep $300 +5.9; don't haggle +5.4; mortgage before selling houses +4.5; hotels
-vs three houses +3.9; trade for railroads +2.3; bid to 1.5x at auction +1.9; always buy vs pass when under
-$300 +1.7; mortgage to build +1.6; jail timing +1.1; mortgage to buy a set card +0.5. When you hold two sets:
-which one first is worth up to 20, and building one up instead of spreading about 9.
+This player makes every best choice above and never picks a favourite colour:
+- always buys, and mortgages if needed to buy a card that finishes or blocks a set;
+- bids up to 1.5 times the price at auction;
+- makes every fair swap, railroads included;
+- spends its cash on houses, mortgaging spare property to do it, and builds the cheaper set first to hotels;
+- mortgages before selling houses;
+- stays in jail once anyone has houses.
+
+| Table | Typical player | Playbook player (with auctions) | Playbook player (without auctions) |
+|---|---|---|---|
+| 2 players | 50.5 | 58.5 | 52.6 |
+| 3 players | 33.4 | 40.8 | 38.8 |
+| 4 players | 25.2 | **32.6** | **30.2** |
+| 5 players | 20.1 | 25.8 | 23.8 |
+| 6 players | 16.8 | 20.5 | 19.3 |
+
+- Same dice, about **30% more wins** at a four-player table (20% more without auctions).
+- Seat a typical player with three playbook players and it wins 20.7 instead of 25: the playbook isn't a trick
+  that only works against weak players.
+- Without auctions the playbook's edge shrinks, most of all heads-up (52.6 vs 50.5), because the auction
+  bidding is one of its advantages.
+
+What each decision is worth (`final_values.png`, with auctions, the better choice against the common
+alternative):
+
+| Decision | Gain (games in 100) |
+|---|---|
+| Making fair swaps instead of never trading | +20.2 |
+| Spending your cash instead of keeping $300 back when building | +8.9 |
+| Mortgaging before selling houses | +6.0 |
+| Hotels instead of stopping at three houses | +5.5 |
+| Not haggling | +3.8 |
+| Mortgaging spare property to build | +2.9 |
+| Trading for all four railroads | +1.9 |
+| Jail timing | +1.4 |
+| Bidding to 1.5 times at auction | +1.4 |
+| Always buying instead of passing when under $300 | +0.5 |
+| Mortgaging to buy a set card | +0.3 |
+
+When you hold two sets, which one you build first is worth up to 21 games in 100, and building one up instead
+of spreading is worth about 10.
 
 ## Running order (about 13 minutes)
 
 | Time | Section | What's said and shown |
 |---|---|---|
-| 0:00-0:35 | Cold open | "Every Monopoly video tells you orange is the best colour. Great. You don't get to choose where you land. Here's what you do get to choose, and what each choice is worth." Flash the playbook number: 29 wins in 100 vs 22 |
-| 0:35-1:15 | How we tested it | The rules slide above. A typical player wins 22 in 100; 13 in 100 games never end (the three-way split, briefly) |
-| 1:15-2:45 | 1. Buy or pass | Buy-or-pass ladder (21.8 down to 17.6). Auction beat: bid to 1.5x. "Every card is a trading chip" |
-| 2:45-4:30 | 2. Trading | The swap animation. Never trade 6.3. Haggling 16.4. Waiting or being picky doesn't help. "Make the deal" |
-| 4:30-6:00 | 3. Railroads | "The railroad guy" setup. Buying them: nothing. Trading for the fourth: all four in 1 game in 4, +2.3. Never buying them: same wins, more likely to go broke first |
-| 6:00-10:00 | 4. Building (the longest section) | Spend vs save (both panels: wins fall, risk rises). How far to build. Two sets: which first (the matrix, orange + green 84 vs 65). Max one set vs one house everywhere (0 of 56). Owe money: mortgage first, sell houses last |
-| 10:00-11:15 | 5. Jail | Out early, in late; the "anyone has houses" trigger; risk of going broke first falls |
-| 11:15-12:30 | The playbook player | Same dice, a third more wins; table sizes; the "what each decision is worth" ranking |
+| 0:00-0:35 | Cold open | "Every Monopoly video tells you orange is the best colour. Great. You don't get to choose where you land. Here's what you do get to choose, and what each choice is worth." Flash the payoff: 33 wins in 100 instead of 25 |
+| 0:35-1:20 | How we tested it | The rules slide. Typical player wins 25 in 100. The endgame beat: "when the board locks up, people start dealing", 2-3 deals a game, and every game finishes |
+| 1:20-2:50 | 1. Buy or pass | Buy-or-pass ladder: a small cushion is fine, passing to keep $500 costs 2.4. Never pass on a set card. Auction beat: bid to 1.5 times. Without auctions: passing is cheaper |
+| 2:50-4:40 | 2. Trading | Swap animation. Never trade: 4.9. Haggling costs about 4. Waiting or being picky barely matters. Endgame: take the deal, because refusing makes you likelier to go broke first |
+| 4:40-6:00 | 3. Railroads | "The railroad guy." Buying them does nothing; trading for the fourth gets all four in more than 1 game in 4, +2 |
+| 6:00-10:00 | 4. Building (longest) | Spend vs save (both panels: wins fall, risk rises). Mortgage to build. How far to build. Two sets: which first (the matrix; orange + green 84 vs 63). Max one set vs one house everywhere (0 of 28). Owe money: mortgage first, sell houses last |
+| 10:00-11:10 | 5. Jail | Out early, in once anyone has houses; less likely to go broke first |
+| 11:10-11:30 | Aside | The computer-designed player, in plain English (above) |
+| 11:30-12:30 | The playbook player | Same dice, about 30% more wins; table sizes; the "what each decision is worth" ranking; one line on how it changes without auctions |
 | 12:30-13:00 | End card | The seven-line playbook (below) |
 
 ## End card: the playbook
 
-1. Land on it? Buy it. (Short on cash for a card that finishes a set? Mortgage something.)
+1. Land on it? Buy it, unless it would leave you nearly broke. Always buy a card that finishes or blocks a set.
 2. At auction, bid up to one and a half times the price.
-3. Make every fair set-for-set swap, at printed prices. Don't haggle.
+3. Make every fair set-for-set swap at printed prices. Don't haggle. When the game stalls, take the deal.
 4. Want the railroads? Trade for the last one, or don't bother.
-5. Spend your cash on houses; mortgage spare property to build; go to hotels.
+5. Spend your cash on houses, mortgage spare property to build, and go to hotels. Owe money? Mortgage before
+   you sell houses.
 6. Two sets: cheaper houses first. Never one house on everything.
-7. Out of jail early; stay in once anyone has houses.
+7. Get out of jail early; stay in once anyone has houses.
 
 ## Titles and thumbnails
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | A player's hand hovering over "BUY" / "PASS", text "WHAT YOU CONTROL" | You Can't Control the Dice in Monopoly. Here's What You Can (Simulated) |
+| A | A hand hovering over "BUY" / "PASS", text "WHAT YOU CONTROL" | You Can't Control the Dice in Monopoly. Here's What You Can (Simulated) |
 | B | Stack of cash vs a hotel, "SPEND IT" | Save Cash or Build Hotels? Every Monopoly Decision, Tested |
 | C | Four railroad cards with a swap arrow, "ONLY IF YOU TRADE" | Should You Go for All Four Railroads? Monopoly Decisions, Settled |
 
 ## Shorts (one decision each)
 
-- "Should you pass on a property to save cash?" Always buy: passing when under $300 costs 1.7 wins in 100.
-- "Never trade in Monopoly?" 6.3 wins in 100 instead of 21.8.
-- "Don't haggle." Even up at printed prices: haggling costs 5.4.
-- "The railroad guy." Buying them does nothing; trading for the fourth: +2.3, all four in 1 game in 4.
-- "Keep cash for emergencies?" Keeping $300 back makes you *more* likely to go broke first.
-- "Owe rent? Don't sell your houses." Mortgage first: selling first costs 4.5.
-- "Two monopolies, which first?" Orange + green: 84 vs 65.
-- "A house on everything?" Best in 0 of 56 situations.
+- "Keep cash for emergencies?" Keeping $300 back when building: 16.3 wins in 100 instead of 25.1, and you're
+  *more* likely to go broke first.
+- "Never trade in Monopoly?" 4.9 wins in 100, a fifth of a fair share.
+- "Owe rent? Don't sell your houses." Mortgage first: selling first costs 6 games in 100.
+- "Two monopolies, which first?" Orange + green: 84 vs 63.
+- "A house on everything?" Best in 0 of 28 pairs.
+- "Is three houses enough?" Three: 19.6. Hotels: 25.1.
+- "The railroad guy." Buying them does nothing; trading for the fourth does.
+- "The game's stalled. Sell the card?" Yes. Refusing makes you likelier to go broke first.
 - "Stay in jail?" Only once someone has houses.
 
 ## Caveats to say on camera
 
-- The "typical player" is a model of an ordinary player, not a real person; every result is "against players
-  who play like this".
-- Trading is simplified to fair two-player swaps. No three-way deals, no cash for set cards, no bluffing.
-- Small effects (jail +1.1, mortgage to buy a set card +0.5) are real over 100,000 games but you'd need dozens
-  of games to feel them. The big ones (trading, spending, which set first, max vs spread, mortgage vs sell)
-  are 4-20 wins in 100.
-- Auction advice only applies if you play auctions; everything else holds with house rules.
+- The "typical player" is a model of an ordinary player, not a real person. Every result means "against
+  players who play like this".
+- Trading is simplified: fair two-player swaps, plus endgame cash deals for set cards once the board locks up.
+  There are no bluffs and no three-way swaps. The endgame prices (2.5 to 3 times the printed price) are our
+  assumption.
+- Small effects (passing with a small cushion, mortgaging to buy a set card, jail timing) are real over
+  100,000 games, but you'd need dozens of games to feel them. The big ones (trading at all, spending vs
+  saving, mortgage vs sell, hotels, which set first, max vs spread) are 5 to 21 games in 100 and safe to lead
+  with.
+- Auctions: every decision was tested both ways. Only the auction bidding advice and the size of the passing
+  penalty depend on them.
 
-## Questions for your review
+## Draft YouTube description (title A)
 
-1. **Endless games.** Under the swap-only rule, 13 in 100 four-player games never finish. Do your games
-   break those deadlocks somehow (a cash sale, a three-way trade, calling it), or do we say on camera that
-   real games stall too?
-2. **Drop the evolved computer player?** It relies on favourite colours, which this video deliberately skips.
-   The playbook player now does its job. Suggest cutting it, or keeping it to a 20-second aside.
-3. **Building section length.** It has five sub-questions. Keep all five in the main video, or move "which set
-   first" and "max vs spread" to their own follow-up video and keep this one to spend vs save, how far, and
-   mortgage vs sell?
-4. **Auctions.** Many families never auction. Keep the auction beat (official rules) or drop it?
-5. **Length.** About 13 minutes as planned; the earlier videos ran 3-11 minutes.
+```
+You can't choose where you land in Monopoly. You can choose whether to buy, when to trade, whether to chase
+the railroads, how to build, and what to do in jail. We simulated each of those decisions over 100,000 games
+of Monopoly played the way families play it: everyone buys what they land on, you only help someone finish a
+set if they help you finish yours, and when the board locks up, people start dealing.
 
-Data: `sim/results/summary.md` (sections "The decisions a player controls", "The playbook player", "Building",
-"Two complete sets"); charts in `sim/results/charts/` (`decision_*.png`, `building_*.png`, `playbook_by_table_size.png`).
+🎲 Never trading: 4.9 wins in 100 (a fair share is 25).
+🏠 Keeping $300 back when building: 16.3 wins in 100, and you're MORE likely to go broke first.
+🏠 Owe money? Mortgage before you sell houses (selling first costs 6 games in 100).
+🏠 Two monopolies? Cheaper houses first. Orange + green: 84 vs 63.
+🚂 Railroads: only worth it if you trade for the last one.
+🔒 Jail: get out early; stay in once anyone has houses.
+📋 Do all of it: about 33 wins in 100 instead of 25. Same dice.
+
+How it's made: a simulator of the standard US board and current cards under the official rules (auctions,
+even building, 32 houses and 12 hotels, mortgages); its board probabilities match Truman Collins' published
+tables. Every decision was also tested without auctions.
+Method, code and every result: https://github.com/drburke-droid/nhl-sog-predictor/tree/master/monopoly
+```
+
+## Still open (small)
+
+1. **Endgame prices.** Are 2.5 to 3 times the printed price about right for what someone pays at your table for
+   the card that finishes their set? If people pay a lot more or a lot less, I can re-run.
+2. **Cold-open number.** "33 wins instead of 25" uses auctions. If most viewers don't play auctions, the line
+   could be "30 instead of 25".
+
+Data: `sim/results/summary.md` ("Final numbers for the video" and "Final: two complete sets"). Charts:
+`sim/results/charts/final_*.png`.
