@@ -1,6 +1,8 @@
-# Video plan for review (revision 2): the Monopoly decisions you actually control
+# Video plan for review (revision 3): the Monopoly decisions you actually control
 
-Status: draft for review, nothing filmed or rendered.
+Status: draft for review, nothing filmed or rendered. Revision 3 adds the look (`Art direction.md`, style frames
+in `art/frames/`), a 20-second lore cold open, and closes the open questions: endgame prices stay at 2.5-3x,
+and the headline number is "33 vs 25" (with auctions).
 
 Changes since revision 1, following your review:
 - **Endless games**: stalled games now go into an endgame where players start making deals that hand someone a
@@ -225,8 +227,9 @@ of spreading is worth about 10.
 
 | Time | Section | What's said and shown |
 |---|---|---|
-| 0:00-0:35 | Cold open | "Every Monopoly video tells you orange is the best colour. Great. You don't get to choose where you land. Here's what you do get to choose, and what each choice is worth." Flash the payoff: 33 wins in 100 instead of 25 |
-| 0:35-1:20 | How we tested it | The rules slide. Typical player wins 25 in 100. The endgame beat: "when the board locks up, people start dealing", 2-3 deals a game, and every game finishes |
+| 0:00-0:20 | Lore cold open | The 1904 patent drawing on a desk. "In 1904 a woman named Lizzie Magie patented a board game to show how landlords get rich. You know it as Monopoly." Push in on her corner, "NO TRESPASSING - GO TO JAIL" |
+| 0:20-0:45 | The promise | Title card (frame 01). "Every Monopoly video tells you which colour is best. You don't get to choose where you land. Here's what you do get to choose, and what each choice is worth." Stamp: 33 wins in 100, not 25 |
+| 0:45-1:20 | How we tested it | The rules slide. Typical player wins 25 in 100. The endgame beat: "when the board locks up, people start dealing", 2-3 deals a game, and every game finishes |
 | 1:20-2:50 | 1. Buy or pass | Buy-or-pass ladder: a small cushion is fine, passing to keep $500 costs 2.4. Never pass on a set card. Auction beat: bid to 1.5 times. Without auctions: passing is cheaper |
 | 2:50-4:40 | 2. Trading | Swap animation. Never trade: 4.9. Haggling costs about 4. Waiting or being picky barely matters. Endgame: take the deal, because refusing makes you likelier to go broke first |
 | 4:40-6:00 | 3. Railroads | "The railroad guy." Buying them does nothing; trading for the fourth gets all four in more than 1 game in 4, +2 |
@@ -251,9 +254,12 @@ of spreading is worth about 10.
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | A hand hovering over "BUY" / "PASS", text "WHAT YOU CONTROL" | You Can't Control the Dice in Monopoly. Here's What You Can (Simulated) |
-| B | Stack of cash vs a hotel, "SPEND IT" | Save Cash or Build Hotels? Every Monopoly Decision, Tested |
-| C | Four railroad cards with a swap arrow, "ONLY IF YOU TRADE" | Should You Go for All Four Railroads? Monopoly Decisions, Settled |
+| A | Magie's 1904 patent drawing with a red stamp across it: "WHAT YOU CONTROL" | You Can't Control the Dice in Monopoly. Here's What You Can (Simulated) |
+| B | Frame 06: our board's corner with the brass pawn, "SAVE IT" crossed out, "SPEND IT" stamped, "33 wins, not 25" | Save Cash or Build Hotels? Every Monopoly Decision, Tested |
+| C | The four railway tickets fanned out, stamped "ONLY IF YOU TRADE" | Should You Go for All Four Railroads? Monopoly Decisions, Settled |
+
+All three use the art direction (no Hasbro artwork); the description and end card carry "Not affiliated with or
+endorsed by Hasbro".
 
 ## Shorts (one decision each)
 
@@ -304,12 +310,23 @@ tables. Every decision was also tested without auctions.
 Method, code and every result: https://github.com/drburke-droid/nhl-sog-predictor/tree/master/monopoly
 ```
 
-## Still open (small)
+## Look and feel
 
-1. **Endgame prices.** Are 2.5 to 3 times the printed price about right for what someone pays at your table for
-   the card that finishes their set? If people pay a lot more or a lot less, I can re-run.
-2. **Cold-open number.** "33 wins instead of 25" uses auctions. If most viewers don't play auctions, the line
-   could be "30 instead of 25".
+Full art direction, palette, fonts, motion, sound and the Hasbro-free checklist: `Art direction.md`. In short:
+the video is built from Monopoly's real paper trail. Lizzie Magie's public-domain 1904 patent drawing sets the
+look of the board (our own drawing in her style), the real Atlantic City streets appear on period postcards
+and maps, and the results arrive as 1930s paperwork: ledgers, rubber stamps, telegrams, railway tickets and a
+certificate for the playbook. Style frames: `art/frames/01_title.png` (title card), `02_board.png` (the board),
+`03_ledger_spend_or_save.png`, `04_railroads_telegram.png`, `05_end_card.png`, `06_thumbnail.png`.
+
+On-screen game count: the numbers in this plan come from **13.4 million games** (100,000 per result); all the
+realistic-play testing behind the project, including the evolution runs, totals about 65 million.
+
+## Decided
+
+- Endgame prices: 2.5x asking, up to 3x paid (as modelled).
+- Headline: 33 wins in 100 vs 25 (with auctions); the no-auction figure (30) is mentioned once in the playbook
+  section.
 
 Data: `sim/results/summary.md` ("Final numbers for the video" and "Final: two complete sets"). Charts:
 `sim/results/charts/final_*.png`.
