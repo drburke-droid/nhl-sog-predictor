@@ -77,8 +77,12 @@ For the 6:15 version (no F-35 opening), use these chapters instead: 0:00 How fas
 2:19 Part 3 · 2:57 Enter light · 3:27 Around the Earth · 3:42 How the light race works · 4:34 Part 4 · 5:13 Light
 passes a frozen Parker · 5:48 Getting to the Moon.
 
-**Tags:** speed of light, how fast is light, F-35, F-35 sonic boom, Parker Solar Probe, NASA, X-15, fastest plane
-ever, fastest machine ever built, slow motion, light speed, physics, Spitfire, Wright Flyer
+**Tags** (paste as one line; 24 tags, 401 characters by YouTube's count, under its 500 limit). The main
+searches come first; tags weigh less than the title and description, but they help with variant spellings.
+
+```
+speed of light, how fast is light, speed of light visualized, fighter jet vs speed of light, F-35, F-35 sonic boom, fighter jet, Parker Solar Probe, NASA, X-15, fastest plane ever, fastest machine ever built, light speed, slow motion, sonic boom, speed comparison, how fast is the speed of light, light around the earth, Spitfire, Wright Flyer, Bell X-1, physics, science, 670 million mph
+```
 
 **Pinned comment:** "Even filmed at 25 million frames a second, light crosses the picture in just 35 frames.
 Parker, the fastest thing we've ever built, would take about 31,000. What should race light next?"
