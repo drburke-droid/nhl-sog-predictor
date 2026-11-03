@@ -14,7 +14,7 @@ Otherwise, use title A.
 
 | | Thumbnail | Title |
 |---|---|---|
-| **A (lead)** | `speed_ladder_v2_thumb_A.png`: the F-35 with its afterburner lit, a pulse of light streaking past its nose, **TOO SLOW.** | **I Raced an F-35 Against the Speed of Light** |
+| **A (lead)** | `speed_ladder_v2_thumb_A.png`: the F-35 with its afterburner lit, a pulse of light streaking past its nose, **TOO SLOW.** | **What 670 Million MPH Looks Like Next to a Fighter Jet** |
 | B | `speed_ladder_v2_thumb_B.png`: the Parker Solar Probe's glowing column frozen while light races past, **FROZEN.** | The Fastest Machine Ever Built vs. the Speed of Light |
 | C | `speed_ladder_v2_thumb_C.png`: the Wright Flyer crossing the road, the ladder of light behind it, **17× AROUND EARTH** | Light Circled Earth 17 Times Before This Plane Crossed a Road |
 
@@ -23,10 +23,11 @@ Why A leads:
   exactly what the thumbnail showed. That holds viewers, and holding them is what YouTube rewards.
 * **It reads instantly.** A fighter jet is recognisable at any size, and "TOO SLOW." under the fastest thing most
   people know sets up the question the video answers.
-* **The title is short.** At 43 characters it shows in full on phones, and it's personal ("I raced…").
+* **The title promises something to see.** It names a huge, exact number and something everyone recognises: "fighter
+  jet" reaches people who wouldn't search "F-35". At 53 characters it shows in full on phones.
 
-Other titles to try later: *What the Speed of Light Actually Looks Like*, *How Fast Is Light? (Real Speeds, Real
-Physics)*, *Racing an F-35, the X-15 and NASA's Fastest Probe Against Light*.
+Other titles to try later: *The Speed of Light, Next to a Fighter Jet*, *Fighter Jet vs. the Speed of Light*, *What
+the Speed of Light Actually Looks Like*, *How Fast Is Light? (Real Speeds, Real Physics)*.
 
 The first set (`speed_ladder_thumb_A/B/C.png`, with longer text) is kept as a fallback.
 
