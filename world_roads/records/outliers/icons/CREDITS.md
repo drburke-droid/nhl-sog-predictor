@@ -12,5 +12,5 @@ results are cropped to the object.
 | `basketball.png` | Basket ball | 60° around, 25° above |
 | `baseball.png` | baseball_01 | 90° around, 20° above (the curved seam) |
 
-The hockey model carries a "BLENDER KIT" brand text on the puck's side, which suggests the models come from
-BlenderKit; check each model's licence there before publishing. The text is unreadable at chart size.
+The models come from BlenderKit (the puck carries a "BLENDER KIT" brand text, unreadable at chart size). The film's
+owner confirmed on 3 November 2026 that their use here is permitted.
