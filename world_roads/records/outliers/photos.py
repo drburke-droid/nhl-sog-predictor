@@ -113,10 +113,10 @@ def fetch():
 
 
 ALTERNATES = {  # era photos considered alongside the infobox image (Commons category pages, /wiki/Category:...)
-    "beamon_a": "Bob Beamon 1968.jpg", "beamon_b": "Bob Beamon 1968b.jpg",
-    "gretzky_a": "GretzkyEDM.png", "gretzky_b": "Wgretz.jpg",
-    "gretzky_c": "President Ronald Reagan Greeting Wayne Gretzky at a Luncheon for National Hockey League All Stars - DPLA - 4615e44f8e6f1fff3d3b2a7f12d38637.jpg",
+    "beamon_a": "Bob Beamon 1968.jpg",
     "rodman_a": "Dennis Rodman-Jackson Citizen Patriot-3 February 1989.jpg",
+    "gretzky_c": "President Ronald Reagan Greeting Wayne Gretzky at a Luncheon for National Hockey League All Stars - DPLA - 4615e44f8e6f1fff3d3b2a7f12d38637.jpg",
+    "gretzky_a": "GretzkyEDM.png", "gretzky_b": "Wgretz.jpg",
     "zelezny_a": "Jan Zelezny.jpg",
 }
 
