@@ -739,7 +739,31 @@ def chart_final():
         save(fig, 'final_max_vs_spread.png')
 
 
+def chart_champion():
+    F = S.get('framing')
+    if not F:
+        return
+    sc = {int(k): v for k, v in F['season_champion'].items()}
+    gs = sorted(sc)
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+    ax.plot(gs, [100 * sc[g][0] for g in gs], color=BLUE, lw=2.4, marker='o', ms=5, label='Playbook player')
+    ax.plot(gs, [100 * sc[g][1] for g in gs], color=MUTED, lw=2.0, marker='o', ms=4, label='Typical player')
+    for g in (10, 52):
+        ax.text(g, 100 * sc[g][0] + 3, '%.0f%%' % (100 * sc[g][0]), ha='center', fontsize=10, color=INK)
+        ax.text(g, 100 * sc[g][1] - 6, '%.0f%%' % (100 * sc[g][1]), ha='center', fontsize=10, color=INK2)
+    ax.set_ylim(0, 80); ax.set_xlim(0, 55)
+    ax.set_xlabel('Game nights in the season (the same four players each time)')
+    ax.set_ylabel('Chance of finishing the season\nwith the most wins (%)')
+    ax.legend(frameon=False, loc='upper left')
+    ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax.set_title('Small edges compound: who is the family champion?', loc='left', fontsize=13, weight='bold', color=INK)
+    fig.text(0.01, -0.03, 'Per game: playbook player 32.6 wins in 100, each opponent 22.4. Ties for the most wins are not counted as a championship.',
+             fontsize=8.5, color=INK2)
+    save(fig, 'final_champion.png')
+
+
 if __name__ == '__main__':
+    chart_champion()
     chart_final()
     chart_controls(); chart_decision_values(); chart_playbook()
     chart_building(); chart_pairs(1000); chart_pairs(500)

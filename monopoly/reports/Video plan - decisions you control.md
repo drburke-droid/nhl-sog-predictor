@@ -1,8 +1,10 @@
-# Video plan for review (revision 3): the Monopoly decisions you actually control
+# Video plan for review (revision 4): the Monopoly decisions you actually control
 
 Status: draft for review, nothing filmed or rendered. Revision 3 adds the look (`Art direction.md`, style frames
 in `art/frames/`), a 20-second lore cold open, and closes the open questions: endgame prices stay at 2.5-3x,
-and the headline number is "33 vs 25" (with auctions).
+and the headline number is "33 vs 25" (with auctions). Revision 4 reframes that payoff so it lands: "three wins
+for every two of theirs" per game, and "family champion two years in three" over a year of game nights (see
+"Framing the payoff").
 
 Changes since revision 1, following your review:
 - **Endless games**: stalled games now go into an endgame where players start making deals that hand someone a
@@ -197,7 +199,9 @@ This player makes every best choice above and never picks a favourite colour:
 | 5 players | 20.1 | 25.8 | 23.8 |
 | 6 players | 16.8 | 20.5 | 19.3 |
 
-- Same dice, about **30% more wins** at a four-player table (20% more without auctions).
+- Same dice: at the four-player table the playbook player wins 32.6 games in 100 and each of its three
+  opponents about 22.4. That's **about three wins for every two of theirs** (1.45 times as many). Without
+  auctions: 30.2 against 23.3 each (1.3 times).
 - Seat a typical player with three playbook players and it wins 20.7 instead of 25: the playbook isn't a trick
   that only works against weak players.
 - Without auctions the playbook's edge shrinks, most of all heads-up (52.6 vs 50.5), because the auction
@@ -223,12 +227,51 @@ alternative):
 When you hold two sets, which one you build first is worth up to 21 games in 100, and building one up instead
 of spreading is worth about 10.
 
+## Framing the payoff
+
+"33 wins in 100 instead of 25" is accurate, but it sounds small, because both numbers lose most games. What
+people care about at game night is beating the people across the table, and bragging rights over a season.
+Both framings below use the same 32.6 vs 22.4 per-game figures and are exact.
+
+**1. Per game, against the people you're playing (the headline):**
+> "Same dice. Same board. Make seven different decisions and you'll win **three games for every two** anyone
+> else at the table wins."
+
+(32.6 vs 22.3 / 22.5 / 22.5 wins per 100: 1.45 to 1.)
+
+**2. Over a season of game nights (the emotional payoff; small edges compound):**
+> "Play every week for a year, and you finish as the family champion **two years out of three**. Each of the
+> people you're playing? About **one year in eleven**."
+
+(Most wins outright over 52 games: 64.8% for the playbook player, 8.5-8.9% for each opponent, 8.8% a shared top
+spot. Over 10 game nights: 35% vs about 13% each. A typical player at an all-typical table: 18% over 10 nights,
+23% over a year. Chart: `final_champion.png`.)
+
+**3. Plain-language backups, used once each:**
+- "One game in three instead of one in four."
+- "The playbook is worth more than twice the edge of rolling first." (Going first: +3.3 wins per 100;
+  playbook: +7.6.)
+- Optional: "It's worth about $300 of extra cash before the first roll." (A typical player handed $250 extra
+  wins 31.8 in 100, $500 extra 37.7. The playbook's 32.6 sits at about $285. True, but it undersells it, so
+  keep it out of the hook.)
+
+**How to show it:**
+- **The game-night ledger** (style frame 07): tally marks after 100 game nights. YOU 33 in red; MOM 22, DAD 22,
+  JORDAN 23 in ink. Stamp: FAMILY CHAMPION.
+- **The trophy shelf:** run 100 simulated "years of Sundays" and put a small trophy on the shelf of whoever
+  finished each year on top. About 65 trophies line up under YOU, about 9 under each of the others, and a few
+  years are shared. One image that makes "two years in three" physical.
+- **The race:** for one year, the four tally rows fill week by week. The rows run neck and neck for the first
+  month, then YOU pulls away, which is exactly what "small edges compound" looks like.
+
+Keep "32.6 vs 22.4 per 100 games" on screen as the footnote, so the claim can be checked.
+
 ## Running order (about 13 minutes)
 
 | Time | Section | What's said and shown |
 |---|---|---|
 | 0:00-0:20 | Lore cold open | The 1904 patent drawing on a desk. "In 1904 a woman named Lizzie Magie patented a board game to show how landlords get rich. You know it as Monopoly." Push in on her corner, "NO TRESPASSING - GO TO JAIL" |
-| 0:20-0:45 | The promise | Title card (frame 01). "Every Monopoly video tells you which colour is best. You don't get to choose where you land. Here's what you do get to choose, and what each choice is worth." Stamp: 33 wins in 100, not 25 |
+| 0:20-0:45 | The promise | Title card (frame 01). "Every Monopoly video tells you which colour is best. You don't get to choose where you land. But make seven different decisions, with the same dice, and you'll win three games for every two anyone else at the table wins. Play every week for a year, and you'll be the family champion two years out of three." Stamp: 3 WINS FOR EVERY 2 |
 | 0:45-1:20 | How we tested it | The rules slide. Typical player wins 25 in 100. The endgame beat: "when the board locks up, people start dealing", 2-3 deals a game, and every game finishes |
 | 1:20-2:50 | 1. Buy or pass | Buy-or-pass ladder: a small cushion is fine, passing to keep $500 costs 2.4. Never pass on a set card. Auction beat: bid to 1.5 times. Without auctions: passing is cheaper |
 | 2:50-4:40 | 2. Trading | Swap animation. Never trade: 4.9. Haggling costs about 4. Waiting or being picky barely matters. Endgame: take the deal, because refusing makes you likelier to go broke first |
@@ -236,7 +279,7 @@ of spreading is worth about 10.
 | 6:00-10:00 | 4. Building (longest) | Spend vs save (both panels: wins fall, risk rises). Mortgage to build. How far to build. Two sets: which first (the matrix; orange + green 84 vs 63). Max one set vs one house everywhere (0 of 28). Owe money: mortgage first, sell houses last |
 | 10:00-11:10 | 5. Jail | Out early, in once anyone has houses; less likely to go broke first |
 | 11:10-11:30 | Aside | The computer-designed player, in plain English (above) |
-| 11:30-12:30 | The playbook player | Same dice, about 30% more wins; table sizes; the "what each decision is worth" ranking; one line on how it changes without auctions |
+| 11:30-12:30 | The playbook player | The game-night ledger (frame 07): 33 tallies vs 22, 22, 23, "three for every two". The year-long race, then the trophy shelf: two years in three vs one in eleven. The "what each decision is worth" ranking. One line on how it changes without auctions |
 | 12:30-13:00 | End card | The seven-line playbook (below) |
 
 ## End card: the playbook
@@ -255,13 +298,17 @@ of spreading is worth about 10.
 | | Thumbnail | Title |
 |---|---|---|
 | A | Magie's 1904 patent drawing with a red stamp across it: "WHAT YOU CONTROL" | You Can't Control the Dice in Monopoly. Here's What You Can (Simulated) |
-| B | Frame 06: our board's corner with the brass pawn, "SAVE IT" crossed out, "SPEND IT" stamped, "33 wins, not 25" | Save Cash or Build Hotels? Every Monopoly Decision, Tested |
+| B | Frame 06: our board's corner with the brass pawn, "SAVE IT" crossed out, "SPEND IT" stamped, "3 wins for every 2" | Save Cash or Build Hotels? Every Monopoly Decision, Tested |
+| D | Frame 07 cropped: tally marks YOU vs MOM, stamped FAMILY CHAMPION | How to Be Your Family's Monopoly Champion (Same Dice, Better Decisions) |
+| E | Same as D | Win 3 Monopoly Games for Every 2 Your Family Wins |
 | C | The four railway tickets fanned out, stamped "ONLY IF YOU TRADE" | Should You Go for All Four Railroads? Monopoly Decisions, Settled |
 
 All three use the art direction (no Hasbro artwork); the description and end card carry "Not affiliated with or
 endorsed by Hasbro".
 
 ## Shorts (one decision each)
+
+- "How to be the family Monopoly champion." Same dice; seven decisions; champion two years in three.
 
 - "Keep cash for emergencies?" Keeping $300 back when building: 16.3 wins in 100 instead of 25.1, and you're
   *more* likely to go broke first.
@@ -302,7 +349,8 @@ set if they help you finish yours, and when the board locks up, people start dea
 🏠 Two monopolies? Cheaper houses first. Orange + green: 84 vs 63.
 🚂 Railroads: only worth it if you trade for the last one.
 🔒 Jail: get out early; stay in once anyone has houses.
-📋 Do all of it: about 33 wins in 100 instead of 25. Same dice.
+📋 Do all of it and you win about 3 games for every 2 that anyone else at the table wins. Play weekly for a year and
+   you finish as family champion two years in three. Same dice.
 
 How it's made: a simulator of the standard US board and current cards under the official rules (auctions,
 even building, 32 houses and 12 hotels, mortgages); its board probabilities match Truman Collins' published
@@ -325,8 +373,9 @@ realistic-play testing behind the project, including the evolution runs, totals 
 ## Decided
 
 - Endgame prices: 2.5x asking, up to 3x paid (as modelled).
-- Headline: 33 wins in 100 vs 25 (with auctions); the no-auction figure (30) is mentioned once in the playbook
-  section.
+- Headline: "three wins for every two of theirs" per game, and "family champion two years in three" over a
+  year of weekly game nights (both with auctions). "33 vs 25" stays as the on-screen footnote. The no-auction
+  figure (30.2, or 1.3 to 1) is mentioned once in the playbook section.
 
 Data: `sim/results/summary.md` ("Final numbers for the video" and "Final: two complete sets"). Charts:
 `sim/results/charts/final_*.png`.

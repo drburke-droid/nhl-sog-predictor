@@ -746,6 +746,25 @@ Everyone buys what they land on and makes fair set-for-set swaps. When nearly ev
 | typical n6 | 16.8 | 16.6% | 16.8 | 16.5% |
 | typical vs 3 playbook | 20.7 | 25.5% | 20.9 | 26.7% |
 
+## Framing the payoff (with auctions, endgame deals on)
+
+Playbook player and its three typical opponents, wins per 100 games: 32.6, 22.3, 22.5, 22.5. Each opponent averages 22.4, so the playbook player wins 1.45 times as often as each person it plays (about 3 games for every 2).
+
+"Family champion": most wins outright over a run of game nights against the same three opponents (ties are not a championship). Simulated from the per-game odds above, 400,000 seasons each.
+
+| Game nights | Playbook player is champion | A typical player at an all-typical table |
+|---|---|---|
+| 5 | 27.2% | 16.4% |
+| 10 | 35.5% | 18.4% |
+| 15 | 41.8% | 20.3% |
+| 20 | 45.9% | 20.7% |
+| 26 | 50.3% | 21.1% |
+| 30 | 53.0% | 21.5% |
+| 40 | 58.9% | 22.3% |
+| 52 | 64.6% | 22.7% |
+
+Dollar equivalent: a typical player given extra starting cash (vs three typical players) wins +$250: 31.8, +$500: 37.7, +$750: 42.4, +$1000: 46.5, +$1250: 50.0, +$1500: 53.0, +$2000: 58.5, +$3000: 66.6 per 100 games.
+
 ## Final: two complete sets, which first and max or spread (endgame deals on, $1,000 each, 20,000 games per cell)
 
 | Your two sets | A first | B first | A to 3 then B | B to 3 then A | Spread | Best |

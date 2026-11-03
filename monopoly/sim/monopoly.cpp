@@ -140,6 +140,7 @@ struct Strat {
     int tradeCash = 0;        // only make a swap when holding at least this much cash (to build straight away)
     bool rrTrade = false;     // also swap set-for-set to collect all four railroads
     int raiseOrder = 0;       // short of cash: 0 mortgage loose property before selling houses, 1 sell houses first
+    int bonus = 0;            // extra starting cash for this player only (to price an edge in dollars)
 };
 
 static uint64_t maskFromName(const std::string& w) {
@@ -234,6 +235,7 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "tcash") s.tradeCash = atoi(v.c_str());
         else if (k == "rrtrade") s.rrTrade = atoi(v.c_str()) != 0;
         else if (k == "raise") s.raiseOrder = (v == "mortgage" ? 0 : v == "sell" ? 1 : atoi(v.c_str()));
+        else if (k == "bonus") s.bonus = atoi(v.c_str());
         else { fprintf(stderr, "unknown key '%s'\n", k.c_str()); exit(1); }
     }
     return s;
@@ -849,7 +851,7 @@ struct Game {
     // returns the winning player index, or -1 on timeout
     int play() {
         for (int s = 0; s < 40; s++) { owner[s] = -1; houses[s] = 0; mort[s] = false; }
-        for (int p = 0; p < n; p++) { P[p] = Player(); P[p].cash = cfg.startCash; P[p].slot = p; }
+        for (int p = 0; p < n; p++) { P[p] = Player(); P[p].cash = cfg.startCash + S[p]->bonus; P[p].slot = p; }
         aliveCount = n;
         chance.shuffle(rng); chest.shuffle(rng);
         for (auto& gv : cfg.give) for (int i = 0; i < GSZ[gv.second]; i++) owner[GSQ[gv.second][i]] = gv.first;

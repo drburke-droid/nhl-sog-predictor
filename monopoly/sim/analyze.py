@@ -418,6 +418,35 @@ def main():
             md.append('| %s | %s | %s | %s | %s |' % (k.replace('_', ' '), '%.1f' % a_['win'] if a_ else '', '%.1f%%' % a_['first_out'] if a_ else '',
                                                       '%.1f' % b_['win'] if b_ else '', '%.1f%%' % b_['first_out'] if b_ else ''))
         md.append('')
+    # framing the payoff: per-opponent ratio, family "seasons", dollar equivalent
+    if eg and 'with_auctions__playbook' in eg and 'with_auctions__typical_n4' in eg:
+        import numpy as np
+        rng = np.random.default_rng(7)
+        def probs(d):
+            n = d['games']; w = [pl['wins'] / n for pl in d['players']]
+            return w + [max(0.0, 1 - sum(w))]
+        def champ(p, games, sims=400000):
+            c = rng.multinomial(games, np.array(p), size=sims)[:, :4]
+            return float((c[:, 0] > c[:, 1:].max(axis=1)).mean())
+        pb, ty = probs(eg['with_auctions__playbook']), probs(eg['with_auctions__typical_n4'])
+        curve = {g: (champ(pb, g), champ(ty, g)) for g in (5, 10, 15, 20, 26, 30, 40, 52)}
+        fr = load('framing')
+        bonus = {int(k.split('_')[1]): pct(d['players'][0]['wins'] / d['games']) for k, d in fr.items() if k.startswith('bonus_')} if fr else {}
+        summary['framing'] = {'playbook': pb[:4], 'typical': ty[:4], 'per_opponent_ratio': pb[0] / (sum(pb[1:4]) / 3),
+                              'season_champion': {g: v for g, v in curve.items()}, 'cash_bonus_wins': bonus}
+        md += ['## Framing the payoff (with auctions, endgame deals on)', '',
+               'Playbook player and its three typical opponents, wins per 100 games: %s. Each opponent averages %.1f, so the playbook '
+               'player wins %.2f times as often as each person it plays (about 3 games for every 2).' % (
+                   ', '.join('%.1f' % pct(x) for x in pb[:4]), pct(sum(pb[1:4]) / 3), pb[0] / (sum(pb[1:4]) / 3)), '',
+               '"Family champion": most wins outright over a run of game nights against the same three opponents '
+               '(ties are not a championship). Simulated from the per-game odds above, 400,000 seasons each.', '',
+               '| Game nights | Playbook player is champion | A typical player at an all-typical table |', '|---|---|---|']
+        for g_, (a_, b_) in curve.items():
+            md.append('| %d | %.1f%% | %.1f%% |' % (g_, pct(a_), pct(b_)))
+        if bonus:
+            md += ['', 'Dollar equivalent: a typical player given extra starting cash (vs three typical players) wins ' +
+                   ', '.join('+$%d: %.1f' % kv for kv in sorted(bonus.items())) + ' per 100 games.']
+        md.append('')
     egp = load('endgame_pairs')
     if egp:
         import itertools

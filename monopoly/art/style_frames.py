@@ -310,7 +310,7 @@ def frame_title():
     wobble_line(d, [(1010, 545), (1760, 545)], width=3, seed=9)
     text(img, (1010, 575), 'You can’t choose where you land.\nYou can choose what you do next.', font('serif', 46), fill=INK, spacing=12)
     text(img, (1010, 760), '13,400,000 GAMES  ·  ATLANTIC CITY, N.J.\nAFTER L. J. MAGIE, PATENT No. 748,626 (1904)', font('type', 28), fill=SEPIA, spacing=10)
-    stamp(img, (1610, 925), ['33 WINS', 'NOT 25'], angle=-9, size=52)
+    stamp(img, (1590, 925), ['3 WINS FOR', 'EVERY 2'], angle=-9, size=50)
     return img
 
 
@@ -446,10 +446,10 @@ def frame_endcard():
     d.ellipse([cx - R, cy - R, cx + R, cy + R], fill=STAMP + (230,))
     d.ellipse([cx - R + 14, cy - R + 14, cx + R - 14, cy + R - 14], outline=(240, 220, 200, 200), width=2)
     img.alpha_composite(roughen(layer, 0.04, 21))
-    text(img, (cx, cy - 14), '33', font('fat', 88), fill=(246, 234, 214), anchor='mm')
-    text(img, (cx, cy + 52), 'NOT 25', font('scb', 30), fill=(246, 234, 214), anchor='mm')
+    text(img, (cx, cy - 12), '3 : 2', font('fat', 72), fill=(246, 234, 214), anchor='mm')
+    text(img, (cx, cy + 50), 'WINS', font('scb', 30), fill=(246, 234, 214), anchor='mm')
     text(img, (300, 850), 'Same dice.', font('script', 64))
-    text(img, (300, 935), 'Wins in a hundred four-player games: 33 for the playbook, 25 for a typical player.', font('type', 24), fill=SEPIA)
+    text(img, (300, 935), 'Three wins for every two of theirs. A year of weekly game nights: champion two years in three.', font('type', 24), fill=SEPIA)
     return img
 
 
@@ -466,13 +466,54 @@ def thumbnail():
     d = ImageDraw.Draw(img)
     wobble_line(d, [(722, 150), (1195, 112)], fill=STAMP, width=12, amp=1.5, seed=3)
     stamp(img, (975, 390), ['SPEND IT'], angle=-8, size=108)
-    text(img, (742, 590), '33 wins, not 25', font('deco', 54))
+    text(img, (742, 585), '3 wins for every 2', font('deco', 54))
+    return img
+
+
+def tally(img, x, y, count, h=46, gap=13, group_gap=26, color=INK, seed=0):
+    """Hand-drawn tally marks: groups of four strokes crossed by a fifth."""
+    d = ImageDraw.Draw(img)
+    k = 0
+    for g in range(count // 5 + 1):
+        n = min(5, count - g * 5)
+        if n <= 0:
+            break
+        gx = x + g * (4 * gap + group_gap)
+        for j in range(min(n, 4)):
+            wobble_line(d, [(gx + j * gap, y), (gx + j * gap + 2, y + h)], fill=color, width=3, amp=0.6, seed=seed + k); k += 1
+        if n == 5:
+            wobble_line(d, [(gx - 6, y + h * 0.8), (gx + 3 * gap + 8, y + h * 0.2)], fill=color, width=3, amp=0.6, seed=seed + k); k += 1
+    return x + (count // 5) * (4 * gap + group_gap) + (count % 5) * gap
+
+
+def frame_game_nights():
+    img = paper(base=(240, 233, 212), seed=8)
+    layer = ink_layer(img.size); d = ImageDraw.Draw(layer)
+    for y in [300 + k * 120 for k in range(5)]:
+        d.line([(80, y), (1840, y)], fill=(120, 150, 170, 110), width=1)
+    d.line([(152, 170), (152, 1040)], fill=(170, 60, 50, 140), width=2)
+    img.alpha_composite(layer)
+    text(img, (170, 60), 'GAME NIGHT LEDGER', font('scb', 44), fill=NOTE_GREEN)
+    text(img, (170, 118), 'One hundred game nights, the same four players. You follow the playbook.', font('serif', 32))
+    rows = [('YOU', 33, STAMP), ('MOM', 22, INK), ('DAD', 22, INK), ('JORDAN', 23, INK)]
+    for k, (who, n, col) in enumerate(rows):
+        y = 200 + k * 120
+        text(img, (180, y + 22), who, font('type', 44), fill=col)
+        end = tally(img, 450, y + 18, n, color=col, seed=100 * k)
+        text(img, (end + 40, y + 22), str(n), font('type', 48), fill=col)
+    text(img, (180, 720), 'Three wins for every two of theirs.', font('serifb', 44))
+    text(img, (180, 800), 'Play every week for a year and you finish as family champion', font('serif', 36))
+    text(img, (180, 850), 'two years in three. Each of them: about one year in eleven.', font('serif', 36))
+    stamp(img, (1590, 900), ['FAMILY', 'CHAMPION'], angle=-8, size=64)
+    text(img, (180, 1000), 'Wins per 100 games: 32.6 vs 22.3, 22.5, 22.5. Champion = most wins outright over 52 weekly games (64.8% vs 8.5-8.9% each).',
+         font('type', 20), fill=SEPIA)
     return img
 
 
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     for name, fn in (('01_title', frame_title), ('02_board', frame_board), ('03_ledger_spend_or_save', frame_ledger),
-                     ('04_railroads_telegram', frame_railroads), ('05_end_card', frame_endcard), ('06_thumbnail', thumbnail)):
+                     ('04_railroads_telegram', frame_railroads), ('05_end_card', frame_endcard), ('06_thumbnail', thumbnail),
+                     ('07_game_night_ledger', frame_game_nights)):
         fn().convert('RGB').save(os.path.join(OUT, name + '.png'))
         print('wrote', name)

@@ -461,7 +461,17 @@ def exp_endgame(n_games=100000, n_scen=20000):
                 n_scen, give=give, deal=1, cash=1000, tv=tv, **END_WORLDS['with_auctions'])
 
 
-EXPERIMENTS = {'endgame': exp_endgame, 'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
+def exp_framing(n_games=100000):
+    """Price the playbook's edge in dollars: extra starting cash a typical player needs to match it."""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    for b_ in (250, 500, 750, 1000, 1250, 1500, 2000, 3000):
+        run('framing', 'bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, n_games, tv=tv, **END_WORLDS['with_auctions'])
+    run('framing', 'playbook_with_bonus_minus_1000', [PLAYBOOK + ';bonus=-1000'] + [typ] * 3, n_games, tv=tv, **END_WORLDS['with_auctions'])
+
+
+EXPERIMENTS = {'framing': exp_framing, 'endgame': exp_endgame, 'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
 if __name__ == '__main__':
