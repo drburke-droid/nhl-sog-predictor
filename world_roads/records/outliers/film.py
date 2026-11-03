@@ -1,6 +1,6 @@
 """The 10 Biggest Statistical Outliers in Sports History: the sections of the film.
 
-    python film.py <section> [scale]     # cold method c10 ... c1 throws close end -> out/<section>.mp4
+    python film.py <section> [scale]     # cold curve method fair scale c10 ... c1 throws close end -> out/<section>.mp4
     python film.py stills                # a still of every section at its busiest moment -> out/stills/
 
 Every number on screen comes from facts.json (python facts.py), built from the locked model E3_main_env of the
@@ -66,6 +66,53 @@ ENV_LABEL = {"mlb_h": "League hits per team per game", "mlb_hr": "League home ru
 SPORT_WORD = {"MLB": "Baseball", "NBA": "Basketball", "NHL": "Hockey", "NFL": "Football", "Athletics": "Athletics",
               "Swimming": "Swimming"}
 
+RATE_WORD = {"mlb_h": "hit rate", "mlb_hr": "home-run rate", "nba_rpg": "rebounding rate", "nba_3pm": "three-point rate",
+             "mlb_so": "strikeout rate", "nhl_assists": "assist rate", "nba_ppg": "scoring rate"}
+RULER_UNIT = {"mlb_h": "hits", "mlb_hr": "home runs", "nba_rpg": "rebounds", "nba_3pm": "threes", "mlb_so": "strikeouts",
+              "ath_M_JT": "m", "nhl_assists": "assists", "mlb_streak": "games", "nba_ppg": "points", "ath_M_LJ": "cm"}
+
+# portraits (Wikimedia Commons, free licences; photos.py) and their credit lines
+PHOTO_KEY = {10: "ichiro", 9: "ruth", 8: "rodman", 7: "curry", 6: "vance", 5: "zelezny", 4: "gretzky", 3: "dimaggio",
+             2: "chamberlain", 1: "beamon"}
+CREDITS = json.load(open(os.path.join(HERE, "photos", "credits.json"), encoding="utf-8"))
+_PH = {}
+
+
+def photo(fig, key, x0, y0, x1, y1, alpha=1.0, credit=True, credit_size=14):
+    if alpha <= 0.001:
+        return
+    if key not in _PH:
+        from PIL import Image
+        _PH[key] = np.asarray(Image.open(os.path.join(HERE, "photos", key + ".png")).convert("RGB"))
+    ax = ax_px(fig, x0, y0, x1, y1)
+    ax.set_axis_off()
+    ax.imshow(_PH[key], alpha=clamp(alpha), interpolation="antialiased", aspect="auto")
+    if credit:
+        text(fig, x1, y1 + 20, CREDITS[key]["short"], size=credit_size, color=MUTED, ha="right", alpha=alpha)
+
+
+def sig(v, n):
+    """v to n significant figures, as plain text (23.0 -> '23', 5.586 -> '5.6')"""
+    d = max(0, n - 1 - int(math.floor(math.log10(abs(v))))) if v else 0
+    out = f"{round(v, d):.{d}f}"
+    return out.rstrip("0").rstrip(".") if "." in out and d > 0 and float(out) == round(v, d) and out.endswith("0") and n > 2 else out
+
+
+def ruler_numbers(c):
+    """strings for '(value - curve) / step = score', rounded so the arithmetic on screen gives the score on screen"""
+    r, cat = c["ruler"], c["category"]
+    k = 100.0 if cat == "ath_M_LJ" else 1.0                  # Beamon's step is 8 cm: shown in centimetres
+    x, b, st = r["x"] * k, r["base"] * k, r["step"] * k
+    best = None
+    for db in range(0, 4):
+        for ds in range(0, 4):
+            bb, ss = round(b, db), round(st, ds)
+            if ss > 0 and abs(round((x - bb) / ss, 2) - c["z_e3"]) < 1e-9 and (best is None or db + ds < best[0]):
+                best = (db + ds, db, ds)
+    assert best, cat
+    dx = 0 if float(x).is_integer() else (2 if cat == "ath_M_JT" else 1)
+    return f"{x:.{dx}f}", f"{b:.{best[1]}f}", f"{st:.{best[2]}f}"
+
 
 def card_lines(c):
     """three context lines per card, every number from facts.json"""
@@ -76,14 +123,14 @@ def card_lines(c):
     if r == 10:
         return [f"262 hits broke George Sisler's record of {float(pr['value']):.0f}, set in {pr['year']}.",
                 f"Next best in 2004: {ru['name']}, {float(ru['value']):.0f}.",
-                "The score also accounts for how often hitters got hits league-wide."]
+                "Other seasons are converted to 2004's league hit rate, the way old prices are adjusted for inflation."]
     if r == 9:
         return [f"His own record from the year before was {float(pr['value']):.0f}.",
                 f"Next best in 1920: {ru['name']}, {float(ru['value']):.0f}. The average team hit {ex['mlb_1920_avg_team_hr']:.0f}.",
                 f"Without the league adjustment his score is {c['z_main_no_env']:.1f}: home runs were that rare in 1920."]
     if r == 8:
         return [f"Next best that season: {ru['name']}, {float(ru['value']):.1f}.",
-                "His 18.7 the season before is higher in raw terms; against league-wide rebounding, 1992–93 stands further out.",
+                f"His 18.7 a year earlier scores lower ({F['extras']['rodman_1992_z']:.2f}) once league rebounding is allowed for.",
                 "He led the league in rebounding seven seasons running, 1991–92 to 1997–98."]
     if r == 7:
         return [f"The previous record was his own: {float(pr['value']):.0f}, the season before.",
@@ -154,9 +201,118 @@ def cold():
     return ColdOpen()
 
 
-# ------------------------------------------------------------------ the method, with Ledecky 2016
+# ------------------------------------------------------------------ how the score works, 1: grading on a curve
+class Curve:
+    """the analogy: a class test. 95 in a class averaging 70 (give or take 5) is five steps up; in a class
+    averaging 90 it is one. Illustrative numbers, not data."""
+    dur = 44.0
+
+    def __init__(self):
+        rng = np.random.default_rng(11)
+        z = rng.normal(size=31)
+        self.zs = (z - z.mean()) / z.std()
+        self.A = self.layout(70.0)
+        self.B = self.layout(90.0)
+
+    def layout(self, mean):
+        xs = np.minimum(np.round((mean + 5.0 * self.zs) / 2.0) * 2.0, 100.0)
+        pts, h = [], {}
+        for x in list(xs) + [95.0]:                      # the gold student last, on top of their column
+            k = h.get(x, 0)
+            h[x] = k + 1
+            pts.append((x, 0.7 + 1.05 * k))
+        return np.array(pts)
+
+    def chart(self, fig, t, al):
+        ax = ax_px(fig, 150, 330, 1100, 900)
+        style_axes(ax, grid_y=False)
+        ax.set_yticks([])
+        ax.set_xlim(37, 103)
+        ax.set_ylim(0, 17)
+        ax.set_xticks(range(40, 101, 10))
+        for lab in ax.get_xticklabels():
+            lab.set_alpha(al)
+        ax.spines["bottom"].set_alpha(al)
+        ax.text(0, -0.13, "test score", transform=ax.transAxes, fontsize=fs(19), color=MUTED, alpha=al)
+        mv = ease(clamp((t - 26.0) / 3.5))                 # the class moves from average 70 to average 90
+        P = self.A * (1 - mv) + self.B * mv
+        mean = 70.0 + 20.0 * mv
+        pop = clamp((t - 2.0) / 3.0)
+        n = len(P) - 1
+        for i, (x, y) in enumerate(P[:-1]):
+            a = al * clamp(pop * n - i * 0.9)
+            if a > 0:
+                ring(ax, x, y, BLUE, size=13, alpha=a, z=5)
+        ma = al * fade(t, 6.5, 99, 0.8, 0)
+        if ma > 0:
+            ax.plot([mean, mean], [0, 12.2], color=TREND, lw=px(3), alpha=ma, zorder=3)
+            ax.text(mean, 12.6, f"class average {mean:.0f}", ha="center", fontsize=fs(21), color=INK2, alpha=ma)
+        ba = al * fade(t, 9.0, 99, 0.8, 0)
+        if ba > 0:
+            ax.axvspan(mean - 5, mean + 5, ymin=0, ymax=12.2 / 17, color=TREND, alpha=0.16 * ba, lw=0, zorder=1)
+            if t < 26.0:
+                ax.annotate("", (mean + 5, 10.3), (mean, 10.3), arrowprops=dict(arrowstyle="<->", color=INK2, lw=px(2)),
+                            alpha=ba)
+                ax.text(mean + 5.8, 10.3, "one step: 5 points", ha="left", va="center", fontsize=fs(19), color=INK2,
+                        alpha=ba)
+        ga = al * fade(t, 15.0, 99, 0.6, 0)
+        if ga > 0:
+            gx, gy = P[-1]
+            ring(ax, gx, gy, GOLD, size=17, alpha=ga, z=8)
+            ax.annotate("95", (gx, gy), xytext=(px(14), px(6)), textcoords="offset points", fontsize=fs(23), color=INK,
+                        weight="semibold", alpha=ga, zorder=9, path_effects=outlined(6))
+            # the ruler: from the class average to 95, one tick per 5 points
+            for t0, m0 in ((16.0, 70.0), (30.0, 90.0)):
+                ra = ga * fade(t, t0, 26.0 if m0 == 70.0 else 99, 0.4, 0.8)
+                if ra <= 0:
+                    continue
+                prog = ease(clamp((t - t0) / 3.5))
+                end = m0 + (95.0 - m0) * prog
+                yr = 14.6
+                ax.plot([m0, end], [yr, yr], color=GOLD, lw=px(3), alpha=ra, zorder=7)
+                ax.plot([95, 95], [gy + 0.6, yr], color=GOLD, lw=px(1.5), ls=(0, (2, 2)), alpha=ra * prog, zorder=6)
+                for k in range(0, int((end - m0) / 5.0 + 1e-6) + 1):
+                    xk = m0 + 5.0 * k
+                    ax.plot([xk, xk], [yr - 0.45, yr + 0.45], color=GOLD, lw=px(2.5), alpha=ra, zorder=7)
+                    if k:
+                        ax.text(xk - 2.5, yr + 0.75, f"{k}", ha="center", fontsize=fs(19), color=GOLD, alpha=ra)
+        return ax
+
+    def draw(self, fig, t):
+        al = fade(t, 0, self.dur, 0.6, 0.6)
+        text(fig, 96, 92, "HOW THE SCORE WORKS", size=21, color=MUTED, weight="semibold", alpha=al)
+        title(fig, 96, 160, "Grading on a curve", size=58, alpha=al)
+        self.chart(fig, t, al)
+        caps = [(1.5, "Picture a class test. Most of the class scores around 70, give or take about 5 points."),
+                (9.0, "Call that usual give-or-take one step."),
+                (15.0, "A student who scores 95 is 25 points above the class average: five steps. On our scale, that's "
+                       "a score of 5."),
+                (26.0, "Now put the same 95 in a class that averages 90. It's one step above: a score of 1."),
+                (35.0, "Same number, different class. So every result in this film is graded against the class of its "
+                       "own era.")]
+        y = 330
+        for t0, s in caps:
+            a = al * fade(t, t0, 99, 0.8, 0)
+            if a > 0:
+                y = para(fig, 1190, y, s, width=40, size=27, color=INK if t0 == max(c[0] for c in caps if c[0] <= t) else INK2,
+                         alpha=a) + 22
+        # the counter
+        if t > 16.0:
+            v = 5.0 * ease(clamp((t - 16.0) / 3.5)) if t < 28.0 else 1.0 * ease(clamp((t - 30.0) / 3.5))
+            ca = al * (fade(t, 16.0, 26.0, 0.5, 0.6) + fade(t, 30.0, 99, 0.5, 0))
+            title(fig, 1190, 1035, f"{v:.0f}" if v >= 1 or t > 33.5 else "0", size=72, color=GOLD, alpha=ca)
+            word = "step" if f"{v:.0f}" == "1" and t > 28.0 else "steps"
+            text(fig, 1260, 1030, f"{word} above the class average", size=24, color=INK2, alpha=ca)
+
+
+@section
+def curve():
+    return Curve()
+
+
+# ------------------------------------------------------------------ how the score works, 2: the class in sport (Ledecky 2016)
 class Method:
-    dur = 78.0
+    dur = 52.0
 
     def __init__(self):
         m = F["method_example"]
@@ -164,12 +320,11 @@ class Method:
         self.pts = [(p["season"], p["time"]) for p in m["window"]]
         self.curve = np.array(m["trend_time"])
         self.z = float(m["z"])
-        # the band and the ruler in time units: speed = 800 / time; unit = scale in speed
         self.sp_base, self.sp_scale = m["base_speed"], m["scale_speed"]
 
     def chart(self, fig, t, al):
         m = self.m
-        ax = ax_px(fig, 150, 300, 1100, 930)
+        ax = ax_px(fig, 150, 330, 1100, 930)
         style_axes(ax)
         times = [p[1] for p in self.pts] + [m["x_time"], m["baseline_time"]]
         ax.set_xlim(2000.3, 2026.7)
@@ -181,86 +336,185 @@ class Method:
             lab.set_alpha(al)
         ax.spines["bottom"].set_alpha(al)
         ax.text(0, 1.04, "Women's 800 m freestyle · ▲ faster", transform=ax.transAxes, fontsize=fs(19), color=MUTED, alpha=al)
-        # dots sweep in
         sweep = 2001 + (2026.9 - 2001) * ease((t - 2.5) / 9.0)
         for s, v in self.pts:
             if s <= sweep:
                 pop = ease_out((sweep - s) / 1.5)
                 ring(ax, s, v, BLUE, size=12 * (0.5 + 0.5 * pop), alpha=al * pop, z=5)
-        # the trend
-        tc = clamp((t - 16.0) / 6.0)
+        tc = clamp((t - 16.0) / 5.0)
         if tc > 0:
             k = max(2, int(len(self.curve) * tc))
             ax.plot(self.curve[:k, 0], self.curve[:k, 1], color=TREND, lw=px(3), alpha=al, zorder=4)
-        # the band: +/- one unit of scatter (in speed), shown in time
-        ba = fade(t, 26.0, 99, 1.2, 0) * al
+        ba = fade(t, 24.0, 99, 1.2, 0) * al
         if ba > 0:
             x = self.curve[:, 0]
             sp = 800 / self.curve[:, 1]
             ax.fill_between(x, 800 / (sp - self.sp_scale), 800 / (sp + self.sp_scale), color=TREND, alpha=0.16 * ba,
                             lw=0, zorder=2)
-        # Ledecky and the ruler
-        la = fade(t, 36.0, 99, 0.8, 0) * al
+        la = fade(t, 32.0, 99, 0.8, 0) * al
         if la > 0:
             ring(ax, 2016, m["x_time"], GOLD, size=17, alpha=la, z=8)
             ax.annotate("Katie Ledecky, 2016: 8:04.79", (2016, m["x_time"]), xytext=(px(16), px(10)),
                         textcoords="offset points", fontsize=fs(23), color=INK, alpha=la, zorder=9,
                         path_effects=outlined(6), weight="semibold")
-            prog = clamp((t - 38.0) / 5.0)
+            prog = ease(clamp((t - 33.0) / 4.0))
             top = self.sp_base + (self.z * self.sp_scale) * prog
             ax.plot([2016, 2016], [800 / self.sp_base, 800 / top], color=GOLD, lw=px(2.5), alpha=la, ls=(0, (2, 2)), zorder=7)
             for k in range(1, int(self.z * prog) + 1):
                 yk = 800 / (self.sp_base + k * self.sp_scale)
                 ax.plot([2015.6, 2016.4], [yk, yk], color=GOLD, lw=px(2), alpha=la, zorder=7)
+                ax.text(2015.3, yk, f"{k}", ha="right", va="center", fontsize=fs(17), color=GOLD, alpha=la, zorder=7)
         return ax
 
     def draw(self, fig, t):
+        m = self.m
         al = fade(t, 0, self.dur, 0.6, 0.6)
-        text(fig, 96, 92, "HOW THE LIST WAS BUILT", size=21, color=MUTED, weight="semibold", alpha=al)
-        title(fig, 96, 160, "Each season, measured against its own era", size=58, alpha=al)
-        ca = fade(t, 0, 50.5, 0, 0.8)
-        if ca > 0:
-            self.chart(fig, t, al * ca)
-            x0 = 1190
-            caps = [(1.5, "Every season's leader in 74 categories, across six sports, is compared with the best of "
-                          "everyone else in the 15 seasons before and after."),
-                    (8.0, "Example: the women's 800 m freestyle. Each blue dot is the fastest time by anyone except "
-                          "Katie Ledecky that season."),
-                    (16.0, "A curve follows how the event changed over those seasons."),
-                    (26.0, "The usual scatter of the dots around the curve becomes the unit of measurement."),
-                    (36.0, f"Her 2016 swim, 8:04.79, sits {self.z:.1f} of those units above her era."),
-                    (44.0, f"That ranks her {F['method_example']['rank_e3']}th. These are the ten that stood out further.")]
-            y = 330
-            for t0, s in caps:
-                a = al * ca * fade(t, t0, 99, 0.8, 0)
-                if a > 0:
-                    y = para(fig, x0, y, s, width=40, size=27, color=INK if t0 == max(c[0] for c in caps if c[0] <= t) else INK2,
-                             alpha=a) + 22
-            if t > 38:
-                cnt = self.z * ease(clamp((t - 38.0) / 5.0))
-                title(fig, 1190, 1035, f"{cnt:.2f}", size=64, color=GOLD, alpha=al * ca * fade(t, 38, 99, 0.5, 0))
-                text(fig, 1370, 1030, "units above the curve", size=24, color=INK2, alpha=al * ca * fade(t, 38, 99, 0.5, 0))
-        ra = fade(t, 51.0, self.dur, 0.8, 0.6)
-        if ra > 0:
-            rules = [(51.5, "1", "Team sports are also measured against the league's scoring level: 50 points a game means "
-                                 "more when teams average 100 than when they average 120."),
-                     (57.5, "2", "An athlete's own other seasons are left out of the comparison, so this measures "
-                                 "dominance over rivals."),
-                     (63.5, "3", "Each athlete appears once. Seasons are labelled by the year they end, and some entries "
-                                 "are a single mark or a streak rather than a season total.")]
-            y = 330
-            for t0, n, s in rules:
-                a = ra * fade(t, t0, 99, 0.8, 0)
-                title(fig, 150, y + 40, n, size=64, color=GOLD, alpha=a)
-                y = para(fig, 250, y, s, width=62, size=33, color=INK, alpha=a) + 48
-            para(fig, 250, max(y, 860), "The score is a statistical distance, not a probability, and the order depends on "
-                                        "these choices. More on that at the end.", width=80, size=24, color=MUTED,
-                 alpha=ra * fade(t, 69.5, 99, 0.8, 0))
+        text(fig, 96, 92, "HOW THE SCORE WORKS", size=21, color=MUTED, weight="semibold", alpha=al)
+        title(fig, 96, 160, "In sport, the class is everyone else", size=58, alpha=al)
+        photo(fig, "ledecky", 1648, 24, 1824, 244, alpha=al * fade(t, 30.0, 99, 0.8, 0))
+        self.chart(fig, t, al)
+        caps = [(1.5, "Every season's leader, in 74 categories across six sports, is graded against a class: the best "
+                      "of everyone else in each of the 15 seasons before and after."),
+                (8.0, "Example: the women's 800 m freestyle. Each blue dot is the fastest time that season by anyone "
+                      "except Katie Ledecky."),
+                (16.0, "The curve is the class average, moving with the times."),
+                (24.0, f"The band is the usual give-or-take. Here, one step is about {m['step_seconds']:.1f} seconds."),
+                (32.0, f"Ledecky's 8:04.79 in 2016 beat the curve by {m['gap_seconds']:.1f} seconds: {self.z:.1f} steps. "
+                       f"Her score is {self.z:.1f}."),
+                (41.0, f"That ranks {m['rank_e3']}th of everything we measured. The ten in this film stood out even "
+                       "further.")]
+        y = 330
+        for t0, s in caps:
+            a = al * fade(t, t0, 99, 0.8, 0)
+            if a > 0:
+                y = para(fig, 1190, y, s, width=40, size=26, color=INK if t0 == max(c[0] for c in caps if c[0] <= t) else INK2,
+                         alpha=a) + 20
+        if t > 33.0:
+            cnt = self.z * ease(clamp((t - 33.0) / 4.0))
+            ca = al * fade(t, 33.0, 99, 0.5, 0)
+            title(fig, 150, 1040, f"{cnt:.1f}", size=64, color=GOLD, alpha=ca)
+            text(fig, 270, 1035, "steps above the curve", size=24, color=INK2, alpha=ca)
 
 
 @section
 def method():
     return Method()
+
+
+# ------------------------------------------------------------------ how the score works, 3: three rules that keep it fair
+class Fair:
+    dur = 40.0
+
+    def draw(self, fig, t):
+        al = fade(t, 0, self.dur, 0.6, 0.6)
+        text(fig, 96, 92, "HOW THE SCORE WORKS", size=21, color=MUTED, weight="semibold", alpha=al)
+        title(fig, 96, 160, "Three rules that keep it fair", size=58, alpha=al)
+        ex = F["extras"]
+        rules = [(1.0, "Adjusted for inflation",
+                  "When every team scores more, each point is worth a little less, like money in an inflated economy. "
+                  "So in team sports, everyone else's numbers are converted into the athlete's own season before they're "
+                  f"compared. Wilt's 50.4 came when teams averaged {ex['nba_points_per_team_game_1962']:.1f} points a "
+                  "game. How much to convert is estimated from the data."),
+                 (12.0, "Graded against rivals, not yourself",
+                  "An athlete's own other seasons are left out of the class. Otherwise Gretzky's 1985–86 would be graded "
+                  "against Gretzky."),
+                 (20.0, "One entry each",
+                  "Each athlete appears once, with their highest-scoring season. A few entries are a single mark or a "
+                  "streak rather than a season total: Beamon's one jump, DiMaggio's 56 games.")]
+        y = 270
+        for i, (t0, head, body) in enumerate(rules):
+            a = al * fade(t, t0, 99, 0.8, 0)
+            title(fig, 150, y + 52, f"{i + 1}", size=64, color=GOLD, alpha=a)
+            title(fig, 250, y + 40, head, size=40, alpha=a)
+            y = para(fig, 250, y + 88, body, width=78, size=28, color=INK2, alpha=a) + 34
+        para(fig, 250, max(y + 10, 900), "The score measures distance from the class, not talent, and it isn't a "
+                                         "probability. The order depends on these choices: more on that at the end.",
+             width=86, size=24, color=MUTED, alpha=al * fade(t, 28.0, 99, 0.8, 0))
+
+
+@section
+def fair():
+    return Fair()
+
+
+# ------------------------------------------------------------------ how the score works, 4: what's a good score?
+class Scale:
+    dur = 34.0
+
+    def __init__(self):
+        self.s = F["scale"]
+        extra = sorted((d["name"], d["year"]) for d in self.s["tail"] if d["z"] >= 5 and not d["top10"])
+        assert extra == [("Bob Feller", 1946), ("Dennis Rodman", 1992)], extra
+
+    def chart(self, fig, t, al):
+        s = self.s
+        ax = ax_px(fig, 150, 330, 1100, 900)
+        style_axes(ax)
+        ax.set_xlim(-4.3, 8.3)
+        ax.set_ylim(0, 1080)
+        ax.set_xticks(range(-4, 9))
+        ax.yaxis.set_major_locator(MaxNLocator(5))
+        for lab in ax.get_xticklabels() + ax.get_yticklabels():
+            lab.set_alpha(al)
+        ax.spines["bottom"].set_alpha(al)
+        ax.text(0, 1.04, "number of season leaders, by score", transform=ax.transAxes, fontsize=fs(19), color=MUTED,
+                alpha=al)
+        ax.text(1, -0.11, "score: steps above the curve", transform=ax.transAxes, ha="right", fontsize=fs(19), color=MUTED,
+                alpha=al)
+        g = ease(clamp((t - 2.0) / 4.0))
+        edges = s["hist_edges"]
+        for lo, n in zip(edges[:-1], s["hist_counts"]):
+            if n:
+                ax.bar(lo + 0.25, n * g, width=0.44, color=BLUE, alpha=al * 0.9, lw=0, zorder=3)
+        ma = al * fade(t, 7.0, 99, 0.8, 0)
+        if ma > 0:
+            ax.plot([s["median"]] * 2, [0, 1040], color=TREND, lw=px(2.5), ls=(0, (3, 2)), alpha=ma, zorder=4)
+            ax.text(s["median"], 1050, "a typical league leader", ha="center", fontsize=fs(21), color=INK2, alpha=ma)
+        ta = al * fade(t, 15.0, 99, 0.8, 0)
+        if ta > 0:
+            ax.plot([4, 4], [0, 520], color=GRID, lw=px(2), zorder=2)
+            ax.text(4.1, 540, "beyond 4: one dot per season", fontsize=fs(19), color=INK2, alpha=ta)
+            h = {}
+            for d in sorted(s["tail"], key=lambda d: d["z"]):
+                b = math.floor(d["z"] / 0.25) * 0.25
+                k = h.get(b, 0)
+                h[b] = k + 1
+                gold = d["top10"] and t >= 21.0
+                ring(ax, b + 0.125, 22 + 36 * k, GOLD if gold else BLUE, size=10, alpha=ta, z=6)
+        la = al * fade(t, 21.5, 99, 0.8, 0)
+        if la > 0:
+            top = [d["z"] for d in s["tail"] if d["top10"]]
+            ax.plot([min(top), max(top)], [300, 300], color=GOLD, lw=px(2), alpha=la)
+            for xv in (min(top), max(top)):
+                ax.plot([xv, xv], [280, 320], color=GOLD, lw=px(2), alpha=la)
+            ax.text((min(top) + max(top)) / 2, 335, "the ten in this film", ha="center", fontsize=fs(21), color=GOLD,
+                    weight="semibold", alpha=la)
+        return ax
+
+    def draw(self, fig, t):
+        s = self.s
+        al = fade(t, 0, self.dur, 0.6, 0.6)
+        text(fig, 96, 92, "HOW THE SCORE WORKS", size=21, color=MUTED, weight="semibold", alpha=al)
+        title(fig, 96, 160, "What's a good score?", size=58, alpha=al)
+        self.chart(fig, t, al)
+        caps = [(1.0, f"We graded all {s['n']:,} season leaders in the data this way."),
+                (7.0, "Leading your league is normal: somebody does it every season. A typical leader scores about 0, "
+                      "right on the curve."),
+                (15.0, f"Three in four score below 1. Only {s['at_least_4']} reach 4."),
+                (21.0, f"Only {s['at_least_5']} reach 5: the ten athletes in this film, plus Rodman's 1991–92 and Bob "
+                       "Feller's 1946."),
+                (28.0, "Here they are, from ten to one.")]
+        y = 330
+        for t0, c_ in caps:
+            a = al * fade(t, t0, 99, 0.8, 0)
+            if a > 0:
+                y = para(fig, 1190, y, c_, width=40, size=27, color=INK if t0 == max(c[0] for c in caps if c[0] <= t) else INK2,
+                         alpha=a) + 22
+
+
+@section
+def scale():
+    return Scale()
 
 
 # ------------------------------------------------------------------ the countdown cards
@@ -270,19 +524,16 @@ class Card:
     def __init__(self, rank):
         self.c = CARDS[rank]
         c = self.c
-        self.share = c.get("share")
-        if self.share:                                    # team sports: share of an average team's total
-            self.pts = [tuple(p) for p in self.share["window"]]
-            self.curve = np.array(self.share["trend"])
-            self.x = self.share["x"]
-        else:
-            self.pts = [(p["season"], p["value"]) for p in c["window"] if p["holder"] != "list cut-off"]
-            self.curve = np.array(c["trend_raw_units"])
-            self.x = c["x_raw"]
+        r = c["ruler"]                                      # the model's own comparison, in this season's units
+        self.pts = [tuple(p) for p in r["window"]]
+        self.curve = np.array(r["trend"])
+        self.x, self.base, self.step = r["x"], r["base"], r["step"]
         self.lines = card_lines(c)
+        self.nums = ruler_numbers(c)
 
     def chart(self, fig, t, al):
         c = self.c
+        cat = c["category"]
         ax = ax_px(fig, 150, 330, 1150, 930)
         style_axes(ax)
         ys = [v for _, v in self.pts] + [self.x] + list(self.curve[:, 1])
@@ -292,48 +543,52 @@ class Card:
         x1 = max(max(s for s, _ in self.pts), c["year"]) + 0.8
         ax.set_xlim(x0, x1)
         ax.set_ylim(lo - pad, hi + pad * 1.6)
-        if self.share:
-            ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{100 * v:.0f}%"))
-        else:
-            ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: fmt_value(c["category"], v).replace(" m", "")))
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: fmt_value(cat, v).replace(" m", "")))
         ax.yaxis.set_major_locator(MaxNLocator(5))
         ax.xaxis.set_major_locator(MaxNLocator(6, integer=True))
         for lab in ax.get_xticklabels() + ax.get_yticklabels():
             lab.set_alpha(al)
         ax.spines["bottom"].set_alpha(al)
-        unit = {"ath_M_JT": "metres", "ath_M_LJ": "metres", "mlb_streak": "consecutive games with a hit"}.get(c["category"],
-                                                                                                         unit_word(c["category"]))
-        if self.share:
-            lab = f"{unit}, as a {self.share['label']} (league average)"
+        unit = {"ath_M_JT": "metres", "ath_M_LJ": "metres", "mlb_streak": "games in a row with a hit"}.get(cat, unit_word(cat))
+        if c["ruler"]["converted"]:
+            games = f" and {c['games_per_team']:.0f} games" if c["games_per_team"] else ""
+            lab = f"{unit} · other seasons converted to {c['season']}'s league {RATE_WORD[cat]}{games}"
         else:
-            note = f" (other seasons scaled to {c['games_per_team']:.0f} games)" if c["games_per_team"] else ""
-            lab = f"{unit}{note}"
+            lab = unit
         ax.text(0, 1.04, lab, transform=ax.transAxes, fontsize=fs(19), color=MUTED, alpha=al)
         sweep = x0 + (x1 + 1 - x0) * ease((t - 1.2) / 9.5)
         for s, v in self.pts:
             if s <= sweep and s != c["year"]:
                 pop = ease_out((sweep - s) / 1.4)
                 ring(ax, s, v, BLUE, size=12 * (0.5 + 0.5 * pop), alpha=al * pop, z=5)
-        # the runner-up in the season itself, smaller
         tc = clamp((t - 11.0) / 3.0)
         if tc > 0:
             k = max(2, int(len(self.curve) * tc))
             ax.plot(self.curve[:k, 0], self.curve[:k, 1], color=TREND, lw=px(3), alpha=al, zorder=4)
         ga = fade(t, 14.2, 99, 0.6, 0) * al
         if ga > 0:
-            base = float(np.interp(c["year"], self.curve[:, 0], self.curve[:, 1]))
-            prog = ease_out(clamp((t - 14.2) / 1.6))
+            base = self.base
+            prog = self.prog(t)
             yy = base + (self.x - base) * prog
+            left = c["year"] > (x0 + x1) / 2
             ax.plot([c["year"], c["year"]], [base, yy], color=GOLD, lw=px(2.5), ls=(0, (2, 2)), alpha=ga, zorder=6)
+            half = (x1 - x0) * 0.011
+            for k in range(1, int((yy - base) / self.step + 1e-9) + 1):
+                yk = base + k * self.step
+                ax.plot([c["year"] - half, c["year"] + half], [yk, yk], color=GOLD, lw=px(2), alpha=ga, zorder=6)
+                ax.annotate(f"{k}", (c["year"], yk), xytext=(px(14 if left else -14), 0), textcoords="offset points",
+                            ha="left" if left else "right", va="center", fontsize=fs(16), color=GOLD, alpha=ga, zorder=6)
             ring(ax, c["year"], yy, GOLD, size=19, alpha=ga, z=8)
-            if prog > 0.95:
-                lab = (f"{c['athlete']}, {c['season']}: {c['achievement'].split(' ')[0]} = {100 * self.x:.0f}%" if self.share
-                       else f"{c['athlete']}, {c['season']}: {fmt_value(c['category'], self.x)}")
-                left = c["year"] > (x0 + x1) / 2
+            if prog > 0.97:
+                lab = f"{c['athlete']}, {c['season']}: {fmt_value(cat, self.x)}"
                 ax.annotate(lab, (c["year"], self.x), xytext=(px(-18 if left else 18), px(4)), textcoords="offset points",
                             ha="right" if left else "left", va="center", fontsize=fs(23), color=INK, weight="semibold",
                             alpha=ga, zorder=9, path_effects=outlined(6))
         return ax
+
+    @staticmethod
+    def prog(t):
+        return ease(clamp((t - 14.2) / 4.0))
 
     def env_inset(self, fig, t, al):
         c = self.c
@@ -342,7 +597,7 @@ class Card:
         a = al * fade(t, 22.0, 99, 0.8, 0)
         if a <= 0:
             return
-        ax = ax_px(fig, 1250, 905, 1830, 1000)
+        ax = ax_px(fig, 1250, 925, 1830, 1000)
         ax.set_facecolor("none")
         for s_ in ("top", "right", "left", "bottom"):
             ax.spines[s_].set_visible(False)
@@ -350,10 +605,9 @@ class Card:
         ax.set_yticks([])
         e = np.array(c["league_env"], float)
         ax.plot(e[:, 0], e[:, 1], color=INK2, lw=px(2), alpha=a)
-        ev = c["league_env_at_season"]
-        ring(ax, c["year"], ev, GOLD, size=10, alpha=a, z=5)
+        ring(ax, c["year"], c["league_env_at_season"], GOLD, size=10, alpha=a, z=5)
         ax.set_xlim(c["year"] - 15.6, c["year"] + 15.6)
-        text(fig, 1250, 895, f"{ENV_LABEL[c['category']]}, {c['year'] - 15}–{min(c['year'] + 15, 2026)}", size=19,
+        text(fig, 1250, 915, f"{ENV_LABEL[c['category']]}, {c['year'] - 15}–{min(c['year'] + 15, 2026)}", size=19,
              color=MUTED, alpha=a)
 
     def draw(self, fig, t):
@@ -364,32 +618,40 @@ class Card:
         title(fig, nx, 128, c["athlete"], size=66, alpha=al)
         text(fig, nx, 180, f"{c['title']} · {SPORT_WORD[c['sport']]} · {c['season']}", size=28, color=INK2, alpha=al)
         text(fig, nx, 232, c["achievement"], size=40, color=INK, weight="semibold", alpha=al)
-        # legend row, under the chart (glyphs keep the marks round)
+        photo(fig, PHOTO_KEY[c["rank"]], 1604, 28, 1824, 303, alpha=al * fade(t, 0.4, 99, 0.8, 0))
         la = al * fade(t, 1.0, 99, 0.6, 0)
         lx = 150
-        for lab, col, glyph in (("everyone else's best, each season", BLUE, "●"), ("their trend", TREND, "—"),
-                                (f"{c['athlete'].split()[-1]}, {c['season']}", GOLD, "●")):
+        for lab, col, glyph in (("everyone else's best, each season", BLUE, "●"), ("the curve", TREND, "—"),
+                                (f"{c['athlete'].split()[-1]}, {c['season']}", GOLD, "●"), ("each tick: one step", GOLD, "–")):
             text(fig, lx, 1022, glyph, size=24, color=col, alpha=la)
             text(fig, lx + 34, 1022, lab, size=21, color=INK2, alpha=la)
             lx += 34 + len(lab) * 11.0 + 48
         self.chart(fig, t, al)
-        # the score
-        sa = al * fade(t, 16.0, 99, 0.6, 0)
+        # the score, counted up with the ruler
+        sa = al * fade(t, 14.2, 99, 0.6, 0)
         if sa > 0:
+            xs, bs, ss = self.nums
+            u = RULER_UNIT[c["category"]]
+            r = c["ruler"]
+            if c["category"] == "ath_M_LJ":
+                friendly = f"Curve about {r['base']:.2f} m · one step about {100 * r['step']:.1f} cm"
+            else:
+                friendly = f"Curve about {sig(r['base'], 3)} {u} · one step about {sig(r['step'], 2)} {u}"
             text(fig, 1250, 360, "OUTLIER SCORE", size=21, color=MUTED, weight="semibold", alpha=sa)
-            v = c["z_e3"] * ease(clamp((t - 16.0) / 3.0))
-            title(fig, 1250, 470, f"{v:.2f}", size=120, color=GOLD, alpha=sa)
-            text(fig, 1250, 512, "typical spreads above everyone else's trend", size=22, color=INK2, alpha=sa)
-            if c["env_adjusted"]:
-                text(fig, 1250, 545, "the score uses an estimated version of the league adjustment", size=20, color=MUTED, alpha=sa)
-        y = 610
+            title(fig, 1250, 468, f"{c['z_e3'] * self.prog(t):.2f}", size=116, color=GOLD, alpha=sa)
+            text(fig, 1250, 508, "steps above the curve", size=24, color=INK, alpha=sa)
+            text(fig, 1250, 546, friendly, size=22, color=INK2, alpha=sa)
+            cm = " (in centimetres)" if c["category"] == "ath_M_LJ" else ""
+            text(fig, 1250, 580, f"({xs} − {bs}) ÷ {ss} = {c['z_e3']:.2f}{cm}", size=22, color=MUTED,
+                 alpha=sa * fade(t, 18.2, 99, 0.6, 0))
+        y = 640
         for i, line in enumerate(self.lines):
             a = al * fade(t, 19.5 + 5.0 * i, 99, 0.8, 0)
-            y = para(fig, 1250, y, line, width=40, size=26, color=INK if i == 0 else INK2, alpha=a) + 16
+            y = para(fig, 1250, y, line, width=40, size=25, color=INK if i == 0 else INK2, alpha=a) + 14
         self.env_inset(fig, t, al)
         if c["rank"] == 10:
-            text(fig, W / 2, 1050, "Historical statistical dominance model: ranks depend on category, comparison window and "
-                                   "era adjustment. Not a probability or a measure of ability.", size=19, color=MUTED,
+            text(fig, W / 2, 1062, "Historical statistical dominance model: ranks depend on category, comparison window and "
+                                   "era adjustment. Not a probability or a measure of ability.", size=17, color=MUTED,
                  ha="center", alpha=al * fade(t, 1.0, 12.0, 0.8, 0.8))
 
 
@@ -485,14 +747,15 @@ class Close:
             for i, c in enumerate(four):
                 x = 96 + i * 440
                 a = a1 * fade(t, 1.0 + 0.8 * i, 99, 0.6, 0)
-                title(fig, x, 360, c["athlete"], size=40, alpha=a)
-                text(fig, x, 405, f"{c['achievement']}, {c['season']}", size=24, color=INK2, alpha=a)
-                text(fig, x, 445, f"#{c['rank']} here", size=24, color=GOLD, alpha=a, weight="semibold")
-            para(fig, 96, 560, f"In all {R['n_specs']} versions of the method we tested (comparison windows of 7 to 20 "
+                photo(fig, PHOTO_KEY[c["rank"]], x, 200, x + 112, 340, alpha=a, credit=False)
+                title(fig, x, 395, c["athlete"], size=40, alpha=a)
+                text(fig, x, 438, f"{c['achievement']}, {c['season']}", size=24, color=INK2, alpha=a)
+                text(fig, x, 476, f"#{c['rank']} here", size=24, color=GOLD, alpha=a, weight="semibold")
+            para(fig, 96, 590, f"In all {R['n_specs']} versions of the method we tested (comparison windows of 7 to 20 "
                                "seasons, straight or curved trends, with or without the league-scoring adjustment), "
                                "these four stayed in the top ten. Their order did not.", width=84, size=32, color=INK,
                  alpha=a1 * fade(t, 4.5, 99, 0.8, 0))
-            para(fig, 96, 790, "When the comparison seasons are resampled, the other six places change hands often.",
+            para(fig, 96, 815, "When the comparison seasons are resampled, the other six places change hands often.",
                  width=90, size=27, color=INK2, alpha=a1 * fade(t, 11.0, 99, 0.8, 0))
         a2 = fade(t, 21.5, 40.5, 0.6, 0.7) * al
         if a2 > 0:
@@ -526,10 +789,13 @@ def close():
 
 
 class End:
-    dur = 16.0
+    dur = 26.0
 
     def draw(self, fig, t):
-        al = fade(t, 0, self.dur, 0.8, 1.2)
+        self.credits(fig, t)
+        al = fade(t, 0, 12.5, 0.8, 0.8)
+        if al <= 0:
+            return
         text(fig, 96, 120, "SOURCES AND METHOD", size=21, color=MUTED, weight="semibold", alpha=al)
         lines = [
             ("Data", "Baseball-Reference, Basketball-Reference, Hockey-Reference, Pro Football Archives, nflverse, "
@@ -550,6 +816,30 @@ class End:
             y = para(fig, 330, y, s, width=92, size=26, color=INK2, alpha=a) + 34
 
 
+def _credits(self, fig, t):
+    al = fade(t, 13.0, self.dur, 0.8, 1.2)
+    if al <= 0:
+        return
+    text(fig, 96, 120, "PHOTOGRAPHS", size=21, color=MUTED, weight="semibold", alpha=al)
+    order = ["beamon", "chamberlain", "dimaggio", "gretzky", "zelezny", "vance", "curry", "rodman", "ruth", "ichiro", "ledecky"]
+    for i, k in enumerate(order):
+        cr = CREDITS[k]
+        col, row = i % 2, i // 2
+        x, y = 96 + col * 880, 200 + row * 118
+        a = al * fade(t, 13.3 + 0.12 * i, 99, 0.5, 0)
+        photo(fig, k, x, y, x + 72, y + 90, alpha=a, credit=False)
+        text(fig, x + 96, y + 30, cr["athlete"], size=24, color=INK, weight="semibold", alpha=a)
+        lic = cr["license"] if cr["license"] != "Public domain" else "public domain"
+        text(fig, x + 96, y + 62, f"{cr['author']} · {lic}", size=20, color=INK2, alpha=a)
+        text(fig, x + 96, y + 88, cr["file"][:70], size=16, color=MUTED, alpha=a)
+    para(fig, 96, 920, "All from Wikimedia Commons (commons.wikimedia.org), cropped and converted to greyscale. Licences: "
+                       "creativecommons.org/licenses (CC BY 2.0, CC BY-SA 2.0, 3.0, 4.0; CC0). Full credits and links "
+                       "are in the description.", width=120, size=20, color=MUTED, alpha=al)
+
+
+End.credits = _credits
+
+
 def R_N():
     return f"{F['robustness']['n_scored']:,}"
 
@@ -559,12 +849,13 @@ def end():
     return End()
 
 
-ORDER = ["cold", "method"] + [f"c{r}" for r in range(10, 0, -1)] + ["throws", "close", "end"]
+ORDER = ["cold", "curve", "method", "fair", "scale"] + [f"c{r}" for r in range(10, 0, -1)] + ["throws", "close", "end"]
 
 
 def stills():
     os.makedirs(os.path.join(look.OUT, "stills"), exist_ok=True)
-    picks = {"cold": [5.5, 18.0], "method": [30.0, 47.0, 72.0], "throws": [52.0], "close": [12.0, 34.0, 50.0], "end": [10.0]}
+    picks = {"cold": [5.5, 18.0], "curve": [24.0, 40.0], "method": [45.0], "fair": [34.0], "scale": [30.0],
+             "throws": [52.0], "close": [12.0, 34.0, 50.0], "end": [10.0, 22.0]}
     for r in range(10, 0, -1):
         picks[f"c{r}"] = [33.0]
     for name in ORDER:
@@ -580,5 +871,5 @@ if __name__ == "__main__":
     if which == "stills":
         stills()
     else:
-        scale = int(sys.argv[2]) if len(sys.argv) > 2 else 1
-        print(look.render_section(which, SECTIONS[which](), scale=scale))
+        sc = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+        print(look.render_section(which, SECTIONS[which](), scale=sc))

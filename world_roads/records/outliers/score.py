@@ -2,7 +2,8 @@
 
 Same instrument and room as the records film (felt piano, soft pad, synthesized, no samples; loaded from
 ../music.py, which loads ../vernier/music.py). D major, one bar = 3 s, so every 36 s countdown card is twelve bars:
-a single low "chapter" chord under the rank number, then a walking arpeggio.
+a single low "chapter" chord under the rank number, then a walking arpeggio. The four "how the score works"
+sections walk (curve, method), settle (fair) and build into the countdown (scale).
 
     python score.py          # writes out/score.wav for the timeline in assemble.py
 """
@@ -28,14 +29,22 @@ def cycle(t0, n, prog, style):
 
 def section_plan(O, total):
     """(start, chord, style) for every bar of the film, built from the section start times"""
+    import film
+    global SECS_DUR
+    SECS_DUR = {k: film.SECTIONS[k]().dur for k in O}
     bars = []
     for name, t0 in O.items():
         if name == "cold":            # four numbers, the question, then the title
             bars += [(t0, "Bm", "pad"), (t0 + 3, "G", "pad"), (t0 + 6, "Em", "sparse"), (t0 + 9, "Asus", "sparse"),
                      (t0 + 12, "D", "title"), (t0 + 15, "D", "title"), (t0 + 18, "Bm", "half"), (t0 + 21, "Asus", "half")]
-        elif name == "method":        # the Ledecky walk-through (0-51 s), then the three rules
-            bars += cycle(t0, 17, ["D", "Bm", "G", "Asus"], "arp")
-            bars += cycle(t0 + 51, 9, ["G", "D/F#", "Em", "Asus"], "half")
+        elif name in ("curve", "method"):   # the analogy and the worked example: a walking arpeggio
+            n = int(SECS_DUR[name] // BAR)
+            bars += cycle(t0, n, ["D", "Bm", "G", "Asus"] if name == "curve" else ["G", "D/F#", "Em", "Asus"], "arp")
+        elif name == "fair":
+            bars += cycle(t0, int(SECS_DUR[name] // BAR), ["Bm", "G", "D", "A"], "half")
+        elif name == "scale":                # builds into the countdown
+            n = int(SECS_DUR[name] // BAR)
+            bars += cycle(t0, n - 1, ["Em", "G", "Bm", "A"], "half") + [(t0 + (n - 1) * BAR, "Asus", "hold")]
         elif name[0] == "c" and name[1:].isdigit():   # a countdown card
             r = int(name[1:])
             bars.append((t0, "Asus" if r > 1 else "D", "chapter" if r > 1 else "title"))
@@ -47,7 +56,8 @@ def section_plan(O, total):
             bars += [(t0 + 41, "D", "title"), (t0 + 44, "G", "title"), (t0 + 47, "Bm", "half"), (t0 + 50, "G", "half"),
                      (t0 + 53, "Asus", "half")]
         elif name == "end":
-            bars += [(t0, "D", "end"), (t0 + 6, "G", "pad"), (t0 + 9, "D", "end")]
+            bars += [(t0, "D", "end"), (t0 + 6, "G", "pad"), (t0 + 9, "D", "end"), (t0 + 15, "G", "pad"),
+                     (t0 + 18, "D", "end")]
     return sorted(bars, key=lambda b: b[0])
 
 

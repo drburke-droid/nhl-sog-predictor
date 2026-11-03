@@ -49,14 +49,16 @@ def thumb_a():
 
 
 def thumb_b():
-    """the four that never left the top ten"""
+    """the four that never left the top ten, with their portraits"""
     fig = new_fig(1)
-    items = [("8.90 m", "Beamon"), ("50.4", "Chamberlain"), ("56", "DiMaggio"), ("163", "Gretzky")]
-    pos = [(500, 420), (1420, 420), (500, 860), (1420, 860)]
-    for (big, who), (x, y) in zip(items, pos):
-        title(fig, x, y, big, size=200, color=INK, ha="center")
-        text(fig, x, y + 80, who, size=52, color=INK2, ha="center", weight="semibold")
-    title(fig, W / 2, 140, "Which stood furthest above its era?", size=86, color=GOLD, ha="center")
+    items = [("8.90 m", "Beamon", "beamon"), ("50.4", "Chamberlain", "chamberlain"), ("56", "DiMaggio", "dimaggio"),
+             ("163", "Gretzky", "gretzky")]
+    pos = [(70, 230), (1000, 230), (70, 640), (1000, 640)]
+    for (big, who, key), (x, y) in zip(items, pos):
+        film.photo(fig, key, x, y, x + 264, y + 330, credit=False)
+        title(fig, x + 300, y + 200, big, size=170, color=INK)
+        text(fig, x + 306, y + 280, who, size=50, color=INK2, weight="semibold")
+    title(fig, W / 2, 150, "Which stood furthest above its era?", size=86, color=GOLD, ha="center")
     save(fig, "B")
 
 

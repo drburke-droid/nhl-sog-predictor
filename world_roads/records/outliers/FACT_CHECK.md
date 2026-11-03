@@ -63,18 +63,47 @@ The scores come from `followup/outputs/rankings_sensitivity.csv`, column `E3_mai
 | 1 | Stood until Mike Powell's 8.95 m in 1991 | `next_record` | data |
 | 1 | 2,240 m altitude, +2.0 m/s tailwind | Mexico City; World Athletics record entry | data |
 
-**League-environment insets** are drawn from `league_env` in `facts.json`, which comes from the per-category
-league rates in `followup/data/context/`. Team-sport charts show each value as a share of an average team's total
-(value ÷ league rate per team-game ÷ games). That is an intuitive version of the adjustment. The score itself uses
-the estimated elasticity (`gamma_estimates.csv`), and the card says so.
+## The ruler on each card
 
-## Method section
+Each card shows the model's own comparison in the season's own units. The other seasons' values are multiplied
+by (league rate in that season)^γ, which converts them into "this season's money". That is a constant
+rescaling of exactly what E3_main_env compares, so the curve, the step and the score are unchanged.
+`facts.py` asserts that (value − curve) ÷ step reproduces the model's z for every card. It also asserts that
+the converted value of the athlete's own season equals the raw mark. γ is the same unrounded partially pooled
+value the locked run used (`run_all.pooled_gamma`).
+
+The arithmetic line on each card is rounded so that it gives the score shown. The friendlier "about" line
+above it uses 3 and 2 significant figures.
+
+| Rank | Curve (base) | One step | (value − curve) ÷ step | Locked score |
+|---|---|---|---|---|
+| 10 Ichiro Suzuki | 218.9064 | 8.1764 | 5.2704 | 5.27 |
+| 9 Babe Ruth | 22.9572 | 5.5862 | 5.5571 | 5.56 |
+| 8 Dennis Rodman | 13.3576 | 0.8704 | 5.6783 | 5.68 |
+| 7 Stephen Curry | 244.6594 | 27.6495 | 5.6905 | 5.69 |
+| 6 Dazzy Vance | 153.7563 | 18.5654 | 5.8304 | 5.83 |
+| 5 Jan Železný | 91.0566 m | 1.2481 m | 5.9478 | 5.95 |
+| 4 Wayne Gretzky | 92.8135 | 10.8552 | 6.4657 | 6.47 |
+| 3 Joe DiMaggio | 28.1290 | 3.9752 | 7.0112 | 7.01 |
+| 2 Wilt Chamberlain | 31.7864 | 2.6410 | 7.0479 | 7.05 |
+| 1 Bob Beamon | 8.2545 m | 0.0827 m | 7.8018 | 7.80 |
+
+**League-environment insets** show the league rate per team-game over the ±15 window, with the season
+marked. They come from `league_env` in `facts.json` (`followup/data/context/`).
+
+## How the score works (four sections)
 
 | On screen | Value | Status |
 |---|---|---|
+| Class test: average 70, give or take 5; a 95 is 5 steps; in a class averaging 90 it is 1 | Illustrative analogy. The dots are 31 made-up scores, standardised to mean 70 and spread 5. | not data |
 | 74 categories, 6 sports | `robustness.n_categories` | data |
 | Ledecky 2016, women's 800 m freestyle, 8:04.79 | `method_example` | data |
-| "4.86 units above her era", ranks 12th | `method_example.z`, `rank_e3` | data |
+| One step about 2.4 s; 11.8 s faster than the curve; score 4.9; ranks 12th | `method_example`. The step in seconds is the gap divided by z: the model works in speed, so a step in time varies slightly along the ruler. | data |
+| Wilt's 50.4 came when teams averaged 118.8 points | `extras.nba_points_per_team_game_1962` | data |
+| All 4,940 season leaders graded | `scale.n` (all E3 scores, ties counted) | data |
+| A typical leader scores about 0 | `scale.median` = 0.09 | data |
+| Three in four score below 1 | 3,816 of 4,940 = 77% | data |
+| Only 44 reach 4; only 12 reach 5 (the ten, Rodman 1991–92 at 5.35, Bob Feller 1946 at 5.03) | `scale.tail`; `film.py` asserts the two extra names | data |
 
 ## Women's throws section
 
@@ -109,3 +138,12 @@ at #75.
 - No "proved", "greatest athlete" or "statistically certain".
 - The film never says the adjustment accounts for minutes, possessions, ice time or innings.
 - "50.4 today = 39.7" does not appear.
+
+## Photographs
+
+Eleven portraits, all from Wikimedia Commons under free licences (public domain, CC0, CC BY 2.0, CC BY-SA 2.0 and
+4.0). Authors, licences and links are in `photos/CREDITS.md`. Each card shows a short credit under the photo, and
+the closing page lists them all. Era photos: Ruth (1920), Vance (1922), DiMaggio (1941), Chamberlain (1960), Beamon
+(1968, mid-jump at Mexico City), Ichiro (2011). Recent photos: Rodman, Curry, Železný, Gretzky, Ledecky. Commons has
+free era photos of Rodman (1989) and Gretzky (1980s, with President Reagan); they weren't fetched because Wikimedia
+rate-limited the requests (`python photos.py alternates` resumes politely).

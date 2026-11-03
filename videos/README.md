@@ -14,7 +14,7 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 
 | File | Format | Length | What it is |
 |---|---|---|---|
-| biggest_statistical_outliers_9m46s.mp4 | 16:9, 1080p | 9:46 | The 10 Biggest Statistical Outliers in Sports History: a countdown of the locked greatest-seasons ranking (74 categories, six sports, each season against the 15 seasons either side), with a segment on why the women's throws aren't on the list. Built in `world_roads/records/outliers` (fact check: `FACT_CHECK.md`, optional narration: `VO_SCRIPT.md`). Copy: `copy/outliers_YOUTUBE.md`, thumbnails outliers_thumb_A/B/C |
+| biggest_statistical_outliers_11m26s.mp4 | 16:9, 1080p | 11:26 | The 10 Biggest Statistical Outliers in Sports History: a countdown of the locked greatest-seasons ranking (74 categories, six sports, each season against the 15 seasons either side), with a four-part explainer of the score (grading on a curve), athlete portraits from Wikimedia Commons, and a segment on why the women's throws aren't on the list. Built in `world_roads/records/outliers` (fact check: `FACT_CHECK.md`, optional narration: `VO_SCRIPT.md`). Copy: `copy/outliers_YOUTUBE.md`, thumbnails outliers_thumb_A/B/C |
 
 ## eye/
 

@@ -38,9 +38,11 @@ def read(path):
 
 def main():
     D = G.Data("v2")
-    gam = {r["category"]: float(r["gamma_pooled"]) for r in read(os.path.join(FU, "outputs", "gamma_estimates.csv"))}
+    import run_all as RA                                      # the same unrounded pooled elasticities as the locked run
+    gam, _ = RA.pooled_gamma(D)
     ctx = X.make(D, env="power", gamma=gam)
-    e3 = {(r["cat"], r["year"]): r for r in G.score(D, G.Spec(ties="all", trend="quad_safe", env="power"), ctx=ctx)}
+    e3_all = G.score(D, G.Spec(ties="all", trend="quad_safe", env="power"), ctx=ctx, details=True)
+    e3 = {(r["cat"], r["year"]): r for r in e3_all}
     raw = {(r["cat"], r["year"]): r for r in G.score(D, G.Spec(ties="all", trend="quad_safe"), details=True)}
     S = read(os.path.join(FU, "outputs", "rankings_sensitivity.csv"))
     E = X.env_series()
@@ -85,6 +87,22 @@ def main():
                 "next_record": {"value": after[0][1], "holder": after[0][2], "year": int(after[0][0])} if after else None,
                 "games_per_team": lst[0].games if m["scaled"] else None,
                 "one_sided": r3["edge"]}
+        # the ruler in the season's own units: the model's comparison values times (league rate in season y)^gamma,
+        # i.e. every other season "converted into this season's money". Same fit, same z (a constant rescaling).
+        kconv = ctx.env[cat][y] ** ctx.gamma.get(cat, 1.0) if cat in ctx.env_cats else 1.0
+        eq_pts = [(s_, v_ * kconv) for s_, v_ in r3["pts"]]
+        fbe = G.fit_baseline(eq_pts, y, m["shift"], "quad_safe")
+        ye = np.array([q[0] for q in eq_pts], float)
+        ve = np.array([q[1] for q in eq_pts], float)
+        qe = min((ye < y).sum(), (ye > y).sum()) >= 5
+        ce = np.polyfit(ye - y, ve, 2 if qe else 1)
+        assert abs(np.polyval(ce, 0) - fbe[0]) < 1e-6 * max(1, abs(fbe[0]))
+        z_eq = (r3["x"] * kconv - fbe[0]) / fbe[2]
+        assert abs(z_eq - r3["z"]) < 1e-9 and abs(r3["x"] * kconv - float(r3["raw"])) < 1e-6 * float(r3["raw"]), cat
+        card["ruler"] = {"window": [[int(s_), round(v_, 4)] for (s_, v_), pid in zip(eq_pts, r3["pids"]) if pid != "cutoff"],
+                         "x": float(r3["raw"]), "base": round(fbe[0], 4), "step": round(fbe[2], 4), "z": round(z_eq, 4),
+                         "trend": [[float(s_), float(np.polyval(ce, s_ - y))] for s_ in np.linspace(ye.min(), ye.max(), 60)],
+                         "converted": cat in ctx.env_cats, "factor_note": "comparison values x (league rate in season)^gamma"}
         if cat in E:
             card["league_env"] = [[s, E[cat][s]] for s in range(y - 15, y + 16) if s in E[cat]]
             card["league_env_at_season"] = E[cat].get(y)
@@ -119,6 +137,8 @@ def main():
     extras["mlb_1920_avg_team_hr"] = round(float(mlb[1920]["hr_per_team_g"]) * float(mlb[1920]["games_per_team"]), 1)
     extras["mlb_1924_so_per_team_game"] = float(mlb[1924]["so_pitch_per_team_g"])
     extras["mlb_2004_h_per_team_game"] = float(mlb[2004]["h_per_team_g"])
+    extras["rodman_1992_z"] = round(float(next(s_["E3_main_env_z"] for s_ in S if s_["category"] == "nba_rpg" and s_["season"] == "1992"
+                                              and s_["athlete"] == "Dennis Rodman")), 2)
     # longest streaks since 1941 (Retrosheet streak table, names via the season lists)
     streak = []
     for yy, lst in D.seasons["mlb_streak"].items():
@@ -191,7 +211,22 @@ def main():
               "trend_time": [[float(s), round(lsec(float(np.polyval(coef, s - 2016))), 3)] for s in np.linspace(yrs.min(), yrs.max(), 60)],
               "baseline_time": round(lsec(rl["base"]), 2), "x_time": round(lsec(rl["x"]), 2),
               "scale_speed": rl["scale"], "base_speed": rl["base"], "x_speed": rl["x"]}
-    out = {"model": "E3_main_env (locked)", "cards": cards, "extras": extras, "womens_throws": W, "robustness": rob,
+    # the scale: every season leader's score (all 4,940 scored records, ties counted)
+    zs = np.array([r["z"] for r in e3_all])
+    bands = [(-99, 0), (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 99)]
+    top_names = {(c["category"], c["year"]) for c in cards}
+    scale = {"n": int(len(zs)), "median": round(float(np.median(zs)), 2),
+             "bands": [{"lo": lo, "hi": hi, "n": int(((zs >= lo) & (zs < hi)).sum())} for lo, hi in bands],
+             "below_1": int((zs < 1).sum()), "at_least_4": int((zs >= 4).sum()), "at_least_5": int((zs >= 5).sum()),
+             "hist_edges": [round(e, 2) for e in np.arange(-4.0, 4.01, 0.5)],
+             "hist_counts": [int(((zs >= lo) & (zs < lo + 0.5)).sum()) for lo in np.arange(-4.0, 4.0, 0.5)],
+             "below_hist": int((zs < -4).sum()),
+             "tail": sorted([{"name": r["name"], "year": r["year"], "cat": r["cat"], "z": round(r["z"], 2),
+                              "top10": (r["cat"], r["year"]) in top_names and r["name"] == next(c["athlete"] for c in cards if (c["category"], c["year"]) == (r["cat"], r["year"]))}
+                             for r in e3_all if r["z"] >= 4], key=lambda d: -d["z"])}
+    method["step_seconds"] = round((method["baseline_time"] - method["x_time"]) / rl["z"], 2)
+    method["gap_seconds"] = round(method["baseline_time"] - method["x_time"], 2)
+    out = {"model": "E3_main_env (locked)", "cards": cards, "scale": scale, "extras": extras, "womens_throws": W, "robustness": rob,
            "method_example": method}
     json.dump(out, open(os.path.join(HERE, "facts.json"), "w"), indent=1, default=str, ensure_ascii=False)
     for c in cards:
