@@ -144,32 +144,25 @@ our scale it's a score of five.
 
 **6:50** Now put the same ninety-five in a class that averages ninety. It's one step above: a score of one.
 
-**6:59** Same number, different class. Every result in this film was graded against the class of its own era: the best of everyone else in the fifteen seasons before and after. The curve is the class average; one step is the usual give-or-take.
+**6:59** Same number, different class. Every result here is graded against its own era: everyone else in the fifteen seasons either side.
 
 ## Three rules that keep it fair (7:07–7:46)
 
-**7:08** Three rules keep it fair. First, inflation. When every team scores more, each point is worth a little
-less, like money in an inflated economy. So in team sports, everyone else's numbers are converted into the
-athlete's own season before they're compared. How much to convert is estimated from the data.
+**7:08** Three rules keep it fair. First, inflation: when every team scores more, each point is worth less. In team sports, others' numbers are converted to the athlete's season.
 
-**7:19** Second, you're graded against your rivals, not yourself. An athlete's own other seasons are left out.
-Otherwise Gretzky would be graded against Gretzky.
+**7:19** Second, you're graded against rivals, not yourself. Otherwise Gretzky would be graded against Gretzky.
 
-**7:27** Third, one entry each, with each athlete's highest-scoring season. A few entries are a single jump or a
-streak rather than a season total.
+**7:27** Third, one entry each: the athlete's highest-scoring season, or for a few, a single jump or streak.
 
 **7:36** The score measures distance from the class, not talent, and it isn't a probability.
 
 ## Why the women's throws aren't on this list (7:46)
 
-**7:47** One more thing: what isn't here. By one measure, the women's shot put and discus records are the most
-extreme numbers in the whole dataset.
+**7:47** What isn't here: by one measure, the women's shot put and discus records are the most extreme in the dataset.
 
-**7:54** No woman has thrown twenty-two metres in the shot put since 1988. The best this decade is twenty-one
-fourteen. The best discus throw since 2000 is more than three metres short of the 1988 record.
+**7:54** No woman has thrown twenty-two metres in the shot put since 1988. Since 2000, no discus throw has come within three metres of the record.
 
-**8:05** But in the 1980s, marks like these were routine at the top: eighteen shot puts of twenty-two metres or more,
-and fifty discus throws of seventy-two metres or more, by eleven different women.
+**8:05** But in the 1980s, marks like these were routine: eighteen shot puts of at least twenty-two metres, and fifty discus throws of at least seventy-two, by eleven women.
 
 **8:16** So against their own era, the record holders' best seasons score about two and a half in the shot put and
 three in the discus. The top ten starts above five.
@@ -182,22 +175,18 @@ anyone out.
 
 ## How sure is this order? (8:43)
 
-**8:44** How sure is this order? We tested sixteen versions of the method: comparison windows from seven to twenty
-seasons, straight or curved trends, with or without the league adjustment. Beamon, Chamberlain, DiMaggio and
-Gretzky were in the top ten every time. Their order wasn't.
+**8:44** How sure is this order? Across sixteen versions of the method, Beamon, Chamberlain, DiMaggio and Gretzky made the top ten every time.
 
-**8:54** And when the comparison seasons are resampled, places five to ten change hands often.
+**8:54** Their order shifted. And when the comparison seasons are resampled, places five to ten change hands often.
 
-**9:06** Change the question, and the order changes. Count an athlete's own other seasons, and Gretzky falls to
-twentieth: his own great seasons become the bar. DiMaggio rises to first.
+**9:06** Count their own seasons too, and Gretzky falls to twentieth. DiMaggio rises to first.
 
 **9:11** Drop the league adjustment, and Dan Marino's forty-eight touchdown passes and Katie Ledecky's 2016 come
 into the top ten.
 
-**9:24** So this isn't a ranking of the greatest athletes. It's a ranking of how far one result stood from everyone
-else of its time.
+**9:24** So this isn't a ranking of the greatest athletes.
 
-**9:29** Which definition would you choose?
+**9:29** It ranks how far one result stood from everyone else of its time. Which definition would you choose?
 
 ## Sources and photo credits (9:41–10:07)
 

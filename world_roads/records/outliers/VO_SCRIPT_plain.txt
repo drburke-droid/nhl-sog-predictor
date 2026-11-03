@@ -1,5 +1,5 @@
 The 10 Biggest Statistical Outliers in Sports History
-Narration, 59 lines, 1203 words
+Narration, 59 lines, 1087 words
 
 Four thousand nine hundred and forty season-leading performances, across six sports, from 1876 to now.
 
@@ -85,21 +85,21 @@ A student who scores ninety-five is twenty-five points above the class average. 
 
 Now put the same ninety-five in a class that averages ninety. It's one step above: a score of one.
 
-Same number, different class. Every result in this film was graded against the class of its own era: the best of everyone else in the fifteen seasons before and after. The curve is the class average; one step is the usual give-or-take.
+Same number, different class. Every result here is graded against its own era: everyone else in the fifteen seasons either side.
 
-Three rules keep it fair. First, inflation. When every team scores more, each point is worth a little less, like money in an inflated economy. So in team sports, everyone else's numbers are converted into the athlete's own season before they're compared. How much to convert is estimated from the data.
+Three rules keep it fair. First, inflation: when every team scores more, each point is worth less. In team sports, others' numbers are converted to the athlete's season.
 
-Second, you're graded against your rivals, not yourself. An athlete's own other seasons are left out. Otherwise Gretzky would be graded against Gretzky.
+Second, you're graded against rivals, not yourself. Otherwise Gretzky would be graded against Gretzky.
 
-Third, one entry each, with each athlete's highest-scoring season. A few entries are a single jump or a streak rather than a season total.
+Third, one entry each: the athlete's highest-scoring season, or for a few, a single jump or streak.
 
 The score measures distance from the class, not talent, and it isn't a probability.
 
-One more thing: what isn't here. By one measure, the women's shot put and discus records are the most extreme numbers in the whole dataset.
+What isn't here: by one measure, the women's shot put and discus records are the most extreme in the dataset.
 
-No woman has thrown twenty-two metres in the shot put since 1988. The best this decade is twenty-one fourteen. The best discus throw since 2000 is more than three metres short of the 1988 record.
+No woman has thrown twenty-two metres in the shot put since 1988. Since 2000, no discus throw has come within three metres of the record.
 
-But in the 1980s, marks like these were routine at the top: eighteen shot puts of twenty-two metres or more, and fifty discus throws of seventy-two metres or more, by eleven different women.
+But in the 1980s, marks like these were routine: eighteen shot puts of at least twenty-two metres, and fifty discus throws of at least seventy-two, by eleven women.
 
 So against their own era, the record holders' best seasons score about two and a half in the shot put and three in the discus. The top ten starts above five.
 
@@ -107,14 +107,14 @@ They were measured like every other event, and they don't make the list. The out
 
 Random out-of-competition drug testing began in athletics in the late 1980s. This film doesn't single anyone out.
 
-How sure is this order? We tested sixteen versions of the method: comparison windows from seven to twenty seasons, straight or curved trends, with or without the league adjustment. Beamon, Chamberlain, DiMaggio and Gretzky were in the top ten every time. Their order wasn't.
+How sure is this order? Across sixteen versions of the method, Beamon, Chamberlain, DiMaggio and Gretzky made the top ten every time.
 
-And when the comparison seasons are resampled, places five to ten change hands often.
+Their order shifted. And when the comparison seasons are resampled, places five to ten change hands often.
 
-Change the question, and the order changes. Count an athlete's own other seasons, and Gretzky falls to twentieth: his own great seasons become the bar. DiMaggio rises to first.
+Count their own seasons too, and Gretzky falls to twentieth. DiMaggio rises to first.
 
 Drop the league adjustment, and Dan Marino's forty-eight touchdown passes and Katie Ledecky's 2016 come into the top ten.
 
-So this isn't a ranking of the greatest athletes. It's a ranking of how far one result stood from everyone else of its time.
+So this isn't a ranking of the greatest athletes.
 
-Which definition would you choose?
+It ranks how far one result stood from everyone else of its time. Which definition would you choose?
