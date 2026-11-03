@@ -1,0 +1,26 @@
+2797 scored records in 70 categories
+  1  7.80  Bob Beamon                 1968  Men's long jump                    8.9  [16/16]
+  2  7.40  Wilt Chamberlain           1962  Points in a game                   100.0  [16/16]
+  3  5.95  Jan Železný                1996  Men's javelin                      98.48  [16/16]
+  4  4.88  Kobe Bryant                2006  Points in a game                   81.0  [15/16]
+  5  4.86  Katie Ledecky              2016  Women's 800 m freestyle            484.79  [12/16]
+  6  4.69  Yulimar Rojas              2021  Women's triple jump                15.67  [10/16]
+  7  4.54  Brian Oldfield             1975  Men's shot put                     22.86  [2/16]
+  8  4.45  Sergey Bubka               1993  Men's pole vault                   6.15  [12/16]
+  9  4.34  Léon Marchand              2025  Men's 200 m individual medley      112.69  [8/16]  one-sided
+ 10  4.30  Johannes Vetter            2020  Men's javelin                      97.76  [5/16]
+ 11  4.24  Alexander Popov            2000  Men's 50 m freestyle               21.64  [0/16]
+ 12  4.17  Gretchen Walsh             2026  Women's 100 m butterfly            54.33  [10/16]  one-sided
+ 13  4.10  Bob Cousy                  1959  Assists in a game                  28.0  [1/16]  one-sided
+ 14  4.05  Wu Yanyan                  1997  Women's 200 m individual medley    129.72  [4/16]  one-sided
+ 15  4.04  Armand Duplantis           2025  Men's pole vault                   6.3  [8/16]  one-sided
+ 16  4.03  Summer McIntosh            2025  Women's 400 m individual medley    263.65  [0/16]  one-sided
+ 17  4.02  Usain Bolt                 2009  Men's 100 metres                   9.58  [6/16]
+ 18  3.90  Florence Griffith Joyner   1988  Women's 100 metres                 10.61  [2/16]
+ 19  3.83  Yaroslava Mahuchikh        2024  Women's high jump                  2.1  [5/16]  one-sided
+ 20  3.77  Renaldo Nehemiah           1981  Men's 110 m hurdles                12.93  [0/16]
+ 21  3.71  Inge de Bruijn             2000  Women's 50 m freestyle             24.13  [0/16]
+ 22  3.69  Kate Douglass              2026  Women's 50 m freestyle             23.19  [0/16]  one-sided
+ 23  3.61  Jani Sievinen              1994  Men's 200 m individual medley      118.16  [0/16]  one-sided
+ 24  3.61  Renaud Lavillenie          2014  Men's pole vault                   6.16  [0/16]
+ 25  3.57  Anita Wlodarczyk           2016  Women's hammer                     82.98  [2/16]

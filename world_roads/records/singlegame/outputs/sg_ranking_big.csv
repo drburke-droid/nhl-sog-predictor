@@ -1,0 +1,101 @@
+rank,athlete,sport,category,title,season,value,z,date,detail,one_sided_window
+1,Bob Beamon,Athletics,ath_M_LJ,Men's long jump,1968,8.9,7.802,,,False
+2,Wilt Chamberlain,NBA,sg_nba_pts,Points in a game,1962,100.0,7.4,1962-03-02,Warriors vs Knicks,False
+3,Jan Železný,Athletics,ath_M_JT,Men's javelin,1996,98.48,5.948,,,False
+4,Kobe Bryant,NBA,sg_nba_pts,Points in a game,2006,81.0,4.879,2006-01-22,Lakers vs Raptors,False
+5,Katie Ledecky,Swimming,swim_W_800_fr,Women's 800 m freestyle,2016,484.79,4.857,,,False
+6,Yulimar Rojas,Athletics,ath_W_TJ,Women's triple jump,2021,15.67,4.692,,,False
+7,Brian Oldfield,Athletics,ath_M_SP,Men's shot put,1975,22.86,4.543,,,False
+8,Sergey Bubka,Athletics,ath_M_PV,Men's pole vault,1993,6.15,4.446,,,False
+9,Léon Marchand,Swimming,swim_M_200_me,Men's 200 m individual medley,2025,112.69,4.338,,,True
+10,Johannes Vetter,Athletics,ath_M_JT,Men's javelin,2020,97.76,4.295,,,False
+11,Alexander Popov,Swimming,swim_M_50_fr,Men's 50 m freestyle,2000,21.64,4.236,,,False
+12,Gretchen Walsh,Swimming,swim_W_100_bu,Women's 100 m butterfly,2026,54.33,4.166,,,True
+13,Bob Cousy,NBA,sg_nba_ast,Assists in a game,1959,28.0,4.1,1959-02-27,Celtics vs Lakers,True
+14,Wu Yanyan,Swimming,swim_W_200_me,Women's 200 m individual medley,1997,129.72,4.049,,,True
+15,Armand Duplantis,Athletics,ath_M_PV,Men's pole vault,2025,6.3,4.039,,,True
+16,Summer McIntosh,Swimming,swim_W_400_me,Women's 400 m individual medley,2025,263.65,4.031,,,True
+17,Usain Bolt,Athletics,ath_M_100m,Men's 100 metres,2009,9.58,4.02,,,False
+18,Florence Griffith Joyner,Athletics,ath_W_100m,Women's 100 metres,1988,10.61,3.903,,,False
+19,Yaroslava Mahuchikh,Athletics,ath_W_HJ,Women's high jump,2024,2.1,3.83,,,True
+20,Renaldo Nehemiah,Athletics,ath_M_110mH,Men's 110 m hurdles,1981,12.93,3.772,,,False
+21,Inge de Bruijn,Swimming,swim_W_50_fr,Women's 50 m freestyle,2000,24.13,3.711,,,False
+22,Kate Douglass,Swimming,swim_W_50_fr,Women's 50 m freestyle,2026,23.19,3.69,,,True
+23,Jani Sievinen,Swimming,swim_M_200_me,Men's 200 m individual medley,1994,118.16,3.608,,,True
+24,Renaud Lavillenie,Athletics,ath_M_PV,Men's pole vault,2014,6.16,3.607,,,False
+25,Anita Wlodarczyk,Athletics,ath_W_HT,Women's hammer,2016,82.98,3.572,,,False
+26,Inessa Kravets,Athletics,ath_W_TJ,Women's triple jump,1995,15.5,3.565,,,False
+27,Michael Johnson,Athletics,ath_M_200m,Men's 200 metres,1996,19.32,3.517,,,False
+28,Adam Peaty,Swimming,swim_M_100_br,Men's 100 m breaststroke,2016,57.13,3.396,,,False
+29,Bob Feller,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",1938,18.0,3.342,1938-10-02,CLE193810021,False
+30,Max Scherzer,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",2016,20.0,3.288,2016-05-11,WAS201605110,False
+31,Kevin Porter,NBA,sg_nba_ast,Assists in a game,1978,29.0,3.252,1978-02-24,Nets vs Rockets,False
+32,Lee Evans,Athletics,ath_M_400m,Men's 400 metres,1968,43.86,3.246,,,True
+33,Gabriele Reinsch,Athletics,ath_W_DT,Women's discus,1988,76.8,3.24,,,False
+34,Yelena Isinbayeva,Athletics,ath_W_PV,Women's pole vault,2005,5.01,3.182,,,False
+35,Katinka Hosszú,Swimming,swim_W_200_me,Women's 200 m individual medley,2015,126.12,3.179,,,False
+36,Jonathan Edwards,Athletics,ath_M_TJ,Men's triple jump,1995,18.29,3.167,,,False
+37,David Rudisha,Athletics,ath_M_800m,Men's 800 metres,2012,100.91,3.166,,,False
+38,Sebastian Coe,Athletics,ath_M_800m,Men's 800 metres,1981,101.72999999999999,3.162,,,False
+39,Stefka Kostadinova,Athletics,ath_W_HJ,Women's high jump,1987,2.09,3.135,,,False
+40,Yana Klochkova,Swimming,swim_W_400_me,Women's 400 m individual medley,2000,273.59000000000003,3.117,,,False
+41,João Carlos de Oliveira,Athletics,ath_M_TJ,Men's triple jump,1975,17.89,3.114,,,True
+42,Tom Cheney,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",1962,21.0,3.099,1962-09-12,BAL196209120,False
+43,David Thompson,NBA,sg_nba_pts,Points in a game,1978,73.0,3.092,1978-04-09,Nuggets vs Pistons,False
+44,Calvin Johnson,NFL,sg_nfl_rec_yds,Receiving yards in a game,2013,329.0,3.086,2013-w08,DET vs DAL,False
+45,Valerie Adams,Athletics,ath_W_SP,Women's shot put,2011,21.24,3.079,,,False
+46,Grant Hackett,Swimming,swim_M_1500_fr,Men's 1500 m freestyle,2001,874.56,3.059,,,False
+47,Yan Ziyi,Athletics,ath_W_JT,Women's javelin,2026,71.74,3.025,,,True
+48,Genzebe Dibaba,Athletics,ath_W_1500m,Women's 1500 metres,2015,230.07,3.021,,,False
+49,Sandra Elkasevic,Athletics,ath_W_DT,Women's discus,2014,71.08,3.018,,,False
+50,Asbel Kiprop,Athletics,ath_M_1500m,Men's 1500 metres,2015,206.69,2.972,,,False
+51,Jim Hines,Athletics,ath_M_100m,Men's 100 metres,1968,9.95,2.965,,,True
+52,Jay Silvester,Athletics,ath_M_DT,Men's discus,1971,70.38,2.961,,,True
+53,Jürgen Schult,Athletics,ath_M_DT,Men's discus,1986,74.08,2.958,,,False
+54,Caeleb Dressel,Swimming,swim_M_100_bu,Men's 100 m butterfly,2019,49.5,2.951,,,False
+55,Wilson Kipketer,Athletics,ath_M_800m,Men's 800 metres,1997,101.11,2.906,,,False
+56,Pamela Jelimo,Athletics,ath_W_800m,Women's 800 metres,2008,114.00999999999999,2.891,,,False
+57,Dazzy Vance,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",1925,17.0,2.881,1925-07-20,BRO192507200,False
+58,Brooke Bennett,Swimming,swim_W_800_fr,Women's 800 m freestyle,2000,499.67,2.874,,,False
+59,Javier Sotomayor,Athletics,ath_M_HJ,Men's high jump,1993,2.45,2.817,,,False
+60,Sun Yang,Swimming,swim_M_1500_fr,Men's 1500 m freestyle,2012,871.02,2.78,,,False
+61,Ryan Crouser,Athletics,ath_M_SP,Men's shot put,2021,23.37,2.773,,,False
+62,Kevin Young,Athletics,ath_M_400mH,Men's 400 m hurdles,1992,46.78,2.759,,,False
+63,Ian Thorpe,Swimming,swim_M_200_fr,Men's 200 m freestyle,2001,104.06,2.757,,,False
+64,Qu Yunxia,Athletics,ath_W_1500m,Women's 1500 metres,1993,230.46,2.714,,,False
+65,Tatyana Kotova,Athletics,ath_W_LJ,Women's long jump,2002,7.42,2.696,,,False
+66,Kevin Love,NBA,sg_nba_reb,Rebounds in a game,2011,31.0,2.653,2010-11-12,Timberwolves vs Knicks,False
+67,Marita Koch,Athletics,ath_W_400m,Women's 400 metres,1985,47.6,2.632,,,False
+68,Allison Schmitt,Swimming,swim_W_200_fr,Women's 200 m freestyle,2012,113.61,2.626,,,False
+69,Edwin Moses,Athletics,ath_M_400mH,Men's 400 m hurdles,1977,47.45,2.611,,,False
+70,Jiang Bo,Athletics,ath_W_1500m,Women's 1500 metres,1997,230.98,2.599,,,False
+71,Yuriy Sedykh,Athletics,ath_M_HT,Men's hammer,1986,86.74,2.585,,,False
+72,Faina Melnik,Athletics,ath_W_DT,Women's discus,1973,69.48,2.584,,,True
+73,Christian Taylor,Athletics,ath_M_TJ,Men's triple jump,2015,18.21,2.583,,,False
+74,Jarmila Kratochvílová,Athletics,ath_W_800m,Women's 800 metres,1983,113.28,2.566,,,False
+75,Marina Stepanova,Athletics,ath_W_400mH,Women's 400 m hurdles,1986,52.94,2.562,,,False
+76,Federica Pellegrini,Swimming,swim_W_200_fr,Women's 200 m freestyle,2009,112.97999999999999,2.55,,,False
+77,Nadezhda Olizarenko,Athletics,ath_W_800m,Women's 800 metres,1980,113.43,2.531,,,False
+78,Mutaz Essa Barshim,Athletics,ath_M_HJ,Men's high jump,2014,2.43,2.518,,,False
+79,Sydney McLaughlin-Levrone,Athletics,ath_W_400mH,Women's 400 m hurdles,2024,50.37,2.514,,,True
+80,Peter Snell,Athletics,ath_M_800m,Men's 800 metres,1962,104.3,2.503,,,True
+81,Moses Malone,NBA,sg_nba_reb,Rebounds in a game,1979,37.0,2.494,1979-02-09,Rockets vs Jazz,False
+82,Le Jingyi,Swimming,swim_W_100_fr,Women's 100 m freestyle,1994,54.01,2.492,,,True
+83,Caster Semenya,Athletics,ath_W_800m,Women's 800 metres,2018,114.25,2.471,,,False
+84,Hicham El Guerrouj,Athletics,ath_M_1500m,Men's 1500 metres,1998,206.0,2.468,,,False
+85,Adrian Peterson,NFL,sg_nfl_rush_yds,Rushing yards in a game,2007,296.0,2.457,2007-w09,MIN vs LAC,False
+86,Marion Jones,Athletics,ath_W_100m,Women's 100 metres,1998,10.65,2.447,,,False
+87,Jim Ryun,Athletics,ath_M_1500m,Men's 1500 metres,1967,213.1,2.428,,,False
+88,Tatyana Kazankina,Athletics,ath_W_1500m,Women's 1500 metres,1980,232.47,2.417,,,False
+89,Penny Heyns,Swimming,swim_W_100_br,Women's 100 m breaststroke,1996,67.02,2.417,,,True
+90,Natalya Lisovskaya,Athletics,ath_W_SP,Women's shot put,1988,22.55,2.398,,,False
+91,Ian Crocker,Swimming,swim_M_100_bu,Men's 100 m butterfly,2005,50.4,2.397,,,False
+92,Virgilijus Alekna,Athletics,ath_M_DT,Men's discus,2000,73.88,2.388,,,False
+93,He Cihong,Swimming,swim_W_100_ba,Women's 100 m backstroke,1994,60.16,2.384,,,True
+94,David Robinson,NBA,sg_nba_pts,Points in a game,1994,71.0,2.373,1994-04-24,Spurs vs Clippers,False
+95,Aries Merritt,Athletics,ath_M_110mH,Men's 110 m hurdles,2012,12.8,2.368,,,False
+96,Randy Barnes,Athletics,ath_M_SP,Men's shot put,1990,23.12,2.354,,,False
+97,Mihaela Melinte,Athletics,ath_W_HT,Women's hammer,1999,76.07,2.349,,,True
+98,Warren Spahn,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",1952,18.0,2.325,1952-06-14,BSN195206140,False
+99,Michael Phelps,Swimming,swim_M_400_me,Men's 400 m individual medley,2007,246.22,2.314,,,False
+100,David Popovici,Swimming,swim_M_200_fr,Men's 200 m freestyle,2022,102.97,2.302,,,True

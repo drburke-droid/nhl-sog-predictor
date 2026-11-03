@@ -1,0 +1,26 @@
+5878 scored records in 70 categories
+  1  7.80  Bob Beamon                 1968  Men's long jump                    8.9  [16/16]
+  2  7.40  Wilt Chamberlain           1962  Points in a game                   100.0  [16/16]
+  3  7.29  Johnny Burnett             1932  Hits in a game                     9.0  [16/16]
+  4  6.28  Mike Schmidt               1976  Home runs in a game                4.0  [11/16]
+  5  5.95  Jan Železný                1996  Men's javelin                      98.48  [14/16]
+  6  5.28  Mark Whiten                1993  Runs batted in, one game           12.0  [9/16]
+  7  4.96  Jim Bottomley              1924  Runs batted in, one game           12.0  [12/16]
+  8  4.88  Kobe Bryant                2006  Points in a game                   81.0  [15/16]
+  9  4.86  Katie Ledecky              2016  Women's 800 m freestyle            484.79  [11/16]
+ 10  4.69  Yulimar Rojas              2021  Women's triple jump                15.67  [7/16]
+ 11  4.54  Brian Oldfield             1975  Men's shot put                     22.86  [1/16]
+ 12  4.46  Sam Gagner                 2012  Points in a game                   8.0  [0/16]
+ 13  4.45  Sergey Bubka               1993  Men's pole vault                   6.15  [2/16]
+ 14  4.34  Léon Marchand              2025  Men's 200 m individual medley      112.69  [1/16]  one-sided
+ 15  4.30  Johannes Vetter            2020  Men's javelin                      97.76  [0/16]
+ 16  4.28  Darryl Sittler             1976  Points in a game                   10.0  [0/16]
+ 17  4.24  Alexander Popov            2000  Men's 50 m freestyle               21.64  [0/16]
+ 18  4.17  Gretchen Walsh             2026  Women's 100 m butterfly            54.33  [8/16]  one-sided
+ 19  4.16  Bert Olmstead              1954  Points in a game                   8.0  [0/16]
+ 20  4.10  Bob Cousy                  1959  Assists in a game                  28.0  [0/16]  one-sided
+ 21  4.05  Wu Yanyan                  1997  Women's 200 m individual medley    129.72  [0/16]  one-sided
+ 22  4.04  Armand Duplantis           2025  Men's pole vault                   6.3  [3/16]  one-sided
+ 23  4.03  Summer McIntosh            2025  Women's 400 m individual medley    263.65  [0/16]  one-sided
+ 24  4.02  Usain Bolt                 2009  Men's 100 metres                   9.58  [1/16]
+ 25  3.90  Florence Griffith Joyner   1988  Women's 100 metres                 10.61  [0/16]
