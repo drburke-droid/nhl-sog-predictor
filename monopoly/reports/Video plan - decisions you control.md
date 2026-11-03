@@ -231,15 +231,25 @@ of spreading is worth about 10.
 
 "33 wins in 100 instead of 25" is accurate, but it sounds small, because both numbers lose most games. What
 people care about at game night is beating the people across the table, and bragging rights over a season.
-Both framings below use the same 32.6 vs 22.4 per-game figures and are exact.
+All three framings below come from the same results and are exact.
 
-**1. Per game, against the people you're playing (the headline):**
+**1. The price tag, in Monopoly's own currency:**
+> "What's the playbook worth? We paid a typical player to keep up. To win as often as the playbook player, a
+> typical player needs an extra **$300** before the first roll, while everyone else starts with the usual
+> $1,500. Without auctions it's about **$200**: a free trip past Go, every game, for knowing what to do."
+
+(Typical player given +$275: 32.0 wins in 100; +$300: 32.7; playbook player with no extra cash: 32.6. Match at
+about $298; 200,000 games per step. Without auctions: +$200 30.0, +$250 31.0; playbook 30.2; match at about
+$212. Style frame 08.) A flip side that also works: "Playing the typical way is like handing the bank $300
+before you've rolled."
+
+**2. Per game, against the people you're playing (the headline):**
 > "Same dice. Same board. Make seven different decisions and you'll win **three games for every two** anyone
 > else at the table wins."
 
 (32.6 vs 22.3 / 22.5 / 22.5 wins per 100: 1.45 to 1.)
 
-**2. Over a season of game nights (the emotional payoff; small edges compound):**
+**3. Over a season of game nights (the emotional payoff; small edges compound):**
 > "Play every week for a year, and you finish as the family champion **two years out of three**. Each of the
 > people you're playing? About **one year in eleven**."
 
@@ -247,15 +257,15 @@ Both framings below use the same 32.6 vs 22.4 per-game figures and are exact.
 spot. Over 10 game nights: 35% vs about 13% each. A typical player at an all-typical table: 18% over 10 nights,
 23% over a year. Chart: `final_champion.png`.)
 
-**3. Plain-language backups, used once each:**
+**Plain-language backups, used once each:**
 - "One game in three instead of one in four."
 - "The playbook is worth more than twice the edge of rolling first." (Going first: +3.3 wins per 100;
   playbook: +7.6.)
-- Optional: "It's worth about $300 of extra cash before the first roll." (A typical player handed $250 extra
-  wins 31.8 in 100, $500 extra 37.7. The playbook's 32.6 sits at about $285. True, but it undersells it, so
-  keep it out of the hook.)
 
 **How to show it:**
+- **The price tag** (style frame 08): four engraved banknotes of our own design ($100, $100, $50, $50) slid
+  across the table to a typical player; "$300 before the first roll"; the two ledger lines (typical + $300:
+  32.7; playbook + nothing: 32.6); stamp: COSTS NOTHING.
 - **The game-night ledger** (style frame 07): tally marks after 100 game nights. YOU 33 in red; MOM 22, DAD 22,
   JORDAN 23 in ink. Stamp: FAMILY CHAMPION.
 - **The trophy shelf:** run 100 simulated "years of Sundays" and put a small trophy on the shelf of whoever
@@ -279,7 +289,7 @@ Keep "32.6 vs 22.4 per 100 games" on screen as the footnote, so the claim can be
 | 6:00-10:00 | 4. Building (longest) | Spend vs save (both panels: wins fall, risk rises). Mortgage to build. How far to build. Two sets: which first (the matrix; orange + green 84 vs 63). Max one set vs one house everywhere (0 of 28). Owe money: mortgage first, sell houses last |
 | 10:00-11:10 | 5. Jail | Out early, in once anyone has houses; less likely to go broke first |
 | 11:10-11:30 | Aside | The computer-designed player, in plain English (above) |
-| 11:30-12:30 | The playbook player | The game-night ledger (frame 07): 33 tallies vs 22, 22, 23, "three for every two". The year-long race, then the trophy shelf: two years in three vs one in eleven. The "what each decision is worth" ranking. One line on how it changes without auctions |
+| 11:30-12:30 | The playbook player | The price tag first (frame 08): "we paid a typical player to keep up", $300 slid across the table. Then the game-night ledger (frame 07): 33 tallies vs 22, 22, 23, "three for every two". The year-long race, then the trophy shelf: two years in three vs one in eleven. The "what each decision is worth" ranking. Without auctions: $200, a free trip past Go |
 | 12:30-13:00 | End card | The seven-line playbook (below) |
 
 ## End card: the playbook
@@ -300,6 +310,7 @@ Keep "32.6 vs 22.4 per 100 games" on screen as the footnote, so the claim can be
 | A | Magie's 1904 patent drawing with a red stamp across it: "WHAT YOU CONTROL" | You Can't Control the Dice in Monopoly. Here's What You Can (Simulated) |
 | B | Frame 06: our board's corner with the brass pawn, "SAVE IT" crossed out, "SPEND IT" stamped, "3 wins for every 2" | Save Cash or Build Hotels? Every Monopoly Decision, Tested |
 | D | Frame 07 cropped: tally marks YOU vs MOM, stamped FAMILY CHAMPION | How to Be Your Family's Monopoly Champion (Same Dice, Better Decisions) |
+| F | Frame 08 cropped: the fanned banknotes and a big "+$300" | This Monopoly Strategy Is Worth $300 Before You Roll |
 | E | Same as D | Win 3 Monopoly Games for Every 2 Your Family Wins |
 | C | The four railway tickets fanned out, stamped "ONLY IF YOU TRADE" | Should You Go for All Four Railroads? Monopoly Decisions, Settled |
 
@@ -309,6 +320,7 @@ endorsed by Hasbro".
 ## Shorts (one decision each)
 
 - "How to be the family Monopoly champion." Same dice; seven decisions; champion two years in three.
+- "What's good Monopoly play worth in cash?" $300 before the first roll ($200 without auctions: a free trip past Go).
 
 - "Keep cash for emergencies?" Keeping $300 back when building: 16.3 wins in 100 instead of 25.1, and you're
   *more* likely to go broke first.
@@ -349,6 +361,7 @@ set if they help you finish yours, and when the board locks up, people start dea
 🏠 Two monopolies? Cheaper houses first. Orange + green: 84 vs 63.
 🚂 Railroads: only worth it if you trade for the last one.
 🔒 Jail: get out early; stay in once anyone has houses.
+💵 Making these decisions well is worth about $300 of extra starting cash (about $200 without auctions).
 📋 Do all of it and you win about 3 games for every 2 that anyone else at the table wins. Play weekly for a year and
    you finish as family champion two years in three. Same dice.
 
@@ -376,6 +389,8 @@ realistic-play testing behind the project, including the evolution runs, totals 
 - Headline: "three wins for every two of theirs" per game, and "family champion two years in three" over a
   year of weekly game nights (both with auctions). "33 vs 25" stays as the on-screen footnote. The no-auction
   figure (30.2, or 1.3 to 1) is mentioned once in the playbook section.
+- The price tag is a featured beat, opening the playbook section: "$300 before the first roll" ($200 without
+  auctions).
 
 Data: `sim/results/summary.md` ("Final numbers for the video" and "Final: two complete sets"). Charts:
 `sim/results/charts/final_*.png`.

@@ -469,6 +469,11 @@ def exp_framing(n_games=100000):
     for b_ in (250, 500, 750, 1000, 1250, 1500, 2000, 3000):
         run('framing', 'bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, n_games, tv=tv, **END_WORLDS['with_auctions'])
     run('framing', 'playbook_with_bonus_minus_1000', [PLAYBOOK + ';bonus=-1000'] + [typ] * 3, n_games, tv=tv, **END_WORLDS['with_auctions'])
+    # finer steps around the match, 200,000 games each, with and without auctions
+    for b_ in (225, 250, 275, 300, 325, 350):
+        run('framing', 'fine_bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['with_auctions'])
+    for b_ in (100, 150, 200, 250, 300):
+        run('framing', 'noauction_bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['no_auctions'])
 
 
 EXPERIMENTS = {'framing': exp_framing, 'endgame': exp_endgame, 'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,

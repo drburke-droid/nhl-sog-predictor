@@ -510,10 +510,56 @@ def frame_game_nights():
     return img
 
 
+WORDS = {100: 'ONE HUNDRED DOLLARS', 50: 'FIFTY DOLLARS', 20: 'TWENTY DOLLARS'}
+
+
+def banknote(value, ink, seed):
+    """An engraved banknote of our own design (not Monopoly money): guilloche border, rosette, serials."""
+    w, h = 560, 250
+    note = paper(w, h, base=(233, 226, 205), seed=seed)
+    guilloche_frame(note, inset=8, band=26, color=ink, alpha=170)
+    layer = ink_layer(note.size); d = ImageDraw.Draw(layer)
+    cx, cy = w / 2, h / 2 + 6
+    for k in range(18):  # central rosette
+        pts = [(cx + (58 + 10 * math.cos(9 * t + k * 0.35)) * math.cos(t), cy + (58 + 10 * math.cos(9 * t + k * 0.35)) * math.sin(t))
+               for t in np.linspace(0, 2 * math.pi, 300)]
+        d.line(pts, fill=ink + (120,), width=1)
+    note.alpha_composite(layer)
+    text(note, (cx, cy), str(value), font('fat', 64), fill=ink, anchor='mm')
+    text(note, (cx, 52), 'THE ATLANTIC CITY TRUST COMPANY', font('scb', 19), fill=ink, anchor='mm')
+    text(note, (cx, h - 50), WORDS[value], font('sc', 20), fill=ink, anchor='mm')
+    for x_, y_ in ((62, 70), (w - 62, 70), (62, h - 62), (w - 62, h - 62)):
+        text(note, (x_, y_), str(value), font('serifb', 30), fill=ink, anchor='mm')
+    text(note, (150, cy), 'No. A%06d' % (seed * 7717 % 999999), font('type', 16), fill=STAMP, anchor='mm')
+    text(note, (w - 150, cy), 'SERIES 1935', font('type', 16), fill=ink, anchor='mm')
+    return note
+
+
+def frame_price():
+    img = paper(seed=12)
+    notes = [(100, (40, 92, 70), -12, (70, 120)), (100, (40, 92, 70), -5, (150, 290)),
+             (50, (86, 60, 40), 3, (110, 460)), (50, (86, 60, 40), 9, (190, 630))]
+    for k, (v, ink, ang, xy) in enumerate(notes):
+        n = banknote(v, ink, 20 + k).rotate(ang, expand=True, resample=Image.BICUBIC)
+        paste_shadowed(img, n, xy)
+    text(img, (1010, 150), 'WHAT THE PLAYBOOK IS WORTH', font('sc', 36), fill=SEPIA)
+    text(img, (1000, 200), '$300', font('deco', 230), fill=INK)
+    text(img, (1010, 470), 'before the first roll.', font('serif', 54))
+    text(img, (1010, 580), 'To win as often as the playbook player, a typical\nplayer needs an extra $300 when everyone else\nstarts with the usual $1,500.',
+         font('serif', 34), spacing=12)
+    tf = font('type', 28)
+    text(img, (1010, 770), 'Typical player, given $300 extra .... 32.7', tf)
+    text(img, (1010, 815), 'Playbook player, given nothing ...... 32.6', tf, fill=STAMP)
+    text(img, (1010, 858), 'wins in a hundred four-player games', font('type', 20), fill=SEPIA)
+    text(img, (1010, 930), 'Without auctions: about $200, a free trip past Go.', font('hand', 30), fill=SEPIA)
+    stamp(img, (700, 960), ['COSTS', 'NOTHING'], angle=-8, size=52)
+    return img
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     for name, fn in (('01_title', frame_title), ('02_board', frame_board), ('03_ledger_spend_or_save', frame_ledger),
                      ('04_railroads_telegram', frame_railroads), ('05_end_card', frame_endcard), ('06_thumbnail', thumbnail),
-                     ('07_game_night_ledger', frame_game_nights)):
+                     ('07_game_night_ledger', frame_game_nights), ('08_worth_300_dollars', frame_price)):
         fn().convert('RGB').save(os.path.join(OUT, name + '.png'))
         print('wrote', name)

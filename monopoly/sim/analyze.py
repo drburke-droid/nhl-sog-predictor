@@ -445,7 +445,23 @@ def main():
             md.append('| %d | %.1f%% | %.1f%% |' % (g_, pct(a_), pct(b_)))
         if bonus:
             md += ['', 'Dollar equivalent: a typical player given extra starting cash (vs three typical players) wins ' +
-                   ', '.join('+$%d: %.1f' % kv for kv in sorted(bonus.items())) + ' per 100 games.']
+                   ', '.join('+$%d: %.1f' % kv for kv in sorted(bonus.items())) + ' per 100 games (100,000 games each).']
+        def match(prefix, target):
+            pts = sorted((int(k.split('_')[-1]), d['players'][0]['wins'] / d['games']) for k, d in (fr or {}).items() if k.startswith(prefix))
+            for (b0, w0), (b1, w1) in zip(pts, pts[1:]):
+                if w0 <= target <= w1:
+                    return b0 + (target - w0) / (w1 - w0) * (b1 - b0), pts
+            return None, pts
+        pb_na = eg.get('no_auctions__playbook')
+        m1, pts1 = match('fine_bonus_', pb[0])
+        m2, pts2 = (match('noauction_bonus_', pb_na['players'][0]['wins'] / pb_na['games']) if pb_na else (None, []))
+        if m1:
+            summary['framing']['dollar_equivalent'] = {'with_auctions': m1, 'no_auctions': m2}
+            md += ['', 'Finer steps (200,000 games each). With auctions: ' + ', '.join('+$%d: %.2f' % (b_, pct(w_)) for b_, w_ in pts1) +
+                   '; the playbook player (%.2f) matches a typical player with about **$%.0f** extra.' % (pct(pb[0]), m1)]
+            if m2:
+                md.append('Without auctions: ' + ', '.join('+$%d: %.2f' % (b_, pct(w_)) for b_, w_ in pts2) +
+                          '; the playbook player (%.2f) matches about **$%.0f** extra.' % (pct(pb_na['players'][0]['wins'] / pb_na['games']), m2))
         md.append('')
     egp = load('endgame_pairs')
     if egp:
