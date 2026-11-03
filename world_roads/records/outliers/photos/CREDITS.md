@@ -8,7 +8,7 @@ Non-free images on Wikipedia were skipped.
 |---|---|---|---|---|
 | Ichiro Suzuki | Jeffrey Hayes | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) | 22 September 2011, 13:43 | [Ichiro Suzuki (51007034081) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Ichiro_Suzuki_%2851007034081%29_%28cropped%29.jpg) |
 | Babe Ruth | Irwin, La Broad, & Pudlin. | Public domain | 23 July 1920, registered as pa | [Babe Ruth2.jpg](https://commons.wikimedia.org/wiki/File:Babe_Ruth2.jpg) |
-| Dennis Rodman | GabboT | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) | 20 May 2017, 13:48 | [Dennis Rodman 02 (34649289162) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Dennis_Rodman_02_%2834649289162%29_%28cropped%29.jpg) |
+| Dennis Rodman | Uncredited (Jackson Citizen Patriot) | Public domain | 3 February 1989 | [Dennis Rodman-Jackson Citizen Patriot-3 February 1989.jpg](https://commons.wikimedia.org/wiki/File:Dennis_Rodman-Jackson_Citizen_Patriot-3_February_1989.jpg) |
 | Stephen Curry | Clément Bardot | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | 3 August 2024, 16:48:43 | [Stephen Curry, Olympic Games 2024 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Stephen_Curry%2C_Olympic_Games_2024_%28cropped%29.jpg) |
 | Dazzy Vance | Unknown author | Public domain | 1922 | [Dazzy Vance 1922.jpeg](https://commons.wikimedia.org/wiki/File:Dazzy_Vance_1922.jpeg) |
 | Jan Železný | Chell Hill | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | 11 June 2015, 20:10:42 | [Jan Zelenzny.JPG](https://commons.wikimedia.org/wiki/File:Jan_Zelenzny.JPG) |
@@ -26,4 +26,6 @@ Non-free images on Wikipedia were skipped.
 - **Two of the public-domain photos are wire-service pictures:** DiMaggio (AP, 1941) and Chamberlain (AP,
   1960). Commons hosts them as public domain in the United States, presumably for lack of a copyright notice
   or renewal. That status is US-specific; worth knowing if the video is distributed with a rights check.
+- **The Rodman photo** (1989) is an uncredited newspaper photo from the Jackson Citizen Patriot, public domain on
+  Commons.
 - **The Beamon photo** (1968, CC0) is from the Dutch National Archives (Nationaal Archief, ANEFO collection).

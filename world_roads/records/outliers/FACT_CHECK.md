@@ -141,9 +141,8 @@ at #75.
 
 ## Photographs
 
-Eleven portraits, all from Wikimedia Commons under free licences (public domain, CC0, CC BY 2.0, CC BY-SA 2.0 and
-4.0). Authors, licences and links are in `photos/CREDITS.md`. Each card shows a short credit under the photo, and
+Eleven portraits, all from Wikimedia Commons under free licences (public domain, CC0, CC BY 2.0, CC BY-SA 4.0). Authors, licences and links are in `photos/CREDITS.md`. Each card shows a short credit under the photo, and
 the closing page lists them all. Era photos: Ruth (1920), Vance (1922), DiMaggio (1941), Chamberlain (1960), Beamon
-(1968, mid-jump at Mexico City), Ichiro (2011). Recent photos: Rodman, Curry, Železný, Gretzky, Ledecky. Commons has
-free era photos of Rodman (1989) and Gretzky (1980s, with President Reagan); they weren't fetched because Wikimedia
-rate-limited the requests (`python photos.py alternates` resumes politely).
+(1968, mid-jump at Mexico City), Rodman (1989, Pistons), Ichiro (2011). Recent photos: Curry, Železný, Gretzky, Ledecky. Commons has a free
+1980s photo of Gretzky (with President Reagan); Wikimedia refused that download under its robot policy, so it was
+not retried.

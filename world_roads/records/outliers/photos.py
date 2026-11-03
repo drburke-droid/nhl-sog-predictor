@@ -39,7 +39,7 @@ def get(url):
     cp = os.path.join(cache, hashlib.sha1(url.encode()).hexdigest())
     if os.path.exists(cp):
         return open(cp, "rb").read()
-    for attempt in range(4):
+    for attempt in range(int(os.environ.get("PHOTO_ATTEMPTS", "4"))):
         wait = 5.0 - (time.time() - _last[0])
         if wait > 0:
             time.sleep(wait)
@@ -52,7 +52,7 @@ def get(url):
             return data
         except urllib.error.HTTPError as e:
             _last[0] = time.time()
-            if e.code != 429 or attempt == 3:
+            if e.code != 429 or attempt >= int(os.environ.get("PHOTO_ATTEMPTS", "4")) - 1:
                 raise
             ra = e.headers.get("Retry-After")
             delay = float(ra) if ra and ra.isdigit() else 30.0 * (attempt + 1)
@@ -116,9 +116,18 @@ ALTERNATES = {  # era photos considered alongside the infobox image (Commons cat
     "beamon_a": "Bob Beamon 1968.jpg",
     "rodman_a": "Dennis Rodman-Jackson Citizen Patriot-3 February 1989.jpg",
     "gretzky_c": "President Ronald Reagan Greeting Wayne Gretzky at a Luncheon for National Hockey League All Stars - DPLA - 4615e44f8e6f1fff3d3b2a7f12d38637.jpg",
-    "gretzky_a": "GretzkyEDM.png", "gretzky_b": "Wgretz.jpg",
-    "zelezny_a": "Jan Zelezny.jpg",
 }
+
+
+def standard_thumb(original, width=960):
+    """a thumbnail URL in one of Wikimedia's standard sizes (https://w.wiki/GHai), as its robot policy asks"""
+    u = original.split("?")[0]
+    m_ = re.match(r"(https://upload\.wikimedia\.org/wikipedia/commons)/(\w/\w\w)/(.+)$", u)
+    if not m_:
+        return original
+    name = m_.group(3)
+    suffix = ".png" if name.lower().endswith((".svg", ".tif", ".tiff")) else ""
+    return f"{m_.group(1)}/thumb/{m_.group(2)}/{name}/{width}px-{name}{suffix}"
 
 
 def fetch_alternates():
@@ -129,7 +138,7 @@ def fetch_alternates():
             continue
         m = commons_meta(fname)
         m["thumbs"] = [("https:" + t) if t.startswith("//") else t for t in m["thumbs"]]
-        url = next((t for t in m["thumbs"] if re.search(r"/(9\d\d|1[0-2]\d\d)px-", t)), None) or m["original"]
+        url = standard_thumb(m["original"])
         ext = os.path.splitext(urllib.parse.urlparse(url).path)[1].lower() or ".jpg"
         path = os.path.join(RAW, key + ext)
         data = get(url)
@@ -143,7 +152,7 @@ def fetch_alternates():
 # which file to use for each athlete, and the 4:5 crop as fractions of the image (left, top, width)
 CHOICE = {
     "ichiro": ("ichiro", (0.10, 0.00, 0.66)), "ruth": ("ruth", (0.22, 0.03, 0.46)),
-    "rodman": ("rodman", (0.06, 0.00, 0.86)), "curry": ("curry", (0.10, 0.00, 0.80)),
+    "rodman": ("rodman_a", (0.08, 0.02, 0.84)), "curry": ("curry", (0.10, 0.00, 0.80)),
     "vance": ("vance", (0.00, 0.00, 1.00)), "zelezny": ("zelezny", (0.16, 0.00, 0.84)),
     "gretzky": ("gretzky", (0.00, 0.04, 1.00)), "dimaggio": ("dimaggio", (0.06, 0.00, 0.88)),
     "chamberlain": ("chamberlain", (0.06, 0.00, 0.88)), "beamon": ("beamon_a", (0.13, 0.10, 0.64)),

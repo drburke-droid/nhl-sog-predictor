@@ -833,7 +833,7 @@ def _credits(self, fig, t):
         text(fig, x + 96, y + 62, f"{cr['author']} · {lic}", size=20, color=INK2, alpha=a)
         text(fig, x + 96, y + 88, cr["file"][:70], size=16, color=MUTED, alpha=a)
     para(fig, 96, 920, "All from Wikimedia Commons (commons.wikimedia.org), cropped and converted to greyscale. Licences: "
-                       "creativecommons.org/licenses (CC BY 2.0, CC BY-SA 2.0, 3.0, 4.0; CC0). Full credits and links "
+                       "creativecommons.org/licenses (CC BY 2.0, CC BY-SA 4.0, CC0) or public domain. Full credits and links "
                        "are in the description.", width=120, size=20, color=MUTED, alpha=al)
 
 
