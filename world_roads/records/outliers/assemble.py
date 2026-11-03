@@ -46,7 +46,7 @@ def main(crf=18):
     for s, p in zip(SECS, paths):
         print(f"  {s:7s} {O[s]:7.2f} + {dur(p):6.2f}")
     print(f"total {total:.2f} s ({int(total // 60)}:{total % 60:04.1f})", flush=True)
-    import score as music
+    import orchestra as music
     mix = music.render(O, total)
     raw = os.path.join(OUT, "score_raw.wav")
     music.write(mix, raw)

@@ -255,6 +255,36 @@ def tile(d, color, alpha=255):
     return _down(im, d, d)
 
 
+ICONS = os.path.join(HERE, "icons")
+
+
+@lru_cache(maxsize=96)
+def model_sprite(name, w, tone="full"):
+    """a rendered model (icons/<name>.png) at width w; 'dim' greys it for everyone else's stacks"""
+    im = Image.open(os.path.join(ICONS, name + ".png")).convert("RGBA")
+    h = max(1, int(round(im.height * w / im.width)))
+    im = im.resize((max(1, int(round(w))), h), Image.LANCZOS)
+    if tone == "dim":
+        a = np.asarray(im, np.float32).copy()
+        lum = 0.299 * a[..., 0] + 0.587 * a[..., 1] + 0.114 * a[..., 2]
+        grey = 0.5 * lum + 0.5 * 150.0
+        for i in range(3):
+            a[..., i] = grey
+        a[..., 3] *= 0.62
+        im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+    return im
+
+
+def paste_h(canvas, sprite, cx, cy, frac=1.0):
+    """a horizontal sprite centred at (cx, cy); frac < 1 keeps only its left part"""
+    sp = sprite
+    if frac < 0.999:
+        keep = max(1, int(round(sp.width * frac)))
+        sp = sp.crop((0, 0, keep, sp.height))
+        cx = cx - (sprite.width - keep) / 2
+    canvas.alpha_composite(sp, (int(round(cx - sp.width / 2)), int(round(cy - sp.height / 2))))
+
+
 def paste(canvas, sprite, cx, cy, alpha=1.0, frac=1.0):
     """alpha-composite a sprite centred at (cx, cy); frac < 1 keeps only its bottom part (a partial icon)"""
     if alpha <= 0.01 or frac <= 0.01:
@@ -287,7 +317,7 @@ CURVE = "#ece9e1"
 BOX = (130, 300, 1150, 968)
 SCENE = {   # rank: how the comparison is drawn
     10: dict(kind="stack", icon="baseball", per=10, word="hits", key="one ball = 10 hits", bins=True, court="diamond"),
-    9: dict(kind="stack", icon="bat", per=2, word="home runs", key="one bat = 2 home runs"),
+    9: dict(kind="hstack", icon="bat", per=10, word="home runs", key="one bat = 10 home runs"),
     8: dict(kind="stack", icon="basketball", per=1, word="rebounds a game", key="one ball = 1 rebound a game", court="key"),
     7: dict(kind="stack", icon="basketball", per=20, word="three-pointers", key="one ball = 20 three-pointers", court="arc"),
     6: dict(kind="stack", icon="k", per=10, word="strikeouts", key="one K = 10 strikeouts"),
@@ -336,11 +366,11 @@ class Stack:
         kind, cw, ip = self.s["icon"], self.cw, self.ipx
         tone = "full" if mine else "dim"
         if kind == "baseball":
-            return baseball(int(min(cw * 0.78, ip * 1.0)), tone)
+            return model_sprite("baseball", int(min(cw * 0.8, ip * 1.04)), tone)
         if kind == "basketball":
-            return basketball(int(min(cw * 0.84, ip * 1.02)), tone)
+            return model_sprite("basketball", int(min(cw * 0.86, ip * 1.04)), tone)
         if kind == "puck":
-            return puck(int(min(cw * 0.94, ip * 2.0)), self.acc if mine else None, tone)
+            return model_sprite("puck", int(min(cw * 0.96, ip / 0.6)), tone)
         if kind == "k":
             return kmark(int(min(cw * 0.95, ip * 1.0)), self.acc if mine else "#7f858e", 255 if mine else 165)
         if kind == "bat":
@@ -488,6 +518,90 @@ class Stack:
             ax.annotate(msg, (tx, ty), xytext=(xt, yt), textcoords="data", fontsize=fs(21), color=INK, weight="semibold",
                         ha="center", va="bottom", alpha=a, zorder=12, path_effects=outlined(6),
                         arrowprops=dict(arrowstyle="-|>", color=INK, lw=px(2), alpha=a, shrinkA=4, shrinkB=6))
+
+
+class HStack(Stack):
+    """rows instead of columns: each season's best by anyone else as bats laid end to end (a bat is long and thin);
+    the curve runs down the rows and the ticks stand on the athlete's row"""
+
+    def __init__(self, c, pal, spec, explain=False):
+        super().__init__(c, pal, spec, explain)
+        self.pl, self.pr, self.pt, self.pb = 64, 60, 84, 46
+        self.rh = (self.h - self.pt - self.pb) / len(self.cols)
+        self.sx = (self.w - self.pl - self.pr) / self.vmax
+        self.blen = spec["per"] * self.sx
+
+    def X(self, v):
+        return self.pl + v * self.sx
+
+    def Yr(self, s):
+        return self.pt + (s - self.cols[0] + 0.5) * self.rh
+
+    def row(self, canvas, s, v, mine):
+        sp = model_sprite("bat", int(round(self.blen * 0.97)), "full" if mine else "dim")
+        n = v / self.s["per"]
+        k = 0
+        while k < n:
+            frac = min(1.0, n - k)
+            paste_h(canvas, sp, self.X((k + 0.5) * self.s["per"]), self.Yr(s), frac=frac)
+            k += 1
+
+    def draw(self, fig, t, al):
+        x0, y0, x1, y1 = BOX
+        ax = ax_px(fig, x0, y0, x1, y1)
+        ax.set_axis_off()
+        ax.set_xlim(0, self.w)
+        ax.set_ylim(self.h, 0)
+        cv = Image.new("RGBA", (self.w, self.h), (0, 0, 0, 0))
+        prog = self.prog(t)
+        mine_v = self.shown(t, self.cols.index(self.year), min(self.x, self.base))
+        if t >= 14.2:
+            mine_v = self.base + (self.x - self.base) * prog
+            yc = self.Yr(self.year)
+            glow(cv, (self.X(0), yc - self.rh * 0.9, self.X(mine_v) + 10, yc + self.rh * 0.9), self.acc,
+                 0.38 * min(1, (t - 14.2) * 2))
+        for i, s in enumerate(self.cols):
+            if s in self.vals:
+                self.row(cv, s, self.shown(t, i, self.vals[s]), False)
+        self.row(cv, self.year, mine_v, True)
+        ax.imshow(np.asarray(cv), extent=(0, self.w, self.h, 0), alpha=al, zorder=2, interpolation="antialiased")
+        ax.plot([self.X(0)] * 2, [self.pt - 6, self.h - self.pb + 4], color="#5a5f66", lw=px(1.5), alpha=al, zorder=3)
+        for v in MaxNLocator(5).tick_values(0, self.vmax)[1:]:
+            if v < self.vmax:
+                ax.plot([self.X(v)] * 2, [self.pt - 6, self.h - self.pb + 4], color="#ffffff", alpha=0.06 * al, lw=px(1), zorder=1)
+                ax.text(self.X(v), self.h - self.pb + 22, f"{v:g}", ha="center", va="center", fontsize=fs(17), color=MUTED, alpha=al)
+        for s in self.cols:
+            if s % 5 == 0:
+                ax.text(self.pl - 12, self.Yr(s), str(s), ha="right", va="center", fontsize=fs(16), color=MUTED, alpha=al)
+        c = self.c
+        games = f" and {c['games_per_team']:.0f} games" if c["games_per_team"] else ""
+        ax.text(0, 8, f"{self.s['word']} · other seasons converted to {c['season']}'s league rate{games}", ha="left", va="top",
+                fontsize=fs(19), color=INK2, alpha=al)
+        ax.text(0, 36, f"{self.s['key']} · each row: the best by anyone else that season", ha="left", va="top",
+                fontsize=fs(17), color=MUTED, alpha=al)
+        tc = clamp((t - 11.0) / 3.0)
+        if tc > 0:
+            tr = self.trend
+            k = max(2, int(len(tr) * tc))
+            _poly(ax, [self.X(v) for v in tr[:k, 1]], [self.Yr(s) for s in tr[:k, 0]], CURVE, 3.2, al * 0.95, z=6)
+            if tc >= 1:
+                ax.text(self.X(tr[-1, 1]) + 10, self.Yr(tr[-1, 0]), "the curve", ha="left", va="center", fontsize=fs(18),
+                        color=CURVE, alpha=al, path_effects=outlined(5))
+        if t >= 14.2:
+            yc = self.Yr(self.year)
+            top_v = self.base + (self.x - self.base) * prog
+            xb = self.X(self.base)
+            ax.plot([xb, xb], [yc - self.rh * 1.1, yc + self.rh * 1.1], color=CURVE, lw=px(2.4), alpha=al, zorder=8,
+                    path_effects=outlined(4))
+            for kk in range(1, int((top_v - self.base) / self.step + 1e-9) + 1):
+                xk = self.X(self.base + kk * self.step)
+                ax.plot([xk, xk], [yc - self.rh * 1.1, yc + self.rh * 1.1], color=self.acc, lw=px(2.4), alpha=al, zorder=8,
+                        path_effects=outlined(4))
+                ax.text(xk, yc - self.rh * 1.3, f"{kk}", ha="center", va="bottom", fontsize=fs(17), color=self.acc,
+                        weight="semibold", alpha=al, zorder=8, path_effects=outlined(5))
+            if prog > 0.97:
+                ax.text(self.X(self.x) + 14, yc, look_value(c), ha="left", va="center", fontsize=fs(30), color=self.acc,
+                        weight="bold", family="Inter Display", alpha=al, zorder=9, path_effects=outlined(6))
 
 
 def look_value(c):
@@ -716,6 +830,8 @@ def make_scene(c, explain=False):
         return Javelin(c, pal)
     if s["kind"] == "pit":
         return Pit(c, pal)
+    if s["kind"] == "hstack":
+        return HStack(c, pal, s)
     return Stack(c, pal, s, explain=explain)
 
 

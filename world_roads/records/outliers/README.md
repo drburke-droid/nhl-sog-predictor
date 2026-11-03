@@ -18,7 +18,8 @@ chapters, tags, pinned comment) is `videos/copy/outliers_YOUTUBE.md`, with thumb
 | `scenes.py` | Each card's look: team or country colours, the toned cut-out portrait, and the sport-specific chart (pucks, ball bins, bats, K's, game tiles, basketballs on court lines, the javelin sector, the long-jump pit), always with the curve and the step ruler |
 | `photos.py` | Portraits from Wikimedia Commons (free licences only; robots.txt-compliant pages, 5 s apart): `fetch`, `alternates`, `crop` |
 | `photos/` | The cropped portraits, `cut/` (backgrounds removed with rembg), `credits.json` and `CREDITS.md` (author, licence, link, changes) |
-| `score.py` | The music: felt piano and pad in D major, one bar per 3 s, synthesized with `../music.py` and `../vernier/music.py` |
+| `orchestra.py` | The music: an original heroic orchestral score (strings, horns, trumpets, trombones, tuba, timpani, choir, harp, percussion) written as MIDI timed to the film's events and played by FluidSynth with the FluidR3 GM soundfont (MIT); `score.py` is the earlier felt-piano score, kept for reference |
+| `icons/` | Chart icons rendered from the supplied 3D models (`render_icons.py`, Blender Cycles): bat, puck, basketball, baseball |
 | `assemble.py` | Crossfades the sections (0.6 s), lays in the score (EBU R128, −16 LUFS), writes `out/outliers_final.mp4` |
 | `render_all.sh` | Renders every section that isn't already in `out/` |
 | `thumbs.py` | Thumbnails A/B/C |

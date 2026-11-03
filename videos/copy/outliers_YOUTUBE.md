@@ -8,7 +8,7 @@ E3_main_env model from the greatest-seasons project.
 * 10:07, 1920×1080, 30 fps, H.264.
 * On-screen captions and no narration. A voice-over script timed to the cut is in
   `world_roads/records/outliers/VO_SCRIPT.md`.
-* Felt-piano score at −16 LUFS.
+* Original orchestral score at −16 LUFS.
 
 To rebuild it, run `./render_all.sh` and then `python assemble.py` in `world_roads/records/outliers`.
 
@@ -72,7 +72,7 @@ The information used here was obtained free of charge from and is copyrighted by
 
 Photos via Wikimedia Commons, cropped, cut out and toned in team colours: Ichiro Suzuki by Jeffrey Hayes (CC BY 2.0); Babe Ruth by Irwin, La Broad, & Pudlin. (public domain); Dennis Rodman by uncredited photographer, Jackson Citizen Patriot 1989 (public domain); Stephen Curry by Clément Bardot (CC BY-SA 4.0); Dazzy Vance by Unknown author (public domain); Jan Železný by Chell Hill (CC BY-SA 4.0); Wayne Gretzky by Andre Forget - Andrew Scheer (CC0); Joe DiMaggio by Tom Sande (public domain); Wilt Chamberlain by Bill Allen (public domain); Bob Beamon by Unknown author (CC0). Licences: creativecommons.org/licenses/by/2.0, by-sa/4.0. File pages and links: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/records/outliers/photos/CREDITS.md
 
-Music: an original felt-piano score, synthesized for this video (no samples).
+Music: an original orchestral score written for this video, played with FluidSynth and the FluidR3 GM soundfont.
 ```
 
 **Chapters**
