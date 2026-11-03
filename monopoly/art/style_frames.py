@@ -295,7 +295,7 @@ def draw_board(img, X, Y, S, highlight=None):
 
 
 # ---------------------------------------------------------------- frames
-def frame_title():
+def frame_title(with_stamp=True):
     img = paper(seed=1)
     guilloche_frame(img)
     pd = patent_drawing(860)
@@ -310,7 +310,8 @@ def frame_title():
     wobble_line(d, [(1010, 545), (1760, 545)], width=3, seed=9)
     text(img, (1010, 575), 'You can’t choose where you land.\nYou can choose what you do next.', font('serif', 46), fill=INK, spacing=12)
     text(img, (1010, 760), '13,400,000 GAMES  ·  ATLANTIC CITY, N.J.\nAFTER L. J. MAGIE, PATENT No. 748,626 (1904)', font('type', 28), fill=SEPIA, spacing=10)
-    stamp(img, (1590, 925), ['3 WINS FOR', 'EVERY 2'], angle=-9, size=50)
+    if with_stamp:
+        stamp(img, (1590, 925), ['3 WINS FOR', 'EVERY 2'], angle=-9, size=50)
     return img
 
 
