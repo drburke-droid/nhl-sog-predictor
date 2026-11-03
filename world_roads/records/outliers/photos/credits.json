@@ -8,7 +8,7 @@
   "license_url": "https://creativecommons.org/licenses/by/2.0",
   "date": "22 September 2011, 13:43",
   "source": "2011_09_22_Minneapolis 352",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Jeffrey Hayes, CC BY 2.0, via Wikimedia Commons"
  },
  "ruth": {
@@ -20,7 +20,7 @@
   "license_url": "//commons.wikimedia.org/wiki/File:Babe_Ruth2.jpg",
   "date": "23 July 1920, registered as part of a series of 8 photograph",
   "source": "",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Irwin, La Broad, & Pudlin., public domain, via Wikimedia Commons"
  },
  "rodman": {
@@ -32,7 +32,7 @@
   "license_url": "",
   "date": "3 February 1989",
   "source": "Jackson Citizen Patriot. Friday, 3 February 1989 edition. Source is here",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Uncredited, public domain, via Wikimedia Commons"
  },
  "curry": {
@@ -44,7 +44,7 @@
   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "date": "3 August 2024, 16:48:43",
   "source": "Own work",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Clément Bardot, CC BY-SA 4.0, via Wikimedia Commons"
  },
  "vance": {
@@ -56,7 +56,7 @@
   "license_url": "",
   "date": "1922",
   "source": "The Sporting News Archives",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: unknown, public domain, via Wikimedia Commons"
  },
  "zelezny": {
@@ -68,7 +68,7 @@
   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "date": "11 June 2015, 20:10:42",
   "source": "Own work",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Chell Hill, CC BY-SA 4.0, via Wikimedia Commons"
  },
  "gretzky": {
@@ -80,7 +80,7 @@
   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
   "date": "11 June 2019, 11:21",
   "source": "https://www.flickr.com/photos/andrewscheer/48055697168/",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Andre Forget - Andrew Scheer, CC0, via Wikimedia Commons"
  },
  "dimaggio": {
@@ -92,7 +92,7 @@
   "license_url": "",
   "date": "1 September 1941",
   "source": "AP Newsroom , Alamy",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Tom Sande, public domain, via Wikimedia Commons"
  },
  "chamberlain": {
@@ -104,7 +104,7 @@
   "license_url": "",
   "date": "January 19, 1960",
   "source": "https://newsroom.ap.org/editorial-photos-videos/detail?itemid=04cb4f348f734a0787ade85dd59f997b&mediatype=photo",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Bill Allen, public domain, via Wikimedia Commons"
  },
  "beamon": {
@@ -116,7 +116,7 @@
   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
   "date": "1968",
   "source": "[1] Dutch National Archives, The Hague, Fotocollectie Algemeen Nederlands Persbureau (ANEFO), 1945-1989 bekijk toegang 2.24.01.04 Bestanddeelnummer 922-2039",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: unknown, CC0, via Wikimedia Commons"
  },
  "ledecky": {
@@ -128,7 +128,7 @@
   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
   "date": "10 January 2024",
   "source": "Own work",
-  "changes": "cropped, converted to greyscale, contrast adjusted",
+  "changes": "cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale",
   "short": "Photo: Mledecky, CC0, via Wikimedia Commons"
  }
 }

@@ -91,7 +91,12 @@ above it uses 3 and 2 significant figures.
 **League-environment insets** show the league rate per team-game over the ±15 window, with the season
 marked. They come from `league_env` in `facts.json` (`followup/data/context/`).
 
-## How the score works (four sections)
+## The hook and how the score works
+
+The hook shows all scored records as a histogram, with each score above 4 as a single dot (the same `scale` data).
+The Ledecky worked example and the "what's a good score" section were cut in the redesign; their numbers stay
+below for reference.
+
 
 | On screen | Value | Status |
 |---|---|---|

@@ -4,8 +4,8 @@ A countdown of the ten season-leading performances that stood furthest above eve
 covers 74 categories in athletics, swimming, baseball, basketball, hockey and football. The ranking is the locked
 E3_main_env model from the greatest-seasons project.
 
-**Upload `sports/biggest_statistical_outliers_11m26s.mp4`:**
-* 11:26, 1920×1080, 30 fps, H.264.
+**Upload `sports/biggest_statistical_outliers_10m07s.mp4`:**
+* 10:07, 1920×1080, 30 fps, H.264.
 * On-screen captions and no narration. A voice-over script timed to the cut is in
   `world_roads/records/outliers/VO_SCRIPT.md`.
 * Felt-piano score at −16 LUFS.
@@ -17,7 +17,7 @@ To rebuild it, run `./render_all.sh` and then `python assemble.py` in `world_roa
 | | Thumbnail | Title |
 |---|---|---|
 | A | `outliers_thumb_A.png`: Beamon's 8.90 m, one gold dot far above every other season's best, "The biggest outlier in sports history?" | The 10 Biggest Statistical Outliers in Sports History |
-| B | `outliers_thumb_B.png`: portraits of Beamon, Chamberlain, DiMaggio and Gretzky beside 8.90 m · 50.4 · 56 · 163, "Which stood furthest above its era?" | Beamon, Wilt, DiMaggio, Gretzky: Who Stood Furthest Above Their Era? |
+| B | `outliers_thumb_B.png`: team-coloured portraits of Beamon, Chamberlain, DiMaggio and Gretzky beside 8.90 m · 50.4 · 56 · 163, "Which stood furthest above its era?" | Beamon, Wilt, DiMaggio, Gretzky: Who Stood Furthest Above Their Era? |
 | C | `outliers_thumb_C.png`: Wilt's 50.4 above every other scorer of his era, "Next best: 31.6" | 10 Seasons That Broke the Curve |
 
 **Description**
@@ -47,24 +47,22 @@ Notes: seasons are named by the year they end. Beamon's entry is a single jump a
 
 Why the women's throws aren't on the list: by one measure the women's shot put and discus records are the most extreme numbers in the dataset, but the whole 1980s field threw marks like them. Measured against their own era, the record holders' best seasons score 2.4 and 3.2; the top ten starts at 5.27. Random out-of-competition drug testing began in athletics in the late 1980s. This video does not single anyone out.
 
-0:00 Four numbers
-0:24 How the score works: grading on a curve
-1:07 In sport, the class is everyone else
-1:59 Three rules that keep it fair
-2:38 What's a good score?
-3:11 #10 Ichiro Suzuki
-3:47 #9 Babe Ruth
-4:22 #8 Dennis Rodman
-4:58 #7 Stephen Curry
-5:33 #6 Dazzy Vance
-6:08 #5 Jan Železný
-6:44 #4 Wayne Gretzky
-7:19 #3 Joe DiMaggio
-7:55 #2 Wilt Chamberlain
-8:30 #1 Bob Beamon
-9:05 Why the women's throws aren't on this list
-10:03 How sure is this order?
-11:00 Sources and photo credits
+0:00 Ten broke the curve
+0:30 #10 Ichiro Suzuki
+1:05 #9 Babe Ruth
+1:41 #8 Dennis Rodman
+2:16 #7 Stephen Curry
+2:51 #6 Dazzy Vance
+3:27 #5 Jan Železný
+4:02 #4 Wayne Gretzky
+4:38 #3 Joe DiMaggio
+5:13 #2 Wilt Chamberlain
+5:48 #1 Bob Beamon
+6:24 How the score works: grading on a curve
+7:07 Three rules that keep it fair
+7:47 Why the women's throws aren't on this list
+8:44 How sure is this order?
+9:41 Sources and photo credits
 
 How it's made: every frame is drawn in code (Python, matplotlib, ffmpeg). Data, model, tests and two rounds of independent review: https://github.com/drburke-droid/nhl-sog-predictor/tree/master/world_roads/records/followup
 
@@ -72,7 +70,7 @@ Sources: Baseball-Reference, Basketball-Reference, Hockey-Reference, Pro Footbal
 
 The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.
 
-Photos via Wikimedia Commons, cropped and converted to greyscale: Ichiro Suzuki by Jeffrey Hayes (CC BY 2.0); Babe Ruth by Irwin, La Broad, & Pudlin. (public domain); Dennis Rodman by uncredited photographer, Jackson Citizen Patriot 1989 (public domain); Stephen Curry by Clément Bardot (CC BY-SA 4.0); Dazzy Vance by Unknown author (public domain); Jan Železný by Chell Hill (CC BY-SA 4.0); Wayne Gretzky by Andre Forget - Andrew Scheer (CC0); Joe DiMaggio by Tom Sande (public domain); Wilt Chamberlain by Bill Allen (public domain); Bob Beamon by Unknown author (CC0); Katie Ledecky by Mledecky (CC0). Licences: creativecommons.org/licenses/by/2.0, by-sa/4.0. File pages and links: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/records/outliers/photos/CREDITS.md
+Photos via Wikimedia Commons, cropped, cut out and toned in team colours: Ichiro Suzuki by Jeffrey Hayes (CC BY 2.0); Babe Ruth by Irwin, La Broad, & Pudlin. (public domain); Dennis Rodman by uncredited photographer, Jackson Citizen Patriot 1989 (public domain); Stephen Curry by Clément Bardot (CC BY-SA 4.0); Dazzy Vance by Unknown author (public domain); Jan Železný by Chell Hill (CC BY-SA 4.0); Wayne Gretzky by Andre Forget - Andrew Scheer (CC0); Joe DiMaggio by Tom Sande (public domain); Wilt Chamberlain by Bill Allen (public domain); Bob Beamon by Unknown author (CC0). Licences: creativecommons.org/licenses/by/2.0, by-sa/4.0. File pages and links: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/records/outliers/photos/CREDITS.md
 
 Music: an original felt-piano score, synthesized for this video (no samples).
 ```
@@ -80,30 +78,28 @@ Music: an original felt-piano score, synthesized for this video (no samples).
 **Chapters**
 
 ```
-0:00 Four numbers
-0:24 How the score works: grading on a curve
-1:07 In sport, the class is everyone else
-1:59 Three rules that keep it fair
-2:38 What's a good score?
-3:11 #10 Ichiro Suzuki
-3:47 #9 Babe Ruth
-4:22 #8 Dennis Rodman
-4:58 #7 Stephen Curry
-5:33 #6 Dazzy Vance
-6:08 #5 Jan Železný
-6:44 #4 Wayne Gretzky
-7:19 #3 Joe DiMaggio
-7:55 #2 Wilt Chamberlain
-8:30 #1 Bob Beamon
-9:05 Why the women's throws aren't on this list
-10:03 How sure is this order?
-11:00 Sources and photo credits
+0:00 Ten broke the curve
+0:30 #10 Ichiro Suzuki
+1:05 #9 Babe Ruth
+1:41 #8 Dennis Rodman
+2:16 #7 Stephen Curry
+2:51 #6 Dazzy Vance
+3:27 #5 Jan Železný
+4:02 #4 Wayne Gretzky
+4:38 #3 Joe DiMaggio
+5:13 #2 Wilt Chamberlain
+5:48 #1 Bob Beamon
+6:24 How the score works: grading on a curve
+7:07 Three rules that keep it fair
+7:47 Why the women's throws aren't on this list
+8:44 How sure is this order?
+9:41 Sources and photo credits
 ```
 
 **Pinned comment**
 
 ```
-How the score works, in one line: it's grading on a curve. Each season's leader is compared with the best of everyone else in the 15 seasons either side; the score is how many "usual gaps" above that class it sits. A typical league leader scores about 0; only 12 of 4,940 reach 5. It's a statistical distance, not a probability, and the order depends on choices we show in the video (10:03). Which definition would you choose?
+How the score works, in one line: it's grading on a curve. Each season's leader is compared with the best of everyone else in the 15 seasons either side; the score is how many "usual gaps" above that class it sits. A typical league leader scores about 0; only 12 of 4,940 reach 5. It's a statistical distance, not a probability, and the order depends on choices we show in the video (8:44). Which definition would you choose?
 ```
 
 **Tags**

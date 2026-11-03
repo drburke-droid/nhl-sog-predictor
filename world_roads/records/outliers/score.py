@@ -34,7 +34,11 @@ def section_plan(O, total):
     SECS_DUR = {k: film.SECTIONS[k]().dur for k in O}
     bars = []
     for name, t0 in O.items():
-        if name == "cold":            # four numbers, the question, then the title
+        if name == "hook":            # the rain of scores, the ten breaking away (17.4 s), the title (21.8 s)
+            bars += [(t0, "Bm", "pad"), (t0 + 3, "G", "pad"), (t0 + 6, "Em", "sparse"), (t0 + 9, "Asus", "sparse"),
+                     (t0 + 12, "Bm", "half"), (t0 + 15, "A", "half"), (t0 + 17.4, "D", "title"), (t0 + 20.4, "Bm", "half"),
+                     (t0 + 21.8, "D", "title"), (t0 + 24.8, "G", "half"), (t0 + 27.5, "Asus", "hold")]
+        elif name == "cold":          # four numbers, the question, then the title
             bars += [(t0, "Bm", "pad"), (t0 + 3, "G", "pad"), (t0 + 6, "Em", "sparse"), (t0 + 9, "Asus", "sparse"),
                      (t0 + 12, "D", "title"), (t0 + 15, "D", "title"), (t0 + 18, "Bm", "half"), (t0 + 21, "Asus", "half")]
         elif name in ("curve", "method"):   # the analogy and the worked example: a walking arpeggio

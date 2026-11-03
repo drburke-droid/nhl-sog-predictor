@@ -49,15 +49,21 @@ def thumb_a():
 
 
 def thumb_b():
-    """the four that never left the top ten, with their portraits"""
+    """the four that never left the top ten: team-coloured portraits and their numbers"""
+    import scenes as SC
     fig = new_fig(1)
-    items = [("8.90 m", "Beamon", "beamon"), ("50.4", "Chamberlain", "chamberlain"), ("56", "DiMaggio", "dimaggio"),
-             ("163", "Gretzky", "gretzky")]
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_axis_off()
+    ax.set_xlim(0, W)
+    ax.set_ylim(H, 0)
+    items = [("8.90 m", "Beamon", 1), ("50.4", "Chamberlain", 2), ("56", "DiMaggio", 3), ("163", "Gretzky", 4)]
     pos = [(70, 230), (1000, 230), (70, 640), (1000, 640)]
-    for (big, who, key), (x, y) in zip(items, pos):
-        film.photo(fig, key, x, y, x + 264, y + 330, credit=False)
-        title(fig, x + 300, y + 200, big, size=170, color=INK)
-        text(fig, x + 306, y + 280, who, size=50, color=INK2, weight="semibold")
+    for (big, who, r), (x, y) in zip(items, pos):
+        disc = SC.face_disc(film.PHOTO_KEY[r], r, 330)
+        ax.imshow(disc, extent=(x, x + 330, y + 330, y), zorder=3)
+        acc = SC.PALETTE[r]["accent"]
+        title(fig, x + 360, y + 200, big, size=170, color=INK)
+        text(fig, x + 366, y + 280, who, size=50, color=acc, weight="semibold")
     title(fig, W / 2, 150, "Which stood furthest above its era?", size=86, color=GOLD, ha="center")
     save(fig, "B")
 

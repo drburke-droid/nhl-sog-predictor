@@ -1,7 +1,8 @@
 # Photo credits
 
-All portraits are from Wikimedia Commons, under the licence shown. Each was cropped to 4:5, converted to
-greyscale and contrast-adjusted (`photos.py crop`). Only Commons-hosted, freely licensed files were used.
+All portraits are from Wikimedia Commons, under the licence shown. Each was cropped (`photos.py crop`), cut out of its
+background with rembg (`photos/cut/`) and toned in the team's colours for the cards (`scenes.py`); Rodman's 1989
+newsprint photo is shown in a soft oval instead of a cut-out. Only Commons-hosted, freely licensed files were used.
 Non-free images on Wikipedia were skipped.
 
 | Athlete | Author | Licence | Date | File |
@@ -21,7 +22,7 @@ Non-free images on Wikipedia were skipped.
 **Licence notes**
 - **CC BY and CC BY-SA** require the credit (author, licence, link). The film shows a short credit under each
   portrait and the full list on its last page, and the YouTube description carries the links.
-- **Changes** are noted, as the licences ask: cropped, greyscale, contrast.
+- **Changes** are noted, as the licences ask: cropped, background removed, toned in team colours.
 - **Public domain and CC0** need no credit; they're credited anyway.
 - **Two of the public-domain photos are wire-service pictures:** DiMaggio (AP, 1941) and Chamberlain (AP,
   1960). Commons hosts them as public domain in the United States, presumably for lack of a copyright notice

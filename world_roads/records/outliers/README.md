@@ -1,10 +1,11 @@
 # The 10 Biggest Statistical Outliers in Sports History
 
-An 11:26 countdown film of the locked greatest-seasons ranking (model `E3_main_env`, from `../followup/`). It
-covers the ten season-leading performances that stood furthest above everyone else of their era, a
-four-part explainer of the score (grading on a curve), a segment on why the women's throws aren't on the list, and a closing look at how stable the order is.
+A 10:07 countdown film of the locked greatest-seasons ranking (model `E3_main_env`, from `../followup/`). It
+opens with a 30-second hook (all 4,940 scores pour into a pile; ten break away), goes straight into the
+countdown, then explains the score (grading on a curve, three fairness rules), the women's throws, and how stable the
+order is.
 
-The finished video is `videos/sports/biggest_statistical_outliers_11m26s.mp4`. YouTube copy (titles, description,
+The finished video is `videos/sports/biggest_statistical_outliers_10m07s.mp4`. YouTube copy (titles, description,
 chapters, tags, pinned comment) is `videos/copy/outliers_YOUTUBE.md`, with thumbnails in `videos/sports/thumbnails/`.
 
 ## Files
@@ -13,9 +14,10 @@ chapters, tags, pinned comment) is `videos/copy/outliers_YOUTUBE.md`, with thumb
 |---|---|
 | `facts.py` | Computes every on-screen number from the locked follow-up outputs and data, and writes `facts.json` |
 | `facts.json` | The only data the film reads |
-| `film.py` | The sections: cold open; how the score works (grading on a curve, Ledecky 2016 as the worked example, three rules, what's a good score); ten cards; women's throws; close; sources and photo credits |
+| `film.py` | The sections: hook; ten cards; how the score works (grading on a curve, three rules); women's throws; close; sources and photo credits |
+| `scenes.py` | Each card's look: team or country colours, the toned cut-out portrait, and the sport-specific chart (pucks, ball bins, bats, K's, game tiles, basketballs on court lines, the javelin sector, the long-jump pit), always with the curve and the step ruler |
 | `photos.py` | Portraits from Wikimedia Commons (free licences only; robots.txt-compliant pages, 5 s apart): `fetch`, `alternates`, `crop` |
-| `photos/` | The cropped greyscale portraits, `credits.json` and `CREDITS.md` (author, licence, link for each) |
+| `photos/` | The cropped portraits, `cut/` (backgrounds removed with rembg), `credits.json` and `CREDITS.md` (author, licence, link, changes) |
 | `score.py` | The music: felt piano and pad in D major, one bar per 3 s, synthesized with `../music.py` and `../vernier/music.py` |
 | `assemble.py` | Crossfades the sections (0.6 s), lays in the score (EBU R128, −16 LUFS), writes `out/outliers_final.mp4` |
 | `render_all.sh` | Renders every section that isn't already in `out/` |
@@ -28,7 +30,7 @@ chapters, tags, pinned comment) is `videos/copy/outliers_YOUTUBE.md`, with thumb
 ```
 python facts.py           # facts.json (needs ../followup outputs from run_all.py)
 python photos.py crop     # photos/ (after photos.py fetch)
-./render_all.sh           # out/<section>.mp4, 1080p 30 fps; about 20,600 frames
+./render_all.sh           # out/<section>.mp4, 1080p 30 fps; about 18,200 frames
 python assemble.py        # out/outliers_final.mp4
 python thumbs.py          # ../../../videos/sports/thumbnails/
 python film.py stills     # review stills in out/stills/
@@ -36,6 +38,13 @@ python film.py stills     # review stills in out/stills/
 
 ## Editorial choices
 
+- **Straight to the list.** The hook carries the scale (a typical leader scores about 0; only 12 of 4,940 reach 5)
+  and card #10 labels its own chart (a bin, the curve, the ticks). The longer explanation comes after #1.
+- **Team colours.** Each card uses the colours of the team or country the athlete is most associated with in that
+  season: Mariners, Yankees, Pistons, Warriors (Curry and Wilt: the same franchise), Brooklyn Robins (an approximation
+  of a 1924 palette), Czech Republic, Oilers, United States. Portraits are toned in those colours.
+- **Sport-specific charts are the same data.** Every icon stack is drawn to scale from zero, so the stack heights are
+  the values; the curve and the ticks are the model's (`ruler` in `facts.json`).
 - **How the score is explained.** It's grading on a curve. A class test comes first: a 95 is 5 steps above a
   class averaging 70 (give or take 5), but 1 step above a class averaging 90. Then the same idea in sport, with
   Ledecky's 2016 swim: the class is everyone else's best in the 15 seasons either side, the curve is the class
