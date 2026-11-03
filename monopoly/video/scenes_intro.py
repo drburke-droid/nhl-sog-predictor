@@ -59,6 +59,14 @@ class ColdOpen(Scene):
             txt(img, (W / 2, H / 2 + 330), 'You know it as Monopoly.', sf.font('serif', 56), fill=sf.INK, anchor='mm', alpha=int(255 * a))
         return fade(img, ramp(t, 0, 1.2))
 
+    def extra_sfx(self):
+        ev = []
+        for t0, lines in ((self.cue('was granted') - 0.1, ['U.S. PATENT No. 748,626', 'GRANTED JANUARY 5, 1904']),
+                          (self.cue('She called it') + 0.2, ['THE LANDLORD’S GAME', 'BY LIZZIE J. MAGIE'])):
+            ev.append((t0, 'tap'))
+            ev += [(t0 + 0.15 + i / 30, 'key') for i, ch in enumerate(''.join(lines)) if ch.strip()]
+        return ev
+
 
 class Promise(Scene):
     """Title card; the orange squares everyone talks about; the dice; the five decisions; the stamp."""
@@ -118,6 +126,13 @@ class Promise(Scene):
                     alpha=int(255 * ramp(t, self.cue('So we tested'), 0.5)))
         stamp_in(img, t, c_win + 0.2, (1620, 950), ['3 WINS FOR', 'EVERY 2'], angle=-9, size=60)
         return shake(img, t, c_win + 0.35)
+
+    def extra_sfx(self):
+        ev = [(self.cue("But you don't get"), 'rattle'), (self.cue('three games for every two') + 0.3, 'thud')]
+        for phrase, line in self.decisions:
+            t0 = self.cue(phrase) - 0.1
+            ev += [(t0 + i / 34, 'key') for i, ch in enumerate(line) if ch.strip()]
+        return ev
 
 
 SCENES = {'01_cold_open': ColdOpen, '02_the_promise': Promise}
