@@ -1,6 +1,6 @@
 # Videos for social media
 
-Every eye video, every speed-of-light video and the athletics film we finished, renamed so the file says what it is.
+Every eye video, every speed-of-light video, the athletics film and the sports-outliers film we finished, renamed so the file says what it is.
 SHORT in a name means vertical 1080x1920 (Shorts, Reels, TikTok); everything else is 16:9 for YouTube.
 Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags already written are in `copy/`.
 
@@ -9,6 +9,12 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 | File | Format | Length | What it is |
 |---|---|---|---|
 | the_record_and_the_rest_7m56s.mp4 | 16:9, 1080p | 7:56 | World records in 34 Olympic events against the top eight of every Olympic final since 1896: how much each improved, and how close the field gets. Built in `world_roads/records` (method: `ACCURACY.md`). Copy: `copy/records_YOUTUBE.md`, thumbnails records_thumb_A/B/C |
+
+## sports/
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| biggest_statistical_outliers_9m46s.mp4 | 16:9, 1080p | 9:46 | The 10 Biggest Statistical Outliers in Sports History: a countdown of the locked greatest-seasons ranking (74 categories, six sports, each season against the 15 seasons either side), with a segment on why the women's throws aren't on the list. Built in `world_roads/records/outliers` (fact check: `FACT_CHECK.md`, optional narration: `VO_SCRIPT.md`). Copy: `copy/outliers_YOUTUBE.md`, thumbnails outliers_thumb_A/B/C |
 
 ## eye/
 
