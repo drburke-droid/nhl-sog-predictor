@@ -398,7 +398,101 @@ def chart_ablation(exp='ablation', fname='ablation.png', title="Which of evoluti
     save(fig, fname)
 
 
+def chart_building():
+    Bd = S.get('building')
+    if not Bd:
+        return
+    keeps = [r for r in (0, 50, 100, 150, 200, 300, 400, 500, 750, 1000) if 'game__keep_%d' % r in Bd]
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), sharex=True)
+    for ax, key, lab, col in ((axes[0], 'win', 'Wins per 100 games', BLUE), (axes[1], 'first_out', 'First player to go bankrupt (%)', ORANGE)):
+        ys = [Bd['game__keep_%d' % r][key] for r in keeps]
+        ax.plot(keeps, ys, color=col, lw=2.2, marker='o', ms=5)
+        for x, y in zip(keeps, ys):
+            if x in (0, 300, 1000):
+                ax.text(x, y + (0.5 if key == 'win' else 0.15), '%.1f' % y, ha='center', fontsize=9, color=INK)
+        ax.set_ylabel(lab); ax.set_xlabel('Cash kept in hand when building ($)')
+        ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    axes[0].axhline(Bd['game__keep_0']['win'], color=MUTED, lw=1, ls=(0, (4, 3)))
+    axes[0].set_title('Saving cash costs wins...', loc='left', fontsize=13, weight='bold', color=INK)
+    axes[1].set_title('...and does not make you safer', loc='left', fontsize=13, weight='bold', color=INK)
+    fig.text(0.01, -0.04, 'Realistic play: one player vs three typical players, 100,000 games per point. Everyone buys what they land on and '
+             'trades only set-for-set.', fontsize=8.5, color=INK2)
+    fig.tight_layout()
+    save(fig, 'building_cash.png')
+
+    rows = [('one house', 'game__stop_1'), ('two houses', 'game__stop_2'), ('three houses', 'game__stop_3'),
+            ('four houses', 'game__stop_4'), ('hotels', 'game__keep_0')]
+    rows = [(l, Bd[k]['win']) for l, k in rows if k in Bd]
+    fig, ax = plt.subplots(figsize=(7.5, 3.8))
+    ax.bar(range(len(rows)), [v for _, v in rows], color=[MUTED] * (len(rows) - 1) + [BLUE], width=0.62)
+    for i, (_, v) in enumerate(rows):
+        ax.text(i, v + 0.4, '%.1f' % v, ha='center', fontsize=10, color=INK)
+    ax.set_xticks(range(len(rows))); ax.set_xticklabels([l for l, _ in rows])
+    ax.set_ylabel('Wins per 100 games')
+    ax.grid(axis='y', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax.set_title('Stop building at...', loc='left', fontsize=13, weight='bold', color=INK)
+    save(fig, 'building_stop.png')
+
+
+def chart_pairs(cash=1000):
+    P = S.get('building_pairs', {}).get(str(cash)) or S.get('building_pairs', {}).get(cash)
+    if not P:
+        return
+    import numpy as np
+    order = ['lightblue', 'pink', 'orange', 'brown', 'red', 'yellow', 'darkblue', 'green']
+    n = len(order)
+    A = np.full((n, n), np.nan)
+    for i, a in enumerate(order):
+        for j, b in enumerate(order):
+            if a == b:
+                continue
+            key = '%s+%s' % (a, b) if '%s+%s' % (a, b) in P else '%s+%s' % (b, a)
+            A[i, j] = 100 * P[key]['%s first' % a]
+    seq = LinearSegmentedColormap.from_list('seq', ['#eef4fc', '#86b6ef', '#2a78d6', '#104281'])
+    fig, ax = plt.subplots(figsize=(8.4, 7.4))
+    ax.imshow(A, cmap=seq, vmin=55, vmax=90)
+    for i in range(n):
+        for j in range(n):
+            if not np.isnan(A[i, j]):
+                better = A[i, j] >= A[j, i]
+                ax.text(j, i, '%.0f%s' % (A[i, j], '' if better else ''), ha='center', va='center', fontsize=9.5,
+                        color='#ffffff' if A[i, j] > 76 else INK, weight='bold' if better else 'normal')
+    ax.set_xticks(range(n)); ax.set_xticklabels([GNAME[g] for g in order], rotation=40, ha='right')
+    ax.set_yticks(range(n)); ax.set_yticklabels([GNAME[g] for g in order])
+    ax.set_ylabel('Build this set first'); ax.set_xlabel('...when your other set is')
+    ax.tick_params(length=0)
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    ax.set_title('Two sets: which gets the houses first?', loc='left', fontsize=13, weight='bold', color=INK)
+    fig.text(0.02, -0.02, 'Wins per 100 games. Bold = the better choice of the pair. Mid-game: every property already bought, '
+             '$%d each, three typical opponents, 20,000 games per cell.' % cash, fontsize=8.5, color=INK2)
+    save(fig, 'building_which_first_%d.png' % cash)
+
+    # max one set vs three-each vs spread, averaged over all 28 pairs
+    best_max, best_staged, spread, wrong = [], [], [], []
+    for key, v in P.items():
+        a, b = key.split('+')
+        fa, fb = v['%s first' % a], v['%s first' % b]
+        first, other = (a, b) if fa >= fb else (b, a)
+        best_max.append(max(fa, fb)); wrong.append(min(fa, fb))
+        best_staged.append(v['%s to 3, then %s' % (first, other)]); spread.append(v['spread'])
+    rows = [('Better set first,\nall the way to hotels', best_max), ('Better set to 3 houses,\nthen the other, then hotels', best_staged),
+            ('One house on every lot,\nthen two, then three...', spread), ('Wrong set first,\nall the way to hotels', wrong)]
+    fig, ax = plt.subplots(figsize=(8.5, 4.2))
+    vals = [100 * sum(r) / len(r) for _, r in rows]
+    ax.barh(range(len(rows))[::-1], vals, color=[BLUE, BLUE, ORANGE, MUTED], height=0.6)
+    for i, v in zip(range(len(rows))[::-1], vals):
+        ax.text(v + 0.4, i, '%.1f' % v, va='center', fontsize=10, color=INK)
+    ax.set_yticks(range(len(rows))[::-1]); ax.set_yticklabels([l for l, _ in rows])
+    ax.set_xlim(0, max(vals) + 9)
+    ax.set_xlabel('Wins per 100 games, average over all 28 pairs of sets ($%d each)' % cash)
+    ax.grid(axis='x', color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax.set_title('Max one set, or one house on everything?', loc='left', fontsize=13, weight='bold', color=INK)
+    save(fig, 'building_max_vs_spread_%d.png' % cash)
+
+
 if __name__ == '__main__':
+    chart_building(); chart_pairs(1000); chart_pairs(500)
     chart_ecology(); chart_evolution(); chart_ablation()
     real_names = {}
     lin = os.path.join(RES, 'evolve_real', 'stage2_lineage.json')

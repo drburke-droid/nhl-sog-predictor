@@ -3362,6 +3362,626 @@
    }
   ]
  },
+ "building": {
+  "game__keep_500": {
+   "win": 12.47,
+   "first_out": 24.892,
+   "busted": 74.52499999999999
+  },
+  "game__mortgage_to_build": {
+   "win": 23.374,
+   "first_out": 22.616,
+   "busted": 63.654999999999994
+  },
+  "family__keep_0": {
+   "win": 21.685,
+   "first_out": 21.678,
+   "busted": 65.182
+  },
+  "game__keep_150": {
+   "win": 19.039,
+   "first_out": 22.499,
+   "busted": 67.957
+  },
+  "game__order_cheap": {
+   "win": 21.881,
+   "first_out": 21.811,
+   "busted": 65.095
+  },
+  "family__spread": {
+   "win": 21.231,
+   "first_out": 21.719,
+   "busted": 65.604
+  },
+  "game__evolved_keep_0": {
+   "win": 30.817,
+   "first_out": 19.046,
+   "busted": 55.888000000000005
+  },
+  "game__danger_1": {
+   "win": 13.980999999999998,
+   "first_out": 23.186999999999998,
+   "busted": 72.991
+  },
+  "family__danger_1": {
+   "win": 15.190000000000001,
+   "first_out": 23.014000000000003,
+   "busted": 71.665
+  },
+  "game__keep_200": {
+   "win": 18.074,
+   "first_out": 22.808,
+   "busted": 68.94200000000001
+  },
+  "game__stop_3": {
+   "win": 17.89,
+   "first_out": 22.684,
+   "busted": 68.697
+  },
+  "game__order_dear": {
+   "win": 21.494,
+   "first_out": 21.816,
+   "busted": 65.483
+  },
+  "game__danger_0.5": {
+   "win": 17.122,
+   "first_out": 22.439999999999998,
+   "busted": 69.853
+  },
+  "game__evolved_keep_500": {
+   "win": 24.592,
+   "first_out": 20.78,
+   "busted": 62.168
+  },
+  "game__evolved_focus": {
+   "win": 31.342,
+   "first_out": 18.441,
+   "busted": 55.369
+  },
+  "game__focus_dear": {
+   "win": 21.525,
+   "first_out": 21.794,
+   "busted": 65.45100000000001
+  },
+  "family__keep_100": {
+   "win": 20.462,
+   "first_out": 22.153,
+   "busted": 66.417
+  },
+  "game__stop_4": {
+   "win": 20.382,
+   "first_out": 22.166,
+   "busted": 66.274
+  },
+  "game__keep_300": {
+   "win": 15.964999999999998,
+   "first_out": 23.618,
+   "busted": 71.052
+  },
+  "game__keep_400": {
+   "win": 13.99,
+   "first_out": 24.247,
+   "busted": 73.02499999999999
+  },
+  "game__stop_1": {
+   "win": 0.075,
+   "first_out": 27.052,
+   "busted": 83.097
+  },
+  "game__stop_2": {
+   "win": 4.8629999999999995,
+   "first_out": 24.6,
+   "busted": 80.62899999999999
+  },
+  "game__focus_cheap": {
+   "win": 21.86,
+   "first_out": 21.811,
+   "busted": 65.106
+  },
+  "game__focus": {
+   "win": 21.86,
+   "first_out": 21.781,
+   "busted": 65.109
+  },
+  "game__danger_2": {
+   "win": 10.517,
+   "first_out": 24.147,
+   "busted": 76.458
+  },
+  "game__keep_0": {
+   "win": 21.823999999999998,
+   "first_out": 21.807000000000002,
+   "busted": 65.152
+  },
+  "game__evolved_spread": {
+   "win": 30.715999999999998,
+   "first_out": 18.478,
+   "busted": 55.992
+  },
+  "family__order_cheap": {
+   "win": 21.68,
+   "first_out": 21.666,
+   "busted": 65.173
+  },
+  "game__keep_1000": {
+   "win": 7.097,
+   "first_out": 26.956999999999997,
+   "busted": 79.888
+  },
+  "game__spread_cheap": {
+   "win": 21.422,
+   "first_out": 21.847,
+   "busted": 65.55199999999999
+  },
+  "game__evolved": {
+   "win": 31.268,
+   "first_out": 18.446,
+   "busted": 55.446
+  },
+  "game__evolved_dear": {
+   "win": 31.255,
+   "first_out": 18.45,
+   "busted": 55.458
+  },
+  "game__staged": {
+   "win": 21.901,
+   "first_out": 21.806,
+   "busted": 65.074
+  },
+  "game__keep_100": {
+   "win": 19.954,
+   "first_out": 22.186,
+   "busted": 67.044
+  },
+  "game__evolved_cheap": {
+   "win": 31.333,
+   "first_out": 18.443,
+   "busted": 55.379999999999995
+  },
+  "game__keep_750": {
+   "win": 9.168999999999999,
+   "first_out": 26.07,
+   "busted": 77.824
+  },
+  "game__danger_1.5": {
+   "win": 11.908000000000001,
+   "first_out": 23.75,
+   "busted": 75.068
+  },
+  "family__keep_500": {
+   "win": 14.853,
+   "first_out": 24.163,
+   "busted": 72.03
+  },
+  "game__staged_cheap": {
+   "win": 21.898999999999997,
+   "first_out": 21.807000000000002,
+   "busted": 65.077
+  },
+  "game__spread": {
+   "win": 21.378,
+   "first_out": 21.849,
+   "busted": 65.596
+  },
+  "game__keep_50": {
+   "win": 20.846,
+   "first_out": 21.991,
+   "busted": 66.13799999999999
+  },
+  "game__evolved_keep_300": {
+   "win": 28.709,
+   "first_out": 19.326,
+   "busted": 58.026999999999994
+  },
+  "family__keep_300": {
+   "win": 17.507,
+   "first_out": 23.193,
+   "busted": 69.372
+  },
+  "game__evolved_danger_1": {
+   "win": 25.05,
+   "first_out": 19.377,
+   "busted": 61.661
+  }
+ },
+ "building_pairs": {
+  "500": {
+   "brown+lightblue": {
+    "brown first": 0.7009,
+    "lightblue first": 0.79865,
+    "brown to 3, then lightblue": 0.6877,
+    "lightblue to 3, then brown": 0.76435,
+    "spread": 0.6794
+   },
+   "brown+pink": {
+    "brown first": 0.6596,
+    "pink first": 0.67375,
+    "brown to 3, then pink": 0.6477,
+    "pink to 3, then brown": 0.6764,
+    "spread": 0.61545
+   },
+   "brown+orange": {
+    "brown first": 0.7388,
+    "orange first": 0.77315,
+    "brown to 3, then orange": 0.7363,
+    "orange to 3, then brown": 0.77475,
+    "spread": 0.70905
+   },
+   "brown+red": {
+    "brown first": 0.659,
+    "red first": 0.63125,
+    "brown to 3, then red": 0.647,
+    "red to 3, then brown": 0.6371,
+    "spread": 0.6078
+   },
+   "brown+yellow": {
+    "brown first": 0.6682,
+    "yellow first": 0.64445,
+    "brown to 3, then yellow": 0.65945,
+    "yellow to 3, then brown": 0.6516,
+    "spread": 0.6179
+   },
+   "brown+green": {
+    "brown first": 0.6428,
+    "green first": 0.57485,
+    "brown to 3, then green": 0.63545,
+    "green to 3, then brown": 0.5782,
+    "spread": 0.5752
+   },
+   "brown+darkblue": {
+    "brown first": 0.7035,
+    "darkblue first": 0.6678,
+    "brown to 3, then darkblue": 0.6991,
+    "darkblue to 3, then brown": 0.68,
+    "spread": 0.6663
+   },
+   "lightblue+pink": {
+    "lightblue first": 0.85075,
+    "pink first": 0.75505,
+    "lightblue to 3, then pink": 0.8289,
+    "pink to 3, then lightblue": 0.7668,
+    "spread": 0.7201
+   },
+   "lightblue+orange": {
+    "lightblue first": 0.88885,
+    "orange first": 0.8435,
+    "lightblue to 3, then orange": 0.87845,
+    "orange to 3, then lightblue": 0.85115,
+    "spread": 0.7861
+   },
+   "lightblue+red": {
+    "lightblue first": 0.8426,
+    "red first": 0.7209,
+    "lightblue to 3, then red": 0.8259,
+    "red to 3, then lightblue": 0.72725,
+    "spread": 0.69615
+   },
+   "lightblue+yellow": {
+    "lightblue first": 0.84705,
+    "yellow first": 0.73275,
+    "lightblue to 3, then yellow": 0.83245,
+    "yellow to 3, then lightblue": 0.73985,
+    "spread": 0.71115
+   },
+   "lightblue+green": {
+    "lightblue first": 0.84205,
+    "green first": 0.71165,
+    "lightblue to 3, then green": 0.8293,
+    "green to 3, then lightblue": 0.7077,
+    "spread": 0.73235
+   },
+   "lightblue+darkblue": {
+    "lightblue first": 0.86735,
+    "darkblue first": 0.75415,
+    "lightblue to 3, then darkblue": 0.8572,
+    "darkblue to 3, then lightblue": 0.76585,
+    "spread": 0.75785
+   },
+   "pink+orange": {
+    "pink first": 0.7778,
+    "orange first": 0.8336,
+    "pink to 3, then orange": 0.7944,
+    "orange to 3, then pink": 0.83555,
+    "spread": 0.72
+   },
+   "pink+red": {
+    "pink first": 0.73945,
+    "red first": 0.6856,
+    "pink to 3, then red": 0.74205,
+    "red to 3, then pink": 0.6959,
+    "spread": 0.63225
+   },
+   "pink+yellow": {
+    "pink first": 0.746,
+    "yellow first": 0.69485,
+    "pink to 3, then yellow": 0.7495,
+    "yellow to 3, then pink": 0.7102,
+    "spread": 0.64815
+   },
+   "pink+green": {
+    "pink first": 0.73485,
+    "green first": 0.6162,
+    "pink to 3, then green": 0.73755,
+    "green to 3, then pink": 0.62325,
+    "spread": 0.60435
+   },
+   "pink+darkblue": {
+    "pink first": 0.7935,
+    "darkblue first": 0.7076,
+    "pink to 3, then darkblue": 0.79685,
+    "darkblue to 3, then pink": 0.7314,
+    "spread": 0.7112
+   },
+   "orange+red": {
+    "orange first": 0.82715,
+    "red first": 0.71765,
+    "orange to 3, then red": 0.8319,
+    "red to 3, then orange": 0.7331,
+    "spread": 0.72735
+   },
+   "orange+yellow": {
+    "orange first": 0.83035,
+    "yellow first": 0.72945,
+    "orange to 3, then yellow": 0.8332,
+    "yellow to 3, then orange": 0.7449,
+    "spread": 0.73675
+   },
+   "orange+green": {
+    "orange first": 0.82875,
+    "green first": 0.68975,
+    "orange to 3, then green": 0.8284,
+    "green to 3, then orange": 0.6949,
+    "spread": 0.74005
+   },
+   "orange+darkblue": {
+    "orange first": 0.86185,
+    "darkblue first": 0.75615,
+    "orange to 3, then darkblue": 0.86145,
+    "darkblue to 3, then orange": 0.77575,
+    "spread": 0.8036
+   },
+   "red+yellow": {
+    "red first": 0.7111,
+    "yellow first": 0.7218,
+    "red to 3, then yellow": 0.7203,
+    "yellow to 3, then red": 0.7346,
+    "spread": 0.6507
+   },
+   "red+green": {
+    "red first": 0.7077,
+    "green first": 0.6202,
+    "red to 3, then green": 0.7145,
+    "green to 3, then red": 0.6309,
+    "spread": 0.64035
+   },
+   "red+darkblue": {
+    "red first": 0.7647,
+    "darkblue first": 0.7011,
+    "red to 3, then darkblue": 0.7712,
+    "darkblue to 3, then red": 0.72855,
+    "spread": 0.70685
+   },
+   "yellow+green": {
+    "yellow first": 0.7182,
+    "green first": 0.63065,
+    "yellow to 3, then green": 0.72895,
+    "green to 3, then yellow": 0.63945,
+    "spread": 0.66095
+   },
+   "yellow+darkblue": {
+    "yellow first": 0.76665,
+    "darkblue first": 0.70775,
+    "yellow to 3, then darkblue": 0.7727,
+    "darkblue to 3, then yellow": 0.73655,
+    "spread": 0.71335
+   },
+   "green+darkblue": {
+    "green first": 0.7072,
+    "darkblue first": 0.70265,
+    "green to 3, then darkblue": 0.7161,
+    "darkblue to 3, then green": 0.73345,
+    "spread": 0.6942
+   }
+  },
+  "1000": {
+   "brown+lightblue": {
+    "brown first": 0.6504,
+    "lightblue first": 0.72025,
+    "brown to 3, then lightblue": 0.64975,
+    "lightblue to 3, then brown": 0.68555,
+    "spread": 0.64305
+   },
+   "brown+pink": {
+    "brown first": 0.63255,
+    "pink first": 0.713,
+    "brown to 3, then pink": 0.64885,
+    "pink to 3, then brown": 0.70695,
+    "spread": 0.6368
+   },
+   "brown+orange": {
+    "brown first": 0.7341,
+    "orange first": 0.81605,
+    "brown to 3, then orange": 0.7634,
+    "orange to 3, then brown": 0.8135,
+    "spread": 0.72905
+   },
+   "brown+red": {
+    "brown first": 0.6271,
+    "red first": 0.66305,
+    "brown to 3, then red": 0.63785,
+    "red to 3, then brown": 0.6731,
+    "spread": 0.6148
+   },
+   "brown+yellow": {
+    "brown first": 0.6261,
+    "yellow first": 0.65805,
+    "brown to 3, then yellow": 0.64,
+    "yellow to 3, then brown": 0.6718,
+    "spread": 0.61805
+   },
+   "brown+green": {
+    "brown first": 0.58885,
+    "green first": 0.56155,
+    "brown to 3, then green": 0.58885,
+    "green to 3, then brown": 0.5722,
+    "spread": 0.54885
+   },
+   "brown+darkblue": {
+    "brown first": 0.67585,
+    "darkblue first": 0.6645,
+    "brown to 3, then darkblue": 0.68435,
+    "darkblue to 3, then brown": 0.6825,
+    "spread": 0.66265
+   },
+   "lightblue+pink": {
+    "lightblue first": 0.80345,
+    "pink first": 0.76585,
+    "lightblue to 3, then pink": 0.77225,
+    "pink to 3, then lightblue": 0.77185,
+    "spread": 0.7044
+   },
+   "lightblue+orange": {
+    "lightblue first": 0.8554,
+    "orange first": 0.85255,
+    "lightblue to 3, then orange": 0.84895,
+    "orange to 3, then lightblue": 0.858,
+    "spread": 0.78145
+   },
+   "lightblue+red": {
+    "lightblue first": 0.7921,
+    "red first": 0.7088,
+    "lightblue to 3, then red": 0.7666,
+    "red to 3, then lightblue": 0.72295,
+    "spread": 0.6688
+   },
+   "lightblue+yellow": {
+    "lightblue first": 0.78845,
+    "yellow first": 0.69845,
+    "lightblue to 3, then yellow": 0.7688,
+    "yellow to 3, then lightblue": 0.71985,
+    "spread": 0.6742
+   },
+   "lightblue+green": {
+    "lightblue first": 0.764,
+    "green first": 0.61465,
+    "lightblue to 3, then green": 0.7341,
+    "green to 3, then lightblue": 0.62305,
+    "spread": 0.6443
+   },
+   "lightblue+darkblue": {
+    "lightblue first": 0.80685,
+    "darkblue first": 0.6998,
+    "lightblue to 3, then darkblue": 0.78865,
+    "darkblue to 3, then lightblue": 0.7223,
+    "spread": 0.71605
+   },
+   "pink+orange": {
+    "pink first": 0.8156,
+    "orange first": 0.862,
+    "pink to 3, then orange": 0.8303,
+    "orange to 3, then pink": 0.86075,
+    "spread": 0.7364
+   },
+   "pink+red": {
+    "pink first": 0.7599,
+    "red first": 0.71115,
+    "pink to 3, then red": 0.76775,
+    "red to 3, then pink": 0.72835,
+    "spread": 0.6386
+   },
+   "pink+yellow": {
+    "pink first": 0.7644,
+    "yellow first": 0.70745,
+    "pink to 3, then yellow": 0.7715,
+    "yellow to 3, then pink": 0.72815,
+    "spread": 0.6497
+   },
+   "pink+green": {
+    "pink first": 0.7474,
+    "green first": 0.5981,
+    "pink to 3, then green": 0.74825,
+    "green to 3, then pink": 0.61915,
+    "spread": 0.5781
+   },
+   "pink+darkblue": {
+    "pink first": 0.81005,
+    "darkblue first": 0.7078,
+    "pink to 3, then darkblue": 0.80975,
+    "darkblue to 3, then pink": 0.7382,
+    "spread": 0.70825
+   },
+   "orange+red": {
+    "orange first": 0.84985,
+    "red first": 0.74845,
+    "orange to 3, then red": 0.8534,
+    "red to 3, then orange": 0.7743,
+    "spread": 0.7292
+   },
+   "orange+yellow": {
+    "orange first": 0.84925,
+    "yellow first": 0.7423,
+    "orange to 3, then yellow": 0.85185,
+    "yellow to 3, then orange": 0.7696,
+    "spread": 0.7278
+   },
+   "orange+green": {
+    "orange first": 0.84255,
+    "green first": 0.64645,
+    "orange to 3, then green": 0.8402,
+    "green to 3, then orange": 0.6668,
+    "spread": 0.67965
+   },
+   "orange+darkblue": {
+    "orange first": 0.88355,
+    "darkblue first": 0.7487,
+    "orange to 3, then darkblue": 0.8836,
+    "darkblue to 3, then orange": 0.78005,
+    "spread": 0.79615
+   },
+   "red+yellow": {
+    "red first": 0.71395,
+    "yellow first": 0.7078,
+    "red to 3, then yellow": 0.72885,
+    "yellow to 3, then red": 0.7337,
+    "spread": 0.6316
+   },
+   "red+green": {
+    "red first": 0.6985,
+    "green first": 0.59405,
+    "red to 3, then green": 0.7125,
+    "green to 3, then red": 0.6173,
+    "spread": 0.59235
+   },
+   "red+darkblue": {
+    "red first": 0.77335,
+    "darkblue first": 0.7035,
+    "red to 3, then darkblue": 0.7833,
+    "darkblue to 3, then red": 0.7374,
+    "spread": 0.69875
+   },
+   "yellow+green": {
+    "yellow first": 0.6966,
+    "green first": 0.6066,
+    "yellow to 3, then green": 0.7139,
+    "green to 3, then yellow": 0.6246,
+    "spread": 0.60465
+   },
+   "yellow+darkblue": {
+    "yellow first": 0.75375,
+    "darkblue first": 0.6996,
+    "yellow to 3, then darkblue": 0.769,
+    "darkblue to 3, then yellow": 0.7344,
+    "spread": 0.70255
+   },
+   "green+darkblue": {
+    "green first": 0.68315,
+    "darkblue first": 0.68825,
+    "green to 3, then darkblue": 0.69995,
+    "darkblue to 3, then green": 0.72245,
+    "spread": 0.65965
+   }
+  }
+ },
  "shark": {
   "textbook": 0.18279,
   "learned": 0.27582,

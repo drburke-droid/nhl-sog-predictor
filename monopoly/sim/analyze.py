@@ -307,6 +307,66 @@ def main():
             md += ['Typical players only, same trading rule: games that never end by table size: ' +
                    ', '.join('%d players %.0f%%' % (n, pct(d['timeouts'] / d['games'])) for n, d in sorted(lens)), '']
 
+    # ---- building questions (realistic play)
+    bld = load('building')
+    if bld:
+        def row(k):
+            d = bld[k]; p0 = d['players'][0]; n = d['games']
+            return pct(p0['wins'] / n), pct(p0['first_out'] / n), pct(p0['busted'] / n)
+        summary['building'] = {k: dict(zip(('win', 'first_out', 'busted'), row(k))) for k in bld}
+        md += ['## Building: spend it all or keep cash back? (realistic play, one player vs three typical players, 100,000 games each)', '',
+               'The player buys and trades like everyone else and only changes how it builds. "First out" = how often it is the first '
+               'player to go bankrupt (the risk people save cash to avoid).', '',
+               '| Cash kept in hand when building | Wins per 100 | First out | Goes bankrupt at some point |', '|---|---|---|---|']
+        for r in (0, 50, 100, 150, 200, 300, 400, 500, 750, 1000):
+            if 'game__keep_%d' % r in bld:
+                md.append('| $%d | %.1f | %.1f%% | %.1f%% |' % ((r,) + row('game__keep_%d' % r)))
+        for f in ('0.5', '1', '1.5', '2'):
+            if 'game__danger_%s' % f in bld:
+                md.append('| enough for %sx the biggest rent an opponent can charge | %.1f | %.1f%% | %.1f%% |' % ((f,) + row('game__danger_%s' % f)))
+        md += ['', '| How far to build | Wins per 100 | First out |', '|---|---|---|']
+        for k, lab in (('game__stop_1', 'one house'), ('game__stop_2', 'two houses'), ('game__stop_3', 'three houses'),
+                       ('game__stop_4', 'four houses'), ('game__keep_0', 'hotels')):
+            if k in bld:
+                md.append('| %s | %.1f | %.1f%% |' % ((lab,) + row(k)[:2]))
+        md += ['', '| Other building habits | Wins per 100 | First out |', '|---|---|---|']
+        for k, lab in (('game__mortgage_to_build', 'mortgage loose property to pay for houses'), ('game__order_cheap', 'sets with cheaper houses first'),
+                       ('game__order_dear', 'sets with dearer houses first'), ('game__focus', 'finish one set before starting the next'),
+                       ('game__staged', 'three houses on every set, then hotels'), ('game__spread', 'one house on every lot, then two...'),
+                       ('game__evolved', 'evolved player (keeps about $100)'), ('game__evolved_keep_0', 'evolved player keeping $0'),
+                       ('game__evolved_keep_300', 'evolved player keeping $300'), ('game__evolved_keep_500', 'evolved player keeping $500'),
+                       ('game__evolved_danger_1', 'evolved player keeping enough for the biggest rent'),
+                       ('game__evolved_spread', 'evolved player spreading houses evenly')):
+            if k in bld:
+                md.append('| %s | %.1f | %.1f%% |' % ((lab,) + row(k)[:2]))
+        fam = [k for k in bld if k.startswith('family__')]
+        if fam:
+            md += ['', 'House rules (no auctions, Free Parking money): ' + ', '.join('%s %.1f' % (k[8:].replace('_', ' '), row(k)[0]) for k in sorted(fam)), '']
+    pairs = load('building_pairs')
+    if pairs:
+        import itertools
+        G2 = GROUPS
+        def pw(cash, a, b, k):
+            d = pairs['c%d__%s__%s__%s' % (cash, a, b, k)]
+            return d['players'][0]['wins'] / d['games']
+        summary['building_pairs'] = {}
+        for cash in (500, 1000):
+            out = {}
+            md += ['## Two complete sets: which first, and max it or spread? (mid-game, $%d each, 20,000 games per cell)' % cash, '',
+                   'You own two complete colour sets; every other property has already been bought (dealt at random to all four players); '
+                   'everyone has $%d. Wins per 100 for each way of building.' % cash, '',
+                   '| Your two sets | A first, to hotels | B first, to hotels | A to 3 houses, then B to 3, then hotels | B to 3, then A to 3, then hotels | One house everywhere, then two... | Best |',
+                   '|---|---|---|---|---|---|---|']
+            for a_, b_ in itertools.combinations(G2, 2):
+                v = {'%s first' % a_: pw(cash, a_, b_, 'first_' + a_), '%s first' % b_: pw(cash, a_, b_, 'first_' + b_),
+                     '%s to 3, then %s' % (a_, b_): pw(cash, a_, b_, 'staged_' + a_), '%s to 3, then %s' % (b_, a_): pw(cash, a_, b_, 'staged_' + b_),
+                     'spread': pw(cash, a_, b_, 'spread')}
+                out['%s+%s' % (a_, b_)] = v
+                best = max(v, key=v.get)
+                md.append('| A=%s, B=%s | %.1f | %.1f | %.1f | %.1f | %.1f | %s |' % ((a_, b_) + tuple(pct(x) for x in v.values()) + (best,)))
+            summary['building_pairs'][cash] = out
+            md.append('')
+
     # ---- learned shark
     shark = load('shark')
     if shark:

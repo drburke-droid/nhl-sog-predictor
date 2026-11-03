@@ -301,7 +301,49 @@ def exp_real_race(n_games=100000):
         run('real_ecology', 'm' + '_'.join(str(i) for i in combo), [pool[i][1] for i in combo], 4000, **cfg)
 
 
-EXPERIMENTS = {'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
+def exp_building(n_games=100000, n_scen=20000):
+    """How to build, under realistic play: cash kept back, where to stop, which set first, focus vs spread."""
+    import evolve_real as er
+    cfg = dict(REAL_WORLDS['real_official'], tv=','.join('%s:%d' % kv for kv in er.TV.items()))
+    typ = er.TYPICAL
+    # A. full games: one player vs three typical players
+    variants = [('keep_%d' % r, 'everything;breserve=%d' % r) for r in (0, 50, 100, 150, 200, 300, 400, 500, 750, 1000)]
+    variants += [('danger_%s' % f, 'everything;danger=%s' % f) for f in ('0.5', '1', '1.5', '2')]
+    variants += [('stop_%d' % b, 'everything;build=%d' % b) for b in (1, 2, 3, 4)]
+    variants += [('mortgage_to_build', 'everything;m2b=1'), ('staged', 'everything;bpri=staged'),
+                 ('staged_cheap', 'everything;bpri=staged;border=cheap')]
+    variants += [('order_cheap', 'everything;border=cheap'), ('order_dear', 'everything;border=dear'),
+                 ('spread', 'everything;bpri=spread'), ('spread_cheap', 'everything;bpri=spread;border=cheap'),
+                 ('focus', 'everything;bpri=focus'), ('focus_cheap', 'everything;bpri=focus;border=cheap'),
+                 ('focus_dear', 'everything;bpri=focus;border=dear')]
+    for k, sp in variants:
+        run('building', 'game__' + k, [sp.replace('everything;', 'everything;name=%s;' % k)] + [typ] * 3, n_games, **cfg)
+    for k in ('keep_0', 'keep_100', 'keep_300', 'keep_500', 'danger_1', 'spread', 'order_cheap'):
+        sp = dict(variants)[k]
+        run('building', 'family__' + k, [sp.replace('everything;', 'everything;name=%s;' % k)] + [typ] * 3, n_games,
+            **dict(REAL_WORLDS['real_family'], tv=cfg['tv']))
+    # the evolved realistic player with different building habits
+    best = json.load(open(os.path.join(RES, 'evolve_real', 'stage1_final.json')))[0]['genome']
+    base = er.spec(best, 'Evolved')
+    def ev(**kw):
+        parts = [p_ for p_ in base.split(';') if p_.split('=')[0] not in kw]
+        return ';'.join(parts + ['%s=%s' % kv for kv in kw.items()])
+    for k, sp in (('evolved', base), ('evolved_keep_0', ev(breserve=0)), ('evolved_keep_300', ev(breserve=300)),
+                  ('evolved_keep_500', ev(breserve=500)), ('evolved_danger_1', ev(danger=1)), ('evolved_spread', ev(bpri='spread')),
+                  ('evolved_focus', ev(bpri='focus')), ('evolved_cheap', ev(border='cheap')), ('evolved_dear', ev(border='dear'))):
+        run('building', 'game__' + k, [sp] + [typ] * 3, n_games, **cfg)
+    # B. mid-game: you hold two complete sets, everything else already bought, everyone has the same cash
+    for cash in (500, 1000):
+        for a_, b_ in itertools.combinations(GROUPS, 2):
+            give = '0:%s,0:%s' % (a_, b_)
+            for k, sp in (('first_%s' % a_, 'everything;first=%s' % a_), ('first_%s' % b_, 'everything;first=%s' % b_),
+                          ('spread', 'everything;bpri=spread'),
+                          ('staged_%s' % a_, 'everything;bpri=staged;first=%s' % a_), ('staged_%s' % b_, 'everything;bpri=staged;first=%s' % b_)):
+                run('building_pairs', 'c%d__%s__%s__%s' % (cash, a_, b_, k), [sp.replace('everything;', 'everything;name=%s;' % k)] + [typ] * 3,
+                    n_scen, give=give, deal=1, cash=cash, **cfg)
+
+
+EXPERIMENTS = {'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
 if __name__ == '__main__':

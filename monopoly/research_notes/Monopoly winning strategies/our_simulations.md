@@ -305,3 +305,32 @@ building, mortgaging to build, jail timing, and how to even up a swap (printed p
   generation 25-50. Different favourite pairs coexist because players do better when their favourites are not
   contested. Charts: `charts/evolution_realistic.png`, `charts/ablation_realistic.png`,
   `charts/ecology_realistic.png`.
+
+### 16. Building questions under realistic play
+One player vs three typical players, realistic play, 100,000 games each; the player only changes how it builds.
+"First out" = how often it is the first player to go bankrupt.
+- Cash kept in hand when building: $0 21.8 wins per 100 (first out 21.8%), $50 20.8, $100 20.0 (22.2%), $150 19.0,
+  $200 18.1, $300 16.0 (23.6%), $400 14.0, $500 12.5 (24.9%), $750 9.2, $1,000 7.1 (27.0%). Keeping enough to pay
+  0.5x / 1x / 1.5x / 2x the biggest rent an opponent can charge: 17.1 / 14.0 / 11.9 / 10.5 (first out rises too).
+  House rules (no auctions, Free Parking money): $0 21.7, $100 20.5, $300 17.5, $500 14.9.
+  Evolved realistic player: keeps about $100 31.3, $0 30.8, $300 28.7, $500 24.6, worst-rent reserve 25.1.
+- How far to build: one house 0.1, two 4.9, three 17.9, four 20.4, hotels 21.8.
+- Mortgage loose property to pay for houses: 23.4 (first out 22.6%). Over whole games the build order barely
+  matters (cheaper sets first 21.9, dearer first 21.5, one level at a time across sets 21.4), because players
+  rarely hold two sets at once.
+Two-set scenario (mid-game snapshot): the player owns two complete sets; every other property is dealt at random
+to all four players; everyone has $500 or $1,000; three typical opponents; 20,000 games per cell; all 28 pairs;
+five ways of building (A first to hotels, B first, A to three houses then B to three then hotels, the reverse,
+one level at a time across both).
+- Spreading one house everywhere was the best choice in 0 of 56 pair/cash cases. Averages at $1,000: better set
+  first to hotels 76.2, better set to three then the other 76.1, spread 67.1, wrong set first 68.8 ($500: 77.3,
+  77.0, 68.8, 69.9).
+- Which set first ($1,000): orange and light blue beat every other set first and tie with each other (85.5 vs
+  85.3); pink next; red and yellow tie; dark blue and green tie; brown goes first only ahead of green and dark
+  blue (at $500 also ahead of red and yellow). Cheaper-houses-first wins 21 of 28 pairs at $1,000 and 23 of 28 at
+  $500. Biggest gaps ($1,000): orange+green 84.3 vs 64.6; pink+green 74.7 vs 59.8; light blue+green 76.4 vs 61.5.
+- Max the first set or three-each first: tie on average; light blue first is better maxed straight to hotels
+  (+0.6 to +3.5); red, yellow, green and dark blue first are better at three houses then the other set (+0.6 to
+  +3.4); pink and orange either way.
+Charts: building_cash.png, building_stop.png, building_which_first_1000.png (and _500),
+building_max_vs_spread_1000.png (and _500).

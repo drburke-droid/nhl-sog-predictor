@@ -486,6 +486,122 @@ Everyone buys what they land on. Trades happen only when both players complete a
 
 Typical players only, same trading rule: games that never end by table size: 2 players 0%, 3 players 1%, 4 players 13%, 5 players 37%, 6 players 57%
 
+## Building: spend it all or keep cash back? (realistic play, one player vs three typical players, 100,000 games each)
+
+The player buys and trades like everyone else and only changes how it builds. "First out" = how often it is the first player to go bankrupt (the risk people save cash to avoid).
+
+| Cash kept in hand when building | Wins per 100 | First out | Goes bankrupt at some point |
+|---|---|---|---|
+| $0 | 21.8 | 21.8% | 65.2% |
+| $50 | 20.8 | 22.0% | 66.1% |
+| $100 | 20.0 | 22.2% | 67.0% |
+| $150 | 19.0 | 22.5% | 68.0% |
+| $200 | 18.1 | 22.8% | 68.9% |
+| $300 | 16.0 | 23.6% | 71.1% |
+| $400 | 14.0 | 24.2% | 73.0% |
+| $500 | 12.5 | 24.9% | 74.5% |
+| $750 | 9.2 | 26.1% | 77.8% |
+| $1000 | 7.1 | 27.0% | 79.9% |
+| enough for 0.5x the biggest rent an opponent can charge | 17.1 | 22.4% | 69.9% |
+| enough for 1x the biggest rent an opponent can charge | 14.0 | 23.2% | 73.0% |
+| enough for 1.5x the biggest rent an opponent can charge | 11.9 | 23.8% | 75.1% |
+| enough for 2x the biggest rent an opponent can charge | 10.5 | 24.1% | 76.5% |
+
+| How far to build | Wins per 100 | First out |
+|---|---|---|
+| one house | 0.1 | 27.1% |
+| two houses | 4.9 | 24.6% |
+| three houses | 17.9 | 22.7% |
+| four houses | 20.4 | 22.2% |
+| hotels | 21.8 | 21.8% |
+
+| Other building habits | Wins per 100 | First out |
+|---|---|---|
+| mortgage loose property to pay for houses | 23.4 | 22.6% |
+| sets with cheaper houses first | 21.9 | 21.8% |
+| sets with dearer houses first | 21.5 | 21.8% |
+| finish one set before starting the next | 21.9 | 21.8% |
+| three houses on every set, then hotels | 21.9 | 21.8% |
+| one house on every lot, then two... | 21.4 | 21.8% |
+| evolved player (keeps about $100) | 31.3 | 18.4% |
+| evolved player keeping $0 | 30.8 | 19.0% |
+| evolved player keeping $300 | 28.7 | 19.3% |
+| evolved player keeping $500 | 24.6 | 20.8% |
+| evolved player keeping enough for the biggest rent | 25.1 | 19.4% |
+| evolved player spreading houses evenly | 30.7 | 18.5% |
+
+House rules (no auctions, Free Parking money): danger 1 15.2, keep 0 21.7, keep 100 20.5, keep 300 17.5, keep 500 14.9, order cheap 21.7, spread 21.2
+
+## Two complete sets: which first, and max it or spread? (mid-game, $500 each, 20,000 games per cell)
+
+You own two complete colour sets; every other property has already been bought (dealt at random to all four players); everyone has $500. Wins per 100 for each way of building.
+
+| Your two sets | A first, to hotels | B first, to hotels | A to 3 houses, then B to 3, then hotels | B to 3, then A to 3, then hotels | One house everywhere, then two... | Best |
+|---|---|---|---|---|---|---|
+| A=brown, B=lightblue | 70.1 | 79.9 | 68.8 | 76.4 | 67.9 | lightblue first |
+| A=brown, B=pink | 66.0 | 67.4 | 64.8 | 67.6 | 61.5 | pink to 3, then brown |
+| A=brown, B=orange | 73.9 | 77.3 | 73.6 | 77.5 | 70.9 | orange to 3, then brown |
+| A=brown, B=red | 65.9 | 63.1 | 64.7 | 63.7 | 60.8 | brown first |
+| A=brown, B=yellow | 66.8 | 64.4 | 65.9 | 65.2 | 61.8 | brown first |
+| A=brown, B=green | 64.3 | 57.5 | 63.5 | 57.8 | 57.5 | brown first |
+| A=brown, B=darkblue | 70.3 | 66.8 | 69.9 | 68.0 | 66.6 | brown first |
+| A=lightblue, B=pink | 85.1 | 75.5 | 82.9 | 76.7 | 72.0 | lightblue first |
+| A=lightblue, B=orange | 88.9 | 84.4 | 87.8 | 85.1 | 78.6 | lightblue first |
+| A=lightblue, B=red | 84.3 | 72.1 | 82.6 | 72.7 | 69.6 | lightblue first |
+| A=lightblue, B=yellow | 84.7 | 73.3 | 83.2 | 74.0 | 71.1 | lightblue first |
+| A=lightblue, B=green | 84.2 | 71.2 | 82.9 | 70.8 | 73.2 | lightblue first |
+| A=lightblue, B=darkblue | 86.7 | 75.4 | 85.7 | 76.6 | 75.8 | lightblue first |
+| A=pink, B=orange | 77.8 | 83.4 | 79.4 | 83.6 | 72.0 | orange to 3, then pink |
+| A=pink, B=red | 73.9 | 68.6 | 74.2 | 69.6 | 63.2 | pink to 3, then red |
+| A=pink, B=yellow | 74.6 | 69.5 | 75.0 | 71.0 | 64.8 | pink to 3, then yellow |
+| A=pink, B=green | 73.5 | 61.6 | 73.8 | 62.3 | 60.4 | pink to 3, then green |
+| A=pink, B=darkblue | 79.3 | 70.8 | 79.7 | 73.1 | 71.1 | pink to 3, then darkblue |
+| A=orange, B=red | 82.7 | 71.8 | 83.2 | 73.3 | 72.7 | orange to 3, then red |
+| A=orange, B=yellow | 83.0 | 72.9 | 83.3 | 74.5 | 73.7 | orange to 3, then yellow |
+| A=orange, B=green | 82.9 | 69.0 | 82.8 | 69.5 | 74.0 | orange first |
+| A=orange, B=darkblue | 86.2 | 75.6 | 86.1 | 77.6 | 80.4 | orange first |
+| A=red, B=yellow | 71.1 | 72.2 | 72.0 | 73.5 | 65.1 | yellow to 3, then red |
+| A=red, B=green | 70.8 | 62.0 | 71.5 | 63.1 | 64.0 | red to 3, then green |
+| A=red, B=darkblue | 76.5 | 70.1 | 77.1 | 72.9 | 70.7 | red to 3, then darkblue |
+| A=yellow, B=green | 71.8 | 63.1 | 72.9 | 63.9 | 66.1 | yellow to 3, then green |
+| A=yellow, B=darkblue | 76.7 | 70.8 | 77.3 | 73.7 | 71.3 | yellow to 3, then darkblue |
+| A=green, B=darkblue | 70.7 | 70.3 | 71.6 | 73.3 | 69.4 | darkblue to 3, then green |
+
+## Two complete sets: which first, and max it or spread? (mid-game, $1000 each, 20,000 games per cell)
+
+You own two complete colour sets; every other property has already been bought (dealt at random to all four players); everyone has $1000. Wins per 100 for each way of building.
+
+| Your two sets | A first, to hotels | B first, to hotels | A to 3 houses, then B to 3, then hotels | B to 3, then A to 3, then hotels | One house everywhere, then two... | Best |
+|---|---|---|---|---|---|---|
+| A=brown, B=lightblue | 65.0 | 72.0 | 65.0 | 68.6 | 64.3 | lightblue first |
+| A=brown, B=pink | 63.3 | 71.3 | 64.9 | 70.7 | 63.7 | pink first |
+| A=brown, B=orange | 73.4 | 81.6 | 76.3 | 81.3 | 72.9 | orange first |
+| A=brown, B=red | 62.7 | 66.3 | 63.8 | 67.3 | 61.5 | red to 3, then brown |
+| A=brown, B=yellow | 62.6 | 65.8 | 64.0 | 67.2 | 61.8 | yellow to 3, then brown |
+| A=brown, B=green | 58.9 | 56.2 | 58.9 | 57.2 | 54.9 | brown first |
+| A=brown, B=darkblue | 67.6 | 66.5 | 68.4 | 68.2 | 66.3 | brown to 3, then darkblue |
+| A=lightblue, B=pink | 80.3 | 76.6 | 77.2 | 77.2 | 70.4 | lightblue first |
+| A=lightblue, B=orange | 85.5 | 85.3 | 84.9 | 85.8 | 78.1 | orange to 3, then lightblue |
+| A=lightblue, B=red | 79.2 | 70.9 | 76.7 | 72.3 | 66.9 | lightblue first |
+| A=lightblue, B=yellow | 78.8 | 69.8 | 76.9 | 72.0 | 67.4 | lightblue first |
+| A=lightblue, B=green | 76.4 | 61.5 | 73.4 | 62.3 | 64.4 | lightblue first |
+| A=lightblue, B=darkblue | 80.7 | 70.0 | 78.9 | 72.2 | 71.6 | lightblue first |
+| A=pink, B=orange | 81.6 | 86.2 | 83.0 | 86.1 | 73.6 | orange first |
+| A=pink, B=red | 76.0 | 71.1 | 76.8 | 72.8 | 63.9 | pink to 3, then red |
+| A=pink, B=yellow | 76.4 | 70.7 | 77.1 | 72.8 | 65.0 | pink to 3, then yellow |
+| A=pink, B=green | 74.7 | 59.8 | 74.8 | 61.9 | 57.8 | pink to 3, then green |
+| A=pink, B=darkblue | 81.0 | 70.8 | 81.0 | 73.8 | 70.8 | pink first |
+| A=orange, B=red | 85.0 | 74.8 | 85.3 | 77.4 | 72.9 | orange to 3, then red |
+| A=orange, B=yellow | 84.9 | 74.2 | 85.2 | 77.0 | 72.8 | orange to 3, then yellow |
+| A=orange, B=green | 84.3 | 64.6 | 84.0 | 66.7 | 68.0 | orange first |
+| A=orange, B=darkblue | 88.4 | 74.9 | 88.4 | 78.0 | 79.6 | orange to 3, then darkblue |
+| A=red, B=yellow | 71.4 | 70.8 | 72.9 | 73.4 | 63.2 | yellow to 3, then red |
+| A=red, B=green | 69.8 | 59.4 | 71.2 | 61.7 | 59.2 | red to 3, then green |
+| A=red, B=darkblue | 77.3 | 70.3 | 78.3 | 73.7 | 69.9 | red to 3, then darkblue |
+| A=yellow, B=green | 69.7 | 60.7 | 71.4 | 62.5 | 60.5 | yellow to 3, then green |
+| A=yellow, B=darkblue | 75.4 | 70.0 | 76.9 | 73.4 | 70.3 | yellow to 3, then darkblue |
+| A=green, B=darkblue | 68.3 | 68.8 | 70.0 | 72.2 | 66.0 | darkblue to 3, then green |
+
 ## Teaching the Shark (one strategy vs three Yes-Men, official rules)
 
 Learned set values: points of win rate a Yes-Man loses by never buying the set, x $100: orange $595, lightblue $584, pink $410, darkblue $246, brown $233, red $168, yellow $46, green $-141

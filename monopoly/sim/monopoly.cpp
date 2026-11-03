@@ -131,6 +131,10 @@ struct Strat {
     double favBid = 1.0;      // bids up to this multiple of list price for a favourite at auction
     bool favMortgage = false; // mortgages other property to afford a favourite it lands on
     int holdFor = 0;          // keeps this much cash back on other purchases while a favourite is unsold
+    // building choices
+    int firstGroup = -1;      // build this colour set before any other
+    int border = 0;           // order of the rest: 0 by return on 3 houses, 1 cheapest houses first, 2 dearest first
+    double dangerFrac = 0;    // when building, keep this multiple of the biggest rent an opponent can charge now
 };
 
 static uint64_t maskFromName(const std::string& w) {
@@ -206,7 +210,7 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "blockbid") s.blockBid = atof(v.c_str());
         else if (k == "build") s.buildMax = atoi(v.c_str());
         else if (k == "breserve") s.buildReserve = atoi(v.c_str());
-        else if (k == "bpri") s.bpri = atoi(v.c_str());
+        else if (k == "bpri") s.bpri = (v == "priority" ? 0 : v == "spread" ? 1 : v == "focus" ? 2 : v == "staged" ? 3 : atoi(v.c_str()));
         else if (k == "jail") s.jail = (v == "leave" ? 0 : v == "stay" ? 1 : v == "smart" ? 2 : atoi(v.c_str()));
         else if (k == "trade") s.trade = (v == "none" ? 0 : v == "fair" ? 1 : v == "shark" ? 2 : atoi(v.c_str()));
         else if (k == "m2b") s.m2b = atoi(v.c_str()) != 0;
@@ -217,6 +221,9 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "favbid") s.favBid = atof(v.c_str());
         else if (k == "favmort") s.favMortgage = atoi(v.c_str()) != 0;
         else if (k == "hold") s.holdFor = atoi(v.c_str());
+        else if (k == "first") { s.firstGroup = -1; for (int g = 0; g < 8; g++) if (v == GROUP_NAME[g]) s.firstGroup = g; }
+        else if (k == "border") s.border = (v == "roi" ? 0 : v == "cheap" ? 1 : v == "dear" ? 2 : atoi(v.c_str()));
+        else if (k == "danger") s.dangerFrac = atof(v.c_str());
         else { fprintf(stderr, "unknown key '%s'\n", k.c_str()); exit(1); }
     }
     return s;
@@ -224,7 +231,7 @@ static Strat parseStrat(const std::string& spec) {
 
 // ---------------------------------------------------------------- config & stats
 struct Config {
-    bool auctions = true, trading = false, freeParking = false, go400 = false, buyouts = false;
+    bool auctions = true, trading = false, freeParking = false, go400 = false, buyouts = false, deal = false;
     int maxRounds = 1000, startCash = 1500;
     std::vector<std::pair<int, int>> give;  // (slot, group) handed out before the first roll
 };
@@ -232,7 +239,7 @@ struct Config {
 struct Stats {
     int n = 0;                          // players
     long games = 0, timeouts = 0;
-    std::vector<long> wins, nwWins, seatWins, seatGames, gotMono, winWithMono;
+    std::vector<long> wins, nwWins, seatWins, seatGames, gotMono, winWithMono, firstOut, busted;
     std::vector<std::array<long, 10>> monoBy, winMonoBy;   // [slot][group]
     std::vector<double> netAtEnd, rent;
     std::array<double, 40> rentSq{}, landSq{};
@@ -243,6 +250,7 @@ struct Stats {
     void init(int np) {
         n = np; wins.assign(n, 0); nwWins.assign(n, 0); seatWins.assign(n, 0); seatGames.assign(n, 0);
         gotMono.assign(n, 0); winWithMono.assign(n, 0); monoBy.assign(n, {}); winMonoBy.assign(n, {});
+        firstOut.assign(n, 0); busted.assign(n, 0);
         netAtEnd.assign(n, 0); rent.assign(n, 0); roundsHist.assign(101, 0);
     }
     void add(const Stats& o) {
@@ -250,6 +258,7 @@ struct Stats {
         for (int i = 0; i < n; i++) {
             wins[i] += o.wins[i]; nwWins[i] += o.nwWins[i]; seatWins[i] += o.seatWins[i]; seatGames[i] += o.seatGames[i];
             gotMono[i] += o.gotMono[i]; winWithMono[i] += o.winWithMono[i]; netAtEnd[i] += o.netAtEnd[i]; rent[i] += o.rent[i];
+            firstOut[i] += o.firstOut[i]; busted[i] += o.busted[i];
             for (int g = 0; g < 10; g++) { monoBy[i][g] += o.monoBy[i][g]; winMonoBy[i][g] += o.winMonoBy[i][g]; }
         }
         for (int s = 0; s < 40; s++) { rentSq[s] += o.rentSq[s]; landSq[s] += o.landSq[s]; }
@@ -385,6 +394,8 @@ struct Game {
         return true;
     }
     void bankrupt(int p, int cred) {
+        if (aliveCount == n) st->firstOut[p]++;
+        st->busted[p]++;
         if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"bankrupt\",\"to\":%d}\n", round, p, cred);
         for (int s = 0; s < 40; s++) if (owner[s] == p && houses[s]) {
             if (houses[s] == 5) { bankHotels++; P[p].cash += B[s].hc * 5 / 2; }
@@ -577,6 +588,16 @@ struct Game {
         for (int i = 0; i < GSZ[g]; i++) if (mort[GSQ[g][i]]) return false;
         return true;
     }
+    // the biggest rent any opponent could charge this player right now (utilities at an average roll of 7)
+    int maxOppRent(int p) const {
+        int m = 0;
+        for (int s = 0; s < 40; s++) {
+            int o = owner[s];
+            if (o < 0 || o == p || mort[s] || !P[o].alive) continue;
+            m = std::max(m, rentFor(s, 7, 0));
+        }
+        return m;
+    }
     // build one level on group g if allowed; returns true if a house/hotel went up
     bool buildStep(int p, int g, int maxLevel, int reserve) {
         int s = -1, mn = 9;
@@ -611,14 +632,36 @@ struct Game {
                 }
             }
         if (t.buildMax <= 0) return;
-        int order[8], no = 0;  // favourite sets first, then by return
-        for (int k = 0; k < 8; k++) { int g = BUILD_ORDER[k]; if (t.fav >> GSQ[g][0] & 1) order[no++] = g; }
-        for (int k = 0; k < 8; k++) { int g = BUILD_ORDER[k]; if (!(t.fav >> GSQ[g][0] & 1)) order[no++] = g; }
-        if (t.bpri == 1) {
+        int reserve = t.buildReserve;
+        if (t.dangerFrac > 0) reserve = std::max(reserve, (int)(t.dangerFrac * maxOppRent(p)));
+        // build order: a named first set, then favourites, then by the chosen rule
+        int base[8];
+        for (int k = 0; k < 8; k++) base[k] = BUILD_ORDER[k];
+        if (t.border) std::sort(base, base + 8, [&](int a, int b) {
+            int ca = B[GSQ[a][0]].hc * 100 + B[GSQ[a][GSZ[a] - 1]].price, cb = B[GSQ[b][0]].hc * 100 + B[GSQ[b][GSZ[b] - 1]].price;
+            return t.border == 1 ? ca < cb : ca > cb;
+        });
+        int order[8], no = 0;
+        if (t.firstGroup >= 0) order[no++] = t.firstGroup;
+        for (int k = 0; k < 8; k++) { int g = base[k]; if (g != t.firstGroup && (t.fav >> GSQ[g][0] & 1)) order[no++] = g; }
+        for (int k = 0; k < 8; k++) { int g = base[k]; if (g != t.firstGroup && !(t.fav >> GSQ[g][0] & 1)) order[no++] = g; }
+        if (t.bpri == 1) {          // spread: one level at a time across every set
             for (int L = 1; L <= t.buildMax; L++)
-                for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, L, t.buildReserve)) {} }
-        } else {
-            for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, t.buildMax, t.buildReserve)) {} }
+                for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, L, reserve)) {} }
+        } else if (t.bpri == 3) {   // staged: every set to three houses (in order), then on to hotels
+            for (int L : {3, 5}) {
+                int lv = std::min(L, (int)t.buildMax);
+                for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, lv, reserve)) {} }
+            }
+        } else if (t.bpri == 2) {   // focus: finish one set before spending a dollar on the next
+            for (int k = 0; k < 8; k++) {
+                int g = order[k]; if (!canBuildOn(p, g)) continue;
+                while (buildStep(p, g, t.buildMax, reserve)) {}
+                bool done = true; for (int i = 0; i < GSZ[g]; i++) if (houses[GSQ[g][i]] < t.buildMax) done = false;
+                if (!done) break;
+            }
+        } else {                    // priority: finish one set first, leftover cash goes to the next
+            for (int k = 0; k < 8; k++) { int g = order[k]; if (!canBuildOn(p, g)) continue; while (buildStep(p, g, t.buildMax, reserve)) {} }
         }
     }
 
@@ -746,6 +789,13 @@ struct Game {
         aliveCount = n;
         chance.shuffle(rng); chest.shuffle(rng);
         for (auto& gv : cfg.give) for (int i = 0; i < GSZ[gv.second]; i++) owner[GSQ[gv.second][i]] = gv.first;
+        if (cfg.deal) {  // mid-game snapshot: every other property already bought, dealt out at random
+            int left[40], nl = 0;
+            for (int s = 0; s < 40; s++) if (buyable(s) && owner[s] < 0) left[nl++] = s;
+            for (int i = nl - 1; i > 0; i--) std::swap(left[i], left[rng.below(i + 1)]);
+            int start = rng.below(n);
+            for (int i = 0; i < nl; i++) owner[left[i]] = (start + i) % n;
+        }
         for (int p = 0; p < n; p++) updateMono(p);
         // random seating
         int order[8]; for (int i = 0; i < n; i++) order[i] = i;
@@ -831,6 +881,7 @@ int main(int argc, char** argv) {
         else if (a == "--fp") cfg.freeParking = atoi(nx().c_str());
         else if (a == "--go400") cfg.go400 = atoi(nx().c_str());
         else if (a == "--buyouts") cfg.buyouts = atoi(nx().c_str());
+        else if (a == "--deal") cfg.deal = atoi(nx().c_str());
         else if (a == "--maxrounds") cfg.maxRounds = atoi(nx().c_str());
         else if (a == "--cash") cfg.startCash = atoi(nx().c_str());
         else if (a == "--horizon") horizon = atof(nx().c_str());
@@ -887,8 +938,8 @@ int main(int argc, char** argv) {
            cfg.auctions, cfg.trading, cfg.freeParking, cfg.go400, cfg.buyouts, cfg.maxRounds, cfg.startCash);
     printf("\"players\":[");
     for (int i = 0; i < np; i++) {
-        printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",
-               i ? "," : "", SS[i].name.c_str(), s.wins[i], s.nwWins[i], s.gotMono[i], s.winWithMono[i], s.rent[i] / s.games, s.netAtEnd[i] / s.games);
+        printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"first_out\":%ld,\"busted\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",
+               i ? "," : "", SS[i].name.c_str(), s.wins[i], s.nwWins[i], s.gotMono[i], s.winWithMono[i], s.firstOut[i], s.busted[i], s.rent[i] / s.games, s.netAtEnd[i] / s.games);
         for (int g = 0; g < 8; g++) printf("%s\"%s\":[%ld,%ld]", g ? "," : "", GROUP_NAME[g], s.monoBy[i][g], s.winMonoBy[i][g]);
         printf("}}");
     }
