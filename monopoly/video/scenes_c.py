@@ -11,28 +11,14 @@ from engine import H, W, Camera, clamp, die_face, ease_out, lerp, sf, smooth, tx
 from kit import (F, Bar, Counter, Fn, Grid100, Line, Obj, PagedScene, Stamp, Telegram, Txt, Typed, decision_card, deed,
                  hotel_elevation, house_elevation, ledger_paper, ledger_row, main, note_card, paste, pawn_layer, ring, shadowed, tick,
                  with_alpha)
+from kit import patent_world
 from scenes_b import houses_row, swatch
 
 SEP, RED, GREEN, G = sf.SEPIA, sf.STAMP, sf.NOTE_GREEN, sf.GROUP
-PATENT_SRC = (1805, 2809)
 
 
 def plain(seed):
     return sf.paper(seed=seed)
-
-
-def patent_world():
-    """The patent sheet on the desk, as in the cold open; returns (world, sheet-pixel -> world-pixel)."""
-    WW, WH = 3840, 2160
-    world = sf.paper(WW, WH, seed=21)
-    sheet_h = 2040
-    k = sheet_h / PATENT_SRC[1]
-    pd = sf.patent_drawing(sheet_h)
-    ox, oy = (WW - pd.size[0]) // 2, 60
-    sheet = sf.paper(pd.size[0] + 60, pd.size[1] + 40, base=(242, 234, 214), seed=22)
-    sheet.alpha_composite(pd, (30, 10))
-    sf.paste_shadowed(world, sheet, (ox - 30, oy - 10), offset=(14, 18), blur=18, alpha=110)
-    return world, (lambda x, y: (ox + x * k, oy + y * k))
 
 
 def bars_layer(n=9, h=H, seed=0):
@@ -206,18 +192,18 @@ class Payoff(PagedScene):
         p = self.page(plain(172), c('How much is that worth') - 0.2)
         p.add(Typed(c('How much is that worth'), (1010, 120), 'How much is that worth?', F('serif', 52)))
         notes = [(100, (40, 92, 70), -12, (70, 150)), (100, (40, 92, 70), -4, (150, 330)), (50, (86, 60, 40), 6, (110, 520))]
-        t_take = c("We took that player's money")
+        t_take = c('We gave a typical player')
         for k, (v, ink, ang, xy) in enumerate(notes):
             n = sf.banknote(v, ink, 20 + k)
             p.add(Obj(t_take + 0.3 * k, n, xy, how='left', angle=ang, dur=0.5))
-        p.add(Txt(t_take + 0.6, (1010, 210), 'until it was no better than a typical player', F('hand', 34), fill=SEP))
-        p.add(Typed(c('It could give up'), (1000, 255), '$250', F('deco', 230), fill=RED, cps=8))
-        p.add(Txt(c('Playing the typical way'), (1010, 530), 'Playing the typical way is like', F('sc', 36), fill=SEP),
-              Typed(c('like handing the bank'), (1010, 590), 'handing the bank $250', F('serif', 60)),
-              Typed(c("before you've rolled"), (1010, 670), 'before you’ve rolled.', F('serif', 60)),
+        p.add(Txt(c('We gave a typical player') + 0.2, (1010, 205), 'extra cash a typical player needs to keep up:', F('hand', 34), fill=SEP),
+              Typed(c('It took three hundred'), (1000, 245), '$300', F('deco', 200), fill=RED, cps=8))
+        p.add(Txt(c('Turn that around'), (1010, 500), 'Turn it around: playing the typical way is like', F('sc', 32), fill=SEP),
+              Typed(c('like handing'), (1010, 555), 'handing the bank $250', F('serif', 60)),
+              Typed(c("before you've rolled"), (1010, 635), 'before you’ve rolled.', F('serif', 60)),
               Stamp(c("before you've rolled") + 0.9, (430, 900), ['PAID TO', 'THE BANK'], angle=-8, size=60),
-              Txt(c('Even without auctions'), (1010, 820), 'Without auctions: about $200,', F('hand', 40), fill=SEP),
-              Txt(c('the same as passing Go'), (1010, 880), 'the same as passing Go.', F('hand', 40), fill=SEP))
+              Txt(c('Even without auctions'), (1010, 790), 'Without auctions: about $200 either way,', F('hand', 40), fill=SEP),
+              Txt(c('the same as passing Go'), (1010, 850), 'the same as passing Go.', F('hand', 40), fill=SEP))
 
         # game nights
         p = self.page(ledger_paper(173, rules=[300 + k * 120 for k in range(5)], top=170), c('Play these decisions well') - 0.2)

@@ -112,17 +112,13 @@ class Scene:
     def frame(self, t):  # pragma: no cover - each scene draws its own
         raise NotImplementedError
 
-    # ------------------------------------------------------------ finishing: grain, weave, vignette
+    # ------------------------------------------------------------ finishing: film grain
     def finish(self, img, i):
         a = np.asarray(img.convert('RGB'), np.float32)
         g = self.grain[i % len(self.grain)]
         g = np.repeat(np.repeat(g, 2, 0), 2, 1)
         a += g[..., None]
-        out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
-        dx, dy = int(round(math.sin(i * 0.37) * 0.8)), int(round(math.cos(i * 0.29) * 0.8))  # gate weave
-        if dx or dy:
-            out = out.transform(out.size, Image.AFFINE, (1, 0, dx, 0, 1, dy), resample=Image.BILINEAR)
-        return out
+        return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))  # no gate weave: a steady frame reads better
 
     def draw_captions(self, img, t):
         for t0, t1, s in self.captions():
@@ -189,7 +185,7 @@ class Camera:
         w, h = min(W / z, WW), min(H / z, WH)
         cx, cy = clamp(cx, w / 2, WW - w / 2), clamp(cy, h / 2, WH - h / 2)   # keep the view on the world
         box = (cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
-        if z < 0.9:  # zoomed out: sample the half-size copy
+        if z <= 0.5:  # zoomed right out: the half-size copy is already at screen scale (never magnify it: that blurs and pops)
             return self.half.resize((W, H), Image.BILINEAR, box=tuple(v / 2 for v in box)).convert('RGBA')
         return self.world.resize((W, H), Image.BILINEAR, box=box).convert('RGBA')
 
@@ -285,7 +281,7 @@ def stamp_in(img, t, t0, center, lines, angle=-8, size=64, seed=5):
     img.alpha_composite(lay, (max(0, px), max(0, py)), (max(0, -px), max(0, -py)))
 
 
-def shake(img, t, t0, amp=6, dur=0.25):
+def shake(img, t, t0, amp=2.5, dur=0.18):
     if t0 <= t < t0 + dur:
         k = 1 - (t - t0) / dur
         dx, dy = amp * k * math.sin((t - t0) * 90), amp * k * math.cos((t - t0) * 70)

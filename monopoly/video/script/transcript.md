@@ -3,7 +3,7 @@
 Narration for ElevenLabs, scene by scene. Numbers are written the way they should be spoken. The same text with no
 headings, ready to paste, is in `narration_elevenlabs.txt` (one paragraph per scene, in this order).
 
-**About 1,950 words: roughly 12 to 13.5 minutes, depending on the voice's pace.**
+**About 2,010 words. Recorded in the "Mark" voice it runs about 11 minutes.**
 
 ## How to generate it
 
@@ -27,13 +27,13 @@ this passage, which has a number, a twist and a punchline:
 > Three hundred, about sixteen. But surely the cushion keeps you safe? It doesn't. Playing the typical way
 > is like handing the bank two hundred and fifty dollars before you've rolled.
 
-## 01 — Cold open: the patent
+## 01 — Cold open: the hook, then the patent
 
-*Audio file:* `01_cold_open.mp3`  ·  *about 50 words, 19 seconds*
+*Audio file:* `01_cold_open.mp3`  ·  *99 words, 31.6 seconds as recorded*
 
-*On screen:* The 1904 patent drawing on a desk; push in on "PATENTED JAN. 5, 1904", then "L. J. MAGIE"; pan to her corner "NO TRESPASSING - GO TO JAIL".
+*On screen:* "FIVE DECISIONS"; three $100 notes drop and "$300" is typed; four pawns, yours at $1,800 and the others at $1,500; a counter runs to 13,400,000 games. Then the 1904 patent on the desk: a slow push to "PATENTED JAN. 5, 1904", pull back to the whole board, "You know it as Monopoly."
 
-In nineteen-oh-four, a woman named Lizzie Magie was granted a patent for a board game. She called it The Landlord's Game. She designed it to show how landlords get rich while everyone else pays the rent. Thirty years later, the game had a new name. You know it as Monopoly.
+Five decisions in Monopoly are worth three hundred dollars, every single game. Get them right, and it's like starting with three hundred dollars more than everyone else at the table. We played more than thirteen million games to find them. And the game itself? It started as a warning. In nineteen-oh-four, a woman named Lizzie Magie was granted a patent for a board game. She called it The Landlord's Game. She designed it to show how landlords get rich while everyone else pays the rent. Thirty years later, the game had a new name. You know it as Monopoly.
 
 ## 02 — The promise
 
@@ -133,11 +133,11 @@ One more test. We let the computer invent its own player, by trial and error. St
 
 ## 10 — The payoff: the playbook player
 
-*Audio file:* `10_the_payoff.mp3`  ·  *about 161 words, 62 seconds*
+*Audio file:* `10_the_payoff.mp3`  ·  *173 words, 56.8 seconds as recorded*
 
-*On screen:* Banknotes pushed to the bank (frame 08) for the $250 line; game-night ledger tallies (frame 07); a year of weekly tallies racing; the trophy shelf.
+*On screen:* Banknotes slide in; "$300" (the extra cash a typical player needs to keep up); "Turn it around: handing the bank $250 before you've rolled", stamped PAID TO THE BANK; game-night ledger tallies; the trophy shelf, 100 years of weekly game nights.
 
-So put it all together. One player who makes every one of these decisions well, and never picks a favourite colour. Same dice as everyone else. How much is that worth? We took that player's money away, until it was no better than a typical player. It could give up two hundred and fifty dollars. Playing the typical way is like handing the bank two hundred and fifty dollars before you've rolled. Even without auctions, it's about two hundred, the same as passing Go. Play these decisions well, and you win about thirty-three games in a hundred, while each of the people you're playing wins about twenty-two. That's three games for every two of theirs. And it compounds. Play once a week for a year, with the same family. The player with the playbook finishes the year as champion two years out of three. Each of the others? About one year in eleven. Same dice. No favourite colour. Just better decisions.
+So put it all together. One player who makes every one of these decisions well, and never picks a favourite colour. Same dice as everyone else. How much is that worth? Remember the three hundred dollars? We gave a typical player extra cash at the start, until they won as often as the playbook player. It took three hundred dollars. Turn that around, and playing the typical way is like handing the bank two hundred and fifty dollars before you've rolled. Even without auctions, it's about two hundred dollars either way, the same as passing Go. Play these decisions well, and you win about thirty-three games in a hundred, while each of the people you're playing wins about twenty-two. That's three games for every two of theirs. And it compounds. Play once a week for a year, with the same family. The player with the playbook finishes the year as champion two years out of three. Each of the others? About one year in eleven. Same dice. No favourite colour. Just better decisions.
 
 ## 11 — The playbook
 
@@ -152,5 +152,5 @@ Here's the playbook. One. Land on it? Buy it, unless it would leave you nearly b
 Every figure is from `sim/results/summary.md`, "Final numbers for the video" (realistic play, endgame deals on, with
 auctions unless the line says otherwise; 100,000 games per result, 13.4 million in all), "Framing the payoff" and
 "Final: two complete sets". Spoken numbers are rounded: for example "about twenty-seven" is 27.0, "about
-thirty-three" is 32.6, "two hundred and fifty dollars" is the measured $249, "two years out of three" is 64.8%
+thirty-three" is 32.6, "three hundred dollars" is the measured $298 (extra starting cash a typical player needs to match the playbook player), "two hundred and fifty dollars" is the measured $249 (cash the playbook player can hand the bank and still keep up), "about two hundred dollars either way" without auctions is $212 and $197, "two years out of three" is 64.8%
 and "one year in eleven" is 8.5-8.9%.

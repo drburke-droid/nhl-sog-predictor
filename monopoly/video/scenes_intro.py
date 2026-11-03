@@ -11,58 +11,61 @@ from PIL import Image
 
 from engine import (FPS, H, W, Camera, Scene, clamp, die_face, ease_out, fade, lerp, ramp, sf, shake, slip, smooth,
                     stamp_in, txt, typewriter)
+from kit import F, Counter, Fn, Obj, PagedScene, Txt, Typed, main, patent_world, pawn_layer
 
 PATENT_SRC = (1805, 2809)  # pixel size of the patent sheet as scanned
 
 
-class ColdOpen(Scene):
-    """The 1904 patent on a desk; the camera visits the date, Magie's signature, the board and her jail corner."""
+class ColdOpen(PagedScene):
+    """The hook ($300, thirteen million games), then the 1904 patent on the desk, with two slow camera moves."""
 
     def __init__(self):
         super().__init__('01_cold_open')
-        WW, WH = 3840, 2160
-        self.world = sf.paper(WW, WH, seed=21)
-        sheet_h = 2040
-        self.k = sheet_h / PATENT_SRC[1]
-        pd = sf.patent_drawing(sheet_h)
-        self.ox, self.oy = (WW - pd.size[0]) // 2, 60
-        sheet = sf.paper(pd.size[0] + 60, pd.size[1] + 40, base=(242, 234, 214), seed=22)
-        sheet.alpha_composite(pd, (30, 10))
-        sf.paste_shadowed(self.world, sheet, (self.ox - 30, self.oy - 10), offset=(14, 18), blur=18, alpha=110)
-        P = self.p
-        full = (WW / 2, WH / 2, 0.5)
-        self.cam = Camera(self.world, [
-            (0.0, *P(1300, 2470), 1.35),                              # Magie's signature as her name is spoken
-            (self.cue('was granted') - 0.2, *P(1300, 2470), 1.5),
-            (self.cue('for a board game'), *P(1300, 150), 1.55),      # up to "PATENTED JAN. 5, 1904"
-            (self.cue('She called it') - 0.1, *P(1240, 170), 1.6),
-            (self.cue('She called it') + 0.9, *full),
-            (self.cue('She designed it') + 0.8, *full),
-            (self.cue('while everyone else') + 0.4, *P(300, 2030), 1.35),
-            (self.cue('Thirty years later') + 0.6, *P(300, 830), 1.4),
-            (self.cue('You know it as') + 0.2, *P(300, 830), 1.45),
-            (self.dur - 0.3, *full),
-        ])
+        c = self.cue
+        # the hook
+        p = self.page(sf.paper(seed=20))
+        p.add(Typed(c('Five decisions'), (W / 2, 120), 'FIVE DECISIONS', F('deco', 110), anchor='mm', cps=22))
+        for k in range(3):
+            note = sf.banknote(100, (40, 92, 70), 50 + k)
+            p.add(Obj(c('worth three hundred dollars') + 0.25 * k, note, (110 + k * 40, 200 + k * 90), how='drop', angle=[-9, 4, -3][k]))
+        p.add(Typed(c('worth three hundred dollars') + 0.6, (1040, 200), '$300', F('deco', 230), fill=sf.STAMP, cps=10),
+              Txt(c('every single game'), (1060, 470), 'every single game', F('hand', 48), fill=sf.SEPIA))
+        for k in range(4):
+            col = (150, 52, 40) if k == 0 else sf.BRASS
+            t0 = c('Get them right') + (0 if k == 0 else 0.6 + 0.15 * k)
+            p.add(Obj(t0, pawn_layer(120, col), (240 + k * 300, 760), how='drop'),
+                  Txt(t0 + 0.2, (312 + k * 300, 945), '$1,800' if k == 0 else '$1,500', F('type', 40), fill=sf.STAMP if k == 0 else sf.INK,
+                      anchor='mm'))
+        p.add(Txt(c('more than everyone else'), (312, 1000), 'YOU', F('sc', 30), fill=sf.STAMP, anchor='mm'),
+              Txt(c('We played more than'), (1660, 760), 'games played', F('sc', 32), fill=sf.SEPIA, anchor='mm'),
+              Counter(c('We played more than'), c('to find them') + 0.4, (1660, 830), 0, 13_400_000, lambda v: '{:,}'.format(int(v)),
+                      F('type', 60), fill=sf.STAMP, anchor='mm'))
 
-    def p(self, x, y):
-        """Patent-sheet pixel -> world pixel."""
-        return self.ox + x * self.k, self.oy + y * self.k
+        # the patent
+        world, P = patent_world()
+        full = (world.size[0] / 2, world.size[1] / 2 + 20, 0.5)
+        t0 = c('And the game itself') - 0.1
+        head = P(1300, 160)
+        self.cam = Camera(world, [(t0, *full), (c('In nineteen-oh-four') + 0.3, *full[:2], 0.53),
+                                  (c('was granted') + 0.4, *head, 1.25), (c('She called it') + 0.1, *head, 1.32),
+                                  (c('She designed it') - 0.2, *full[:2], 0.54), (self.dur, *full[:2], 0.58)])
+        p = self.page(sf.paper(seed=21), t0, enter='fade', zoom=0)
+        p.add(Fn(t0 - 0.01, lambda img, t, a: img.paste(self.cam.view(t), (0, 0))))
+        self.slips = [(c('was granted') - 0.1, ['U.S. PATENT No. 748,626', 'GRANTED JANUARY 5, 1904'], (70, 70)),
+                      (c('She called it') + 0.2, ['THE LANDLORD’S GAME', 'BY LIZZIE J. MAGIE'], (70, 230))]
+        for ts, lines, xy in self.slips:
+            p.add(Fn(ts, lambda img, t, a, ts=ts, lines=lines, xy=xy: t < c('Thirty years later') and slip(img, xy, lines, t, ts, width=560)))
+        t_k = c('You know it as') + 0.4
 
-    def frame(self, t):
-        img = self.cam.view(t).convert('RGBA')
-        if t < self.cue('Thirty years later'):
-            slip(img, (70, 70), ['U.S. PATENT No. 748,626', 'GRANTED JANUARY 5, 1904'], t, self.cue('was granted') - 0.1, width=560)
-        if self.cue('She called it') < t < self.cue('Thirty years later'):
-            slip(img, (70, 230), ['THE LANDLORD’S GAME', 'BY LIZZIE J. MAGIE'], t, self.cue('She called it') + 0.2, width=560)
-        if t >= self.cue('You know it as') + 0.6:
-            a = ramp(t, self.cue('You know it as') + 0.6, 0.5)
-            txt(img, (W / 2, H / 2 + 330), 'You know it as Monopoly.', sf.font('serif', 56), fill=sf.INK, anchor='mm', alpha=int(255 * a))
-        return fade(img, ramp(t, 0, 1.2))
+        def known(img, t, a):
+            al = clamp((t - t_k) / 0.5)
+            img.alpha_composite(Image.new('RGBA', (W, 130), (239, 228, 204, int(225 * al))), (0, H - 200))
+            txt(img, (W / 2, H - 135), 'You know it as Monopoly.', F('serif', 64), anchor='mm', alpha=int(255 * al))
+        p.add(Fn(t_k, known))
 
     def extra_sfx(self):
         ev = []
-        for t0, lines in ((self.cue('was granted') - 0.1, ['U.S. PATENT No. 748,626', 'GRANTED JANUARY 5, 1904']),
-                          (self.cue('She called it') + 0.2, ['THE LANDLORD’S GAME', 'BY LIZZIE J. MAGIE'])):
+        for t0, lines, _ in self.slips:
             ev.append((t0, 'tap'))
             ev += [(t0 + 0.15 + i / 30, 'key') for i, ch in enumerate(''.join(lines)) if ch.strip()]
         return ev
@@ -138,6 +141,4 @@ class Promise(Scene):
 SCENES = {'01_cold_open': ColdOpen, '02_the_promise': Promise}
 
 if __name__ == '__main__':
-    name = sys.argv[1]
-    cap = '--captions' in sys.argv
-    print(SCENES[name]().render(captions=cap))
+    main(SCENES)

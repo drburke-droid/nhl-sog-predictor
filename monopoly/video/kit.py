@@ -518,6 +518,23 @@ def deed(name, price, group, seed=0, w=640, h=400):
 
 
 # ---------------------------------------------------------------- shared pieces for the decision scenes
+PATENT_SRC = (1805, 2809)  # the scanned patent sheet, pixels
+
+
+def patent_world():
+    """The patent sheet on the desk, as in the cold open; returns (world, sheet-pixel -> world-pixel)."""
+    WW, WH = 3840, 2160
+    world = sf.paper(WW, WH, seed=21)
+    sheet_h = 2040
+    k = sheet_h / PATENT_SRC[1]
+    pd = sf.patent_drawing(sheet_h)
+    ox, oy = (WW - pd.size[0]) // 2, 60
+    sheet = sf.paper(pd.size[0] + 60, pd.size[1] + 40, base=(242, 234, 214), seed=22)
+    sheet.alpha_composite(pd, (30, 10))
+    sf.paste_shadowed(world, sheet, (ox - 30, oy - 10), offset=(14, 18), blur=18, alpha=110)
+    return world, (lambda x, y: (ox + x * k, oy + y * k))
+
+
 def tick(page, t0, x, y, size=30, seed=0):
     """A red check mark, inked."""
     page.add(Line(t0, [(x, y + size * 0.5), (x + size * 0.38, y + size), (x + size, y)], width=6, dur=0.25, amp=0.6, seed=seed))
