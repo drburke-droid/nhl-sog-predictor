@@ -343,7 +343,79 @@ def exp_building(n_games=100000, n_scen=20000):
                     n_scen, give=give, deal=1, cash=cash, **cfg)
 
 
-EXPERIMENTS = {'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
+CONTROL_VARIANTS = [
+    # buy or pass
+    ('buy_always', 'everything'),
+    ('pass_if_left_under_100', 'everything;reserve=100'),
+    ('pass_if_left_under_200', 'everything;reserve=200'),
+    ('pass_if_left_under_300', 'everything;reserve=300'),
+    ('pass_if_left_under_500', 'everything;reserve=500'),
+    ('pass_if_under_300_except_set_cards', 'everything;reserve=300;stretch=1'),
+    ('mortgage_to_buy_set_cards', 'everything;buymort=1'),
+    ('mortgage_to_buy_anything', 'everything;buymort=2'),
+    ('bid_half_price', 'everything;bid=0.5'), ('bid_3_quarters', 'everything;bid=0.75'),
+    ('bid_1_5x', 'everything;bid=1.5'), ('bid_2x', 'everything;bid=2.0'),
+    ('bid_2x_to_block', 'everything;blockbid=2.0'),
+    # trading
+    ('never_trade', 'everything;trade=none'), ('picky_trader', 'everything;trade=picky'),
+    ('haggler', 'everything;trade=shark'), ('trade_only_with_200', 'everything;tcash=200'),
+    ('trade_only_with_400', 'everything;tcash=400'),
+    # railroads
+    ('railroad_fan', 'everything;fav=rr'), ('railroad_trader', 'everything;rrtrade=1'),
+    ('railroad_collector', 'everything;fav=rr;rrtrade=1;buymort=1'), ('never_buy_railroads', 'everything;buy=all-rr'),
+    # cash when you owe
+    ('sell_houses_before_mortgaging', 'everything;raise=sell'),
+    # jail
+    ('jail_stay', 'everything;jail=stay'), ('jail_smart', 'everything;jail=smart'), ('jail_zone', 'everything;jail=zone'),
+    ('jail_houses', 'everything;jail=houses'), ('jail_unsold', 'everything;jail=unsold'), ('jail_roll_first', 'everything;jail=rollfirst'),
+]
+
+
+def exp_controls(n_games=100000):
+    """The decisions a player controls, under realistic play: buy or pass, trading, railroads, raising cash, jail."""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    for k, sp in CONTROL_VARIANTS:
+        sp = sp.replace('everything', 'everything;name=%s' % k, 1)
+        run('controls', 'official__' + k, [sp] + [typ] * 3, n_games, tv=tv, **REAL_WORLDS['real_official'])
+    for k in ('buy_always', 'pass_if_left_under_300', 'mortgage_to_buy_set_cards', 'bid_2x', 'picky_trader', 'trade_only_with_400',
+              'railroad_collector', 'sell_houses_before_mortgaging', 'jail_stay', 'jail_smart', 'jail_zone', 'jail_roll_first'):
+        sp = dict(CONTROL_VARIANTS)[k].replace('everything', 'everything;name=%s' % k, 1)
+        run('controls', 'family__' + k, [sp] + [typ] * 3, n_games, tv=tv, **REAL_WORLDS['real_family'])
+    best = json.load(open(os.path.join(RES, 'evolve_real', 'stage1_final.json')))[0]['genome']
+    base = er.spec(best, 'Evolved')
+    def ev(**kw):
+        parts = [p_ for p_ in base.split(';') if p_.split('=')[0] not in kw]
+        return ';'.join(parts + ['%s=%s' % kv for kv in kw.items()])
+    for k, sp in (('evolved', base), ('evolved_jail_leave', ev(jail='leave')), ('evolved_jail_stay', ev(jail='stay')),
+                  ('evolved_jail_zone', ev(jail='zone')), ('evolved_jail_roll_first', ev(jail='rollfirst')),
+                  ('evolved_railroad_trader', ev(rrtrade=1)), ('evolved_mortgage_to_buy_set_cards', ev(buymort=1)),
+                  ('evolved_picky_trader', ev(trade='picky'))):
+        run('controls', 'official__' + k, [sp] + [typ] * 3, n_games, tv=tv, **REAL_WORLDS['real_official'])
+
+
+PLAYBOOK = 'everything;name=Playbook;bid=1.5;buymort=1;rrtrade=1;m2b=1;border=cheap;jail=houses'
+
+
+def exp_playbook(n_games=100000):
+    """Every best choice from the controls and building experiments in one player."""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    off, fam = REAL_WORLDS['real_official'], REAL_WORLDS['real_family']
+    run('playbook', 'official__playbook', [PLAYBOOK] + [typ] * 3, n_games, tv=tv, **off)
+    run('playbook', 'official__playbook_keep_100', [PLAYBOOK + ';breserve=100'] + [typ] * 3, n_games, tv=tv, **off)
+    run('playbook', 'official__playbook_railroad_fan', [PLAYBOOK + ';fav=rr'] + [typ] * 3, n_games, tv=tv, **off)
+    run('playbook', 'family__playbook', [PLAYBOOK] + [typ] * 3, n_games, tv=tv, **fam)
+    run('playbook', 'official__typical_vs_3_playbook', [typ] + [PLAYBOOK] * 3, n_games, tv=tv, **off)
+    run('playbook', 'official__four_playbook', [PLAYBOOK] * 4, n_games, tv=tv, **off)
+    for n in (2, 3, 5, 6):
+        run('playbook', 'official__playbook_n%d' % n, [PLAYBOOK] + [typ] * (n - 1), n_games // 2, tv=tv, **off)
+        run('playbook', 'official__typical_n%d' % n, [typ] * n, n_games // 2, tv=tv, **off)
+
+
+EXPERIMENTS = {'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
 if __name__ == '__main__':

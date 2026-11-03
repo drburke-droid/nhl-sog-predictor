@@ -367,6 +367,33 @@ def main():
             summary['building_pairs'][cash] = out
             md.append('')
 
+    # ---- the decisions a player controls (realistic play)
+    ctl = load('controls')
+    pb = load('playbook')
+    if ctl:
+        def cw(k):
+            d = ctl[k]; p0 = d['players'][0]; n = d['games']
+            return dict(win=pct(p0['wins'] / n), first_out=pct(p0['first_out'] / n), all_rr=pct(p0['all_rr'] / n),
+                        all_rr_win=pct(p0['all_rr_win'] / max(1, p0['all_rr'])), draws=pct(d['timeouts'] / n))
+        summary['controls'] = {k: cw(k) for k in ctl}
+        md += ['## The decisions a player controls (realistic play, one player vs three typical players, 100,000 games each)', '',
+               'Typical player = buys what it lands on, makes every fair set-for-set swap, builds as far as cash allows, leaves jail at once.', '',
+               '| Choice | Wins per 100 | First to go bankrupt | Collected all four railroads | Won when it did |', '|---|---|---|---|---|']
+        for k in sorted(ctl):
+            r = summary['controls'][k]
+            md.append('| %s | %.1f | %.1f%% | %.1f%% | %.0f%% |' % (k.replace('__', ': ').replace('_', ' '), r['win'], r['first_out'], r['all_rr'], r['all_rr_win']))
+        md.append('')
+    if pb:
+        summary['playbook'] = {k: pct(d['players'][0]['wins'] / d['games']) for k, d in pb.items()}
+        md += ['## The playbook player (every best choice above, no favourite colours)', '',
+               'Spec: `buy everything; bid up to 1.5x list at auction; mortgage to buy a card that completes or blocks a set; fair '
+               'set-for-set swaps, railroads included; build cheaper sets first to hotels; mortgage loose property to build; mortgage '
+               'before selling houses; leave jail early, stay once anyone has houses`.', '',
+               '| Table | First-named player wins per 100 |', '|---|---|']
+        for k in sorted(pb):
+            md.append('| %s | %.1f |' % (k.replace('__', ': ').replace('_', ' '), summary['playbook'][k]))
+        md.append('')
+
     # ---- learned shark
     shark = load('shark')
     if shark:

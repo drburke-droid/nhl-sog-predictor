@@ -602,6 +602,83 @@ You own two complete colour sets; every other property has already been bought (
 | A=yellow, B=darkblue | 75.4 | 70.0 | 76.9 | 73.4 | 70.3 | yellow to 3, then darkblue |
 | A=green, B=darkblue | 68.3 | 68.8 | 70.0 | 72.2 | 66.0 | darkblue to 3, then green |
 
+## The decisions a player controls (realistic play, one player vs three typical players, 100,000 games each)
+
+Typical player = buys what it lands on, makes every fair set-for-set swap, builds as far as cash allows, leaves jail at once.
+
+| Choice | Wins per 100 | First to go bankrupt | Collected all four railroads | Won when it did |
+|---|---|---|---|---|
+| family: bid 2x | 21.7 | 21.7% | 3.9% | 80% |
+| family: buy always | 21.7 | 21.7% | 3.9% | 80% |
+| family: jail roll first | 21.4 | 21.3% | 3.7% | 82% |
+| family: jail smart | 22.5 | 19.9% | 3.9% | 82% |
+| family: jail stay | 21.1 | 20.6% | 3.7% | 82% |
+| family: jail zone | 22.4 | 20.6% | 4.0% | 82% |
+| family: mortgage to buy set cards | 22.0 | 21.8% | 4.0% | 80% |
+| family: pass if left under 300 | 20.5 | 21.8% | 3.5% | 80% |
+| family: picky trader | 21.2 | 21.3% | 3.3% | 79% |
+| family: railroad collector | 23.0 | 21.3% | 25.3% | 51% |
+| family: sell houses before mortgaging | 18.3 | 23.7% | 3.5% | 79% |
+| family: trade only with 400 | 22.2 | 21.7% | 3.8% | 82% |
+| official: bid 1 5x | 23.7 | 21.6% | 4.6% | 82% |
+| official: bid 2x | 23.7 | 21.6% | 4.6% | 82% |
+| official: bid 2x to block | 22.5 | 21.6% | 4.2% | 82% |
+| official: bid 3 quarters | 20.6 | 21.7% | 3.8% | 82% |
+| official: bid half price | 20.5 | 21.9% | 3.7% | 82% |
+| official: buy always | 21.8 | 21.8% | 4.1% | 82% |
+| official: evolved | 31.3 | 18.4% | 5.2% | 86% |
+| official: evolved jail leave | 29.8 | 20.6% | 5.1% | 85% |
+| official: evolved jail roll first | 29.8 | 20.1% | 4.9% | 85% |
+| official: evolved jail stay | 30.0 | 19.3% | 4.9% | 85% |
+| official: evolved jail zone | 30.7 | 19.5% | 5.2% | 85% |
+| official: evolved mortgage to buy set cards | 31.9 | 18.5% | 5.3% | 86% |
+| official: evolved picky trader | 26.4 | 18.7% | 4.0% | 82% |
+| official: evolved railroad trader | 32.6 | 18.0% | 24.2% | 63% |
+| official: haggler | 16.4 | 23.7% | 2.9% | 77% |
+| official: jail houses | 22.9 | 19.6% | 4.2% | 83% |
+| official: jail roll first | 21.6 | 21.2% | 4.0% | 83% |
+| official: jail smart | 22.7 | 19.7% | 4.2% | 82% |
+| official: jail stay | 21.7 | 20.4% | 3.9% | 83% |
+| official: jail unsold | 22.7 | 19.9% | 4.2% | 82% |
+| official: jail zone | 22.5 | 20.7% | 4.1% | 83% |
+| official: mortgage to buy anything | 22.2 | 22.4% | 4.4% | 83% |
+| official: mortgage to buy set cards | 22.3 | 21.8% | 4.2% | 83% |
+| official: never buy railroads | 21.9 | 23.3% | 1.8% | 90% |
+| official: never trade | 6.3 | 21.3% | 0.5% | 40% |
+| official: pass if left under 100 | 21.5 | 21.8% | 3.9% | 83% |
+| official: pass if left under 200 | 20.9 | 21.9% | 3.7% | 82% |
+| official: pass if left under 300 | 20.1 | 22.0% | 3.5% | 81% |
+| official: pass if left under 500 | 17.6 | 22.8% | 2.8% | 81% |
+| official: pass if under 300 except set cards | 21.0 | 21.9% | 3.6% | 82% |
+| official: picky trader | 22.0 | 21.3% | 3.4% | 80% |
+| official: railroad collector | 24.2 | 21.1% | 26.1% | 54% |
+| official: railroad fan | 21.8 | 21.7% | 4.6% | 80% |
+| official: railroad trader | 23.6 | 21.2% | 24.5% | 55% |
+| official: sell houses before mortgaging | 17.3 | 24.3% | 3.4% | 80% |
+| official: trade only with 200 | 21.5 | 22.0% | 3.9% | 83% |
+| official: trade only with 400 | 22.0 | 22.1% | 3.8% | 85% |
+
+## The playbook player (every best choice above, no favourite colours)
+
+Spec: `buy everything; bid up to 1.5x list at auction; mortgage to buy a card that completes or blocks a set; fair set-for-set swaps, railroads included; build cheaper sets first to hotels; mortgage loose property to build; mortgage before selling houses; leave jail early, stay once anyone has houses`.
+
+| Table | First-named player wins per 100 |
+|---|---|
+| family: playbook | 25.0 |
+| official: four playbook | 22.6 |
+| official: playbook | 28.8 |
+| official: playbook keep 100 | 29.1 |
+| official: playbook n2 | 58.6 |
+| official: playbook n3 | 41.1 |
+| official: playbook n5 | 16.3 |
+| official: playbook n6 | 9.1 |
+| official: playbook railroad fan | 28.8 |
+| official: typical n2 | 50.4 |
+| official: typical n3 | 33.3 |
+| official: typical n5 | 12.7 |
+| official: typical n6 | 7.4 |
+| official: typical vs 3 playbook | 19.2 |
+
 ## Teaching the Shark (one strategy vs three Yes-Men, official rules)
 
 Learned set values: points of win rate a Yes-Man loses by never buying the set, x $100: orange $595, lightblue $584, pink $410, darkblue $246, brown $233, red $168, yellow $46, green $-141

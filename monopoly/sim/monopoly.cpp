@@ -135,6 +135,11 @@ struct Strat {
     int firstGroup = -1;      // build this colour set before any other
     int border = 0;           // order of the rest: 0 by return on 3 houses, 1 cheapest houses first, 2 dearest first
     double dangerFrac = 0;    // when building, keep this multiple of the biggest rent an opponent can charge now
+    // other decisions a player controls
+    int buyMort = 0;          // mortgage other property to buy what you land on: 1 if it completes or blocks a set, 2 always
+    int tradeCash = 0;        // only make a swap when holding at least this much cash (to build straight away)
+    bool rrTrade = false;     // also swap set-for-set to collect all four railroads
+    int raiseOrder = 0;       // short of cash: 0 mortgage loose property before selling houses, 1 sell houses first
 };
 
 static uint64_t maskFromName(const std::string& w) {
@@ -211,8 +216,9 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "build") s.buildMax = atoi(v.c_str());
         else if (k == "breserve") s.buildReserve = atoi(v.c_str());
         else if (k == "bpri") s.bpri = (v == "priority" ? 0 : v == "spread" ? 1 : v == "focus" ? 2 : v == "staged" ? 3 : atoi(v.c_str()));
-        else if (k == "jail") s.jail = (v == "leave" ? 0 : v == "stay" ? 1 : v == "smart" ? 2 : atoi(v.c_str()));
-        else if (k == "trade") s.trade = (v == "none" ? 0 : v == "fair" ? 1 : v == "shark" ? 2 : atoi(v.c_str()));
+        else if (k == "jail") s.jail = (v == "leave" ? 0 : v == "stay" ? 1 : v == "smart" ? 2 : v == "zone" ? 3 : v == "houses" ? 4 :
+                                        v == "unsold" ? 5 : v == "rollfirst" ? 6 : atoi(v.c_str()));
+        else if (k == "trade") s.trade = (v == "none" ? 0 : v == "fair" ? 1 : v == "shark" ? 2 : v == "picky" ? 3 : atoi(v.c_str()));
         else if (k == "m2b") s.m2b = atoi(v.c_str()) != 0;
         else if (k == "stretch") s.stretch = atoi(v.c_str()) != 0;
         else if (k == "sell") s.sellPremium = atof(v.c_str());
@@ -224,6 +230,10 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "first") { s.firstGroup = -1; for (int g = 0; g < 8; g++) if (v == GROUP_NAME[g]) s.firstGroup = g; }
         else if (k == "border") s.border = (v == "roi" ? 0 : v == "cheap" ? 1 : v == "dear" ? 2 : atoi(v.c_str()));
         else if (k == "danger") s.dangerFrac = atof(v.c_str());
+        else if (k == "buymort") s.buyMort = atoi(v.c_str());
+        else if (k == "tcash") s.tradeCash = atoi(v.c_str());
+        else if (k == "rrtrade") s.rrTrade = atoi(v.c_str()) != 0;
+        else if (k == "raise") s.raiseOrder = (v == "mortgage" ? 0 : v == "sell" ? 1 : atoi(v.c_str()));
         else { fprintf(stderr, "unknown key '%s'\n", k.c_str()); exit(1); }
     }
     return s;
@@ -239,7 +249,7 @@ struct Config {
 struct Stats {
     int n = 0;                          // players
     long games = 0, timeouts = 0;
-    std::vector<long> wins, nwWins, seatWins, seatGames, gotMono, winWithMono, firstOut, busted;
+    std::vector<long> wins, nwWins, seatWins, seatGames, gotMono, winWithMono, firstOut, busted, allRR, allRRWin;
     std::vector<std::array<long, 10>> monoBy, winMonoBy;   // [slot][group]
     std::vector<double> netAtEnd, rent;
     std::array<double, 40> rentSq{}, landSq{};
@@ -250,7 +260,7 @@ struct Stats {
     void init(int np) {
         n = np; wins.assign(n, 0); nwWins.assign(n, 0); seatWins.assign(n, 0); seatGames.assign(n, 0);
         gotMono.assign(n, 0); winWithMono.assign(n, 0); monoBy.assign(n, {}); winMonoBy.assign(n, {});
-        firstOut.assign(n, 0); busted.assign(n, 0);
+        firstOut.assign(n, 0); busted.assign(n, 0); allRR.assign(n, 0); allRRWin.assign(n, 0);
         netAtEnd.assign(n, 0); rent.assign(n, 0); roundsHist.assign(101, 0);
     }
     void add(const Stats& o) {
@@ -258,7 +268,7 @@ struct Stats {
         for (int i = 0; i < n; i++) {
             wins[i] += o.wins[i]; nwWins[i] += o.nwWins[i]; seatWins[i] += o.seatWins[i]; seatGames[i] += o.seatGames[i];
             gotMono[i] += o.gotMono[i]; winWithMono[i] += o.winWithMono[i]; netAtEnd[i] += o.netAtEnd[i]; rent[i] += o.rent[i];
-            firstOut[i] += o.firstOut[i]; busted[i] += o.busted[i];
+            firstOut[i] += o.firstOut[i]; busted[i] += o.busted[i]; allRR[i] += o.allRR[i]; allRRWin[i] += o.allRRWin[i];
             for (int g = 0; g < 10; g++) { monoBy[i][g] += o.monoBy[i][g]; winMonoBy[i][g] += o.winMonoBy[i][g]; }
         }
         for (int s = 0; s < 40; s++) { rentSq[s] += o.rentSq[s]; landSq[s] += o.landSq[s]; }
@@ -284,7 +294,7 @@ struct Player {
     int cash = 0, pos = 0, jailTurns = 0, slot = 0;
     bool inJail = false, alive = true;
     int goojfCh = 0, goojfCc = 0;
-    int monoMask = 0, firstMono = -1; long rent = 0;
+    int monoMask = 0, firstMono = -1; long rent = 0; bool rrAll = false;
 };
 
 static const int BANK = -1, POT = -2;
@@ -293,7 +303,7 @@ struct Game {
     const Config& cfg; Rng rng; int n; std::vector<const Strat*> S; Player P[8];
     int owner[40], houses[40]; bool mort[40];
     int bankHouses = 32, bankHotels = 12, pot = 0, round = 0, aliveCount = 0;
-    Deck chance, chest; Stats* st; FILE* log = nullptr; long turns = 0;
+    Deck chance, chest; Stats* st; FILE* log = nullptr; long turns = 0; bool transferring = false;
 
     Game(const Config& c, uint64_t seed, std::vector<const Strat*> strats, Stats* stats)
         : cfg(c), n((int)strats.size()), S(strats), st(stats) { rng.seed(seed); }
@@ -320,6 +330,7 @@ struct Game {
         return w;
     }
     void updateMono(int p) {
+        if (!P[p].rrAll && !transferring && hasSet(p, 8)) P[p].rrAll = true;  // collected, not inherited from a bankrupt
         for (int g = 0; g < 8; g++) if (!(P[p].monoMask >> g & 1) && hasSet(p, g)) {
             P[p].monoMask |= 1 << g;
             if (P[p].firstMono < 0) P[p].firstMono = g;
@@ -335,13 +346,14 @@ struct Game {
     // -------- money
     void receive(int to, int amt) { if (to >= 0) P[to].cash += amt; else if (to == POT && cfg.freeParking) pot += amt; }
 
-    bool mortgageOne(int p, int pass) {
+    bool mortgageOne(int p, int pass, int skipGroup = -1) {
         // pass 0: loose property (no full set), utilities first, then colours by price, railroads last
         // pass 1: properties of a full set with no buildings
         int best = -1, bestKey = 1 << 30;
         for (int s = 0; s < 40; s++) {
             if (owner[s] != p || mort[s] || houses[s]) continue;
             int g = B[s].group; bool inSet = g < 8 && hasSet(p, g);
+            if (g == skipGroup) continue;
             if (inSet && groupHasBuildings(g)) continue;
             if ((pass == 0) == inSet) continue;
             int key = B[s].type == T_UTIL ? 0 : B[s].type == T_RR ? 10000 : B[s].price;
@@ -374,6 +386,7 @@ struct Game {
     }
     bool raise(int p, int need) {
         while (P[p].cash < need) {
+            if (S[p]->raiseOrder == 1 && sellOneLevel(p)) continue;
             if (mortgageOne(p, 0)) continue;
             if (sellOneLevel(p)) continue;
             if (mortgageOne(p, 1)) continue;
@@ -410,7 +423,7 @@ struct Game {
                 if (mort[s]) { int fee = B[s].price / 20; P[cred].cash -= std::min(fee, std::max(0, P[cred].cash)); }
             }
             P[cred].goojfCh += P[p].goojfCh; P[cred].goojfCc += P[p].goojfCc;
-            updateMono(cred);
+            transferring = true; updateMono(cred); transferring = false;
         } else {
             for (int s = 0; s < 40; s++) if (owner[s] == p) { owner[s] = -1; mort[s] = false; back.push_back(s); }
             for (int i = 0; i < P[p].goojfCh; i++) chance.bottom(CH_GOOJF);
@@ -463,6 +476,11 @@ struct Game {
         int reserve = reserveFor(p, s);
         if (want && t.favMortgage && (t.fav >> s & 1))
             while (P[p].cash < B[s].price && mortgageOne(p, 0)) {}
+        if (want && t.buyMort && P[p].cash - B[s].price < reserve &&
+            (t.buyMort == 2 || completesSet(p, s) || completesOpp(p, s) || (B[s].type == T_RR && t.rrTrade)))
+            while (P[p].cash < B[s].price && mortgageOne(p, 0, B[s].group)) {}
+        if (want && t.buyMort && P[p].cash >= B[s].price && P[p].cash - B[s].price < reserve &&
+            (t.buyMort == 2 || completesSet(p, s) || completesOpp(p, s))) reserve = 0;
         if (want && P[p].cash - B[s].price >= reserve) {
             P[p].cash -= B[s].price; owner[s] = p;
             if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"buy\",\"s\":%d,\"price\":%d}\n", round, p, s, B[s].price);
@@ -666,23 +684,28 @@ struct Game {
     }
 
     // -------- trading
+    static double tvOf(int g) { return g < 8 ? TV[g] : 0.0; }
     double valueOf(int who, int gGet, int gGive, int faceGet, int faceGive) const {
         // value, to `who`, of completing gGet while handing the opponent gGive
-        if (S[who]->trade == 2) return TV[gGet] - TV[gGive];
+        if (S[who]->trade == 2) return tvOf(gGet) - tvOf(gGive);
         return faceGet - faceGive;
     }
     void tryTrades(int a) {
-        if (!cfg.trading || S[a]->trade == 0) return;
+        if (!cfg.trading || S[a]->trade == 0 || P[a].cash < S[a]->tradeCash) return;
         for (int b = 0; b < n; b++) {
-            if (b == a || !P[b].alive || S[b]->trade == 0) continue;
-            int cntA[8], cntB[8];
-            for (int g = 0; g < 8; g++) { cntA[g] = countOwned(a, g); cntB[g] = countOwned(b, g); }
+            if (b == a || !P[b].alive || S[b]->trade == 0 || P[b].cash < S[b]->tradeCash) continue;
+            int cntA[9], cntB[9];
+            for (int g = 0; g < 9; g++) { cntA[g] = countOwned(a, g); cntB[g] = countOwned(b, g); }
             int bestGA = -1, bestGB = -1, bestC = 0; double bestGain = -1e18;
-            for (int gA = 0; gA < 8; gA++) {
+            for (int gA = 0; gA < 9; gA++) {
+                if (gA == 8 && !S[a]->rrTrade) continue;  // railroads count as a set only for a collector
                 if (!(cntA[gA] >= 1 && cntB[gA] >= 1 && cntA[gA] + cntB[gA] == GSZ[gA])) continue;
-                for (int gB = 0; gB < 8; gB++) {
+                for (int gB = 0; gB < 9; gB++) {
+                    if (gB == 8 && !S[b]->rrTrade) continue;
                     if (gB == gA || !(cntA[gB] >= 1 && cntB[gB] >= 1 && cntA[gB] + cntB[gB] == GSZ[gB])) continue;
                     if ((S[a]->fav >> GSQ[gB][0] & 1) || (S[b]->fav >> GSQ[gA][0] & 1)) continue;  // fans keep their favourite
+                    if (S[a]->trade == 3 && tvOf(gA) < tvOf(gB)) continue;  // picky: never take the weaker set
+                    if (S[b]->trade == 3 && tvOf(gB) < tvOf(gA)) continue;
                     int faceFromB = 0, faceFromA = 0;  // list price of what each hands over
                     for (int i = 0; i < GSZ[gA]; i++) if (owner[GSQ[gA][i]] == b) faceFromB += B[GSQ[gA][i]].price;
                     for (int i = 0; i < GSZ[gB]; i++) if (owner[GSQ[gB][i]] == a) faceFromA += B[GSQ[gB][i]].price;
@@ -734,6 +757,13 @@ struct Game {
         int j = S[p]->jail;
         if (j == 0) return true;
         if (j == 1) return false;
+        if (j == 3) {  // stay while an opponent has houses in the stretch you roll into (St. Charles to Illinois)
+            for (int s = 11; s <= 24; s++) if (owner[s] >= 0 && owner[s] != p && houses[s] > 0) return false;
+            return true;
+        }
+        if (j == 4) return !anyOppDeveloped(p);
+        if (j == 5) return unownedCount() > 4;
+        if (j == 6) return P[p].jailTurns >= 1;  // try one roll for doubles, then pay
         return !(anyOppDeveloped(p) || unownedCount() <= 4);
     }
     void turn(int p) {
@@ -816,6 +846,7 @@ struct Game {
         for (int p = 0; p < n; p++) {
             st->rent[p] += P[p].rent; st->netAtEnd[p] += P[p].alive ? netWorth(p) : 0;
             if (P[p].monoMask) st->gotMono[p]++;
+            if (P[p].rrAll) { st->allRR[p]++; if (p == w) st->allRRWin[p]++; }
             for (int g = 0; g < 8; g++) if (P[p].monoMask >> g & 1) { st->monoBy[p][g]++; if (p == w) st->winMonoBy[p][g]++; }
             if (P[p].firstMono >= 0) st->firstMonoAny[P[p].firstMono]++;
         }
@@ -938,8 +969,8 @@ int main(int argc, char** argv) {
            cfg.auctions, cfg.trading, cfg.freeParking, cfg.go400, cfg.buyouts, cfg.maxRounds, cfg.startCash);
     printf("\"players\":[");
     for (int i = 0; i < np; i++) {
-        printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"first_out\":%ld,\"busted\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",
-               i ? "," : "", SS[i].name.c_str(), s.wins[i], s.nwWins[i], s.gotMono[i], s.winWithMono[i], s.firstOut[i], s.busted[i], s.rent[i] / s.games, s.netAtEnd[i] / s.games);
+        printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"first_out\":%ld,\"busted\":%ld,\"all_rr\":%ld,\"all_rr_win\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",
+               i ? "," : "", SS[i].name.c_str(), s.wins[i], s.nwWins[i], s.gotMono[i], s.winWithMono[i], s.firstOut[i], s.busted[i], s.allRR[i], s.allRRWin[i], s.rent[i] / s.games, s.netAtEnd[i] / s.games);
         for (int g = 0; g < 8; g++) printf("%s\"%s\":[%ld,%ld]", g ? "," : "", GROUP_NAME[g], s.monoBy[i][g], s.winMonoBy[i][g]);
         printf("}}");
     }
