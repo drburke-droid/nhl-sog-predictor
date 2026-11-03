@@ -338,17 +338,22 @@ def calm(S, t0, dur, minor=False, events=()):
     S.cc("hrn", t0 + dur, 11, 100)
 
 
-def close(S, t0):
+CLOSE_FINALE, CLOSE_DUR = 41.0, 58.0           # when "Not a ranking of the greatest athletes" lands, and the close's length
+
+
+def close(S, t0, finale=None, dur=None):
+    finale, dur = finale or CLOSE_FINALE, dur or CLOSE_DUR
     key = D
     bar = 2.4
-    for i, ch in enumerate(["I", "IV", "vi", "V", "I", "IV", "ii", "V"]):   # four that never left the top ten
+    n = max(2, int((finale - 21.8) / bar + 1e-6))
+    for i, ch in enumerate((["I", "IV", "vi", "V", "I", "IV", "ii", "V"] * 2)[:n]):   # the lists / the four
         tb = t0 + i * bar
         pad(S, key, ch, tb, bar, 0.55)
         ostinato(S, key, ch, tb, bar, 0.45)
-    calm(S, t0 + 19.2, 19.6)                                         # same data, different questions
-    riser(S, key, t0 + 41.0, 3.0, 1.0)
-    hit(S, key, "I", t0 + 41.0, 1.0, 2.0)                             # "Not a ranking of the greatest athletes"
-    theme(S, key, t0 + 41.0, 17.0 / 8, list(range(8)), 1.0, choir=True)
+    calm(S, t0 + n * bar, finale - 2.2 - n * bar)                    # reading time
+    riser(S, key, t0 + finale, 3.0, 1.0)
+    hit(S, key, "I", t0 + finale, 1.0, 2.0)                           # "Not a ranking of the greatest athletes"
+    theme(S, key, t0 + finale, (dur - finale) / 8, list(range(8)), 1.0, choir=True)
 
 
 def end(S, t0):
@@ -378,6 +383,8 @@ def build(O):
             calm(S, t0, 40.0)
         elif name == "throws":
             calm(S, t0, 58.0, minor=True)
+        elif name == "sittler":
+            calm(S, t0, 48.0, minor=True)
         elif name == "close":
             close(S, t0)
         elif name == "end":

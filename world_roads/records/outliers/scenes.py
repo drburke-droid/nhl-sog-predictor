@@ -47,13 +47,38 @@ PALETTE = {
     1: dict(team="United States", bg="#0A3161", accent="#E8343F", light="#F2F2F2", stars=True),
 }
 
+PALETTE.update({
+    "germany": dict(team="Germany", bg="#6b0d0d", accent="#FFCE00", light="#F5E6C8"),
+    "france": dict(team="France", bg="#002395", accent="#EF4135", light="#F2F2F2"),
+    "ukraine": dict(team="Ukraine", bg="#0057B7", accent="#FFD500", light="#FFF6CC"),
+    "usa": dict(team="United States", bg="#0A3161", accent="#E8343F", light="#F2F2F2", stars=True),
+    "venezuela": dict(team="Venezuela", bg="#00247D", accent="#FFCC00", light="#FFF3C4"),
+    "lakers": dict(team="Los Angeles Lakers", bg="#552583", accent="#FDB927", light="#F1E6FF"),
+    "czech": dict(team="Czech Republic", bg="#11457E", accent="#EE3340", light="#F2F2F2"),
+    "warriors": dict(team="Philadelphia Warriors", bg="#1D428A", accent="#FDB927", light="#FFF1C9"),
+    "leafs": dict(team="Toronto Maple Leafs", bg="#00205B", accent="#E8EEF7", light="#DCE6F5"),
+})
+REC = os.path.dirname(HERE)
+PHOTO_DIRS = [os.path.join(HERE, "photos"), os.path.join(REC, "singlegame", "film", "photos")]
+
+
+def photo_path(key, sub=""):
+    for d in PHOTO_DIRS:
+        p = os.path.join(d, sub, key + ".png")
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError(key)
+
+
 # how each cut-out is framed: box height in px, centre x, and the bottom edge (y); Beamon floats mid-jump
 FRAMING = {"ichiro": (1010, 1585, 1110), "ruth": (1040, 1560, 1120), "rodman": (900, 1565, 1010),
            "curry": (980, 1565, 1100), "vance": (700, 1560, 1100), "zelezny": (780, 1570, 1095),
            "gretzky": (800, 1560, 1095), "dimaggio": (880, 1560, 1100), "chamberlain": (960, 1560, 1100),
-           "beamon": (640, 1560, 660), "ledecky": (980, 1570, 1110)}
+           "beamon": (640, 1560, 660), "ledecky": (980, 1570, 1110),
+           "bryant": (980, 1565, 1100), "rojas": (1000, 1570, 1110), "oldfield": (900, 1560, 1100),
+           "bubka": (900, 1560, 1100), "marchand": (900, 1565, 1100), "vetter": (940, 1565, 1100)}
 CUT_TRIM = {"beamon": (0.0, 0.0, 1.0, 0.745)}
-CUT_ERASE = {}
+CUT_ERASE = {"marchand": [(0.0, 0.38, 0.11, 0.80)]}
 OVAL = {"rodman"}   # l, t, r, b fractions kept
 
 
@@ -94,19 +119,25 @@ def duotone(im, dark, mid, light):
     return np.concatenate([out, a[..., 3:4]], axis=2)
 
 
-@lru_cache(maxsize=12)
+@lru_cache(maxsize=24)
 def portrait_layer(key, rank):
-    """full-frame RGBA: the cut-out, toned in the team's colours, fading into the text panel below it"""
+    """full-frame RGBA: the cut-out, toned in the team's colours, fading into the text panel below it (empty when the
+    photo is missing)"""
     p = PALETTE[rank]
+    try:
+        photo_path(key, "" if key in OVAL else "cut")
+    except FileNotFoundError:
+        print("no portrait for", key, flush=True)
+        return np.zeros((H, W, 4), np.uint8)
     if key in OVAL:                                    # halftone newsprint: a soft oval instead of a hard matte
-        im = Image.open(os.path.join(HERE, "photos", key + ".png")).convert("RGBA")
+        im = Image.open(photo_path(key)).convert("RGBA")
         a_ = np.asarray(im, np.float32).copy()
         yy, xx = np.mgrid[0:im.height, 0:im.width].astype(np.float32)
         e = ((xx - im.width * 0.52) / (im.width * 0.50)) ** 2 + ((yy - im.height * 0.52) / (im.height * 0.56)) ** 2
         a_[..., 3] = np.clip((1.0 - e) / 0.45, 0, 1) * 255
         im = Image.fromarray(a_.astype(np.uint8))
     else:
-        im = Image.open(os.path.join(HERE, "photos", "cut", key + ".png")).convert("RGBA")
+        im = Image.open(photo_path(key, "cut")).convert("RGBA")
     l, t, r, b = CUT_TRIM.get(key, (0, 0, 1, 1))
     im = im.crop((int(l * im.width), int(t * im.height), int(r * im.width), int(b * im.height)))
     for (e0, e1, e2, e3) in CUT_ERASE.get(key, ()):                       # leftover background the matte kept
@@ -114,7 +145,7 @@ def portrait_layer(key, rank):
                                      fill=(0, 0, 0, 0))
     bb = im.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox()
     im = im.crop(bb)
-    hgt, cx, bottom = FRAMING[key]
+    hgt, cx, bottom = FRAMING.get(key, (960, 1565, 1100))
     s = hgt / im.height
     im = im.resize((max(1, int(im.width * s)), hgt), Image.LANCZOS)
     col = rgb(p["bg"])
@@ -437,7 +468,8 @@ class Stack:
         if t >= 14.2:
             mine_v = self.base + (self.x - self.base) * prog
             xc = self.X(self.year)
-            glow(cv, (xc - self.cw * 0.6, self.Y(mine_v) - 10, xc + self.cw * 0.6, self.Y(0)), self.acc, 0.38 * min(1, (t - 14.2) * 2))
+            strength = 0.75 if (self.s["icon"] == "puck" and sum(rgb(self.acc)) > 600) else 0.38   # black pucks on a pale accent
+            glow(cv, (xc - self.cw * 0.6, self.Y(mine_v) - 10, xc + self.cw * 0.6, self.Y(0)), self.acc, strength * min(1, (t - 14.2) * 2))
         for i, s in enumerate(self.cols):
             if s in self.vals:
                 self.column(cv, s, self.shown(t, i, self.vals[s]), False)
@@ -613,16 +645,19 @@ class Javelin:
     """a bird's-eye view of the landing sector: each season's longest throw by anyone else is a javelin stuck in the
     grass; rings mark the curve and each step beyond it"""
 
-    def __init__(self, c, pal):
+    def __init__(self, c, pal, kind="javelin", explain=False):
         r = c["ruler"]
         self.c, self.p, self.acc = c, pal, pal["accent"]
+        self.kind, self.explain = kind, explain
+        self.half = math.radians(14.48 if kind == "javelin" else 17.46)     # the sector's half-angle
         self.year = c["year"]
         self.pts = [(int(s), float(v)) for s, v in r["window"] if int(s) != self.year]
+        self.years = (min(s for s, _ in self.pts), max(s for s, _ in self.pts))
         self.x, self.base, self.step = r["x"], r["base"], r["step"]
         x0, y0, x1, y1 = BOX
         self.w, self.h = x1 - x0, y1 - y0
-        self.dmin = math.floor(min(v for _, v in self.pts)) - 1.0
-        self.dmax = math.ceil(self.x) + 1.0
+        self.dmin = math.floor(min(v for _, v in self.pts)) - (1.0 if kind == "javelin" else 0.4)
+        self.dmax = math.ceil(self.x) + (1.0 if kind == "javelin" else 0.4)
         self.ppm = (self.h - 80) / (self.dmax - self.dmin)
         self.cx = self.w * 0.5
         self.apex = self.h - 20 + self.dmin * self.ppm
@@ -648,8 +683,8 @@ class Javelin:
         yy, xx = np.mgrid[0:self.h, 0:self.w].astype(np.float32)
         r = np.sqrt((xx - self.cx) ** 2 + (self.apex - yy) ** 2) / self.ppm
         ang = np.arctan2(xx - self.cx, self.apex - yy)
-        inside = np.abs(ang) <= math.radians(14.48)
-        band = (np.floor(r / 2.0) % 2 == 0)
+        inside = np.abs(ang) <= self.half
+        band = (np.floor(r / (2.0 if self.kind == "javelin" else 0.5)) % 2 == 0)
         g = np.zeros((self.h, self.w, 4), np.float32)
         g[..., 0], g[..., 1], g[..., 2] = 34, 62, 44
         g[band, 1] += 8
@@ -665,13 +700,13 @@ class Javelin:
         if not hasattr(self, "_field"):
             self._field = np.asarray(self.field())
         ax.imshow(self._field, extent=(0, self.w, self.h, 0), alpha=al, zorder=1)
-        for d in np.arange(math.ceil(self.dmin), self.dmax + 0.01, 2.0):
+        for d in np.arange(math.ceil(self.dmin), self.dmax + 0.01, 2.0 if self.kind == "javelin" else 0.5):
             xs, ys = self.arc(d)
             ax.plot(list(xs), list(ys), color="#ffffff", lw=px(1.2), alpha=0.22 * al, zorder=2)
             lx, ly = self.at_x(d, 12)
-            ax.text(lx, ly - 10, f"{d:.0f} m", ha="left", va="bottom", fontsize=fs(16), color=INK2, alpha=0.8 * al,
+            ax.text(lx, ly - 10, f"{d:.0f} m" if self.kind == "javelin" else f"{d:.1f} m", ha="left", va="bottom", fontsize=fs(16), color=INK2, alpha=0.8 * al,
                     path_effects=outlined(4))
-        for a in (-math.radians(14.48), math.radians(14.48)):
+        for a in (-self.half, self.half):
             p0, p1 = self.P(self.dmin - 2, a), self.P(self.dmax + 2, a)
             ax.plot([p0[0], p1[0]], [p0[1], p1[1]], color="#ffffff", lw=px(2.2), alpha=0.55 * al, zorder=2)
         # everyone else's javelins land, season by season
@@ -682,8 +717,9 @@ class Javelin:
             if pop <= 0:
                 continue
             self.javelin(ax, d, self.ang[s], "#c9ccd2", 0.85 * al * pop, 30 * pop, 2.2)
+        what = "javelin: the longest throw" if self.kind == "javelin" else "mark: the longest put"
         ax.text(0, 8, "metres · seen from above: the landing sector", ha="left", va="top", fontsize=fs(19), color=INK2, alpha=al)
-        ax.text(0, 36, "each grey javelin: the longest throw by anyone else that season, 1986–2011", ha="left", va="top",
+        ax.text(0, 36, f"each grey {what} by anyone else that season, {self.years[0]}–{self.years[1]}", ha="left", va="top",
                 fontsize=fs(17), color=MUTED, alpha=al)
         tc = clamp((t - 11.0) / 3.0)
         if tc > 0:
@@ -709,8 +745,29 @@ class Javelin:
                 px_, py_ = self.P(self.x, a_my)
                 ax.text(px_ + 20, py_ - 8, f"{self.x:.2f} m", ha="left", va="bottom", fontsize=fs(30), color=self.acc,
                         weight="bold", family="Inter Display", alpha=al, path_effects=outlined(6), zorder=9)
+        if self.explain:
+            self.callouts(ax, t, al)
+
+    def callouts(self, ax, t, al):
+        s0, d0 = sorted(self.pts)[len(self.pts) // 3]
+        items = [(4.0, 10.6, self.P(d0, self.ang[s0]), "each grey javelin: the longest throw\nby anyone else that season", (60, -150)),
+                 (11.5, 15.8, self.at_x(self.base, self.w * 0.62), "the curve: where they usually land", (40, 110)),
+                 (15.6, 21.5, self.at_x(self.base + 2 * self.step, self.w * 0.78), "each ring: one step,\nthe usual give-or-take", (-120, -120))]
+        for t0, t1, (tx, ty), msg, (dx, dy) in items:
+            a = al * fade(t, t0, t1, 0.5, 0.6)
+            if a > 0:
+                ax.annotate(msg, (tx, ty), xytext=(tx + dx, ty + dy), textcoords="data", fontsize=fs(21), color=INK,
+                            weight="semibold", ha="center", va="bottom" if dy < 0 else "top", alpha=a, zorder=12,
+                            path_effects=outlined(6), arrowprops=dict(arrowstyle="-|>", color=INK, lw=px(2), alpha=a,
+                                                                       shrinkA=4, shrinkB=6))
 
     def javelin(self, ax, d, a, color, alpha, length, lw):
+        if self.kind == "shot":                                        # a dent where the shot landed
+            tx, ty = self.P(d, a)
+            ax.plot([tx + 2], [ty + 2], marker="o", ms=px(length * 0.42), color="#000000", alpha=0.35 * alpha, zorder=3, mec="none")
+            ax.plot([tx], [ty], marker="o", ms=px(length * 0.36), color=color, alpha=alpha, zorder=4, mec="#2a2a2a",
+                    mew=px(1))
+            return
         tx, ty = self.P(d, a)
         bx, by = tx - length * math.sin(a) * 0.95 - length * 0.18, ty + length * math.cos(a) * 0.95
         ax.plot([bx + 4, tx + 4], [by + 3, ty + 3], color="#000000", lw=px(lw), alpha=0.35 * alpha, zorder=3,
@@ -779,9 +836,11 @@ class Pit:
             d += 0.05
         ax.text(0, 8, "metres from the take-off board · the pit seen from above", ha="left", va="top", fontsize=fs(19),
                 color=INK2, alpha=al)
-        ax.text(0, 36, "each grey mark: the longest jump by anyone else that season, 1960–1983", ha="left", va="top",
+        ys = [s for s, _ in self.pts]
+        ax.text(0, 36, f"each grey mark: the longest jump by anyone else that season, {min(ys)}–{max(ys)}", ha="left", va="top",
                 fontsize=fs(17), color=MUTED, alpha=al)
-        ax.text(6, self.bot + 30, "← take-off board, 8 m back", ha="left", va="center", fontsize=fs(16), color=MUTED, alpha=al)
+        ax.text(6, self.bot + 30, f"← take-off board, about {int(self.dmin)} m back", ha="left", va="center", fontsize=fs(16),
+                color=MUTED, alpha=al)
         n = len(self.pts)
         for i, (s, dd) in enumerate(sorted(self.pts)):
             pop = ease_out(clamp((t - (1.2 + 8.6 * i / n)) / 0.5))
@@ -824,10 +883,16 @@ class Pit:
 
 
 def make_scene(c, explain=False):
-    pal = PALETTE[c["rank"]]
-    s = SCENE[c["rank"]]
+    pal = PALETTE[c.get("palette", c["rank"])]
+    s = c.get("scene") or SCENE[c["rank"]]
     if s["kind"] == "javelin":
-        return Javelin(c, pal)
+        return Javelin(c, pal, explain=explain)
+    if s["kind"] == "shot":
+        return Javelin(c, pal, kind="shot")
+    if s["kind"] == "pool":
+        return Pool(c, pal)
+    if s["kind"] == "vault":
+        return Vault(c, pal)
     if s["kind"] == "pit":
         return Pit(c, pal)
     if s["kind"] == "hstack":
@@ -835,11 +900,17 @@ def make_scene(c, explain=False):
     return Stack(c, pal, s, explain=explain)
 
 
-@lru_cache(maxsize=16)
+@lru_cache(maxsize=32)
 def face_disc(key, rank, d=150):
     """a round, team-toned head-and-shoulders thumbnail (from the 4:5 portrait crop)"""
     p = PALETTE[rank]
-    im = Image.open(os.path.join(HERE, "photos", key + ".png")).convert("RGB")
+    try:
+        im = Image.open(photo_path(key)).convert("RGB")
+    except FileNotFoundError:                                         # initials in the team's colours
+        im = Image.new("RGB", (d * SS, d * SS), rgb(p["bg"]))
+        g = ImageDraw.Draw(im)
+        g.text((d * SS / 2, d * SS / 2), "".join(w[0] for w in key.split("_"))[:2].upper(), font=_font(d * SS * 0.42),
+               fill=rgb(p["accent"]), anchor="mm")
     im = im.crop((0, 0, im.width, im.width)).resize((d * SS, d * SS), Image.LANCZOS)
     col = rgb(p["bg"])
     tone = duotone(im, mix(BG, col, 0.5), mix(col, (255, 255, 255), 0.25), mix(rgb(p["light"]), (255, 255, 255), 0.4))
@@ -852,3 +923,182 @@ def face_disc(key, rank, d=150):
                                  width=SS * 4)
     out.alpha_composite(ring)
     return np.asarray(out.resize((d, d), Image.LANCZOS))
+
+
+class Pool:
+    """the pool from above at the moment the athlete touches the wall: each season's fastest swim by anyone else
+    is a swimmer still in the water, as far behind as that time would leave them; lines mark the curve and each step"""
+
+    def __init__(self, c, pal):
+        r, sw = c["ruler"], c["swim"]
+        self.c, self.p, self.acc = c, pal, pal["accent"]
+        self.year, self.L = c["year"], sw["length"]
+        self.pts = [(int(s), float(v)) for s, v in r["window"] if int(s) != self.year]
+        self.x, self.base, self.step = r["x"], r["base"], r["step"]
+        self.behind = {s: self.L * (1 - v / self.x) for s, v in self.pts}
+        self.b_curve, self.b_step = sw["behind_m_curve"], sw["step_m"]
+        x0, y0, x1, y1 = BOX
+        self.w, self.h = x1 - x0, y1 - y0
+        self.span = max(max(self.behind.values()), self.b_curve) * 1.12
+        self.wall = self.w - 34
+        self.ppm = (self.wall - 30) / self.span
+        self.top, self.bot = 110, self.h - 46
+        self.lane_h = (self.bot - self.top) / 8
+        rs = np.random.default_rng(self.year)
+        order = sorted(self.pts)
+        self.yy = {s: self.top + self.lane_h * ((i * 3) % 8 + 0.5) + float(rs.uniform(-0.18, 0.18)) * self.lane_h
+                   for i, (s, _) in enumerate(order)}
+        self.my_y = self.top + self.lane_h * 3.5
+        self.years = (min(s for s, _ in self.pts), max(s for s, _ in self.pts))
+
+    def X(self, behind_m):
+        return self.wall - behind_m * self.ppm
+
+    def water(self):
+        yy, xx = np.mgrid[0:self.h, 0:self.w].astype(np.float32)
+        a = np.zeros((self.h, self.w, 4), np.float32)
+        ripple = 0.5 + 0.5 * np.sin(xx / 23.0 + np.sin(yy / 31.0) * 2.0)
+        a[..., 0], a[..., 1], a[..., 2] = 18 + 6 * ripple, 92 + 10 * ripple, 128 + 14 * ripple
+        a[..., 3] = 0
+        a[self.top:self.bot, 20:self.wall, 3] = 200
+        return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+
+    def draw(self, fig, t, al):
+        x0, y0, x1, y1 = BOX
+        ax = ax_px(fig, x0, y0, x1, y1)
+        ax.set_axis_off()
+        ax.set_xlim(0, self.w)
+        ax.set_ylim(self.h, 0)
+        if not hasattr(self, "_water"):
+            self._water = np.asarray(self.water())
+        ax.imshow(self._water, extent=(0, self.w, self.h, 0), alpha=al, zorder=1)
+        for k in range(1, 8):                                        # lane ropes
+            yk = self.top + k * self.lane_h
+            ax.plot([20, self.wall], [yk, yk], color="#f2f2f2", lw=px(1.6), alpha=0.55 * al, ls=(0, (1, 2)), zorder=2)
+        ax.plot([self.wall, self.wall], [self.top, self.bot], color="#f2f2f2", lw=px(5), alpha=0.9 * al, zorder=3)
+        step = 5 if self.span > 12 else 1
+        d = 0
+        while d <= self.span:
+            ax.plot([self.X(d)] * 2, [self.top - (14 if d % (step * 2) == 0 else 7), self.top], color="#d8d4ca", lw=px(1.4),
+                    alpha=al, zorder=3)
+            if d % (step * 2) == 0:
+                ax.text(self.X(d), self.top - 20, f"{d} m" if d else "wall", ha="center", va="bottom", fontsize=fs(16),
+                        color=MUTED, alpha=al)
+            d += step
+        ax.text(0, 8, f"metres behind when {self.c['athlete'].split()[-1]} touched the wall · the pool seen from above",
+                ha="left", va="top", fontsize=fs(19), color=INK2, alpha=al)
+        ax.text(0, 36, f"each grey swimmer: the fastest by anyone else that season, {self.years[0]}–{self.years[1]}",
+                ha="left", va="top", fontsize=fs(17), color=MUTED, alpha=al)
+        n = len(self.pts)
+        for i, (s, _) in enumerate(sorted(self.pts)):                # everyone else swims in and stops where they'd be
+            u = ease(clamp((t - (1.2 + 8.6 * i / n)) / 1.4))
+            if u <= 0:
+                continue
+            xs = 20 + (self.X(self.behind[s]) - 20) * u
+            ys = self.yy[s]
+            ax.plot([xs - 26, xs - 4], [ys, ys], color="#ffffff", lw=px(3), alpha=0.25 * al, zorder=4, solid_capstyle="round")
+            ax.plot([xs], [ys], marker="o", ms=px(9), color="#cfd3d9", alpha=0.9 * al, zorder=5, mec="#1b2b38", mew=px(1))
+        tc = clamp((t - 11.0) / 3.0)
+        if tc > 0:
+            xb = self.X(self.b_curve)
+            _poly(ax, [xb, xb], [self.top, self.top + (self.bot - self.top) * tc], CURVE, 3.0, al, z=6, ls=(0, (4, 3)))
+            if tc >= 1:
+                ax.text(xb - 8, self.bot - 10, f"the curve\n{self.b_curve:.1f} m back", ha="right", va="bottom", fontsize=fs(17),
+                        color=CURVE, alpha=al, path_effects=outlined(5), zorder=7)
+        if t >= 14.2:
+            prog = ease(clamp((t - 14.2) / 4.0))
+            behind_now = self.b_curve * 1.25 * (1 - prog)
+            for kk in range(1, int((self.b_curve - behind_now) / self.b_step + 1e-9) + 1):
+                xk = self.X(self.b_curve - kk * self.b_step)
+                if xk > self.wall:
+                    break
+                ax.plot([xk, xk], [self.top, self.bot], color=self.acc, lw=px(1.8), alpha=0.85 * al, zorder=5)
+                ax.text(xk, self.top + 18, f"{kk}", ha="center", va="top", fontsize=fs(17), color=self.acc, weight="semibold",
+                        alpha=al, zorder=7, path_effects=outlined(5))
+            xm = self.X(behind_now)
+            ax.plot([xm - 40, xm - 6], [self.my_y, self.my_y], color=self.acc, lw=px(4), alpha=0.45 * al, zorder=7)
+            ax.plot([xm], [self.my_y], marker="o", ms=px(15), color=self.acc, alpha=al, zorder=8, mec="#101820", mew=px(1.5))
+            if prog > 0.97:
+                tt = self.c["swim"]["time"]
+                lab = f"{int(tt // 60)}:{tt - 60 * int(tt // 60):05.2f}"
+                ax.text(xm - 24, self.my_y - 26, lab, ha="right", va="bottom", fontsize=fs(30), color=self.acc, weight="bold",
+                        family="Inter Display", alpha=al, path_effects=outlined(6), zorder=9)
+
+
+class Vault:
+    """each season's highest clearance by anyone else as a crossbar at its height; the curve through them; the
+    athlete's bar rises past it, one tick per step"""
+
+    def __init__(self, c, pal):
+        r = c["ruler"]
+        self.c, self.p, self.acc = c, pal, pal["accent"]
+        self.year = c["year"]
+        self.pts = [(int(s), float(v)) for s, v in r["window"] if int(s) != self.year]
+        self.x, self.base, self.step = r["x"], r["base"], r["step"]
+        self.trend = np.array(r["trend"])
+        x0, y0, x1, y1 = BOX
+        self.w, self.h = x1 - x0, y1 - y0
+        self.s0, self.s1 = min(min(s for s, _ in self.pts), self.year), max(max(s for s, _ in self.pts), self.year)
+        self.v0 = math.floor((min(v for _, v in self.pts) - 0.06) * 10) / 10
+        self.v1 = self.x + 0.08
+        self.pl, self.pr, self.pt, self.pb = 64, 20, 90, 40
+
+    def X(self, s):
+        return self.pl + (s - self.s0 + 0.5) / (self.s1 - self.s0 + 1) * (self.w - self.pl - self.pr)
+
+    def Y(self, v):
+        return self.h - self.pb - (v - self.v0) / (self.v1 - self.v0) * (self.h - self.pb - self.pt)
+
+    def bar(self, ax, s, v, color, alpha, wide=0.42, lw=3.0, z=5):
+        xa, xb = self.X(s - wide), self.X(s + wide)
+        y = self.Y(v)
+        ax.plot([xa, xb], [y, y], color=color, lw=px(lw), alpha=alpha, zorder=z, solid_capstyle="round")
+        ax.plot([xa, xb], [y, y], ls="none", marker="o", ms=px(lw * 1.4), color=color, alpha=alpha, zorder=z)
+
+    def draw(self, fig, t, al):
+        x0, y0, x1, y1 = BOX
+        ax = ax_px(fig, x0, y0, x1, y1)
+        ax.set_axis_off()
+        ax.set_xlim(0, self.w)
+        ax.set_ylim(self.h, 0)
+        ax.plot([self.pl - 8, self.w - self.pr], [self.Y(self.v0)] * 2, color="#5a5f66", lw=px(1.5), alpha=al)
+        v = math.ceil(self.v0 * 10) / 10
+        while v <= self.v1:
+            ax.plot([self.pl - 8, self.w - self.pr], [self.Y(v)] * 2, color="#ffffff", alpha=0.06 * al, lw=px(1))
+            ax.text(self.pl - 14, self.Y(v), f"{v:.1f}", ha="right", va="center", fontsize=fs(17), color=MUTED, alpha=al)
+            v += 0.1
+        for s in range(self.s0, self.s1 + 1):
+            if s % 5 == 0:
+                ax.text(self.X(s), self.Y(self.v0) + 24, str(s), ha="center", va="center", fontsize=fs(17), color=MUTED, alpha=al)
+        ax.text(0, 8, "metres: the height cleared", ha="left", va="top", fontsize=fs(19), color=INK2, alpha=al)
+        ax.text(0, 36, "each grey bar: the highest clearance by anyone else that season", ha="left", va="top", fontsize=fs(17),
+                color=MUTED, alpha=al)
+        n = len(self.pts)
+        for i, (s, vv) in enumerate(sorted(self.pts)):
+            pop = ease_out(clamp((t - (1.2 + 8.6 * i / n)) / 0.5))
+            if pop > 0:
+                self.bar(ax, s, vv, "#c9ccd2", 0.85 * al * pop)
+        tc = clamp((t - 11.0) / 3.0)
+        if tc > 0:
+            tr = self.trend
+            k = max(2, int(len(tr) * tc))
+            _poly(ax, [self.X(s) for s in tr[:k, 0]], [self.Y(vv) for vv in tr[:k, 1]], CURVE, 3.2, al * 0.95, z=6)
+            if tc >= 1:
+                ax.text(self.X(tr[-1, 0]), self.Y(tr[-1, 1]) - 16, "the curve", ha="right", va="bottom", fontsize=fs(18),
+                        color=CURVE, alpha=al, path_effects=outlined(5))
+        if t >= 14.2:
+            prog = ease(clamp((t - 14.2) / 4.0))
+            top_v = self.base + (self.x - self.base) * prog
+            xs = self.X(self.year)
+            for dx in (-0.55, 0.55):                                  # the uprights
+                ax.plot([self.X(self.year + dx)] * 2, [self.Y(self.v0), self.Y(self.v1 - 0.02)], color="#e8e6df", lw=px(3),
+                        alpha=0.8 * al, zorder=6)
+            for kk in range(1, int((top_v - self.base) / self.step + 1e-9) + 1):
+                yk = self.Y(self.base + kk * self.step)
+                ax.plot([xs - 16, xs + 16], [yk, yk], color=self.acc, lw=px(2.2), alpha=al, zorder=7, path_effects=outlined(4))
+                ax.text(xs + 26, yk, f"{kk}", ha="left", va="center", fontsize=fs(17), color=self.acc, weight="semibold",
+                        alpha=al, zorder=8, path_effects=outlined(5))
+            self.bar(ax, self.year, top_v, self.acc, al, wide=0.55, lw=5.0, z=8)
+            if prog > 0.97:
+                ax.text(xs - 28, self.Y(self.x) - 4, f"{self.x:.2f} m", ha="right", va="bottom", fontsize=fs(30), color=self.acc,
+                        weight="bold", family="Inter Display", alpha=al, path_effects=outlined(6), zorder=9)

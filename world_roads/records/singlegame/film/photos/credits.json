@@ -1,0 +1,50 @@
+{
+ "bryant": {
+  "athlete": "Kobe Bryant",
+  "file": "Kobe Bryant Dec 2014.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Kobe_Bryant_Dec_2014.jpg",
+  "author": "Keith Allison",
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "date": "3 December 2014, 20:38:22",
+  "source": "Flickr : Kobe Bryant",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Keith Allison, CC BY-SA 2.0, via Wikimedia Commons"
+ },
+ "rojas": {
+  "athlete": "Yulimar Rojas",
+  "file": "Yulimar Rojas - Triple saut Femmes (48614911652) (cropped).jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Yulimar_Rojas_-_Triple_saut_Femmes_%2848614911652%29_%28cropped%29.jpg",
+  "author": "Yann Caradec from Paris, France",
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "date": "24 August 2019, 20:04",
+  "source": "Yulimar Rojas - Triple saut Femmes",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Yann Caradec from Paris, France, CC BY-SA 2.0, via Wikimedia Commons"
+ },
+ "bubka": {
+  "athlete": "Sergey Bubka",
+  "file": "Sergey Bubka 2013.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Sergey_Bubka_2013.jpg",
+  "author": "Vinod Divakaran / Doha Stadium Plus Qatar",
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "date": "8 January 2013",
+  "source": "https://www.flickr.com/photos/dohastadiumplusqatar/8424526522/",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Vinod Divakaran / Doha Stadium Plus Qatar, CC BY 2.0, via Wikimedia Commons"
+ },
+ "marchand": {
+  "athlete": "Léon Marchand",
+  "file": "Léon Marchand, 2023 Pac-12 Championships, 400 yard individual medley preliminaries - 3 March 2023 (cropped).jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:L%C3%A9on_Marchand%2C_2023_Pac-12_Championships%2C_400_yard_individual_medley_preliminaries_-_3_March_2023_%28cropped%29.jpg",
+  "author": "Tanis Coralee Leonhardi",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "date": "3 March 2023",
+  "source": "Own work",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Tanis Coralee Leonhardi, CC BY-SA 4.0, via Wikimedia Commons"
+ }
+}

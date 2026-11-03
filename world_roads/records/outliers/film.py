@@ -84,7 +84,8 @@ def photo(fig, key, x0, y0, x1, y1, alpha=1.0, credit=True, credit_size=14):
         return
     if key not in _PH:
         from PIL import Image
-        _PH[key] = np.asarray(Image.open(os.path.join(HERE, "photos", key + ".png")).convert("RGB"))
+        import scenes as _SC
+        _PH[key] = np.asarray(Image.open(_SC.photo_path(key)).convert("RGB"))
     ax = ax_px(fig, x0, y0, x1, y1)
     ax.set_axis_off()
     ax.imshow(_PH[key], alpha=clamp(alpha), interpolation="antialiased", aspect="auto")
@@ -99,10 +100,13 @@ def sig(v, n):
     return out.rstrip("0").rstrip(".") if "." in out and d > 0 and float(out) == round(v, d) and out.endswith("0") and n > 2 else out
 
 
+CM_CATS = ("ath_M_LJ", "ath_W_TJ", "ath_M_PV")
+
+
 def ruler_numbers(c):
     """strings for '(value - curve) / step = score', rounded so the arithmetic on screen gives the score on screen"""
     r, cat = c["ruler"], c["category"]
-    k = 100.0 if cat == "ath_M_LJ" else 1.0                  # Beamon's step is 8 cm: shown in centimetres
+    k = 100.0 if cat in CM_CATS else 1.0                      # steps of a few centimetres: shown in centimetres
     x, b, st = r["x"] * k, r["base"] * k, r["step"] * k
     best = None
     for db in range(0, 4):
@@ -111,7 +115,7 @@ def ruler_numbers(c):
             if ss > 0 and abs(round((x - bb) / ss, 2) - c["z_e3"]) < 1e-9 and (best is None or db + ds < best[0]):
                 best = (db + ds, db, ds)
     assert best, cat
-    dx = 0 if float(x).is_integer() else (2 if cat == "ath_M_JT" else 1)
+    dx = 0 if float(x).is_integer() else (2 if cat.startswith("ath_") else 1)          # marks keep both decimals
     return f"{x:.{dx}f}", f"{b:.{best[1]}f}", f"{st:.{best[2]}f}"
 
 
@@ -227,7 +231,9 @@ class Hook:
             k = h.get(b, 0)
             h[b] = k + 1
             self.tpos.append((d, b + 0.125, k))
-        self.faces = {r: SC.face_disc(PHOTO_KEY[r], r, 128) for r in range(1, 11)}
+        self.faces = {r: SC.face_disc(CARDS[r].get("photo") or PHOTO_KEY[r], CARDS[r].get("palette", r), 128)
+                      for r in range(1, 11)}
+        self.words = F.get("hook_words", {})
         self.slot = {r: (W / 2 + (i - 4.5) * 158, 250) for i, r in enumerate(self.ORDER)}
         self.rank_of = {CARDS[r]["athlete"]: r for r in range(1, 11)}
 
@@ -244,8 +250,9 @@ class Hook:
         ax.set_xlim(0, W)
         ax.set_ylim(H, 0)
         ta = al * fade(t, 0.2, 15.6, 0.6, 0.6)
-        title(fig, W / 2, 170, f"{self.sc['n']:,} season-leading performances.", size=70, ha="center", alpha=ta)
-        text(fig, W / 2, 228, "74 categories · six sports · 1876 to 2026", size=30, color=INK2, ha="center",
+        title(fig, W / 2, 170, self.words.get("headline", f"{self.sc['n']:,} season-leading performances."), size=70,
+              ha="center", alpha=ta)
+        text(fig, W / 2, 228, self.words.get("sub", "74 categories · six sports · 1876 to 2026"), size=30, color=INK2, ha="center",
              alpha=ta * fade(t, 1.4, 99, 0.6, 0))
         ca = al * fade(t, 2.4, 21.6, 0.6, 0.8)                  # the chart
         if ca > 0:
@@ -287,7 +294,7 @@ class Hook:
                                 mec="#ffe9b0", mew=px(1.5 * glow_a))
                 elif tt > 0:
                     ax.plot([x0], [y0], marker="o", ms=px(9), color=BLUE, alpha=tt, zorder=5, mec="none")
-        caps = [(7.2, 10.0, "Each one graded against everyone else of its era."),
+        caps = [(7.2, 10.0, self.words.get("graded", "Each one graded against everyone else of its era.")),
                 (10.0, 12.4, "Most land near zero. Leading your league is normal."),
                 (12.4, 15.6, f"Only {self.sc['at_least_5']} of {self.sc['n']:,} reach 5."),
                 (18.0, 21.6, "Ten broke the curve.")]
@@ -306,7 +313,7 @@ class Hook:
         ha = al * fade(t, 21.8, 99, 0.7, 0)                     # the title
         if ha > 0:
             title(fig, W / 2, 560, "The 10 Biggest", size=104, ha="center", alpha=ha)
-            title(fig, W / 2, 680, "Statistical Outliers", size=104, ha="center", alpha=ha)
+            title(fig, W / 2, 680, self.words.get("title2", "Statistical Outliers"), size=104, ha="center", alpha=ha)
             title(fig, W / 2, 800, "in Sports History", size=104, ha="center", color=GOLD, alpha=ha)
             text(fig, W / 2, 900, "Counting down from ten", size=32, color=INK2, ha="center", alpha=ha * fade(t, 24.5, 99, 0.6, 0))
 
@@ -525,7 +532,7 @@ class Fair:
         text(fig, 96, 92, "HOW THE SCORE WORKS", size=21, color=MUTED, weight="semibold", alpha=al)
         title(fig, 96, 160, "Three rules that keep it fair", size=58, alpha=al)
         ex = F["extras"]
-        rules = [(1.0, "Adjusted for inflation",
+        rules = F.get("fair_rules") or [(1.0, "Adjusted for inflation",
                   "When every team scores more, each point is worth a little less, like money in an inflated economy. "
                   "So in team sports, everyone else's numbers are converted into the athlete's own season before they're "
                   f"compared. Wilt's 50.4 came when teams averaged {ex['nba_points_per_team_game_1962']:.1f} points a "
@@ -641,14 +648,15 @@ class Card:
         import scenes as SC
         self.SC = SC
         self.c = CARDS[rank]
-        self.pal = SC.PALETTE[rank]
+        pk = self.c.get("palette", rank)
+        self.pal = SC.PALETTE[pk]
         self.acc = self.pal["accent"]
         self.scene = SC.make_scene(self.c, explain=(rank == 10))
         self.lines = card_lines(self.c)
         self.nums = ruler_numbers(self.c)
-        key = PHOTO_KEY[rank]
-        bg = SC.background(rank).astype(np.float32)
-        por = SC.portrait_layer(key, rank).astype(np.float32)
+        key = self.c.get("photo") or PHOTO_KEY[rank]
+        bg = SC.background(pk).astype(np.float32)
+        por = SC.portrait_layer(key, pk).astype(np.float32)
         scr = SC.scrim().astype(np.float32)
 
         def over(base, layer):
@@ -657,7 +665,7 @@ class Card:
         self.plate0 = over(bg, scr)                              # without the portrait
         self.plate1 = over(over(bg, por), scr)                   # with it
         self.base_rgb = np.array(SC.BG, np.float32)
-        self.credit = CREDITS[key]["short"]
+        self.credit = CREDITS.get(key, {}).get("short", "")
 
     def plate(self, fig, t, al):
         pa = fade(t, 0.3, 99, 1.0, 0)
@@ -687,7 +695,9 @@ class Card:
             xs, bs, ss = self.nums
             u = RULER_UNIT[c["category"]]
             r = c["ruler"]
-            if c["category"] == "ath_M_LJ":
+            if c.get("friendly"):
+                friendly = c["friendly"]
+            elif c["category"] in ("ath_M_LJ", "ath_W_TJ", "ath_M_PV"):
                 friendly = f"Curve about {r['base']:.2f} m · one step about {100 * r['step']:.1f} cm"
             else:
                 friendly = f"Curve about {sig(r['base'], 3)} {u} · one step about {sig(r['step'], 2)} {u}"
@@ -695,8 +705,9 @@ class Card:
             title(fig, 1230, 662, f"{c['z_e3'] * prog:.2f}", size=116, color=acc, alpha=sa)
             text(fig, 1230, 702, "steps above the curve", size=24, color=INK, alpha=sa)
             text(fig, 1230, 738, friendly, size=21, color=INK2, alpha=sa)
-            cm = " (in centimetres)" if c["category"] == "ath_M_LJ" else ""
-            text(fig, 1230, 768, f"({xs} − {bs}) ÷ {ss} = {c['z_e3']:.2f}{cm}", size=21, color=MUTED,
+            cm = " (in centimetres)" if c["category"] in CM_CATS else ""
+            arith = c.get("arith") or f"({xs} − {bs}) ÷ {ss} = {c['z_e3']:.2f}{cm}"
+            text(fig, 1230, 768, arith, size=21, color=MUTED,
                  alpha=sa * fade(t, 18.2, 99, 0.6, 0))
         y = 812
         for i, line in enumerate(self.lines):

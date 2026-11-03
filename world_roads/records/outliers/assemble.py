@@ -48,6 +48,11 @@ def main(crf=18):
     print(f"total {total:.2f} s ({int(total // 60)}:{total % 60:04.1f})", flush=True)
     import orchestra as music
     mix = music.render(O, total)
+    voice = os.path.join(OUT, "narration.wav")
+    if os.path.exists(voice):                                # narrate.py output: the voice over a dipped score
+        import narrate
+        mix = narrate.duck_and_mix(mix, voice)
+        print("narration mixed in", flush=True)
     raw = os.path.join(OUT, "score_raw.wav")
     music.write(mix, raw)
     wav = os.path.join(OUT, "score.wav")
