@@ -6132,6 +6132,10 @@
    "2000": 58.5,
    "1000": 46.511
   },
+  "handed_to_bank": {
+   "with_auctions": 249.04061400703543,
+   "no_auctions": 197.17391304347836
+  },
   "dollar_equivalent": {
    "with_auctions": 297.62435040831485,
    "no_auctions": 211.76192725555026

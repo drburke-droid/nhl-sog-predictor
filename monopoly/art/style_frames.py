@@ -537,22 +537,21 @@ def banknote(value, ink, seed):
 
 def frame_price():
     img = paper(seed=12)
-    notes = [(100, (40, 92, 70), -12, (70, 120)), (100, (40, 92, 70), -5, (150, 290)),
-             (50, (86, 60, 40), 3, (110, 460)), (50, (86, 60, 40), 9, (190, 630))]
+    notes = [(100, (40, 92, 70), -12, (70, 150)), (100, (40, 92, 70), -4, (150, 330)), (50, (86, 60, 40), 6, (110, 520))]
     for k, (v, ink, ang, xy) in enumerate(notes):
         n = banknote(v, ink, 20 + k).rotate(ang, expand=True, resample=Image.BICUBIC)
         paste_shadowed(img, n, xy)
-    text(img, (1010, 150), 'WHAT THE PLAYBOOK IS WORTH', font('sc', 36), fill=SEPIA)
-    text(img, (1000, 200), '$300', font('deco', 230), fill=INK)
-    text(img, (1010, 470), 'before the first roll.', font('serif', 54))
-    text(img, (1010, 580), 'To win as often as the playbook player, a typical\nplayer needs an extra $300 when everyone else\nstarts with the usual $1,500.',
-         font('serif', 34), spacing=12)
+    stamp(img, (430, 900), ['PAID TO', 'THE BANK'], angle=-8, size=60)
+    text(img, (1010, 140), 'PLAYING THE TYPICAL WAY IS LIKE', font('sc', 36), fill=SEPIA)
+    text(img, (1010, 190), 'handing the bank', font('serif', 60))
+    text(img, (1000, 255), '$250', font('deco', 230), fill=STAMP)
+    text(img, (1010, 520), 'before you\u2019ve rolled.', font('serif', 60))
     tf = font('type', 28)
-    text(img, (1010, 770), 'Typical player, given $300 extra .... 32.7', tf)
-    text(img, (1010, 815), 'Playbook player, given nothing ...... 32.6', tf, fill=STAMP)
-    text(img, (1010, 858), 'wins in a hundred four-player games', font('type', 20), fill=SEPIA)
-    text(img, (1010, 930), 'Without auctions: about $200, a free trip past Go.', font('hand', 30), fill=SEPIA)
-    stamp(img, (700, 960), ['COSTS', 'NOTHING'], angle=-8, size=52)
+    text(img, (1010, 690), 'Playbook player, $250 handed over .... 25.1', tf)
+    text(img, (1010, 735), 'Typical player, the usual $1,500 ..... 25.1', tf)
+    text(img, (1010, 778), 'wins in a hundred four-player games', font('type', 20), fill=SEPIA)
+    text(img, (1010, 860), 'Without auctions: about $200, the same as passing Go.', font('hand', 30), fill=SEPIA)
+    text(img, (1010, 910), 'And to buy the edge back, a typical player needs $300.', font('hand', 30), fill=SEPIA)
     return img
 
 
@@ -560,6 +559,6 @@ if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     for name, fn in (('01_title', frame_title), ('02_board', frame_board), ('03_ledger_spend_or_save', frame_ledger),
                      ('04_railroads_telegram', frame_railroads), ('05_end_card', frame_endcard), ('06_thumbnail', thumbnail),
-                     ('07_game_night_ledger', frame_game_nights), ('08_worth_300_dollars', frame_price)):
+                     ('07_game_night_ledger', frame_game_nights), ('08_handing_the_bank_250', frame_price)):
         fn().convert('RGB').save(os.path.join(OUT, name + '.png'))
         print('wrote', name)

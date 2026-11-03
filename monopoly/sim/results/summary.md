@@ -765,6 +765,9 @@ Playbook player and its three typical opponents, wins per 100 games: 32.6, 22.3,
 
 Dollar equivalent: a typical player given extra starting cash (vs three typical players) wins +$250: 31.8, +$500: 37.7, +$750: 42.4, +$1000: 46.5, +$1250: 50.0, +$1500: 53.0, +$2000: 58.5, +$3000: 66.6 per 100 games (100,000 games each).
 
+The other direction ("playing the typical way is like handing the bank $X"): the playbook player starting with less cash, with auctions: -$150: 28.14, -$200: 26.66, -$250: 25.10, -$300: 23.41, -$350: 22.02, -$400: 20.46, -$450: 18.84; it falls to a typical player's 25.13 at about **$249** less.
+Without auctions: -$100: 27.72, -$150: 26.37, -$200: 24.99, -$250: 23.72, -$300: 22.31; level with a typical player (25.06) at about **$197** less.
+
 Finer steps (200,000 games each). With auctions: +$225: 30.77, +$250: 31.41, +$275: 32.04, +$300: 32.71, +$325: 33.31, +$350: 33.91; the playbook player (32.65) matches a typical player with about **$298** extra.
 Without auctions: +$100: 27.63, +$150: 28.72, +$200: 29.98, +$250: 31.04, +$300: 32.22; the playbook player (30.23) matches about **$212** extra.
 

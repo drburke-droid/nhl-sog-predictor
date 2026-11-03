@@ -1,7 +1,7 @@
 # Art direction: "the patent drawing comes to life"
 
 Companion to `Video plan - decisions you control.md`. Style frames (rendered from code, so every element can
-be animated the same way): `art/frames/01_title.png` to `08_worth_300_dollars.png`, made by `art/style_frames.py`.
+be animated the same way): `art/frames/01_title.png` to `08_handing_the_bank_250.png`, made by `art/style_frames.py`.
 
 ## The idea
 
@@ -109,7 +109,7 @@ All free to use (SIL Open Font License, or Apache for Special Elite), from Googl
 | 4. Building | The ledger (frame 03) for spend vs save. For houses and hotels, use architect's elevation drawings (a small house, a grand 1930s Boardwalk hotel facade) in the same ink style instead of plastic pieces. For the two-set question, the Sanborn map of the real blocks with the two sets washed in colour, then the which-first matrix as a ledger grid |
 | 5. Jail | Magie's own jail corner from the patent, then prison bars drawn in ink. The stamps read LEAVE, then STAY once houses appear on the board |
 | Aside: the computer's player | A family tree drawn like a patent figure: 24 boxes, the winners circled, 25 generations, ending on two favourite colour washes (light blue, orange) |
-| The playbook | The price tag (frame 08): four engraved banknotes of our own design slide across the desk, "$300 before the first roll", stamped COSTS NOTHING. Then the game-night ledger (frame 07): tally marks for 100 game nights, YOU 33 vs 22, 22, 23, stamped FAMILY CHAMPION. Then a trophy shelf for 100 simulated years of weekly games: about 65 trophies under YOU, about 9 under each of the others. Then the certificate (frame 05) with its wax seal "3 : 2 WINS", rules appearing one by one. Hold for the end card |
+| The playbook | The price tag (frame 08): three engraved banknotes of our own design pushed across the desk to the bank and stamped PAID TO THE BANK: "Playing the typical way is like handing the bank $250 before you've rolled". Then the game-night ledger (frame 07): tally marks for 100 game nights, YOU 33 vs 22, 22, 23, stamped FAMILY CHAMPION. Then a trophy shelf for 100 simulated years of weekly games: about 65 trophies under YOU, about 9 under each of the others. Then the certificate (frame 05) with its wax seal "3 : 2 WINS", rules appearing one by one. Hold for the end card |
 
 ## Thumbnail
 

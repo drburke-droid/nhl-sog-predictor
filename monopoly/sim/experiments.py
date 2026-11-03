@@ -474,6 +474,11 @@ def exp_framing(n_games=100000):
         run('framing', 'fine_bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['with_auctions'])
     for b_ in (100, 150, 200, 250, 300):
         run('framing', 'noauction_bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['no_auctions'])
+    # the other direction: how much can the playbook player hand to the bank and still only tie a typical player?
+    for b_ in (150, 200, 250, 300, 350, 400, 450):
+        run('framing', 'playbook_minus_%d' % b_, [PLAYBOOK + ';bonus=-%d' % b_] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['with_auctions'])
+    for b_ in (100, 150, 200, 250, 300):
+        run('framing', 'noauction_playbook_minus_%d' % b_, [PLAYBOOK + ';bonus=-%d' % b_] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['no_auctions'])
 
 
 EXPERIMENTS = {'framing': exp_framing, 'endgame': exp_endgame, 'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,

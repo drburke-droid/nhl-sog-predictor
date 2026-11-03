@@ -455,6 +455,24 @@ def main():
         pb_na = eg.get('no_auctions__playbook')
         m1, pts1 = match('fine_bonus_', pb[0])
         m2, pts2 = (match('noauction_bonus_', pb_na['players'][0]['wins'] / pb_na['games']) if pb_na else (None, []))
+        def match_down(prefix, target):
+            pts = sorted((int(k.split('_')[-1]), d['players'][0]['wins'] / d['games']) for k, d in (fr or {}).items() if k.startswith(prefix))
+            for (b0, w0), (b1, w1) in zip(pts, pts[1:]):
+                if w1 <= target <= w0:
+                    return b0 + (w0 - target) / (w0 - w1) * (b1 - b0), pts
+            return None, pts
+        ty_a = eg['with_auctions__buy_always']['players'][0]['wins'] / eg['with_auctions__buy_always']['games']
+        ty_n = eg['no_auctions__buy_always']['players'][0]['wins'] / eg['no_auctions__buy_always']['games'] if 'no_auctions__buy_always' in eg else None
+        d1, dpts1 = match_down('playbook_minus_', ty_a)
+        d2, dpts2 = match_down('noauction_playbook_minus_', ty_n) if ty_n else (None, [])
+        if d1:
+            summary['framing']['handed_to_bank'] = {'with_auctions': d1, 'no_auctions': d2}
+            md += ['', 'The other direction ("playing the typical way is like handing the bank $X"): the playbook player starting '
+                   'with less cash, with auctions: ' + ', '.join('-$%d: %.2f' % (b_, pct(w_)) for b_, w_ in dpts1) +
+                   '; it falls to a typical player\'s %.2f at about **$%.0f** less.' % (pct(ty_a), d1)]
+            if d2:
+                md.append('Without auctions: ' + ', '.join('-$%d: %.2f' % (b_, pct(w_)) for b_, w_ in dpts2) +
+                          '; level with a typical player (%.2f) at about **$%.0f** less.' % (pct(ty_n), d2))
         if m1:
             summary['framing']['dollar_equivalent'] = {'with_auctions': m1, 'no_auctions': m2}
             md += ['', 'Finer steps (200,000 games each). With auctions: ' + ', '.join('+$%d: %.2f' % (b_, pct(w_)) for b_, w_ in pts1) +
