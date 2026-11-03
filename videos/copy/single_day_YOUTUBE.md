@@ -66,7 +66,7 @@ Sources: NBA box scores, Eoin Moore, "Historical NBA Data and Player Box Scores"
 
 The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.
 
-PHOTO_CREDITS
+Photos via Wikimedia Commons, cropped, cut out and toned in team colours: Johannes Vetter by Chell Hill (CC BY-SA 4.0); Léon Marchand by Tanis Coralee Leonhardi (CC BY-SA 4.0); Sergey Bubka by Vinod Divakaran / Doha Stadium Plus Qatar (CC BY 2.0); Yulimar Rojas by Yann Caradec from Paris, France (CC BY-SA 2.0); Katie Ledecky by Mledecky (CC0); Kobe Bryant by Keith Allison (CC BY-SA 2.0); Jan Železný by Chell Hill (CC BY-SA 4.0); Wilt Chamberlain by Bill Allen (public domain); Bob Beamon by Unknown author (CC0). No freely licensed photo of Brian Oldfield was found. File pages and links: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/records/singlegame/film/photos/credits.json
 
 Icons: 3D models from BlenderKit. Music: an original orchestral score written for this video, played with FluidSynth and the FluidR3 GM soundfont.
 ```

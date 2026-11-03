@@ -1,0 +1,120 @@
+The 10 Biggest Statistical Outliers in Sports History
+Narration, 59 lines, 1203 words
+
+Four thousand nine hundred and forty season-leading performances, across six sports, from 1876 to now.
+
+Each one graded against everyone else of its era.
+
+Most land near zero: leading your league is normal. Somebody does it every year.
+
+Only twelve reach five.
+
+And ten broke the curve.
+
+These are the ten biggest statistical outliers in sports history, counting down from ten.
+
+Number ten. Ichiro Suzuki, 2004: two hundred and sixty-two hits.
+
+Each bin holds the most hits by anyone else in a season, fifteen years either side, converted to 2004's hit rate the way old prices are adjusted for inflation.
+
+The curve sits at about two hundred and nineteen hits, and one step is about eight. He was forty-three hits above it: a little over five steps.
+
+It broke George Sisler's record of two fifty-seven, set in 1920. The next best in 2004 was Juan Pierre, with two twenty-one.
+
+Nine. Babe Ruth, 1920: fifty-four home runs.
+
+Every other season is converted to 1920's home-run rate. In those terms the curve is about twenty-three, and one step is between five and six.
+
+His own record from the year before was twenty-nine. The next best in 1920 was George Sisler, with nineteen, and the average team hit thirty-nine. In raw numbers he's well clear; against how rare home runs were, he's further out still.
+
+Eight. Dennis Rodman, 1992–93: eighteen point three rebounds a game.
+
+The next best that season was a rookie, Shaquille O'Neal, at thirteen point nine.
+
+Rodman's eighteen point seven the year before is the bigger raw number, but measured against league-wide rebounding, 1992–93 stands further out. He led the league in rebounding seven seasons running.
+
+Seven. Stephen Curry, 2015–16: four hundred and two three-pointers.
+
+The previous record was his own, two eighty-six, from the season before. Second place was his teammate Klay Thompson, with two seventy-six.
+
+Teams have shot more threes every season since, so later totals are measured against a busier league. Allowing for that raises his score.
+
+Six. Dazzy Vance, 1924: two hundred and sixty-two strikeouts.
+
+No one else in either league had more than a hundred and fifty-eight: Walter Johnson.
+
+Strikeouts were scarce, about two point seven per team per game. Without the league adjustment his score is about three and a half. Scarcity is what lifts it.
+
+Five. Jan Železný, 1996: ninety-eight point four eight metres with the javelin.
+
+The men's javelin was redesigned in 1986, so he's measured only against throws with the new design. The next best in 1996 was Raymond Hecht, at ninety-two twenty-eight.
+
+It broke his own world record from 1993, and thirty years later it still stands.
+
+Four. Wayne Gretzky, 1985–86: a hundred and sixty-three assists.
+
+Second in assists was Mario Lemieux, with ninety-three. Gretzky's assists alone were more than any other player's points: Lemieux had a hundred and forty-one.
+
+Scoring in the mid-eighties was near its peak, and allowing for that brings his score down from about seven and a half to six and a half.
+
+Three. Joe DiMaggio, 1941: a hit in fifty-six straight games. A streak, not a season total.
+
+The record before was forty-four, Willie Keeler, in 1897. The longest by anyone else in 1941 was twenty-four.
+
+In the eighty-five years since, the closest anyone has come is Pete Rose's forty-four, in 1978.
+
+Two. Wilt Chamberlain, 1961–62: fifty point four points a game.
+
+The next best was Walt Bellamy, with thirty-one point six, almost nineteen points behind. Chamberlain averaged forty-eight and a half minutes a game, overtimes included.
+
+Teams scored nearly a hundred and nineteen points a game that season. Allowing for that brings his score down, but only to second. It doesn't account for his minutes or possessions.
+
+And number one. Bob Beamon, Mexico City, 1968: eight point nine zero metres.
+
+One jump, not a season total. It beat the world record by fifty-five centimetres.
+
+The next best jump that year was eight twenty-eight. Nobody jumped further until Mike Powell, twenty-three years later.
+
+It came at two thousand two hundred and forty metres altitude, with a tailwind of two metres a second: the legal maximum.
+
+So how does the score work? Picture a class test. Most of the class scores around seventy, give or take about five points.
+
+Call that usual give-or-take one step.
+
+A student who scores ninety-five is twenty-five points above the class average. That's five steps, so on our scale it's a score of five.
+
+Now put the same ninety-five in a class that averages ninety. It's one step above: a score of one.
+
+Same number, different class. Every result in this film was graded against the class of its own era: the best of everyone else in the fifteen seasons before and after. The curve is the class average; one step is the usual give-or-take.
+
+Three rules keep it fair. First, inflation. When every team scores more, each point is worth a little less, like money in an inflated economy. So in team sports, everyone else's numbers are converted into the athlete's own season before they're compared. How much to convert is estimated from the data.
+
+Second, you're graded against your rivals, not yourself. An athlete's own other seasons are left out. Otherwise Gretzky would be graded against Gretzky.
+
+Third, one entry each, with each athlete's highest-scoring season. A few entries are a single jump or a streak rather than a season total.
+
+The score measures distance from the class, not talent, and it isn't a probability.
+
+One more thing: what isn't here. By one measure, the women's shot put and discus records are the most extreme numbers in the whole dataset.
+
+No woman has thrown twenty-two metres in the shot put since 1988. The best this decade is twenty-one fourteen. The best discus throw since 2000 is more than three metres short of the 1988 record.
+
+But in the 1980s, marks like these were routine at the top: eighteen shot puts of twenty-two metres or more, and fifty discus throws of seventy-two metres or more, by eleven different women.
+
+So against their own era, the record holders' best seasons score about two and a half in the shot put and three in the discus. The top ten starts above five.
+
+They were measured like every other event, and they don't make the list. The outlier isn't one athlete. It's the era.
+
+Random out-of-competition drug testing began in athletics in the late 1980s. This film doesn't single anyone out.
+
+How sure is this order? We tested sixteen versions of the method: comparison windows from seven to twenty seasons, straight or curved trends, with or without the league adjustment. Beamon, Chamberlain, DiMaggio and Gretzky were in the top ten every time. Their order wasn't.
+
+And when the comparison seasons are resampled, places five to ten change hands often.
+
+Change the question, and the order changes. Count an athlete's own other seasons, and Gretzky falls to twentieth: his own great seasons become the bar. DiMaggio rises to first.
+
+Drop the league adjustment, and Dan Marino's forty-eight touchdown passes and Katie Ledecky's 2016 come into the top ten.
+
+So this isn't a ranking of the greatest athletes. It's a ranking of how far one result stood from everyone else of its time.
+
+Which definition would you choose?

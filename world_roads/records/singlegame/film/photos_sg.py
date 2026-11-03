@@ -107,7 +107,7 @@ if __name__ == "__main__" and sys.argv[1] == "fetch":
 
 
 CHOICE = {"bryant": (0.36, 0.0, 0.55), "rojas": (0.05, 0.0, 0.90), "oldfield": (0.15, 0.0, 0.70),
-          "bubka": (0.08, 0.0, 0.84), "marchand": (0.05, 0.0, 0.85), "vetter": (0.12, 0.0, 0.76)}
+          "bubka": (0.08, 0.0, 0.84), "marchand": (0.05, 0.0, 0.85), "vetter": (0.05, 0.0, 0.90)}
 
 
 def crop():

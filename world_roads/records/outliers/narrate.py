@@ -3,7 +3,7 @@
     ELEVENLABS_API_KEY=... python narrate.py <VO_SCRIPT.md> <out dir> <film length s>   # -> <out dir>/narration.wav
 
 The key is read from the environment (never from a file in the repository). Optional: ELEVENLABS_VOICE_ID (default
-George, a warm documentary voice), ELEVENLABS_MODEL (default eleven_multilingual_v2). Each cue ("**m:ss** text") is
+c6SfcYrb2t09NHXiT80T, the voice chosen for these films), ELEVENLABS_MODEL (default eleven_multilingual_v2). Each cue ("**m:ss** text") is
 sent once and cached in <out dir>/voice/ by a hash of its text, voice and model, so re-runs cost nothing. A clip that
 would run into the next cue pushes that cue later (reported). The assembly scripts mix narration.wav over the score
 and dip the music by about 8 dB under the voice (duck_and_mix).
@@ -12,7 +12,7 @@ import hashlib, json, os, re, subprocess, sys, urllib.request
 import numpy as np
 
 SR = 48000
-VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "JBFqnCBsd6RMkjVDRZzb")
+VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "c6SfcYrb2t09NHXiT80T")      # the voice chosen for these films
 MODEL = os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")
 
 

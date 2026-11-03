@@ -4,7 +4,7 @@ script with ElevenLabs, dip the score under the voice, and put the new soundtrac
     ELEVENLABS_API_KEY=... python voice_over.py season    # videos/sports/biggest_statistical_outliers_10m07s.mp4
     ELEVENLABS_API_KEY=... python voice_over.py day       # videos/sports/biggest_single_day_outliers_9m49s.mp4
 
-Writes <name>_voiced.mp4 next to the original. Voice: ELEVENLABS_VOICE_ID (default George); clips are cached in
+Writes <name>_voiced.mp4 next to the original. Voice: ELEVENLABS_VOICE_ID (default c6SfcYrb2t09NHXiT80T, the chosen voice); clips are cached in
 out/voice/ (season) or ../singlegame/film/out/voice/ (day), so a re-run with an edited script only pays for changed lines.
 """
 import os, subprocess, sys
