@@ -15,6 +15,7 @@ short seasons. Output keeps the raw value (what happened) next to the adjusted o
     python team_games.py merge                    # -> data/tg_categories.csv, data/tg_season_lists.csv (top 15)
     python team_games.py league                   # league per-team-game rates the data can give (NHL, NFL, MLB)
     python team_games.py check                    # record games, with their length factors
+    python team_games.py nflold [offline]         # NFL 1932-98 + AFL from Pro Football Archives (offline: cached pages only)
 """
 import csv, glob, io, json, os, sys
 from collections import defaultdict
@@ -267,12 +268,17 @@ PFA_COLS = {"RUSHING": {"sg_nfl_rush_yds": "YDS"}, "PASSING": {"sg_nfl_pass_yds"
             "RECEIVING": {"sg_nfl_rec_yds": "YDS"}, "INTERCEPTIONS": {"sg_nfl_int": "NO"}, "SACKS": {"sg_nfl_sacks": "NO"}}
 
 
+OFFLINE = [False]          # True: read only what is already cached (python team_games.py nflold offline)
+
+
 def pfa_get(url, path, pause=3.0):
     """a polite fetch for Pro Football Archives: cached, `pause` seconds apart, and when the host answers with its
     "One moment, please" slow-down page, nothing is cached and we wait (1, 2, 4 ... minutes) before asking again"""
     import time, urllib.request, urllib.error
     if os.path.exists(path) and os.path.getsize(path) > 0:
         return path
+    if OFFLINE[0]:
+        return None
     for attempt in range(8):
         wait = pause - (time.time() - B._last[0])
         if wait > 0:
@@ -358,12 +364,18 @@ def pfa_parse(path):
     return ot, tied, lines
 
 
-def nflold(pause=3.0):
+def nflold(pause=3.0, offline=False):
     """every player's best regular-season game per season, 1932-1998 (NFL) and 1960-69 (AFL); overtime (from 1974)
-    scaled as 60 / (60 + 7.5), or 75 minutes for a tie, since box scores don't give the winning score's time"""
-    best, tot, games = {}, defaultdict(lambda: defaultdict(float)), defaultdict(int)
+    scaled as 60 / (60 + 7.5), or 75 minutes for a tie, since box scores don't give the winning score's time. Also
+    writes each season's totals and how many games have each table (nflold_totals.json), to set where each stat starts
+    and the league rates."""
+    OFFLINE[0] = offline
+    best = {}
+    tot = defaultdict(lambda: defaultdict(float))
+    games, cover, teams = defaultdict(int), defaultdict(lambda: defaultdict(int)), defaultdict(set)
     for y, lg in PFA_SEASONS:
         gl = pfa_games(y, lg)
+        n = 0
         for path, date, vis, home in gl:
             p = pfa_get(f"{PFA}/{path}", os.path.join(CACHE, "pfa_box", path.replace("/", "_")), pause=pause)
             if not p:
@@ -371,7 +383,12 @@ def nflold(pause=3.0):
             ot, tied, lines = pfa_parse(p)
             om = (15.0 if tied else 7.5) if ot else 0.0
             fac = 60 / (60 + om)
+            m_, d_, y_ = date.split("/")
+            iso = f"{y_}-{int(m_):02d}-{int(d_):02d}"
             games[y] += 1
+            teams[y] |= {vis, home}
+            n += 1
+            seen = set()
             for (sec, pid), (name, team, vals) in lines.items():
                 for cat, col in PFA_COLS[sec].items():
                     v = vals.get(col, "")
@@ -379,29 +396,71 @@ def nflold(pause=3.0):
                         v = float(v)
                     except ValueError:
                         continue
+                    seen.add(cat)
                     tot[y][cat] += v
-                    info = {"name": name, "date": date, "detail": f"{team} ({vis} at {home}; {lg.upper()})"}
+                    info = {"name": name, "date": iso, "detail": f"{team} ({vis} at {home}; {lg.upper()})"}
                     keep(best, (cat, y, "pfa:" + pid.rsplit("/", 1)[-1].replace(".html", "")), v * fac, v, fac,
                          ("overtime (length not recorded)" if ot else "regulation"), info)
-        print("  PFA", y, lg, len(gl), "games", flush=True)
+            for cat in seen:
+                cover[y][cat] += 1
+        print("  PFA", y, lg, len(gl), "games", f"({n} read)" if n < len(gl) else "", flush=True)
     write("nflold", best)
-    json.dump({"games": games, "totals": tot}, open(os.path.join(CACHE, "nflold_totals.json"), "w"))
+    json.dump({"games": games, "totals": tot, "games_with": cover, "teams": {y: len(t) for y, t in teams.items()}},
+              open(os.path.join(CACHE, "nflold_totals.json"), "w"), indent=0)
 
 
 # ------------------------------------------------------------------ merge, league rates, checks
+# Where the old NFL box scores start to count. Before 1950 they are partial reconstructions from newspaper accounts:
+# a team's receiving yards match its passing yards in only 29-79% of team-games (1940-49), against 97-100% from 1950.
+# Individual interceptions are complete from 1950 too. Sacks were not an official stat before 1982; 1982 itself (nine
+# games, a strike) is left out like the other short seasons.
+TG_CATS = dict(B.SG_CATS)
+for _c in ("sg_nfl_pass_yds", "sg_nfl_pass_td", "sg_nfl_rush_yds", "sg_nfl_rec_yds", "sg_nfl_int"):
+    TG_CATS[_c] = TG_CATS[_c][:2] + (1950, "1982 2026")
+TG_CATS["sg_nfl_sacks"] = TG_CATS["sg_nfl_sacks"][:2] + (1983, "1982 2026")
+
+
+def norm_name(n):
+    import re, unicodedata
+    n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode().lower()
+    n = re.sub(r"[.'`]", "", n)
+    n = re.sub(r"\b(jr|sr|ii|iii|iv)\b", "", n)
+    return " ".join(n.replace("-", " ").split())
+
+
+def nfl_ids(rows_old, rows_new, lo=1994, hi=2004):
+    """Pro Football Archives id -> nflverse (gsis) id for players on both sides of 1998/99, matched by name when the
+    name is unique on each side, so a player's own games stay out of his curve across the change of source"""
+    def by_name(rows, y0, y1):
+        m = defaultdict(set)
+        for r in rows:
+            if y0 <= int(r["season"]) <= y1:
+                m[norm_name(r["name"])].add(r["athlete_id"])
+        return m
+    old, new = by_name(rows_old, lo, 1998), by_name(rows_new, 1999, hi)
+    return {next(iter(old[n])): next(iter(new[n])) for n in old if len(old[n]) == 1 and len(new.get(n, ())) == 1}
+
+
 def merge(depth=15):
     os.makedirs(DATA, exist_ok=True)
     lists = defaultdict(list)
-    for league in ("nba", "nhl", "mlb", "nfl"):
+    src = {}
+    for league in ("nba", "nhl", "mlb", "nfl", "nflold"):
         p = os.path.join(CACHE, f"{league}_bests_len.csv")
         if not os.path.exists(p):
             print("missing", p)
             continue
-        for r in csv.DictReader(open(p, encoding="utf-8")):
-            if r["category"] in B.SG_CATS:
-                lists[(r["category"], int(r["season"]))].append(r)
+        src[league] = [r for r in csv.DictReader(open(p, encoding="utf-8")) if r["category"] in TG_CATS]
+    if "nflold" in src and "nfl" in src:
+        ids = nfl_ids(src["nflold"], src["nfl"])
+        for r in src["nflold"]:
+            r["athlete_id"] = ids.get(r["athlete_id"], r["athlete_id"])
+        print(len(ids), "players matched across 1998/99")
+    for league, rs in src.items():
+        for r in rs:
+            lists[(r["category"], int(r["season"]))].append(r)
     cats, rows = [], []
-    for cat, (sport, title, start, short) in B.SG_CATS.items():
+    for cat, (sport, title, start, short) in TG_CATS.items():
         seasons = sorted(s for c, s in lists if c == cat and s >= start)
         if not seasons:
             continue
@@ -427,24 +486,29 @@ def merge(depth=15):
 
 
 def league():
-    """per-team-game rates computed from the game data, for leagues and stats the context tables lack (NHL; NFL
-    interceptions and sacks); MLB rates are rewritten from the same files as the lists"""
+    """league per-team-game rates for the stats the Reference league tables lack: the NFL (Pro Football Archives box
+    scores 1950-98, the AFL's games counted in 1960-69; nflverse from 1999). The NHL and MLB tables come from Hockey-
+    and Baseball-Reference (followup/build/parse_context.py), as in the season film; only if those are missing are
+    they computed from the game data here, as a stand-in."""
     os.makedirs(CTX, exist_ok=True)
-    nh = json.load(open(os.path.join(CACHE, "nhl_rates_len.json")))
-    with open(os.path.join(CTX, "nhl_league.csv"), "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["season", "games", "goals_per_team_g", "assists_per_team_g", "points_per_team_g"])
-        for s, r in sorted(nh.items(), key=lambda kv: int(kv[0])):
-            if r["goals_per_team_g"]:
-                w.writerow([s, r["games"], round(r["goals_per_team_g"], 4), round(r["assists_per_team_g"], 4),
-                            round(r["goals_per_team_g"] + r["assists_per_team_g"], 4)])
-    ml = json.load(open(os.path.join(CACHE, "mlb_rates_len.json")))
-    with open(os.path.join(CTX, "mlb_league.csv"), "w", newline="") as f:
-        w = csv.writer(f)
-        cols = [("so_pitch", "P_SO"), ("h", "B_H"), ("hr", "B_HR"), ("rbi", "B_RBI"), ("sb", "B_SB")]
-        w.writerow(["season", "games"] + [k + "_per_team_g" for k, _ in cols])
-        for s, r in sorted(ml.items(), key=lambda kv: int(kv[0])):
-            w.writerow([s, r["games"]] + [round(r.get(c, 0.0), 5) for _, c in cols])
+    have = lambda name, col: os.path.exists(os.path.join(CTX, name)) and col in open(os.path.join(CTX, name)).readline()
+    if not have("nhl_league.csv", "assists_per_goal"):
+        nh = json.load(open(os.path.join(CACHE, "nhl_rates_len.json")))
+        with open(os.path.join(CTX, "nhl_league.csv"), "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["season", "games", "goals_per_team_g", "assists_per_team_g", "points_per_team_g"])
+            for s, r in sorted(nh.items(), key=lambda kv: int(kv[0])):
+                if r["goals_per_team_g"]:
+                    w.writerow([s, r["games"], round(r["goals_per_team_g"], 4), round(r["assists_per_team_g"], 4),
+                                round(r["goals_per_team_g"] + r["assists_per_team_g"], 4)])
+    if not have("mlb_league.csv", "era"):
+        ml = json.load(open(os.path.join(CACHE, "mlb_rates_len.json")))
+        with open(os.path.join(CTX, "mlb_league.csv"), "w", newline="") as f:
+            w = csv.writer(f)
+            cols = [("so_pitch", "P_SO"), ("h", "B_H"), ("hr", "B_HR"), ("rbi", "B_RBI"), ("sb", "B_SB")]
+            w.writerow(["season", "games"] + [k + "_per_team_g" for k, _ in cols])
+            for s, r in sorted(ml.items(), key=lambda kv: int(kv[0])):
+                w.writerow([s, r["games"]] + [round(r.get(c, 0.0), 5) for _, c in cols])
     tot = defaultdict(lambda: defaultdict(float))
     for name, cols in (("player_stats.csv", {"pass_yds": "passing_yards", "pass_td": "passing_tds",
                                              "rush_yds": "rushing_yards", "rec_yds": "receiving_yards"}),
@@ -455,10 +519,20 @@ def league():
             for k, c in cols.items():
                 if r.get(c) not in (None, "", "NA"):
                     tot[int(r["season"])][k] += float(r[c])
+    keys = ["pass_yds", "rush_yds", "rec_yds", "pass_td", "int", "sacks"]
+    old = json.load(open(os.path.join(CACHE, "nflold_totals.json")))           # 1932-1998, NFL and AFL together
     with open(os.path.join(CTX, "nfl_league.csv"), "w", newline="") as f:
         w = csv.writer(f)
-        keys = ["pass_yds", "rush_yds", "rec_yds", "pass_td", "int", "sacks"]
         w.writerow(["season", "teams", "games_per_team"] + [k + "_per_team_g" for k in keys])
+        for y in sorted(old["games"], key=int):
+            n, tg = old["games"][y], old["totals"][y]
+            if int(y) < 1950:
+                continue
+            full = {k: tg.get("sg_nfl_" + k, 0) for k in keys}
+            if int(y) < 1982:
+                full["sacks"] = 0                                             # not an official stat before 1982
+            w.writerow([y, old["teams"][y], round(2 * n / old["teams"][y], 2)]
+                       + [round(full[k] / (2 * n), 4) if full[k] else "" for k in keys])
         for y in sorted(tot):
             n, g = (31 if y <= 2001 else 32), (17 if y >= 2021 else 16)
             w.writerow([y, n, g] + [round(tot[y][k] / (n * g), 4) for k in keys])
@@ -480,5 +554,8 @@ def check():
 
 
 if __name__ == "__main__":
-    {"mlb": mlb, "nba": nba, "nhl": nhl, "nfl": nfl, "nflold": nflold, "merge": merge, "league": league,
-     "check": check}[sys.argv[1]]()
+    if sys.argv[1:] == ["nflold", "offline"]:
+        nflold(offline=True)
+    else:
+        {"mlb": mlb, "nba": nba, "nhl": nhl, "nfl": nfl, "nflold": nflold, "merge": merge, "league": league,
+         "check": check}[sys.argv[1]]()

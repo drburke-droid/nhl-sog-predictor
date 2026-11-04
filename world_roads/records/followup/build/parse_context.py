@@ -23,7 +23,6 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, ROOT)
 os.chdir(ROOT)
 from bs4 import BeautifulSoup                                   # noqa: E402
-import bigfour as B                                            # noqa: E402
 
 C = os.path.join(ROOT, "cache", "context")
 OUT = os.path.join(ROOT, "followup", "data", "context")
@@ -227,6 +226,7 @@ def mlb():
 
 def nfl():
     """league totals from every player line: PFA team pages (summed per player over teams) and nflverse"""
+    import bigfour as B                    # only this table needs the original pipeline (and its full cache)
     pl = []
     P = B.pfa_load()                       # top-40 lists only: re-sum every player for league totals
     tot = defaultdict(lambda: defaultdict(float))
