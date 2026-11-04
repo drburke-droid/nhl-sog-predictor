@@ -20,7 +20,7 @@ import vessels as V
 CELL = 3
 WC, HC = W // CELL, H // CELL
 NCELL = WC * HC
-HMAX = 64
+HMAX = 96
 HFULL = 4.0                 # mean grains per cell when a vessel is "full"
 K = len(S.KEYS)
 KI = {k: i for i, k in enumerate(S.KEYS)}
@@ -110,6 +110,44 @@ def build_grid():
 VID, NB, META = build_grid()
 VCELLS = [np.where(VID == i)[0] for i in range(NV)]
 NCELLS_V = np.array([len(c) for c in VCELLS], float)
+VALID = np.where(VID >= 0)[0]
+
+
+def build_density():
+    """Where people live today, per cell: city and town populations (Natural Earth populated places)
+    spread into tight urban peaks plus wider halos for the surrounding farmland, compressed a little,
+    and scaled to mean 1 within each vessel. Inset (magnified) vessels are left uniform."""
+    import json, os
+    from proj import to_px
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ne_10m_populated_places_simple.geojson")
+    if not os.path.exists(path):
+        import subprocess
+        subprocess.run(["curl", "-sS", "-o", path, "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/"
+                        "master/geojson/ne_10m_populated_places_simple.geojson"], check=True)
+    f = json.load(open(path))["features"]
+    lon = np.array([x["properties"]["longitude"] for x in f], float)
+    lat = np.array([x["properties"]["latitude"] for x in f], float)
+    pop = np.array([max(x["properties"].get("pop_max") or 0, 1000) for x in f], float)
+    x, y = to_px(lon, lat)
+    ix = np.clip((x / CELL).astype(int), 0, WC - 1); iy = np.clip((y / CELL).astype(int), 0, HC - 1)
+    g = np.zeros((HC, WC), np.float32)
+    np.add.at(g, (iy, ix), pop)
+    parts = [(1.2, 0.45), (5.0, 0.35), (16.0, 0.20)]            # (sigma in cells, weight)
+    d = sum(w * cv2.GaussianBlur(g, (0, 0), sg) / max(cv2.GaussianBlur(g, (0, 0), sg).sum(), 1) for sg, w in parts)
+    d = d.ravel() ** 0.7
+    out = np.ones(NCELL, np.float32)
+    for i, v in enumerate(ORDER):
+        c = VCELLS[i]
+        if META[v]["inset"] or len(c) == 0:
+            continue
+        dv = d[c]
+        dv = dv / max(dv.mean(), 1e-12)
+        dv = np.clip(dv, 0.02, 6.0)                        # cap: the densest places hold at most 6x the mean
+        out[c] = dv / dv.mean()
+    return out
+
+
+DENS = build_density()
 GMAX = HFULL * NCELLS_V.sum()
 CELL_XY = np.stack([(np.arange(NCELL) % WC + 0.5) * CELL, (np.arange(NCELL) // WC + 0.5) * CELL], 1)
 from scipy.spatial import cKDTree
@@ -186,6 +224,7 @@ class Sand:
     def __init__(self, seed=11):
         self.rng = np.random.default_rng(seed)
         self.s = 0.0
+        self.Ht = np.zeros(NCELL, np.float32)
         self.stack = np.full((NCELL, HMAX), -1, np.int8)
         self.h = np.zeros(NCELL, np.int16)
         self.tchg = np.full(NCELL, -99.0, np.float32)       # last time the top grain changed
@@ -219,10 +258,12 @@ class Sand:
                 cells = self.add(cells, np.full(len(cells), c, np.int8))
                 if len(cells) == 0:
                     break
+            self.cell_targets()
             for _ in range(60):
                 self.topple(passes=1)
         self.first_seen = {}
         self._share_t = None
+        self.Ht = np.zeros(NCELL, np.float32)
 
     # ---------------------------------------------------------- routes
     def prepare_route(self, e):
@@ -276,9 +317,11 @@ class Sand:
             for d in self.rng.permutation(4):
                 nb = NB[d]
                 src = np.where(nb >= 0)[0]
-                diff = self.h[src] - self.h[nb[src]]
+                ex = self.h - self.Ht
+                diff = ex[src] - ex[nb[src]]
                 r = self.rng.random(len(src))
-                mv = ((diff >= 2) & (r < 0.85)) | ((diff == 1) & (r < 0.03))
+                mv = (((diff >= 1.6) & (r < 0.85)) | ((diff >= 0.8) & (r < 0.06))) & (self.h[src] > 0) \
+                    & (self.h[nb[src]] < HMAX - 2)
                 a = src[mv]
                 if len(a) == 0:
                     continue
@@ -286,14 +329,9 @@ class Sand:
                 self.h[a] -= 1
                 g = self.stack[a, self.h[a]].copy()
                 self.stack[a, self.h[a]] = -1
-                full = self.h[b] >= HMAX
-                b2, g2 = b[~full], g[~full]
-                self.stack[b2, self.h[b2]] = g2
+                b2 = b
+                self.stack[b2, self.h[b2]] = g
                 self.h[b2] += 1
-                if full.any():                       # put back
-                    a3 = a[full]
-                    self.stack[a3, self.h[a3]] = g[full]
-                    self.h[a3] += 1
                 self.tchg[a] = self.s
                 self.tchg[b2] = self.s
 
@@ -332,6 +370,22 @@ class Sand:
         rp = self.replace[v]
         return rp["P_new"] if rp is not None else self.P[v]
 
+    @staticmethod
+    def farm_w(ybp):
+        w = float(np.clip((10_000 - ybp) / 8_000, 0, 1))
+        return w * w * (3 - 2 * w)
+
+    def cell_targets(self):
+        """Target pile height per cell: each vessel's grains spread in proportion to where its people
+        live (evenly before farming, by today's population density once settled life takes over)."""
+        w = self.farm_w(ybp_at(self.s))
+        we = (1 - w) + w * DENS[VALID]
+        sums = np.bincount(VID[VALID], we, minlength=NV)
+        N = self.counts.sum(1).astype(float)
+        H = np.zeros(NCELL, np.float32)
+        H[VALID] = np.minimum(N[VID[VALID]] * we / np.maximum(sums[VID[VALID]], 1e-9), HMAX - 6)
+        self.Ht = H
+
     def base_grains(self, v, ybp):
         """Sand in proportion to population: spread by habitable area before farming, by the historical
         population tables after, blending between 10,000 years ago and 1 CE. Small peoples keep a
@@ -339,8 +393,7 @@ class Sand:
         if self.fixed_fill[v] is not None:
             return self.fixed_fill[v] * HFULL * NCELLS_V[v]
         area = fill_at(ybp) * HFULL * NCELLS_V[v]
-        w = float(np.clip((10_000 - ybp) / 8_000, 0, 1))
-        w = w * w * (3 - 2 * w)
+        w = self.farm_w(ybp)
         if w > 0:
             if self._share_t != ybp:
                 self._share = pop_share_hist(ybp); self._share_t = ybp
@@ -399,7 +452,8 @@ class Sand:
                 sel = np.where(cols == c)[0]
                 same = room[tops == c]
                 pool = same if len(same) and self.rng.random() < 0.8 else room
-                cells[sel] = self.rng.choice(pool, size=len(sel))
+                pw = self.Ht[pool] + 0.05
+                cells[sel] = self.rng.choice(pool, size=len(sel), p=pw / pw.sum())
             # some grains hop to a nearby spot: sand crosses small gaps (island chains) and fills out
             hop = np.where(self.rng.random(k) < (0.7 if crowded else 0.12))[0]
             if len(hop):
@@ -412,6 +466,9 @@ class Sand:
             k = int(min(N - T, max(12, 0.05 * N)))
             if self.extinct[v] is not None:
                 self.pop(self.rng.choice(occ, size=k))
+            elif self.counts[v].sum() and (self.counts[v] - P * N).max() <= 0.75:
+                ex = np.maximum(self.h[occ] - self.Ht[occ], 0) + 0.02
+                self.pop(self.rng.choice(occ, size=min(k, len(occ)), p=ex / ex.sum()))
             else:
                 ex = self.counts[v] - P * N
                 tops = self.stack[occ, self.h[occ] - 1]
@@ -596,6 +653,7 @@ class Sand:
         dt = s_new - self.s
         self.s = s_new
         self.run_events(dt)
+        self.cell_targets()
         for v in range(NV):
             if self.counts[v].sum() or self.growth[v] is not None:
                 self.reconcile(v, dt)
