@@ -2,7 +2,7 @@
 
 Model: the season film's locked model (E3_main_env: best of everyone else in the 15 seasons either side, quadratic trend, league adjustment, the athlete's own seasons left out), team sports only, plus the rule used in all three films: a season must be at least 1 step clear of every other season on its graph. 2,299 season-leading performances in 22 categories; 37 clear their field.
 
-Reproduction: 1467 of 1906 scores match the published model to 0.005; the largest difference is 3.73 (Otto Graham, 1952, passing yards in a season).
+Reproduction: 1638 of 1906 scores match the published model to 0.005 (NBA 269 of 270, NHL 246 of 252, MLB 1113 of 1151, NFL 10 of 233; top 30 of the old list: 28 of 30). The published model used the follow-up's deeper season lists (top 40, stable IDs), which can't be rebuilt without the original download cache; the original top-10 lists with the same identity fixes stand in for them, so a few seasons whose comparison runs past rank 10 or through a merged name score differently (all listed at the end).
 
 Curve, step and *best other* are in the athlete's own season's units (*best other* is the best season by anyone else on the same graph, converted to that season's league rate).
 
@@ -12,12 +12,12 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Wilt Chamberlain, points per game, 1961-62 | NBA | 50.4 | 31.79 | 2.64 | **7.05** | 7.0479 | 3.94 | George Mikan 28.3 (1948-49) = 40 | 16 |
 | 2 | Joe DiMaggio, hitting streak, 1941 | MLB | 56.0 | 28.13 | 3.98 | **7.01** | 7.0112 | 4.78 | Tommy Holmes 37.0 (1945) = 37 | 16 |
-| 3 | Wayne Gretzky, assists in a season, 1985-86 | NHL | 163.0 | 92.76 | 10.8 | **6.49** | 6.4657 | 2.82 | Bobby Orr 102.0 (1970-71) = 132.5 | 16 |
+| 3 | Wayne Gretzky, assists in a season, 1985-86 | NHL | 163.0 | 92.82 | 10.9 | **6.46** | 6.4657 | 2.80 | Bobby Orr 102.0 (1970-71) = 132.6 | 16 |
 | 4 | Dazzy Vance, strikeouts by a pitcher, 1924 | MLB | 262.0 | 153.8 | 18.6 | **5.83** | 5.8304 | 2.47 | Walter Johnson 313.0 (1910) = 216.2 | 8 |
 | 5 | Dennis Rodman, rebounds per game, 1992-93 | NBA | 18.3 | 13.36 | 0.87 | **5.68** | 5.6783 | 1.57 | Moses Malone 17.6 (1978-79) = 16.94 | 13 |
 | 6 | Babe Ruth, home runs in a season, 1920 | MLB | 54.0 | 22.96 | 5.59 | **5.56** | 5.5571 | 2.97 | Gavy Cravath 24.0 (1915) = 37.4 | 6 |
 | 7 | Ichiro Suzuki, hits in a season, 2004 | MLB | 262.0 | 218.9 | 8.18 | **5.27** | 5.2704 | 2.63 | Jose Altuve 225.0 (2014) = 240.5 | 15 |
-| 8 | Bob Feller, strikeouts by a pitcher, 1946 | MLB | 348.0 | 205.2 | 28.4 | **5.03** | 5.0307 | 2.44 | Van Mungo 238.0 (1936) = 278.7 | 10 |
+| 8 | Bob Feller, strikeouts by a pitcher, 1946 | MLB | 348.0 | 205.2 | 28.4 | **5.03** | 5.0307 | 2.44 | Van Mungo 238.0 (1936) = 278.7 | 9 |
 | 9 | Maury Wills, stolen bases in a season, 1962 | MLB | 104.0 | 55.12 | 10.2 | **4.78** | 4.7802 | 2.25 | Lou Brock 118.0 (1974) = 80.95 | 9 |
 | 10 | Ted Williams, batting average, 1941 | MLB | 0.406 | 0.3575 | 0.0102 | **4.77** | 4.7726 | 3.07 | Stan Musial 0.376 (1948) = 0.3748 | 3 |
 | 11 | Tim Keefe, earned run average, 1880 | MLB | 0.86 | 1.467 | 0.194 | **4.62** | 4.6216 | 2.09 | Old Hoss Radbourn 1.38 (1884) = 1.058 | 2 (one-sided window) |
@@ -39,13 +39,13 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Jordan's 37.1 points a game | 37.1 | 4.26 | 16 | 0.28 | Bob McAdoo 34.5 (1974-75) = 36.64 | out: another season on its graph comes within a step |
 | Stockton's 14.5 assists | 14.5 | 2.36 | 71 | 0.86 | Steve Nash 11.5 (2004-05) = 13.45 | out: another season on its graph comes within a step |
 | Wilt's 27.2 rebounds | 27.2 | 2.03 | not the athlete best | 0.15 | Bill Russell 24.7 (1963-64) = 26.92 | out: another season on its graph comes within a step |
-| Gretzky's 163 assists | 163.0 | 6.49 | 3 | 2.82 | Bobby Orr 102.0 (1970-71) = 132.5 | **#3** |
-| Gretzky's 92 goals | 92.0 | 1.89 | not the athlete best | -0.72 | Phil Esposito 76.0 (1970-71) = 99.51 | out: another season on its graph is as good or better |
-| Orr's 102 assists | 102.0 | 4.54 | 13 | -3.10 | Wayne Gretzky 163.0 (1985-86) = 125.5 | out: another season on its graph is as good or better |
-| Esposito's 76 goals | 76.0 | 3.69 | 23 | 0.91 | Wayne Gretzky 92.0 (1981-82) = 70.26 | out: another season on its graph comes within a step |
-| Lemieux's 199 points | 199.0 | 1.44 | not the athlete best | -0.25 | Wayne Gretzky 215.0 (1985-86) = 204.1 | out: another season on its graph is as good or better |
-| Howe's 95 points | 95.0 | 4.16 | 18 | 1.82 | Bill Cowley 64.0 (1940-41) = 83.65 | in, below the top ten |
-| Babe Dye's 38 goals | 38.0 | 4.24 | 17 | 2.75 | Nels Stewart 34.0 (1925-26) = 30.66 | in, below the top ten |
+| Gretzky's 163 assists | 163.0 | 6.46 | 3 | 2.80 | Bobby Orr 102.0 (1970-71) = 132.6 | **#3** |
+| Gretzky's 92 goals | 92.0 | 1.90 | not the athlete best | -0.72 | Phil Esposito 76.0 (1970-71) = 99.51 | out: another season on its graph is as good or better |
+| Orr's 102 assists | 102.0 | 4.56 | 13 | -3.09 | Wayne Gretzky 163.0 (1985-86) = 125.4 | out: another season on its graph is as good or better |
+| Esposito's 76 goals | 76.0 | 3.69 | 23 | 0.91 | Wayne Gretzky 92.0 (1981-82) = 70.27 | out: another season on its graph comes within a step |
+| Lemieux's 199 points | 199.0 | 1.44 | not the athlete best | -0.24 | Wayne Gretzky 215.0 (1985-86) = 204 | out: another season on its graph is as good or better |
+| Howe's 95 points | 95.0 | 4.13 | 17 | 1.80 | Bill Cowley 64.0 (1940-41) = 83.77 | in, below the top ten |
+| Babe Dye's 38 goals | 38.0 | 4.00 | 19 | 2.07 | Joe Malone 44.0 (1917-18) = 32.13 | in, below the top ten |
 | DiMaggio's 56-game streak | 56.0 | 7.01 | 2 | 4.78 | Tommy Holmes 37.0 (1945) = 37 | **#2** |
 | Ruth's 54 home runs | 54.0 | 5.56 | 7 | 2.97 | Gavy Cravath 24.0 (1915) = 37.4 | **#6** |
 | Bonds's 73 home runs | 73.0 | 2.00 | 106 | -0.28 | Mark McGwire 70.0 (1998) = 74.88 | out: another season on its graph is as good or better |
@@ -56,7 +56,7 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Wills's 104 steals | 104.0 | 4.78 | 10 | 2.25 | Lou Brock 118.0 (1974) = 80.95 | **#9** |
 | Henderson's 130 steals | 130.0 | 3.01 | 43 | -0.44 | Lou Brock 118.0 (1974) = 136.2 | out: another season on its graph is as good or better |
 | Ted Williams's .406 | 0.406 | 4.77 | 11 | 3.07 | Stan Musial 0.376 (1948) = 0.3748 | **#10** |
-| Gibson's 1.12 ERA | 1.123 | 4.06 | 19 | 2.02 | Dean Chance 1.649 (1964) = 1.331 | in, below the top ten |
+| Gibson's 1.12 ERA | 1.123 | 4.06 | 18 | 2.02 | Dean Chance 1.649 (1964) = 1.331 | in, below the top ten |
 | Hack Wilson's 191 RBI | 191.0 | 0.33 | 433 | -1.44 | Lou Gehrig 185.0 (1931) = 214.1 | out: another season on its graph is as good or better |
 | McLain's 31 wins | 31.0 | 3.77 | 22 | 1.55 | Don Newcombe 27.0 (1956) = 28.4 | in, below the top ten |
 | Marino's 48 TD passes | - | - | - | - | - | not scored (not that season's leader, or no league rate) |
@@ -82,9 +82,9 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Johnny Unitas, touchdown passes in a season, 1959 | 2.350 | 3.453 |
 | Bobby Layne, touchdown passes in a season, 1951 | 1.778 | 0.733 |
 | Carl Hubbell, wins by a pitcher, 1936 | 0.182 | 1.202 |
-| Milt Schmidt, assists in a season, 1940 | -0.675 | 0.290 |
 | George Ratterman, touchdown passes in a season, 1950 | 0.650 | -0.314 |
 | Joe Perry, rushing yards in a season, 1953 | 1.114 | 0.193 |
+| Milt Schmidt, assists in a season, 1940 | -0.626 | 0.290 |
 | Hal Newhouser, earned run average, 1946 | -0.016 | 0.882 |
 | Joe Perry, rushing yards in a season, 1954 | 1.076 | 0.186 |
 | Marion Motley, rushing yards in a season, 1950 | -0.433 | -1.250 |
@@ -107,12 +107,12 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Cy Seymour, batting average, 1905 | 0.610 | 1.186 |
 | Lady Baldwin, strikeouts by a pitcher, 1886 | -1.200 | -0.637 |
 | Tobin Rote, touchdown passes in a season, 1955 | -0.285 | -0.843 |
-| Nikita Kucherov, points in a season, 2024 | 1.289 | 1.833 |
+| Nikita Kucherov, points in a season, 2025 | -0.667 | -0.121 |
+| Nikita Kucherov, points in a season, 2024 | 1.295 | 1.833 |
 | Chris Sale, earned run average, 2024 | -1.496 | -0.960 |
-| Nikita Kucherov, points in a season, 2025 | -0.652 | -0.121 |
 | Jamal Lewis, rushing yards in a season, 2003 | 1.423 | 0.914 |
 | Tom Brady, passing yards in a season, 2005 | -1.576 | -1.080 |
-| Guy Lafleur, points in a season, 1978 | -0.830 | -0.356 |
+| Guy Lafleur, points in a season, 1978 | -0.838 | -0.356 |
 | Ricky Williams, rushing yards in a season, 2002 | 0.434 | -0.031 |
 | Sandy Koufax, strikeouts by a pitcher, 1966 | 0.619 | 1.081 |
 | Tom Fears, receiving yards in a season, 1950 | -0.028 | -0.479 |
@@ -140,7 +140,6 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Dexter McCleon, interceptions in a season, 2000 | -0.572 | -0.918 |
 | Darren Sharper, interceptions in a season, 2000 | -0.572 | -0.918 |
 | Mickey Mantle, home runs in a season, 1956 | 0.216 | 0.554 |
-| Joe Malone, goals in a season, 1918 | 0.687 | 1.025 |
 | Jim Brown, rushing yards in a season, 1957 | -0.234 | -0.563 |
 | Edgerrin James, rushing yards in a season, 1999 | -0.307 | -0.620 |
 | Alan Ameche, rushing yards in a season, 1955 | -0.821 | -1.125 |
@@ -160,7 +159,6 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Charley Hennigan, receiving yards in a season, 1961 | 2.061 | 1.808 |
 | Drew Brees, passing yards in a season, 2006 | -0.227 | 0.017 |
 | Ja'Marr Chase, receiving yards in a season, 2024 | 0.228 | -0.011 |
-| Babe Dye, goals in a season, 1925 | 4.236 | 3.998 |
 | Daunte Culpepper, passing yards in a season, 2004 | 0.261 | 0.498 |
 | Dwight Freeney, sacks in a season, 2004 | -0.817 | -0.581 |
 | Priest Holmes, rushing yards in a season, 2001 | -0.858 | -1.092 |
@@ -177,7 +175,6 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Michael Strahan, sacks in a season, 2001 | 2.433 | 2.644 |
 | Curtis Martin, rushing yards in a season, 2004 | -0.692 | -0.902 |
 | T.J. Watt, sacks in a season, 2020 | -0.720 | -0.929 |
-| Bill Cook, points in a season, 1933 | -0.733 | -0.525 |
 | Cooper Kupp, receiving yards in a season, 2021 | 1.432 | 1.229 |
 | Kurt Warner, passing yards in a season, 2001 | 1.523 | 1.320 |
 | Johnny Unitas, touchdown passes in a season, 1957 | 1.267 | 1.466 |
@@ -188,11 +185,11 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Justin Jefferson, receiving yards in a season, 2022 | 0.889 | 0.700 |
 | Johnny Pesky, hitting streak, 1947 | -0.469 | -0.281 |
 | Jim Brown, rushing yards in a season, 1960 | 1.412 | 1.226 |
+| Bill Cook, points in a season, 1933 | -0.707 | -0.525 |
 | Del Shofner, receiving yards in a season, 1958 | -0.425 | -0.245 |
 | Peyton Manning, touchdown passes in a season, 2004 | 2.135 | 2.315 |
 | Kerby Joseph, interceptions in a season, 2024 | 0.768 | 0.945 |
 | Andre Johnson, receiving yards in a season, 2009 | 0.258 | 0.087 |
-| Art Chapman, assists in a season, 1936 | -0.739 | -0.907 |
 | Peyton Manning, passing yards in a season, 2000 | -0.124 | 0.044 |
 | Tony Parrish, interceptions in a season, 2003 | 0.079 | -0.088 |
 | Brian Russell, interceptions in a season, 2003 | 0.079 | -0.088 |
@@ -200,7 +197,6 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Dak Prescott, touchdown passes in a season, 2023 | -0.457 | -0.620 |
 | Michael Strahan, sacks in a season, 2003 | 1.105 | 1.259 |
 | Torry Holt, receiving yards in a season, 2000 | 0.378 | 0.528 |
-| Henrik Sedin, assists in a season, 2010 | 1.583 | 1.433 |
 | Torry Holt, receiving yards in a season, 2003 | 1.594 | 1.738 |
 | Ed Reed, interceptions in a season, 2008 | 0.927 | 1.071 |
 | Kiki Cuyler, hitting streak, 1926 | -0.746 | -0.603 |
@@ -209,14 +205,9 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Tre'Davious White, interceptions in a season, 2019 | -1.387 | -1.245 |
 | Ty Law, interceptions in a season, 2005 | 1.123 | 1.265 |
 | Deltha O'Neal, interceptions in a season, 2005 | 1.123 | 1.265 |
-| Art Chapman, assists in a season, 1935 | -0.458 | -0.598 |
 | George Blanda, touchdown passes in a season, 1961 | 1.302 | 1.442 |
-| Harry Cameron, assists in a season, 1918 | -1.020 | -0.881 |
 | Chris Davis, home runs in a season, 2013 | 1.548 | 1.686 |
 | Tom Brady, touchdown passes in a season, 2007 | 2.250 | 2.388 |
-| Corb Denneny, assists in a season, 1918 | -1.170 | -1.032 |
-| Cy Denneny, assists in a season, 1918 | -1.170 | -1.032 |
-| Reg Noble, assists in a season, 1918 | -1.170 | -1.032 |
 | Steve Beuerlein, passing yards in a season, 1999 | -0.256 | -0.121 |
 | DeMarcus Ware, sacks in a season, 2008 | 1.910 | 2.042 |
 | Shaquil Barrett, sacks in a season, 2019 | 0.049 | -0.081 |
@@ -230,7 +221,6 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Tua Tagovailoa, passing yards in a season, 2023 | -0.902 | -1.016 |
 | Peyton Manning, touchdown passes in a season, 2013 | 2.683 | 2.796 |
 | Daron Bland, interceptions in a season, 2023 | 0.421 | 0.534 |
-| Sweeney Schriner, points in a season, 1936 | -0.529 | -0.641 |
 | Patrick Mahomes, passing yards in a season, 2022 | 1.959 | 1.847 |
 | Pedro Martínez, wins by a pitcher, 1999 | 0.703 | 0.814 |
 | Walter Johnson, strikeouts by a pitcher, 1912 | 1.330 | 1.440 |
@@ -239,6 +229,7 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Dean Derby, interceptions in a season, 1959 | -1.570 | -1.677 |
 | Milt Davis, interceptions in a season, 1959 | -1.570 | -1.677 |
 | Don Shinnick, interceptions in a season, 1959 | -1.570 | -1.677 |
+| Nels Stewart, goals in a season, 1926 | 1.166 | 1.273 |
 | Kurt Warner, touchdown passes in a season, 1999 | 0.776 | 0.671 |
 | Norm Van Brocklin, passing yards in a season, 1954 | -0.978 | -0.874 |
 | Aaron Rodgers, touchdown passes in a season, 2020 | 0.670 | 0.566 |
@@ -267,76 +258,43 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Will Sherman, interceptions in a season, 1955 | 0.343 | 0.416 |
 | Pete Pihos, receiving yards in a season, 1953 | -0.537 | -0.609 |
 | Jim Finks, passing yards in a season, 1955 | -0.736 | -0.666 |
-| Babe Dye, goals in a season, 1921 | -0.296 | -0.365 |
 | Rich Gannon, passing yards in a season, 2002 | 0.163 | 0.231 |
 | LeSean McCoy, rushing yards in a season, 2013 | -0.292 | -0.225 |
-| Herb Cain, points in a season, 1944 | -0.011 | 0.053 |
 | Johnny Unitas, passing yards in a season, 1960 | 0.444 | 0.507 |
-| Newsy Lalonde, points in a season, 1919 | -0.468 | -0.531 |
-| Newsy Lalonde, points in a season, 1921 | -0.263 | -0.325 |
 | Reggie Wayne, receiving yards in a season, 2007 | -0.338 | -0.399 |
-| Joe Malone, goals in a season, 1920 | -0.333 | -0.392 |
-| Clint Smith, assists in a season, 1944 | -0.155 | -0.096 |
-| Steven Stamkos, goals in a season, 2010 | -0.101 | -0.160 |
 | Jack Christiansen, interceptions in a season, 1957 | 0.599 | 0.542 |
 | Antonio Cromartie, interceptions in a season, 2007 | 0.712 | 0.768 |
 | Drew Brees, passing yards in a season, 2008 | 2.447 | 2.391 |
 | Chris Johnson, rushing yards in a season, 2009 | 1.404 | 1.460 |
 | Jack Christiansen, interceptions in a season, 1953 | -0.195 | -0.140 |
-| Nels Stewart, goals in a season, 1926 | 1.217 | 1.273 |
-| Jack Darragh, assists in a season, 1921 | 0.204 | 0.148 |
-| Babe Dye, goals in a season, 1922 | -0.639 | -0.694 |
 | José Canseco, home runs in a season, 1988 | -0.016 | 0.039 |
 | Ed Reed, interceptions in a season, 2010 | -0.264 | -0.316 |
-| Sidney Crosby, goals in a season, 2010 | -0.194 | -0.245 |
 | Daunte Culpepper, touchdown passes in a season, 2000 | -0.230 | -0.281 |
 | Stefon Diggs, receiving yards in a season, 2020 | -1.286 | -1.336 |
-| Eddie Gerard, assists in a season, 1919 | -0.909 | -0.958 |
 | Lamar Jackson, touchdown passes in a season, 2019 | -0.741 | -0.789 |
-| Punch Broadbent, points in a season, 1922 | -0.239 | -0.286 |
-| Elmer Lach, assists in a season, 1945 | 2.786 | 2.740 |
-| Frank Nighbor, assists in a season, 1919 | -0.783 | -0.828 |
 | Ed Reed, interceptions in a season, 2004 | 0.361 | 0.317 |
 | Robert Mathis, sacks in a season, 2013 | -0.282 | -0.239 |
 | Tom Brady, touchdown passes in a season, 2010 | -0.566 | -0.523 |
-| Joe Primeau, assists in a season, 1932 | 0.280 | 0.322 |
 | Michael Thomas, receiving yards in a season, 2019 | 0.217 | 0.175 |
 | Ronde Barber, interceptions in a season, 2001 | 0.722 | 0.681 |
 | Anthony Henry, interceptions in a season, 2001 | 0.722 | 0.681 |
 | Maurice Jones-Drew, rushing yards in a season, 2011 | -0.698 | -0.658 |
-| Busher Jackson, points in a season, 1932 | -0.713 | -0.674 |
 | Richard Sherman, interceptions in a season, 2013 | -0.402 | -0.441 |
 | Glover Quin, interceptions in a season, 2014 | -0.737 | -0.776 |
 | Kyle Fuller, interceptions in a season, 2018 | -0.573 | -0.534 |
 | Damontae Kazee, interceptions in a season, 2018 | -0.573 | -0.534 |
 | Xavien Howard, interceptions in a season, 2018 | -0.548 | -0.511 |
-| Syl Apps, assists in a season, 1937 | -0.725 | -0.689 |
 | Champ Bailey, interceptions in a season, 2006 | 1.022 | 1.058 |
 | Asante Samuel, interceptions in a season, 2006 | 1.022 | 1.058 |
 | J.J. Watt, sacks in a season, 2015 | -0.332 | -0.297 |
 | Jared Allen, sacks in a season, 2007 | -0.687 | -0.652 |
-| Doug Bentley, goals in a season, 1944 | -0.654 | -0.619 |
-| Frank Nighbor, assists in a season, 1926 | 0.886 | 0.852 |
-| Syl Apps, assists in a season, 1938 | -0.987 | -0.953 |
 | Josh Jacobs, rushing yards in a season, 2022 | -0.612 | -0.579 |
 | Simeon Rice, sacks in a season, 1999 | -0.477 | -0.510 |
 | Brett Favre, touchdown passes in a season, 2003 | -0.498 | -0.531 |
 | Adrian Peterson, rushing yards in a season, 2015 | -0.383 | -0.416 |
 | T.Y. Hilton, receiving yards in a season, 2016 | -1.681 | -1.712 |
-| Peter Forsberg, assists in a season, 2003 | 0.747 | 0.778 |
-| Frank Nighbor, assists in a season, 1920 | 0.263 | 0.232 |
-| Phil Watson, assists in a season, 1942 | -0.477 | -0.447 |
 | Tommy Davis, runs batted in, 1962 | 1.009 | 1.039 |
 | Drew Brees, touchdown passes in a season, 2009 | -0.741 | -0.771 |
-| Connor McDavid, assists in a season, 2024 | 1.795 | 1.825 |
-| Frank Boucher, assists in a season, 1930 | 0.588 | 0.618 |
-| Gordie Howe, points in a season, 1953 | 4.161 | 4.132 |
-| Joe Primeau, assists in a season, 1934 | -0.292 | -0.262 |
-| Howie Morenz, points in a season, 1931 | 0.036 | 0.066 |
-| Bill Cowley, assists in a season, 1939 | -0.403 | -0.374 |
-| Babe Dye, points in a season, 1923 | -0.054 | -0.083 |
-| Joe Thornton, assists in a season, 2007 | 2.177 | 2.206 |
-| Elmer Lach, points in a season, 1948 | -1.368 | -1.396 |
 | Drew Brees, passing yards in a season, 2015 | -1.329 | -1.357 |
 | Patrick Mahomes, touchdown passes in a season, 2018 | 1.145 | 1.117 |
 | Tom Brady, passing yards in a season, 2021 | 0.736 | 0.708 |
@@ -344,58 +302,39 @@ Curve, step and *best other* are in the athlete's own season's units (*best othe
 | Marcus Peters, interceptions in a season, 2015 | 0.145 | 0.117 |
 | Vic Beasley, sacks in a season, 2016 | -0.741 | -0.714 |
 | Julio Jones, receiving yards in a season, 2015 | 1.067 | 1.094 |
-| Frank Boucher, assists in a season, 1933 | -1.163 | -1.135 |
-| Joe Primeau, assists in a season, 1931 | 0.659 | 0.686 |
-| Bobby Orr, assists in a season, 1970 | 4.368 | 4.394 |
-| Wayne Gretzky, assists in a season, 1986 | 6.492 | 6.466 |
 | Lindon Crow, interceptions in a season, 1956 | 1.098 | 1.124 |
 | Arian Foster, rushing yards in a season, 2010 | -0.558 | -0.532 |
-| Sweeney Schriner, points in a season, 1937 | -0.652 | -0.626 |
-| Ted Kennedy, assists in a season, 1951 | -1.102 | -1.127 |
-| Doug Bentley, assists in a season, 1949 | 0.554 | 0.528 |
-| Wayne Gretzky, assists in a season, 1991 | 3.909 | 3.884 |
 | J.J. Watt, sacks in a season, 2012 | 0.941 | 0.916 |
-| Wayne Gretzky, assists in a season, 1985 | 4.218 | 4.194 |
-| Charlie Conacher, goals in a season, 1932 | -0.017 | 0.007 |
-| Bill Cowley, assists in a season, 1943 | -0.033 | -0.008 |
 | Derrick Henry, rushing yards in a season, 2020 | 2.062 | 2.086 |
-| Cooney Weiland, points in a season, 1930 | 0.972 | 0.996 |
 | Jared Allen, sacks in a season, 2011 | 1.554 | 1.530 |
 | Jonathan Taylor, rushing yards in a season, 2021 | 0.615 | 0.638 |
-| Frank Boucher, assists in a season, 1929 | 1.613 | 1.636 |
-| Jaromír Jágr, points in a season, 1999 | 2.143 | 2.166 |
 | Christian McCaffrey, rushing yards in a season, 2023 | -0.578 | -0.601 |
 | LaDainian Tomlinson, rushing yards in a season, 2007 | -1.139 | -1.162 |
-| Roy Conacher, points in a season, 1949 | 0.102 | 0.079 |
 | Kareem Hunt, rushing yards in a season, 2017 | -1.312 | -1.334 |
-| Harry Cameron, assists in a season, 1922 | -0.095 | -0.117 |
-| Auston Matthews, goals in a season, 2024 | 2.978 | 2.956 |
-| Ace Bailey, points in a season, 1929 | 0.812 | 0.834 |
 | Chandler Jones, sacks in a season, 2017 | -0.590 | -0.568 |
 | Jameis Winston, passing yards in a season, 2019 | 0.240 | 0.218 |
 | Tom Brady, passing yards in a season, 2017 | -0.913 | -0.934 |
-| Sidney Crosby, points in a season, 2014 | 0.206 | 0.228 |
-| Daniel Sedin, points in a season, 2011 | -0.023 | -0.001 |
-| Doug Bentley, assists in a season, 1948 | -1.244 | -1.265 |
-| Gordie Howe, goals in a season, 1952 | 1.876 | 1.856 |
-| Gordie Drillon, points in a season, 1938 | -0.251 | -0.231 |
-| Milan Hejduk, goals in a season, 2003 | -0.342 | -0.322 |
 | Antonio Brown, receiving yards in a season, 2014 | 0.237 | 0.257 |
 | Tim Jennings, interceptions in a season, 2012 | 0.653 | 0.672 |
-| Auston Matthews, goals in a season, 2022 | 0.750 | 0.731 |
-| Toe Blake, points in a season, 1939 | -0.759 | -0.740 |
-| Brett Hull, goals in a season, 1991 | 2.836 | 2.818 |
 | Justin Houston, sacks in a season, 2014 | 1.363 | 1.345 |
-| Nathan MacKinnon, assists in a season, 2025 | -0.242 | -0.260 |
 | Julio Jones, receiving yards in a season, 2018 | -0.146 | -0.165 |
 | Andrew Luck, touchdown passes in a season, 2014 | -0.472 | -0.453 |
-| Henrik Sedin, assists in a season, 2011 | 0.636 | 0.653 |
 | Bob Boyd, receiving yards in a season, 1954 | -0.337 | -0.320 |
-| Phil Esposito, goals in a season, 1972 | 2.165 | 2.148 |
-| Evgeni Malkin, points in a season, 2012 | 0.741 | 0.758 |
-| Phil Esposito, goals in a season, 1970 | -0.821 | -0.804 |
-| Connor McDavid, points in a season, 2023 | 2.319 | 2.336 |
-| Bobby Orr, assists in a season, 1971 | 4.545 | 4.561 |
-| Elmer Lach, assists in a season, 1952 | 0.494 | 0.478 |
-| Connor McDavid, points in a season, 2022 | -0.098 | -0.114 |
 | Ben Roethlisberger, passing yards in a season, 2018 | -0.044 | -0.060 |
+| Bill Groman, receiving yards in a season, 1960 | 1.028 | 1.043 |
+| Casey Hayward, interceptions in a season, 2016 | -0.343 | -0.358 |
+| Russell Wilson, touchdown passes in a season, 2017 | -0.941 | -0.956 |
+| DeMarco Murray, rushing yards in a season, 2014 | 1.239 | 1.254 |
+| Matt Schaub, passing yards in a season, 2009 | -0.067 | -0.080 |
+| Dick Lane, interceptions in a season, 1952 | 1.647 | 1.659 |
+| Al Dorow, touchdown passes in a season, 1960 | -0.542 | -0.529 |
+| Drew Brees, passing yards in a season, 2016 | 0.492 | 0.504 |
+| Brandon Lloyd, receiving yards in a season, 2010 | -0.984 | -0.995 |
+| Antonio Brown, receiving yards in a season, 2017 | -0.341 | -0.351 |
+| Chad Johnson, receiving yards in a season, 2006 | -1.116 | -1.107 |
+| Philip Rivers, touchdown passes in a season, 2008 | -0.320 | -0.327 |
+| Aaron Rodgers, touchdown passes in a season, 2016 | -0.210 | -0.204 |
+| Darren Sharper, interceptions in a season, 2009 | 0.105 | 0.111 |
+| Charles Woodson, interceptions in a season, 2009 | 0.105 | 0.111 |
+| Asante Samuel, interceptions in a season, 2009 | 0.105 | 0.111 |
+| Jairus Byrd, interceptions in a season, 2009 | 0.105 | 0.111 |

@@ -141,9 +141,14 @@ def main():
          f"used in all three films: a season must be at least {CLEAR_STEPS:g} step clear of every other season on its "
          f"graph. {len(sc):,} season-leading performances in {len(D.meta)} categories; "
          f"{sum(r['clear'] >= CLEAR_STEPS for r in sc):,} clear their field.", "",
-         f"Reproduction: {exact} of {len(diffs)} scores match the published model to 0.005"
-         + (f"; the largest difference is {diffs[0][0]:.2f} ({diffs[0][1]['name']}, {diffs[0][1]['year']}, "
-            f"{diffs[0][1]['title'].lower()})." if diffs and diffs[0][0] >= 0.005 else "."), "",
+         f"Reproduction: {exact} of {len(diffs)} scores match the published model to 0.005 ("
+         + ", ".join(f"{sp} {sum(d < 0.005 for d, r, _ in diffs if r['sport'] == sp)} of "
+                     f"{sum(r['sport'] == sp for _, r, _ in diffs)}" for sp in TEAM)
+         + f"; top 30 of the old list: {sum(abs(r['z'] - lock.get((r['cat'], r['year'], r['name']), 99)) < 0.005 for r in allpage[:30])} "
+           "of 30). The published model used the follow-up's deeper season lists (top 40, stable IDs), which can't "
+           "be rebuilt without the original download cache; the original top-10 lists with the same identity fixes "
+           "stand in for them, so a few seasons whose comparison runs past rank 10 or through a merged name score "
+           "differently (all listed at the end).", "",
          "Curve, step and *best other* are in the athlete's own season's units (*best other* is the best season by "
          "anyone else on the same graph, converted to that season's league rate).", "",
          "## The list", "",
