@@ -423,7 +423,7 @@ class Sim:
             n_real = math.log(1 - f) / math.log(1 - 1.0 / N)
             n = int(max(3 if f >= 0.01 else 1, min(round(n_real), MAX_FLYERS)))
             e["n_total"] = n
-            e["Psrc"] = self.modern_P(src).copy()
+            e["Psrc"] = S.restrict(self.modern_P(src), e.get("only"))
             e["qcounts"] = np.zeros(K)
             e["w"] = 1 - (1 - f) ** (1.0 / n)
             self.guides.append([e["path"], self.s, e["s1"] + e["fly"] + 0.6, e])
@@ -911,7 +911,7 @@ class Painter:
         t_i0, t_i1 = S.TODAY_S + 1.0, S.TODAY_S + 8.2
         if t_i0 <= s <= t_i1:
             a = smooth((s - t_i0) / 0.8) * smooth((t_i1 - s) / 0.8)
-            for j in ("AND", "PNG", "SAR", "ADS"):
+            for j in ("PNG", "ADS", "MDG"):
                 bx0, by0, bx1, by1 = JARS[j].bbox
                 rr = 1.0 + 0.04 * math.sin((s - t_i0) * 3)
                 k = 0.7 * a

@@ -17,7 +17,7 @@ COMPONENTS = [
     ("IRN", "Iranian & Caucasus", "#62c486"),
     ("WHG", "European hunter-gatherer", "#4d94e8"),
     ("ANE", "Ancient North Eurasian", "#7173e0"),
-    ("AAS", "South Asian & Andamanese", "#c970c9"),
+    ("AAS", "South Asian forager (AASI)", "#c970c9"),
     ("EAS", "East Asian", "#b4dc48"),
     ("AUS", "Papuan & Aboriginal Australian", "#9a6ae0"),
     ("NAT", "Native American", "#ec5e93"),
@@ -28,7 +28,7 @@ ARCHAIC = {"NEA", "DEN"}
 # ---------------------------------------------------------------- vessels
 # Each vessel is the glass outline of a group of countries (Natural Earth ADM0_A3 codes).
 #   bbox: keep only the polygons whose interior point lies in (lon0, lon1, lat0, lat1) -- drops overseas
-#         territories (French Guiana from France) and carves islands out (Sardinia from Italy)
+#         territories (French Guiana from France) and carves islands out (Hawai'i from the USA)
 #   clip: cut the countries listed in clip_codes (default: all) to this lon/lat box first
 #         (European vs Asian Russia)
 #   inset: (magnification, (lon, lat) of the inset's centre) for islands too small to hold sand;
@@ -48,17 +48,11 @@ VESSELS = {
     "LEV": dict(label="Near East", codes=["TUR", "SYR", "LBN", "ISR", "PSX", "JOR", "IRQ", "SAU", "YEM", "OMN", "ARE",
                                           "QAT", "KWT", "BHR", "CYP", "CYN"]),
     "IRN": dict(label="Iran & Caucasus", codes=["IRN", "ARM", "AZE", "GEO", "AFG"]),
-    "EUR": dict(label="Europe", codes=EUROPE, bbox=(-30, 45, 34, 72),
-                exclude=[(8.0, 10.0, 38.8, 41.4)]),
-    "SAR": dict(label="Sardinia", codes=["ITA"], bbox=(8.0, 10.0, 38.8, 41.4), inset=(5.0, (-21, 40)),
-                geo=(9.0, 40.0)),
+    "EUR": dict(label="Europe", codes=EUROPE, bbox=(-30, 45, 34, 72)),
     "STP": dict(label="Steppe & Central Asia", codes=["UKR", "MDA", "RUS", "KAZ", "UZB", "TKM", "KGZ", "TJK"],
                 clip=(-180, 40, 60, 90), clip_codes=["RUS"], bbox=(20, 90, 35, 75)),
     "SIB": dict(label="Siberia", codes=["RUS"], clip=(60, 40, 190, 90), bbox=(60, 200, 40, 80)),
-    "SAS": dict(label="South Asia", codes=["IND", "PAK", "BGD", "NPL", "LKA", "BTN"],
-                exclude=[(91.5, 94.5, 6.0, 14.5)]),
-    "AND": dict(label="Andaman Islands", codes=["IND"], bbox=(92.0, 93.5, 10.3, 14.0), inset=(5.0, (86.3, 12.5)), buffer=0.10,
-                geo=(92.7, 11.7)),
+    "SAS": dict(label="South Asia", codes=["IND", "PAK", "BGD", "NPL", "LKA", "BTN"]),
     "SEA": dict(label="SE Asia", codes=["THA", "VNM", "LAO", "KHM", "MMR"]),
     "EAS": dict(label="East Asia", codes=["CHN", "MNG", "KOR", "PRK", "JPN", "TWN", "HKG", "MAC"]),
     "ISE": dict(label="Island SE Asia", codes=["PHL", "IDN", "MYS", "BRN", "TLS", "SGP"], bbox=(90, 134, -12, 22)),
@@ -83,6 +77,8 @@ INITIAL = {
     "KHS": ("KHS", 0.50),
     "CAH": ("CAH", 0.50),
     "EAF": ("EAF", 0.55),
+    "WAF": ("WAF", 0.45),
+    "NAF": ("EAF", 0.22),
     "EUR": ("NEA", 0.30),
     "LEV": ("NEA", 0.30),
     "IRN": ("NEA", 0.30),
@@ -102,22 +98,23 @@ WORLD_POP = [(200_000, 1.0e5), (70_000, 2.0e5), (50_000, 5.0e5), (20_000, 1.0e6)
              (125, 1.65e9), (75, 2.5e9), (25, 6.1e9), (0, 8.1e9)]
 
 # Each vessel's population, millions, at 1 CE, 1500, 1800, 1950 and today (approximate; McEvedy &
-# Jones 1978, HYDE 3.2, UN WPP 2024, summed over each vessel's countries). Before farming (> 10,000
+# Jones 1978, HYDE 3.2, UN WPP 2024, summed over each vessel's countries; the Americas in 1500 after
+# Denevan 1992 and Koch et al. 2019, Australia in 1788 after the ABS minimum). Before farming (> 10,000
 # years ago) people are spread by habitable area instead, blending into these by 1 CE.
 POP_YEARS = [2_000, 525, 225, 75, 0]
 POP = {
     "KHS": [1, 3, 5, 30, 164], "CAH": [3, 8, 13, 35, 186], "EAF": [5, 12, 18, 55, 407],
     "WAF": [8, 20, 30, 75, 456], "NAF": [10, 10, 13, 50, 221], "MDG": [0.01, 1, 2, 4, 31],
     "LEV": [15, 20, 25, 60, 289], "IRN": [5, 6, 9, 30, 149], "EUR": [30, 70, 150, 400, 590],
-    "SAR": [0.3, 0.3, 0.4, 1.3, 1.6], "STP": [3, 10, 35, 120, 230], "SIB": [0.5, 1, 2, 25, 36],
-    "SAS": [50, 110, 200, 450, 1907], "AND": [0.005, 0.005, 0.005, 0.002, 0.001],
-    "SEA": [5, 15, 28, 80, 251], "EAS": [60, 110, 340, 600, 1647], "ISE": [4, 12, 25, 110, 432],
-    "PNG": [0.5, 1, 1.5, 2, 16], "AUS": [0.3, 0.4, 0.4, 8, 27], "POL": [0.01, 0.4, 0.3, 1, 2],
-    "NAM": [1, 2, 7, 170, 375], "MES": [4, 18, 6, 35, 181], "CAR": [0.2, 2, 2.5, 15, 40],
-    "AMZ": [1, 3, 4, 70, 298], "ADS": [3, 9, 3, 15, 64], "SCN": [0.3, 1, 1.5, 25, 76],
+    "STP": [3, 10, 35, 120, 230], "SIB": [0.5, 1, 2, 25, 36],
+    "SAS": [50, 110, 200, 450, 1907],
+    "SEA": [5, 15, 28, 80, 251], "EAS": [60, 110, 340, 670, 1647], "ISE": [4, 12, 25, 110, 432],
+    "PNG": [0.5, 1, 1.5, 2, 16], "AUS": [0.5, 0.75, 0.75, 8, 27], "POL": [0.01, 0.4, 0.3, 1, 2],
+    "NAM": [1.5, 4, 7, 170, 375], "MES": [5, 22, 6, 35, 181], "CAR": [0.2, 3, 2.5, 15, 40],
+    "AMZ": [2, 8, 4, 70, 298], "ADS": [4, 12, 3, 15, 64], "SCN": [0.5, 2, 1.5, 25, 76],
     "GRL": [0.001, 0.003, 0.008, 0.02, 0.056], "NZL": [0.0, 0.1, 0.1, 2, 5.2],
 }
-MIN_VISIBLE = 0.35      # magnified island peoples (Andamanese, Sardinians...) keep at least this many grains per cell
+MIN_VISIBLE = 0.35      # magnified island peoples (Hawai'i, the Caribbean...) keep at least this many grains per cell
 
 # ---------------------------------------------------------------- where each ancestry lives within a vessel
 # (components, lon, lat, sigma in degrees, strength): grains of these components are drawn toward the
@@ -142,7 +139,7 @@ ANCESTRY_GEO = {
     "AMZ": [("WAF", -40, -12, 5, 1.6), ("WAF", -44, -3, 3, 0.8), ("WAF", -75.5, 9, 2.5, 1.3),
             ("WAF", -67, 10.5, 2.5, 0.8), ("WAF", -56, 5, 2, 1.2),
             (EU, -51, -27, 5, 1.3), (EU, -46.6, -23.5, 2.5, 0.7),
-            ("NAT", -62, -3, 9, 1.4), ("NAT", -74, 4.5, 3, 0.6)],
+            ("NAT", -62, -3, 9, 1.4), ("NAT", -74, 4.5, 3, 0.6), ("WAF", -77, 5.5, 2, 1.2)],
     "SCN": [("NAT", -58, -23, 5, 1.3), ("NAT", -71, -38, 5, 1.0), ("NAT", -65, -24, 4, 1.0),
             (EU, -58.4, -34.6, 4, 1.0)],
     "ADS": [(EU, -77, -12, 2.5, 1.0), (EU, -79.9, -2.2, 2.5, 0.8), ("WAF", -79.5, 0.5, 2, 1.5),
@@ -167,7 +164,7 @@ ANCESTRY_GEO = {
     "IRN": [("EAS", 66, 34, 4, 1.3), ("ANF", 43, 42, 3, 0.6)],
     "AUS": [("AUS", 133, -20, 8, 1.6), ("AUS", 130.8, -12.5, 3, 1.2), ("EAS", 151.2, -33.9, 1.5, 1.2),
             ("EAS", 145, -37.8, 1.5, 1.0), ("AAS", 145, -37.8, 1.5, 0.8)],
-    "ISE": [("AUS", 125, -8, 5, 1.6), ("AUS", 129, -3, 4, 1.4), ("DEN", 123, -8, 5, 1.0)],
+    "ISE": [("AUS", 125, -8, 5, 1.6), ("AUS", 129, -3, 4, 1.4), ("DEN", 123, -8, 5, 1.0), ("DEN", 120.3, 15.2, 2, 1.2)],
     "PNG": [("EAS", 151, -5, 4, 1.4), ("EAS", 146, -6, 2, 0.6)],
     "MDG": [("EAS AUS", 47.5, -19, 2.5, 1.2), ("WAF", 44, -22, 3, 1.0)],
     "NZL": [("EAS AUS", 175.5, -38, 2.5, 1.4)],
@@ -188,6 +185,14 @@ ROUTES = {
     ("PNG", "POL"): [(175, -12), (-165, -15)],
     ("ADS", "POL"): [(-110, -18)],
     ("ISE", "MDG"): [(95, -8), (70, -14)],
+    ("ISE", "POL"): [(140, -4), (165, -12), (-178, -15), (-162, -10)],
+    ("EAF", "MDG"): [(42, -12)],
+    ("SIB", "GRL"): [(140, 66), (175, 68), (-165, 69), (-125, 72), (-80, 76)],
+    ("CAH", "NAM"): [(-5, -8), (-35, 12), (-72, 30)],
+    ("CAH", "CAR"): [(-10, -6), (-40, 12)],
+    ("CAH", "MES"): [(-10, -6), (-45, 10), (-80, 16)],
+    ("CAH", "ADS"): [(-10, -6), (-38, -2), (-75, 0)],
+    ("CAH", "SCN"): [(-10, -12), (-45, -30)],
     ("EUR", "NAM"): ATL_N,
     ("EUR", "MES"): [(-25, 40), (-60, 28)],
     ("EUR", "CAR"): [(-25, 38), (-50, 26)],
@@ -211,7 +216,6 @@ ROUTES = {
     ("WAF", "KHS"): [(15, -2)],
     ("WAF", "EAF"): [(20, 10)],
     ("NEA", "LEV"): [(33, 44)],
-    ("SEA", "AND"): [(98, 9)],
     ("SEA", "ISE"): [(114, 8)],
     ("ISE", "PNG"): [(135, -5)],
     ("MES", "AMZ"): [(-80, 5), (-62, -3)],
@@ -234,9 +238,20 @@ def found(t, src, dst, n, only=None, keep=0.0, until=None):
     return dict(kind="found", t0=t, t1=t, src=src, dst=dst, n=n, only=only, keep=keep, until=until)
 
 
-def flow(t0, t1, src, dst, f):
-    """Gene flow: by t1 a fraction f of dst's gene pool comes from src (replacing, not adding)."""
-    return dict(kind="flow", t0=t0, t1=t1, src=src, dst=dst, f=f)
+def flow(t0, t1, src, dst, f, only=None):
+    """Gene flow: by t1 a fraction f of dst's gene pool comes from src (replacing, not adding).
+    `only`: the migrants carry only these components of the source (e.g. the Bantu-speaking ancestry of
+    West-Central Africa, without its forager share)."""
+    return dict(kind="flow", t0=t0, t1=t1, src=src, dst=dst, f=f, only=only)
+
+
+def restrict(P, only):
+    """The part of composition P made of the components in `only` (renormalised); P if only is None."""
+    import numpy as np
+    P = np.asarray(P, float).copy()
+    if only:
+        P = P * np.array([k in only for k in KEYS], float)
+    return P / P.sum()
 
 
 def tint(t0, t1, jar, sources, target):
@@ -249,115 +264,126 @@ def extinct(t0, t1, jar):
 
 
 EVENTS = [
-    # --- deep African structure (contact between groups never stopped)
-    found(165_000, "EAF", "WAF", 16),
-    tint(155_000, 80_000, "WAF", ["EAF"], "WAF"),
+    # --- deep African structure: groups already apart 200,000 years ago, with contact that never stopped
+    # (Schlebusch et al. 2017; Ragsdale et al. 2023). North Africa is home to H. sapiens from the start
+    # (Jebel Irhoud, Hublin et al. 2017).
     flow(120_000, 100_000, "EAF", "KHS", 0.05),
     flow(110_000, 95_000, "WAF", "CAH", 0.08),
     flow(100_000, 85_000, "CAH", "EAF", 0.04),
+    flow(90_000, 70_000, "WAF", "NAF", 0.15),
 
-    # --- out of Africa, Neanderthals, the great dispersal
-    found(65_000, "EAF", "LEV", 12, only=["EAF"], keep=0.026, until=52_000),
-    found(50_000, "LEV", "SAS", 14),
-    found(48_600, "SAS", "SEA", 12, keep=0.003, until=40_000),
-    found(47_600, "SEA", "ISE", 12, keep=0.045, until=45_500),
+    # --- out of Africa (main dispersal 70,000-50,000 years ago), the great dispersal, archaic admixture.
+    # Neanderthal mixing ~50,000-43,000 (Iasi et al. 2024; Sumer et al. 2025): it is carried by every
+    # founder group, whatever the founding date shown. Sahul by at least ~50,000 (O'Connell et al. 2018;
+    # possibly ~65,000, Clarkson et al. 2017).
+    found(62_000, "EAF", "LEV", 12, only=["EAF"], keep=0.026, until=44_000),
+    found(56_000, "LEV", "SAS", 14),
+    found(54_000, "SAS", "SEA", 12, keep=0.0012, until=40_000),
+    found(52_500, "SEA", "ISE", 12, keep=0.045, until=46_000),
+    found(51_000, "ISE", "PNG", 10),
+    found(50_000, "PNG", "AUS", 10),
     found(46_000, "LEV", "EUR", 14, until=40_000),
-    found(44_800, "ISE", "PNG", 10),
-    found(44_000, "PNG", "AUS", 10),
     found(45_000, "LEV", "IRN", 14, until=40_000),
-    found(44_500, "SEA", "EAS", 12, keep=0.004, until=36_000),
+    found(44_500, "SEA", "EAS", 12, keep=0.0012, until=36_000),
     found(43_000, "LEV", "SIB", 12, until=36_000),
-    extinct(42_000, 40_000, "STP"),
+    found(41_000, "EUR", "STP", 12, until=37_000),           # Kostenki (~37 ka), Sungir (~34 ka)
 
     # --- isolation: each region's sand drifts into its own colour
     tint(44_000, 20_000, "LEV", ["EAF"], "ANF"),
     tint(44_000, 22_000, "IRN", ["EAF", "ANF"], "IRN"),
     tint(44_000, 20_000, "EUR", ["EAF", "ANF"], "WHG"),
     tint(42_000, 24_000, "SIB", ["EAF", "ANF"], "ANE"),
-    tint(47_000, 26_000, "SAS", ["EAF"], "AAS"),
-    tint(46_000, 26_000, "SEA", ["EAF"], "AAS"),
+    tint(50_000, 26_000, "SAS", ["EAF"], "AAS"),
+    tint(48_000, 26_000, "SEA", ["EAF"], "AAS"),
     tint(44_000, 26_000, "EAS", ["EAF", "AAS"], "EAS"),
-    tint(46_000, 26_000, "ISE", ["EAF", "AAS"], "AUS"),
-    tint(45_000, 26_000, "PNG", ["EAF", "AAS"], "AUS"),
-    tint(44_000, 26_000, "AUS", ["EAF", "AAS"], "AUS"),
-    found(32_000, "SEA", "AND", 8),
-    tint(32_000, 25_000, "AND", ["EAF"], "AAS"),
+    tint(48_000, 26_000, "ISE", ["EAF", "AAS"], "AUS"),
+    tint(47_000, 26_000, "PNG", ["EAF", "AAS"], "AUS"),
+    tint(46_000, 26_000, "AUS", ["EAF", "AAS"], "AUS"),
 
-    # --- Ice Age North: Eastern hunter-gatherers, Ancient Paleo-Siberians, the peopling of the Americas
-    found(28_000, "SIB", "STP", 12),
-    tint(28_000, 22_000, "STP", ["EAF", "ANF"], "ANE"),
+    # --- Ice Age North: Ancient North Eurasians, Eastern hunter-gatherers, the peopling of the Americas
+    tint(36_000, 22_000, "STP", ["EAF", "ANF"], "ANE"),
+    flow(28_000, 22_000, "SIB", "STP", 0.35),
     flow(26_000, 21_000, "EAS", "SIB", 0.62),
-    found(20_000, "SIB", "NAM", 9),
+    found(20_000, "SIB", "NAM", 9),                           # by at least ~20 ka; White Sands 23-21 ka
     flow(18_000, 14_500, "EUR", "STP", 0.40),
-    found(19_000, "LEV", "NAF", 12),
-    flow(17_000, 14_000, "WAF", "NAF", 0.35),
+    flow(20_000, 15_000, "LEV", "NAF", 0.60),                 # Taforalt (~15 ka): ~64% Natufian-related
+    flow(17_000, 14_000, "WAF", "NAF", 0.30),                 # ...and ~36% sub-Saharan
     tint(19_000, 13_000, "NAM", ["ANE", "EAS"], "NAT"),
     found(16_000, "NAM", "MES", 10),
-    found(14_800, "MES", "ADS", 9),
-    found(14_000, "MES", "AMZ", 9),
-    found(13_500, "ADS", "SCN", 8),
-    tint(13_500, 12_500, "SCN", ["ANE", "EAS"], "NAT"),
+    found(15_200, "MES", "ADS", 9),
+    found(14_800, "MES", "AMZ", 9),
+    found(14_600, "ADS", "SCN", 8),                           # Monte Verde ~14.5 ka
+    tint(14_600, 12_500, "SCN", ["ANE", "EAS"], "NAT"),
     tint(16_000, 12_500, "MES", ["ANE", "EAS"], "NAT"),
-    tint(14_800, 12_500, "ADS", ["ANE", "EAS"], "NAT"),
-    tint(14_000, 12_500, "AMZ", ["ANE", "EAS"], "NAT"),
+    tint(15_200, 12_500, "ADS", ["ANE", "EAS"], "NAT"),
+    tint(14_800, 12_500, "AMZ", ["ANE", "EAS"], "NAT"),
     flow(11_000, 7_000, "EAS", "SIB", 0.45),
 
-    # --- farming spreads, and mixes with the foragers it meets
+    # --- farming (from ~11,500 years ago) spreads, and mixes with the foragers it meets
     flow(9_500, 7_000, "LEV", "IRN", 0.22),
-    flow(9_000, 5_000, "IRN", "SAS", 0.42),
+    flow(9_000, 5_000, "IRN", "SAS", 0.42),                   # Iranian-related ancestry (Shinde et al. 2019)
     flow(8_500, 6_200, "LEV", "EUR", 0.80),
-    found(7_800, "LEV", "SAR", 14),
-    flow(7_200, 6_000, "EUR", "SAR", 0.18),
     flow(7_500, 5_500, "LEV", "NAF", 0.32),
     flow(8_000, 4_200, "IRN", "LEV", 0.30),
-    found(6_500, "AMZ", "CAR", 8),
+    found(6_500, "MES", "CAR", 8),                            # Archaic Caribbean settlers ~6 ka
+    flow(2_600, 1_800, "AMZ", "CAR", 0.70),                   # Ceramic-age migrants (Fernandes et al. 2021)
     flow(6_800, 5_400, "IRN", "STP", 0.45),
+    found(4_500, "SIB", "GRL", 6),                            # Paleo-Inuit (Saqqaq, Rasmussen et al. 2010)
 
     # --- steppe herders, the Bantu expansion, Austronesian voyagers
     flow(5_000, 4_300, "STP", "EUR", 0.50),
     flow(5_000, 4_300, "STP", "SIB", 0.10),
     flow(5_000, 3_000, "WAF", "CAH", 0.78),
-    flow(5_000, 3_500, "EAS", "SEA", 0.86),
-    flow(4_500, 3_200, "EAS", "ISE", 0.78),
+    flow(5_000, 3_500, "EAS", "SEA", 0.92),
+    flow(4_500, 3_200, "EAS", "ISE", 0.93),
     flow(4_000, 3_000, "STP", "SAS", 0.16),
     flow(3_600, 2_600, "LEV", "EAF", 0.30),
     flow(3_500, 2_600, "ISE", "PNG", 0.08),
-    found(3_000, "EAS", "POL", 10),
+    found(2_900, "ISE", "POL", 10),                           # Lapita to Tonga/Samoa ~2,850 ybp
     flow(2_600, 1_600, "PNG", "POL", 0.24),
     flow(3_000, 1_000, "EAS", "SAS", 0.04),
     flow(2_600, 1_500, "WAF", "EAF", 0.22),
     flow(2_500, 700, "EAS", "STP", 0.18),
-    flow(2_400, 1_800, "LEV", "SAR", 0.25),
-    flow(2_000, 900, "WAF", "KHS", 0.68),
     flow(2_000, 1_600, "EAF", "KHS", 0.05),
+    flow(2_000, 900, "CAH", "KHS", 0.86, only=["WAF"]),       # Bantu-speaking farmers reach southern Africa
     flow(2_000, 1_000, "SAS", "SEA", 0.05),
     found(1_500, "ISE", "MDG", 10),
-    flow(1_300, 800, "WAF", "MDG", 0.60),
+    flow(1_300, 800, "EAF", "MDG", 0.60, only=["WAF"]),       # East African Bantu speakers (Pierron et al. 2017)
     flow(1_350, 950, "LEV", "NAF", 0.18),
+    flow(1_300, 500, "NAF", "EUR", 0.012),                    # North African ancestry in Iberia (Olalde et al. 2019)
+    flow(1_500, 100, "EAF", "LEV", 0.05),                     # Red Sea and Indian Ocean trade, incl. slavery
     flow(1_000, 600, "LEV", "MDG", 0.04),
     flow(1_000, 800, "EAS", "LEV", 0.05),
-    flow(900, 700, "ADS", "POL", 0.012),
-    found(800, "NAM", "GRL", 8),
+    flow(1_000, 600, "EAS", "IRN", 0.04),                     # Turkic and Mongol periods
+    flow(900, 700, "ADS", "POL", 0.012),                      # Native American contact (Ioannidis et al. 2020)
+    flow(800, 650, "NAM", "GRL", 0.90),                       # Thule (Inuit ancestors) replace the Paleo-Inuit
     found(750, "POL", "NZL", 8),
     flow(1_000, 400, "WAF", "NAF", 0.08),
     flow(3_500, 2_600, "STP", "IRN", 0.08),
-    flow(1_500, 600, "EUR", "SAR", 0.12),
 
-    # --- 1500 CE onward: ships, colonization, the slave trade, modern migration
-    flow(525, 430, "EUR", "CAR", 0.75),
+    # --- 1500 CE onward: ships, colonization, the slave trade, modern migration. Enslaved Africans came
+    # from West Africa and, in large numbers, West-Central Africa (Angola, Congo): ~70% of those taken to
+    # Brazil (Eltis & Richardson 2010; Micheletti et al. 2020).
+    flow(525, 430, "EUR", "CAR", 0.85),
     flow(505, 150, "EUR", "MES", 0.36),
     flow(490, 80, "EUR", "AMZ", 0.72),
     flow(490, 120, "EUR", "ADS", 0.18),
-    flow(480, 60, "EUR", "SCN", 0.70),
+    flow(480, 60, "EUR", "SCN", 0.64),
     flow(450, 200, "WAF", "SCN", 0.02),
-    flow(475, 165, "WAF", "AMZ", 0.50),
-    flow(470, 170, "WAF", "MES", 0.05),
-    flow(450, 170, "WAF", "ADS", 0.03),
-    flow(430, 165, "WAF", "CAR", 0.60),
+    flow(450, 200, "CAH", "SCN", 0.035, only=["WAF"]),
+    flow(475, 165, "WAF", "AMZ", 0.17),
+    flow(475, 165, "CAH", "AMZ", 0.40, only=["WAF"]),
+    flow(470, 170, "WAF", "MES", 0.026),
+    flow(470, 170, "CAH", "MES", 0.026, only=["WAF"]),
+    flow(450, 170, "WAF", "ADS", 0.016),
+    flow(450, 170, "CAH", "ADS", 0.016, only=["WAF"]),
+    flow(430, 165, "WAF", "CAR", 0.36),
+    flow(430, 165, "CAH", "CAR", 0.27, only=["WAF"]),
     flow(405, 105, "EUR", "NAM", 0.92),
-    flow(400, 160, "WAF", "NAM", 0.36),
-    flow(373, 120, "EUR", "KHS", 0.10),
-    flow(380, 80, "STP", "SIB", 0.70),
+    flow(400, 160, "WAF", "NAM", 0.30),
+    flow(400, 160, "CAH", "NAM", 0.11, only=["WAF"]),
+    flow(373, 120, "EUR", "KHS", 0.045),
+    flow(380, 80, "STP", "SIB", 0.88, only=["ANF", "IRN", "WHG", "ANE", "NEA"]),   # Russian settlers
     flow(237, 70, "EUR", "AUS", 0.95),
     flow(220, 70, "EUR", "POL", 0.12),
     flow(200, 60, "EAS", "SEA", 0.05),
@@ -398,30 +424,34 @@ CAPTIONS = [
               "Neanderthals (white sand) and Denisovans (pale blue) live in Eurasia."),
     ("s", 12.2, "Each glass vessel is a population, shaped like its land. Each colour of sand is a strand of ancestry."),
     ("s", 16.6, "Separated for long enough, a group's sand drifts into a colour of its own."),
-    (65_000, "About 65,000 years ago, a small band crosses out of Africa."),
-    (55_000, "They mix with Neanderthals. Everyone with ancestors outside Africa still carries "
-             "about 2% Neanderthal DNA (the white grains)."),
-    ("s", 43.4, "Within a few thousand years they reach South Asia, Europe, East Asia and, by boat, Australia and New Guinea."),
-    ("s", 47.8, "Near Wallacea they mix with Denisovans: Papuans and Aboriginal Australians carry 3-5% "
-             "Denisovan DNA."),
-    ("s", 53.6, "The Neanderthals and Denisovans disappear. A little of their sand lives on in us."),
+    ("s", 21.4, "Some groups venture out of Africa early, about 120,000 years ago, but leave little trace in people today."),
+    (62_000, "Sometime between 70,000 and 50,000 years ago, a small band crosses out of Africa."),
+    (55_000, "They spread fast, along the coasts to South Asia and, by boat, to New Guinea and Australia: "
+             "by at least 50,000 years ago, possibly earlier."),
+    (49_000, "Along the way they mix with Neanderthals, mostly 50,000 to 43,000 years ago. People outside "
+             "Africa carry about 2% Neanderthal DNA (white grains); many Africans carry a little too."),
+    (44_800, "In Island Southeast Asia and New Guinea they mix with Denisovans: Papuans and Aboriginal "
+             "Australians carry 3-5% Denisovan DNA (pale blue)."),
+    (40_500, "People reach Europe, East Asia and the steppe. The Neanderthals and Denisovans eventually "
+             "disappear; a little of their sand lives on in us."),
     (33_000, "Tens of thousands of years apart, each region's sand drifts into its own colour."),
     (25_000, "In Ice Age Siberia, East Asian and Ancient North Eurasian ancestry mix."),
-    (20_200, "A few founders cross Beringia. A handful of grains seeds two whole continents: "
-             "the founder effect."),
-    (15_500, "Cut off for 15,000 years, the First Peoples of the Americas become genetically distinct."),
-    (9_000, "Farming begins in the Fertile Crescent. Farmers spread and mix with the foragers they meet."),
-    (7_400, "Sardinia is settled by farmers, and keeps much of their ancestry to this day."),
-    (5_000, "Herders from the steppe sweep west into Europe and later south into India."),
+    (20_200, "By at least 20,000 years ago, perhaps earlier, a few founders cross Beringia. A handful of "
+             "grains seeds two whole continents: the founder effect."),
+    (15_500, "Largely separate for 15,000 years, the First Peoples of the Americas become genetically distinct."),
+    (11_000, "About 11,000 years ago farming begins in the Fertile Crescent (and later, independently, "
+             "elsewhere). Farmers spread and mix with the foragers they meet."),
+    (5_000, "Herders from the steppe sweep west into Europe and later south into South Asia."),
     ("s", 103.4, "The Bantu expansion carries West-Central African ancestry across half a continent."),
-    ("s", 108.2, "Austronesian sailors leave Taiwan and island-hop across two oceans..."),
-    (1_300, "...to Polynesia and to Madagascar, where Asian and African ancestry meet."),
-    (520, "1500 CE: ships link every continent. Colonization, and the forced migration of 12 million "
-          "enslaved Africans, remake the Americas."),
+    ("s", 108.2, "Austronesian sailors from Taiwan island-hop across two oceans..."),
+    (2_000, "...to Tonga and Samoa about 2,900 years ago (Hawai'i, shown here for Polynesia, about "
+            "1,000 years ago), and to Madagascar, where Asian and African ancestry meet."),
+    (520, "1500 CE: ships link every continent. Epidemics, war and enslavement devastate Indigenous peoples "
+          "of the Americas, and 12.5 million Africans are taken across the Atlantic in chains."),
     (230, "Settlers transform the makeup of Australia, Siberia and southern Africa."),
-    (70, "Modern migration keeps stirring the sand."),
-    ("s", TODAY_S + 1.0, "Today almost every vessel holds sand from many places. Islands of ancestry endure: "
-                 "the Andaman Islanders, Papuans, Sardinians, the Andes."),
+    (70, "Modern migration keeps stirring the sand, and people gather in cities."),
+    ("s", TODAY_S + 1.0, "Today almost every vessel holds sand from many places. Islands of ancestry endure, "
+                 "from New Guinea to the Andes."),
     ("s", TODAY_S + 9.0, "And underneath, it was always the same sand. Every person alive descends from "
                  "those first African grains."),
 ]

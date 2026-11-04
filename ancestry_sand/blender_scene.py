@@ -21,6 +21,12 @@ SAND = argv[argv.index("--sand") + 1] if "--sand" in argv else None       # rend
 OUTP = argv[argv.index("--out") + 1] if "--out" in argv else None
 # --view X Y ZOOM TILT: a close-up looking at map pixel (X, Y), ZOOM times closer, tilted TILT degrees
 VIEW = [float(v) for v in argv[argv.index("--view") + 1:argv.index("--view") + 5]] if "--view" in argv else None
+# --poses plate_poses.json --outdir DIR [--range A B] [--bare-samples N]: glass plates for the moving camera
+POSES = argv[argv.index("--poses") + 1] if "--poses" in argv else None
+OUTDIR = argv[argv.index("--outdir") + 1] if "--outdir" in argv else os.path.join(HERE, "data", "plates")
+RANGE = [int(v) for v in argv[argv.index("--range") + 1:argv.index("--range") + 3]] if "--range" in argv else None
+BARE_SAMPLES = int(argv[argv.index("--bare-samples") + 1]) if "--bare-samples" in argv else 24
+FAST = "--fast" in argv          # fewer bounces, no refractive caustics (keyframe plates)
 WALL_H = 0.14            # wall height (14 map px)
 BEVEL = 0.009
 
@@ -42,6 +48,12 @@ scene.cycles.glossy_bounces = 8
 scene.cycles.caustics_reflective = False
 scene.cycles.caustics_refractive = True
 scene.cycles.blur_glossy = 1.0
+if FAST:
+    scene.cycles.max_bounces = 10
+    scene.cycles.transmission_bounces = 10
+    scene.cycles.glossy_bounces = 4
+    scene.cycles.diffuse_bounces = 2
+    scene.cycles.caustics_refractive = False
 scene.render.resolution_x = 1920
 scene.render.resolution_y = 1080
 scene.render.resolution_percentage = 100
@@ -107,7 +119,7 @@ wl.new(mix.outputs[0], out.inputs["Surface"])
 # ---------------------------------------------------------------- the table (map texture)
 bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0, 0))
 table = bpy.context.object
-table.scale = (19.2 * 1.6, 10.8 * 1.8, 1)
+table.scale = (19.2 * 8, 10.8 * 8, 1)       # large: low camera angles never see its edge
 mat = bpy.data.materials.new("Table")
 mat.use_nodes = True
 nt = mat.node_tree
@@ -118,7 +130,7 @@ tex.extension = "EXTEND"
 tc = nt.nodes.new("ShaderNodeTexCoord")
 mp = nt.nodes.new("ShaderNodeMapping")
 # object coords (-0.5..0.5) -> map uv: the map covers the central 19.2 x 10.8 of the plane
-mp.inputs["Scale"].default_value = (1.6, 1.8, 1)
+mp.inputs["Scale"].default_value = (8, 8, 1)
 mp.inputs["Location"].default_value = (0.5, 0.5, 0)
 nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
 nt.links.new(mp.outputs["Vector"], tex.inputs["Vector"])
@@ -289,6 +301,46 @@ if SAND:
     scene.render.filepath = OUTP
     bpy.ops.render.render(write_still=True)
     print("done")
+    raise SystemExit
+
+# ---------------------------------------------------------------- plates along the camera path
+if POSES:
+    import time
+    from mathutils import Matrix
+    sys.path.insert(0, HERE)
+    import camera as CM
+    poses = json.load(open(POSES))["poses"]
+    ids = list(range(len(poses)))
+    if RANGE:
+        ids = ids[RANGE[0]:RANGE[1]]
+    os.makedirs(OUTDIR, exist_ok=True)
+    scene.render.use_persistent_data = True          # keep the BVH between keyframes
+    cam_d.dof.use_dof = False
+    cam_d.lens = CM.LENS
+
+    def place(pose):
+        loc, r, u, f = CM.basis(pose)
+        m = Matrix.Identity(4)
+        for i in range(3):
+            m[i][0], m[i][1], m[i][2], m[i][3] = r[i], u[i], -f[i], loc[i]
+        cam.matrix_world = m
+        bpy.context.view_layer.update()
+
+    for kind in ("glass", "bare"):
+        for ob in glass_objs:
+            ob.hide_render = kind == "bare"
+        for i in ids:
+            # pose 0 is the wide shot, held for a third of the film: more samples
+            scene.cycles.samples = (max(SAMPLES, 160) if i == 0 else SAMPLES) if kind == "glass" else BARE_SAMPLES
+            path = os.path.join(OUTDIR, f"{kind[0]}_{i:03d}.png")
+            if os.path.exists(path):
+                continue
+            place(poses[i])
+            t0 = time.time()
+            scene.render.filepath = path
+            bpy.ops.render.render(write_still=True)
+            print(f"PLATE {kind} {i} {time.time() - t0:.1f}s", flush=True)
+    print("PLATES_DONE")
     raise SystemExit
 
 # ---------------------------------------------------------------- render both plates

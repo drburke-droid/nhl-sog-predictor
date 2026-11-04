@@ -21,7 +21,7 @@ CELL = 3
 WC, HC = W // CELL, H // CELL
 NCELL = WC * HC
 import os as _os
-TOWERS = bool(_os.environ.get("SAND_TOWERS"))     # experiment: uncapped density, sand piles up in towers
+TOWERS = _os.environ.get("SAND_TOWERS", "1") != "0"   # uncapped density: sand piles up in towers (SAND_TOWERS=0: capped)
 HMAX = 600 if TOWERS else 96
 HFULL = 4.0                 # mean grains per cell when a vessel is "full"
 K = len(S.KEYS)
@@ -256,6 +256,10 @@ class Sand:
         self.rng = np.random.default_rng(seed)
         self.s = 0.0
         self.Ht = np.zeros(NCELL, np.float32)
+        # each cell's target is a whole number of grains: the density target, dithered once, so sand
+        # settles exactly and then lies still (no grains forever hopping between near-empty cells)
+        self.U = np.random.default_rng(77).random(NCELL).astype(np.float32)
+        self.Hq = np.zeros(NCELL, np.int32)
         self.stack = np.full((NCELL, HMAX), -1, np.int8)
         self.h = np.zeros(NCELL, np.int16)
         self.tchg = np.full(NCELL, -99.0, np.float32)       # last time the top grain changed
@@ -348,10 +352,11 @@ class Sand:
             for d in self.rng.permutation(4):
                 nb = NB[d]
                 src = np.where(nb >= 0)[0]
-                ex = self.h - self.Ht
+                ex = self.h - self.Hq
                 diff = ex[src] - ex[nb[src]]
                 r = self.rng.random(len(src))
-                mv = (((diff >= 1.6) & (r < 0.85)) | ((diff >= 0.8) & (r < 0.06))) & (self.h[src] > 0) \
+                # only real slopes slide: a lone grain next to an empty cell stays put (no buzzing)
+                mv = (diff >= 1.6) & (r < 0.85) & (self.h[src] > 0) \
                     & (self.h[nb[src]] < HMAX - 2)
                 a = src[mv]
                 if len(a) == 0:
@@ -365,6 +370,32 @@ class Sand:
                 self.h[b2] += 1
                 self.tchg[a] = self.s
                 self.tchg[b2] = self.s
+
+    def relocate(self, v):
+        """Spread sand toward where people live: a few grains above their cell's target move to a cell
+        below target nearby (or, failing that, the nearest of a few anywhere in the vessel). Stops
+        once every cell holds its target."""
+        cells = VCELLS[v]
+        hv, q = self.h[cells], self.Hq[cells]
+        exc, dfc = cells[hv > q], cells[hv < q]
+        if not len(exc) or not len(dfc):
+            return
+        m = min(len(exc), len(dfc), max(2, int(self.counts[v].sum() * 0.004)))
+        src = self.rng.choice(exc, size=m, replace=False)
+        dmask = np.zeros(NCELL, bool)
+        dmask[dfc] = True
+        dst = np.empty(m, np.int64)
+        for i, (c, lst) in enumerate(zip(src, VTREE[v].query_ball_point(CELL_XY[src], 30.0))):
+            cand = cells[lst]
+            cand = cand[dmask[cand]]
+            if len(cand):
+                dst[i] = cand[self.rng.integers(len(cand))]
+            else:
+                c8 = dfc[self.rng.integers(len(dfc), size=8)]
+                dst[i] = c8[np.argmin(np.hypot(*(CELL_XY[c8] - CELL_XY[c]).T))]
+        dst, k = np.unique(dst, return_index=True)
+        _, cl = self.pop(src[k])
+        self.add(dst[:len(cl)], cl.astype(np.int8))
 
     def occupied(self, v):
         c = VCELLS[v]
@@ -416,6 +447,7 @@ class Sand:
         H = np.zeros(NCELL, np.float32)
         H[VALID] = np.minimum(N[VID[VALID]] * we / np.maximum(sums[VID[VALID]], 1e-9), HMAX - 6)
         self.Ht = H
+        self.Hq = np.floor(H + self.U).astype(np.int32)
 
     def base_grains(self, v, ybp):
         """Sand in proportion to population: spread by habitable area before farming, by the historical
@@ -483,7 +515,7 @@ class Sand:
                 sel = np.where(cols == c)[0]
                 same = room[tops == c]
                 pool = same if len(same) and self.rng.random() < 0.8 else room
-                pw = (self.Ht[pool] + 0.05) * np.exp(LA[pool, c])
+                pw = (np.maximum(self.Hq[pool] - self.h[pool], 0) + 0.1) * np.exp(LA[pool, c])
                 cells[sel] = self.rng.choice(pool, size=len(sel), p=pw / pw.sum())
             # some grains hop to a nearby spot: sand crosses small gaps (island chains) and fills out
             hop = np.where(self.rng.random(k) < (0.7 if crowded else 0.12))[0]
@@ -498,7 +530,7 @@ class Sand:
             if self.extinct[v] is not None:
                 self.pop(self.rng.choice(occ, size=k))
             elif self.counts[v].sum() and (self.counts[v] - P * N).max() <= 0.75:
-                ex = np.maximum(self.h[occ] - self.Ht[occ], 0) + 0.02
+                ex = np.maximum(self.h[occ] - self.Hq[occ], 0) + 0.02
                 self.pop(self.rng.choice(occ, size=min(k, len(occ)), p=ex / ex.sum()))
             else:
                 ex = self.counts[v] - P * N
@@ -587,7 +619,7 @@ class Sand:
             self.emit(e, np.repeat(cols, 12), size=1.2, spread=0.7)       # founders + the dust they raise
         elif k == "flow":
             src, dst = VI[e["src"]], VI[e["dst"]]
-            e["Psrc"] = self.modern_P(src).copy()
+            e["Psrc"] = S.restrict(self.modern_P(src), e.get("only"))
             e["M"] = e["f"] * max(self.counts[dst].sum(), 10)      # grains poured in (and as many displaced)
             e["arr0"], e["arr1"] = e["s0"] + e["fly"], e["s1"] + e["fly"]
             e["poured"] = 0.0
@@ -702,6 +734,7 @@ class Sand:
         for v in range(NV):
             if self.counts[v].sum() or self.growth[v] is not None:
                 self.reconcile(v, dt)
+                self.relocate(v)
         self.topple(passes=2)
         self.particles = [p for p in self.particles if (p["t0"] + p["dur"]).max() + 0.3 > self.s]
         self.splash = [sp for sp in self.splash if self.s - sp[1] < 1.5]
