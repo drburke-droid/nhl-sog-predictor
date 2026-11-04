@@ -29,7 +29,8 @@ ARCHAIC = {"NEA", "DEN"}
 # Each vessel is the glass outline of a group of countries (Natural Earth ADM0_A3 codes).
 #   bbox: keep only the polygons whose interior point lies in (lon0, lon1, lat0, lat1) -- drops overseas
 #         territories (French Guiana from France) and carves islands out (Sardinia from Italy)
-#   clip: cut the countries to this lon/lat box first (European vs Asian Russia)
+#   clip: cut the countries listed in clip_codes (default: all) to this lon/lat box first
+#         (European vs Asian Russia)
 #   inset: (magnification, (lon, lat) of the inset's centre) for islands too small to hold sand;
 #          geo: the real location, joined to the inset by a hairline
 EUROPE = ["PRT", "ESP", "FRA", "ITA", "CHE", "AUT", "DEU", "BEL", "NLD", "LUX", "GBR", "IRL", "ISL", "NOR", "SWE",
@@ -52,7 +53,7 @@ VESSELS = {
     "SAR": dict(label="Sardinia", codes=["ITA"], bbox=(8.0, 10.0, 38.8, 41.4), inset=(5.0, (-21, 40)),
                 geo=(9.0, 40.0)),
     "STP": dict(label="Steppe & Central Asia", codes=["UKR", "MDA", "RUS", "KAZ", "UZB", "TKM", "KGZ", "TJK"],
-                clip=(-180, 40, 60, 90), bbox=(20, 90, 35, 75)),
+                clip=(-180, 40, 60, 90), clip_codes=["RUS"], bbox=(20, 90, 35, 75)),
     "SIB": dict(label="Siberia", codes=["RUS"], clip=(60, 40, 190, 90), bbox=(60, 200, 40, 80)),
     "SAS": dict(label="South Asia", codes=["IND", "PAK", "BGD", "NPL", "LKA", "BTN"],
                 exclude=[(91.5, 94.5, 6.0, 14.5)]),
@@ -71,6 +72,8 @@ VESSELS = {
                 geo=(-74, 20)),
     "AMZ": dict(label="Brazil & north", codes=["BRA", "COL", "VEN", "GUY", "SUR", "FRA"], bbox=(-80, -30, -35, 13)),
     "ADS": dict(label="Andes", codes=["PER", "BOL", "ECU"]),
+    "GRL": dict(label="Greenland", codes=["GRL"]),
+    "NZL": dict(label="New Zealand", codes=["NZL"], bbox=(160, 180, -50, -30)),
     "SCN": dict(label="Southern Cone", codes=["ARG", "CHL", "URY", "PRY"], bbox=(-80, -50, -56, -17)),
 }
 
@@ -134,6 +137,10 @@ ROUTES = {
     ("NAM", "MES"): [(-104, 33)],
     ("MES", "ADS"): [(-82, 3)],
     ("AMZ", "CAR"): [(-62, 9)],
+    ("NAM", "GRL"): [(-100, 70), (-75, 77)],
+    ("EUR", "GRL"): [(-12, 63)],
+    ("POL", "NZL"): [(-165, -20), (178, -33)],
+    ("EUR", "NZL"): [(-12, 30), (0, -12), (20, -38), (75, -44), (140, -46)],
 }
 
 
@@ -249,6 +256,8 @@ EVENTS = [
     flow(1_000, 600, "LEV", "MDG", 0.04),
     flow(1_000, 800, "EAS", "LEV", 0.05),
     flow(900, 700, "ADS", "POL", 0.012),
+    found(800, "NAM", "GRL", 8),
+    found(750, "POL", "NZL", 8),
     flow(1_000, 400, "WAF", "NAF", 0.08),
     flow(3_500, 2_600, "STP", "IRN", 0.08),
     flow(1_500, 600, "EUR", "SAR", 0.12),
@@ -280,6 +289,10 @@ EVENTS = [
     flow(60, 5, "WAF", "EUR", 0.02),
     flow(60, 5, "SAS", "EUR", 0.02),
     flow(55, 5, "EAS", "AUS", 0.11),
+    flow(180, 60, "EUR", "NZL", 0.80),
+    flow(45, 5, "EAS", "NZL", 0.10),
+    flow(45, 5, "SAS", "NZL", 0.04),
+    flow(300, 60, "EUR", "GRL", 0.22),
     flow(40, 5, "SAS", "AUS", 0.05),
 ]
 

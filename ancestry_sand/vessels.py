@@ -57,7 +57,7 @@ def vessel_polys(spec, countries):
     polys = []
     for code in spec["codes"]:
         for p in split_cut(countries[code]):
-            if clip:                                  # (lon0, lat0, lon1, lat1), after the edge split
+            if clip and code in spec.get("clip_codes", spec["codes"]):   # (lon0, lat0, lon1, lat1)
                 p = p.intersection(box(*clip))
                 if p.is_empty:
                     continue
@@ -177,7 +177,7 @@ def lattice(mask_ss, anchor_x):
 
 
 def build(specs):
-    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v4-10m").encode()).hexdigest()
+    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v5-10m").encode()).hexdigest()
     cache = os.path.join(DATA, "vessels_cache.pkl")
     if os.path.exists(cache):
         with open(cache, "rb") as f:
