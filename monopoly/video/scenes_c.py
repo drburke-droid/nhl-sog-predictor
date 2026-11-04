@@ -189,10 +189,10 @@ class Payoff(PagedScene):
         p.add(Obj(c('Same dice as everyone'), die_face(5, 130), (W / 2 - 170, 800), how='drop', angle=-12),
               Obj(c('Same dice as everyone') + 0.15, die_face(2, 130), (W / 2 + 40, 810), how='drop', angle=9))
 
-        # the price: handing the bank $250
+        # the price: $300 of free cash, three $100 notes
         p = self.page(plain(172), c('How much is that worth') - 0.2)
         p.add(Typed(c('How much is that worth'), (1010, 120), 'How much is that worth?', F('serif', 52)))
-        notes = [(100, (40, 92, 70), -12, (70, 150)), (100, (40, 92, 70), -4, (150, 330)), (50, (86, 60, 40), 6, (110, 520))]
+        notes = [(100, (40, 92, 70), -12, (70, 150)), (100, (40, 92, 70), -4, (150, 330)), (100, (40, 92, 70), 6, (110, 520))]
         t_take = c('I gave a typical player')
         for k, (v, ink, ang, xy) in enumerate(notes):
             n = sf.banknote(v, ink, 20 + k)
