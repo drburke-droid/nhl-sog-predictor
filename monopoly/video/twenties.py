@@ -20,11 +20,29 @@ NIGHT = (17, 14, 11)
 _CACHE = {}
 
 
+def trim(im, cap=0.12, margin=0.02):
+    """Cut away a scan's border (the black film edge and the white card round a glass-plate print)."""
+    sw = 400
+    g = np.asarray(im.convert('L').resize((sw, max(8, int(sw * im.size[1] / im.size[0])))), np.float32)
+
+    def depth(lines):
+        n = 0
+        for k, l in enumerate(lines[:int(len(lines) * cap)]):
+            if (l < 40).mean() > 0.5 or (l > 232).mean() > 0.75:
+                n = k + 1
+        return n / len(lines)
+    t, b = depth(g), depth(g[::-1])
+    l, r = depth(g.T), depth(g.T[::-1])
+    W0, H0 = im.size
+    box = (int(W0 * (l + margin)), int(H0 * (t + margin)), int(W0 * (1 - r - margin)), int(H0 * (1 - b - margin)))
+    return im.crop(box)
+
+
 def photo(name, tone=True):
-    """A period photo, sepia-toned: (RGB image). Cached."""
+    """A period photo, border trimmed and sepia-toned: (RGB image). Cached."""
     key = (name, tone)
     if key not in _CACHE:
-        im = Image.open(os.path.join(PHOTOS, name)).convert('L')
+        im = trim(Image.open(os.path.join(PHOTOS, name)).convert('L'))
         im = ImageOps.autocontrast(im, cutoff=1)
         if tone:
             a = np.asarray(im, np.float32) / 255
@@ -143,15 +161,28 @@ def sunburst(img, cx, cy, r0, r1, n=21, spread=150, color=GOLD, alpha=150, width
 def deco_title(kicker, title, sub=None, w=1240, h=470):
     """A black-and-gold Deco plaque for a section title, to sit over a photo."""
     lay = Image.new('RGBA', (w, h), (0, 0, 0, 0))
-    plate = Image.new('RGBA', (w, h), NIGHT + (222,))
+    plate = Image.new('RGBA', (w, h), NIGHT + (226,))
     lay.alpha_composite(plate)
-    sunburst(lay, w / 2, h - 30, 60, h * 0.95, n=25, spread=160, alpha=38, width=3)
+    ty = h / 2 + (12 if sub else 30)
+    fk, ft = F('scb', 38), F('deco', 104)
+    rays = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    sunburst(rays, w / 2, h - 30, 60, h * 0.95, n=25, spread=160, alpha=46, width=3)
+    # keep the rays out from behind the words: a soft window round the kicker and the title
+    m = Image.new('L', (w, h), 255)
+    md = ImageDraw.Draw(m)
+    for box in (md.multiline_textbbox((w / 2, ty), title, font=ft, anchor='mm', align='center', spacing=10),
+                md.textbbox((w / 2, 92), kicker, font=fk, anchor='mm')):
+        md.rounded_rectangle([box[0] - 30, box[1] - 18, box[2] + 30, box[3] + 18], 20, fill=0)
+    m = m.filter(ImageFilter.GaussianBlur(14))
+    rays.putalpha(Image.fromarray((np.asarray(rays.getchannel('A'), np.float32) * np.asarray(m, np.float32) / 255).astype(np.uint8)))
+    lay.alpha_composite(rays)
     deco_frame(lay, (14, 14, w - 15, h - 15))
     d = ImageDraw.Draw(lay)
-    for x in (w / 2 - 230, w / 2 + 130):  # rules either side of the kicker
-        d.line([(x, 92), (x + 100, 92)], fill=GOLD + (255,), width=2)
-    txt(lay, (w / 2, 92), kicker, F('scb', 34), fill=GOLD, anchor='mm')
-    txt(lay, (w / 2, h / 2 + (12 if sub else 30)), title, F('deco', 104), fill=(244, 232, 200), anchor='mm', align='center', spacing=10)
+    half = d.textlength(kicker, font=fk) / 2 + 28
+    for x in (w / 2 - half - 110, w / 2 + half):  # rules either side of the kicker
+        d.line([(x, 92), (x + 110, 92)], fill=GOLD + (255,), width=2)
+    txt(lay, (w / 2, 92), kicker, fk, fill=(226, 192, 110), anchor='mm')
+    txt(lay, (w / 2, ty), title, ft, fill=(244, 232, 200), anchor='mm', align='center', spacing=10)
     if sub:
         txt(lay, (w / 2, h - 70), sub, F('sc', 30), fill=GOLD, anchor='mm')
     return lay
@@ -181,3 +212,32 @@ def caption_bar(text, w=None):
     ImageDraw.Draw(lay).line([(0, 63), (w, 63)], fill=GOLD + (255,), width=2)
     txt(lay, (w / 2, 32), text, f, fill=(238, 226, 196), anchor='mm')
     return lay
+
+
+def photo_bg(name, crop_focus=(0.5, 0.5), darken=0.0, scale=1.0):
+    """A full-frame page background: the toned photo, cropped to the frame, vignetted (and darkened for text)."""
+    bg = cover(photo(name), int(W * scale), int(H * scale), crop_focus).resize((W, H), Image.LANCZOS).convert('RGBA')
+    bg.alpha_composite(vignette())
+    if darken:
+        bg.alpha_composite(Image.new('RGBA', (W, H), NIGHT + (int(255 * darken),)))
+    return bg
+
+
+def photo_page(scene, name, t0, caption=None, crop_focus=(0.5, 0.5), zoom=0.07, focus=(0.5, 0.45), enter='slide', darken=0.0,
+               cap_xy=(60, H - 140)):
+    """A newsreel cutaway: a full-frame period photo with a slow push-in and, if given, a place-and-date strip."""
+    p = scene.page(photo_bg(name, crop_focus, darken), t0, enter=enter, zoom=zoom, focus=focus)
+    if caption:
+        bar = caption_bar(caption)
+        p.add(Obj(t0 + 0.5, bar, cap_xy, how='left', shadow=None))
+    return p
+
+
+def deco_opener(scene, n, title, name, caption=None, crop_focus=(0.5, 0.5), focus=(0.5, 0.45)):
+    """A decision opens on a period photo with a black-and-gold Deco plaque rising over it."""
+    p = photo_page(scene, name, 0, caption, crop_focus, zoom=0.06, focus=focus)
+    words = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']
+    lines = title.count('\n') + 1
+    plate = deco_title('DECISION  %s' % words[n - 1], title, w=1180, h=330 + 110 * lines)
+    p.add(Plaque(0.15, plate, (W / 2, H / 2 - 30)))
+    return p

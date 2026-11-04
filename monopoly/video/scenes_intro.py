@@ -12,6 +12,7 @@ from PIL import Image
 from engine import (FPS, H, W, Camera, Scene, clamp, die_face, ease_out, fade, lerp, ramp, sf, shake, slip, smooth,
                     stamp_in, txt, typewriter)
 from kit import F, Counter, Fn, Obj, PagedScene, Txt, Typed, main, patent_world, pawn_layer
+from twenties import photo_page
 
 PATENT_SRC = (1805, 2809)  # pixel size of the patent sheet as scanned
 
@@ -37,8 +38,8 @@ class ColdOpen(PagedScene):
                   Txt(t0 + 0.2, (312 + k * 300, 945), '$1,800' if k == 0 else '$1,500', F('type', 40), fill=sf.STAMP if k == 0 else sf.INK,
                       anchor='mm'))
         p.add(Txt(c('more than everyone else'), (312, 1000), 'YOU', F('sc', 30), fill=sf.STAMP, anchor='mm'),
-              Txt(c('We played more than'), (1660, 760), 'games played', F('sc', 32), fill=sf.SEPIA, anchor='mm'),
-              Counter(c('We played more than'), c('to find them') + 0.4, (1660, 830), 0, 13_400_000, lambda v: '{:,}'.format(int(v)),
+              Txt(c('I played more than'), (1660, 760), 'games played', F('sc', 32), fill=sf.SEPIA, anchor='mm'),
+              Counter(c('I played more than'), c('to find them') + 0.4, (1660, 830), 0, 13_400_000, lambda v: '{:,}'.format(int(v)),
                       F('type', 60), fill=sf.STAMP, anchor='mm'))
 
         # the patent
@@ -55,6 +56,9 @@ class ColdOpen(PagedScene):
                       (c('She called it') + 0.2, ['THE LANDLORD’S GAME', 'BY LIZZIE J. MAGIE'], (70, 230))]
         for ts, lines, xy in self.slips:
             p.add(Fn(ts, lambda img, t, a, ts=ts, lines=lines, xy=xy: t < c('Thirty years later') and slip(img, xy, lines, t, ts, width=560)))
+        # thirty years later: Atlantic City, where the street names came from
+        p = photo_page(self, 'ac_boardwalk_rolling_chairs_traymore.jpg', c('Thirty years later') - 0.1, 'THE BOARDWALK, ATLANTIC CITY, N.J.',
+                       enter='fade', zoom=0.08, focus=(0.62, 0.35), cap_xy=(60, 60))
         t_k = c('You know it as') + 0.4
 
         def known(img, t, a):
@@ -99,7 +103,7 @@ class Promise(Scene):
 
     def frame(self, t):
         c_orange, c_dice, c_choose = self.cue('Buy the orange'), self.cue("But you don't get"), self.cue('What you do choose')
-        c_win = self.cue('three games for every two')
+        c_win = self.cue('forty-five percent more')
         if t < c_orange - 0.4:
             return fade(self.title.copy(), ramp(t, 0, 0.6))
         if t < c_choose:
@@ -124,14 +128,14 @@ class Promise(Scene):
         for k, (phrase, line) in enumerate(self.decisions):
             t0 = self.cue(phrase)
             typewriter(img, (580, 250 + k * 100), line, sf.font('serif', 56), t, t0 - 0.1, cps=34)
-        if t >= self.cue('So we tested'):
+        if t >= self.cue('So I tested'):
             txt(img, (580, 760), 'Same dice.  Same board.  Tested, one decision at a time.', sf.font('hand', 38), fill=sf.SEPIA,
-                    alpha=int(255 * ramp(t, self.cue('So we tested'), 0.5)))
+                    alpha=int(255 * ramp(t, self.cue('So I tested'), 0.5)))
         stamp_in(img, t, c_win + 0.2, (1620, 950), ['45% MORE', 'WINS'], angle=-9, size=60)
         return shake(img, t, c_win + 0.35)
 
     def extra_sfx(self):
-        ev = [(self.cue("But you don't get"), 'rattle'), (self.cue('three games for every two') + 0.3, 'thud')]
+        ev = [(self.cue("But you don't get"), 'rattle'), (self.cue('forty-five percent more') + 0.3, 'thud')]
         for phrase, line in self.decisions:
             t0 = self.cue(phrase) - 0.1
             ev += [(t0 + i / 34, 'key') for i, ch in enumerate(line) if ch.strip()]

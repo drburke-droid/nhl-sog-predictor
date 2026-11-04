@@ -8,10 +8,11 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from engine import H, W, Camera, clamp, die_face, ease_out, lerp, sf, smooth, txt
-from kit import (F, Bar, Counter, Fn, Grid100, Line, Obj, PagedScene, Stamp, Telegram, Txt, Typed, decision_card, deed,
+from kit import (F, Bar, Counter, Fn, Grid100, Line, Obj, PagedScene, Stamp, Telegram, Txt, Typed, deed,
                  hotel_elevation, house_elevation, ledger_paper, ledger_row, main, note_card, paste, pawn_layer, ring, shadowed, tick,
                  with_alpha)
 from kit import patent_world
+from twenties import GOLD, deckle_print, deco_opener, photo_bg
 from scenes_b import houses_row, swatch
 
 SEP, RED, GREEN, G = sf.SEPIA, sf.STAMP, sf.NOTE_GREEN, sf.GROUP
@@ -51,7 +52,7 @@ class Jail(PagedScene):
     def __init__(self):
         super().__init__('08_jail')
         c = self.cue
-        self.page(decision_card(5, 'JAIL'))
+        deco_opener(self, 5, 'JAIL', 'jail_liquor_into_sewer_1921.jpg', 'PROHIBITION RAID, NEW YORK, 1921', focus=(0.5, 0.45))
 
         p = self.page(plain(151), c("You're in jail") - 0.2)
         bars = bars_layer(seed=3)
@@ -192,11 +193,11 @@ class Payoff(PagedScene):
         p = self.page(plain(172), c('How much is that worth') - 0.2)
         p.add(Typed(c('How much is that worth'), (1010, 120), 'How much is that worth?', F('serif', 52)))
         notes = [(100, (40, 92, 70), -12, (70, 150)), (100, (40, 92, 70), -4, (150, 330)), (50, (86, 60, 40), 6, (110, 520))]
-        t_take = c('We gave a typical player')
+        t_take = c('I gave a typical player')
         for k, (v, ink, ang, xy) in enumerate(notes):
             n = sf.banknote(v, ink, 20 + k)
             p.add(Obj(t_take + 0.3 * k, n, xy, how='left', angle=ang, dur=0.5))
-        p.add(Txt(c('We gave a typical player') + 0.2, (1010, 205), 'extra cash a typical player needs to keep up:', F('hand', 34), fill=SEP),
+        p.add(Txt(c('I gave a typical player') + 0.2, (1010, 205), 'extra cash a typical player needs to keep up:', F('hand', 34), fill=SEP),
               Typed(c('It took three hundred'), (1000, 245), '$300', F('deco', 200), fill=RED, cps=8))
         p.add(Txt(c('It took three hundred') + 0.8, (1010, 500), 'of free cash at the start of every game', F('serif', 48)),
               Stamp(c('It took three hundred') + 1.4, (430, 900), ['WORTH', '$300'], angle=-8, size=66),
@@ -244,14 +245,17 @@ class Payoff(PagedScene):
                                                                               (1820, y + 56 + (130 if y == 230 else 0))],
                                                                              fill=SEP + (200,), width=4))
             p.add(d)
+        crown = deckle_print('ac_miss_america_gorman_neptune_1922.jpg', w=500, caption='ATLANTIC CITY, 1922', aspect=1.3, crop_focus=(0.5, 0.3))
+        p.add(Obj(c('champion two years out of three') + 0.4, crown, (1290, 515), how='drop', angle=3))
         p.add(Txt(c('champion two years out of three'), (1820, 450), 'champion two years in three', F('hand', 40), fill=RED, anchor='ra'),
               Txt(c('About one year in eleven'), (1820, 1010), 'each of the others: about one year in eleven', F('hand', 38), fill=SEP, anchor='ra'))
 
         # same dice
-        p = self.page(plain(175), c('Same dice.') - 0.3)
-        p.add(Txt(c('Same dice.'), (W / 2, 330), 'Same dice.', F('script', 110), anchor='mm'),
-              Txt(c('No favourite colour'), (W / 2, 520), 'No favourite colour.', F('script', 110), anchor='mm'),
-              Txt(c('Just better decisions'), (W / 2, 720), 'Just better decisions.', F('script', 110), fill=RED, anchor='mm'))
+        p = self.page(photo_bg('games_mah_jong_bathing_beach_1924.jpg', (0.5, 0.6), darken=0.6), c('Same dice.') - 0.3, zoom=0.05)
+        cream = (246, 236, 210)
+        p.add(Txt(c('Same dice.'), (W / 2, 330), 'Same dice.', F('script', 110), fill=cream, anchor='mm'),
+              Txt(c('No favourite colour'), (W / 2, 520), 'No favourite colour.', F('script', 110), fill=cream, anchor='mm'),
+              Txt(c('Just better decisions'), (W / 2, 720), 'Just better decisions.', F('script', 110), fill=GOLD, anchor='mm'))
 
     def tallies(self, img, t, y, n, col, t0, k):
         m = int(clamp((t - t0) / 1.6) * n)

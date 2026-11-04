@@ -7,7 +7,8 @@ import math
 from PIL import Image, ImageDraw
 
 from engine import H, W, clamp, ease_out, sf, txt
-from kit import (F, Bar, Counter, Fn, Line, Obj, PagedScene, Stamp, Telegram, Txt, Typed, decision_card, deed, hotel_elevation,
+from twenties import deco_opener
+from kit import (F, Bar, Counter, Fn, Line, Obj, PagedScene, Stamp, Telegram, Txt, Typed, deed, hotel_elevation,
                  house_elevation, ledger_paper, ledger_row, main, note_card, paste, ring, shadowed, tick, with_alpha)
 
 SEP, RED, GREEN, G = sf.SEPIA, sf.STAMP, sf.NOTE_GREEN, sf.GROUP
@@ -66,7 +67,7 @@ class SpendOrSave(PagedScene):
     def __init__(self):
         super().__init__('07a_spend_or_save')
         c = self.cue
-        self.page(decision_card(4, 'TO BUILD'))
+        deco_opener(self, 4, 'TO BUILD', 'ac_hotel_traymore_1920.jpg', 'HOTEL TRAYMORE, ATLANTIC CITY, 1920', focus=(0.5, 0.35))
 
         p = self.page(plain(101), c('And the first question') - 0.2)
         p.add(Typed(c('And the first question') + 0.3, (W / 2, 110), 'The question every player asks:', F('serif', 50), anchor='mm'))
@@ -82,7 +83,7 @@ class SpendOrSave(PagedScene):
         p.add(Obj(c("in case I land"), hotel_elevation(230, seed=5), (830, 200), how='down'),
               Txt(c("in case I land") + 0.2, (W / 2, 490), 'someone’s hotel', F('hand', 34), fill=RED, anchor='mm'),
               Txt(c('Keeping a cushion'), (W / 2, 890), 'A cushion feels responsible.', F('serif', 46), anchor='mm'),
-              Txt(c('So we gave players'), (W / 2, 975), 'So we tried cushions of every size.', F('hand', 36), fill=SEP, anchor='mm'))
+              Txt(c('So I gave players'), (W / 2, 975), 'So I tried cushions of every size.', F('hand', 36), fill=SEP, anchor='mm'))
 
         # the ledger: wins, then first to go broke
         p = self.page(ledger_paper(102, rules=[330 + 110 * k for k in range(5)], cols=(470, 1160, 1480)), c('Keep nothing back') - 0.3)
@@ -104,9 +105,9 @@ class SpendOrSave(PagedScene):
               Txt(t_broke + 1.0, (1510, 420), 'more cash kept\nback, MORE likely\nto go broke first', F('hand', 36), fill=RED, spacing=8))
 
         # the smartest-sounding version
-        p = self.page(plain(103), c('We even tried') - 0.2)
+        p = self.page(plain(103), c('I even tried') - 0.2)
         card = note_card(['ALWAYS KEEP ENOUGH CASH', 'TO PAY THE BIGGEST RENT', 'ON THE BOARD'], F('type', 46), w=760, seed=11)
-        p.add(Obj(c('We even tried') + 0.3, card, (140, 160), how='drop', angle=-2),
+        p.add(Obj(c('I even tried') + 0.3, card, (140, 160), how='drop', angle=-2),
               Obj(c('the biggest rent') - 0.3, hotel_elevation(300, seed=9), (1170, 120), how='drop'),
               Txt(c('the biggest rent') + 0.2, (1330, 520), 'Boardwalk with a hotel: $2,000', F('hand', 36), fill=SEP, anchor='mm'),
               Typed(c('That player wins'), (180, 640), '13%', F('deco', 160), fill=RED, cps=10),
@@ -197,13 +198,13 @@ class WhichFirst(PagedScene):
         p.add(Txt(c('Which one gets') - 0.1, (W / 2, 520), 'Which one\nfirst?', F('deco', 96), anchor='mm', align='center', spacing=14))
 
         # the setup and the 28 pairs
-        p = self.page(plain(122), c('We set up that exact') - 0.2)
+        p = self.page(plain(122), c('I set up that exact') - 0.2)
         slip = note_card(['THE SET-UP', 'middle of the game', 'every property already bought', '$1,000 each', 'you hold two full sets'],
                          F('type', 38), w=640, seed=12)
-        p.add(Obj(c('We set up that exact') + 0.3, slip, (110, 200), how='drop', angle=-2))
+        p.add(Obj(c('I set up that exact') + 0.3, slip, (110, 200), how='drop', angle=-2))
         order = ['brown', 'lightblue', 'pink', 'orange', 'red', 'yellow', 'green', 'darkblue']
         gx, gy, cs = 1050, 230, 88
-        t_grid = c('Then we tried every pair')
+        t_grid = c('Then I tried every pair')
         for i, g in enumerate(order):
             p.add(Obj(t_grid - 0.4, swatch(g, cs - 8, 30, seed=i), (gx + i * cs + 4, gy - 44), how='fade', shadow=None),
                   Obj(t_grid - 0.4, swatch(g, 30, cs - 8, seed=i + 9), (gx - 44, gy + i * cs + 4), how='fade', shadow=None))

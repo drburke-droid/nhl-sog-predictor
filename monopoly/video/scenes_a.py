@@ -8,8 +8,9 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from engine import H, W, clamp, ease_out, lerp, sf, smooth, txt
+from twenties import deco_opener, photo_page
 from kit import (F, Bar, Counter, Fn, Grid100, Line, Obj, PagedScene, Stamp, Telegram, Txt, Typed, board_layer,
-                 decision_card, deed, fig_page, ledger_paper, ledger_row, main, note_card, padlock, paste, pawn_layer,
+                 deed, fig_page, ledger_paper, ledger_row, main, note_card, padlock, paste, pawn_layer,
                  ring, shadowed, tick, with_alpha)
 
 SEP = sf.SEPIA
@@ -57,8 +58,9 @@ class HowWeTested(PagedScene):
             p.add(Typed(c(ph), (px + 70, y), s, F('serif', 40), spacing=10))
             tick(p, c(ph) + 0.15, px + 10, y + 4, seed=k)
 
-        # B: how people actually play; a set for a set
-        p = self.page(plain(62), c('Then I taught it') - 0.2)
+        # B: how people actually play (a 1922 game night), then a set for a set
+        photo_page(self, 'games_women_mah_jong_1922.jpg', c('Then I taught it') - 0.2, 'GAME NIGHT, 1922', focus=(0.45, 0.6))
+        p = self.page(plain(62), c('Everyone typically buys') - 0.35)
         p.add(Txt(c('Then I taught it') + 0.3, (160, 90), 'HOW PEOPLE ACTUALLY PLAY', F('scb', 48), fill=GREEN),
               Typed(c('Everyone typically buys'), (160, 190), '1.  Buy what you land on, if you can afford it.', F('serif', 44)),
               Typed(c('And nobody hands'), (160, 268), '2.  Nobody hands you the card that finishes your set,', F('serif', 44)),
@@ -143,7 +145,7 @@ class BuyOrPass(PagedScene):
     def __init__(self):
         super().__init__('04_buy_or_pass')
         c = self.cue
-        self.page(decision_card(1, 'TO BUY,\nOR TO PASS'))
+        deco_opener(self, 1, 'TO BUY,\nOR TO PASS', 'jazz_stutz_roadster_1920.jpg', 'A NEW STUTZ ROADSTER, 1920', focus=(0.4, 0.6))
 
         # the deed on the desk
         p = self.page(plain(71), c('You land on') - 0.1)
@@ -250,11 +252,11 @@ class Trading(PagedScene):
     def __init__(self):
         super().__init__('05_trading')
         c = self.cue
-        self.page(decision_card(2, 'TO TRADE'))
+        deco_opener(self, 2, 'TO TRADE', 'money_curb_brokers_wall_street_1920.jpg', 'THE CURB MARKET, WALL STREET, c. 1920')
 
         # never trading
         p = self.page(plain(81), c('This is the one') - 0.2)
-        p.add(Typed(c('This is the one'), (120, 90), 'The one that surprised us most.', F('serif', 50)),
+        p.add(Typed(c('This is the one'), (120, 90), 'The one that surprised me most.', F('serif', 50)),
               Txt(c("It's how much"), (120, 170), 'Not that trading helps. How much.', F('hand', 40), fill=SEP))
         tg = Telegram(c('This is the one') + 0.6, (110, 300), ['My St. James for your Ventnor?', 'We both get a set.'],
                       w=780, angle=-2, wps=3)
@@ -324,7 +326,7 @@ class Railroads(PagedScene):
     def __init__(self):
         super().__init__('06_railroads')
         c = self.cue
-        self.page(decision_card(3, 'THE RAILROADS'))
+        deco_opener(self, 3, 'THE RAILROADS', 'rail_penn_station_new_york.jpg', 'PENNSYLVANIA STATION, NEW YORK', focus=(0.55, 0.4))
         names = ['READING\nR.R.', 'PENNA.\nR.R.', 'B. & O.\nR.R.', 'SHORT\nLINE']
         tickets = [sf.railroad_ticket(nm, 11 + k) for k, nm in enumerate(names)]
 
@@ -350,7 +352,7 @@ class Railroads(PagedScene):
                 ledger_row(p, t0, y, lab, v, 24, fnt=F('type', 34), x_bar=760, wash=sf.GROUP['green'] if k == 2 else None)
                 p.add(Typed(t_pct[k], (1560, y), pct, F('type', 44), fill=RED if k < 2 else GREEN))
 
-        p = self.page(ledger_paper(92, rules=[440, 640, 840], cols=(1480,)), c('We tried three') - 0.2)
+        p = self.page(ledger_paper(92, rules=[440, 640, 840], cols=(1480,)), c('I tried three') - 0.2)
         rr_ledger(p, [c('A player who just buys'), c('A player who chases')], None, [c('in only about four percent'), c('in only about four percent') + 0.3, 0])
         p.add(Txt(c('no better than typical') + 0.2, (760, 360), 'typical: 25.1', F('hand', 30), fill=SEP),
               Txt(c('still no better') + 0.2, (760, 560), 'still 25.1', F('hand', 30), fill=SEP),
