@@ -76,8 +76,9 @@ def build(script, out_dir, total):
     print("narration.wav", f"{len(cues(script))} cues", flush=True)
 
 
-def duck_and_mix(music, voice_path, duck_db=8.0, voice_gain=1.0):
-    """music (n x 2 float32 at SR) with the narration on top; the music dips by duck_db under the voice"""
+def duck_and_mix(music, voice_path, duck_db=18.0, voice_gain=1.0):
+    """music (n x 2 float32 at SR) with the narration on top; the music dips by duck_db under the voice (18 dB keeps the
+    voice about 15 dB above the score while it speaks; 8 dB left it only 4-6 dB above, too quiet to follow)"""
     from scipy.io import wavfile
     sr, v = wavfile.read(voice_path)
     v = v.astype(np.float32) / 32768.0
