@@ -17,7 +17,6 @@ import score as SG                                         # noqa: E402  (margin
 
 G = SG.G
 SPORTS = ("Athletics", "Swimming")
-AGREE = 12            # as in video C: in the top ten of at least three-quarters of the 16 versions
 
 
 class Individual(G.Data):
@@ -83,22 +82,20 @@ def main():
         s, who = r["beaten_by"]
         return f"{who} {show(D, r['cat'], dict(r['pts'])[s])} ({s})"
 
-    agree = [r for r in top if ens.get((r["name"], r["sport"]), 0) >= AGREE]
     L = ["# Video B review: the biggest single-performance outliers in athletics and swimming", "",
          "Model: the single-day film's model on athletics and swimming only (speed skating left out): each season's "
          "best mark, graded against the best mark by anyone else in the 15 seasons either side, plus the rule: a mark "
          f"must be at least {SG.CLEAR_STEPS:g} step clear of every other mark on its graph. {len(sc):,} season-best "
          f"marks in {len(D.meta)} events; {sum(r['clear'] >= SG.CLEAR_STEPS for r in sc):,} clear their field.", "",
-         f"## Agreed by the versions: in the top ten in at least {AGREE} of 16", "",
-         f"{sum(ens.get((r['name'], r['sport']), 0) == 16 for r in top)} of them are in the top ten of all 16.", "",
-         "| # | Mark | Score | In top 10 of 16 versions |", "|---|---|---|---|"]
-    for i, r in enumerate(agree, 1):
-        L.append(f"| {i} | {r['name']}, {r['title']}, {r['year']} ({mark(D, r)}) | {r['z']:.2f} | "
-                 f"{ens.get((r['name'], r['sport']), 0)} |")
-    L += ["", "## The list", "",
+         "## The film's ten: the top ten by score (#11 and #12 shown for reference)", "",
+         "The last column says how many of the 16 versions (windows of 7, 10, 15 and 20 seasons; straight or curved "
+         "trend; the league adjustment does not apply to these sports, so each version is counted twice) also put "
+         "the athlete in their top ten.", "",
           "| # | Mark | Sport | Curve | Step | Score | Clear by | Best other on the graph | In top 10 of 16 versions |",
           "|---|---|---|---|---|---|---|---|---|"]
     for i, r in enumerate(top[:12], 1):
+        if i == 11:
+            L.append("| | *next* | | | | | | | |")
         step = abs(own(D, r["cat"], r["base"] + r["scale"]) - own(D, r["cat"], r["base"]))
         L.append(f"| {i} | {r['name']}, {r['title']}, {r['year']} ({mark(D, r)}) | {r['sport']} | "
                  f"{show(D, r['cat'], r['base'])} | {step:.2f}{' m' if 'speed' not in D.cats[r['cat']]['performance'] else ' s'} | **{r['z']:.2f}** | "

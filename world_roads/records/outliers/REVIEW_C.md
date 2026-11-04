@@ -13,10 +13,20 @@ Every season below was considered; these are the ones the versions agree on (thr
 | # | Season | Score | In top 10 of 16 versions |
 |---|---|---|---|
 | 1 | Wilt Chamberlain, points per game, 1961-62 (50.4) | 7.05 | 16 |
-| 2 | Joe DiMaggio, hitting streak, 1941 (56.0) | 7.01 | 16 |
-| 3 | Wayne Gretzky, assists in a season, 1985-86 (163.0) | 6.46 | 16 |
+| 2 | Joe DiMaggio, hitting streak, 1941 (56) | 7.01 | 16 |
+| 3 | Wayne Gretzky, assists in a season, 1985-86 (163) | 6.46 | 16 |
 | 4 | Dennis Rodman, rebounds per game, 1992-93 (18.3) | 5.68 | 13 |
-| 5 | Ichiro Suzuki, hits in a season, 2004 (262.0) | 5.27 | 15 |
+| 5 | Ichiro Suzuki, hits in a season, 2004 (262) | 5.27 | 15 |
+
+## Considered, not in the film: the rest of the top ten by score
+
+Each was in the top ten of fewer than 12 of the 16 versions (8 with the league adjustment, 8 without; windows of 7, 10, 15 and 20 seasons; straight or curved trend). What kept it out in the others:
+
+- **Dazzy Vance, strikeouts by a pitcher, 1924 (262)**: #4 by score (5.83), top ten in 8 of 16. It rests on the league adjustment: strikeouts were scarce in 1924, but without that adjustment the big raw totals of 1904-1915 (Waddell 349, Johnson 313) win, and a 20-season window reaches Waddell's 1904 even with it. Out: Rube Waddell 349 (1904) within a step or ahead in 4 (adjusted or not, 20-season window); Walter Johnson 313 (1910) within a step or ahead in 2 (unadjusted, 15-season window); Grover Alexander 241 (1915) within a step or ahead in 1 (unadjusted, 10-season window, straight trend); below the top ten in 1 (unadjusted, 7-season window, straight trend; ranked #15).
+- **Babe Ruth, home runs in a season, 1920 (54)**: #6 by score (5.56), top ten in 6 of 16. It rests on the league adjustment: without it, the home-run boom Ruth started catches him (Gehrig, Wilson's 56 in 1930, Foxx's 58 in 1932); with it, a 7-season window ranks it 11th or 18th. Out: Jimmie Foxx 58 (1932) within a step or ahead in 4 (unadjusted, 15/20-season windows); Lou Gehrig 47 (1927) within a step or ahead in 2 (unadjusted, 7-season window); Hack Wilson 56 (1930) within a step or ahead in 2 (unadjusted, 10-season window); below the top ten in 2 (adjusted, 7-season window; ranked #11, #18).
+- **Bob Feller, strikeouts by a pitcher, 1946 (348)**: #8 by score (5.03), top ten in 9 of 16. Always clear of its own era, but with 7- or 10-season windows it ranks 11th to 18th, and the widest window without adjustment reaches Koufax's 382 in 1965. Out: Sandy Koufax 382 (1965) within a step or ahead in 2 (unadjusted, 20-season window); below the top ten in 5 (adjusted or not, 7/10-season windows; ranked #11, #13, #14, #14, #18).
+- **Maury Wills, stolen bases in a season, 1962 (104)**: #9 by score (4.78), top ten in 9 of 16. Without the league adjustment, the steals boom that followed him wins (Brock's 118 in 1974, Henderson's 130 in 1982); with 7-season windows it ranks 11th to 20th. Out: Lou Brock 118 (1974) within a step or ahead in 2 (unadjusted, 15-season window); Rickey Henderson 130 (1982) within a step or ahead in 2 (unadjusted, 20-season window); below the top ten in 3 (adjusted or not, 7-season window; ranked #11, #17, #20).
+- **Ted Williams, batting average, 1941 (.406)**: #10 by score (4.77), top ten in 3 of 16. Without the league adjustment, the high averages of the 1920s and 30s (Hornsby's .424, Terry's .401) come within a step or ahead; with it, only the 15- and 20-season windows put it in the ten. Out: Bill Terry .401 (1930) within a step or ahead in 2 (unadjusted, 15-season window); Rogers Hornsby .424 (1924) within a step or ahead in 2 (unadjusted, 20-season window); below the top ten in 9 (adjusted or not, 7/10/20-season windows; ranked #11, #12, #13, #15, #15, #23, #24, #24, #27).
 
 ## The list
 

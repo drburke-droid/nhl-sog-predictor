@@ -77,6 +77,12 @@ def to_own_units(v, r, ctx):
     return e ** g / v if ctx.kind.get(r["cat"]) == "era" else v * e ** g
 
 
+def val(raw):
+    """a value as people say it: 262, .406, 18.3"""
+    v = float(raw)
+    return str(int(v)) if v.is_integer() else (f"{v:.3f}".lstrip("0") if v < 1 else f"{v:g}")
+
+
 def season(sport, y):
     return f"{y - 1}-{str(y)[2:]}" if SEASON_FMT.get(sport) else str(y)
 
@@ -107,6 +113,55 @@ FAMOUS = [  # (category, season, name fragment, what it is)
 ]
 
 
+NOTES = {  # the plain-English reason, checked against the per-version facts that follow it in the review
+    "Dazzy Vance": "It rests on the league adjustment: strikeouts were scarce in 1924, but without that adjustment "
+                   "the big raw totals of 1904-1915 (Waddell 349, Johnson 313) win, and a 20-season window reaches "
+                   "Waddell's 1904 even with it.",
+    "Babe Ruth": "It rests on the league adjustment: without it, the home-run boom Ruth started catches him "
+                 "(Gehrig, Wilson's 56 in 1930, Foxx's 58 in 1932); with it, a 7-season window ranks it 11th or 18th.",
+    "Bob Feller": "Always clear of its own era, but with 7- or 10-season windows it ranks 11th to 18th, and the "
+                  "widest window without adjustment reaches Koufax's 382 in 1965.",
+    "Maury Wills": "Without the league adjustment, the steals boom that followed him wins (Brock's 118 in 1974, "
+                   "Henderson's 130 in 1982); with 7-season windows it ranks 11th to 20th.",
+    "Ted Williams": "Without the league adjustment, the high averages of the 1920s and 30s (Hornsby's .424, "
+                    "Terry's .401) come within a step or ahead; with it, only the 15- and 20-season windows put it in "
+                    "the ten.",
+}
+
+
+def why_out(D, versions, r):
+    """the versions where this season misses the top ten, grouped by what kept it out"""
+    key, beat, below = (r["cat"], r["year"], r["id"]), defaultdict(list), []
+    for v, (sc, pg) in versions.items():
+        if any(t["name"] == r["name"] and t["sport"] == r["sport"] for t in pg[:10]):
+            continue
+        rv = next((t for t in sc if (t["cat"], t["year"], t["id"]) == key), None)
+        if rv is None:
+            below.append((v, None))
+        elif rv["clear"] < CLEAR_STEPS:
+            s_, who = rv["beaten_by"]
+            raw = next((val(e.raw) for e in D.seasons[r["cat"]][s_] if e.name == who), "")
+            beat[(who, raw, s_)].append(v)
+        else:
+            rk = next((i for i, t in enumerate(pg, 1) if t["name"] == r["name"] and t["sport"] == r["sport"]), None)
+            below.append((v, rk))
+
+    def desc(vs):
+        adj = sorted({v[0] for v in vs})
+        w = sorted({v[1] for v in vs})
+        tr = {v[2] for v in vs}
+        return (("adjusted" if adj == ["power"] else "unadjusted" if adj == ["none"] else "adjusted or not")
+                + ", " + "/".join(map(str, w)) + "-season window" + ("s" if len(w) > 1 else "")
+                + ("" if len(tr) == 2 else ", " + ("straight" if "ols" in tr else "curved") + " trend"))
+    parts = [f"{who} {raw} ({s_}) within a step or ahead in {len(vs)} ({desc(vs)})" for (who, raw, s_), vs in
+             sorted(beat.items(), key=lambda kv: -len(kv[1]))]
+    if below:
+        ranks = sorted(rk for _, rk in below if rk)
+        parts.append(f"below the top ten in {len(below)} ({desc([v for v, _ in below])}"
+                     + (f"; ranked {', '.join('#' + str(k) for k in ranks)}" if ranks else "") + ")")
+    return "Out: " + "; ".join(parts) if parts else ""
+
+
 def main():
     D, gam, ctx = setup()
     spec = G.Spec(ties="all", env="power", trend="quad_safe")
@@ -120,11 +175,13 @@ def main():
                     if (k := (r["cat"], r["year"], r["name"])) in lock), key=lambda t: -t[0])
     exact = sum(d < 0.005 for d, _, _ in diffs)
     ens = defaultdict(int)
-    for wdw in (7, 10, 15, 20):
-        for tr in ("ols", "quad_safe"):
-            for env in ("none", "power"):
-                _, pg = ranked(D, ctx if env == "power" else None, G.Spec(ties="all", window=wdw, trend=tr, env=env))
-                for r in pg[:10]:
+    versions = {}
+    for env in ("none", "power"):
+        for wdw in (7, 10, 15, 20):
+            for tr in ("ols", "quad_safe"):
+                versions[(env, wdw, tr)] = ranked(D, ctx if env == "power" else None,
+                                                  G.Spec(ties="all", window=wdw, trend=tr, env=env))
+                for r in versions[(env, wdw, tr)][1][:10]:
                     ens[(r["name"], r["sport"])] += 1
     rank_all = {(r["cat"], r["year"], r["id"]): i for i, r in enumerate(allpage, 1)}
     old = {(r["cat"], r["year"], r["id"]) for r in allpage[:10]}
@@ -158,8 +215,18 @@ def main():
          + f"{sum(ens.get((r['name'], r['sport']), 0) == 16 for r in top)} of them are in the top ten of all 16.", "",
          "| # | Season | Score | In top 10 of 16 versions |", "|---|---|---|---|"]
     for i, r in enumerate([r for r in top if ens.get((r["name"], r["sport"]), 0) >= AGREE], 1):
-        L.append(f"| {i} | {r['name']}, {r['title'].lower()}, {season(r['sport'], r['year'])} ({r['raw']}) | "
+        L.append(f"| {i} | {r['name']}, {r['title'].lower()}, {season(r['sport'], r['year'])} ({val(r['raw'])}) | "
                  f"{r['z']:.2f} | {ens.get((r['name'], r['sport']), 0)} |")
+    five = [r for r in top if ens.get((r["name"], r["sport"]), 0) >= AGREE]
+    L += ["", "## Considered, not in the film: the rest of the top ten by score", "",
+          f"Each was in the top ten of fewer than {AGREE} of the 16 versions (8 with the league adjustment, 8 "
+          "without; windows of 7, 10, 15 and 20 seasons; straight or curved trend). What kept it out in the others:", ""]
+    for i, r in enumerate(top[:10], 1):
+        if r in five:
+            continue
+        n = ens.get((r["name"], r["sport"]), 0)
+        L.append(f"- **{r['name']}, {r['title'].lower()}, {season(r['sport'], r['year'])} ({val(r['raw'])})**: #{i} by score "
+                 f"({r['z']:.2f}), top ten in {n} of 16. " + NOTES.get(r["name"], "") + " " + why_out(D, versions, r) + ".")
     L += ["", "## The list", "",
          "| # | Season | Sport | Value | Curve | Step | Score | Published score | Clear by | Best other on the graph | "
          "In top 10 of 16 versions |", "|---|---|---|---|---|---|---|---|---|---|---|"]

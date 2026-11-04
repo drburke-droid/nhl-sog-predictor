@@ -2,19 +2,9 @@
 
 Model: the single-day film's model on athletics and swimming only (speed skating left out): each season's best mark, graded against the best mark by anyone else in the 15 seasons either side, plus the rule: a mark must be at least 1 step clear of every other mark on its graph. 2,333 season-best marks in 52 events; 42 clear their field.
 
-## Agreed by the versions: in the top ten in at least 12 of 16
+## The film's ten: the top ten by score (#11 and #12 shown for reference)
 
-2 of them are in the top ten of all 16.
-
-| # | Mark | Score | In top 10 of 16 versions |
-|---|---|---|---|
-| 1 | Jan Železný, Men's javelin, 1996 (98.48 m) | 5.95 | 16 |
-| 2 | Sergey Bubka, Men's pole vault, 1993 (6.15 m) | 4.45 | 14 |
-| 3 | Léon Marchand, Men's 200 m individual medley, 2025 (1:52.69) | 4.34 | 16 |
-| 4 | Gretchen Walsh, Women's 100 m butterfly, 2026 (54.33) | 4.17 | 12 |
-| 5 | Armand Duplantis, Men's pole vault, 2025 (6.30 m) | 4.04 | 12 |
-
-## The list
+The last column says how many of the 16 versions (windows of 7, 10, 15 and 20 seasons; straight or curved trend; the league adjustment does not apply to these sports, so each version is counted twice) also put the athlete in their top ten.
 
 | # | Mark | Sport | Curve | Step | Score | Clear by | Best other on the graph | In top 10 of 16 versions |
 |---|---|---|---|---|---|---|---|---|
@@ -28,6 +18,7 @@ Model: the single-day film's model on athletics and swimming only (speed skating
 | 8 | Armand Duplantis, Men's pole vault, 2025 (6.30 m) | Athletics | 6.08 m | 0.05 m | **4.04** | 1.86 | Emmanouíl Karális 6.20 m (2026) | 12 (one-sided window) |
 | 9 | Summer McIntosh, Women's 400 m individual medley, 2025 (4:23.65) | Swimming | 4:30.99 | 1.86 s | **4.03** | 1.51 | Katinka Hosszú 4:26.36 (2016) | 8 (one-sided window) |
 | 10 | Usain Bolt, Men's 100 metres, 2009 (9.58) | Athletics | 9.78 | 0.05 s | **4.02** | 2.24 | Tyson Gay 9.69 (2009) | 8 |
+| | *next* | | | | | | | |
 | 11 | Katie Ledecky, Women's 1500 m freestyle, 2018 (15:20.48) | Swimming | 15:46.32 | 6.73 s | **3.92** | 1.74 | Simona Quadarella 15:31.79 (2025) | 10 |
 | 12 | Yaroslava Mahuchikh, Women's high jump, 2024 (2.10 m) | Athletics | 2.03 m | 0.02 m | **3.83** | 1.09 | Blanka Vlasic 2.08 m (2009) | 10 (one-sided window) |
 
