@@ -22,12 +22,12 @@ MARGIN = 1.0       # clearance between a grain's edge and the glass
 
 
 def load_countries():
-    path = os.path.join(DATA, "ne_50m_admin_0_countries.geojson")
+    path = os.path.join(DATA, "ne_10m_admin_0_countries.geojson")
     if not os.path.exists(path):
         import subprocess
         os.makedirs(DATA, exist_ok=True)
         url = ("https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/"
-               "ne_50m_admin_0_countries.geojson")
+               "ne_10m_admin_0_countries.geojson")
         subprocess.run(["curl", "-sS", "-o", path, url], check=True)
     from shapely.geometry import shape
     gj = json.load(open(path))
@@ -177,7 +177,7 @@ def lattice(mask_ss, anchor_x):
 
 
 def build(specs):
-    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v3").encode()).hexdigest()
+    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v4-10m").encode()).hexdigest()
     cache = os.path.join(DATA, "vessels_cache.pkl")
     if os.path.exists(cache):
         with open(cache, "rb") as f:

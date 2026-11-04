@@ -15,7 +15,7 @@ def rgb(h):
 
 
 def main():
-    gj = json.load(open(os.path.join(DATA, "ne_50m_land.geojson")))
+    gj = json.load(open(os.path.join(DATA, "ne_10m_land.geojson")))
     rings, holes = [], []
     for f in gj["features"]:
         for p in V.split_cut(shape(f["geometry"])):

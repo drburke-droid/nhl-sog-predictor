@@ -17,6 +17,10 @@ DATA = os.path.join(HERE, "data")
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 SAMPLES = int(argv[argv.index("--samples") + 1]) if "--samples" in argv else 256
 TEST = "--test" in argv
+SAND = argv[argv.index("--sand") + 1] if "--sand" in argv else None       # render this sand state
+OUTP = argv[argv.index("--out") + 1] if "--out" in argv else None
+# --view X Y ZOOM TILT: a close-up looking at map pixel (X, Y), ZOOM times closer, tilted TILT degrees
+VIEW = [float(v) for v in argv[argv.index("--view") + 1:argv.index("--view") + 5]] if "--view" in argv else None
 WALL_H = 0.14            # wall height (14 map px)
 BEVEL = 0.009
 
@@ -40,7 +44,7 @@ scene.cycles.caustics_refractive = True
 scene.cycles.blur_glossy = 1.0
 scene.render.resolution_x = 1920
 scene.render.resolution_y = 1080
-scene.render.resolution_percentage = 50 if TEST else 100
+scene.render.resolution_percentage = 100
 scene.render.image_settings.file_format = "PNG"
 scene.render.image_settings.color_depth = "16"
 scene.view_settings.view_transform = "AgX"
@@ -230,6 +234,62 @@ P = vt[-1].reshape(3, 4)
 P /= P[2, 3]
 json.dump(dict(P=P.tolist(), lens=cam_d.lens), open(os.path.join(DATA, "camera.json"), "w"))
 print("lens", cam_d.lens)
+
+# ---------------------------------------------------------------- optional: real sand, as spheres
+if VIEW:
+    vx, vy, zoom, vtilt = VIEW
+    tgt = px2w(vx, vy)
+    d = dist / zoom
+    t = math.radians(vtilt)
+    cam.location = tgt + Vector((0, -math.sin(t) * d, math.cos(t) * d))
+    cam.rotation_euler = (tgt - cam.location).to_track_quat("-Z", "Y").to_euler()
+    cam_d.dof.use_dof = True
+    cam_d.dof.focus_distance = d
+    cam_d.dof.aperture_fstop = 0.9
+    bpy.context.view_layer.update()
+if SAND:
+    z = np.load(SAND)
+    n = len(z["x"])
+    me = bpy.data.meshes.new("sand")
+    co = np.stack([z["x"] / 100.0 - 9.6, 5.4 - z["y"] / 100.0, z["z"] / 100.0], 1).astype(np.float32)
+    me.vertices.add(n)
+    me.vertices.foreach_set("co", co.ravel())
+    ca = me.attributes.new("col", "FLOAT_COLOR", "POINT")
+    ca.data.foreach_set("color", np.concatenate([z["c"], np.ones((n, 1), np.float32)], 1).ravel())
+    ra = me.attributes.new("rad", "FLOAT", "POINT")
+    ra.data.foreach_set("value", (z["r"] / 100.0).astype(np.float32))
+    ob = bpy.data.objects.new("sand", me)
+    scene.collection.objects.link(ob)
+    sm = bpy.data.materials.new("Sand")
+    sm.use_nodes = True
+    sb = sm.node_tree.nodes["Principled BSDF"]
+    at = sm.node_tree.nodes.new("ShaderNodeAttribute")
+    at.attribute_name = "col"
+    sm.node_tree.links.new(at.outputs["Color"], sb.inputs["Base Color"])
+    sb.inputs["Roughness"].default_value = 0.5
+    sb.inputs["Specular IOR Level"].default_value = 0.45
+    sb.inputs["Subsurface Weight"].default_value = 0.08
+    sb.inputs["Coat Weight"].default_value = 0.15
+    ng = bpy.data.node_groups.new("ToPoints", "GeometryNodeTree")
+    ng.interface.new_socket("Geometry", in_out="INPUT", socket_type="NodeSocketGeometry")
+    ng.interface.new_socket("Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry")
+    gi, go = ng.nodes.new("NodeGroupInput"), ng.nodes.new("NodeGroupOutput")
+    m2p = ng.nodes.new("GeometryNodeMeshToPoints")
+    rad = ng.nodes.new("GeometryNodeInputNamedAttribute")
+    rad.data_type = "FLOAT"
+    rad.inputs["Name"].default_value = "rad"
+    setm = ng.nodes.new("GeometryNodeSetMaterial")
+    setm.inputs["Material"].default_value = sm
+    ng.links.new(gi.outputs[0], m2p.inputs["Mesh"])
+    ng.links.new(rad.outputs["Attribute"], m2p.inputs["Radius"])
+    ng.links.new(m2p.outputs["Points"], setm.inputs["Geometry"])
+    ng.links.new(setm.outputs["Geometry"], go.inputs[0])
+    mod = ob.modifiers.new("pts", "NODES")
+    mod.node_group = ng
+    scene.render.filepath = OUTP
+    bpy.ops.render.render(write_still=True)
+    print("done")
+    raise SystemExit
 
 # ---------------------------------------------------------------- render both plates
 suffix = "_test" if TEST else ""

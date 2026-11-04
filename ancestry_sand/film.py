@@ -5,7 +5,7 @@ Blender-rendered glass world (blender_scene.py plates), with wind-blown sand fly
     python film.py video --workers 4       # the film -> out/grains_of_ancestry_glass.mp4
 
 Per frame: the sand surface is shaded in map space at 2x (pile lighting from the height field, ambient
-occlusion, cast shadows, grain texture, glints), projected into the camera with the plane homography,
+occlusion, cast shadows, grain texture), projected into the camera with the plane homography,
 then laid under the glass (the plates' ratio = glass tint, difference = glass highlights). Flying
 grains follow 3D arcs with turbulence, projected with the full camera matrix, and cast shadows.
 """
@@ -124,7 +124,8 @@ class Painter:
         self.covpile8 = np.clip(np.maximum(self.cov, 0.85) * 255, 0, 255).astype(np.uint8)
         rng = np.random.default_rng(9)
         self.cell_tint = (0.86 + 0.24 * rng.random((HC, WC))).astype(np.float32)
-        self.glint_ph = rng.random(HC * WC).astype(np.float32)
+        self.disp, self.disp_t = None, None
+        self.prev_h = np.zeros((HC, WC), np.int16)
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
         self.illum = (0.80 + 0.32 * (1 - (xx / W) * 0.55 - (yy / H) * 0.45))[..., None]   # key light upper left
         r2 = ((xx / W - 0.5) / 0.78) ** 2 + ((yy / H - 0.5) / 0.8) ** 2
@@ -209,11 +210,27 @@ class Painter:
             img[y0:y1, x0:x1] *= (1 - a)
 
     # ---- the sand surface
+    def update_disp(self, sim):
+        """Per-cell displayed colour, eased toward the current top grain (call every frame)."""
+        if self.disp_t == sim.s:
+            return
+        top = sim.top_colors().reshape(HC, WC)
+        target = COL[np.maximum(top, 0)] * self.cell_tint[..., None]
+        if self.disp is None:
+            self.disp = target.astype(np.float32)
+        else:
+            new = (self.prev_h == 0) & (top >= 0)              # freshly covered cells take their colour at once
+            self.disp += (target - self.disp) * 0.18
+            self.disp[new] = target[new]
+        self.prev_h = sim.h.reshape(HC, WC).copy()
+        self.disp_t = sim.s
+
     def sand_layer(self, sim, s):
         hgt = sim.h.reshape(HC, WC).astype(np.float32)
         top = sim.top_colors().reshape(HC, WC)
         occ = hgt > 0
         alb = COL[np.maximum(top, 0)] * self.cell_tint[..., None]
+        self.update_disp(sim)
         # lighting from the pile surface (cell resolution, then smooth upsampling)
         hs = cv2.GaussianBlur(hgt, (0, 0), 0.8)
         gx = cv2.Sobel(hs, cv2.CV_32F, 1, 0, ksize=3) / 8
@@ -230,11 +247,9 @@ class Painter:
             shadow = np.minimum(shadow, np.where(sh - 0.55 * j > hs + 0.4, 0.72, 1.0))
         shadow = cv2.GaussianBlur(shadow, (0, 0), 0.8)
         light = (0.38 + 0.82 * lam) * ao * shadow
-        # glints, and a brief brightening where grains just moved
-        fresh = np.exp(-(s - sim.tchg) / 0.35).reshape(HC, WC).astype(np.float32) * 0.22
-        ph = self.glint_ph.reshape(HC, WC)
-        glint = (np.sin(s * 3.1 + ph * 60.0) > 0.985).astype(np.float32) * occ * 0.9
-        cell_rgb = alb * (light + fresh)[..., None] + glint[..., None]
+        # colours ease toward the top grain's colour, so stirring and drift fade in instead of flickering
+        alb = self.disp if self.disp is not None else alb
+        cell_rgb = alb * light[..., None]
         # the closing ripple of light from East Africa
         tw0 = S.TODAY_S + 9.4
         if tw0 <= s <= tw0 + 6.5:
@@ -269,8 +284,9 @@ class Painter:
             idx = np.where(act)[0]
             for back, alpha_k, width_k in ((0.0, 1.0, 1.0), (0.05, 0.5, 0.6), (0.1, 0.25, 0.45)):
                 uu = np.clip(u[idx] - back, 0, 1)
-                x, y, z, ok = self.flight_pos(p, idx, uu)
-                xp, yp, zp, okp = self.flight_pos(p, idx, np.clip(uu - 0.6 / FPS / p["dur"][idx], 0, 1))
+                x, y, z, ok, pc = self.flight_pos(p, idx, uu)
+                xp, yp, zp, okp, pcp = self.flight_pos(p, idx, np.clip(uu - 0.6 / FPS / p["dur"][idx], 0, 1))
+                okp = okp & (pcp == pc)            # never streak across the map edge
                 sx, sy = project(x, y, z)
                 px_, py_ = project(xp, yp, zp)
                 if back == 0.0:
@@ -323,7 +339,7 @@ class Painter:
         apex = np.clip(0.13 * L, 22, 115)
         z = apex * np.sin(np.pi * u) * (0.85 + 0.3 * p["amp"][idx]) + 4 * env * np.sin(u * 11 + ph[:, 2]) + 1.5
         ok = (piece == piece2) & (xy[:, 0] > -20) & (xy[:, 0] < W + 20)
-        return xy[:, 0], xy[:, 1], np.maximum(z, 0), ok
+        return xy[:, 0], xy[:, 1], np.maximum(z, 0), ok, piece
 
     # ---- frame
     def frame(self, sim, s):
@@ -442,6 +458,8 @@ def cmd_still(args):
     for f in range(int(round(S.DURATION * FPS)) + 1):
         s = f / FPS
         sim.step(s)
+        if want and s > want[k] - 2.5:
+            painter.update_disp(sim)
         while k < len(want) and want[k] <= s + 1e-9:
             t0 = time.time()
             im = painter.frame(sim, s)
@@ -463,6 +481,8 @@ def render_chunk(job):
     for f in range(f1):
         s = f / FPS
         sim.step(s)
+        if f >= f0 - 60:
+            painter.update_disp(sim)
         if f >= f0:
             ff.stdin.write(painter.frame(sim, s).tobytes())
             if (f - f0) % 300 == 0:

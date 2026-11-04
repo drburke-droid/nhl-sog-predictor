@@ -71,7 +71,7 @@ def build_grid():
             cv2.fillPoly(m, holes, 0, cv2.LINE_AA, shift=4)
         dist = cv2.distanceTransform((m > 127).astype(np.uint8), cv2.DIST_L2, 5) / 2.0
         d = dist[np.clip((cy * 2).astype(int), 0, H * 2 - 1)][:, np.clip((cx * 2).astype(int), 0, W * 2 - 1)]
-        ok = (d >= 3.4).ravel() & (vid < 0)
+        ok = (d >= 2.9).ravel() & (vid < 0)
         vid[ok] = VI[v]
         meta[v] = dict(anchor=np.array(g["anchor"], float), bbox=g["bbox"], geo=g["geo"],
                        inset=bool(S.VESSELS[v].get("inset")))
@@ -367,7 +367,7 @@ class Sand:
                     if lst:
                         cells[j] = VCELLS[v][lst[int(self.rng.integers(len(lst)))]]
             self.add(cells, cols.astype(np.int8))
-        elif N > T + 1 and len(occ):
+        elif N > T + 0.5 and len(occ):
             k = int(min(N - T, max(12, 0.05 * N)))
             if self.extinct[v] is not None:
                 self.pop(self.rng.choice(occ, size=k))
@@ -436,8 +436,8 @@ class Sand:
                 self.fixed_fill[dst] = None
             else:
                 self.P[dst] = P
-                self.extinct[dst] = None
                 self.fixed_fill[dst] = None
+            self.extinct[dst] = None          # newcomers end any extinction still under way here
             self.growth[dst] = dict(n0=e["n"], t0=None, landed=0)
             e["cols"] = cols
             e["landed"] = 0
@@ -544,10 +544,11 @@ class Sand:
                     self.P[v, tgt] += m
                 e["done"] = self.s >= e["s1"]
             elif k == "extinct":
-                if self.s >= e["s1"] + 1.0 and self.counts[VI[e["jar"]]].sum() == 0:
-                    v = VI[e["jar"]]
+                v = VI[e["jar"]]
+                if self.extinct[v] is None:                 # cleared by newcomers
+                    e["done"] = True
+                elif self.s >= e["s1"] + 1.0 and self.counts[v].sum() == 0:
                     self.extinct[v] = None
-                    self.growth[v] = None
                     e["done"] = True
 
     def step(self, s_new):
