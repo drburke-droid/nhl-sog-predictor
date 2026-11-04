@@ -27,6 +27,7 @@ import score as SG                                            # noqa: E402  (mar
 
 TEAM = ("NBA", "NHL", "MLB", "NFL")
 CLEAR_STEPS = SG.CLEAR_STEPS
+AGREE = 12            # the film keeps the seasons in the top ten of at least three-quarters of the 16 versions
 SEASON_FMT = {"NBA": True, "NHL": True}                       # seasons that span two years are shown as 1985-86
 
 
@@ -151,7 +152,15 @@ def main():
            "differently (all listed at the end).", "",
          "Curve, step and *best other* are in the athlete's own season's units (*best other* is the best season by "
          "anyone else on the same graph, converted to that season's league rate).", "",
-         "## The list", "",
+         f"## The film's five: in the top ten in at least {AGREE} of the 16 versions", "",
+         "Every season below was considered; these are the ones the versions agree on (three-quarters or more), in "
+         "score order. "
+         + f"{sum(ens.get((r['name'], r['sport']), 0) == 16 for r in top)} of them are in the top ten of all 16.", "",
+         "| # | Season | Score | In top 10 of 16 versions |", "|---|---|---|---|"]
+    for i, r in enumerate([r for r in top if ens.get((r["name"], r["sport"]), 0) >= AGREE], 1):
+        L.append(f"| {i} | {r['name']}, {r['title'].lower()}, {season(r['sport'], r['year'])} ({r['raw']}) | "
+                 f"{r['z']:.2f} | {ens.get((r['name'], r['sport']), 0)} |")
+    L += ["", "## The list", "",
          "| # | Season | Sport | Value | Curve | Step | Score | Published score | Clear by | Best other on the graph | "
          "In top 10 of 16 versions |", "|---|---|---|---|---|---|---|---|---|---|---|"]
     for i, r in enumerate(top[:12], 1):

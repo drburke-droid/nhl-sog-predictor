@@ -6,6 +6,18 @@ Reproduction: 1638 of 1906 scores match the published model to 0.005 (NBA 269 of
 
 Curve, step and *best other* are in the athlete's own season's units (*best other* is the best season by anyone else on the same graph, converted to that season's league rate).
 
+## The film's five: in the top ten in at least 12 of the 16 versions
+
+Every season below was considered; these are the ones the versions agree on (three-quarters or more), in score order. 3 of them are in the top ten of all 16.
+
+| # | Season | Score | In top 10 of 16 versions |
+|---|---|---|---|
+| 1 | Wilt Chamberlain, points per game, 1961-62 (50.4) | 7.05 | 16 |
+| 2 | Joe DiMaggio, hitting streak, 1941 (56.0) | 7.01 | 16 |
+| 3 | Wayne Gretzky, assists in a season, 1985-86 (163.0) | 6.46 | 16 |
+| 4 | Dennis Rodman, rebounds per game, 1992-93 (18.3) | 5.68 | 13 |
+| 5 | Ichiro Suzuki, hits in a season, 2004 (262.0) | 5.27 | 15 |
+
 ## The list
 
 | # | Season | Sport | Value | Curve | Step | Score | Published score | Clear by | Best other on the graph | In top 10 of 16 versions |
