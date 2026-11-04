@@ -21,6 +21,15 @@ FAMOUS = [  # (category, season, name fragment, what it is)
     ("sg_mlb_so", 1938, "Feller", "Feller's 18 K"), ("sg_nfl_rush_yds", 2007, "Peterson", "Adrian Peterson's 296, the record"),
     ("sg_nfl_rec_yds", 2013, "Johnson", "Calvin Johnson's 329"), ("sg_nfl_pass_yds", 2021, "Burrow", "Burrow's 525"),
     ("sg_nfl_pass_td", 2013, "Manning", "Peyton Manning's 7 TD passes"), ("sg_nfl_sacks", 2007, "Umenyiora", "Umenyiora's 6 sacks"),
+    # before 1999, from the Pro Football Archives box scores
+    ("sg_nfl_pass_yds", 1951, "Van Brocklin", "Van Brocklin's 554, the record"),
+    ("sg_nfl_pass_yds", 1990, "Moon", "Warren Moon's 527"), ("sg_nfl_pass_yds", 1996, "Esiason", "Esiason's 522 (overtime)"),
+    ("sg_nfl_rec_yds", 1989, "Anderson", "Flipper Anderson's 336 (overtime), the record"),
+    ("sg_nfl_rec_yds", 1985, "Paige", "Stephone Paige's 309"), ("sg_nfl_rec_yds", 1950, "Box", "Cloyce Box's 302"),
+    ("sg_nfl_rush_yds", 1977, "Payton", "Walter Payton's 275"), ("sg_nfl_rush_yds", 1976, "Simpson", "O.J. Simpson's 273"),
+    ("sg_nfl_sacks", 1990, "Thomas", "Derrick Thomas's 7 sacks, the record"),
+    ("sg_nfl_pass_td", 1954, "Burk", "Adrian Burk's 7 TD passes"), ("sg_nfl_pass_td", 1961, "Blanda", "Blanda's 7 TD passes (AFL)"),
+    ("sg_nfl_pass_td", 1962, "Tittle", "Y.A. Tittle's 7 TD passes"), ("sg_nfl_pass_td", 1969, "Kapp", "Joe Kapp's 7 TD passes"),
 ]
 
 

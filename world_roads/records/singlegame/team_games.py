@@ -16,6 +16,7 @@ short seasons. Output keeps the raw value (what happened) next to the adjusted o
     python team_games.py league                   # league per-team-game rates the data can give (NHL, NFL, MLB)
     python team_games.py check                    # record games, with their length factors
     python team_games.py nflold [offline]         # NFL 1932-98 + AFL from Pro Football Archives (offline: cached pages only)
+    python team_games.py pfateams                 # the season film's PFA team pages (-> ../cache/pfa, for its NFL rates)
 """
 import csv, glob, io, json, os, sys
 from collections import defaultdict
@@ -539,6 +540,18 @@ def league():
     print("league rates written to", CTX)
 
 
+def pfateams():
+    """the Pro Football Archives season and team pages the season film's NFL league rates were summed from (NFL 1932-98,
+    AFL 1960-69), into ../cache/pfa where followup/build/parse_context.py nfl reads them; cached, polite, resumable"""
+    import re
+    for y, lg in [(y, "nfl") for y in range(1932, 1999)] + [(y, "afl") for y in range(1960, 1970)]:
+        p = pfa_get(f"{PFA}/{y}{lg}.html", os.path.join(REC, "cache", "pfa", f"{y}{lg}.html"))
+        txt = open(p, encoding="utf-8", errors="replace").read() if p else ""
+        teams = sorted({f for f, t in re.findall(rf'href="/?({y}{lg}([a-z]+)\.html)"', txt) if t not in ("draft", "awards")})
+        miss = [f for f in teams if not pfa_get(f"{PFA}/{f}", os.path.join(REC, "cache", "pfa", f))]
+        print(f"  PFA {y} {lg} {len(teams)} team pages {'missing ' + ' '.join(miss) if miss else ''}", flush=True)
+
+
 CHECKS = [("sg_nba_pts", 1962, "Chamberlain", 100), ("sg_nba_pts", 2006, "Bryant", 81), ("sg_nba_ast", 1991, "Skiles", 30),
           ("sg_nhl_goals", 1920, "Malone", 7), ("sg_nhl_points", 1976, "Sittler", 10), ("sg_mlb_h", 1932, "Burnett", 9),
           ("sg_mlb_h", 1975, "Stennett", 7), ("sg_mlb_hr", 1932, "Gehrig", 4), ("sg_mlb_so", 1998, "Wood", 20),
@@ -558,4 +571,4 @@ if __name__ == "__main__":
         nflold(offline=True)
     else:
         {"mlb": mlb, "nba": nba, "nhl": nhl, "nfl": nfl, "nflold": nflold, "merge": merge, "league": league,
-         "check": check}[sys.argv[1]]()
+         "check": check, "pfateams": pfateams}[sys.argv[1]]()
