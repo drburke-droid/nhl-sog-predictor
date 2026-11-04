@@ -89,7 +89,11 @@ def project_polys(polys, spec):
         c0 = (allp.min(0) + allp.max(0)) / 2
         c1 = np.array(to_px(clon, clat), float)
         rings_px = [((e - c0) * k + c1, [(h - c0) * k + c1 for h in hs]) for e, hs in rings_px]
+        INSET_XF[spec["label"]] = (c0, c1, k)
     return rings_px
+
+
+INSET_XF = {}       # label -> (centre of the real island, centre of the inset, magnification), px
 
 
 def raster(rings_px, ss):
@@ -177,7 +181,7 @@ def lattice(mask_ss, anchor_x):
 
 
 def build(specs):
-    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v7-frame").encode()).hexdigest()
+    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v8-xf").encode()).hexdigest()
     cache = os.path.join(DATA, "vessels_cache.pkl")
     if os.path.exists(cache):
         with open(cache, "rb") as f:
@@ -215,6 +219,8 @@ def build(specs):
             tp = np.vstack([e for e, _ in extra["true_rings"]])
             geo = None
             extra["true_center"] = tuple(float(v) for v in (tp.min(0) + tp.max(0)) / 2)
+        if spec.get("inset"):
+            extra["inset_xf"] = INSET_XF[spec["label"]]
         out[vid] = dict(**extra,rings=rings, sprite=spr.astype(np.float16), sprite_off=off, slots=pts, up=up, nb=nb,
                         anchor=anchor, geo=tuple(float(v) for v in to_px(*geo)) if geo else None,
                         bbox=(float(pts[:, 0].min()), float(pts[:, 1].min()), float(pts[:, 0].max()), float(pts[:, 1].max())))

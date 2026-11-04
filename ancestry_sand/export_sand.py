@@ -30,7 +30,7 @@ def export(sim, s, path):
     jit = np.random.default_rng(7).normal(0, 0.55, (Sd.NCELL * Sd.HMAX + 1, 2))[cell * Sd.HMAX + lev]
     xy = Sd.CELL_XY[cell] + jit
     rad = 1.35 + 0.35 * np.random.default_rng(8).random(Sd.NCELL * Sd.HMAX)[cell * Sd.HMAX + lev]
-    z = rad + lev * 1.9
+    z = rad + lev * (0.55 if Sd.TOWERS else 1.9)
     tint = (0.86 + 0.24 * np.random.default_rng(9).random(Sd.NCELL))[cell]
     rgb = srgb_to_linear(np.clip(COL[col] * tint[:, None], 0, 1))
     # flying grains, with three trailing points each

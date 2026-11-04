@@ -20,7 +20,9 @@ import vessels as V
 CELL = 3
 WC, HC = W // CELL, H // CELL
 NCELL = WC * HC
-HMAX = 96
+import os as _os
+TOWERS = bool(_os.environ.get("SAND_TOWERS"))     # experiment: uncapped density, sand piles up in towers
+HMAX = 600 if TOWERS else 96
 HFULL = 4.0                 # mean grains per cell when a vessel is "full"
 K = len(S.KEYS)
 KI = {k: i for i, k in enumerate(S.KEYS)}
@@ -92,7 +94,8 @@ def build_grid():
         vid[ok] = VI[v]
         meta[v] = dict(anchor=np.array(g["anchor"], float), bbox=g["bbox"], geo=g["geo"],
                        inset=bool(S.VESSELS[v].get("inset")), frame=g.get("frame"),
-                       mag=S.VESSELS[v]["inset"][0] if S.VESSELS[v].get("inset") else None)
+                       mag=S.VESSELS[v]["inset"][0] if S.VESSELS[v].get("inset") else None,
+                       inset_xf=g.get("inset_xf"))
     nb = np.full((4, NCELL), -1, np.int64)
     idx = np.arange(NCELL).reshape(HC, WC)
     for d, (dy, dx) in enumerate(((0, 1), (0, -1), (1, 0), (-1, 0))):
@@ -134,7 +137,7 @@ def build_density():
     np.add.at(g, (iy, ix), pop)
     parts = [(1.2, 0.45), (5.0, 0.35), (16.0, 0.20)]            # (sigma in cells, weight)
     d = sum(w * cv2.GaussianBlur(g, (0, 0), sg) / max(cv2.GaussianBlur(g, (0, 0), sg).sum(), 1) for sg, w in parts)
-    d = d.ravel() ** 0.7
+    d = d.ravel() ** (1.0 if TOWERS else 0.7)
     out = np.ones(NCELL, np.float32)
     for i, v in enumerate(ORDER):
         c = VCELLS[i]
@@ -142,16 +145,44 @@ def build_density():
             continue
         dv = d[c]
         dv = dv / max(dv.mean(), 1e-12)
-        dv = np.clip(dv, 0.02, 6.0)                        # cap: the densest places hold at most 6x the mean
+        dv = np.clip(dv, 0.02, 400.0 if TOWERS else 6.0)   # cap: the densest places hold at most 6x the mean
         out[c] = dv / dv.mean()
     return out
 
 
 DENS = build_density()
+
+
+def build_affinity():
+    """Log-weight of each ancestry component at each cell (S.ANCESTRY_GEO): where within its vessel a
+    component's grains tend to sit."""
+    from proj import to_px
+    LA = np.zeros((NCELL, K), np.float32)
+    for v, spots in S.ANCESTRY_GEO.items():
+        i = VI[v]
+        c = VCELLS[i]
+        if not len(c):
+            continue
+        xy = CELL_XY[c]
+        xf = META[v]["inset_xf"]
+        for comps, lon, lat, sig, st in spots:
+            ax, ay = to_px(lon, lat)
+            p = np.array([float(ax), float(ay)])
+            sp = sig * 5.6
+            if xf is not None:                          # spot inside a magnified inset
+                c0, c1, k = xf
+                p = (p - np.asarray(c0)) * k + np.asarray(c1)
+                sp *= k
+            g = np.exp(-((xy[:, 0] - p[0]) ** 2 + (xy[:, 1] - p[1]) ** 2) / (2 * sp * sp))
+            for comp in comps.split():
+                LA[c, KI[comp]] += st * g
+    return LA
+
 GMAX = HFULL * NCELLS_V.sum()
 CELL_XY = np.stack([(np.arange(NCELL) % WC + 0.5) * CELL, (np.arange(NCELL) // WC + 0.5) * CELL], 1)
 from scipy.spatial import cKDTree
 VTREE = [cKDTree(CELL_XY[c]) for c in VCELLS]
+LA = build_affinity()
 
 
 # ============================================================== flight paths (map px)
@@ -452,7 +483,7 @@ class Sand:
                 sel = np.where(cols == c)[0]
                 same = room[tops == c]
                 pool = same if len(same) and self.rng.random() < 0.8 else room
-                pw = self.Ht[pool] + 0.05
+                pw = (self.Ht[pool] + 0.05) * np.exp(LA[pool, c])
                 cells[sel] = self.rng.choice(pool, size=len(sel), p=pw / pw.sum())
             # some grains hop to a nearby spot: sand crosses small gaps (island chains) and fills out
             hop = np.where(self.rng.random(k) < (0.7 if crowded else 0.12))[0]
@@ -497,6 +528,20 @@ class Sand:
                     self.recolor_sample(v, hi, lo, n)
                 budget -= n
                 d = self.counts[v] - P * int(self.counts[v].sum())
+        # sorting: random pairs of cells swap their top grains when each grain is more at home in the
+        # other cell (within-region ancestry geography); totals are unchanged
+        occ = self.occupied(v)
+        if ORDER[v] in S.ANCESTRY_GEO and len(occ) > 8:
+            m = min(len(occ) // 2 * 2, max(16, int(len(occ) * 0.04)) // 2 * 2)
+            pick = self.rng.choice(occ, size=m, replace=False)
+            a, b = pick[: m // 2], pick[m // 2:]
+            ca = self.stack[a, self.h[a] - 1].astype(np.int64)
+            cb = self.stack[b, self.h[b] - 1].astype(np.int64)
+            gain = LA[b, ca] + LA[a, cb] - LA[a, ca] - LA[b, cb]
+            sw = (gain > 0.02) & (ca != cb)
+            a, b = a[sw], b[sw]
+            self.stack[a, self.h[a] - 1] = cb[sw]
+            self.stack[b, self.h[b] - 1] = ca[sw]
         # stirring: a top grain swaps with one deeper in its pile, or with a neighbour's top
         occ = self.occupied(v)
         if len(occ) > 4:

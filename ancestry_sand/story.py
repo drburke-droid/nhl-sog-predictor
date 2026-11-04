@@ -119,6 +119,62 @@ POP = {
 }
 MIN_VISIBLE = 0.35      # magnified island peoples (Andamanese, Sardinians...) keep at least this many grains per cell
 
+# ---------------------------------------------------------------- where each ancestry lives within a vessel
+# (components, lon, lat, sigma in degrees, strength): grains of these components are drawn toward the
+# spot (strength is a log-weight: 1.0 = about 2.7x more likely at the centre). Grains are only moved
+# around inside a vessel, so each vessel's totals are unchanged. From: Bryc et al. 2015 (US),
+# Moreno-Estrada et al. 2014 (Mexico), Kehdy et al. 2015 and Pena et al. 2011 (Brazil), Ruiz-Linares
+# et al. 2014 (Latin America), Schlebusch et al. 2012 and Chimusa et al. 2015 (southern Africa),
+# Pickrell et al. 2014 (Ethiopia), Narasimhan et al. 2019 (South Asia), Jeong et al. 2019 (Eurasian
+# clines), Lipson et al. 2014 (Indonesia), Pierron et al. 2014 (Madagascar), census data for cities.
+EU = "ANF IRN WHG ANE"
+ANCESTRY_GEO = {
+    "NAM": [("WAF", -86, 33, 7, 1.6), ("WAF", -76.5, 39, 3, 0.8), ("WAF", -90.5, 30.5, 3, 0.8),
+            ("NAT", -108, 35, 6, 1.4), ("NAT", -99, 29, 5, 1.0), ("NAT", -118, 34, 3, 0.8),
+            ("NAT", -150, 64, 8, 1.6), ("NAT", -100, 62, 12, 1.5), ("NAT", -97, 35.5, 3, 0.8),
+            ("EAS", -122.3, 37.7, 3, 1.6), ("EAS", -118.2, 34, 2.5, 1.0), ("EAS", -123.1, 49.3, 2.5, 1.5),
+            ("EAS", -74, 40.7, 2, 0.8), ("EAS", -79.4, 43.7, 2, 1.0),
+            ("AAS", -74.2, 40.6, 2, 1.2), ("AAS", -79.6, 43.6, 2, 1.6), ("AAS", -122, 37.4, 2, 1.0),
+            ("WHG ANE", -94, 46, 8, 0.4)],
+    "MES": [("NAT", -94, 17, 4, 1.4), ("NAT", -89, 20, 2.5, 1.0), ("NAT", -91, 15, 2.5, 1.2),
+            (EU, -106, 28, 6, 0.9), (EU, -84, 10, 2, 0.8),
+            ("WAF", -96, 19, 2, 1.2), ("WAF", -87, 16, 2.5, 1.4), ("WAF", -79.5, 9, 1.5, 1.4)],
+    "AMZ": [("WAF", -40, -12, 5, 1.6), ("WAF", -44, -3, 3, 0.8), ("WAF", -75.5, 9, 2.5, 1.3),
+            ("WAF", -67, 10.5, 2.5, 0.8), ("WAF", -56, 5, 2, 1.2),
+            (EU, -51, -27, 5, 1.3), (EU, -46.6, -23.5, 2.5, 0.7),
+            ("NAT", -62, -3, 9, 1.4), ("NAT", -74, 4.5, 3, 0.6)],
+    "SCN": [("NAT", -58, -23, 5, 1.3), ("NAT", -71, -38, 5, 1.0), ("NAT", -65, -24, 4, 1.0),
+            (EU, -58.4, -34.6, 4, 1.0)],
+    "ADS": [(EU, -77, -12, 2.5, 1.0), (EU, -79.9, -2.2, 2.5, 0.8), ("WAF", -79.5, 0.5, 2, 1.5),
+            ("WAF", -76.5, -13, 2, 0.8), ("NAT", -70, -15, 5, 1.0)],
+    "CAR": [("WAF", -72.5, 19, 1.5, 1.4), ("WAF", -77.3, 18.1, 1.0, 1.5), (EU, -80, 22.5, 2.5, 1.0),
+            (EU, -66.5, 18.2, 1.0, 0.7), ("NAT", -66.5, 18.2, 1.0, 1.0)],
+    "KHS": [("KHS", 20, -22, 4.5, 1.6), ("KHS", 19.5, -32, 3, 1.2), (EU, 18.5, -33.9, 2, 1.4),
+            (EU, 28, -26, 2, 1.0), ("AAS", 31, -29.8, 1.5, 1.5)],
+    "EAF": [("ANF IRN", 39, 11, 5, 1.2), ("ANF IRN", 45, 7, 5, 0.8), ("ANF IRN", 33, 17, 5, 1.0),
+            ("WAF", 33, -5, 7, 1.3), ("WAF", 29.5, -2, 2, 1.0)],
+    "NAF": [("WAF", -10, 18, 6, 1.4), ("WAF", 32, 23, 3, 0.8), ("WAF", 5, 25, 7, 0.6), ("IRN", 31, 29, 5, 0.6)],
+    "CAH": [("CAH", 16, 1, 5, 1.5), ("CAH", 28, 1, 3, 1.0)],
+    "SAS": [("IRN ANE WHG ANF", 72, 30, 6, 1.0), ("AAS", 79, 13, 6, 0.9), ("AAS", 83, 21, 4, 0.8),
+            ("EAS", 92, 25, 3.5, 1.8), ("EAS", 85, 28, 3, 1.2)],
+    "STP": [("EAS", 75, 46, 8, 1.4), ("EAS", 46, 46, 3, 0.6), ("ANF WHG", 31, 49, 6, 0.6)],
+    "SIB": [("EAS", 130, 63, 12, 1.3), ("EAS", 108, 52, 5, 1.2), ("EAS", 94, 51.5, 3, 1.2),
+            ("EAS", 170, 65, 10, 1.0), ("ANF IRN WHG", 83, 55, 9, 0.6)],
+    "EUR": [("WHG ANE", 25, 60, 9, 0.8), ("ANF", 13, 41, 7, 0.9), ("ANF", -4, 40, 5, 0.6), ("IRN", 22, 40, 5, 0.9),
+            ("WAF", 2.35, 48.85, 2, 1.4), ("WAF", -0.1, 51.5, 2, 1.2), ("AAS", -1.9, 52.5, 2, 1.4),
+            ("EAS", -0.1, 51.5, 2, 0.6)],
+    "LEV": [("EAS", 35, 39, 5, 1.0), ("IRN", 45, 32, 5, 0.8), ("ANF", 35.5, 33, 3, 0.5), ("WAF EAF", 44, 15, 4, 1.0)],
+    "IRN": [("EAS", 66, 34, 4, 1.3), ("ANF", 43, 42, 3, 0.6)],
+    "AUS": [("AUS", 133, -20, 8, 1.6), ("AUS", 130.8, -12.5, 3, 1.2), ("EAS", 151.2, -33.9, 1.5, 1.2),
+            ("EAS", 145, -37.8, 1.5, 1.0), ("AAS", 145, -37.8, 1.5, 0.8)],
+    "ISE": [("AUS", 125, -8, 5, 1.6), ("AUS", 129, -3, 4, 1.4), ("DEN", 123, -8, 5, 1.0)],
+    "PNG": [("EAS", 151, -5, 4, 1.4), ("EAS", 146, -6, 2, 0.6)],
+    "MDG": [("EAS AUS", 47.5, -19, 2.5, 1.2), ("WAF", 44, -22, 3, 1.0)],
+    "NZL": [("EAS AUS", 175.5, -38, 2.5, 1.4)],
+    "GRL": [(EU, -51.7, 64.2, 2, 1.5)],
+    "SEA": [("AAS", 101, 6, 3, 0.8), ("AAS IRN", 104.9, 11.6, 2, 0.5)],
+}
+
 # ---------------------------------------------------------------- routes (lon, lat waypoints)
 # longitudes beyond 180 continue eastwards across the Pacific (the map wraps at the Bering Strait)
 ATL_N = [(-25, 47), (-60, 44)]
