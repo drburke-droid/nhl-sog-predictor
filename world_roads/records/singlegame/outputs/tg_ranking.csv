@@ -1,0 +1,13 @@
+rank,athlete,sport,category,title,season,raw,length,adjusted,z,curve,step,margin_over_best_other,best_other,date,detail,one_sided_window,specs_in_top10
+1,Wilt Chamberlain,NBA,sg_nba_pts,Points in a game,1962,100.0,regulation,100.0,8.944,50.174,5.515,5.228,Elgin Baylor 71.0 (1961; 71.17 in this season's terms),1962-03-02,Warriors vs Knicks,False,16
+2,Kobe Bryant,NBA,sg_nba_pts,Points in a game,2006,81.0,regulation,81.0,6.744,50.878,4.392,2.569,David Robinson 71.0 (1994; 69.72 in this season's terms),2006-01-22,Lakers vs Raptors,False,16
+3,Jim Bottomley,MLB,sg_mlb_rbi,"Runs batted in, one game",1924,12.0,9.0 innings batted,12.0,5.853,6.717,0.817,1.884,Tony Lazzeri 11.0 (1936; 10.46 in this season's terms),1924-09-16,BRO192409160,False,14
+4,Bob Cousy,NBA,sg_nba_ast,Assists in a game,1959,28.0,regulation,28.0,4.963,14.527,2.614,1.024,Guy Rodgers 28.0 (1963; 25.32 in this season's terms),1959-02-27,Celtics vs Lakers,True,4
+5,Mark Whiten,MLB,sg_mlb_rbi,"Runs batted in, one game",1993,12.0,9.0 innings batted,12.0,4.908,7.322,0.851,2.419,Alex Rodriguez 10.0 (2005; 9.94 in this season's terms),1993-09-07,CIN199309072,False,16
+6,Darryl Sittler,NHL,sg_nhl_points,Points in a game,1976,10.0,regulation,10.0,4.742,6.09,0.719,2.55,Tom Bladon 8.0 (1978; 8.17 in this season's terms),1976:1975020479,1975020479,False,14
+7,Bert Olmstead,NHL,sg_nhl_points,Points in a game,1954,8.0,regulation,8.0,4.489,4.584,0.65,1.875,Maurice Richard 8.0 (1945; 6.78 in this season's terms),1954:1953020117,1953020117,False,6
+8,John Roche,NBA,sg_nba_3pm,Three-pointers in a game,1982,8.0,regulation,8.0,4.314,4.274,0.748,1.052,Rick Barry 8.0 (1980; 7.21 in this season's terms),1982-01-09,Nuggets vs SuperSonics,True,4
+9,Sam Gagner,NHL,sg_nhl_points,Points in a game,2012,8.0,regulation,8.0,4.037,5.097,0.595,1.632,Jaromir Jagr 7.0 (2003; 7.03 in this season's terms),2012:2011020759,2011020759,False,15
+10,Billy Taylor,NHL,sg_nhl_assists,Assists in a game,1947,7.0,regulation,7.0,3.883,3.907,0.668,2.113,Syl Apps 5.0 (1937; 5.59 in this season's terms),1947:1946020172,1946020172,False,6
+11,Rennie Stennett,MLB,sg_mlb_h,Hits in a game,1975,7.0,9.0 innings batted,7.0,3.676,5.07,0.389,2.359,Bob Oliver 6.0 (1969; 6.08 in this season's terms),1975-09-16,CHN197509160,False,7
+12,Mike Schmidt,MLB,sg_mlb_hr,Home runs in a game,1976,4.0,10.0 innings batted,3.6,1.569,2.403,0.444,1.287,Bob Horner 4.0 (1986; 3.03 in this season's terms),1976-04-17,CHN197604170,False,2

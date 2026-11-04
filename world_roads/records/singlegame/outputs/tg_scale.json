@@ -1,0 +1,10 @@
+{
+ "n": 3908,
+ "median": -0.84,
+ "at_least_4": 14,
+ "at_least_5": 3,
+ "eligible": 12,
+ "n_categories": 18,
+ "k": 5,
+ "clear_steps": 1.0
+}
