@@ -1,0 +1,90 @@
+# Grains of Ancestry
+
+200,000 years of human migration and mixing, told as coloured sand poured into glass vessels shaped like
+the land each population lives on. 1920x1080, 30 fps, about 3 minutes, no audio.
+
+```
+python render.py report                 # final ancestry of every vessel (check against the sources below)
+python render.py still 40 75 165        # PNG stills at those video times -> out/
+python render.py video --workers 4      # the film -> out/grains_of_ancestry.mp4 (~10 min on 4 cores)
+python render.py video --preview        # half size, fast
+```
+
+Needs numpy, scipy, shapely, opencv-python-headless, pillow, ffmpeg and the Inter font
+(`/usr/share/fonts/opentype/inter`). Natural Earth 1:50m land and country outlines are downloaded into
+`data/` on first run.
+
+## How it works
+
+- **story.py** is the whole story as data: the ancestry components (sand colours), the vessels (groups
+  of countries), the event timeline, the clock (video seconds against years ago, log-scaled) and the captions.
+- **vessels.py** turns each group of countries into a glass vessel: the union of their outlines, a
+  supersampled glass sprite (rim, highlight, tint), and a hex lattice of grain slots inside the glass,
+  ordered bottom-up so sand settles to the bottom of each shape. Islands too small to hold sand
+  (Sardinia, the Andamans, the Caribbean, Hawai'i for Polynesia) are drawn as magnified insets joined
+  to their real location by a hairline.
+- **render.py** runs the simulation and paints the frames. Every vessel carries an exact gene-pool
+  composition P; the grains are a physical picture of it:
+  - *founding*: a handful of real grains flies from the source and the newcomers multiply by budding
+    copies of themselves. A small random sample is how the founder effect shows up.
+  - *gene flow*: grains stream along the route and land on top. Each visible grain stands for a share of
+    the flow, so its colour pours into the surface layer, and some of the existing sand makes way.
+  - *jostling*: neighbouring grains keep swapping places, so a new layer slowly blends in.
+  - *isolation and drift*: in an isolated vessel, grains of the ancestral colour turn one by one into a
+    new colour (how a new "ancestry component" forms).
+  - *archaic humans*: Neanderthals and Denisovans have no countries, so their sand starts inside the
+    Eurasian vessels. When modern humans arrive, it is displaced except for the share that mixed in.
+
+`python render.py report` prints where every vessel ends up. Today's values, rounded:
+
+| Vessel | Result |
+|---|---|
+| Europe | Near Eastern farmer 43%, hunter-gatherer 19%, Iranian/Caucasus 17%, Ancient North Eurasian 15% (the last two arrive with the steppe migration), Neanderthal 2.5% |
+| Sardinia | farmer ancestry 78%, the "island" of early-farmer ancestry |
+| South Asia | South Asian forager (AASI) 46%, Iranian-related 38%, steppe-related about 10% |
+| New Guinea | Papuan 89%, Denisovan 4.6%, Neanderthal 2.5% |
+| Andaman Islands | 97% their own ancestry |
+| Madagascar | African 58%, Austronesian (East Asian + Papuan-related) 37%, Arab/Near Eastern 4% |
+| Polynesia | East Asian (Austronesian) 65%, Papuan 19%, European 12%, Native American 1% |
+| Mexico & C. America | Native American 59%, European 34%, African 4% |
+| Brazil & north | European 61%, African 24%, Native American 14% |
+| Andes | Native American 77%, European 17% |
+| Caribbean | African 60%, European 29%, Native American 10% |
+| North America | European 74%, Native American 10%, African 8%, East Asian 5% |
+| Australia | European 80%, East Asian 10%, Aboriginal 4% |
+| Southern Africa | West-Central African (Bantu) 60%, Khoe-San 25%, European 11% |
+
+## Simplifications, said plainly
+
+- The components are the usual ancient-DNA ones (as in ADMIXTURE/qpAdm studies). They are labels for
+  ancient populations, not races, and real ancestry is continuous. "Steppe" ancestry is shown as its
+  parts (Ancient North Eurasian + European hunter-gatherer + Caucasus).
+- Vessels group neighbouring countries. Each one shows the average ancestry of the people living there
+  today, so colonised countries (Australia, North America) look mostly European, although Indigenous
+  peoples there remain genetically distinct. Polynesia is shown as Hawai'i, and it stands for
+  Polynesians as a people.
+- Dates are mid-range estimates; many are debated (the date people left Africa; the first arrival in the
+  Americas, here about 20,000 years ago; when Neanderthals mixed in, here about 55,000-50,000 years ago).
+- The African groups at the start are a simplification of a complicated, deeply structured history.
+- How full a vessel is stands, very roughly, for population growth.
+
+## Main sources
+
+- Schlebusch et al. 2017, *Science*: Khoe-San divergence 260,000-350,000 years ago
+- Green et al. 2010; Prüfer et al. 2014; Sümer et al. 2024 and Iasi et al. 2024: Neanderthal ancestry
+  (~2%) and timing
+- Reich et al. 2010; Jacobs et al. 2019: Denisovan ancestry in Papuans and Island Southeast Asia
+- Lazaridis et al. 2014, 2016; Haak et al. 2015: European hunter-gatherers, early farmers, Ancient North
+  Eurasians, Iranian/Levantine farmers, the steppe migration
+- Raghavan et al. 2014; Sikora et al. 2019: Mal'ta, Ancient Paleo-Siberians, Native American origins
+- Narasimhan et al. 2019, *Science*: South Asia (AASI, Iranian-related, steppe)
+- McColl et al. 2018; Lipson et al. 2018: Southeast Asia
+- Skoglund et al. 2016; Posth et al. 2018; Ioannidis et al. 2020: Lapita, Papuan admixture in Remote
+  Oceania, Native American contact in Polynesia
+- Pierron et al. 2017: Madagascar
+- van de Loosdrecht et al. 2018: Taforalt (North Africa)
+- Marcus et al. 2020: Sardinia
+- Llorente et al. 2015: Mota and Eurasian back-migration into East Africa
+- Patin et al. 2017: the Bantu expansion
+- Bryc et al. 2015; Moreno-Estrada et al. 2014; Kehdy et al. 2015: ancestry in the US, Mexico and Brazil
+- Mondal et al. 2016: Andamanese
