@@ -3,6 +3,7 @@
  "median": 0.14,
  "at_least_4": 22,
  "at_least_5": 3,
- "below_1": 2137,
- "n_categories": 70
+ "below_1": 2138,
+ "n_categories": 67,
+ "eligible": 45
 }

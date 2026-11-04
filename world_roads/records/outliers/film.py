@@ -297,7 +297,7 @@ class Hook:
         caps = [(7.2, 10.0, self.words.get("graded", "Each one graded against everyone else of its era.")),
                 (10.0, 12.4, "Most land near zero. Leading your league is normal."),
                 (12.4, 15.6, f"Only {self.sc['at_least_5']} of {self.sc['n']:,} reach 5."),
-                (18.0, 21.6, "Ten broke the curve.")]
+                (18.0, 21.6, self.words.get("ten", "Ten broke the curve."))]
         for t0, t1, msg in caps:
             a = al * fade(t, t0, t1, 0.4, 0.4)
             if a > 0:
@@ -530,7 +530,7 @@ class Fair:
     def draw(self, fig, t):
         al = fade(t, 0, self.dur, 0.6, 0.6)
         text(fig, 96, 92, "HOW THE SCORE WORKS", size=21, color=MUTED, weight="semibold", alpha=al)
-        title(fig, 96, 160, "Three rules that keep it fair", size=58, alpha=al)
+        title(fig, 96, 160, F.get("fair_title", "Three rules that keep it fair"), size=58, alpha=al)
         ex = F["extras"]
         rules = F.get("fair_rules") or [(1.0, "Adjusted for inflation",
                   "When every team scores more, each point is worth a little less, like money in an inflated economy. "
@@ -544,14 +544,16 @@ class Fair:
                   "Each athlete appears once, with their highest-scoring season. A few entries are a single mark or a "
                   "streak rather than a season total: Beamon's one jump, DiMaggio's 56 games.")]
         y = 270
+        tight = len(rules) > 3                                  # four rules: a smaller body so they all fit
         for i, (t0, head, body) in enumerate(rules):
             a = al * fade(t, t0, 99, 0.8, 0)
-            title(fig, 150, y + 52, f"{i + 1}", size=64, color=GOLD, alpha=a)
-            title(fig, 250, y + 40, head, size=40, alpha=a)
-            y = para(fig, 250, y + 88, body, width=78, size=28, color=INK2, alpha=a) + 34
+            title(fig, 150, y + 52, f"{i + 1}", size=64 if not tight else 56, color=GOLD, alpha=a)
+            title(fig, 250, y + 40, head, size=40 if not tight else 34, alpha=a)
+            y = para(fig, 250, y + (88 if not tight else 76), body, width=78 if not tight else 98,
+                     size=28 if not tight else 23, color=INK2, alpha=a) + (34 if not tight else 22)
         para(fig, 250, max(y + 10, 900), "The score measures distance from the class, not talent, and it isn't a "
                                          "probability. The order depends on these choices: more on that at the end.",
-             width=86, size=24, color=MUTED, alpha=al * fade(t, 28.0, 99, 0.8, 0))
+             width=86, size=24, color=MUTED, alpha=al * fade(t, 28.0 if not tight else 33.0, 99, 0.8, 0))
 
 
 @section

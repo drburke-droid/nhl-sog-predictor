@@ -1,9 +1,11 @@
 """Portraits for the single-day film: the same compliant fetch as ../../outliers/photos.py (article page for the
 infobox image, Commons file page for licence and author, a standard-size thumbnail), for the athletes the season
-film did not need. Wilt Chamberlain, Bob Beamon, Jan Železný and Katie Ledecky reuse the season film's files.
+film did not need. Wilt Chamberlain, Bob Beamon and Jan Železný reuse the season film's files. Gretchen Walsh has no
+freely licensed photo on Wikipedia or Wikimedia Commons (November 2026), so her card runs without a portrait.
 
-    python photos_sg.py fetch      # -> ../../cache/singlegame/photos_raw/ and meta.json
-    python photos_sg.py crop       # -> photos/<key>.png (4:5), photos/cut/<key>.png (background removed), credits.json
+    python photos_sg.py fetch [key ...]   # -> ../../cache/singlegame/photos_raw/ and meta.json
+    python photos_sg.py crop [key ...]    # -> photos/<key>.png (4:5), photos/cut/<key>.png (background removed), credits.json
+                                          #    (with keys: only those athletes; credits for the others are kept)
 """
 import json, os, re, sys, urllib.parse
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -47,7 +49,9 @@ _last_img = [0.0]
 P.get = curl_get
 NEW = {"bryant": ("Kobe Bryant", "Kobe_Bryant"), "rojas": ("Yulimar Rojas", "Yulimar_Rojas"),
        "oldfield": ("Brian Oldfield", "Brian_Oldfield"), "bubka": ("Sergey Bubka", "Sergey_Bubka"),
-       "marchand": ("Léon Marchand", "Léon_Marchand"), "vetter": ("Johannes Vetter", "Johannes_Vetter")}
+       "marchand": ("Léon Marchand", "Léon_Marchand"), "vetter": ("Johannes Vetter", "Johannes_Vetter"),
+       "walsh": ("Gretchen Walsh", "Gretchen_Walsh"), "cousy": ("Bob Cousy", "Bob_Cousy")}
+ONLY = [a for a in sys.argv[2:]] if len(sys.argv) > 2 else None
 
 
 def fetch():
@@ -66,6 +70,8 @@ def fetch_once():
     meta = json.load(open(mp)) if os.path.exists(mp) else {}
     missing = []
     for key, (name, title) in NEW.items():
+        if ONLY and key not in ONLY:
+            continue
         if key in meta and os.path.exists(meta[key].get("path", "")):
             continue
         try:
@@ -107,7 +113,8 @@ if __name__ == "__main__" and sys.argv[1] == "fetch":
 
 
 CHOICE = {"bryant": (0.36, 0.0, 0.55), "rojas": (0.05, 0.0, 0.90), "oldfield": (0.15, 0.0, 0.70),
-          "bubka": (0.08, 0.0, 0.84), "marchand": (0.05, 0.0, 0.85), "vetter": (0.05, 0.0, 0.90)}
+          "bubka": (0.08, 0.0, 0.84), "marchand": (0.05, 0.0, 0.85), "vetter": (0.05, 0.0, 0.90),
+          "cousy": (0.12, 0.0, 0.80)}
 
 
 def crop():
@@ -121,7 +128,7 @@ def crop():
     from rembg import remove, new_session
     sess = new_session("u2net_human_seg")
     for key, (fl, ft, fw) in CHOICE.items():
-        if key not in meta:
+        if key not in meta or (ONLY and key not in ONLY):
             continue
         m = meta[key]
         im = Image.open(m["path"]).convert("RGB")

@@ -25,11 +25,18 @@ SC_CREDITS = json.load(open(os.path.join(HERE, "photos", "credits.json"), encodi
 CREDITS = dict(FM.CREDITS)
 CREDITS.update(SC_CREDITS)
 
+def mmss(sec):
+    m = int(sec // 60)
+    return f"{m}:{sec - 60 * m:05.2f}" if m else f"{sec:.2f}"
+
+
 sc = FS["scale"]
 FS["hook_words"] = {"headline": f"{sc['n']:,} single-day bests.",
                     "sub": f"{sc['n_categories']} categories · one game, one race, one jump at a time",
                     "graded": "Each one graded against the best day of everyone else in its era.",
-                    "title2": "Single-Day Outliers"}
+                    "title2": "Single-Day Outliers", "ten": "Ten stood clear of the field."}
+_ex = {e["athlete"]: e for e in FS["excluded"]}
+_led, _old = _ex["Katie Ledecky"], _ex["Brian Oldfield"]
 FS["fair_rules"] = [
     (1.0, "Adjusted for inflation",
      "When every team scores more, each point is worth a little less, like money in an inflated economy. So in team "
@@ -40,17 +47,20 @@ FS["fair_rules"] = [
      "An athlete's own other days are left out of the class. Otherwise Wilt's 100 would be graded against Wilt's 78."),
     (20.0, "One entry each, and only big numbers",
      "Each athlete appears once, with their highest-scoring day. Team stats that come in small whole numbers (goals, "
-     "home runs, hits) are left out: one more of them can't be measured fairly.")]
+     "home runs, hits) are left out: one more of them can't be measured fairly."),
+    (27.0, "Clear of the field",
+     "A day counts only if it beats every other mark on its own graph by at least one step. Ledecky's "
+     f"{mmss(float(_led['value']))} (2016) scores {_led['z']:.2f}, but {_led['best_other']['name']} swam "
+     f"{mmss(float(_led['best_other']['value']))} in {_led['best_other']['year']}; Oldfield's {float(_old['value']):.2f} m "
+     f"(1975) scores {_old['z']:.2f}, but {_old['best_other']['name']} threw {float(_old['best_other']['value']):.2f} m in "
+     f"{_old['best_other']['year']}. Both are left out.")]
+FS["fair_title"] = "Four rules that keep it fair"
 FM.F = FS
 FM.CARDS = CARDS
 FM.CREDITS = CREDITS
 FM.RULER_UNIT.update({"ath_M_JT": "m", "ath_M_SP": "m", "ath_M_PV": "m", "ath_W_TJ": "m", "ath_M_LJ": "cm",
-                      "swim_W_800_fr": "s", "swim_M_200_me": "s", "sg_nba_pts": "points"})
-
-
-def mmss(sec):
-    m = int(sec // 60)
-    return f"{m}:{sec - 60 * m:05.2f}" if m else f"{sec:.2f}"
+                      "swim_W_800_fr": "s", "swim_M_200_me": "s", "swim_W_100_bu": "s", "sg_nba_pts": "points",
+                      "sg_nba_ast": "assists"})
 
 
 for c in FS["cards"]:                                       # swimming: say it in seconds, rounded so the sum holds
@@ -69,52 +79,57 @@ FM.ruler_numbers = lambda c: ("", "", "") if c.get("arith") else _orig_nums(c)
 
 
 def card_lines(c):
-    r, ex = c["rank"], FS["extras"]
+    k, ex = c["photo"], FS["extras"]
     ru, pr, nr = c["runner_up"], c["previous_record"], c["next_record"]
-    if r == 10:
+    if k == "cousy":
+        m = c["matched_by"][0]
+        a = ex["nba_assists_per_team_game"]
+        return ["For Boston against the Minneapolis Lakers, 27 February 1959.",
+                f"Next best that season: {ru['name']}, {float(ru['value']):.0f}. Teams averaged {a['1959']} assists a game.",
+                f"{m['name']} matched {float(m['value']):.0f} in {m['year']}, when teams averaged {a[str(m['year'])]}: "
+                f"about {m['converted']:.0f} in 1959 terms. {nr['holder']}'s {float(nr['value']):.0f} broke it in {nr['year']}."]
+    if k == "gretchen_walsh":
+        rb = c["records_before"]
+        first = next(i for i, p in enumerate(rb) if p["holder"] == "Gretchen Walsh")
+        old = rb[first - 1]
+        return [f"A world record in 2026, {float(pr['value']) - 54.33:.2f} seconds under her own {float(pr['value']):.2f} from "
+                f"{pr['year']}.",
+                f"Before her, {old['holder']}'s {float(old['value']):.2f} had stood since {old['year']}.",
+                f"Next best in 2026: {ru['name']}, {float(ru['value']):.2f}. 2026 has only past seasons to compare with."]
+    if k == "vetter":
         return [f"Next best in 2020: {ru['name']}, {float(ru['value']):.2f} m, {97.76 - float(ru['value']):.2f} m behind.",
                 f"Only {pr['holder']}'s {float(pr['value']):.2f} m world record, from {pr['year']}, has gone further.",
                 "Thrown in Chorzów, Poland, in September 2020."]
-    if r == 9:
+    if k == "marchand":
         return ["World Championships, Singapore, July 2025.",
                 f"It broke {pr['holder']}'s world record of {mmss(float(pr['value']))}, which had stood since {pr['year']}.",
                 f"Next best in 2025: {ru['name']}, {mmss(float(ru['value']))}. 2025 has only past seasons to compare with."]
-    if r == 8:
+    if k == "bubka":
         return ["Indoors, in Donetsk, in February 1993.",
                 f"It stood as the world record until {nr['holder']}'s {float(nr['value']):.2f} m in {nr['year']}.",
                 f"Next best in 1993: {ru['name']}, {float(ru['value']):.2f} m."]
-    if r == 7:
-        return ["Thrown at a professional meet in El Paso, Texas, in May 1975: never ratified, as professionals' marks "
-                "didn't count.",
-                f"The official world record was {float(pr['value']):.2f} m ({pr['holder']}, {pr['year']}): "
-                f"{22.86 - float(pr['value']):.2f} m shorter.",
-                f"Next best in 1975: {ru['name']}, {float(ru['value']):.2f} m."]
-    if r == 6:
+    if k == "rojas":
         return ["Tokyo Olympic final, August 2021.",
                 f"It beat {pr['holder']}'s world record of {float(pr['value']):.2f} m, which had stood since {pr['year']}, "
                 f"by {100 * (15.67 - float(pr['value'])):.0f} cm.",
                 f"Next best in 2021: {ru['name']}, {float(ru['value']):.2f} m."]
-    if r == 5:
-        return [f"Rio Olympic final, August 2016: {float(ru['value']) - 484.79:.2f} seconds ahead of the silver medallist.",
-                f"It lowered her own world record, {mmss(486.68)} from January, by {486.68 - 484.79:.2f} seconds.",
-                f"She broke it again in {nr['year']}: {mmss(float(nr['value']))}."]
-    if r == 4:
+    if k == "bryant":
         return ["Against Toronto, 22 January 2006: 55 of them in the second half.",
                 "Only Wilt Chamberlain has scored more in an NBA game.",
                 f"Next best that season: {ru['name']}, {float(ru['value']):.0f}. Teams averaged "
                 f"{ex['nba_points_per_team_game']['2006']:.1f} points."]
-    if r == 3:
+    if k == "zelezny":
         return ["98.48 m with the javelin redesigned in 1986 — still the world record.",
                 f"Next best in 1996: {ru['name']}, {float(ru['value']):.2f} m.",
                 f"It broke his own record of {float(pr['value']):.2f} m, set in {pr['year']}."]
-    if r == 2:
+    if k == "chamberlain":
         b, bd = ex["wilt_best_before_100"]
         return ["Hershey, Pennsylvania, 2 March 1962, against the New York Knicks.",
                 f"Three months earlier he had set the record at {b:.0f}. No one else that season scored more than "
                 f"{float(ru['value']):.0f}.",
                 f"Teams averaged {ex['nba_points_per_team_game']['1962']:.1f} points; allowing for that, it still scores "
                 f"{c['z_e3']:.2f}."]
-    if r == 1:
+    if k == "beamon":
         return [f"One jump: {100 * (8.90 - float(pr['value'])):.0f} cm beyond the world record.",
                 f"Next best that year: {float(ru['value']):.2f} m. The record stood until {nr['holder']}'s "
                 f"{float(nr['value']):.2f} m in {nr['year']}.",
@@ -196,13 +211,17 @@ class Close:
                     text(fig, x + 360, yy, f"{ach.replace('individual medley', 'medley')}, {season}", size=22, color=INK2, alpha=a)
                     text(fig, x + 820, yy, f"{z:.2f}", size=22, color=MUTED, ha="right", alpha=a)
             FM.para(fig, 96, 850, "Over a season, consistency stands out: Gretzky, DiMaggio, Ruth, Curry. Over a single game, "
-                                  "team sports are noisy, and only Wilt Chamberlain's 100 and Kobe Bryant's 81 clear the "
-                                  "bar. Names in gold are on both lists.", width=110, size=27, color=INK,
+                                  "team sports are noisy, and only Wilt Chamberlain's 100, Kobe Bryant's 81 and Bob Cousy's "
+                                  "28 assists clear the bar. Names in gold are on both lists.", width=110, size=27, color=INK,
                     alpha=a1 * fade(t, 8.0, 99, 0.8, 0))
             sp = FS["robustness"]["in_top10_specs"]
-            FM.para(fig, 96, 960, f"The top four stayed in the top ten in at least {min(sp[n] for n in list(sp)[:4])} of 16 "
-                                  "versions of the method; places 5 to 10 change with small choices.", width=120, size=23,
-                    color=INK2, alpha=a1 * fade(t, 16.0, 99, 0.8, 0))
+            bo = FS["robustness"]["beamon_out"]
+            em = next(b["best_other"] for b in bo if b["window"] == 20)
+            all16 = [n.split()[-1] for n in list(sp)[:4] if sp[n] == 16]
+            FM.para(fig, 96, 960, f"{', '.join(all16[:-1])} and {all16[-1]} made the top ten in all 16 versions of the method; "
+                                  f"Beamon in {sp['Bob Beamon']}: with a 20-season window, {em['name']}'s {float(em['value']):.2f} m "
+                                  f"({em['year']}) comes within a step of him. Places 5 to 10 change with small choices.",
+                    width=124, size=23, color=INK2, alpha=a1 * fade(t, 16.0, 99, 0.8, 0))
         a3 = fade(t, 33.0, self.dur, 0.8, 0.8) * al
         if a3 > 0:
             title(fig, W / 2, 400, "Not a ranking of the greatest athletes.", size=60, ha="center", alpha=a3)
@@ -230,7 +249,7 @@ class End:
             ("Model", f"{sc['n']:,} single-day bests in {sc['n_categories']} categories. Each is compared with the best day "
                       "by anyone else in the 15 seasons before and after, around a curved trend, with a league-scoring "
                       "adjustment for team sports (estimated from the data). Team stats that come in small whole numbers "
-                      "are left out."),
+                      "are left out, and a day must clear every other mark on its own graph by at least one step."),
             ("Caveats", "Single games include overtime and extra innings. NBA box scores before 1955–56 are incomplete and "
                         "NFL games before 1999 aren't openly available, so those seasons are left out. Scores are "
                         "statistical distances, not probabilities or measures of ability."),

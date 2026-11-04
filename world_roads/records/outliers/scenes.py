@@ -57,6 +57,7 @@ PALETTE.update({
     "czech": dict(team="Czech Republic", bg="#11457E", accent="#EE3340", light="#F2F2F2"),
     "warriors": dict(team="Philadelphia Warriors", bg="#1D428A", accent="#FDB927", light="#FFF1C9"),
     "leafs": dict(team="Toronto Maple Leafs", bg="#00205B", accent="#E8EEF7", light="#DCE6F5"),
+    "celtics": dict(team="Boston Celtics", bg="#005C2A", accent="#D8B972", light="#E4F0E8"),
 })
 REC = os.path.dirname(HERE)
 PHOTO_DIRS = [os.path.join(HERE, "photos"), os.path.join(REC, "singlegame", "film", "photos")]
@@ -529,16 +530,18 @@ class Stack:
 
     def callouts(self, ax, t, al):
         """card #10 only: how to read the chart"""
-        items = [(4.0, 10.6, self.cols[3], self.vals.get(self.cols[3], self.base) * 0.62, "each bin: the most hits by anyone\nelse that season"),
+        s0 = next(s for s in self.cols[3:] if s in self.vals)       # a column of someone else's, never the athlete's
+        items = [(4.0, 10.6, s0, self.vals[s0] * 0.62, self.s.get("bin_label", "each bin: the most hits by anyone\nelse that season")),
                  (11.5, 15.8, self.cols[-6], None, "the curve: where they usually land"),
                  (15.6, 21.5, self.year, None, "each tick: one step,\nthe usual give-or-take")]
+        left = (self.year - self.cols[0]) < len(self.cols) / 3          # near the left edge: label to the right
         for t0, t1, s, v, msg in items:
             a = al * fade(t, t0, t1, 0.5, 0.6)
             if a <= 0:
                 continue
             if v is None and s == self.year:
                 tx, ty = self.X(s), self.Y(self.base + 2.2 * self.step)
-                xt, yt = tx - 230, ty - 40
+                xt, yt = (tx + 260 if left else tx - 230), ty - 40
             elif v is None:
                 tr = self.trend
                 vv = float(np.interp(s, tr[:, 0], tr[:, 1]))
@@ -1020,7 +1023,7 @@ class Pool:
             ax.plot([xm], [self.my_y], marker="o", ms=px(15), color=self.acc, alpha=al, zorder=8, mec="#101820", mew=px(1.5))
             if prog > 0.97:
                 tt = self.c["swim"]["time"]
-                lab = f"{int(tt // 60)}:{tt - 60 * int(tt // 60):05.2f}"
+                lab = f"{int(tt // 60)}:{tt - 60 * int(tt // 60):05.2f}" if tt >= 60 else f"{tt:.2f}"
                 ax.text(xm - 24, self.my_y - 26, lab, ha="right", va="bottom", fontsize=fs(30), color=self.acc, weight="bold",
                         family="Inter Display", alpha=al, path_effects=outlined(6), zorder=9)
 

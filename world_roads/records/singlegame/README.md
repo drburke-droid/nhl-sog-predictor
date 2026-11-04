@@ -36,10 +36,36 @@ score 7.3 and 6.3 for that reason.
 - **big** (recommended): only team stats whose season-best game is usually 15 or more: NBA points, rebounds and
   assists; pitcher strikeouts; NFL passing, rushing and receiving yards.
 
-Recommended top ten (big): Beamon 7.80, Wilt Chamberlain's 100 points 7.40, Železný 5.95, Kobe Bryant's 81 points
-4.88, Ledecky 4.86, Rojas 4.69, Oldfield 4.54 (a professional-circuit mark), Bubka 4.45, Marchand 4.34 (2025:
-one-sided window), Vetter 4.30. The top four stay in the top ten under 15 or 16 of the 16 versions; places 5–10
-are unstable (2 to 12 of 16).
+## Clear of the field (eligibility rule, November 2026)
+
+The score is distance above the curve, but a day only makes the ranking if it also beats every other mark on its own
+graph (the comparison window, in the athlete's own units) by at least one step (`score.CLEAR_STEPS`). Without it, a
+mark could rank high for being early while later rivals in the same window matched or beat it. Of 2,797 scored days,
+45 pass. `outputs/sg_beaten_big.csv` lists what the rule removed from the old top 100, with the mark that came within
+a step: from the old top ten, Ledecky's 8:04.79 (2016; McIntosh 8:05.07 in 2025, 0.12 steps) and Oldfield's 22.86 m
+(1975; Barnes 23.12 m in 1990, beaten). The swimming supersuit seasons (2008-09) and list cut-offs are left out of the
+check. The rule is applied in every version of the 16-version ensemble, on that version's own window.
+
+Top ten (big, with the rule): Beamon 7.80, Wilt Chamberlain's 100 points 7.40, Železný 5.95, Kobe Bryant's 81 points
+4.88, Rojas 4.69, Bubka 4.45, Marchand 4.34 (2025: one-sided window), Vetter 4.30, Gretchen Walsh's 54.33 100 m
+butterfly 4.17 (2026: one-sided), Bob Cousy's 28 assists 4.10 (1959: one-sided, box scores start in 1955-56).
+Chamberlain, Železný and Bryant are in the top ten in all 16 versions; Beamon in 10 (with a 20-season window Robert
+Emmiyan's 8.86 m in 1987 comes within 0.34-0.43 steps; with a straight 15-season trend Carl Lewis's 8.79 m in 1983
+comes within 0.96); places 5-10 range from 3 to 12 of 16.
+
+## Rebuilding the inputs
+
+`data/`, `../cache/` and `../followup/data/` are not in the repository. To rebuild what the `big` variant needs:
+`python build_data.py nba mlb nfl` (sources above), `python build_data.py merge`; the athletics and swimming season
+lists are `../followup/data/v2/`, rebuilt from `../followup/handoff/original_project/inputs/` (top ten per season, with
+the v2 corrections that need no download cache: wind-prefixed names, seasons after 2026, a swimmer listed twice, the
+transliteration-aware name key), which reproduces every published athletics and swimming score. League rates
+(`../followup/data/context/*_league.csv`): NBA from Basketball-Reference's league per-game table (one page; early box
+scores undercount rebounds and assists), MLB and NFL as per-team-game totals from the same game data. Without the NHL
+lists the elasticity pooling cannot be redone, so run `python score.py big --stored-gamma` (the published values in
+`outputs/sg_gamma.csv`). Rebuilt this way, the published top 100 (before the rule) comes back in the same order, 94 of
+100 scores to the published three decimals and the rest within 0.01 (MLB and NFL league rates), and the 16-version
+counts exactly. The `all` and `corrected` outputs need the NHL lists and were not regenerated with the rule.
 
 The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may
 contact Retrosheet at www.retrosheet.org.

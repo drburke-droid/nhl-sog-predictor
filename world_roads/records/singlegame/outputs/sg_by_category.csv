@@ -9,7 +9,7 @@ ath_M_PV,Men's pole vault,Sergey Bubka,1993,6.15,4.446,
 swim_M_200_me,Men's 200 m individual medley,Léon Marchand,2025,112.69,4.338,
 swim_M_50_fr,Men's 50 m freestyle,Alexander Popov,2000,21.64,4.236,
 swim_W_100_bu,Women's 100 m butterfly,Gretchen Walsh,2026,54.33,4.166,
-sg_nba_ast,Assists in a game,Bob Cousy,1959,28.0,4.1,0.705
+sg_nba_ast,Assists in a game,Bob Cousy,1959,28.0,4.101,0.705
 swim_W_200_me,Women's 200 m individual medley,Wu Yanyan,1997,129.72,4.049,
 swim_W_400_me,Women's 400 m individual medley,Summer McIntosh,2025,263.65,4.031,
 ath_M_100m,Men's 100 metres,Usain Bolt,2009,9.58,4.02,
@@ -22,7 +22,7 @@ swim_M_400_me,Men's 400 m individual medley,Léon Marchand,2023,242.5,3.688,
 ath_W_HT,Women's hammer,Anita Wlodarczyk,2016,82.98,3.572,
 ath_M_200m,Men's 200 metres,Michael Johnson,1996,19.32,3.517,
 swim_M_100_br,Men's 100 m breaststroke,Adam Peaty,2016,57.13,3.396,
-sg_mlb_so,"Strikeouts by a pitcher, one game",Bob Feller,1938,18.0,3.342,0.368
+sg_mlb_so,"Strikeouts by a pitcher, one game",Bob Feller,1938,18.0,3.341,0.368
 ath_M_400m,Men's 400 metres,Lee Evans,1968,43.86,3.246,
 ath_W_DT,Women's discus,Gabriele Reinsch,1988,76.8,3.24,
 ath_W_PV,Women's pole vault,Yelena Isinbayeva,2005,5.01,3.182,
@@ -49,7 +49,7 @@ ath_M_HT,Men's hammer,Yuriy Sedykh,1986,86.74,2.585,
 ath_W_400mH,Women's 400 m hurdles,Marina Stepanova,1986,52.94,2.562,
 ath_W_200m,Women's 200 metres,Florence Griffith Joyner,1988,21.34,2.528,
 swim_W_100_fr,Women's 100 m freestyle,Le Jingyi,1994,54.01,2.492,
-sg_nfl_rush_yds,Rushing yards in a game,Adrian Peterson,2007,296.0,2.457,0.551
+sg_nfl_rush_yds,Rushing yards in a game,Adrian Peterson,2007,296.0,2.467,0.551
 swim_W_100_br,Women's 100 m breaststroke,Penny Heyns,1996,67.02,2.417,
 swim_M_100_fr,Men's 100 m freestyle,Alexander Popov,1994,48.21,2.387,
 swim_W_100_ba,Women's 100 m backstroke,He Cihong,1994,60.16,2.384,

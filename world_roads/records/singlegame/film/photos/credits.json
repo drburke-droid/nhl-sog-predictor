@@ -58,5 +58,17 @@
   "source": "Own work",
   "changes": "cropped, background removed (rembg), toned in team colours",
   "short": "Photo: Chell Hill, CC BY-SA 4.0, via Wikimedia Commons"
+ },
+ "cousy": {
+  "athlete": "Bob Cousy",
+  "file": "Bob Cousy (1).jpeg",
+  "page": "https://commons.wikimedia.org/wiki/File:Bob_Cousy_%281%29.jpeg",
+  "author": "Unknown author",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "circa 1959 date QS:P,+1959-00-00T00:00:00Z/9,P1480,Q5727902 ",
+  "source": "Sport Magazine Archives",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
  }
 }
