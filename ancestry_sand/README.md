@@ -21,11 +21,24 @@ it heaps up where it is poured and avalanches across the land, and migrating san
 between vessels.
 
 ```
-python make_table.py                                        # the printed map on the table
-blender -b -P blender_scene.py -- --samples 512             # glass plates + camera (about 15 min on 4 CPU cores)
-python film.py still 40 133.5 163                           # stills -> out/
+python make_walls.py && python make_table.py                # glass outlines and the printed map on the table
+python camera.py --write                                    # glass keyframes along the camera path
+blender -b -P blender_scene.py -- --samples 32 --poses data/plate_poses.json   # ~1 min per keyframe on 4 cores
+python film.py still 40 112 147                             # stills -> out/
 python film.py video --workers 4                            # the film -> out/grains_of_ancestry_glass.mp4
 ```
+
+**The camera moves.** `camera.py` holds one path (pans, tilts and dollies keyed to the story: into
+East Africa for the exit, along the southern route, over Beringia, the Fertile Crescent, the Bantu
+expansion, the Atlantic in 1500, then low among the towers of Asia), shared by Blender and the
+compositor. Blender renders the glass at keyframes placed wherever reprojecting from the last one
+would be more than 1 px off; in between, the two nearest keyframes are reprojected through the plane
+halfway up the walls and cross-faded.
+
+**Every grain is a ball.** Each visible grain is drawn as a lit sphere in 3D, as in the full Blender
+renders: the top layers of every pile and every grain on the side of a tower. Sand piles up where
+people actually live, so dense places rise as towers above the glass. They cast long shadows, and
+depth of field matches the Blender lens (f/0.9, focused on the camera's target).
 
 Blender 4.2 LTS (Cycles, CPU) renders the static world once: the table, plus a thick bevelled glass wall
 on every vessel outline under studio lighting. It renders two plates, with and without the glass; their
@@ -56,12 +69,14 @@ moving parts are composited per frame through the same camera:
   Amazon, African ancestry in the US South and Bahia, and European ancestry in southern Brazil.
   Grains swap places towards their hotspots, and new grains grow there preferentially. These
   movements never change a vessel's totals.
-- **Magnified islands.** Sardinia, the Andamans, the Caribbean, Hawai'i and Madagascar are drawn at
+- **Magnified islands.** The Caribbean, Hawai'i and Madagascar are drawn at
   true size in glass, plus a framed, labelled inset (×k) that holds their sand. They keep a minimum
   amount of sand so they stay visible.
-- **Megatowers (experiment).** Running with `SAND_TOWERS=1 python export_sand.py 163` drops the
-  density cap and lets piles stack up to 600 grains. That way, cities rise as towers. The Blender stills
-  are in `videos/ancestry/blender_samples/megatowers_*.jpg`.
+- **Towers.** Density is uncapped and piles stack up to 600 grains, so the most crowded places rise as
+  towers (`SAND_TOWERS=0` caps density at 6x the mean instead).
+- **Sand settles, then lies still.** Each cell's target is a whole number of grains (the density
+  target, dithered once). Grains above target move to nearby cells below it, and once every cell holds
+  its target nothing moves, except where people really arrive, grow or mix.
 
 ## How it works (first version: render.py)
 
@@ -70,7 +85,7 @@ moving parts are composited per frame through the same camera:
 - **vessels.py** turns each group of countries into a glass vessel: the union of their outlines, a
   supersampled glass sprite (rim, highlight, tint), and a hex lattice of grain slots inside the glass,
   ordered bottom-up so sand settles to the bottom of each shape. Islands too small to hold sand
-  (Sardinia, the Andamans, the Caribbean, Hawai'i for Polynesia) are drawn as magnified insets joined
+  (the Caribbean, Hawai'i for Polynesia, Madagascar) are drawn as magnified insets joined
   to their real location by a hairline.
 - **render.py** runs the simulation and paints the frames. Every vessel carries an exact gene-pool
   composition P; the grains are a physical picture of it:
@@ -88,20 +103,25 @@ moving parts are composited per frame through the same camera:
 
 | Vessel | Result |
 |---|---|
-| Europe | Near Eastern farmer 43%, hunter-gatherer 19%, Iranian/Caucasus 17%, Ancient North Eurasian 15% (the last two arrive with the steppe migration), Neanderthal 2.5% |
-| Sardinia | farmer ancestry 78%, the "island" of early-farmer ancestry |
-| South Asia | South Asian forager (AASI) 46%, Iranian-related 38%, steppe-related about 10% |
-| New Guinea | Papuan 89%, Denisovan 4.6%, Neanderthal 2.5% |
-| Andaman Islands | 97% their own ancestry |
-| Madagascar | African 58%, Austronesian (East Asian + Papuan-related) 37%, Arab/Near Eastern 4% |
-| Polynesia | East Asian (Austronesian) 65%, Papuan 19%, European 12%, Native American 1% |
+| Europe | Near Eastern farmer 43%, hunter-gatherer 18%, Iranian/Caucasus 17%, Ancient North Eurasian 14% (the last two arrive with the steppe migration), Neanderthal 2.5% |
+| South Asia | South Asian forager (AASI) 46%, Iranian-related 38%, steppe-related about 10%, East Asian 4% |
+| New Guinea | Papuan 87%, Denisovan 4.4%, Neanderthal 2.5%, Austronesian 6% |
+| East Asia | East Asian 97%, Neanderthal 2.6%, Denisovan 0.2% |
+| Island SE Asia | Austronesian (East Asian) 90%, Papuan-related 6.5% |
+| Madagascar | African 58%, Austronesian 37%, Near Eastern 4% |
+| Polynesia | East Asian (Austronesian) 65%, Papuan 18%, European 12%, Native American 1% |
+| North Africa | Near Eastern/Iranian 62%, West African 24%, East African 12% |
+| East Africa | East African 52%, Bantu-related 22%, Eurasian 23% |
+| Southern Africa | Bantu-related 80%, Khoe-San 12%, European 6% |
+| Siberia | European (Russian settlers) 89%, East Asian 8% |
 | Mexico & C. America | Native American 59%, European 34%, African 4% |
-| Brazil & north | European 61%, African 24%, Native American 14% |
-| Andes | Native American 77%, European 17% |
-| Caribbean | African 60%, European 29%, Native American 10% |
-| North America | European 74%, Native American 10%, African 8%, East Asian 5% |
+| Brazil & north | European 60%, African 24%, Native American 14% |
+| Andes | Native American 77%, European 17%, African 3% |
+| Caribbean | African 53%, European 38%, Native American 7% |
+| Southern Cone | European 61%, Native American 33%, African 3% |
+| North America | European 73%, Native American 10%, African 9%, East Asian 5% |
+| Greenland | Inuit (Native American-related, with Paleo-Inuit/Siberian) 75%, European 22% |
 | Australia | European 80%, East Asian 10%, Aboriginal 4% |
-| Southern Africa | West-Central African (Bantu) 60%, Khoe-San 25%, European 11% |
 
 ## Simplifications, said plainly
 
@@ -109,31 +129,49 @@ moving parts are composited per frame through the same camera:
   ancient populations, not races, and real ancestry is continuous. "Steppe" ancestry is shown as its
   parts (Ancient North Eurasian + European hunter-gatherer + Caucasus).
 - Vessels group neighbouring countries. Each one shows the average ancestry of the people living there
-  today, so colonised countries (Australia, North America) look mostly European, although Indigenous
-  peoples there remain genetically distinct. Polynesia is shown as Hawai'i, and it stands for
-  Polynesians as a people.
-- Dates are mid-range estimates; many are debated (the date people left Africa; the first arrival in the
-  Americas, here about 20,000 years ago; when Neanderthals mixed in, here about 55,000-50,000 years ago).
+  today, so colonised countries (Australia, North America) look mostly European; Indigenous peoples
+  and their ancestry continue there, and the within-region hotspots show where. Polynesia is drawn as
+  Hawai'i (settled about 1,000 years ago) but stands for Polynesians as a people, whose ancestors
+  reached Tonga and Samoa about 2,900 years ago.
+- Dates are mid-range estimates; many are debated, and the captions say so: the main exit from Africa
+  (70,000-50,000 years ago; earlier ventures about 120,000 years ago left little trace), the settlement
+  of Sahul (here 50,000 years ago; possibly 65,000), Neanderthal mixing (mostly 50,000-43,000 years ago,
+  carried by every founder group whatever the founding date drawn), and the first arrival in the
+  Americas (here 20,000 years ago; the White Sands footprints suggest 23,000-21,000).
+- Some components are deliberately broad. "East African" (yellow) also stands for the deep African
+  stem that North Africans carried before the Natufian-related and later flows; "South Asian forager"
+  also colours the Hoabinhian ancestry of Southeast Asia.
 - The African groups at the start are a simplification of a complicated, deeply structured history.
-- How full a vessel is stands, very roughly, for population growth.
+- Sand is proportional to estimated population (1 grain = a few people 200,000 years ago, about
+  55,000 today). Before farming these numbers are guesses within a factor of about 3.
 
 ## Main sources
 
-- Schlebusch et al. 2017, *Science*: Khoe-San divergence 260,000-350,000 years ago
-- Green et al. 2010; Prüfer et al. 2014; Sümer et al. 2024 and Iasi et al. 2024: Neanderthal ancestry
-  (~2%) and timing
-- Reich et al. 2010; Jacobs et al. 2019: Denisovan ancestry in Papuans and Island Southeast Asia
-- Lazaridis et al. 2014, 2016; Haak et al. 2015: European hunter-gatherers, early farmers, Ancient North
-  Eurasians, Iranian/Levantine farmers, the steppe migration
+- Schlebusch et al. 2017, *Science*; Ragsdale et al. 2023, *Nature*: deep, weakly structured African history
+- Hublin et al. 2017, *Nature*: Jebel Irhoud, *H. sapiens* in North Africa ~315,000 years ago
+- Green et al. 2010; Prüfer et al. 2014; Iasi et al. 2024, *Science*; Sümer et al. 2025, *Nature*:
+  Neanderthal ancestry (~2%) and its timing (~50,000-43,000 years ago); Chen et al. 2020, *Cell*:
+  Neanderthal ancestry in Africans
+- Reich et al. 2010; Browning et al. 2018, *Cell*; Jacobs et al. 2019, *Cell*: Denisovan ancestry
+- O'Connell et al. 2018, *PNAS*; Clarkson et al. 2017, *Nature*: the settlement of Sahul
+- Seguin-Orlando et al. 2014 and Sikora et al. 2017, *Science*: Kostenki and Sungir
+- Lazaridis et al. 2014, 2016; Haak et al. 2015: European hunter-gatherers, farmers, the steppe migration
 - Raghavan et al. 2014; Sikora et al. 2019: Mal'ta, Ancient Paleo-Siberians, Native American origins
-- Narasimhan et al. 2019, *Science*: South Asia (AASI, Iranian-related, steppe)
-- McColl et al. 2018; Lipson et al. 2018: Southeast Asia
-- Skoglund et al. 2016; Posth et al. 2018; Ioannidis et al. 2020: Lapita, Papuan admixture in Remote
-  Oceania, Native American contact in Polynesia
-- Pierron et al. 2017: Madagascar
-- van de Loosdrecht et al. 2018: Taforalt (North Africa)
-- Marcus et al. 2020: Sardinia
-- Llorente et al. 2015: Mota and Eurasian back-migration into East Africa
-- Patin et al. 2017: the Bantu expansion
-- Bryc et al. 2015; Moreno-Estrada et al. 2014; Kehdy et al. 2015: ancestry in the US, Mexico and Brazil
-- Mondal et al. 2016: Andamanese
+- Bennett et al. 2021 and Pigati et al. 2023, *Science*: White Sands; Dillehay et al. 2015: Monte Verde
+- Zeder 2011, *Current Anthropology*: the origins of farming
+- Narasimhan et al. 2019 and Shinde et al. 2019: South Asia (AASI, Iranian-related, steppe)
+- McColl et al. 2018; Lipson et al. 2014, 2018: Southeast Asia and Island Southeast Asia
+- Skoglund et al. 2016; Posth et al. 2018; Ioannidis et al. 2020: Lapita, Remote Oceania, Native
+  American contact in Polynesia; Kirch 2011 and Wilmshurst et al. 2011: dates of East Polynesia
+- Pierron et al. 2017, *PNAS*: Madagascar
+- van de Loosdrecht et al. 2018, *Science*: Taforalt (North Africa)
+- Llorente et al. 2015 (with its 2016 erratum): Eurasian back-migration into East Africa
+- Patin et al. 2017; Sengupta et al. 2021: the Bantu expansion and southern Africa
+- Rasmussen et al. 2010; Moltke et al. 2015: Paleo-Inuit and Greenland
+- Nägele et al. 2020; Fernandes et al. 2021: the peopling of the Caribbean
+- Eltis & Richardson 2010, *Atlas of the Transatlantic Slave Trade*; Micheletti et al. 2020, *AJHG*:
+  origins of the enslaved and their descendants
+- Bryc et al. 2015; Moreno-Estrada et al. 2014; Kehdy et al. 2015; Montinaro et al. 2015: ancestry in
+  the US, Mexico, Brazil and the Caribbean
+- Olalde et al. 2019, *Science*: North African ancestry in Iberia; Almarri et al. 2021, *Cell*: the Middle East
+- McEvedy & Jones 1978; HYDE 3.2; UN WPP 2024; Denevan 1992; Koch et al. 2019: population

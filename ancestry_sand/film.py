@@ -659,6 +659,11 @@ def render_chunk(job):
 def cmd_video(args):
     from multiprocessing import Pool
     os.makedirs(OUT, exist_ok=True)
+    pl = Plates()
+    missing = [i for _, i in pl.keys if not (os.path.exists(os.path.join(pl.dir, f"g_{i:03d}.png"))
+                                            and os.path.exists(os.path.join(pl.dir, f"b_{i:03d}.png")))]
+    if missing:
+        sys.exit(f"glass keyframes not rendered yet: {sorted(set(missing))[:10]}... (blender_scene.py --poses)")
     out = os.path.join(OUT, "grains_of_ancestry_glass.mp4")
     n = int(round(S.DURATION * FPS))
     nw = args.workers
