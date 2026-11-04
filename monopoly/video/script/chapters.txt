@@ -1,6 +1,6 @@
 0:00 Five decisions worth $300
 0:32 What you control
-1:04 How we tested it
+1:04 How I tested it
 2:00 Decision 1: Buy or pass
 3:14 Decision 2: Trading
 4:24 Decision 3: The railroads
