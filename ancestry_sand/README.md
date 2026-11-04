@@ -43,6 +43,26 @@ moving parts are composited per frame through the same camera:
   into the Blender camera with the plane homography, and lays the glass over it. Flying sand follows 3D
   arcs with turbulence, is projected with the full camera matrix, and casts shadows on the table.
 
+### Population, where people live, and ancestry within a region
+
+- **Sand stands for people.** The total amount of sand follows long-run world population estimates, and
+  each vessel's share follows historical estimates (1 CE, 1500, 1800, 1950, today). The on-screen
+  "1 grain ≈ N people" line rises from a few people per grain to about 55,000 today.
+- **Sand settles where people live.** Each cell's target height comes from a smoothed density map of
+  Natural Earth populated places. Northern Canada, Siberia, the Sahara and inland Australia stay thinly
+  covered, while the Nile, the Ganges plain and eastern China pile high.
+- **Ancestry varies within a region.** `story.ANCESTRY_GEO` gives hotspots where a component is more
+  common inside a vessel: for example, Native American ancestry in the US Southwest, Alaska and the
+  Amazon, African ancestry in the US South and Bahia, and European ancestry in southern Brazil.
+  Grains swap places towards their hotspots, and new grains grow there preferentially. These
+  movements never change a vessel's totals.
+- **Magnified islands.** Sardinia, the Andamans, the Caribbean, Hawai'i and Madagascar are drawn at
+  true size in glass, plus a framed, labelled inset (×k) that holds their sand. They keep a minimum
+  amount of sand so they stay visible.
+- **Megatowers (experiment).** Running with `SAND_TOWERS=1 python export_sand.py 163` drops the
+  density cap and lets piles stack up to 600 grains. That way, cities rise as towers. The Blender stills
+  are in `videos/ancestry/blender_samples/megatowers_*.jpg`.
+
 ## How it works (first version: render.py)
 
 - **story.py** is the whole story as data: the ancestry components (sand colours), the vessels (groups
