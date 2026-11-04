@@ -57,18 +57,18 @@ VESSELS = {
     "SIB": dict(label="Siberia", codes=["RUS"], clip=(60, 40, 190, 90), bbox=(60, 200, 40, 80)),
     "SAS": dict(label="South Asia", codes=["IND", "PAK", "BGD", "NPL", "LKA", "BTN"],
                 exclude=[(91.5, 94.5, 6.0, 14.5)]),
-    "AND": dict(label="Andaman Islands", codes=["IND"], bbox=(92.0, 93.5, 10.3, 14.0), inset=(5.0, (88.6, 11.2)), buffer=0.10,
+    "AND": dict(label="Andaman Islands", codes=["IND"], bbox=(92.0, 93.5, 10.3, 14.0), inset=(5.0, (86.3, 12.5)), buffer=0.10,
                 geo=(92.7, 11.7)),
     "SEA": dict(label="SE Asia", codes=["THA", "VNM", "LAO", "KHM", "MMR"]),
     "EAS": dict(label="East Asia", codes=["CHN", "MNG", "KOR", "PRK", "JPN", "TWN", "HKG", "MAC"]),
     "ISE": dict(label="Island SE Asia", codes=["PHL", "IDN", "MYS", "BRN", "TLS", "SGP"], bbox=(90, 134, -12, 22)),
     "PNG": dict(label="New Guinea", codes=["PNG", "IDN"], bbox=(134, 160, -12, 0)),
     "AUS": dict(label="Australia", codes=["AUS"]),
-    "POL": dict(label="Polynesia", codes=["USA"], bbox=(-161, -154, 18, 23), inset=(4.2, (-150, 14)),
+    "POL": dict(label="Polynesia", codes=["USA"], bbox=(-161, -154, 18, 23), inset=(4.2, (-141, 3)),
                 note="(Hawai'i shown)"),
     "NAM": dict(label="North America", codes=["USA", "CAN"], bbox=(-180, -50, 24, 85)),
     "MES": dict(label="Mexico & C. America", codes=["MEX", "GTM", "BLZ", "HND", "SLV", "NIC", "CRI", "PAN"]),
-    "CAR": dict(label="Caribbean", codes=["CUB", "HTI", "DOM", "JAM", "PRI"], inset=(2.4, (-40, 24)),
+    "CAR": dict(label="Caribbean", codes=["CUB", "HTI", "DOM", "JAM", "PRI"], inset=(1.8, (-43, 24)),
                 geo=(-74, 20)),
     "AMZ": dict(label="Brazil & north", codes=["BRA", "COL", "VEN", "GUY", "SUR", "FRA"], bbox=(-80, -30, -35, 13)),
     "ADS": dict(label="Andes", codes=["PER", "BOL", "ECU"]),
@@ -93,6 +93,31 @@ INITIAL = {
     "ISE": ("DEN", 0.25),
 }
 
+
+# ---------------------------------------------------------------- population
+# World population (years ago -> people), from the usual long-run estimates (Deevey; McEvedy & Jones;
+# HYDE 3.2; UN World Population Prospects). Before farming these are guesses within a factor of ~3.
+WORLD_POP = [(200_000, 1.0e5), (70_000, 2.0e5), (50_000, 5.0e5), (20_000, 1.0e6), (12_000, 4.0e6),
+             (5_000, 1.4e7), (2_000, 2.3e8), (1_000, 3.1e8), (500, 4.6e8), (300, 6.0e8), (225, 9.8e8),
+             (125, 1.65e9), (75, 2.5e9), (25, 6.1e9), (0, 8.1e9)]
+
+# Each vessel's population, millions, at 1 CE, 1500, 1800, 1950 and today (approximate; McEvedy &
+# Jones 1978, HYDE 3.2, UN WPP 2024, summed over each vessel's countries). Before farming (> 10,000
+# years ago) people are spread by habitable area instead, blending into these by 1 CE.
+POP_YEARS = [2_000, 525, 225, 75, 0]
+POP = {
+    "KHS": [1, 3, 5, 30, 164], "CAH": [3, 8, 13, 35, 186], "EAF": [5, 12, 18, 55, 407],
+    "WAF": [8, 20, 30, 75, 456], "NAF": [10, 10, 13, 50, 221], "MDG": [0.01, 1, 2, 4, 31],
+    "LEV": [15, 20, 25, 60, 289], "IRN": [5, 6, 9, 30, 149], "EUR": [30, 70, 150, 400, 590],
+    "SAR": [0.3, 0.3, 0.4, 1.3, 1.6], "STP": [3, 10, 35, 120, 230], "SIB": [0.5, 1, 2, 25, 36],
+    "SAS": [50, 110, 200, 450, 1907], "AND": [0.005, 0.005, 0.005, 0.002, 0.001],
+    "SEA": [5, 15, 28, 80, 251], "EAS": [60, 110, 340, 600, 1647], "ISE": [4, 12, 25, 110, 432],
+    "PNG": [0.5, 1, 1.5, 2, 16], "AUS": [0.3, 0.4, 0.4, 8, 27], "POL": [0.01, 0.4, 0.3, 1, 2],
+    "NAM": [1, 2, 7, 170, 375], "MES": [4, 18, 6, 35, 181], "CAR": [0.2, 2, 2.5, 15, 40],
+    "AMZ": [1, 3, 4, 70, 298], "ADS": [3, 9, 3, 15, 64], "SCN": [0.3, 1, 1.5, 25, 76],
+    "GRL": [0.001, 0.003, 0.008, 0.02, 0.056], "NZL": [0.0, 0.1, 0.1, 2, 5.2],
+}
+MIN_VISIBLE = 0.35      # magnified island peoples (Andamanese, Sardinians...) keep at least this many grains per cell
 
 # ---------------------------------------------------------------- routes (lon, lat waypoints)
 # longitudes beyond 180 continue eastwards across the Pacific (the map wraps at the Bering Strait)

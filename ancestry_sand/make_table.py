@@ -51,18 +51,21 @@ def main():
     cv2.polylines(c, rings, True, 255, SS, cv2.LINE_AA, shift=4)
     ca = (c / 255.0)[..., None] * 0.6
     img = img * (1 - ca) + coast * ca
-    # inset hairlines
+    # magnifier hairlines: from the bubble's edge to the island at its true size
     G = V.build(S.VESSELS)
     for vid, gm in G.items():
-        if gm["geo"] is None:
+        if "frame" not in gm:
             continue
-        bx0, by0, bx1, by1 = gm["bbox"]
-        gx, gy = gm["geo"]
-        qx, qy = min(max(gx, bx0 - 8), bx1 + 8), min(max(gy, by0 - 8), by1 + 8)
+        from shapely.geometry import Polygon, Point
+        from shapely.ops import nearest_points
+        tx, ty = gm["true_center"]
+        q = nearest_points(Polygon(gm["frame"]).exterior, Point(tx, ty))[0]
+        d = np.hypot(tx - q.x, ty - q.y)
+        qx, qy = q.x, q.y
+        ex, ey = tx - (tx - qx) / d * 7, ty - (ty - qy) / d * 7
         l = np.zeros((hh, ww), np.uint8)
-        cv2.line(l, (int(qx * SS * 16), int(qy * SS * 16)), (int(gx * SS * 16), int(gy * SS * 16)), 255, SS, cv2.LINE_AA, 4)
-        cv2.circle(l, (int(gx * SS * 16), int(gy * SS * 16)), int(3 * SS * 16), 255, -1, cv2.LINE_AA, 4)
-        la = (l / 255.0)[..., None] * 0.55
+        cv2.line(l, (int(qx * SS * 16), int(qy * SS * 16)), (int(ex * SS * 16), int(ey * SS * 16)), 255, SS, cv2.LINE_AA, 4)
+        la = (l / 255.0)[..., None] * 0.6
         img = img * (1 - la) + rgb("#8d9bb3") * la
     out = np.clip(img, 0, 255).astype(np.uint8)
     cv2.imwrite(os.path.join(DATA, "table.png"), cv2.cvtColor(out, cv2.COLOR_RGB2BGR))

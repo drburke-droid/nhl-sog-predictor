@@ -177,7 +177,7 @@ def lattice(mask_ss, anchor_x):
 
 
 def build(specs):
-    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v5-10m").encode()).hexdigest()
+    key = hashlib.md5((json.dumps(specs, sort_keys=True) + f"{D}{R_GRAIN}{MARGIN}{SS}v7-frame").encode()).hexdigest()
     cache = os.path.join(DATA, "vessels_cache.pkl")
     if os.path.exists(cache):
         with open(cache, "rb") as f:
@@ -203,7 +203,19 @@ def build(specs):
         pts, up, nb = lattice(m, anchor[0])
         spr, off = glass_sprite(m)
         geo = spec.get("geo")
-        out[vid] = dict(rings=rings, sprite=spr.astype(np.float16), sprite_off=off, slots=pts, up=up, nb=nb,
+        extra = {}
+        if spec.get("inset"):
+            # the island at its true size (glass only), and the magnifier bubble around the inset
+            true_spec = {k: v for k, v in spec.items() if k not in ("inset", "buffer")}
+            extra["true_rings"] = project_polys(vessel_polys(true_spec, countries), true_spec)
+            from shapely.geometry import box as sbox
+            allp = np.vstack([e for e, _ in rings])
+            frame = sbox(*allp.min(0), *allp.max(0)).buffer(9, 12)          # rounded-rectangle lens
+            extra["frame"] = np.array(frame.exterior.coords)
+            tp = np.vstack([e for e, _ in extra["true_rings"]])
+            geo = None
+            extra["true_center"] = tuple(float(v) for v in (tp.min(0) + tp.max(0)) / 2)
+        out[vid] = dict(**extra,rings=rings, sprite=spr.astype(np.float16), sprite_off=off, slots=pts, up=up, nb=nb,
                         anchor=anchor, geo=tuple(float(v) for v in to_px(*geo)) if geo else None,
                         bbox=(float(pts[:, 0].min()), float(pts[:, 1].min()), float(pts[:, 0].max()), float(pts[:, 1].max())))
         print(f"  vessel {vid}: {len(pts)} grain slots", flush=True)

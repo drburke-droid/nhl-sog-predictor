@@ -20,7 +20,7 @@ import vessels as V
 CELL = 3
 WC, HC = W // CELL, H // CELL
 NCELL = WC * HC
-HMAX = 16
+HMAX = 64
 HFULL = 4.0                 # mean grains per cell when a vessel is "full"
 K = len(S.KEYS)
 KI = {k: i for i, k in enumerate(S.KEYS)}
@@ -49,6 +49,23 @@ def fill_at(ybp):
     return float(np.interp(-ybp, [-p[0] for p in pts], [p[1] for p in pts]))
 
 
+_WP = np.array(S.WORLD_POP, float)
+
+
+def world_pop(ybp):
+    return float(np.exp(np.interp(-ybp, -_WP[:, 0], np.log(_WP[:, 1]))))
+
+
+def pop_share_hist(ybp):
+    """Vessels' shares of world population from the historical tables (interpolated in time)."""
+    yrs = np.array(S.POP_YEARS, float)
+    vals = np.array([[max(x, 1e-4) for x in S.POP[v]] for v in ORDER])
+    t = np.clip(ybp, 0, yrs[0])
+    lv = np.array([np.interp(-t, -yrs, np.log(row)) for row in vals])
+    p = np.exp(lv)
+    return p / p.sum()
+
+
 def smooth(v):
     v = min(1.0, max(0.0, v))
     return v * v * (3 - 2 * v)
@@ -74,7 +91,8 @@ def build_grid():
         ok = (d >= 2.9).ravel() & (vid < 0)
         vid[ok] = VI[v]
         meta[v] = dict(anchor=np.array(g["anchor"], float), bbox=g["bbox"], geo=g["geo"],
-                       inset=bool(S.VESSELS[v].get("inset")))
+                       inset=bool(S.VESSELS[v].get("inset")), frame=g.get("frame"),
+                       mag=S.VESSELS[v]["inset"][0] if S.VESSELS[v].get("inset") else None)
     nb = np.full((4, NCELL), -1, np.int64)
     idx = np.arange(NCELL).reshape(HC, WC)
     for d, (dy, dx) in enumerate(((0, 1), (0, -1), (1, 0), (-1, 0))):
@@ -91,6 +109,8 @@ def build_grid():
 
 VID, NB, META = build_grid()
 VCELLS = [np.where(VID == i)[0] for i in range(NV)]
+NCELLS_V = np.array([len(c) for c in VCELLS], float)
+GMAX = HFULL * NCELLS_V.sum()
 CELL_XY = np.stack([(np.arange(NCELL) % WC + 0.5) * CELL, (np.arange(NCELL) // WC + 0.5) * CELL], 1)
 from scipy.spatial import cKDTree
 VTREE = [cKDTree(CELL_XY[c]) for c in VCELLS]
@@ -202,6 +222,7 @@ class Sand:
             for _ in range(60):
                 self.topple(passes=1)
         self.first_seen = {}
+        self._share_t = None
 
     # ---------------------------------------------------------- routes
     def prepare_route(self, e):
@@ -311,9 +332,29 @@ class Sand:
         rp = self.replace[v]
         return rp["P_new"] if rp is not None else self.P[v]
 
+    def base_grains(self, v, ybp):
+        """Sand in proportion to population: spread by habitable area before farming, by the historical
+        population tables after, blending between 10,000 years ago and 1 CE. Small peoples keep a
+        minimum visible amount."""
+        if self.fixed_fill[v] is not None:
+            return self.fixed_fill[v] * HFULL * NCELLS_V[v]
+        area = fill_at(ybp) * HFULL * NCELLS_V[v]
+        w = float(np.clip((10_000 - ybp) / 8_000, 0, 1))
+        w = w * w * (3 - 2 * w)
+        if w > 0:
+            if self._share_t != ybp:
+                self._share = pop_share_hist(ybp); self._share_t = ybp
+            hist = fill_at(ybp) * GMAX * self._share[v]
+        else:
+            hist = area
+        g = area * (1 - w) + hist * w
+        if w > 0 and META[ORDER[v]]["inset"]:          # tiny island peoples stay visible
+            g = max(g, S.MIN_VISIBLE * NCELLS_V[v])
+        return g
+
     def target(self, v):
         ybp = ybp_at(self.s)
-        base = (self.fixed_fill[v] if self.fixed_fill[v] is not None else fill_at(ybp)) * HFULL * len(VCELLS[v])
+        base = self.base_grains(v, ybp)
         ex = self.extinct[v]
         if ex is not None:
             base *= max(0.0, 1 - (self.s - ex[0]) / max(ex[1] - ex[0], 0.5))

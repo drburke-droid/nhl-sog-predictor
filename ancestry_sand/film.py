@@ -144,8 +144,9 @@ class Painter:
         for v in Sd.ORDER:
             m = Sd.META[v]
             if m["inset"]:
-                bx0, by0, bx1, by1 = m["bbox"]
-                x, y = project(np.array([(bx0 + bx1) / 2]), np.array([by1 + 12.0]), np.array([0.0]))
+                f = np.asarray(m["frame"])
+                x, y = project(np.array([(f[:, 0].min() + f[:, 0].max()) / 2]), np.array([f[:, 1].max() + 11.0]),
+                               np.array([0.0]))
             else:
                 x, y = project(np.array([m["anchor"][0]]), np.array([m["anchor"][1]]), np.array([0.0]))
             self.label_pos[v] = (float(x[0]), float(y[0]))
@@ -369,7 +370,9 @@ class Painter:
         for v in Sd.ORDER:
             vi = Sd.VI[v]
             has = sim.counts[vi].sum() > 0
-            spr = self.text_sprite(S.VESSELS[v]["label"], self.f_label, INK * 255, halo=True)
+            mag = Sd.META[v]["mag"]
+            lab = S.VESSELS[v]["label"] + (f"  \u00d7{mag:g}" if mag else "")
+            spr = self.text_sprite(lab, self.f_label, INK * 255, halo=True)
             x, y = self.label_pos[v]
             self.blit(img, spr, x - spr.shape[1] / 2, y - spr.shape[0] / 2, (0.8 if has else 0.4) * (1 - title_a * 0.7))
         ybp = ybp_at(s)
@@ -383,6 +386,11 @@ class Painter:
         self.blit(img, spr, 44, 26, 0.95)
         if small:
             self.blit(img, self.text_sprite(small, self.f_year_sub, MUTED * 255), 48, 26 + spr.shape[0] + 2, 0.9)
+        tot = max(int(sim.counts.sum()), 1)
+        ppl = Sd.world_pop(ybp) / tot
+        ppl = float(f"{ppl:.2g}") if ppl < 1000 else round(ppl, -3)
+        line = f"1 grain \u2248 {ppl:,.0f} people"
+        self.blit(img, self.text_sprite(line, self.f_year_sub, INK * 255), 48, 26 + spr.shape[0] + 30, 0.85)
         lx, ly = 40, 700
         if sim.first_seen:
             self.blit(img, self.text_sprite("ANCESTRY  (COLOUR OF SAND)", self.f_leg_h, MUTED * 255), lx, ly - 24, 0.8)
@@ -415,8 +423,8 @@ class Painter:
             self.blit(img, st, W / 2 - st.shape[1] / 2, 530, title_a)
         if s > S.TODAY_S + 9.0:
             a = smooth((s - S.TODAY_S - 9.0) / 1.2)
-            n = self.text_sprite("Proportions are approximate, simplified from published ancient-DNA studies. "
-                                 "Vessels group neighbouring countries.", self.f_note, MUTED * 255)
+            n = self.text_sprite("Ancestry from published ancient-DNA studies; population from long-run estimates. "
+                                 "Magnified islands keep a minimum of sand to stay visible.", self.f_note, MUTED * 255)
             self.blit(img, n, W - n.shape[1] - 40, 40, 0.8 * a)
         t_i0, t_i1 = S.TODAY_S + 1.0, S.TODAY_S + 8.2
         if t_i0 <= s <= t_i1:

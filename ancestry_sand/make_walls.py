@@ -23,6 +23,17 @@ def main():
             rings.append([np.round(np.array(p.exterior.coords), 2).tolist()] +
                          [np.round(np.array(r.coords), 2).tolist() for r in p.interiors])
         out[vid] = rings
+        if "true_rings" in g:
+            # the island at true size: a small solid glass shape (its own outline, filled)
+            polys = [Polygon(e, hs).buffer(0) for e, hs in g["true_rings"]]
+            u = unary_union([p for p in polys if p.area > 0.3]).buffer(0.8, 6)
+            out[vid + "_true"] = [[np.round(np.array(p.exterior.coords), 2).tolist()]
+                                  for p in getattr(u, "geoms", [u]) if p.area > 0.5]
+            # the magnifier: a thin glass frame around the inset
+            f = Polygon(g["frame"])
+            fr = f.buffer(1.4, 8).difference(f.buffer(-1.4, 8))
+            out[vid + "_frame"] = [[np.round(np.array(fr.exterior.coords), 2).tolist()] +
+                                   [np.round(np.array(r.coords), 2).tolist() for r in fr.interiors]]
     json.dump(out, open(os.path.join(DATA, "walls.json"), "w"))
     print("vertices", sum(len(r) for v in out.values() for p in v for r in p))
 
