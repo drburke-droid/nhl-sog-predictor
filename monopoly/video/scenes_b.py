@@ -88,7 +88,7 @@ class SpendOrSave(PagedScene):
         p = self.page(ledger_paper(102, rules=[330 + 110 * k for k in range(5)], cols=(470, 1160, 1480)), c('Keep nothing back') - 0.3)
         p.add(Txt(c('Keep nothing back'), (170, 70), 'LEDGER  —  SPEND IT, OR KEEP SOME BACK?', F('scb', 40), fill=GREEN),
               Txt(c('Keep nothing back'), (170, 200), 'Cash kept back', F('sc', 26), fill=SEP),
-              Txt(c('Keep nothing back'), (500, 200), 'Games won, per hundred', F('sc', 26), fill=SEP))
+              Txt(c('Keep nothing back'), (500, 200), 'Games won (%)', F('sc', 26), fill=SEP))
         rows = [('$0', 25.1, '25.1%', 'Keep nothing back'), ('$100', 22.4, '25.8%', 'Keep a hundred'),
                 ('$300', 16.3, '27.8%', 'Three hundred'), ('$500', 10.9, '29.9%', 'Five hundred'), ('$1,000', 3.2, '33.5%', 'A thousand dollars')]
         t_broke = c('The more cash you keep')
@@ -109,7 +109,7 @@ class SpendOrSave(PagedScene):
         p.add(Obj(c('We even tried') + 0.3, card, (140, 160), how='drop', angle=-2),
               Obj(c('the biggest rent') - 0.3, hotel_elevation(300, seed=9), (1170, 120), how='drop'),
               Txt(c('the biggest rent') + 0.2, (1330, 520), 'Boardwalk with a hotel: $2,000', F('hand', 36), fill=SEP, anchor='mm'),
-              Typed(c('That player wins'), (180, 640), '13 in 100', F('deco', 140), fill=RED, cps=14),
+              Typed(c('That player wins'), (180, 640), '13%', F('deco', 160), fill=RED, cps=10),
               Txt(c('That player wins') + 0.8, (190, 830), 'about half a fair share', F('serif', 46)))
 
         # why: houses earn, cash doesn't
@@ -134,9 +134,9 @@ class SpendOrSave(PagedScene):
               Line(c('and spend that too') + 0.2, [(875, 640), (905, 660), (875, 680)], width=6, dur=0.2),
               Obj(c('and spend that too'), houses_row(2, h=150, gap=16, seed=6), (940, 520), how='drop'))
         p.add(Txt(c('That alone takes you'), (1180, 160), 'Mortgage to build:', F('sc', 40), fill=SEP),
-              Typed(c('from twenty-five wins'), (1180, 230), '25', F('deco', 150), cps=10),
-              Txt(c('to twenty-eight') - 0.1, (1370, 290), '→', F('serif', 120), fill=SEP),
-              Typed(c('to twenty-eight'), (1500, 230), '28', F('deco', 150), fill=GREEN, cps=10))
+              Typed(c('from twenty-five percent'), (1180, 230), '25%', F('deco', 150), cps=10),
+              Txt(c('to twenty-eight') - 0.1, (1440, 290), '→', F('serif', 120), fill=SEP),
+              Typed(c('to twenty-eight'), (1560, 230), '28%', F('deco', 150), fill=GREEN, cps=10))
 
 
 # ====================================================================== 07b
@@ -146,7 +146,7 @@ class HowFar(PagedScene):
         c = self.cue
         p = self.page(ledger_paper(111, rules=(), margin=0))
         p.add(Typed(0.4, (W / 2, 90), 'How far should you build?', F('serif', 56), anchor='mm'),
-              Txt(0.8, (W / 2, 160), 'games won, per hundred, building only that far', F('sc', 28), fill=SEP, anchor='mm'))
+              Txt(0.8, (W / 2, 160), 'games won (%), building only that far', F('sc', 28), fill=SEP, anchor='mm'))
         base, scale = 960, 21
         steps = [(1, 0.1, 'One house'), (2, 4.4, 'Two houses'), (3, 19.6, 'Three houses'), (4, 23.2, 'Four,'), (5, 25.1, 'Hotels,')]
         d_base = Fn(0.4, lambda img, t, a: ImageDraw.Draw(img).line([(120, base), (1800, base)], fill=sf.INK + (220,), width=3))
@@ -251,14 +251,14 @@ class WhichFirst(PagedScene):
         p = self.page(ledger_paper(124, rules=[470, 650], cols=()), c('And getting it wrong') - 0.2)
         p.add(Txt(c('And getting it wrong') + 0.3, (170, 90), 'GETTING IT WRONG IS EXPENSIVE', F('scb', 44), fill=GREEN),
               Txt(c('Holding orange and green'), (170, 190), 'You hold orange and green.', F('serif', 48)),
-              Txt(c('Holding orange and green') + 0.3, (900, 290), 'Games won, per hundred', F('sc', 26), fill=SEP))
+              Txt(c('Holding orange and green') + 0.3, (900, 290), 'Games won (%)', F('sc', 26), fill=SEP))
         p.add(Obj(c('Build orange first') - 0.1, swatch('orange', 120, 60, seed=2), (170, 370), how='drop', shadow=None),
               Obj(c('Build green first') - 0.1, swatch('green', 120, 60, seed=3), (170, 550), how='drop', shadow=None))
         ledger_row(p, c('Build orange first'), 380, 'orange first', 84.3, 9.5, x_label=320, x_bar=900, fnt=F('type', 44), wash=G['orange'])
         ledger_row(p, c('Build green first'), 560, 'green first', 63.3, 9.5, x_label=320, x_bar=900, fnt=F('type', 44), wash=G['green'])
         p.add(Txt(c('Same two sets'), (170, 760), 'Same two sets.', F('script', 80)),
               Txt(c('Same dice'), (900, 760), 'Same dice.', F('script', 80)),
-              Txt(c('Same two sets') + 0.4, (170, 920), 'Build orange first: 21 more wins in every hundred games.', F('type', 32), fill=RED))
+              Txt(c('Same two sets') + 0.4, (170, 920), 'Build orange first: 21 percentage points more wins.', F('type', 32), fill=RED))
 
 
 # ====================================================================== 07d
@@ -278,9 +278,9 @@ class OneOrSpread(PagedScene):
         p.add(Line(c('Never a house on everything'), [(rx - 20, y0 - 10), (rx + 760, y0 + 460)], width=10, dur=0.3),
               Line(c('Never a house on everything') + 0.3, [(rx - 20, y0 + 460), (rx + 760, y0 - 10)], width=10, dur=0.3),
               Stamp(c('was never the best') + 0.2, (rx + 380, 860), ['BEST IN', '0 OF 28'], angle=-8, size=58))
-        p.add(Typed(c('On average'), (lx, 820), 'Average wins per hundred:', F('type', 34)),
-              Typed(c('On average') + 0.8, (lx + 30, 880), 'the wrong set first .... 67.6', F('type', 34)),
-              Typed(c('On average') + 1.8, (lx + 30, 930), 'a house on everything ... 65.8', F('type', 34), fill=RED))
+        p.add(Typed(c('On average'), (lx, 820), 'Average games won:', F('type', 34)),
+              Typed(c('On average') + 0.8, (lx + 30, 880), 'the wrong set first .... 67.6%', F('type', 34)),
+              Typed(c('On average') + 1.8, (lx + 30, 930), 'a house on everything ... 65.8%', F('type', 34), fill=RED))
 
         p = self.page(plain(132), c('Build one set up first') - 0.2)
         p.add(Typed(c('Build one set up first'), (W / 2, 110), 'Build one set up first.', F('serifb', 60), anchor='mm'))
@@ -313,7 +313,7 @@ class OweMoney(PagedScene):
                   Stamp(t0 + 0.2, (265 + k * 300, 705 + (k % 2) * 30), ['MORTGAGED'], angle=-8, size=36, seed=k + 3))
         p.add(Obj(c('Sell houses last') - 0.1, houses_row(3, h=150, gap=18, seed=2), (1120, 560), how='drop'),
               Txt(c('Sell houses last') + 0.2, (1390, 800), 'keep the houses standing', F('hand', 36), fill=SEP, anchor='mm'))
-        p.add(Typed(c('Sell first, and you drop'), (1000, 860), 'sell houses first .. 19.1', F('type', 38), fill=RED),
+        p.add(Typed(c('Sell first, and you drop'), (1000, 860), 'sell houses first .. 19.1%', F('type', 38), fill=RED),
               Typed(c("and you're more likely"), (1000, 920), 'first to go broke .. 28.5%', F('type', 38), fill=RED),
               Line(c('Those houses are the only'), ring(1390, 640, 330, 120), width=4, dur=0.6),
               Stamp(c('the only thing paying you back') + 0.2, (1700, 330), ['MORTGAGE', 'FIRST'], angle=-8, size=56))

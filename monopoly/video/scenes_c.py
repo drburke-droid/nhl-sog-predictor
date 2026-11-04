@@ -94,12 +94,12 @@ class Jail(PagedScene):
               Stamp(c('stay in.') + 0.1, (1420, 690), ['STAY IN'], angle=-6, size=70))
         p.add(Txt(c('You still collect'), (1420, 800), 'you still collect your rent', F('hand', 36), fill=SEP, anchor='mm'),
               Txt(c('and every turn inside'), (1420, 855), 'and can’t land on their hotels', F('hand', 36), fill=SEP, anchor='mm'))
-        p.add(Typed(c("That's worth about"), (150, 820), 'wins per hundred .... 26.5  (typical 25.1)', F('type', 34)),
+        p.add(Typed(c('That takes you from'), (150, 820), 'games won .......... 26.5%  (typical 25.1%)', F('type', 34)),
               Typed(c('and it makes you less likely'), (150, 880), 'first to go broke ... 23.0%  (typical 25.1%)', F('type', 34)))
 
         # timing is what matters
         p = self.page(ledger_paper(154, rules=[420, 590, 760], cols=()), c('Always staying') - 0.2)
-        p.add(Txt(c('Always staying') + 0.2, (170, 90), 'JAIL: GAMES WON, PER HUNDRED', F('scb', 42), fill=GREEN))
+        p.add(Txt(c('Always staying') + 0.2, (170, 90), 'JAIL: GAMES WON (%)', F('scb', 42), fill=GREEN))
         ledger_row(p, c('Always staying') + 0.2, 340, 'Always stay', 25.1, 24, x_bar=900, fnt=F('type', 40))
         ledger_row(p, c('or always rolling once'), 510, 'Always roll once, then pay', 25.0, 24, x_bar=900, fnt=F('type', 40))
         ledger_row(p, c("It's the timing") - 0.4, 680, 'Leave early, stay once\nthere are houses', 26.5, 24, x_bar=900, fnt=F('type', 40),
@@ -171,7 +171,7 @@ class ComputersPlayer(PagedScene):
               Obj(c('light blue and orange') - 0.1, swatch('lightblue', 280, 120, seed=1, label='light blue'), (1150, 440), how='drop'),
               Obj(c('light blue and orange') + 0.3, swatch('orange', 280, 120, seed=2, label='orange'), (1470, 440), how='drop'),
               Txt(c('and went hard for them'), (1150, 600), 'and went hard for them', F('hand', 38), fill=SEP),
-              Typed(c('It wins about thirty-six'), (230, 700), '36 in 100', F('deco', 150), fill=RED, cps=14))
+              Typed(c('It wins about thirty-six'), (230, 700), '36%', F('deco', 170), fill=RED, cps=10))
 
 
 # ====================================================================== 10
@@ -198,12 +198,10 @@ class Payoff(PagedScene):
             p.add(Obj(t_take + 0.3 * k, n, xy, how='left', angle=ang, dur=0.5))
         p.add(Txt(c('We gave a typical player') + 0.2, (1010, 205), 'extra cash a typical player needs to keep up:', F('hand', 34), fill=SEP),
               Typed(c('It took three hundred'), (1000, 245), '$300', F('deco', 200), fill=RED, cps=8))
-        p.add(Txt(c('Turn that around'), (1010, 500), 'Turn it around: playing the typical way is like', F('sc', 32), fill=SEP),
-              Typed(c('like handing'), (1010, 555), 'handing the bank $250', F('serif', 60)),
-              Typed(c("before you've rolled"), (1010, 635), 'before you’ve rolled.', F('serif', 60)),
-              Stamp(c("before you've rolled") + 0.9, (430, 900), ['PAID TO', 'THE BANK'], angle=-8, size=60),
-              Txt(c('Even without auctions'), (1010, 790), 'Without auctions: about $200 either way,', F('hand', 40), fill=SEP),
-              Txt(c('the same as passing Go'), (1010, 850), 'the same as passing Go.', F('hand', 40), fill=SEP))
+        p.add(Txt(c('It took three hundred') + 0.8, (1010, 500), 'of free cash at the start of every game', F('serif', 48)),
+              Stamp(c('It took three hundred') + 1.4, (430, 900), ['WORTH', '$300'], angle=-8, size=66),
+              Txt(c('Even without auctions'), (1010, 640), 'Without auctions: about $200,', F('hand', 44), fill=SEP),
+              Txt(c('the same as passing Go'), (1010, 705), 'the same as passing Go.', F('hand', 44), fill=SEP))
 
         # game nights
         p = self.page(ledger_paper(173, rules=[300 + k * 120 for k in range(5)], top=170), c('Play these decisions well') - 0.2)
@@ -217,8 +215,8 @@ class Payoff(PagedScene):
             t0 = t_you if k == 0 else t_them + 0.2 * k
             p.add(Txt(t0 - 0.3, (180, y + 22), who, F('type', 44), fill=col))
             p.add(Fn(t0, lambda img, t, a, y=y, n=n, col=col, t0=t0, k=k: self.tallies(img, t, y, n, col, t0, k)))
-        p.add(Txt(c("That's three games") - 0.1, (180, 720), 'Three wins for every two of theirs.', F('serifb', 48)),
-              Stamp(c("That's three games") + 1.0, (1560, 860), ['3 FOR 2'], angle=-8, size=90))
+        p.add(Txt(c("That's about forty-five") - 0.1, (180, 720), '45% more wins than each of them.', F('serifb', 48)),
+              Stamp(c("That's about forty-five") + 1.0, (1560, 860), ['45% MORE', 'WINS'], angle=-8, size=72))
 
         # a year of game nights: trophies
         p = self.page(plain(174), c('And it compounds') - 0.2)
@@ -284,8 +282,8 @@ def seal():
     d.ellipse([cx - R, cy - R, cx + R, cy + R], fill=RED + (230,))
     d.ellipse([cx - R + 14, cy - R + 14, cx + R - 14, cy + R - 14], outline=(240, 220, 200, 200), width=2)
     lay = sf.roughen(lay, 0.04, 21)
-    txt(lay, (cx, cy - 12), '3 : 2', F('fat', 72), fill=(246, 234, 214), anchor='mm')
-    txt(lay, (cx, cy + 50), 'WINS', F('scb', 30), fill=(246, 234, 214), anchor='mm')
+    txt(lay, (cx, cy - 14), '+45%', F('fat', 66), fill=(246, 234, 214), anchor='mm')
+    txt(lay, (cx, cy + 48), 'MORE WINS', F('scb', 26), fill=(246, 234, 214), anchor='mm')
     return lay
 
 
@@ -310,7 +308,7 @@ class Playbook(PagedScene):
         t_end = c('Stay in once anyone') + 0.2
         p.add(Obj(t_end, seal(), (1470, 710), how='drop', shadow=(6, 8, 6, 80)),
               Txt(t_end + 0.3, (300, 870), 'Same dice.', F('script', 64)),
-              Txt(t_end + 0.6, (300, 950), 'Three wins for every two of theirs. A year of weekly game nights: champion two years in three.',
+              Txt(t_end + 0.6, (300, 950), '45% more wins than each of them. A year of weekly game nights: champion two years in three.',
                   F('type', 24), fill=SEP))
 
         # over the 1904 patent

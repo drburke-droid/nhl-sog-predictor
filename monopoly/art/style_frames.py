@@ -408,7 +408,7 @@ def frame_railroads():
     text(tg, (40, 30), 'TELEGRAM', font('fat', 52), fill=INK)
     text(tg, (430, 48), 'ATLANTIC CITY N.J.  1935', font('type', 24), fill=SEPIA)
     d.line([(30, 110), (790, 110)], fill=INK + (200,), width=2)
-    strips = ['WILL GIVE YOU KENTUCKY AVE STOP', 'YOU FINISH THE REDS STOP', 'I GET SHORT LINE AND ALL FOUR', 'RAILROADS STOP DEAL']
+    strips = ['I’ll give you Kentucky Ave.', 'You finish your reds.', 'I get Short Line and', 'all four railroads. Deal?']
     for k, s in enumerate(strips):
         strip = ink_layer((760, 46)); ImageDraw.Draw(strip).rectangle([0, 0, 760, 46], fill=(250, 246, 232, 255))
         img_s = strip; text(img_s, (12, 6), s, font('type', 30))

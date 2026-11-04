@@ -58,9 +58,9 @@ class HowWeTested(PagedScene):
             tick(p, c(ph) + 0.15, px + 10, y + 4, seed=k)
 
         # B: how people actually play; a set for a set
-        p = self.page(plain(62), c('Then we taught it') - 0.2)
-        p.add(Txt(c('Then we taught it') + 0.3, (160, 90), 'HOW PEOPLE ACTUALLY PLAY', F('scb', 48), fill=GREEN),
-              Typed(c('Everyone buys'), (160, 190), '1.  Buy what you land on, if you can afford it.', F('serif', 44)),
+        p = self.page(plain(62), c('Then I taught it') - 0.2)
+        p.add(Txt(c('Then I taught it') + 0.3, (160, 90), 'HOW PEOPLE ACTUALLY PLAY', F('scb', 48), fill=GREEN),
+              Typed(c('Everyone typically buys'), (160, 190), '1.  Buy what you land on, if you can afford it.', F('serif', 44)),
               Typed(c('And nobody hands'), (160, 268), '2.  Nobody hands you the card that finishes your set,', F('serif', 44)),
               Typed(c('unless you hand them'), (160, 330), '     unless you hand them the card that finishes theirs.', F('serif', 44)))
         d_red = deed('KENTUCKY AVE.', 220, 'red', seed=3).resize((544, 340), Image.LANCZOS)
@@ -89,8 +89,8 @@ class HowWeTested(PagedScene):
         p.add(Stamp(c('Nobody can make') + 0.3, (W / 2, 660), ['STALLED'], angle=-9, size=60))
         p.add(Counter(c('drags') - 0.6, c('So when that') + 0.5, (W / 2, 770), 31, 58, lambda v: 'ROUND %d' % v, F('type', 34),
                       fill=SEP, anchor='mm'))
-        tg = Telegram(c('They start dealing'), (980, 470), ['WILL BUY YOUR KENTUCKY AVE STOP', 'FIVE HUNDRED FIFTY DOLLARS CASH',
-                                                          'STOP IT FINISHES MY REDS STOP'], w=880, angle=-2, how='right', wps=6)
+        tg = Telegram(c('They start dealing'), (980, 470), ['I’ll buy your Kentucky Ave.', 'for $550 cash.',
+                                                          'It finishes my reds.'], w=880, angle=-2, how='right', wps=6)
         p.add(tg, Stamp(c('for a price') + 0.2, (1640, 880), ['SOLD'], angle=-10, size=70))
 
         # D: one player makes the decision; three typical players
@@ -105,9 +105,10 @@ class HowWeTested(PagedScene):
         p.add(Line(c('one player makes it') + 0.5, ring(414, 200, 140, 150), width=4, dur=0.6))
         gx, gy = 330, 450
         p.add(Grid100(c('At a four-player'), (gx, gy + 20), 25, dur=1.6, size=40, gap=8, wash=sf.SEPIA))
-        p.add(Typed(c('wins about twenty-five') + 0.2, (900, 520), '25 in 100', F('deco', 110), fill=sf.INK),
-              Txt(c('A fair share'), (906, 680), 'A fair share: one game in four.', F('serif', 46)),
-              Txt(c('A fair share') + 0.6, (906, 750), 'the yardstick for every result that follows', F('hand', 34), fill=SEP))
+        p.add(Typed(c('wins about twenty-five') + 0.2, (900, 520), '25%', F('deco', 130), fill=sf.INK),
+              Txt(c('wins about twenty-five') + 0.8, (906, 680), 'of games, for a typical player', F('serif', 46)),
+              Txt(c('Going first helps'), (906, 760), 'goes first: 28%     goes last: 22%', F('type', 40), fill=SEP),
+              Txt(c('so every player I tested'), (906, 830), 'so every tested player takes every seat', F('hand', 34), fill=SEP))
 
         # E: the games, counted on ticker tape
         p = self.page(plain(65), c('Every result') - 0.2)
@@ -157,7 +158,7 @@ class BuyOrPass(PagedScene):
         p = self.page(ledger_paper(72, rules=[300 + 110 * k for k in range(6)], cols=(1420,)), c('A player who passes') - 0.2)
         p.add(Txt(c('A player who passes') + 0.2, (170, 70), 'PASS IF BUYING WOULD LEAVE YOU WITH LESS THAN ...', F('scb', 38), fill=GREEN),
               Txt(c('A player who passes') + 0.2, (170, 200), 'Cash left after buying', F('sc', 26), fill=SEP),
-              Txt(c('A player who passes') + 0.2, (640, 200), 'Games won, per hundred', F('sc', 26), fill=SEP))
+              Txt(c('A player who passes') + 0.2, (640, 200), 'Games won (%)', F('sc', 26), fill=SEP))
         sc = 24
         rows = [('Always buy', 25.1, c('A player who passes')), ('$100', 25.3, c('Keep a hundred')),
                 ('$200', 25.2, c('or two in hand')), ('$300', 24.6, c('But the more careful')), ('$500', 22.7, c('wins about twenty-three'))]
@@ -178,7 +179,7 @@ class BuyOrPass(PagedScene):
               Txt(c("And there's one card") + 0.3, (640, 110), 'YOURS', F('sc', 34), fill=SEP, anchor='mm'))
         p.add(Obj(c('the one that finishes a set'), il, (1220, 260), how='right', angle=-4),
               Stamp(c('the one that finishes a set') + 0.9, (1460, 420), ['BUY IT'], angle=-10, size=74),
-              Txt(c('or stops someone else') + 0.1, (1220, 620), '... or the one that stops\nsomeone else finishing theirs.',
+              Txt(c('or prevents someone else') + 0.1, (1220, 620), '... or the one that stops\nsomeone else finishing theirs.',
                   F('serif', 40), spacing=10))
         bal = deed('BALTIC AVE.', 60, 'brown', seed=8).resize((420, 262), Image.LANCZOS)
         p.add(Obj(c('If you have to mortgage') - 0.1, bal, (200, 640), how='left', angle=3),
@@ -208,7 +209,7 @@ class BuyOrPass(PagedScene):
         # the bid ladder
         p = self.page(ledger_paper(76, rules=[360 + 150 * k for k in range(4)], cols=()), c('Stop at the printed') - 0.2)
         p.add(Txt(c('Stop at the printed') + 0.3, (170, 80), 'AT AUCTION, BID UP TO ...', F('scb', 42), fill=GREEN),
-              Txt(c('Stop at the printed') + 0.3, (820, 220), 'Games won, per hundred', F('sc', 26), fill=SEP))
+              Txt(c('Stop at the printed') + 0.3, (820, 220), 'Games won (%)', F('sc', 26), fill=SEP))
         sc = 24
         ledger_row(p, c('Lowball at half'), 280, 'half the price', 24.1, sc, fill=RED, fnt=F('type', 40))
         ledger_row(p, c('Stop at the printed'), 430, 'the printed price', 25.1, sc, fnt=F('type', 40))
@@ -255,27 +256,27 @@ class Trading(PagedScene):
         p = self.page(plain(81), c('This is the one') - 0.2)
         p.add(Typed(c('This is the one'), (120, 90), 'The one that surprised us most.', F('serif', 50)),
               Txt(c("It's how much"), (120, 170), 'Not that trading helps. How much.', F('hand', 40), fill=SEP))
-        tg = Telegram(c('This is the one') + 0.6, (110, 300), ['WILL SWAP MY ST JAMES', 'FOR YOUR VENTNOR STOP',
-                                                                   'WE BOTH GET A SET STOP'], w=780, angle=-2, wps=4)
+        tg = Telegram(c('This is the one') + 0.6, (110, 300), ['My St. James for your Ventnor?', 'We both get a set.'],
+                      w=780, angle=-2, wps=3)
         p.add(tg, Stamp(c('refuses every trade') + 0.2, (500, 560), ['REFUSED'], angle=-12, size=76))
         p.add(Txt(c('wins about five'), (1060, 300), 'Never trades', F('sc', 36), fill=SEP),
               Grid100(c('wins about five'), (1060, 360), 5, dur=0.4, size=34, gap=8, wash=sf.STAMP),
               Typed(c('Five.') - 0.1, (1520, 360), '5', F('deco', 200), fill=RED, cps=10),
-              Txt(c('Five.') + 0.3, (1530, 600), 'in 100', F('serif', 44)),
+              Txt(c('Five.') + 0.3, (1530, 600), 'percent', F('serif', 44)),
               Txt(c('A fifth of a fair'), (1060, 820), 'A fifth of a fair share.', F('serif', 48)),
-              Txt(c('Nothing else in this'), (1060, 900), 'a typical player: 25 in 100', F('hand', 36), fill=SEP))
+              Txt(c('Nothing else in this'), (1060, 900), 'a typical player: 25%', F('hand', 36), fill=SEP))
 
         # take the fair swap; don't haggle
         p = self.page(plain(82), c('So when the deal') - 0.2)
-        t1 = Telegram(c('So when the deal') + 0.3, (90, 110), ['WILL SWAP MY ST JAMES', 'FOR YOUR VENTNOR STOP',
-                                                            'A SET FOR A SET STOP'], w=780, angle=-2, wps=8)
-        p.add(t1, Typed(c('take it.') - 0.2, (130, 560), 'REPLY:  DEAL STOP', F('type', 44), fill=GREEN),
+        t1 = Telegram(c('So when the deal') + 0.3, (90, 110), ['My St. James for your Ventnor?', 'A set for a set.'],
+                      w=780, angle=-2, wps=8)
+        p.add(t1, Typed(c('take it.') - 0.2, (130, 560), 'REPLY:  Deal.', F('type', 44), fill=GREEN),
               Stamp(c('take it.') + 0.4, (700, 520), ['ACCEPTED'], angle=-8, size=58),
-              Txt(c('at the printed prices'), (130, 650), 'at the printed prices', F('hand', 40), fill=SEP))
-        t2 = Telegram(c('ruin a trade is to haggle') - 0.2, (1000, 140), ['YOUR SET IS BETTER THAN MINE', 'STOP THROW IN SOME CASH',
-                                                                         'STOP TWO HUNDRED DOLLARS STOP'], w=830, angle=2, wps=6, how='right')
+              Txt(c('at the printed prices'), (130, 650), 'any difference settled at the printed prices', F('hand', 36), fill=SEP))
+        t2 = Telegram(c('ruin a trade is to haggle') - 0.2, (1000, 140), ['Your set is better than mine.', 'Throw in $200 and', 'it’s a deal.'],
+                      w=830, angle=2, wps=6, how='right')
         p.add(t2, Txt(c('A player who does that') + 0.2, (1040, 640), 'The haggler:', F('sc', 36), fill=SEP),
-              Typed(c('wins about twenty-one'), (1040, 700), '21 in 100, instead of 25', F('type', 46), fill=RED),
+              Typed(c('wins about twenty-one'), (1040, 700), '21%, instead of 25%', F('type', 46), fill=RED),
               Line(c('The other player walks') + 0.2, [(1040, 190), (1800, 470)], width=8, dur=0.3),
               Line(c('The other player walks') + 0.5, [(1040, 470), (1800, 190)], width=8, dur=0.3),
               Txt(c('neither of you gets a set'), (1040, 800), 'They walk away. Nobody gets a set.', F('hand', 38), fill=SEP),
@@ -284,7 +285,7 @@ class Trading(PagedScene):
         # waiting and holding out
         p = self.page(ledger_paper(83, rules=[360, 560, 760], cols=()), c('What about waiting') - 0.2)
         p.add(Txt(c('What about waiting') + 0.3, (170, 90), 'OTHER WAYS TO TRADE', F('scb', 42), fill=GREEN),
-              Txt(c('What about waiting') + 0.3, (840, 210), 'Games won, per hundred', F('sc', 26), fill=SEP))
+              Txt(c('What about waiting') + 0.3, (840, 210), 'Games won (%)', F('sc', 26), fill=SEP))
         sc = 24
         ledger_row(p, c('What about waiting') + 0.5, 280, 'Typical: take every fair swap', 25.1, sc, fnt=F('type', 34), x_bar=840)
         ledger_row(p, c('What about waiting') + 1.0, 480, 'Wait until you have the\ncash to build', 25.1, sc, fnt=F('type', 34), x_bar=840,
@@ -298,15 +299,15 @@ class Trading(PagedScene):
         p = self.page(plain(84), c('And remember the endgame') - 0.2)
         p.add(Txt(c('And remember the endgame') + 0.3, (120, 80), 'THE ENDGAME: THE BOARD HAS LOCKED UP', F('sc', 36), fill=SEP),
               Obj(c('And remember the endgame') + 0.5, padlock(150), (1640, 60), how='drop'))
-        t3 = Telegram(c('Someone offers to buy') - 0.2, (110, 160), ['WILL BUY YOUR KENTUCKY AVE STOP', 'FIVE HUNDRED FIFTY DOLLARS',
-                                                                    'CASH STOP FINISHES MY REDS'], w=880, angle=-2, wps=7)
+        t3 = Telegram(c('Someone offers to buy') - 0.2, (110, 160), ['I’ll buy your Kentucky Ave.', 'for $550 cash.', 'It finishes my reds.'],
+                      w=880, angle=-2, wps=7)
         p.add(t3, Txt(c('Every instinct') + 0.4, (1140, 220), 'NO!', F('fat', 150), fill=sf.SEPIA),
               Line(c('Say yes') - 0.3, [(1120, 330), (1360, 210)], width=10, dur=0.3),
-              Typed(c('Say yes') + 0.1, (150, 620), 'REPLY:  YES STOP DEAL STOP', F('type', 48), fill=GREEN),
+              Typed(c('Say yes') + 0.1, (150, 620), 'REPLY:  Yes. Deal.', F('type', 48), fill=GREEN),
               Stamp(c('Say yes') + 0.9, (920, 520), ['SOLD'], angle=-10, size=70))
-        p.add(Txt(c('Players who refuse') + 0.1, (1140, 450), 'First to go broke:', F('sc', 34), fill=SEP),
-              Typed(c('Players who refuse') + 0.6, (1140, 510), 'refuse ..... 28.7%', F('type', 42), fill=RED),
-              Typed(c('Players who refuse') + 1.4, (1140, 570), 'sell ....... 25.1%', F('type', 42)))
+        p.add(Txt(c('Players who refuse') + 0.1, (1140, 450), 'Wins / first to go broke:', F('sc', 34), fill=SEP),
+              Typed(c('Players who refuse') + 0.6, (1140, 510), 'refuse .. 24.2% / 28.7%', F('type', 40), fill=RED),
+              Typed(c('Players who refuse') + 1.4, (1140, 570), 'sell .... 25.1% / 25.1%', F('type', 40)))
         notes = sf.banknote(100, (40, 92, 70), 33).rotate(-5, expand=True, resample=Image.BICUBIC)
         p.add(Obj(c('The cash lets you build'), notes, (150, 760), how='left', dur=0.5),
               Obj(c('on what you') + 0.2, house_small(), (790, 700), how='drop'),
@@ -339,7 +340,7 @@ class Railroads(PagedScene):
 
         def rr_ledger(p, ts, reveal_third, t_pct):
             p.add(Txt(ts[0] - 1.5, (150, 80), 'THREE RAILROAD PLAYERS', F('scb', 42), fill=GREEN),
-                  Txt(ts[0] - 1.5, (760, 210), 'Games won, per hundred', F('sc', 26), fill=SEP),
+                  Txt(ts[0] - 1.5, (760, 210), 'Games won (%)', F('sc', 26), fill=SEP),
                   Txt(ts[0] - 1.5, (1520, 210), 'Owns all four', F('sc', 26), fill=SEP))
             for k, (lab, v, pct) in enumerate(rr_rows):
                 if k == 2 and reveal_third is None:
@@ -350,27 +351,27 @@ class Railroads(PagedScene):
                 p.add(Typed(t_pct[k], (1560, y), pct, F('type', 44), fill=RED if k < 2 else GREEN))
 
         p = self.page(ledger_paper(92, rules=[440, 640, 840], cols=(1480,)), c('We tried three') - 0.2)
-        rr_ledger(p, [c('A player who just buys'), c('A player who chases')], None, [c('about four games'), c('about four games') + 0.3, 0])
+        rr_ledger(p, [c('A player who just buys'), c('A player who chases')], None, [c('in only about four percent'), c('in only about four percent') + 0.3, 0])
         p.add(Txt(c('no better than typical') + 0.2, (760, 360), 'typical: 25.1', F('hand', 30), fill=SEP),
               Txt(c('still no better') + 0.2, (760, 560), 'still 25.1', F('hand', 30), fill=SEP),
-              Txt(c('Buying alone almost never'), (150, 760), 'Buying alone almost never gets you all four.', F('serif', 44)),
-              Line(c('about four games') + 0.6, ring(1590, 400, 90, 110), width=4, dur=0.5))
+              Txt(c('Either way, buying gets'), (150, 760), 'Buying alone almost never gets you all four.', F('serif', 44)),
+              Line(c('in only about four percent') + 0.6, ring(1590, 400, 90, 110), width=4, dur=0.5))
 
         # the trade for the fourth
         p = self.page(plain(93), c('The version that works') - 0.2)
         for k, tk in enumerate(tickets[:3]):
             p.add(Obj(-1, tk, (90 + k * 200, 120 + [0, 30, 10][k]), how='drop', angle=[-5, 3, -2][k]))
         p.add(Obj(c('You get your four'), tickets[3], (690, 150), how='right', angle=6, dur=0.6))
-        tg = Telegram(c('When someone is holding') + 0.2, (1010, 140), ['WILL GIVE YOU KENTUCKY AVE STOP', 'YOU FINISH THE REDS STOP',
-                                                                      'I GET SHORT LINE AND ALL FOUR', 'RAILROADS STOP DEAL'], w=830,
+        tg = Telegram(c('When someone is holding') + 0.2, (1010, 140), ['I’ll give you Kentucky Ave.', 'You finish your reds.',
+                                                                      'I get Short Line and', 'all four railroads. Deal?'], w=830,
                       angle=-3, wps=7, how='right')
         p.add(tg, Txt(c('They get a set'), (1040, 680), 'They get a set.', F('serif', 52)),
               Txt(c('You get your four'), (1040, 760), 'You get your four railroads.', F('serif', 52)),
               Txt(c('The version that works') + 0.3, (110, 700), 'The version that works\nis the one that trades.', F('deco', 60), spacing=14))
 
         p = self.page(ledger_paper(92, rules=[440, 640, 840], cols=(1480,)), c('Do that, and') - 0.2)
-        rr_ledger(p, [-10, -10], c("you'll win about twenty"), [-10, -10, c('more than a quarter')])
-        p.add(Txt(c('when you do hold all four') + 0.2, (150, 900), 'Holding all four: wins more than half of those games.', F('serif', 44)),
+        rr_ledger(p, [-10, -10], c("You'll win about twenty"), [-10, -10, c('own all four in about')])
+        p.add(Txt(c('where you do hold all four') + 0.2, (150, 900), 'Holding all four: wins 53% of those games.', F('serif', 44)),
               Stamp(c('So, go for the railroads') + 0.4, (1560, 900), ['ONLY IF', 'YOU TRADE'], angle=-8, size=60),
               Txt(c("Otherwise, don't bother"), (150, 990), 'Otherwise, don’t bother.', F('hand', 40), fill=RED))
 

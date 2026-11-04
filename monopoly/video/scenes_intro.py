@@ -44,7 +44,7 @@ class ColdOpen(PagedScene):
         # the patent
         world, P = patent_world()
         full = (world.size[0] / 2, world.size[1] / 2 + 20, 0.5)
-        t0 = c('And the game itself') - 0.1
+        t0 = c('The board game actually') - 0.1
         head = P(1300, 160)
         self.cam = Camera(world, [(t0, *full), (c('In nineteen-oh-four') + 0.3, *full[:2], 0.53),
                                   (c('was granted') + 0.4, *head, 1.25), (c('She called it') + 0.1, *head, 1.32),
@@ -127,7 +127,7 @@ class Promise(Scene):
         if t >= self.cue('So we tested'):
             txt(img, (580, 760), 'Same dice.  Same board.  Tested, one decision at a time.', sf.font('hand', 38), fill=sf.SEPIA,
                     alpha=int(255 * ramp(t, self.cue('So we tested'), 0.5)))
-        stamp_in(img, t, c_win + 0.2, (1620, 950), ['3 WINS FOR', 'EVERY 2'], angle=-9, size=60)
+        stamp_in(img, t, c_win + 0.2, (1620, 950), ['45% MORE', 'WINS'], angle=-9, size=60)
         return shake(img, t, c_win + 0.35)
 
     def extra_sfx(self):
