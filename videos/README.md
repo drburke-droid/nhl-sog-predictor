@@ -4,6 +4,12 @@ Every eye video and every speed-of-light video we finished, renamed so the file 
 SHORT in a name means vertical 1080x1920 (Shorts, Reels, TikTok); everything else is 16:9 for YouTube.
 Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags already written are in `copy/`.
 
+## ancestry/
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| grains_of_ancestry_2m58s.mp4 | 16:9 | 2:58 | Grains of Ancestry: 200,000 years of human migration and mixing, as coloured sand in glass vessels shaped like the land (Neanderthal and Denisovan sand, out of Africa, founder effects, farming, steppe, Bantu, Austronesians, 1500 CE to today). No audio. Source and science notes: `ancestry_sand/`. Thumbnail candidate: grains_of_ancestry_thumb.png |
+
 ## eye/
 
 | File | Format | Length | What it is |
