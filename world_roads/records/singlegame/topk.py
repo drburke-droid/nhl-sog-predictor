@@ -1,4 +1,4 @@
-"""The single-game team-sports model (video A): the greatest-seasons method with three changes agreed for this film.
+"""The single-game team-sports model (video A): the greatest-seasons method with the changes agreed for this film.
 
 1. Length: every game is scaled to regulation length before anything else (team_games.py), so extra innings and
    overtime don't count as extra chances.
@@ -12,9 +12,14 @@
 4. Counts are counts: 7 hits stands for anything from 6.5 to 7.5, so the score uses x - half a unit and the step adds
    the rounding variance (unit^2 / 12). Without it, a season whose top five are all exactly 5 hits has almost no
    spread, and a routine 6-hit game scored 3.7; with it, about 1. Big-number stats (points, yards) barely move.
+5. The league conversion is capped: another season's game is scaled into the athlete's season by at most 1.5x either
+   way (CAP). Uncapped, early hockey's swings (4.8 goals a team-game in 1920, 1.4 in 1928) turned a 4-goal game in 1928
+   into 8.8 in 1920 terms, and Joe Malone's record 7 scored about 1.
+6. Three-pointers count from 1994-95 (START): in the first seasons of the shot, rates were so low that the conversion
+   decided everything (Roche's 8 in 1982 in, Barry's 8 in 1980 out).
 
-League adjustment as before: value / (league per-team-game rate)^gamma, gamma estimated from these lists and pooled
-across the 18 categories (run_all.pooled_gamma). Ties at the top of a season all count.
+League adjustment: value / (league per-team-game rate)^gamma, gamma estimated from these lists and pooled across the 18
+categories (run_all.pooled_gamma). Ties at the top of a season all count.
 
     python topk.py              # -> outputs/tg_ranking.csv, tg_beaten.csv, tg_spec_ensemble.csv, tg_gamma.csv,
                                 #    tg_by_category.csv, tg_scale.json
@@ -36,6 +41,8 @@ DATA = os.path.join(HERE, "data")
 OUT = os.path.join(HERE, "outputs")
 K = 5
 CLEAR_STEPS = 1.0
+CAP = 1.5                       # no other season's game is converted by more than 1.5x either way
+START = {"sg_nba_3pm": 1995}    # threes count from 1994-95, once the shot was established
 
 
 class TGData(G.Data):
@@ -56,8 +63,12 @@ class TGData(G.Data):
                                           math.nan) for r in rs]
         self.meta = {c: {"sport": m["sport"], "title": m["title"],
                          "short": {int(t) for t in m["short_seasons_left_out"].split()}, "shift": set(), "scaled": False,
-                         "cut": None, "first": int(m["first_season"]), "start": int(m["performances_count_from"])}
+                         "cut": None, "first": START.get(c, int(m["first_season"])),
+                         "start": START.get(c, int(m["performances_count_from"]))}
                      for c, m in self.cats.items()}
+        for c, y0 in START.items():                            # earlier seasons are neither scored nor compared
+            for y in [y for y in self.seasons[c] if y < y0]:
+                del self.seasons[c][y]
 
 
 def setup():
@@ -89,7 +100,7 @@ def unit(cat, y, spec, ctx):
     return one if one else 1.0
 
 
-def score(D, spec=G.Spec(ties="all", trend="quad_safe", env="power"), ctx=None, k=K, cats=None, correct=True):
+def score(D, spec=G.Spec(ties="all", trend="quad_safe", env="power"), ctx=None, k=K, cats=None, correct=True, cap=CAP):
     """every season-leading game -> record with z (steps above the top-k curve) and 'clear' (steps over the best other
     game on its graph)"""
     ctx = ctx or G.Context()
@@ -103,6 +114,7 @@ def score(D, spec=G.Spec(ties="all", trend="quad_safe", env="power"), ctx=None, 
                 x = G.transform(lead.perf, cat, m["sport"], y, spec, ctx)
                 if x is None:
                     continue
+                ky = (lead.perf / x) if x else 1.0                       # the athlete's season's divisor (1 without env)
                 pts, who = [], []
                 for s in range(y - spec.window, y + spec.window + 1):
                     if s in m["short"] or s not in Ss:
@@ -113,6 +125,10 @@ def score(D, spec=G.Spec(ties="all", trend="quad_safe", env="power"), ctx=None, 
                     v = [G.transform(e.perf, cat, m["sport"], s, spec, ctx) for e in o]
                     if any(q is None for q in v):
                         continue
+                    if cap and o[0].perf and v[0]:                         # capped conversion into season y
+                        ks = o[0].perf / v[0]
+                        r_ = min(max(ky / ks, 1 / cap), cap)
+                        v = [e.perf * r_ / ky for e in o]
                     pts.append((s, v))
                     who.append(o)
                 if len(pts) < spec.min_real:

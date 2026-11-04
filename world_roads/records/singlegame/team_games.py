@@ -260,6 +260,134 @@ def nfl():
     write("nfl", best)
 
 
+# ------------------------------------------------------------------ NFL before 1999: Pro Football Archives box scores
+PFA = "https://www.profootballarchives.com"
+PFA_SEASONS = [(y, "nfl") for y in range(1932, 1999)] + [(y, "afl") for y in range(1960, 1970)]
+PFA_COLS = {"RUSHING": {"sg_nfl_rush_yds": "YDS"}, "PASSING": {"sg_nfl_pass_yds": "YDS", "sg_nfl_pass_td": "TD"},
+            "RECEIVING": {"sg_nfl_rec_yds": "YDS"}, "INTERCEPTIONS": {"sg_nfl_int": "NO"}, "SACKS": {"sg_nfl_sacks": "NO"}}
+
+
+def pfa_get(url, path, pause=3.0):
+    """a polite fetch for Pro Football Archives: cached, `pause` seconds apart, and when the host answers with its
+    "One moment, please" slow-down page, nothing is cached and we wait (1, 2, 4 ... minutes) before asking again"""
+    import time, urllib.request, urllib.error
+    if os.path.exists(path) and os.path.getsize(path) > 0:
+        return path
+    for attempt in range(8):
+        wait = pause - (time.time() - B._last[0])
+        if wait > 0:
+            time.sleep(wait)
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": B.UA}), timeout=120) as r:
+                data = r.read()
+        except urllib.error.HTTPError as e:
+            B._last[0] = time.time()
+            if e.code == 404:
+                return None
+            data = b""
+        except (urllib.error.URLError, TimeoutError):
+            B._last[0] = time.time()
+            data = b""
+        B._last[0] = time.time()
+        if data and b"One moment, please" not in data[:4000]:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            open(path + ".tmp", "wb").write(data)
+            os.replace(path + ".tmp", path)
+            return path
+        print(f"    host asked us to slow down ({url.rsplit('/', 1)[-1]}); waiting {60 * 2 ** min(attempt, 4)} s", flush=True)
+        time.sleep(60 * 2 ** min(attempt, 4))
+    raise RuntimeError(f"gave up on {url}")
+
+
+def pfa_games(y, lg):
+    """regular-season games of one season: [(game page path, date, visitor, home)] (the list's rows before its first
+    playoff heading)"""
+    from bs4 import BeautifulSoup
+    p = pfa_get(f"{PFA}/{y}{lg}-boxscores.html", os.path.join(CACHE, "pfa_box", f"{y}{lg}-boxscores.html"))
+    if not p:
+        return []
+    out, started = [], False
+    for r in BeautifulSoup(open(p, encoding="utf-8", errors="replace").read(), "lxml").find_all("tr"):
+        cells = r.find_all(["td", "th"])
+        if len(cells) == 1:
+            t = cells[0].get_text(" ", strip=True)
+            if "Boxscores" in t or "Season" in t:          # the title and the season links
+                started = True
+                continue
+            if started and out:
+                break                                          # the first heading after the season: playoffs
+            continue
+        a = r.find("a", href=True)
+        if started and a and "boxscores" in a["href"]:
+            c = [x.get_text(" ", strip=True) for x in cells]
+            out.append((a["href"].lstrip("/"), c[0], c[1], c[3]))
+    return out
+
+
+def pfa_parse(path):
+    """one box score -> (overtime?, tied?, {(section, player id): (name, team, {column: value})})"""
+    from bs4 import BeautifulSoup
+    s = BeautifulSoup(open(path, encoding="utf-8", errors="replace").read(), "lxml")
+    ot, tied, lines = False, False, {}
+    for t in s.find_all("table"):
+        rows = t.find_all("tr")
+        if not rows:
+            continue
+        head = [c.get_text(" ", strip=True) for c in rows[0].find_all(["td", "th"])]
+        if not head:
+            continue
+        if head[0] == "Score By Quarters":
+            ot = any(h.upper().startswith("OT") for h in head[1:-1])
+            finals = [r.find_all(["td", "th"])[-1].get_text(strip=True) for r in rows[1:3]]
+            tied = len(finals) == 2 and finals[0] == finals[1]
+            continue
+        if head[0] not in PFA_COLS:
+            continue
+        team = ""
+        for r in rows[1:]:
+            cells = r.find_all(["td", "th"])
+            name = cells[0].get_text(" ", strip=True) if cells else ""
+            a = cells[0].find("a", href=True) if cells else None
+            if len(cells) <= 2 and not a:
+                team = name                                    # a team-name row
+                continue
+            if not a or name == "Team Totals":
+                continue
+            vals = {h: (cells[i].get_text(strip=True) if i < len(cells) else "") for i, h in enumerate(head) if i}
+            lines[(head[0], a["href"])] = (name, team, vals)
+    return ot, tied, lines
+
+
+def nflold(pause=3.0):
+    """every player's best regular-season game per season, 1932-1998 (NFL) and 1960-69 (AFL); overtime (from 1974)
+    scaled as 60 / (60 + 7.5), or 75 minutes for a tie, since box scores don't give the winning score's time"""
+    best, tot, games = {}, defaultdict(lambda: defaultdict(float)), defaultdict(int)
+    for y, lg in PFA_SEASONS:
+        gl = pfa_games(y, lg)
+        for path, date, vis, home in gl:
+            p = pfa_get(f"{PFA}/{path}", os.path.join(CACHE, "pfa_box", path.replace("/", "_")), pause=pause)
+            if not p:
+                continue
+            ot, tied, lines = pfa_parse(p)
+            om = (15.0 if tied else 7.5) if ot else 0.0
+            fac = 60 / (60 + om)
+            games[y] += 1
+            for (sec, pid), (name, team, vals) in lines.items():
+                for cat, col in PFA_COLS[sec].items():
+                    v = vals.get(col, "")
+                    try:
+                        v = float(v)
+                    except ValueError:
+                        continue
+                    tot[y][cat] += v
+                    info = {"name": name, "date": date, "detail": f"{team} ({vis} at {home}; {lg.upper()})"}
+                    keep(best, (cat, y, "pfa:" + pid.rsplit("/", 1)[-1].replace(".html", "")), v * fac, v, fac,
+                         ("overtime (length not recorded)" if ot else "regulation"), info)
+        print("  PFA", y, lg, len(gl), "games", flush=True)
+    write("nflold", best)
+    json.dump({"games": games, "totals": tot}, open(os.path.join(CACHE, "nflold_totals.json"), "w"))
+
+
 # ------------------------------------------------------------------ merge, league rates, checks
 def merge(depth=15):
     os.makedirs(DATA, exist_ok=True)
@@ -352,4 +480,5 @@ def check():
 
 
 if __name__ == "__main__":
-    {"mlb": mlb, "nba": nba, "nhl": nhl, "nfl": nfl, "merge": merge, "league": league, "check": check}[sys.argv[1]]()
+    {"mlb": mlb, "nba": nba, "nhl": nhl, "nfl": nfl, "nflold": nflold, "merge": merge, "league": league,
+     "check": check}[sys.argv[1]]()
