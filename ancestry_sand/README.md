@@ -14,7 +14,36 @@ Needs numpy, scipy, shapely, opencv-python-headless, pillow, ffmpeg and the Inte
 (`/usr/share/fonts/opentype/inter`). Natural Earth 1:50m land and country outlines are downloaded into
 `data/` on first run.
 
-## How it works
+## Glass edition (Blender glass + sandpile)
+
+The second version stands real glass, rendered in Blender, on a dark map table. Sand behaves like sand:
+it heaps up where it is poured and avalanches across the land, and migrating sand blows through the air
+between vessels.
+
+```
+python make_table.py                                        # the printed map on the table
+blender -b -P blender_scene.py -- --samples 512             # glass plates + camera (about 15 min on 4 CPU cores)
+python film.py still 40 133.5 163                           # stills -> out/
+python film.py video --workers 4                            # the film -> out/grains_of_ancestry_glass.mp4
+```
+
+Blender 4.2 LTS (Cycles, CPU) renders the static world once: the table, plus a thick bevelled glass wall
+on every vessel outline under studio lighting. It renders two plates, with and without the glass; their
+ratio gives the glass's tint and refraction darkening, and their difference gives its highlights. Path
+tracing every frame (glass plus hundreds of thousands of grains) would take days without a GPU. So the
+moving parts are composited per frame through the same camera:
+
+- **sand.py** holds a sandpile simulation on a 3-px grid. Each cell is a stack of coloured grains. A pile
+  two or more grains taller than its neighbour avalanches onto it. Founders pour in at a landing point on
+  the side they came from and spread over the land as they multiply. Gene flow pours in around the
+  landing point while as much sand makes way elsewhere, and stirring slowly blends the layers. Every
+  vessel's grain counts still follow its exact gene pool, so `render.py report` describes this version too.
+- **film.py** shades the sand surface in map space (pile lighting from the height field, ambient
+  occlusion, cast shadows, a texture of individually lit grains of random size, glints), projects it
+  into the Blender camera with the plane homography, and lays the glass over it. Flying sand follows 3D
+  arcs with turbulence, is projected with the full camera matrix, and casts shadows on the table.
+
+## How it works (first version: render.py)
 
 - **story.py** is the whole story as data: the ancestry components (sand colours), the vessels (groups
   of countries), the event timeline, the clock (video seconds against years ago, log-scaled) and the captions.
