@@ -16,6 +16,7 @@ short seasons. Output keeps the raw value (what happened) next to the adjusted o
     python team_games.py league                   # league per-team-game rates the data can give (NHL, NFL, MLB)
     python team_games.py check                    # record games, with their length factors
     python team_games.py nflold [offline]         # NFL 1932-98 + AFL from Pro Football Archives (offline: cached pages only)
+    python team_games.py nflfetch                 # download the uncached box scores only (resumes fast)
     python team_games.py pfateams                 # the season film's PFA team pages (-> ../cache/pfa, for its NFL rates)
 """
 import csv, glob, io, json, os, sys
@@ -540,6 +541,18 @@ def league():
     print("league rates written to", CTX)
 
 
+def nflfetch(pause=3.0):
+    """download only: every uncached Pro Football Archives box score (cached pages are skipped without parsing), so an
+    interrupted download resumes in seconds; then `python team_games.py nflold offline` parses them all once"""
+    for y, lg in PFA_SEASONS:
+        gl = pfa_games(y, lg)
+        todo = [p for p, *_ in gl if not os.path.exists(os.path.join(CACHE, "pfa_box", p.replace("/", "_")))]
+        for path in todo:
+            pfa_get(f"{PFA}/{path}", os.path.join(CACHE, "pfa_box", path.replace("/", "_")), pause=pause)
+        if todo:
+            print(f"  PFA {y} {lg} {len(gl)} games ({len(todo)} fetched)", flush=True)
+
+
 def pfateams():
     """the Pro Football Archives season and team pages the season film's NFL league rates were summed from (NFL 1932-98,
     AFL 1960-69), into ../cache/pfa where followup/build/parse_context.py nfl reads them; cached, polite, resumable"""
@@ -571,4 +584,4 @@ if __name__ == "__main__":
         nflold(offline=True)
     else:
         {"mlb": mlb, "nba": nba, "nhl": nhl, "nfl": nfl, "nflold": nflold, "merge": merge, "league": league,
-         "check": check, "pfateams": pfateams}[sys.argv[1]]()
+         "check": check, "pfateams": pfateams, "nflfetch": nflfetch}[sys.argv[1]]()
