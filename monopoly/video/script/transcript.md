@@ -3,7 +3,7 @@
 Narration for ElevenLabs, scene by scene. Numbers are written the way they should be spoken. The same text with no
 headings, ready to paste, is in `narration_elevenlabs.txt` (one paragraph per scene, in this order).
 
-**2,338 words, recorded in the "Mark" voice (ElevenLabs).**
+**2,355 words, recorded in the "Mark" voice (ElevenLabs), in chunks: see tts.py.**
 
 ## How to generate it
 
@@ -29,19 +29,19 @@ this passage, which has a number, a twist and a punchline:
 
 ## 01 — Cold open: the hook, then the patent
 
-*Audio file:* `01_cold_open.mp3`  ·  *101 words, 31.2 seconds as recorded*
+*Audio file:* `01_cold_open.mp3`  ·  *107 words, 34.6 seconds as recorded*
 
-*On screen:* "FIVE DECISIONS"; three $100 notes and "$300"; four pawns, yours at $1,800 and theirs at $1,500; a counter to 13,400,000 games. Then the 1904 patent on the desk, with slips for the patent number and the game's name. At "Thirty years later": the Atlantic City boardwalk, and "You know it as Monopoly."
+*On screen:* "FIVE DECISIONS"; three $100 notes and a $50, and "$350"; four pawns, yours at $1,850 and theirs at $1,500; a counter to 13,400,000 games. Then the 1904 patent on the desk, with slips for the patent number and the game's name. At "Thirty years later": the Atlantic City boardwalk, and "You know it as Monopoly."
 
-Five decisions in Monopoly are worth three hundred dollars, every single game. Get them right, and it's like starting with three hundred dollars more than everyone else at the table. I played more than thirteen million games to find them. The board game actually started as a warning to tenants everywhere. In nineteen-oh-four, a woman named Lizzie Magie was granted a patent for a board game. She called it The Landlord's Game. She designed it to show how landlords get rich while everyone else pays the rent. Thirty years later, the game had a new name. You know it as Monopoly.
+Five decisions in Monopoly are worth more than three hundred and fifty dollars, every single game. Get them right, and it's like starting with three hundred and fifty dollars more than everyone else at the table. I played more than thirteen million games to find them. The board game actually started as a warning to tenants everywhere. In nineteen-oh-four, a woman named Lizzie Magie was granted a patent for a board game. She called it The Landlord's Game. She designed it to show how landlords get rich while everyone else pays the rent. Thirty years later, the game had a new name. You know it as Monopoly.
 
 ## 02 — The promise
 
-*Audio file:* `02_the_promise.mp3`  ·  *99 words, 29.2 seconds as recorded*
+*Audio file:* `02_the_promise.mp3`  ·  *99 words, 29.6 seconds as recorded*
 
-*On screen:* Title card; the orange squares; dice tumbling; the five decisions typed as a list; stamp 45% MORE WINS.
+*On screen:* Title card; the orange squares; dice tumbling; the five decisions typed as a list, with "SAME DICE · SAME BOARD · TESTED ONE DECISION AT A TIME" in small capitals under a rule; stamp 55% MORE WINS.
 
-Most Monopoly strategy videos tell you the same thing. Buy the orange properties, because people land on them more. And sure. But you don't get to choose where you land. The dice do that. What you do choose is everything else. Like whether to buy. When to trade. Whether to chase the railroads. When to build, and how much cash to keep. Whether to stay in jail. So I tested every one of those decisions. Same dice. Same board. And if you make them all well, you'll win about forty-five percent more games than anyone else at your table.
+Most Monopoly strategy videos tell you the same thing. Buy the orange properties, because people land on them more. And sure. But you don't get to choose where you land. The dice do that. What you do choose is everything else. Like whether to buy. When to trade. Whether to chase the railroads. When to build, and how much cash to keep. Whether to stay in jail. So I tested every one of those decisions. Same dice. Same board. And if you make them all well, you'll win about fifty-five percent more games than anyone else at your table.
 
 ## 03 — How I tested it
 
@@ -133,24 +133,24 @@ One more test. I let the computer invent its own player, by trial and error. Sta
 
 ## 10 — The payoff: the playbook player
 
-*Audio file:* `10_the_payoff.mp3`  ·  *152 words, 54.2 seconds as recorded*
+*Audio file:* `10_the_payoff.mp3`  ·  *154 words, 52.4 seconds as recorded*
 
-*On screen:* The playbook player's pawn and dice; "$300" of free cash at the start of every game, stamp WORTH $300; game-night tallies, 45% MORE WINS; a trophy shelf for 100 years of weekly game nights, with a 1922 Atlantic City Miss America snapshot by "champion two years in three"; "Same dice. No favourite colour. Just better decisions." over a 1924 bathing-beach mah-jong game.
+*On screen:* The playbook player's pawn and dice; three $100 notes and a $50, "$350" of free cash at the start of every game, stamp WORTH $350, "Without auctions: about $300."; game-night tallies (34, 22, 22, 22), 55% MORE WINS; a trophy shelf for 100 years of weekly game nights (73, 7, 7, 7) with a 1922 Atlantic City Miss America snapshot; "Same dice. No favourite colour. Just better decisions." over a 1924 bathing-beach mah-jong game.
 
-So put it all together. One player who makes every one of these decisions well, and never picks a favourite colour. Same dice as everyone else. How much is that worth? Remember the three hundred dollars? I gave a typical player extra cash at the start, until they won as often as the playbook player. It took three hundred dollars. Even without auctions, it's about two hundred, the same as passing Go. Play these decisions well, and you win about thirty-three percent of your games, while each of the people you're playing wins about twenty-two percent. That's about forty-five percent more wins than each of them. And it compounds. Play once a week for a year, with the same family. The player with the playbook finishes the year as champion two years out of three. Each of the others? About one year in eleven. Same dice. No favourite colour. Just better decisions.
+So put it all together. One player who makes every one of these decisions well, and never picks a favourite colour. Same dice as everyone else. How much is that worth? Remember the three hundred and fifty dollars? I gave a typical player extra cash at the start, until they won as often as the playbook player. It took more than three hundred and fifty dollars. Even without auctions, it's about three hundred. Play these decisions well, and you win about thirty-four percent of your games, while each of the people you're playing wins about twenty-two percent. That's about fifty-five percent more wins than each of them. And it compounds. Play once a week for a year, with the same family. The player with the playbook finishes the year as champion almost three years out of four. Each of the others? About one year in fifteen. Same dice. No favourite colour. Just better decisions.
 
 ## 11 — The playbook
 
-*Audio file:* `11_the_playbook.mp3`  ·  *126 words, 47.6 seconds as recorded*
+*Audio file:* `11_the_playbook.mp3`  ·  *135 words, 49.8 seconds as recorded*
 
-*On screen:* The certificate, THE PLAYBOOK, rules I to VII typed as they're read, the wax seal "+45% MORE WINS"; a fade to the 1904 patent; "Now you know how to be the landlord."; "Which of these does your family get wrong?"; the Hasbro disclaimer.
+*On screen:* The certificate, THE PLAYBOOK, rules I to VII typed as they're read (III: "Stalled? Sell only with a set."), the wax seal "+55% MORE WINS"; a fade to the 1904 patent; "Now you know how to be the landlord."; "Which of these does your family get wrong?"; the Hasbro disclaimer.
 
-Here's the playbook. One. Land on it? Buy it, unless it would leave you nearly broke. Two. At auction, bid up to one and a half times the price. Three. Make every fair set-for-set trade, and don't haggle. When the game stalls, deal. Four. Want the railroads? Trade for the last one, or don't bother. Five. Spend your cash on houses, and go to hotels. Owe money? Mortgage first. Six. Two sets? Cheaper houses first, and never one house on everything. Seven. Get out of jail early. Stay in once anyone has houses. Lizzie Magie made this game to show that the landlord always wins. Now you know how to be the landlord. Which of these does your family get wrong? Tell me in the comments.
+Here's the playbook. One. Land on it? Buy it, unless it would leave you nearly broke. Two. At auction, bid up to one and a half times the price. Three. Make every fair set-for-set trade, and don't haggle. When the game stalls, sell only if you have a set of your own. Four. Want the railroads? Trade for the last one, or don't bother. Five. Spend your cash on houses, and go to hotels. Owe money? Mortgage first. Six. Two sets? Cheaper houses first, and never one house on everything. Seven. Get out of jail early. Stay in once anyone has houses. Lizzie Magie made this game to show that the landlord always wins. Now you know how to be the landlord. Which of these does your family get wrong? Tell me in the comments.
 
 ## Where the numbers come from
 
 Every figure is from `sim/results/summary.md`, "Final numbers for the video" (realistic play, endgame deals on, with
 auctions unless the line says otherwise; 100,000 games per result, 13.4 million in all), "Framing the payoff" and
 "Final: two complete sets". Spoken numbers are rounded: for example "about twenty-seven" is 27.0, "about
-thirty-three" is 32.6, "three hundred dollars" is the measured $298 (extra starting cash a typical player needs to match the playbook player), "about two hundred" without auctions is $212, "forty-five percent more" is 32.6 against 22.4 wins per 100, "two years out of three" is 64.8%
-and "one year in eleven" is 8.5-8.9%.
+thirty-three" is 32.6, "three hundred and fifty dollars" is the measured $364 (extra starting cash a typical player needs to match the playbook player), "about three hundred" without auctions is $302, "fifty-five percent more" is 34.2 against 21.9 wins per 100, "almost three years out of four" is 72.6%
+and "one year in fifteen" is 6.6-6.8%.
