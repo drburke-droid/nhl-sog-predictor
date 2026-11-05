@@ -1,6 +1,6 @@
 # YouTube copy: "The 5 Biggest Season-Long Outliers in Team Sports"
 
-**Upload `sports/biggest_season_outliers_team_sports_6m59s_voiced.mp4`** (6:59, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
+**Upload `sports/biggest_season_outliers_team_sports_8m39s_voiced.mp4`** (8:38, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
 
 To rebuild it: `python facts_c.py`, `./render.sh c`, `python cfilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_C.md`, cached by line).
 
@@ -17,7 +17,7 @@ To rebuild it: `python facts_c.py`, `./render.sh c`, `python cfilm.py assemble` 
 ```
 Wilt Chamberlain's 50.4 points a game. Joe DiMaggio's 56-game streak. Wayne Gretzky's 163 assists. Which seasons stood furthest above everyone else of their era?
 
-We took every season's leader in 22 team-sport categories (2,607 seasons) and compared each with the best of everyone else in the 15 seasons before and after, around a curved trend, with an adjustment for league scoring. A season makes the list only if it stands at least one step clear of every other season on its graph, and the five here are the seasons in the top ten of at least 12 of 16 versions of the method.
+We took every season's leader in 22 team-sport categories (2,607 seasons) and compared each with the best of everyone else in the 15 seasons before and after, around a curved trend, with an adjustment for league scoring. The score is how many standard deviations a season sits above that curve. A season makes the list only if it stands at least one step clear of every other season on its graph, and the five here are the seasons in the top ten of at least 12 of 16 versions of the method.
 
 The countdown:
 5. Ichiro Suzuki, 2004: 262 hits (5.27; top ten in 15 of 16 versions)
@@ -34,18 +34,19 @@ Five that came close (the rest of the top ten by score):
 #10 by score: Ted Williams, 1941, .406 batting average (4.77; 3 of 16). Without the adjustment, Rogers Hornsby's .424 and Bill Terry's .401 come within a step. With it, only the longer windows rank it in the ten.
 
 Chapters:
-0:00 Intro
-0:29 #5 Ichiro Suzuki
-1:04 #4 Dennis Rodman
-1:40 #3 Wayne Gretzky
-2:15 #2 Joe DiMaggio
-2:51 #1 Wilt Chamberlain
-3:26 How the score works
-4:09 Four rules that keep it fair
-4:49 How sure is this list?
-5:20 Five that came close
-6:12 What this ranking is
-6:33 Sources and photo credits
+0:00 Comparing across eras: how the score works
+1:39 The biggest outliers
+2:08 #5 Ichiro Suzuki
+2:44 #4 Dennis Rodman
+3:19 #3 Wayne Gretzky
+3:55 #2 Joe DiMaggio
+4:30 #1 Wilt Chamberlain
+5:05 Grading on a curve
+5:49 Four rules that keep it fair
+6:28 How sure is this list?
+6:59 Five that came close
+7:51 What this ranking is
+8:12 Sources and photo credits
 
 Sources: Baseball-Reference, Basketball-Reference, Hockey-Reference, Pro Football Archives, nflverse, Retrosheet.
 

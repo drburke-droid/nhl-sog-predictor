@@ -1,6 +1,6 @@
 # YouTube copy: "The 10 Biggest Single Performances in Athletics and Swimming"
 
-**Upload `sports/biggest_single_performances_athletics_swimming_9m05s_voiced.mp4`** (9:04, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
+**Upload `sports/biggest_single_performances_athletics_swimming_11m00s_voiced.mp4`** (11:00, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
 
 To rebuild it: `python facts_b.py`, `./render.sh b`, `python bfilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_B.md`, cached by line).
 
@@ -17,7 +17,7 @@ To rebuild it: `python facts_b.py`, `./render.sh b`, `python bfilm.py assemble` 
 ```
 Bob Beamon's 8.90 m. Jan Železný's 98.48 m. Usain Bolt's 9.58. Which single performance stood furthest above everyone else of its era?
 
-We took every season's best mark in 52 athletics and swimming events (2,333 marks) and compared each with the best mark by anyone else in the 15 seasons before and after, around a curved trend (races scored as speed; swimming's 2008–09 supersuit seasons treated as a shift). The score is how many usual gaps a mark sits above that curve. A mark makes the list only if it stands at least one step clear of every other mark on its graph.
+We took every season's best mark in 52 athletics and swimming events (2,333 marks) and compared each with the best mark by anyone else in the 15 seasons before and after, around a curved trend (races scored as speed; swimming's 2008–09 supersuit seasons treated as a shift). The score is how many standard deviations a mark sits above that curve. A mark makes the list only if it stands at least one step clear of every other mark on its graph.
 
 The countdown:
 10. Usain Bolt, 2009: 9.58, 100 m (4.02)
@@ -34,22 +34,23 @@ The countdown:
 Gretchen Walsh has no freely licensed photo, so her card runs without one.
 
 Chapters:
-0:00 Intro
-0:29 #10 Usain Bolt
-1:04 #9 Summer McIntosh
-1:40 #8 Armand Duplantis
-2:15 #7 Gretchen Walsh
-2:51 #6 Johannes Vetter
-3:26 #5 Léon Marchand
-4:01 #4 Sergey Bubka
-4:37 #3 Yulimar Rojas
-5:12 #2 Jan Železný
-5:48 #1 Bob Beamon
-6:23 How the score works
-7:06 Four rules that keep it fair
-7:46 How sure is this list?
-8:17 What this ranking is
-8:38 Sources and photo credits
+0:00 Comparing across eras: how the score works
+1:55 The biggest outliers
+2:24 #10 Usain Bolt
+3:00 #9 Summer McIntosh
+3:35 #8 Armand Duplantis
+4:11 #7 Gretchen Walsh
+4:46 #6 Johannes Vetter
+5:21 #5 Léon Marchand
+5:57 #4 Sergey Bubka
+6:32 #3 Yulimar Rojas
+7:07 #2 Jan Železný
+7:43 #1 Bob Beamon
+8:18 Grading on a curve
+9:02 Four rules that keep it fair
+9:41 How sure is this list?
+10:12 What this ranking is
+10:34 Sources and photo credits
 
 Sources: World Athletics; World Aquatics; alltime-athletics.com (Peter Larsson).
 
