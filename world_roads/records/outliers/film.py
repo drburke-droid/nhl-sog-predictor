@@ -6,7 +6,7 @@
 Every number on screen comes from facts.json (python facts.py), built from the locked model E3_main_env of the
 follow-up analysis. The look (surface, type, gold and blue) is the records film's (../look.py).
 """
-import json, os, sys, math
+import json, os, re, sys, math
 
 import numpy as np
 import matplotlib
@@ -26,7 +26,7 @@ TREND = "#9a9890"                                              # the trend of ev
 
 
 def wrap(s, width):
-    words, lines, cur = s.split(), [], ""
+    words, lines, cur = re.split(r"[ \t\r\n]+", s.strip()), [], ""      # a no-break space keeps "15 ÷ 3 = 5" together
     for w in words:
         if len(cur) + len(w) + (1 if cur else 0) > width:
             lines.append(cur)
@@ -262,7 +262,7 @@ class Hook:
             ax.plot([self.X(-4.3), self.X(8.3)], [900, 900], color="#5a5f66", lw=px(1.5), alpha=ca)
             for z in range(-4, 9, 2):
                 ax.text(self.X(z), 930, f"{z}", ha="center", va="center", fontsize=fs(19), color=MUTED, alpha=ca)
-            ax.text(self.X(8.3), 962, "score: steps above everyone else of their era", ha="right", va="center",
+            ax.text(self.X(8.3), 962, self.words.get("axis", "score: steps above everyone else of their era"), ha="right", va="center",
                     fontsize=fs(18), color=MUTED, alpha=ca)
             g = ease(clamp((t - 2.6) / 6.0))
             for lo, n in zip(self.edges[:-1], self.counts):
@@ -298,8 +298,8 @@ class Hook:
                 elif tt > 0:
                     ax.plot([x0], [y0], marker="o", ms=px(9), color=BLUE, alpha=tt, zorder=5, mec="none")
         caps = [(7.2, 10.0, self.words.get("graded", "Each one graded against everyone else of its era.")),
-                (10.0, 12.4, "Most land near zero. Leading your league is normal."),
-                (12.4, 15.6, f"Only {self.sc['at_least_5']} of {self.sc['n']:,} reach 5."),
+                (10.0, 12.4, self.words.get("most", "Most land near zero. Leading your league is normal.")),
+                (12.4, 15.6, self.words.get("five", f"Only {self.sc['at_least_5']} of {self.sc['n']:,} reach 5.")),
                 (18.0, 21.6, self.words.get("ten", "Ten broke the curve."))]
         for t0, t1, msg in caps:
             a = al * fade(t, t0, t1, 0.4, 0.4)
@@ -710,7 +710,7 @@ class Card:
                 friendly = f"Curve about {sig(r['base'], 3)} {u} · one step about {sig(r['step'], 2)} {u}"
             text(fig, 1230, 556, "OUTLIER SCORE", size=21, color=INK2, weight="semibold", alpha=sa)
             title(fig, 1230, 662, f"{c['z_e3'] * prog:.2f}", size=116, color=acc, alpha=sa)
-            text(fig, 1230, 702, "steps above the curve", size=24, color=INK, alpha=sa)
+            text(fig, 1230, 702, F.get("score_label", "steps above the curve"), size=24, color=INK, alpha=sa)
             text(fig, 1230, 738, friendly, size=21, color=INK2, alpha=sa)
             cm = " (in centimetres)" if c["category"] in CM_CATS else ""
             arith = c.get("arith") or f"({xs} − {bs}) ÷ {ss} = {c['z_e3']:.2f}{cm}"

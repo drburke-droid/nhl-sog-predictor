@@ -20,6 +20,7 @@ says why the rest of the top ten by score missed. Films A and B are the top ten 
 | `common.py` | The shared board ("16 ways to rank"), closing line, credits pages, the score's timeline and the assembly |
 | `photos3.py` | Portraits from Wikimedia Commons for the athletes the earlier films didn't need (free licences only; GFDL-only files are passed over) |
 | `VO_A.md`, `VO_B.md`, `VO_C.md` | The narration, timed to each cut |
+| `script_a.py`, `VO_A_body.md`, `classtest.py`, `say.json` | Film A after the script review: the hook and "grading on a curve" timed to their lines (`timed_a.json`; the hook keeps its pictures and music on a longer clock), the class test built like the cards (each class's five best by everyone else, 15 classes either side, the curve, one standard deviation), the rest of the script with offsets within each section, and names respelled for the voice only |
 | `render.sh` | Renders a film's missing sections: `./render.sh a` |
 | `copy3.py` | YouTube copy (titles, description, chapters, full photo credits) into `../../../videos/copy/` |
 
@@ -28,6 +29,18 @@ curve through them, and the game measured from half a unit below its count, sinc
 **Track** for Bolt (the pool chart on a running track), and a drawn football icon.
 
 ## Build
+
+Film A (after the 5 November script review):
+
+```
+ELEVENLABS_API_KEY=... python opening.py a && ELEVENLABS_API_KEY=... python script_a.py   # opening_a.json, timed_a.json, VO_A.md
+ELEVENLABS_API_KEY=... python -c "import sys, json; sys.path.insert(0, '../outliers'); import narrate; narrate.SAY = json.load(open('say.json'))['a']; narrate.build('VO_A.md', 'out_a', <total>)"
+./render.sh a && python afilm.py assemble
+```
+
+`NARRATE_ESTIMATE=1` times lines not yet voiced by their length (16.45 characters a second), for stills only.
+
+Films B and C:
 
 ```
 python facts_a.py; python facts_b.py; python facts_c.py; python facts_intro.py

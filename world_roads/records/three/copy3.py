@@ -27,7 +27,8 @@ def length_tag(total):
 def timeline(film):
     """section start times, without building any card (the three films share film.py's card state)"""
     import film as FM
-    fixed = {"hook": FM.Hook.dur, "curve": FM.Curve.dur, "fair": FM.Fair.dur}
+    fixed = {"hook": getattr(film, "HOOK_DUR", FM.Hook.dur), "curve": getattr(film, "CURVE_DUR", FM.Curve.dur),
+             "fair": getattr(film, "FAIR_DUR", FM.Fair.dur)}            # film A times its own (script_a.py)
     ds = [FM.Card.dur if s[0] == "c" and s[1:].isdigit() else fixed.get(s) or film.SECTIONS[s]().dur for s in film.ORDER]
     off = [0.0]
     for d in ds[:-1]:
@@ -98,8 +99,8 @@ def main():
                      f"({F['scale']['n']:,} games), scaled every game to regulation length, and compared each with the five "
                      "best games by anyone else in each of the 15 seasons before and after, around a curved trend, "
                      "converted by the league's scoring rate. The score is how many standard deviations a game sits above that "
-                     "curve. A game makes the list only if it stands at least one step clear of every other game on its "
-                     "graph.", cd, lab, [c["photo"] for c in F["cards"]],
+                     "curve. A game makes the list only if it stands at least one standard deviation clear of every other "
+                     "game on its graph.", cd, lab, [c["photo"] for c in F["cards"]],
                      "NBA box scores (Eoin Moore, Historical NBA Data and Player Box Scores, CC0, via Hugging Face); "
                      "NHL_DB (Hugging Face, from NHL.com game data); Retrosheet; Pro Football Archives (NFL box scores "
                      "1950–1998); nflverse.")

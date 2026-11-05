@@ -24,16 +24,46 @@ def close_short(S, t0, finale, dur):
     orchestra.theme(S, key, t0 + finale, (dur - finale) / 8, list(range(8)), 1.0, choir=True)
 
 
-def build_score(O, durs, close_finale, explain=("curve",), minor=()):
+class Warp:
+    """a score that plays another section's music on a different clock: knots [(own time, film time)], piecewise
+    linear (a film whose hook is longer than 30 s stretches the hush before the build, not the fanfare)"""
+
+    def __init__(self, S, t0, knots):
+        import numpy as np
+        self.S, self.t0 = S, t0
+        self.a, self.b = np.array([k[0] for k in knots]), np.array([k[1] for k in knots])
+
+    def m(self, t):
+        import numpy as np
+        return self.t0 + float(np.interp(t - self.t0, self.a, self.b))
+
+    def note(self, ch, t, midi, dur, vel):
+        a = self.m(t)
+        self.S.note(ch, a, midi, max(0.05, self.m(t + dur) - a), vel)
+
+    def cc(self, ch, t, num, val):
+        self.S.cc(ch, self.m(t), num, val)
+
+    def drum(self, t, key, vel, dur=0.3):
+        self.S.drum(self.m(t), key, vel, dur)
+
+    def swell(self, ch, t0, t1, v0, v1, step=0.08):
+        self.S.swell(ch, self.m(t0), self.m(t1), v0, v1, step)
+
+    def __getattr__(self, k):
+        return getattr(self.S, k)
+
+
+def build_score(O, durs, close_finale, explain=("curve",), minor=(), hook_knots=None, curve_events=(16.0, 30.0)):
     S = orchestra.Score()
     for name, t0 in O.items():
         d = durs[name]
         if name == "hook":
-            orchestra.hook(S, t0)
+            orchestra.hook(Warp(S, t0, hook_knots) if hook_knots else S, t0)
         elif name[0] == "c" and name[1:].isdigit():
             orchestra.card(S, t0, int(name[1:]))
         elif name == "curve":
-            orchestra.calm(S, t0, d, events=(16.0, 30.0))
+            orchestra.calm(S, t0, d, events=curve_events)
         elif name == "close":
             close_short(S, t0, close_finale, d)
         elif name == "end":
@@ -58,7 +88,8 @@ def assemble(film, out_dir, final, close_finale, minor=(), crf=18):
     paths = [os.path.join(out_dir, f"{s}.mp4") for s in film.ORDER]
     print(f"total {total:.2f} s ({int(total // 60)}:{total % 60:04.1f})", flush=True)
     orchestra.OUT = out_dir
-    S = build_score(O, durs, close_finale, minor=minor)
+    S = build_score(O, durs, close_finale, minor=minor, hook_knots=getattr(film, "HOOK_MUSIC", None),
+                    curve_events=getattr(film, "CURVE_EVENTS", (16.0, 30.0)))
     if S.dropped:
         raise SystemExit(f"{len(S.dropped)} notes out of range")
     mid, wavf = os.path.join(out_dir, "score.mid"), os.path.join(out_dir, "score_fluid.wav")

@@ -1,0 +1,139 @@
+{
+ "hook": {
+  "dur": 47.2,
+  "knots": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    7.2,
+    9.7
+   ],
+   [
+    10.0,
+    18.5
+   ],
+   [
+    12.4,
+    26.5
+   ],
+   [
+    15.0,
+    32.2
+   ],
+   [
+    17.4,
+    34.6
+   ],
+   [
+    30.0,
+    47.2
+   ]
+  ],
+  "music": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    9.6,
+    26.8
+   ],
+   [
+    30.0,
+    47.2
+   ],
+   [
+    60.0,
+    77.2
+   ]
+  ],
+  "starts": [
+   1.0,
+   9.7,
+   18.5,
+   26.5,
+   35.2
+  ],
+  "ends": [
+   9.17,
+   18.049999999999997,
+   26.0,
+   34.73,
+   45.13
+  ],
+  "words": {
+   "graded": "Each one graded against the best games of everyone else in its era, 15 seasons either side.",
+   "most": "Most land close to the curve: the typical level of the best in each era.",
+   "five": "Only 6 of 4,364 are more than 5 standard deviations above it.",
+   "axis": "score: standard deviations above the curve"
+  }
+ },
+ "curve": {
+  "dur": 62.1,
+  "at": {
+   "s95": 3.66,
+   "top5": 5.69,
+   "others": 12.7,
+   "curve": 15.45,
+   "easy": 22.5,
+   "band": 31.8,
+   "star": 38.6,
+   "lift": 45.0
+  },
+  "caps": [
+   [
+    1.0,
+    "Picture a class test. One student scores 95. Leave them out, and take the five best scores by everyone else: about 80."
+   ],
+   [
+    12.7,
+    "Do the same for the 15 classes before and the 15 after. The line through all those top fives is the curve."
+   ],
+   [
+    22.5,
+    "A year with an easier test is scaled down first, just as every season is converted to the same scoring level."
+   ],
+   [
+    31.8,
+    "The top scores usually sit within about 3 points of the curve: one standard deviation."
+   ],
+   [
+    38.6,
+    "The 95 is 15 points above the curve: 15 ÷ 3 = 5 standard deviations. On our scale, a score of 5."
+   ],
+   [
+    45.0,
+    "If the top fives around it had scored about 92, the same 95 would be (95 − 92) ÷ 3 = 1 standard deviation up: a score of 1."
+   ],
+   [
+    53.7,
+    "Same score, different era. So every game in this film is graded against the best of everyone else in its own era."
+   ]
+  ],
+  "starts": [
+   1.0,
+   12.7,
+   22.5,
+   31.8,
+   38.6,
+   45.0,
+   53.7
+  ],
+  "ends": [
+   12.21,
+   21.96,
+   31.339999999999996,
+   38.15,
+   44.46,
+   53.17,
+   60.230000000000004
+  ],
+  "events": [
+   42.9,
+   49.5
+  ]
+ },
+ "estimate": true
+}

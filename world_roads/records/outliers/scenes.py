@@ -907,6 +907,9 @@ def football(d, tone="full"):
     return _down(im, w, h)
 
 
+TOPK_TICK = "each tick: one step,\nthe usual give-or-take"         # a film may reword it (film A: standard deviations)
+
+
 class TopK:
     """the single-game chart (film A): each season's five best games by anyone else, converted into the athlete's
     season, as five dots; the curve through them; the athlete's game, measured from half a unit below its count, one
@@ -1011,7 +1014,7 @@ class TopK:
         if self.explain:
             items = [(4.0, 10.6, "each dot: one of the five best games\nby anyone else that season"),
                      (11.5, 15.8, "the curve: where the top five usually land"),
-                     (15.6, 21.5, "each tick: one step,\nthe usual give-or-take"),
+                     (15.6, 21.5, TOPK_TICK),
                      (21.5, 27.5, f"a count of {self.raw:g} is measured from {self.x:g}:\nit stands for {self.x:g} to {self.x + 1:g}")]
             for t0, t1, msg in items:
                 a = al * fade(t, t0, t1, 0.5, 0.6)

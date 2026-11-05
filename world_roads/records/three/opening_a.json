@@ -10,7 +10,7 @@
       "Since 1950, world records in athletics and swimming have risen by about 23% in the typical event. The 100 m has gone from 10.2 to 9.58, the pole vault from 4.77 m to 6.31 m."
      ],
      [
-      11,
+      10,
       "Science, nutrition, full-time training and better technique: each generation starts from a higher floor."
      ]
     ],
@@ -19,7 +19,7 @@
   ],
   [
    "tiles",
-   24,
+   35,
    {
     "title": "Four home runs isn't always four home runs",
     "tiles": [
@@ -45,7 +45,7 @@
       "Four home runs in a game in 1932, when a team hit one about every other game, isn't the same feat as in 2017, when teams hit 1.26 a game."
      ],
      [
-      13,
+      19,
       "And an athlete of the 1950s, with little weight training or sports science, can't be compared with a full-time professional of today without allowing for it."
      ]
     ],
@@ -54,7 +54,7 @@
   ],
   [
    "rate",
-   20,
+   23,
    {
     "nhl": {
      "1982": 4.01,
@@ -72,7 +72,7 @@
       "NHL teams scored 3.97 goals a game in 1985–86 and 2.57 in 2003–04."
      ],
      [
-      16.95,
+      20.13,
       "Home runs, points and yards get the same treatment."
      ]
     ],
@@ -83,7 +83,7 @@
   ],
   [
    "method",
-   37,
+   60,
    {
     "example": {
      "pts": [
@@ -665,18 +665,18 @@
       "The usual spread of the best around that curve is one standard deviation."
      ],
      [
-      28,
-      "Adrian Peterson's record 296 rushing yards in 2007 stand 3.9 standard deviations above the curve. Here each season's class is its five best games."
+      32,
+      "On a bell curve, about 68% of results fall within one standard deviation either side, 95% within two and 99.7% within three."
      ],
      [
-      34.26,
-      "The score is that count: how many standard deviations above the best of its time."
+      45,
+      "Adrian Peterson's record 296 rushing yards in 2007 stand 3.9 standard deviations above the curve: on a perfect bell curve, about 1 in 20,000. Here each season's class is its five best games."
      ]
     ],
     "at": {
      "curve": 11.0,
      "band": 20.0,
-     "example": 28
+     "example": 45
     }
    }
   ]
@@ -684,44 +684,48 @@
  "cues": [
   [
    1,
-   "Athletes keep getting better. Since 1950, world records in athletics and swimming have improved by about twenty-three percent in the typical event."
+   "Athletes keep getting better... Since 1950, world records in athletics and swimming have improved by about twenty-three percent."
   ],
   [
-   11,
-   "Science, nutrition, full-time training and better technique: every generation starts from a higher floor."
+   10,
+   "Science, nutrition, full-time training and better technique let every generation start from a higher floor."
   ],
   [
    20,
-   "And the game itself changes. Four home runs in a game in 1932, when teams hit one about every other game, isn't the same feat as in 2017, when they hit more than one a game."
+   "The games themselves also change... For example, four home runs by one player in a single game in 1932, when whole teams were only hitting about one every other game, is much more impressive than the same feat in 2017, when teams were hitting more than twice as many home runs."
   ],
   [
-   32,
-   "An athlete of the 1950s, with little weight training or nutrition science, can't be compared with today's full-time professionals without allowing for it."
-  ],
-  [
-   44,
-   "So we look for the biggest statistical outliers in two steps. Step one: every performance is converted to the scoring level of the season being judged."
+   38,
+   "In the same way, an athlete of the 1950s, with little weight training or nutrition science, can't be fairly compared with today's full-time professionals, who build every part of their day around their sport, unless we allow for it."
   ],
   [
    55,
-   "In hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–04, about two and a half."
+   "So we look for the biggest statistical outliers in two steps. Step one: every performance is converted to the scoring level of the season being judged."
   ],
   [
-   64,
+   66,
+   "In hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–04, about two and a half. We need to adjust the data to account for this."
+  ],
+  [
+   78,
    "Step two: each game is compared with the five best games by everyone else, in each of the fifteen seasons before and after."
   ],
   [
-   72,
-   "They trained and competed with much the same science, so together they set the standard for the best of their time: the curve."
+   86,
+   "Their peers in this group trained and competed with much the same science, so together they set the standard for the best of their time: the curve."
   ],
   [
-   82,
-   "The usual spread of the best around that curve is one standard deviation. The score is how many standard deviations a performance sits above it."
+   96,
+   "The usual spread of the best around that curve is one standard deviation. The measure we use to find the greatest performances is how many standard deviations a single performance sits above it."
   ],
   [
-   91,
-   "Adrian Peterson's record two hundred and ninety-six rushing yards stand almost four standard deviations above the curve."
+   109,
+   "On a bell curve, about sixty-eight percent of results fall within one standard deviation either side, ninety-five percent within two, and ninety-nine point seven percent within three."
+  ],
+  [
+   122,
+   "Adrian Peterson's record two hundred and ninety-six rushing yards stand almost four standard deviations above the curve. On a perfect bell curve, a result that high would come up about once in twenty thousand tries."
   ]
  ],
- "dur": 100
+ "dur": 137
 }

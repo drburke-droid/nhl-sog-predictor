@@ -48,6 +48,11 @@ FA["hook_words"] = {"headline": f"{sc['n']:,} season-leading games.",
                     "graded": "Each one graded against the best games of everyone else in its era.",
                     "ten": "Ten stood clear of the field.", "title1": "The 10 Biggest", "title2": "Single-Game Outliers",
                     "title3": "in Team Sports", "countdown": "Counting down from ten"}
+# the score in standard deviations on screen too (the narration says "standard deviations", not "steps")
+FA["score_label"] = "standard deviations above the curve"
+SC.TOPK_TICK = "each tick: one standard deviation,\nthe usual spread of the best"
+for _c in FA["cards"]:
+    _c["friendly"] = _c["friendly"].replace("one step about", "standard deviation about")
 FA["fair_title"] = "Four rules that keep it fair"
 FA["fair_rules"] = [
     (1.0, "Every game at regulation length",
@@ -61,10 +66,10 @@ FA["fair_rules"] = [
      "The class is the five best games by anyone else in each of the 15 seasons before and after. And a count is a "
      "count: 10 points stands for anything from 9.5 to 10.5, so it's measured from 9.5."),
     (26.0, "Clear of the field",
-     "A game counts only if it beats every other game on its own graph by at least one step. Calvin Johnson's "
-     f"{float(_cj['value']):.0f} yards (2013) score {_cj['z']:.2f}, but {_cj['best_other']['name']}'s "
+     "A game counts only if it beats every other game on its own graph by at least one standard deviation. Calvin "
+     f"Johnson's {float(_cj['value']):.0f} yards (2013) score {_cj['z']:.2f}, but {_cj['best_other']['name']}'s "
      f"{float(_cj['best_other']['value']):.0f} in {_cj['best_other']['year']} is about "
-     f"{_cj['best_other']['converted']:.0f} in 2013 terms: within a step. It's left out.")]
+     f"{_cj['best_other']['converted']:.0f} in 2013 terms: within one standard deviation. It's left out.")]
 FA.setdefault("extras", {})
 FM.F = FA
 FM.CARDS = CARDS
@@ -128,6 +133,11 @@ def card_lines(c):
 FM.card_lines = card_lines
 
 
+def surname(name):
+    p = name.split()
+    return " ".join(p[-2:]) if len(p) > 2 and p[-2].lower() in ("van", "von", "de", "del", "da", "di", "le", "la") else p[-1]
+
+
 def board():
     rows = []
     for r in range(1, 11):
@@ -135,15 +145,15 @@ def board():
         rows.append({"rank": r, "athlete": c["athlete"], "achievement": c["achievement"], "season": c["season"],
                      "z": c["z_e3"], "specs_in_top10": c["specs_in_top10"], "hi": c["specs_in_top10"] >= 12,
                      "face": SC.face_disc(c["photo"], c["palette"], 54)})
-    all16 = [c["athlete"].split()[-1] for c in FA["cards"] if c["specs_in_top10"] == 16]
+    all16 = [surname(c["athlete"]) for c in FA["cards"] if c["specs_in_top10"] == 16]
     many = sum(c["specs_in_top10"] >= 12 for c in FA["cards"])
     low = sorted(FA["cards"], key=lambda c: c["specs_in_top10"])[:2]
     caps = [(2.0, "We ranked every game 16 ways: comparison windows of 7, 10, 15 or 20 seasons, straight or curved trends, "
                   "with or without the league adjustment."),
             (9.0, "Each square is a version that put the game in its top ten."),
             (16.0, f"{', '.join(all16[:-1])} and {all16[-1]} made all 16. {many} made at least 12."),
-            (24.0, f"{low[1]['athlete'].split()[-1]}'s {low[1]['achievement'].split()[0]} and "
-                   f"{low[0]['athlete'].split()[-1]}'s {low[0]['achievement'].split()[0]} depend most on the choices: "
+            (24.0, f"{surname(low[1]['athlete'])}'s {low[1]['achievement'].split()[0]} and "
+                   f"{surname(low[0]['athlete'])}'s {low[0]['achievement'].split()[0]} depend most on the choices: "
                    f"{low[1]['specs_in_top10']} and {low[0]['specs_in_top10']} of 16.")]
     return common.Board(rows, "HOW SURE IS THIS LIST?", "16 ways to rank", caps)
 
@@ -160,7 +170,8 @@ class End:
             ("Model", f"{sc['n']:,} season-leading games in {sc['n_categories']} categories, each scaled to regulation "
                       "length and compared with the five best games by anyone else in each of the 15 seasons before and "
                       "after, around a curved trend, converted by the league's scoring rate (at most 1.5 times). Counts "
-                      "are measured from half a unit below; a game must clear every other game on its graph by a step."),
+                      "are measured from half a unit below; a game must clear every other game on its graph by one standard "
+                      "deviation."),
             ("Caveats", "NBA box scores before 1955–56 are incomplete and NFL box scores before 1950 unreliable, so those "
                         "seasons are left out. Old NFL overtimes count as 7.5 minutes. Scores are statistical distances, "
                         "not probabilities or measures of ability."),
@@ -174,12 +185,47 @@ import intro as IN                                          # noqa: E402
 _OP = json.load(open(os.path.join(HERE, "opening_a.json"), encoding="utf-8"))   # python opening.py a: timed to the narration
 INTRO = IN.Intro([(n, d, s) for n, d, s in _OP["scenes"]])
 
-SECTIONS = {"intro": lambda: INTRO, "hook": FM.SECTIONS["hook"], "curve": FM.SECTIONS["curve"], "fair": FM.SECTIONS["fair"], "sure": board,
+import classtest                                            # noqa: E402
+import numpy as _np                                         # noqa: E402
+_T = json.load(open(os.path.join(HERE, "timed_a.json"), encoding="utf-8"))  # python script_a.py
+FA["hook_words"].update(_T["hook"]["words"])
+HOOK_MUSIC = _T["hook"]["music"]                            # the hook's music on the film's clock (common.build_score)
+CURVE_EVENTS = tuple(_T["curve"]["events"])                 # sparkles as the class test's counter lands on 5, then 1
+
+
+class HookA(FM.Hook):
+    """the season film's hook on a longer clock: each part plays as its line is spoken (knots: hook time, film time)"""
+
+    def __init__(self):
+        super().__init__()
+        k = _T["hook"]["knots"]
+        self.own, self.film = _np.array([a for a, _ in k]), _np.array([b for _, b in k])
+        self.dur = _T["hook"]["dur"]
+
+    def draw(self, fig, t):
+        d, self.dur = self.dur, FM.Hook.dur
+        try:
+            super().draw(fig, float(_np.interp(t, self.film, self.own)))
+        finally:
+            self.dur = d
+
+
+class FairA(FM.Fair):
+    dur = 43.0                                              # three seconds longer: rule 4's line is longer
+
+
+HOOK_DUR, CURVE_DUR, FAIR_DUR = _T["hook"]["dur"], _T["curve"]["dur"], FairA.dur    # for copy3.py's timeline
+
+SECTIONS = {"intro": lambda: INTRO, "hook": HookA, "curve": lambda: classtest.ClassTest(_T["curve"]), "fair": FairA, "sure": board,
             "close": lambda: common.ClosingLine("one game", "Which would you choose?"), "end": End}
 for _r in range(1, 11):
     SECTIONS[f"c{_r}"] = FM.SECTIONS[f"c{_r}"]
 ORDER = ["intro", "hook"] + [f"c{r}" for r in range(10, 0, -1)] + ["curve", "fair", "sure", "close", "end"]
-PICKS = {"hook": [14.0, 19.5, 26.0], "fair": [36.0], "sure": [26.0], "close": [12.0], "end": [8.0, 20.0], "curve": [24.0]}
+_hk, _ca = _T["hook"]["knots"], _T["curve"]["at"]
+PICKS = {"hook": [round(float(_np.interp(x, [a for a, _ in _hk], [b for _, b in _hk])), 1) for x in (14.0, 19.5, 26.0)],
+         "fair": [36.0], "sure": [26.0], "close": [12.0], "end": [8.0, 20.0],
+         "curve": [round(_ca["others"] + 4.0, 1), round(_ca["easy"] + 1.5, 1), round(_ca["band"] + 3.0, 1),
+                   round(_ca["star"] + 5.0, 1), round(_ca["lift"] + 5.5, 1)]}
 FINAL = "film_a_final.mp4"
 
 if __name__ == "__main__":

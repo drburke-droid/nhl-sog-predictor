@@ -80,22 +80,45 @@ FILMS = {
                  f"the curve: {bo['name'].split()[-1]}'s {bo['value']} in {bo['year']} is worth about {bo['converted']:.0f} "
                  "in 2001 terms.", "Home runs in a season: the most by anyone else each season, in 2001 terms",
                  I["c"]["example"])],
-    "a": [IMPROVE,
-          ("tiles", 10, ["And the game itself changes. Four home runs in a game in 1932, when teams hit one about every "
-                         "other game, isn't the same feat as in 2017, when they hit more than one a game.", OLD50], [
+    "a": [("improve", 12, [                               # film A's wording, from the review doc (5 November)
+              "Athletes keep getting better... Since 1950, world records in athletics and swimming have improved by "
+              "about twenty-three percent.",
+              "Science, nutrition, full-time training and better technique let every generation start from a higher "
+              "floor."], IMPROVE[3], {}),
+          ("tiles", 10, ["The games themselves also change... For example, four home runs by one player in a single "
+                         "game in 1932, when whole teams were only hitting about one every other game, is much more "
+                         "impressive than the same feat in 2017, when teams were hitting more than twice as many home runs.",
+                         "In the same way, an athlete of the 1950s, with little weight training or nutrition science, "
+                         "can't be fairly compared with today's full-time professionals, who build every part of their "
+                         "day around their sport, unless we allow for it."], [
               ((0, 0), f"Four home runs in a game in 1932, when a team hit one about every other game, isn't the same feat "
                        f"as in 2017, when teams hit {I['a']['tiles'][2]['rate']:.2f} a game."), ((1, 0), OLD50_CAP)], {},
            {"title": "Four home runs isn't always four home runs",
             "tiles": [{"big": x["value"], "label": f"{x['who']} · {x['year']}", "context": f"teams hit {x['rate']:.2f} a game"}
                       for x in I["a"]["tiles"]]}),
-          RATE + ({"nhl": NH},),
-          method(["Step two: each game is compared with the five best games by everyone else, in each of the fifteen "
-                  "seasons before and after.", SHARED, SD,
-                  "Adrian Peterson's record two hundred and ninety-six rushing yards stand almost four standard deviations "
-                  "above the curve."],
-                 f"Adrian Peterson's record 296 rushing yards in 2007 stand {I['a']['example']['z']:.1f} standard "
-                 "deviations above the curve. Here each season's class is its five best games.",
-                 "Rushing yards in a game: the five best by anyone else each season, in 2007 terms", I["a"]["example"])],
+          ("rate", 10, [RATE[2][0], RATE[2][1] + " We need to adjust the data to account for this."], RATE[3], RATE[4],
+           {"nhl": NH}),
+          ("method", 20, [
+              "Step two: each game is compared with the five best games by everyone else, in each of the fifteen "
+              "seasons before and after.",
+              "Their peers in this group trained and competed with much the same science, so together they set the "
+              "standard for the best of their time: the curve.",
+              "The usual spread of the best around that curve is one standard deviation. The measure we use to find the "
+              "greatest performances is how many standard deviations a single performance sits above it.",
+              "On a bell curve, about sixty-eight percent of results fall within one standard deviation either side, "
+              "ninety-five percent within two, and ninety-nine point seven percent within three.",
+              "Adrian Peterson's record two hundred and ninety-six rushing yards stand almost four standard deviations "
+              "above the curve. On a perfect bell curve, a result that high would come up about once in twenty thousand "
+              "tries."], [
+              ((0, 0), MCAPS[0]), ((1, 0), MCAPS[1]), ((2, 0), MCAPS[2]),
+              ((3, 0), "On a bell curve, about 68% of results fall within one standard deviation either side, 95% within "
+                       "two and 99.7% within three."),
+              ((4, 0), f"Adrian Peterson's record 296 rushing yards in 2007 stand {I['a']['example']['z']:.1f} standard "
+                       "deviations above the curve: on a perfect bell curve, about 1 in 20,000. Here each season's class "
+                       "is its five best games.")],
+           {"curve": (1, 2.0), "band": (2, 1.0), "example": (4, 0)},
+           {"example": I["a"]["example"],
+            "chart_title": "Rushing yards in a game: the five best by anyone else each season, in 2007 terms"})],
     "b": [IMPROVE,
           ("tiles", 10, ["A sprinter of 1950, with little weight training, sports science or modern technique, can't be "
                          "compared with a full-time professional of today without allowing for it.",
@@ -146,8 +169,18 @@ def throws_caps(top10_min):
             ((2, 6.0), "The method discounts the whole era, whatever lifted it, without singling anyone out.")]
 
 
+SAY = json.load(open(os.path.join(HERE, "say.json"), encoding="utf-8"))   # respellings for the voice, by film
+
+
+CHARS_PER_S = 16.45                                     # this voice's pace (film A's clips): for a timing estimate
+
+
 def clip_len(text, cache):
+    """a line's length when voiced; with NARRATE_ESTIMATE=1, a line not yet voiced is estimated from its length (for
+    stills and layout checks only: the film is timed to the real clips)"""
     import narrate
+    if os.environ.get("NARRATE_ESTIMATE") and not narrate.cached(text, cache):
+        return round(len(narrate.say(text)) / CHARS_PER_S + 0.3, 2)
     mp3 = narrate.tts(text, cache)
     r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", mp3],
                        capture_output=True, text=True, check=True)
@@ -155,6 +188,8 @@ def clip_len(text, cache):
 
 
 def plan(f):
+    import narrate
+    narrate.SAY = SAY.get(f, {})
     cache = os.path.join(HERE, f"out_{f}", "voice")
     os.makedirs(cache, exist_ok=True)
     top10 = min(c["z_e3"] for c in json.load(open(os.path.join(HERE, f"facts_{f}.json"), encoding="utf-8"))["cards"])
@@ -185,7 +220,8 @@ def plan(f):
         t0 += dur
     json.dump({"scenes": scenes, "cues": cues, "dur": t0}, open(os.path.join(HERE, f"opening_{f}.json"), "w",
                                                                   encoding="utf-8"), indent=1, ensure_ascii=False)
-    script(f, t0, cues)
+    if f != "a":                                            # film A's whole script is written by script_a.py
+        script(f, t0, cues)
     print(f, "opening", t0, "s:", [(n, d_) for n, d_, _ in scenes])
 
 
