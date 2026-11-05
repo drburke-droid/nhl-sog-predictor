@@ -1,6 +1,6 @@
 import numpy as np, subprocess, sys, wave
 S='/tmp/claude-0/-home-user-nhl-sog-predictor/2efb7469-1609-5df1-93e2-5fa10a306726/scratchpad'
-R=48000; FZ,FL,NA,NB,XF=250,36,471,200,16; N=NA+NB-XF
+R=48000; FZ,FL,NA,NB,XF=250,36,471,300,16; N=NA+NB-XF
 raw=subprocess.run(['ffmpeg','-v','error','-i',S+'/src/raw.mov','-af','highpass=f=90,afftdn=nf=-40','-f','f32le','-ac','2','-ar',str(R),'-'],capture_output=True).stdout
 a=np.frombuffer(raw,np.float32).reshape(-1,2).copy()
 fr=lambda f:int(round(f*R/30))

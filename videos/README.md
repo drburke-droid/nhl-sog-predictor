@@ -18,15 +18,24 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 
 ## eye/clips/ (pieces for videos still being made)
 
+The phone AE/AF lock trick (blog post of 2023-11-28), filmed with a −3.00 D lens.
+
 | File | Format | Length | What it is |
 |---|---|---|---|
-| aeaf_lock_glasses_trick_CAPTIONED_22s.mp4 | 16:9, 1080p | 0:22 | Phone AE/AF lock trick (from the 2023-11-28 blog post): zooms that follow the phone, a 1.2 s hold on the AE/AF LOCK banner, then a "with glasses / without glasses" side-by-side. Five step captions, a highlight box on the banner, a shutter flash, and a footnote on nearsighted prescriptions |
-| aeaf_lock_glasses_trick_CLEAN_22s.mp4 | 16:9, 1080p | 0:22 | Same cut and timing with no text or graphics, for editing into the explainer |
+| aeaf_lock_glasses_trick_FULL_with_explainer_1m15s.mp4 | 16:9, 1080p | 1:15 | Captioned demo (0:00-0:25), then the explainer (0:25-1:15) |
+| aeaf_lock_glasses_trick_CLEAN_25s.mp4 | 16:9, 1080p | 0:25 | The demo with no text or graphics, same cut and timing, for editing into the explainer |
+| aeaf_lock_explainer_graphics_50s.mp4 | 16:9, 1080p | 0:50 | The explainer on its own (silent) |
 
-Both have the original street sound, cleaned and kept low so it can be muted or replaced. Timeline (both versions):
-0:00 wide shot, 0:02.8 medium shot as the glasses come in, 0:04.7 close-up on the screen, 0:08.0 tighter as AE/AF LOCK appears,
-0:08.3-0:09.5 hold on the banner, 0:10.7 pull back for the glasses coming off, 0:12.5 close-up on the now-blurry viewfinder
-(shutter 0:13.2), 0:15.2 side-by-side comparison, 0:17.9-0:20.5 slow zoom on both. Scripts to re-render: `tools/aeaf_lock/`.
+Demo (both versions): 0:00 wide, 0:02.8 medium as the glasses come in, 0:04.7 close-up on the screen, 0:08.0 tighter as
+AE/AF LOCK appears, 0:08.3-0:09.5 hold on the banner, 0:10.7 pull back as the glasses come off, 0:12.5 close-up on the
+blurry viewfinder (shutter 0:13.2), 0:15.2 the two photos side by side, 0:19.5 full-frame wipe between them (aligned on the
+skyline; the foreground differs a little because the photos were taken from slightly different spots).
+Original street sound, cleaned and kept low.
+
+Explainer: 0:00 how it works (ray diagram: through the −3.00 D lens far light seems to come from 33 cm, so the camera
+focuses there and stays there once the lens is gone); 0:13.5 up close looks clear, far away blurry (blur = 3.00 − 1/distance,
+sample charts at 33 cm, 1 m and 6 m); 0:27 limitations (no cylinder, minus Rx only, about −0.50 to −10.00 D);
+0:42.6 the four steps. Scripts and the two photos are in `tools/aeaf_lock/`.
 
 ## speed_of_light/
 

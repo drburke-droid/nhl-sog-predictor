@@ -32,7 +32,7 @@ def vfc(sf): return pc[min(sf,NS-1)]+VF_OFF
 # ---------- timeline ----------
 FZ,FL=250,36          # freeze source frame 250 for 36 frames
 NA=NS+FL              # live part length
-NB=200                # comparison part
+NB=300                # comparison part
 XF=16                 # crossfade live->comparison
 N=NA+NB-XF
 def src_of(o):
@@ -119,28 +119,28 @@ def live_frame(o):
         bg=bgplate(fr)*(1-0.55*sh)
         out=(fg*m+bg*(1-m)).astype(np.uint8)
     return grade(out),M,s
-# ---------- comparison plates ----------
-def vf_crop(sf,x0,y0,x1,y1,frac=0.83):
-    f=SRC[sf]; h=y1-y0
-    c=f[y0:y0+int(h*frac),x0:x1].copy()
-    return cv2.fastNlMeansDenoisingColored(c,None,3,3,5,15)
-SHARP=vf_crop(278,872,1042,1162,1429)
-BLUR=vf_crop(390,823,907,1130,1320)
+# ---------- comparison plates (user's real before/after photos, aligned) ----------
+IMG='/tmp/claude-0/-home-user-nhl-sog-predictor/2efb7469-1609-5df1-93e2-5fa10a306726/images/'
+_L=cv2.imread(IMG+'1.jpg'); _R=cv2.imread(IMG+'2.jpg')
+_M=np.load(S+'/work/align_M.npy')
+RW,RH=_R.shape[1],_R.shape[0]
+LW_=cv2.warpAffine(_L,_M,(RW,RH),flags=cv2.INTER_LANCZOS4,borderMode=cv2.BORDER_REPLICATE)
+SHARP=LW_[0:1600]; BLUR=_R[0:1600]
 PH=820; PW=int(PH*SHARP.shape[1]/SHARP.shape[0])
 GAP=70
 PX=[(OW-2*PW-GAP)//2,(OW-2*PW-GAP)//2+PW+GAP]; PY=150 if CAPTIONS else (OH-PH)//2
-FOC=[(0.476/1,0.258/0.83),(0.567,0.388/0.83)]   # vanishing points (rel coords in crop)
 PMASK=rrect_mask(PW,PH,26).astype(np.float32)[...,None]/255
-COMPBG=bgplate(SRC[300],0.30)
-def panel(img,z,foc):
-    h,w=img.shape[:2]
-    fx,fy=foc[0]*w,foc[1]*h
-    s=max(PH/h,PW/w)*z
-    # keep focus point fixed in panel as we zoom, but blend toward it
-    cx=w/2+(fx-w/2)*min(1,(z-1)/0.8); cy=h/2+(fy-h/2)*min(1,(z-1)/0.8)
-    M=np.array([[s,0,PW/2-s*cx],[0,s,PH/2-s*cy]],np.float32)
-    p=cv2.warpAffine(img,M,(PW,PH),flags=cv2.INTER_LANCZOS4,borderMode=cv2.BORDER_REFLECT)
-    return sharpen(p,0.35)
+COMPBG=bgplate(cv2.resize(_R,(SW,SH)),0.30)
+# wipe region: 16:9 band over skyline + far tracks, where the two photos align
+WY0=230; WH_=int(RW/ASP)
+def wipe_src(img,z):
+    h=WH_/z; w=RW/z; cx=RW/2; cy=WY0+WH_/2-30*(z-1)/0.1
+    sc=OH/h
+    M=np.array([[sc,0,OW/2-sc*cx],[0,sc,OH/2-sc*cy]],np.float32)
+    return cv2.warpAffine(img,M,(OW,OH),flags=cv2.INTER_LANCZOS4,borderMode=cv2.BORDER_REPLICATE)
+def panel(img):
+    return cv2.resize(img,(PW,PH),interpolation=cv2.INTER_AREA)
+P_SHARP=panel(SHARP).astype(np.float32); P_BLUR=panel(BLUR).astype(np.float32)
 # ---------- text overlays ----------
 def text_layer(draw_fn):
     im=Image.new('RGBA',(OW,OH),(0,0,0,0)); d=ImageDraw.Draw(im); draw_fn(d,im)
@@ -174,40 +174,79 @@ def caption_card(num,title,sub=None):
 CAPS=[] 
 if CAPTIONS:
     CAPS=[(10,62,caption_card(1,'Open your camera','Aim at something 6+ ft away')),
-          (70,150,caption_card(2,'Hold your glasses over the lens','The camera now sees through your prescription')),
+          (70,150,caption_card(2,'Hold your glasses over the lens','In this video: a −3.00 D lens')),
           (156,FZ+FL+12,caption_card(3,'Press and hold the screen','until AE/AF LOCK appears: focus is now locked')),
           (FZ+FL+18,362,caption_card(4,'Take the glasses away','The focus stays locked at your prescription')),
           (368,NA-6,caption_card(5,'This is your uncorrected vision','Snap a photo to show your friends'))]
 def comp_labels():
     def fn(d,im):
         fT=ImageFont.truetype(FONT_B,44); fS=ImageFont.truetype(FONT_M,28)
-        for i,(t1,t2) in enumerate((('With glasses','Focus locked through the lens'),('Without glasses','Same focus, lens removed'))):
+        for i,(t1,t2) in enumerate((('With glasses','Your corrected vision'),('Without glasses','Your uncorrected vision, simulated'))):
             cx=PX[i]+PW//2
             d.text((cx,PY-78),t1,font=fT,fill=(255,255,255,255),anchor='mm')
             d.text((cx,PY-34),t2,font=fS,fill=(205,210,218,255),anchor='mm')
         fF=ImageFont.truetype(FONT_M,24)
         d.text((OW//2,PY+PH+52),'Works for nearsighted (minus) prescriptions, roughly -0.50 to -10.00 D',font=fF,fill=(170,176,186,255),anchor='mm')
     return text_layer(fn)
+def wipe_labels():
+    def fn(d,im):
+        f=ImageFont.truetype(FONT_B,40)
+        for x,t,anc in ((70,'WITH GLASSES','lm'),(OW-70,'WITHOUT GLASSES','rm')):
+            w_=d.textlength(t,font=f); x0=x-18 if anc=='lm' else x-w_-18
+            ov=Image.new('RGBA',(OW,OH),(0,0,0,0)); od=ImageDraw.Draw(ov)
+            od.rounded_rectangle((x0,62,x0+w_+36,126),18,fill=(14,16,20,190)); im.alpha_composite(ov)
+            d.text((x,94),t,font=f,fill=(255,255,255,255),anchor=anc)
+    return text_layer(fn)
 CL=comp_labels() if CAPTIONS else None
-def comp_frame(b):
+WL=wipe_labels() if CAPTIONS else None
+NBP=118   # end of side-by-side phase
+def wipe_pos(b):
+    # 1.0 = all sharp; sweep to 0.06, then settle at 0.5
+    if b<150: return 1.0
+    if b<205: return 1.0-0.94*ease((b-150)/55)
+    return 0.06+0.44*ease((b-212)/38)
+def draw_handle(img,x):
+    x=int(round(x))
+    ov=img.copy()
+    cv2.line(ov,(x+3,0),(x+3,OH),(0,0,0),6,cv2.LINE_AA)
+    img=cv2.addWeighted(ov,0.25,img,0.75,0)
+    cv2.line(img,(x,0),(x,OH),(255,255,255),4,cv2.LINE_AA)
+    cy=OH//2
+    cv2.circle(img,(x,cy),34,(255,255,255),-1,cv2.LINE_AA)
+    for sgn in (-1,1):
+        pts=np.array([[x+sgn*8,cy-11],[x+sgn*8,cy+11],[x+sgn*21,cy]],np.int32)
+        cv2.fillPoly(img,[pts],(30,30,30),cv2.LINE_AA)
+    return img
+def sbs_frame(b):
     out=COMPBG.copy()
-    # panels slide/fade in
-    for i,img in enumerate((SHARP,BLUR)):
+    for i,p in enumerate((P_SHARP,P_BLUR)):
         u=ease((b-6-i*8)/22)
-        z=1+0.5*ease((b-80)/38)-0.5*ease((b-160)/30)
-        p=panel(img,z,FOC[i]).astype(np.float32)
         x=PX[i]; y=int(PY+40*(1-u))
         sh=np.zeros((OH,OW),np.float32); sh[y+16:y+PH+16,x:x+PW]=1; sh=cv2.GaussianBlur(sh,(0,0),20)[...,None]
         out=out*(1-0.5*u*sh)
-        reg=out[y:y+PH,x:x+PW]
-        a=PMASK*u
+        reg=out[y:y+PH,x:x+PW]; a=PMASK*u
         out[y:y+PH,x:x+PW]=reg*(1-a)+p*a
-        # yellow hairline on blurred panel? keep subtle white border
     out=np.clip(out,0,255).astype(np.uint8)
     if CL is not None:
         u=ease((b-20)/16); rgb,al=CL; a=al*u
         out=(out*(1-a)+rgb*a).astype(np.uint8)
     return out
+def wipe_frame(b):
+    z=1.0+0.08*ease((b-NBP)/(NB-NBP))
+    A=wipe_src(LW_,z); Bm=wipe_src(_R,z)
+    x=wipe_pos(b)*OW
+    m=np.clip((xx[...,None]-x)/2+0.5,0,1)   # 0 left (sharp) .. 1 right (blur)
+    out=(A*(1-m)+Bm*m).astype(np.uint8)
+    if b>=150: out=draw_handle(out,x)
+    if WL is not None and b>=222:
+        u=ease((b-222)/14); rgb,al=WL; a=al*u
+        out=(out*(1-a)+rgb*a).astype(np.uint8)
+    return out
+def comp_frame(b):
+    if b<NBP: return sbs_frame(b)
+    if b<NBP+18:
+        u=ease((b-NBP)/18); return cv2.addWeighted(wipe_frame(b),u,sbs_frame(b),1-u,0)
+    return wipe_frame(b)
 # ---------- overlays on live part ----------
 def ring(img,center,r,alpha,th=5,col=YEL):
     if alpha<=0: return img
