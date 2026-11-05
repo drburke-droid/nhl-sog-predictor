@@ -1,6 +1,6 @@
 # YouTube copy: "The 10 Biggest Single-Game Outliers in Team Sports"
 
-**Upload `sports/biggest_single_game_outliers_10m44s_voiced.mp4`** (10:44, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
+**Upload `sports/biggest_single_game_outliers_12m09s_voiced.mp4`** (12:08, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
 To rebuild it: `python facts_a.py`, `./render.sh a`, `python afilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_A.md`, cached by line).
 
@@ -17,7 +17,7 @@ To rebuild it: `python facts_a.py`, `./render.sh a`, `python afilm.py assemble` 
 ```
 Wilt Chamberlain's 100 points. Norm Van Brocklin's 554 passing yards. Jim Bottomley's 12 RBI. Which single game stood furthest above everyone else of its era?
 
-We took the best game of every season in 18 team-sport categories (4,364 games), scaled every game to regulation length, and compared each with the five best games by anyone else in each of the 15 seasons before and after, around a curved trend, converted by the league's scoring rate. The score is how many standard deviations a game sits above that curve. A game makes the list only if it stands at least one step clear of every other game on its graph.
+We took the best game of every season in 18 team-sport categories (4,364 games), scaled every game to regulation length, and compared each with the five best games by anyone else in each of the 15 seasons before and after, around a curved trend, converted by the league's scoring rate. The score is how many standard deviations a game sits above that curve. A game makes the list only if it stands at least one standard deviation clear of every other game on its graph.
 
 The countdown:
 10. Derrick Thomas, 1990: 7 sacks (4.33)
@@ -33,22 +33,22 @@ The countdown:
 
 Chapters:
 0:00 Comparing across eras: how the score works
-1:39 The biggest outliers
-2:08 #10 Derrick Thomas
-2:44 #9 Bert Olmstead
-3:19 #8 Darryl Sittler
-3:55 #7 Mark Whiten
-4:30 #6 Bob Cousy
-5:05 #5 Cloyce Box
-5:41 #4 Jim Bottomley
-6:16 #3 Norm Van Brocklin
-6:51 #2 Kobe Bryant
-7:27 #1 Wilt Chamberlain
-8:02 Grading on a curve
-8:46 Four rules that keep it fair
-9:25 How sure is this list?
-9:56 What this ranking is
-10:18 Sources and photo credits
+2:34 The biggest outliers
+3:18 #10 Derrick Thomas
+3:53 #9 Bert Olmstead
+4:29 #8 Darryl Sittler
+5:04 #7 Mark Whiten
+5:39 #6 Bob Cousy
+6:15 #5 Cloyce Box
+6:50 #4 Jim Bottomley
+7:26 #3 Norm Van Brocklin
+8:01 #2 Kobe Bryant
+8:36 #1 Wilt Chamberlain
+9:12 Grading on a curve
+10:07 Four rules that keep it fair
+10:50 How sure is this list?
+11:21 What this ranking is
+11:42 Sources and photo credits
 
 Sources: NBA box scores (Eoin Moore, Historical NBA Data and Player Box Scores, CC0, via Hugging Face); NHL_DB (Hugging Face, from NHL.com game data); Retrosheet; Pro Football Archives (NFL box scores 1950–1998); nflverse.
 
