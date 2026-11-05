@@ -241,11 +241,14 @@ def found(t, src, dst, n, only=None, keep=0.0, until=None):
     return dict(kind="found", t0=t, t1=t, src=src, dst=dst, n=n, only=only, keep=keep, until=until)
 
 
-def flow(t0, t1, src, dst, f, only=None):
+def flow(t0, t1, src, dst, f, only=None, land=None, spread=1.0):
     """Gene flow: by t1 a fraction f of dst's gene pool comes from src (replacing, not adding).
     `only`: the migrants carry only these components of the source (e.g. the Bantu-speaking ancestry of
-    West-Central Africa, without its forager share)."""
-    return dict(kind="flow", t0=t0, t1=t1, src=src, dst=dst, f=f, only=only)
+    West-Central Africa, without its forager share).
+    `land`: (lon, lat) where the migrants arrive (default: just inside the coast they approach from).
+    `spread`: how far across the land the arrivals settle (1 = the whole region by the end; less keeps
+    them near where they landed)."""
+    return dict(kind="flow", t0=t0, t1=t1, src=src, dst=dst, f=f, only=only, land=land, spread=spread)
 
 
 def restrict(P, only):
@@ -392,8 +395,13 @@ EVENTS = [
     flow(200, 60, "EAS", "SEA", 0.05),
     flow(165, 110, "SAS", "KHS", 0.025),
     flow(70, 5, "MES", "NAM", 0.10),
-    flow(60, 5, "EAS", "NAM", 0.05),
-    flow(55, 5, "SAS", "NAM", 0.015),
+    # across the Pacific to western North America: the Gold Rush and railroad era (cut short by the
+    # exclusion laws of 1882-1924), then the large migrations after 1965 (US) and 1967 (Canada). Today
+    # about 5% of the US and Canada has East or Southeast Asian ancestry and about 2% South Asian, most of
+    # it in the West: California is ~16% Asian, Metro Vancouver ~50% (2020 US census, 2021 Canadian census)
+    flow(175, 80, "EAS", "NAM", 0.006, land=(-121.5, 37.5), spread=0.12),
+    flow(60, 5, "EAS", "NAM", 0.05, land=(-120.5, 37.0), spread=0.35),
+    flow(55, 5, "SAS", "NAM", 0.02, land=(-121.0, 39.0), spread=0.45),
     flow(70, 5, "NAF", "EUR", 0.03),
     flow(65, 5, "LEV", "EUR", 0.03),
     flow(60, 5, "WAF", "EUR", 0.02),

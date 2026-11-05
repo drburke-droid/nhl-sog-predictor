@@ -18,8 +18,8 @@ FOCAL_PX = LENS / SENSOR * W
 WIDE = (960.0, 505.0, 22.0, 26.0, 0.0)
 
 # (video second, pose). Between two keys the camera eases in and out; equal neighbouring poses hold.
-# STORY follows the story around the world; FINALE (the default) holds the wide shot until the
-# population explosion, then flies low among the towers and pulls back out for the ending.
+# STORY follows the story around the world; FINALE (the default) holds the wide shot until today,
+# then flies low among the population towers of Asia for the ending.
 KEYS_STORY = [
     (0.0, WIDE),
     (17.0, WIDE),
@@ -46,12 +46,11 @@ KEYS_STORY = [
 
 KEYS_FINALE = [
     (0.0, WIDE),
-    (143.0, WIDE),                                   # still, while 200,000 years go by
-    (150.0, (1340.0, 420.0, 57.0, 8.6, 10.0)),        # down among the towers of South and East Asia
-    (155.0, (1240.0, 395.0, 58.0, 8.6, -4.0)),
-    (159.5, (1010.0, 360.0, 55.0, 9.5, -12.0)),       # across to Europe and Africa
-    (166.0, WIDE),                                    # back out for the closing ripple
-    (999.0, WIDE),
+    (163.5, WIDE),                                   # still for 200,000 years, until today's arrivals land
+    (170.0, (1290.0, 425.0, 58.0, 7.5, 6.0)),         # then down among the towers of South Asia
+    (175.0, (1420.0, 440.0, 60.0, 7.0, 22.0)),        # and across to Southeast and East Asia
+    (178.5, (1460.0, 420.0, 62.0, 6.0, 28.0)),
+    (999.0, (1460.0, 420.0, 62.0, 6.0, 28.0)),
 ]
 
 import os as _os

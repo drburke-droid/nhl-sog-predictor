@@ -185,13 +185,13 @@ mr = T.node("ShaderNodeMapRange", interpolation_type="SMOOTHSTEP")
 T.val(mr.inputs["Value"], T.math("SUBTRACT", tw0 + 6.5 * FPS, frame))
 mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = 0.0, 1.5 * FPS
 on = T.math("MULTIPLY", T.cmp("GREATER_EQUAL", tw, 0.0), mr.outputs["Result"])
-wv = T.math("MULTIPLY", T.math("MULTIPLY", gauss, on), 0.85)
+wv = T.math("MULTIPLY", T.math("MULTIPLY", gauss, on), 0.6)
 col = T.mix("RGBA", wv, col, (1.0, 0.92, 0.68, 1.0))
 geo = T.store(spos.outputs["Geometry"], "col", "FLOAT_COLOR", col)
 geo = T.store(geo, "emit", "FLOAT", wv)
 setm = T.node("GeometryNodeSetMaterial")
 T.link(geo, setm.inputs["Geometry"])
-setm.inputs["Material"].default_value = sand_material("Sand", 2.5)
+setm.inputs["Material"].default_value = sand_material("Sand", 0.5)
 T.link(setm.outputs["Geometry"], go.inputs[0])
 sand.modifiers.new("SandOverTime", "NODES").node_group = ng
 
@@ -364,8 +364,11 @@ sed = ed.sequence_editor_create()
 frames = sed.sequences.new_image("Render", os.path.join(OUTD, "render", "frame_0000.png"), channel=1, frame_start=0)
 for f in range(1, NFRAMES):
     frames.elements.append(f"frame_{f:04d}.png")
-hud = sed.sequences.new_movie("HUD", os.path.join(OUTD, "hud.mov"), channel=2, frame_start=0)
-hud.blend_type = "ALPHA_OVER"
+if os.path.exists(os.path.join(OUTD, "hud.mov")):
+    hud = sed.sequences.new_movie("HUD", os.path.join(OUTD, "hud.mov"), channel=2, frame_start=0)
+    hud.blend_type = "ALPHA_OVER"
+else:
+    print("WARNING: no hud.mov yet (export_blender.py --hud-only); the Edit scene has no on-screen text")
 t_on, t_off = int(4.2 * FPS), int(5.8 * FPS)                  # the title fades between these frames
 shade = sed.sequences.new_effect("TitleShade", "COLOR", channel=3, frame_start=0, frame_end=t_off + 1)
 shade.color = (0, 0, 0)

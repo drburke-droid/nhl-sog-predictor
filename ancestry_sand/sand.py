@@ -312,6 +312,8 @@ class Sand:
         xy = CELL_XY[cells]
         entry = xy[np.argmin(np.hypot(*(xy - approach).T))]
         target = entry * 0.72 + b * 0.28
+        if e.get("land"):                                   # a named landing place
+            target = np.array(to_px(*e["land"]), float)
         pour = cells[np.argmin(np.hypot(*(xy - target).T))]
         e["pour"] = pour
         e["pour_xy"] = CELL_XY[pour]
@@ -687,7 +689,7 @@ class Sand:
                             rp["P_new"] = rp["P_new"] * (1 - w) + e["Psrc"] * w
                         # pour: around the landing point, the circle widening as the flow goes on
                         nc = len(e["by_dist"])
-                        sig = 6 + prog * nc * 0.55
+                        sig = 6 + prog * nc * 0.55 * e.get("spread", 1.0)
                         idx = np.minimum((np.abs(self.rng.normal(0, sig, m))).astype(np.int64), nc - 1)
                         cols = self.rng.choice(K, size=m, p=e["Psrc"] / e["Psrc"].sum())
                         rest = self.add(e["by_dist"][idx], cols.astype(np.int8))

@@ -30,8 +30,8 @@ python film.py script                                       # the narration as a
 ```
 
 **The camera.** `camera.py` holds the camera path, shared by Blender and the compositor. By default
-(`FINALE`) it holds the whole map still for the first 2:23, then flies low among the population towers
-of Asia, across to Europe and Africa, and pulls back out for the ending. `SAND_CAMERA=story` selects the
+(`FINALE`) it holds the whole map still until today's migrants have landed (2:43), then flies down
+among the population towers of South Asia and pans across to East and Southeast Asia for the ending. `SAND_CAMERA=story` selects the
 earlier path that follows the story around the world (into East Africa for the exit, along the southern
 route, over Beringia, the Fertile Crescent, the Bantu expansion, the Atlantic in 1500, then the towers).
 For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
@@ -144,7 +144,7 @@ goes. Render settings are tuned for speed: adaptive sampling up to 64 samples, O
 | Andes | Native American 77%, European 17%, African 3% |
 | Caribbean | African 53%, European 38%, Native American 7% |
 | Southern Cone | European 61%, Native American 33%, African 3% |
-| North America | European 73%, Native American 10%, African 9%, East Asian 5% |
+| North America | European 73%, Native American 10%, African 9%, East Asian 5%, South Asian 2% |
 | Greenland | Inuit (Native American-related, with Paleo-Inuit/Siberian) 75%, European 22% |
 | Australia | European 80%, East Asian 10%, Aboriginal 4% |
 

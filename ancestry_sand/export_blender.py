@@ -1,6 +1,6 @@
 """Export the whole film for a full Cycles render in Blender (blender_film.py then builds the .blend).
 
-    python export_blender.py [--no-hud]        # -> out/blender_film/
+    python export_blender.py [--no-hud | --hud-only]       # -> out/blender_film/
 
 grains.npz   every grain the film shows, as records: where it sits, its radius, the frames it is visible
              (tb <= frame < td), and its colour, easing from c0 to c1 (c = c1 + (c0 - c1) * 0.82^(frame - tc));
@@ -68,7 +68,7 @@ def hud_rgba(pt, sim, s):
     return np.dstack([rgb[..., ::-1], a[..., None] * 255]).astype(np.uint8)    # BGRA for cv2
 
 
-def main(hud=True):
+def main(hud=True, records=True):
     os.makedirs(OUTD, exist_ok=True)
     ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{W}x{H}",
                            "-r", str(FPS), "-i", "-", "-c:v", "qtrle", "-pix_fmt", "argb", "-g", "300",
@@ -143,6 +143,9 @@ def main(hud=True):
 
     if ff:
         ff.stdin.close(); ff.wait()
+    if not records:
+        print(f"wrote hud.mov in {time.time() - t0:.0f}s")
+        return
     m = R.n
     a = {k: v[:m] for k, v in R.a.items()}
     cell, lev = a["cell"].astype(np.int64), a["lev"].astype(np.int64)
@@ -159,4 +162,4 @@ def main(hud=True):
 
 
 if __name__ == "__main__":
-    main(hud="--no-hud" not in sys.argv)
+    main(hud="--no-hud" not in sys.argv, records="--hud-only" not in sys.argv)

@@ -47,21 +47,24 @@ SPEED AND QUALITY
      light bounces trimmed to what glass and sand need (6 total, 6 through glass)
      no caustics, no motion blur, a fixed noise pattern so the still camera does not shimmer
      the sand as a point cloud (spheres traced directly, no meshes), only the grains that can be seen
-   Before the full run, test one frame: go to a frame (e.g. 4600, among the towers) and press F12.
+   Before the full run, test one frame: go to a frame (e.g. 5250, among the towers) and press F12.
 
    To go faster:  Render Properties > Sampling > Render > Max Samples 32 (a little noisier), or
                   Output Properties > Resolution 50% for a draft of the whole film.
    To go cleaner: Max Samples 128 and Noise Threshold 0.02.
 
-   Rough time per frame at the project settings, 1920x1080:
-     4-core processor, no GPU     about 2 minutes        (about 7 days for the film)
-     Apple M2/M3 Pro GPU          about 12 seconds       (about 18 hours)
-     NVIDIA RTX 3060/4060         about 6 seconds        (about 9 hours)
-     NVIDIA RTX 4080/4090         about 2-3 seconds      (about 3-4 hours)
-   (Estimates; frames among the towers near the end are the slowest.)
+   Rough time per frame at the project settings, 1920x1080 (measured: about 3 minutes on a
+   4-core cloud processor; the rest scaled from Blender's public Cycles benchmark):
+     NVIDIA RTX 4080/4090           about 2-3 seconds     whole film about 3-5 hours
+     NVIDIA RTX 4060/4070, 3070     about 4-6 seconds     about 6-9 hours
+     NVIDIA RTX 3060, AMD RX 7800   about 6-8 seconds     about 9-12 hours
+     Apple M2/M3 Pro or Max GPU     about 10-20 seconds   about 15-30 hours
+     8-core processor, no GPU       about 1-1.5 minutes   about 4-5 days
+   The frames among the towers at the end are about a third slower than the rest.
 
 
 THE STORY ON SCREEN
-   The camera holds the whole map still for the first 2:23, then flies low among the population
-   towers of Asia, across to Europe and Africa, and pulls back out for the closing ripple of light
-   from East Africa. The timed script for the voice-over is grains_of_ancestry_narration.srt.
+   The camera holds the whole map still for 200,000 years, through the arrival of today's migrants
+   (including the stream across the Pacific to western North America), then at 2:43 flies down among
+   the population towers of South Asia and pans across to East and Southeast Asia, as a last ripple of
+   light runs out from East Africa. The timed script for the voice-over is narration.srt.
