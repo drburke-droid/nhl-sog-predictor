@@ -24,8 +24,19 @@ def length_tag(total):
     return f"{int(total // 60)}m{int(round(total % 60)):02d}s"
 
 
+def timeline(film):
+    """section start times, without building any card (the three films share film.py's card state)"""
+    import film as FM
+    fixed = {"hook": FM.Hook.dur, "curve": FM.Curve.dur, "fair": FM.Fair.dur}
+    ds = [FM.Card.dur if s[0] == "c" and s[1:].isdigit() else fixed.get(s) or film.SECTIONS[s]().dur for s in film.ORDER]
+    off = [0.0]
+    for d in ds[:-1]:
+        off.append(off[-1] + d - common.A.XF)
+    return dict(zip(film.ORDER, off)), dict(zip(film.ORDER, ds)), off[-1] + ds[-1]
+
+
 def chapters(film, labels):
-    O, durs, total = common.timeline(film)
+    O, durs, total = timeline(film)
     out = []
     for s in film.ORDER:
         if s in labels:

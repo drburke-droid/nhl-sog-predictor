@@ -37,15 +37,15 @@
  },
  "bolt": {
   "athlete": "Usain Bolt",
-  "file": "Usain Bolt smiling Berlin 2009.JPG",
-  "page": "https://commons.wikimedia.org/wiki/File:Usain_Bolt_smiling_Berlin_2009.JPG",
-  "author": "Erik van Leeuwen",
-  "license": "GFDL",
-  "license_url": "http://www.gnu.org/copyleft/fdl.html",
-  "date": "16 August 2009",
-  "source": "http://www.erki.nl/",
+  "file": "Usain Bolt Rio 100m final 2016k.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Usain_Bolt_Rio_100m_final_2016k.jpg",
+  "author": "Fernando Frazão/Agência Brasil",
+  "license": "CC BY 3.0 br",
+  "license_url": "https://creativecommons.org/licenses/by/3.0/br/deed.en",
+  "date": "14 August 2016",
+  "source": "[1] [2]",
   "changes": "cropped, background removed (rembg), toned in team colours",
-  "short": "Photo: Erik van Leeuwen, GFDL, via Wikimedia Commons"
+  "short": "Photo: Fernando Frazão/Agência Brasil, CC BY 3.0 br, via Wikimedia Commons"
  },
  "vanbrocklin": {
   "athlete": "Norm Van Brocklin",
