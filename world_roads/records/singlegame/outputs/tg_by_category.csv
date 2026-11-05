@@ -1,19 +1,19 @@
 athlete,sport,category,title,season,raw,length,adjusted,z,curve,step,margin_over_best_other,best_other,date,detail,one_sided_window,specs_in_top10
-Wilt Chamberlain,NBA,sg_nba_pts,Points in a game,1962,100.0,regulation,100.0,8.944,50.174,5.515,5.228,Elgin Baylor 71.0 (1961; 71.17 in this season's terms),1962-03-02,Warriors vs Knicks,False,16
-Jim Bottomley,MLB,sg_mlb_rbi,"Runs batted in, one game",1924,12.0,9.0 innings batted,12.0,5.853,6.717,0.817,1.884,Tony Lazzeri 11.0 (1936; 10.46 in this season's terms),1924-09-16,BRO192409160,False,14
-Bob Cousy,NBA,sg_nba_ast,Assists in a game,1959,28.0,regulation,28.0,4.963,14.527,2.614,1.024,Guy Rodgers 28.0 (1963; 25.32 in this season's terms),1959-02-27,Celtics vs Lakers,True,4
-Darryl Sittler,NHL,sg_nhl_points,Points in a game,1976,10.0,regulation,10.0,4.742,6.09,0.719,2.55,Tom Bladon 8.0 (1978; 8.17 in this season's terms),1976:1975020479,1975020479,False,14
-Calvin Johnson,NFL,sg_nfl_rec_yds,Receiving yards in a game,2013,329.0,regulation,329.0,4.363,212.121,26.675,0.897,Jimmy Smith 291.0 (2000; 305.08 in this season's terms),2013-w08,DET vs DAL (2013_08_DAL_DET),False,12
-John Roche,NBA,sg_nba_3pm,Three-pointers in a game,1982,8.0,regulation,8.0,4.314,4.274,0.748,1.052,Rick Barry 8.0 (1980; 7.21 in this season's terms),1982-01-09,Nuggets vs SuperSonics,True,4
-Wilt Chamberlain,NBA,sg_nba_reb,Rebounds in a game,1961,55.0,,55.0,4.291,33.344,4.93,0.82,Bill Russell 51.0 (1960; 50.96 in this season's terms),1960-11-24,Warriors vs Celtics,False,16
-Bob Feller,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",1938,18.0,9.0 innings pitched,18.0,3.965,11.715,1.459,0.135,Dizzy Dean 17.0 (1933; 17.80 in this season's terms),1938-10-02,CLE193810021,False,0
-Billy Taylor,NHL,sg_nhl_assists,Assists in a game,1947,7.0,regulation,7.0,3.883,3.907,0.668,2.113,Syl Apps 5.0 (1937; 5.59 in this season's terms),1947:1946020172,1946020172,False,6
-Adrian Peterson,NFL,sg_nfl_rush_yds,Rushing yards in a game,2007,296.0,regulation,296.0,3.709,203.558,24.791,0.412,Jamal Lewis 295.0 (2003; 285.78 in this season's terms),2007-w09,MIN vs LAC (2007_09_SD_MIN),False,0
-Rennie Stennett,MLB,sg_mlb_h,Hits in a game,1975,7.0,9.0 innings batted,7.0,3.676,5.07,0.389,2.359,Bob Oliver 6.0 (1969; 6.08 in this season's terms),1975-09-16,CHN197509160,False,7
-Red Berenson,NHL,sg_nhl_goals,Goals in a game,1969,6.0,regulation,6.0,3.431,3.407,0.61,0.374,Bernie Geoffrion 5.0 (1955; 5.77 in this season's terms),1969:1968020066,1968020066,False,0
-Osi Umenyiora,NFL,sg_nfl_sacks,Sacks in a game,2007,6.0,regulation,6.0,2.9,3.576,0.664,0.191,Adrian Clayborn 6.0 (2017; 5.87 in this season's terms),2007-w04,NYG vs  (2007_04_PHI_NYG),False,0
-Carl Crawford,MLB,sg_mlb_sb,Stolen bases in a game,2009,6.0,8.0 innings batted,6.0,2.897,3.574,0.665,0.182,Eric Young 6.0 (1996; 5.88 in this season's terms),2009-05-03,TBA200905030,False,0
-DeAngelo Hall,NFL,sg_nfl_int,Interceptions in a game,2010,4.0,regulation,4.0,2.51,2.268,0.491,0.053,Deltha O'Neal 4.0 (2001; 3.97 in this season's terms),2010-w07,WAS vs  (2010_07_WAS_CHI),False,0
-Drew Brees,NFL,sg_nfl_pass_yds,Passing yards in a game,2006,510.0,regulation,510.0,2.413,430.658,32.672,0.054,Joe Burrow 525.0 (2021; 508.24 in this season's terms),2006-w11,NO vs CIN (2006_11_CIN_NO),False,0
-Peyton Manning,NFL,sg_nfl_pass_td,Touchdown passes in a game,2013,7.0,regulation,7.0,1.931,5.102,0.724,0.0,Nick Foles 7.0 (2013; 7.00 in this season's terms),2013-w01,DEN vs BAL (2013_01_BAL_DEN),False,0
-Mark Whiten,MLB,sg_mlb_hr,Home runs in a game,1993,4.0,9.0 innings batted,4.0,1.603,2.778,0.451,0.112,Bob Horner 4.0 (1986; 3.95 in this season's terms),1993-09-07,CIN199309072,False,16
+Wilt Chamberlain,NBA,sg_nba_pts,Points in a game,1962,100.0,regulation,100.0,8.906,50.328,5.521,5.149,Pete Maravich 68.0 (1977; 71.57 in this season's terms),1962-03-02,Warriors vs Knicks,False,16
+Norm Van Brocklin,NFL,sg_nfl_pass_yds,Passing yards in a game,1951,554.0,regulation,554.0,5.856,312.027,41.235,1.989,Y.A. Tittle 505.0 (1962; 471.98 in this season's terms),1951-09-28,Los Angeles Rams (Los Angeles Rams at New York Yanks; NFL),True,16
+Jim Bottomley,MLB,sg_mlb_rbi,"Runs batted in, one game",1924,12.0,9.0 innings batted,12.0,5.778,6.726,0.826,2.012,Tony Lazzeri 11.0 (1936; 10.34 in this season's terms),1924-09-16,BRO192409160,False,14
+Cloyce Box,NFL,sg_nfl_rec_yds,Receiving yards in a game,1950,302.0,regulation,302.0,5.244,170.103,25.056,1.037,Billy Howton 257.0 (1956; 276.01 in this season's terms),1950-12-03,Detroit Lions (Detroit Lions at Baltimore Colts; NFL),True,14
+Bob Cousy,NBA,sg_nba_ast,Assists in a game,1959,28.0,regulation,28.0,5.018,14.468,2.597,1.094,Guy Rodgers 28.0 (1963; 25.16 in this season's terms),1959-02-27,Celtics vs Lakers,True,8
+Darryl Sittler,NHL,sg_nhl_points,Points in a game,1976,10.0,regulation,10.0,4.747,6.088,0.719,2.556,Tom Bladon 8.0 (1978; 8.16 in this season's terms),1976:1975020479,1975020479,False,12
+Derrick Thomas,NFL,sg_nfl_sacks,Sacks in a game,1990,7.0,regulation,7.0,4.332,3.953,0.588,1.907,Fred Dean 6.0 (1983; 5.88 in this season's terms),1990-11-11,Kansas City Chiefs (Seattle Seahawks at Kansas City Chiefs; NFL),False,12
+Wilt Chamberlain,NBA,sg_nba_reb,Rebounds in a game,1961,55.0,,55.0,4.258,33.42,4.951,0.818,Bill Russell 51.0 (1960; 50.95 in this season's terms),1960-11-24,Warriors vs Celtics,False,16
+Adrian Peterson,NFL,sg_nfl_rush_yds,Rushing yards in a game,2007,296.0,regulation,296.0,3.92,203.628,23.435,0.64,Jamal Lewis 295.0 (2003; 281.00 in this season's terms),2007-w09,MIN vs LAC (2007_09_SD_MIN),False,0
+Bob Feller,MLB,sg_mlb_so,"Strikeouts by a pitcher, one game",1938,18.0,9.0 innings pitched,18.0,3.911,11.729,1.475,0.018,Dizzy Dean 17.0 (1933; 17.97 in this season's terms),1938-10-02,CLE193810021,False,0
+Billy Taylor,NHL,sg_nhl_assists,Assists in a game,1947,7.0,regulation,7.0,3.888,3.905,0.667,2.081,Syl Apps 5.0 (1937; 5.61 in this season's terms),1947:1946020172,1946020172,False,2
+Rennie Stennett,MLB,sg_mlb_h,Hits in a game,1975,7.0,9.0 innings batted,7.0,3.671,5.072,0.389,2.341,Bob Oliver 6.0 (1969; 6.09 in this season's terms),1975-09-16,CHN197509160,False,1
+Red Berenson,NHL,sg_nhl_goals,Goals in a game,1969,6.0,regulation,6.0,3.435,3.403,0.61,0.339,Bernie Geoffrion 5.0 (1955; 5.79 in this season's terms),1969:1968020066,1968020066,False,0
+Kobe Bryant,NBA,sg_nba_3pm,Three-pointers in a game,2003,12.0,regulation,12.0,3.375,8.142,0.995,0.445,Donyell Marshall 12.0 (2005; 11.56 in this season's terms),2003-01-07,Lakers vs SuperSonics,False,16
+Adrian Burk,NFL,sg_nfl_pass_td,Touchdown passes in a game,1954,7.0,regulation,7.0,2.988,3.993,0.839,-0.136,Joe Kapp 7.0 (1969; 7.11 in this season's terms),1954-10-17,Philadelphia Eagles (Philadelphia Eagles at Washington Redskins; NFL),True,0
+Carl Crawford,MLB,sg_mlb_sb,Stolen bases in a game,2009,6.0,8.0 innings batted,6.0,2.88,3.587,0.664,0.233,Eric Young 6.0 (1996; 5.85 in this season's terms),2009-05-03,TBA200905030,False,0
+DeAngelo Hall,NFL,sg_nfl_int,Interceptions in a game,2010,4.0,regulation,4.0,2.16,2.379,0.519,0.351,Kwamie Lassiter 4.0 (1998; 3.82 in this season's terms),2010-w07,WAS vs  (2010_07_WAS_CHI),False,0
+Mark Whiten,MLB,sg_mlb_hr,Home runs in a game,1993,4.0,9.0 innings batted,4.0,1.605,2.776,0.451,0.115,Bob Horner 4.0 (1986; 3.95 in this season's terms),1993-09-07,CIN199309072,False,16

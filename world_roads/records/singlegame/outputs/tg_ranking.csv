@@ -1,13 +1,16 @@
 rank,athlete,sport,category,title,season,raw,length,adjusted,z,curve,step,margin_over_best_other,best_other,date,detail,one_sided_window,specs_in_top10
-1,Wilt Chamberlain,NBA,sg_nba_pts,Points in a game,1962,100.0,regulation,100.0,8.944,50.174,5.515,5.228,Elgin Baylor 71.0 (1961; 71.17 in this season's terms),1962-03-02,Warriors vs Knicks,False,16
-2,Kobe Bryant,NBA,sg_nba_pts,Points in a game,2006,81.0,regulation,81.0,6.744,50.878,4.392,2.569,David Robinson 71.0 (1994; 69.72 in this season's terms),2006-01-22,Lakers vs Raptors,False,16
-3,Jim Bottomley,MLB,sg_mlb_rbi,"Runs batted in, one game",1924,12.0,9.0 innings batted,12.0,5.853,6.717,0.817,1.884,Tony Lazzeri 11.0 (1936; 10.46 in this season's terms),1924-09-16,BRO192409160,False,14
-4,Bob Cousy,NBA,sg_nba_ast,Assists in a game,1959,28.0,regulation,28.0,4.963,14.527,2.614,1.024,Guy Rodgers 28.0 (1963; 25.32 in this season's terms),1959-02-27,Celtics vs Lakers,True,4
-5,Mark Whiten,MLB,sg_mlb_rbi,"Runs batted in, one game",1993,12.0,9.0 innings batted,12.0,4.908,7.322,0.851,2.419,Alex Rodriguez 10.0 (2005; 9.94 in this season's terms),1993-09-07,CIN199309072,False,16
-6,Darryl Sittler,NHL,sg_nhl_points,Points in a game,1976,10.0,regulation,10.0,4.742,6.09,0.719,2.55,Tom Bladon 8.0 (1978; 8.17 in this season's terms),1976:1975020479,1975020479,False,14
-7,Bert Olmstead,NHL,sg_nhl_points,Points in a game,1954,8.0,regulation,8.0,4.489,4.584,0.65,1.875,Maurice Richard 8.0 (1945; 6.78 in this season's terms),1954:1953020117,1953020117,False,6
-8,John Roche,NBA,sg_nba_3pm,Three-pointers in a game,1982,8.0,regulation,8.0,4.314,4.274,0.748,1.052,Rick Barry 8.0 (1980; 7.21 in this season's terms),1982-01-09,Nuggets vs SuperSonics,True,4
-9,Sam Gagner,NHL,sg_nhl_points,Points in a game,2012,8.0,regulation,8.0,4.037,5.097,0.595,1.632,Jaromir Jagr 7.0 (2003; 7.03 in this season's terms),2012:2011020759,2011020759,False,15
-10,Billy Taylor,NHL,sg_nhl_assists,Assists in a game,1947,7.0,regulation,7.0,3.883,3.907,0.668,2.113,Syl Apps 5.0 (1937; 5.59 in this season's terms),1947:1946020172,1946020172,False,6
-11,Rennie Stennett,MLB,sg_mlb_h,Hits in a game,1975,7.0,9.0 innings batted,7.0,3.676,5.07,0.389,2.359,Bob Oliver 6.0 (1969; 6.08 in this season's terms),1975-09-16,CHN197509160,False,7
-12,Mike Schmidt,MLB,sg_mlb_hr,Home runs in a game,1976,4.0,10.0 innings batted,3.6,1.569,2.403,0.444,1.287,Bob Horner 4.0 (1986; 3.03 in this season's terms),1976-04-17,CHN197604170,False,2
+1,Wilt Chamberlain,NBA,sg_nba_pts,Points in a game,1962,100.0,regulation,100.0,8.906,50.328,5.521,5.149,Pete Maravich 68.0 (1977; 71.57 in this season's terms),1962-03-02,Warriors vs Knicks,False,16
+2,Kobe Bryant,NBA,sg_nba_pts,Points in a game,2006,81.0,regulation,81.0,6.752,50.904,4.383,2.622,David Robinson 71.0 (1994; 69.51 in this season's terms),2006-01-22,Lakers vs Raptors,False,16
+3,Norm Van Brocklin,NFL,sg_nfl_pass_yds,Passing yards in a game,1951,554.0,regulation,554.0,5.856,312.027,41.235,1.989,Y.A. Tittle 505.0 (1962; 471.98 in this season's terms),1951-09-28,Los Angeles Rams (Los Angeles Rams at New York Yanks; NFL),True,16
+4,Jim Bottomley,MLB,sg_mlb_rbi,"Runs batted in, one game",1924,12.0,9.0 innings batted,12.0,5.778,6.726,0.826,2.012,Tony Lazzeri 11.0 (1936; 10.34 in this season's terms),1924-09-16,BRO192409160,False,14
+5,Cloyce Box,NFL,sg_nfl_rec_yds,Receiving yards in a game,1950,302.0,regulation,302.0,5.244,170.103,25.056,1.037,Billy Howton 257.0 (1956; 276.01 in this season's terms),1950-12-03,Detroit Lions (Detroit Lions at Baltimore Colts; NFL),True,14
+6,Bob Cousy,NBA,sg_nba_ast,Assists in a game,1959,28.0,regulation,28.0,5.018,14.468,2.597,1.094,Guy Rodgers 28.0 (1963; 25.16 in this season's terms),1959-02-27,Celtics vs Lakers,True,8
+7,Mark Whiten,MLB,sg_mlb_rbi,"Runs batted in, one game",1993,12.0,9.0 innings batted,12.0,4.896,7.324,0.853,2.422,Alex Rodriguez 10.0 (2005; 9.93 in this season's terms),1993-09-07,CIN199309072,False,16
+8,Darryl Sittler,NHL,sg_nhl_points,Points in a game,1976,10.0,regulation,10.0,4.747,6.088,0.719,2.556,Tom Bladon 8.0 (1978; 8.16 in this season's terms),1976:1975020479,1975020479,False,12
+9,Bert Olmstead,NHL,sg_nhl_points,Points in a game,1954,8.0,regulation,8.0,4.522,4.571,0.648,1.942,Maurice Richard 8.0 (1945; 6.74 in this season's terms),1954:1953020117,1953020117,False,5
+10,Derrick Thomas,NFL,sg_nfl_sacks,Sacks in a game,1990,7.0,regulation,7.0,4.332,3.953,0.588,1.907,Fred Dean 6.0 (1983; 5.88 in this season's terms),1990-11-11,Kansas City Chiefs (Seattle Seahawks at Kansas City Chiefs; NFL),False,12
+11,Sam Gagner,NHL,sg_nhl_points,Points in a game,2012,8.0,regulation,8.0,4.05,5.09,0.595,1.621,Jaromir Jagr 7.0 (2003; 7.04 in this season's terms),2012:2011020759,2011020759,False,6
+12,Joe Namath,NFL,sg_nfl_pass_yds,Passing yards in a game,1972,496.0,regulation,496.0,4.027,355.986,34.643,1.285,Y.A. Tittle 505.0 (1962; 451.49 in this season's terms),1972-09-24,New York Jets (New York Jets at Baltimore Colts; NFL),False,3
+13,Billy Taylor,NHL,sg_nhl_assists,Assists in a game,1947,7.0,regulation,7.0,3.888,3.905,0.667,2.081,Syl Apps 5.0 (1937; 5.61 in this season's terms),1947:1946020172,1946020172,False,2
+14,Rennie Stennett,MLB,sg_mlb_h,Hits in a game,1975,7.0,9.0 innings batted,7.0,3.671,5.072,0.389,2.341,Bob Oliver 6.0 (1969; 6.09 in this season's terms),1975-09-16,CHN197509160,False,1
+15,Mike Schmidt,MLB,sg_mlb_hr,Home runs in a game,1976,4.0,10.0 innings batted,3.6,1.596,2.392,0.444,1.348,Bob Horner 4.0 (1986; 3.00 in this season's terms),1976-04-17,CHN197604170,False,0
