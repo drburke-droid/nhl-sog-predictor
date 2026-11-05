@@ -95,18 +95,36 @@ def assemble(film, out_dir, final, close_finale, minor=(), crf=18):
              "-colorspace", "bt709", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-shortest", dst]
     subprocess.run(args, check=True)
     print(dst, f"{os.path.getsize(dst) / 1e6:.1f} MB", f"{A.dur(dst):.2f} s")
-    voice = os.path.join(out_dir, "narration.wav")
-    if os.path.exists(voice):                                # the voiced copy: narration over the score, ducked 18 dB
-        import narrate
-        vmix = narrate.duck_and_mix(mix, voice, duck_db=18.0)
-        vraw, vwav = os.path.join(out_dir, "voiced_raw.wav"), os.path.join(out_dir, "voiced.wav")
-        orchestra.write(vmix, vraw)
-        A.loudnorm(vraw, vwav)
-        vdst = dst.replace(".mp4", "_voiced.mp4")
-        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", dst, "-i", vwav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-                        "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-shortest", vdst], check=True)
-        print(vdst, f"{os.path.getsize(vdst) / 1e6:.1f} MB", f"{A.dur(vdst):.2f} s")
+    if os.path.exists(os.path.join(out_dir, "narration.wav")):
+        voiced(out_dir, final)
     return dst
+
+
+BED_DB = {"b": 10.0}            # the voiced mix lowers the score by this much throughout (film B: the music between lines
+                                # was as loud as the voice); the 18 dB duck under the voice comes on top
+
+
+def voiced(out_dir, final, duck_db=18.0, bed_db=None):
+    """the voiced copy, from the finished film: the score (score_raw.wav, as assembled) lowered by bed_db, the narration
+    on top with the score ducked duck_db under the voice, normalised to -16 LUFS, on the film's own video stream"""
+    import numpy as np
+    import narrate
+    from scipy.io import wavfile
+    if bed_db is None:
+        bed_db = BED_DB.get(os.path.basename(out_dir.rstrip("/"))[-1], 0.0)
+    sr, x = wavfile.read(os.path.join(out_dir, "score_raw.wav"))
+    music = (x.astype(np.float32) / 32768.0) * 10 ** (-bed_db / 20.0)
+    vmix = narrate.duck_and_mix(music, os.path.join(out_dir, "narration.wav"), duck_db=duck_db)
+    vraw, vwav = os.path.join(out_dir, "voiced_raw.wav"), os.path.join(out_dir, "voiced.wav")
+    orchestra.write(vmix, vraw)
+    A.loudnorm(vraw, vwav)
+    dst = os.path.join(out_dir, final)
+    vdst = dst.replace(".mp4", "_voiced.mp4")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", dst, "-i", vwav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+                    "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-shortest", vdst], check=True)
+    print(vdst, f"music {bed_db:g} dB down, ducked {duck_db:g} dB under the voice;",
+          f"{os.path.getsize(vdst) / 1e6:.1f} MB", f"{A.dur(vdst):.2f} s")
+    return vdst
 
 
 def stills(film, picks, out_dir):

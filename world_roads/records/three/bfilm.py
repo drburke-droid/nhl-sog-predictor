@@ -191,6 +191,8 @@ if __name__ == "__main__":
     which = sys.argv[1]
     if which == "stills":
         common.stills(sys.modules[__name__], PICKS, OUT)
+    elif which == "voiced":                                 # remix the voiced copy only (no re-render)
+        common.voiced(OUT, FINAL)
     elif which == "assemble":
         common.assemble(sys.modules[__name__], OUT, FINAL, common.ClosingLine.FINALE)
     else:
