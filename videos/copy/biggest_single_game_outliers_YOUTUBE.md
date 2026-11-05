@@ -1,6 +1,6 @@
 # YouTube copy: "The 10 Biggest Single-Game Outliers in Team Sports"
 
-**Upload `sports/biggest_single_game_outliers_10m44s_voiced.mp4`** (10:44, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
+**Upload `sports/biggest_single_game_outliers_10m44s_voiced.mp4`** (10:44, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
 To rebuild it: `python facts_a.py`, `./render.sh a`, `python afilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_A.md`, cached by line).
 

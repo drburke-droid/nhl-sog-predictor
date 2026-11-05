@@ -1,6 +1,6 @@
 # YouTube copy: "The 10 Biggest Single Performances in Athletics and Swimming"
 
-**Upload `sports/biggest_single_performances_athletics_swimming_11m00s_voiced.mp4`** (11:00, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
+**Upload `sports/biggest_single_performances_athletics_swimming_11m00s_voiced.mp4`** (11:00, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
 To rebuild it: `python facts_b.py`, `./render.sh b`, `python bfilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_B.md`, cached by line).
 

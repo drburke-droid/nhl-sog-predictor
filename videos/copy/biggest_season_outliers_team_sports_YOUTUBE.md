@@ -1,6 +1,6 @@
 # YouTube copy: "The 5 Biggest Season-Long Outliers in Team Sports"
 
-**Upload `sports/biggest_season_outliers_team_sports_8m39s_voiced.mp4`** (8:38, 1920×1080, 30 fps, H.264; narrated, original orchestral score ducked 18 dB under the voice, −16 LUFS).
+**Upload `sports/biggest_season_outliers_team_sports_8m39s_voiced.mp4`** (8:38, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
 To rebuild it: `python facts_c.py`, `./render.sh c`, `python cfilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_C.md`, cached by line).
 

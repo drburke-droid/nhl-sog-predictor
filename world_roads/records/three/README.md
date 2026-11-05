@@ -37,5 +37,5 @@ ELEVENLABS_API_KEY=... python -c "import sys; sys.path.insert(0, '../outliers');
 ./render.sh c && python cfilm.py assemble                # out_c/film_c_final.mp4 and film_c_final_voiced.mp4
 ```
 
-The voiced copy puts the narration over the score with the music ducked 18 dB under the voice, normalised to −16 LUFS.
+The voiced copy puts the narration over the score as a steady bed about 18 dB under the voice, with no ducking (a slow level-rider and a peak limiter keep the music's own swells and hits even), normalised to −16 LUFS. To remix only the sound: `python <film>film.py voiced`.
 Mark Whiten, Derrick Thomas and Gretchen Walsh have no freely licensed photo, so their cards run without one.

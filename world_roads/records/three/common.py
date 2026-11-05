@@ -100,30 +100,71 @@ def assemble(film, out_dir, final, close_finale, minor=(), crf=18):
     return dst
 
 
-BED_DB = {"b": 10.0}            # the voiced mix lowers the score by this much throughout (film B: the music between lines
-                                # was as loud as the voice); the 18 dB duck under the voice comes on top
+BED_BELOW_VOICE_DB = 18.0       # the score sits this far under the narration (speech RMS), steady from start to finish
 
 
-def voiced(out_dir, final, duck_db=18.0, bed_db=None):
-    """the voiced copy, from the finished film: the score (score_raw.wav, as assembled) lowered by bed_db, the narration
-    on top with the score ducked duck_db under the voice, normalised to -16 LUFS, on the film's own video stream"""
+def steady(music, sr, target_rms, win=2.0, smooth=1.5, crest_db=12.0):
+    """the score as a steady bed: a slow level-rider brings its loudness to target_rms (between -12 and +6 dB of gain,
+    smoothed so it never pumps), then a peak limiter keeps orchestral hits within crest_db of that level"""
     import numpy as np
-    import narrate
+    mono = music.mean(axis=1).astype(np.float64)
+    n, w = len(mono), int(win * sr)
+    c = np.concatenate([[0.0], np.cumsum(mono ** 2)])
+    idx = np.arange(n)
+    lo, hi = np.clip(idx - w // 2, 0, n), np.clip(idx + w // 2, 0, n)
+    env = np.sqrt((c[hi] - c[lo]) / np.maximum(hi - lo, 1)) + 1e-6
+    g = np.clip(target_rms / env, 10 ** (-12 / 20), 10 ** (6 / 20))
+    k = int(smooth * sr)                                       # moving average by running sums (fast)
+    cg = np.concatenate([[0.0], np.cumsum(g)])
+    lo2, hi2 = np.clip(idx - k // 2, 0, n), np.clip(idx + k // 2, 0, n)
+    g = (cg[hi2] - cg[lo2]) / np.maximum(hi2 - lo2, 1)
+    y = music * g[:, None].astype(np.float32)
+    ceil = target_rms * 10 ** (crest_db / 20)                  # peak limiter on 5 ms blocks: instant attack, 0.4 s release
+    B = int(0.005 * sr)
+    nb = -(-n // B)
+    peak = np.pad(np.abs(y).max(axis=1), (0, nb * B - n)).reshape(nb, B).max(axis=1)
+    need = np.minimum(1.0, ceil / np.maximum(peak, 1e-9))
+    rel = np.exp(-B / (0.4 * sr))
+    gb = np.empty(nb)
+    cur = 1.0
+    for i in range(nb):
+        cur = need[i] if need[i] < cur else min(need[i], 1.0 - (1.0 - cur) * rel)
+        gb[i] = cur
+    gb = np.minimum(gb, np.concatenate([gb[1:], gb[-1:]]))     # take the next block's cut early (no overshoot)
+    gl = np.interp(np.arange(n), np.arange(nb) * B + B / 2, gb).astype(np.float32)
+    return (y * gl[:, None]).astype(np.float32)
+
+
+def voiced(out_dir, final, below_db=BED_BELOW_VOICE_DB):
+    """the voiced copy, from the finished film: the score (score_raw.wav, as assembled) as a steady bed below_db under
+    the narration, with no ducking (the music never jumps when the voice stops), normalised to -16 LUFS, on the film's
+    own video stream"""
+    import numpy as np
     from scipy.io import wavfile
-    if bed_db is None:
-        bed_db = BED_DB.get(os.path.basename(out_dir.rstrip("/"))[-1], 0.0)
     sr, x = wavfile.read(os.path.join(out_dir, "score_raw.wav"))
-    music = (x.astype(np.float32) / 32768.0) * 10 ** (-bed_db / 20.0)
-    vmix = narrate.duck_and_mix(music, os.path.join(out_dir, "narration.wav"), duck_db=duck_db)
+    music = x.astype(np.float32) / 32768.0
+    _, v = wavfile.read(os.path.join(out_dir, "narration.wav"))
+    v = v.astype(np.float32) / 32768.0
+    n = len(music)
+    v = np.pad(v, (0, max(0, n - len(v))))[:n]
+    w = int(0.05 * sr)
+    c = np.concatenate([[0.0], np.cumsum(v.astype(np.float64) ** 2)])
+    idx = np.arange(n)
+    lo, hi = np.clip(idx - w, 0, n), np.clip(idx + w, 0, n)
+    speaking = np.sqrt((c[hi] - c[lo]) / np.maximum(hi - lo, 1)) > 0.01
+    speech_rms = float(np.sqrt(np.mean(v[speaking].astype(np.float64) ** 2)))
+    bed = steady(music, sr, speech_rms * 10 ** (-below_db / 20))
+    mix = bed + v[:, None]
+    mix = (mix / (np.abs(mix).max() + 1e-9) * 0.89).astype(np.float32)
     vraw, vwav = os.path.join(out_dir, "voiced_raw.wav"), os.path.join(out_dir, "voiced.wav")
-    orchestra.write(vmix, vraw)
+    orchestra.write(mix, vraw)
     A.loudnorm(vraw, vwav)
     dst = os.path.join(out_dir, final)
     vdst = dst.replace(".mp4", "_voiced.mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", dst, "-i", vwav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
                     "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-shortest", vdst], check=True)
-    print(vdst, f"music {bed_db:g} dB down, ducked {duck_db:g} dB under the voice;",
-          f"{os.path.getsize(vdst) / 1e6:.1f} MB", f"{A.dur(vdst):.2f} s")
+    print(vdst, f"music a steady {below_db:g} dB under the voice, no ducking;", f"{os.path.getsize(vdst) / 1e6:.1f} MB",
+          f"{A.dur(vdst):.2f} s", flush=True)
     return vdst
 
 

@@ -60,8 +60,8 @@ def write(key, film, title, alt_titles, hook, method, countdown, labels, keys, s
     ch, total = chapters(film, labels)
     name = f"{NAMES[key]}_{length_tag(total)}"
     L = [f"# YouTube copy: \"{title}\"", "",
-         f"**Upload `sports/{name}_voiced.mp4`** ({mmss(total)}, 1920×1080, 30 fps, H.264; narrated, original orchestral "
-         "score ducked 18 dB under the voice, −16 LUFS).", "",
+         f"**Upload `sports/{name}_voiced.mp4`** ({mmss(total)}, 1920×1080, 30 fps, H.264; narrated over the original orchestral "
+         "score, kept at a steady low level under the voice with no ducking, −16 LUFS).", "",
          f"To rebuild it: `python facts_{key}.py`, `./render.sh {key}`, `python {key}film.py assemble` in "
          "`world_roads/records/three` (narration: `narrate.py` on `VO_" + key.upper() + ".md`, cached by line).", "",
          "**Titles to test**", "", "| | Title |", "|---|---|"]
