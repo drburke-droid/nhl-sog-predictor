@@ -7,7 +7,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from engine import (FPS, H, W, Camera, Scene, clamp, die_face, ease_out, fade, lerp, ramp, sf, shake, slip, smooth,
                     stamp_in, txt, typewriter)
@@ -18,7 +18,7 @@ PATENT_SRC = (1805, 2809)  # pixel size of the patent sheet as scanned
 
 
 class ColdOpen(PagedScene):
-    """The hook ($300, thirteen million games), then the 1904 patent on the desk, with two slow camera moves."""
+    """The hook ($350, thirteen million games), then the 1904 patent on the desk, with two slow camera moves."""
 
     def __init__(self):
         super().__init__('01_cold_open')
@@ -26,16 +26,16 @@ class ColdOpen(PagedScene):
         # the hook
         p = self.page(sf.paper(seed=20))
         p.add(Typed(c('Five decisions'), (W / 2, 120), 'FIVE DECISIONS', F('deco', 110), anchor='mm', cps=22))
-        for k in range(3):
-            note = sf.banknote(100, (40, 92, 70), 50 + k)
-            p.add(Obj(c('worth three hundred dollars') + 0.25 * k, note, (110 + k * 40, 200 + k * 90), how='drop', angle=[-9, 4, -3][k]))
-        p.add(Typed(c('worth three hundred dollars') + 0.6, (1040, 200), '$300', F('deco', 230), fill=sf.STAMP, cps=10),
+        for k in range(4):  # three $100 notes and a $50
+            note = sf.banknote(100, (40, 92, 70), 50 + k) if k < 3 else sf.banknote(50, (86, 60, 40), 53)
+            p.add(Obj(c('worth more than three') + 0.25 * k, note, (110 + k * 40, 180 + k * 85), how='drop', angle=[-9, 4, -3, 5][k]))
+        p.add(Typed(c('worth more than three') + 0.6, (1040, 200), '$350', F('deco', 230), fill=sf.STAMP, cps=10),
               Txt(c('every single game'), (1060, 470), 'every single game', F('hand', 48), fill=sf.SEPIA))
         for k in range(4):
             col = (150, 52, 40) if k == 0 else sf.BRASS
             t0 = c('Get them right') + (0 if k == 0 else 0.6 + 0.15 * k)
             p.add(Obj(t0, pawn_layer(120, col), (240 + k * 300, 760), how='drop'),
-                  Txt(t0 + 0.2, (312 + k * 300, 945), '$1,800' if k == 0 else '$1,500', F('type', 40), fill=sf.STAMP if k == 0 else sf.INK,
+                  Txt(t0 + 0.2, (312 + k * 300, 945), '$1,850' if k == 0 else '$1,500', F('type', 40), fill=sf.STAMP if k == 0 else sf.INK,
                       anchor='mm'))
         p.add(Txt(c('more than everyone else'), (312, 1000), 'YOU', F('sc', 30), fill=sf.STAMP, anchor='mm'),
               Txt(c('I played more than'), (1660, 760), 'games played', F('sc', 32), fill=sf.SEPIA, anchor='mm'),
@@ -103,7 +103,7 @@ class Promise(Scene):
 
     def frame(self, t):
         c_orange, c_dice, c_choose = self.cue('Buy the orange'), self.cue("But you don't get"), self.cue('What you do choose')
-        c_win = self.cue('forty-five percent more')
+        c_win = self.cue('fifty-five percent more')
         if t < c_orange - 0.4:
             return fade(self.title.copy(), ramp(t, 0, 0.6))
         if t < c_choose:
@@ -129,13 +129,16 @@ class Promise(Scene):
             t0 = self.cue(phrase)
             typewriter(img, (580, 250 + k * 100), line, sf.font('serif', 56), t, t0 - 0.1, cps=34)
         if t >= self.cue('So I tested'):
-            txt(img, (580, 760), 'Same dice.  Same board.  Tested, one decision at a time.', sf.font('hand', 38), fill=sf.SEPIA,
-                    alpha=int(255 * ramp(t, self.cue('So I tested'), 0.5)))
-        stamp_in(img, t, c_win + 0.2, (1620, 950), ['45% MORE', 'WINS'], angle=-9, size=60)
+            al = int(255 * ramp(t, self.cue('So I tested'), 0.5))
+            layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+            ImageDraw.Draw(layer).line([(582, 748), (1420, 748)], fill=sf.SEPIA + (int(al * 0.7),), width=2)
+            img.alpha_composite(layer)
+            txt(img, (580, 768), 'SAME DICE   ·   SAME BOARD   ·   TESTED ONE DECISION AT A TIME', sf.font('sc', 30), fill=sf.SEPIA, alpha=al)
+        stamp_in(img, t, c_win + 0.2, (1620, 950), ['55% MORE', 'WINS'], angle=-9, size=60)
         return shake(img, t, c_win + 0.35)
 
     def extra_sfx(self):
-        ev = [(self.cue("But you don't get"), 'rattle'), (self.cue('forty-five percent more') + 0.3, 'thud')]
+        ev = [(self.cue("But you don't get"), 'rattle'), (self.cue('fifty-five percent more') + 0.3, 'thud')]
         for phrase, line in self.decisions:
             t0 = self.cue(phrase) - 0.1
             ev += [(t0 + i / 34, 'key') for i, ch in enumerate(line) if ch.strip()]

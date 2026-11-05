@@ -721,12 +721,12 @@ Everyone buys what they land on and makes fair set-for-set swaps. When nearly ev
 | pass if left under 500 | 22.7 | 23.5% | 23.2 | 22.9% |
 | pass if under 300 except set cards | 25.1 | 23.6% | 25.7 | 23.2% |
 | picky trader | 25.6 | 24.5% | 25.4 | 24.6% |
-| playbook | 32.6 | 22.8% | 30.2 | 23.0% |
-| playbook keep 100 | 32.6 | 22.2% | 30.0 | 22.7% |
+| playbook | 34.2 | 24.1% | 32.3 | 24.3% |
+| playbook keep 100 | 34.0 | 23.5% | 32.0 | 24.0% |
 | playbook n2 | 58.5 | 41.5% | 52.6 | 47.4% |
-| playbook n3 | 40.8 | 31.8% | 38.8 | 31.9% |
-| playbook n5 | 25.8 | 18.0% | 23.8 | 18.1% |
-| playbook n6 | 20.5 | 15.1% | 19.3 | 15.1% |
+| playbook n3 | 40.8 | 32.1% | 39.0 | 32.0% |
+| playbook n5 | 30.3 | 20.2% | 28.5 | 20.2% |
+| playbook n6 | 25.9 | 17.7% | 24.8 | 17.7% |
 | railroad collector | 27.0 | 24.2% | 26.4 | 24.5% |
 | railroad fan | 25.1 | 25.0% | 25.0 | 25.2% |
 | railroad trader | 26.6 | 24.4% | 26.2 | 24.4% |
@@ -744,32 +744,32 @@ Everyone buys what they land on and makes fair set-for-set swaps. When nearly ev
 | typical n4 | 25.2 | 25.0% | 25.1 | 25.0% |
 | typical n5 | 20.1 | 19.8% | 20.1 | 19.8% |
 | typical n6 | 16.8 | 16.6% | 16.8 | 16.5% |
-| typical vs 3 playbook | 20.7 | 25.5% | 20.9 | 26.7% |
+| typical vs 3 playbook | 19.3 | 22.1% | 19.4 | 23.3% |
 
 ## Framing the payoff (with auctions, endgame deals on)
 
-Playbook player and its three typical opponents, wins per 100 games: 32.6, 22.3, 22.5, 22.5. Each opponent averages 22.4, so the playbook player wins 1.45 times as often as each person it plays (about 3 games for every 2).
+Playbook player and its three typical opponents, wins per 100 games: 34.2, 21.9, 21.9, 22.0. Each opponent averages 21.9, so the playbook player wins 1.56 times as often as each person it plays (about 3 games for every 2).
 
 "Family champion": most wins outright over a run of game nights against the same three opponents (ties are not a championship). Simulated from the per-game odds above, 400,000 seasons each.
 
 | Game nights | Playbook player is champion | A typical player at an all-typical table |
 |---|---|---|
-| 5 | 27.2% | 16.4% |
-| 10 | 35.5% | 18.4% |
-| 15 | 41.8% | 20.3% |
-| 20 | 45.9% | 20.7% |
-| 26 | 50.3% | 21.1% |
-| 30 | 53.0% | 21.5% |
-| 40 | 58.9% | 22.3% |
-| 52 | 64.6% | 22.7% |
+| 5 | 29.6% | 16.4% |
+| 10 | 39.4% | 18.4% |
+| 15 | 46.6% | 20.2% |
+| 20 | 51.5% | 20.7% |
+| 26 | 56.7% | 21.1% |
+| 30 | 59.8% | 21.5% |
+| 40 | 66.4% | 22.3% |
+| 52 | 72.6% | 22.8% |
 
 Dollar equivalent: a typical player given extra starting cash (vs three typical players) wins +$250: 31.8, +$500: 37.7, +$750: 42.4, +$1000: 46.5, +$1250: 50.0, +$1500: 53.0, +$2000: 58.5, +$3000: 66.6 per 100 games (100,000 games each).
 
-The other direction ("playing the typical way is like handing the bank $X"): the playbook player starting with less cash, with auctions: -$150: 28.14, -$200: 26.66, -$250: 25.10, -$300: 23.41, -$350: 22.02, -$400: 20.46, -$450: 18.84; it falls to a typical player's 25.13 at about **$249** less.
-Without auctions: -$100: 27.72, -$150: 26.37, -$200: 24.99, -$250: 23.72, -$300: 22.31; level with a typical player (25.06) at about **$197** less.
+The other direction ("playing the typical way is like handing the bank $X"): the playbook player starting with less cash, with auctions: -$150: 29.62, -$200: 28.11, -$250: 26.46, -$300: 24.72, -$350: 23.24, -$400: 21.62, -$450: 19.94, -$500: 18.46, -$550: 16.91; it falls to a typical player's 25.13 at about **$288** less.
+Without auctions: -$100: 29.62, -$150: 28.17, -$200: 26.73, -$250: 25.39, -$300: 23.92, -$350: 22.48, -$400: 21.03; level with a typical player (25.06) at about **$261** less.
 
-Finer steps (200,000 games each). With auctions: +$225: 30.77, +$250: 31.41, +$275: 32.04, +$300: 32.71, +$325: 33.31, +$350: 33.91; the playbook player (32.65) matches a typical player with about **$298** extra.
-Without auctions: +$100: 27.63, +$150: 28.72, +$200: 29.98, +$250: 31.04, +$300: 32.22; the playbook player (30.23) matches about **$212** extra.
+Finer steps (200,000 games each). With auctions: +$225: 30.77, +$250: 31.41, +$275: 32.04, +$300: 32.71, +$325: 33.31, +$350: 33.91, +$375: 34.47, +$400: 35.05, +$425: 35.65, +$450: 36.19; the playbook player (34.22) matches a typical player with about **$364** extra.
+Without auctions: +$100: 27.63, +$150: 28.72, +$200: 29.98, +$250: 31.04, +$300: 32.22, +$350: 33.32, +$400: 34.41; the playbook player (32.27) matches about **$302** extra.
 
 ## Final: two complete sets, which first and max or spread (endgame deals on, $1,000 each, 20,000 games per cell)
 

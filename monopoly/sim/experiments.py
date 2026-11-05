@@ -395,7 +395,7 @@ def exp_controls(n_games=100000):
         run('controls', 'official__' + k, [sp] + [typ] * 3, n_games, tv=tv, **REAL_WORLDS['real_official'])
 
 
-PLAYBOOK = 'everything;name=Playbook;bid=1.5;buymort=1;rrtrade=1;m2b=1;border=cheap;jail=houses'
+PLAYBOOK = 'everything;name=Playbook;bid=1.5;buymort=1;rrtrade=1;m2b=1;border=cheap;jail=houses;sellset=1'  # sellset: in a stalled game, sell only with a set of your own
 
 
 def exp_playbook(n_games=100000):
@@ -470,14 +470,14 @@ def exp_framing(n_games=100000):
         run('framing', 'bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, n_games, tv=tv, **END_WORLDS['with_auctions'])
     run('framing', 'playbook_with_bonus_minus_1000', [PLAYBOOK + ';bonus=-1000'] + [typ] * 3, n_games, tv=tv, **END_WORLDS['with_auctions'])
     # finer steps around the match, 200,000 games each, with and without auctions
-    for b_ in (225, 250, 275, 300, 325, 350):
+    for b_ in (225, 250, 275, 300, 325, 350, 375, 400, 425, 450):
         run('framing', 'fine_bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['with_auctions'])
-    for b_ in (100, 150, 200, 250, 300):
+    for b_ in (100, 150, 200, 250, 300, 350, 400):
         run('framing', 'noauction_bonus_%d' % b_, ['everything;name=bonus %d;bonus=%d' % (b_, b_)] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['no_auctions'])
     # the other direction: how much can the playbook player hand to the bank and still only tie a typical player?
-    for b_ in (150, 200, 250, 300, 350, 400, 450):
+    for b_ in (150, 200, 250, 300, 350, 400, 450, 500, 550):
         run('framing', 'playbook_minus_%d' % b_, [PLAYBOOK + ';bonus=-%d' % b_] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['with_auctions'])
-    for b_ in (100, 150, 200, 250, 300):
+    for b_ in (100, 150, 200, 250, 300, 350, 400):
         run('framing', 'noauction_playbook_minus_%d' % b_, [PLAYBOOK + ';bonus=-%d' % b_] + [typ] * 3, 2 * n_games, seed=5, tv=tv, **END_WORLDS['no_auctions'])
 
 

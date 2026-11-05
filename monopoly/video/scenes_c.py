@@ -189,26 +189,26 @@ class Payoff(PagedScene):
         p.add(Obj(c('Same dice as everyone'), die_face(5, 130), (W / 2 - 170, 800), how='drop', angle=-12),
               Obj(c('Same dice as everyone') + 0.15, die_face(2, 130), (W / 2 + 40, 810), how='drop', angle=9))
 
-        # the price: $300 of free cash, three $100 notes
+        # the price: $350 of free cash, three $100 notes and a $50
         p = self.page(plain(172), c('How much is that worth') - 0.2)
         p.add(Typed(c('How much is that worth'), (1010, 120), 'How much is that worth?', F('serif', 52)))
-        notes = [(100, (40, 92, 70), -12, (70, 150)), (100, (40, 92, 70), -4, (150, 330)), (100, (40, 92, 70), 6, (110, 520))]
+        notes = [(100, (40, 92, 70), -12, (70, 130)), (100, (40, 92, 70), -4, (150, 300)), (100, (40, 92, 70), 6, (110, 470)),
+                 (50, (86, 60, 40), -3, (180, 640))]
         t_take = c('I gave a typical player')
         for k, (v, ink, ang, xy) in enumerate(notes):
             n = sf.banknote(v, ink, 20 + k)
             p.add(Obj(t_take + 0.3 * k, n, xy, how='left', angle=ang, dur=0.5))
         p.add(Txt(c('I gave a typical player') + 0.2, (1010, 205), 'extra cash a typical player needs to keep up:', F('hand', 34), fill=SEP),
-              Typed(c('It took three hundred'), (1000, 245), '$300', F('deco', 200), fill=RED, cps=8))
-        p.add(Txt(c('It took three hundred') + 0.8, (1010, 500), 'of free cash at the start of every game', F('serif', 48)),
-              Stamp(c('It took three hundred') + 1.4, (430, 900), ['WORTH', '$300'], angle=-8, size=66),
-              Txt(c('Even without auctions'), (1010, 640), 'Without auctions: about $200,', F('hand', 44), fill=SEP),
-              Txt(c('the same as passing Go'), (1010, 705), 'the same as passing Go.', F('hand', 44), fill=SEP))
+              Typed(c('It took more than three'), (1000, 245), '$350', F('deco', 200), fill=RED, cps=8))
+        p.add(Txt(c('It took more than three') + 0.8, (1010, 500), 'of free cash at the start of every game', F('serif', 48)),
+              Stamp(c('It took more than three') + 1.4, (1420, 880), ['WORTH', '$350'], angle=-8, size=66),
+              Txt(c('Even without auctions'), (1010, 640), 'Without auctions: about $300.', F('hand', 44), fill=SEP))
 
         # game nights
         p = self.page(ledger_paper(173, rules=[300 + k * 120 for k in range(5)], top=170), c('Play these decisions well') - 0.2)
         p.add(Txt(c('Play these decisions well') + 0.2, (170, 60), 'GAME NIGHT LEDGER', F('scb', 44), fill=GREEN),
               Txt(c('Play these decisions well') + 0.4, (170, 118), 'A hundred game nights, the same four players. You follow the playbook.', F('serif', 32)))
-        rows = [('YOU', 33, RED), ('MOM', 22, sf.INK), ('DAD', 22, sf.INK), ('JORDAN', 23, sf.INK)]
+        rows = [('YOU', 34, RED), ('MOM', 22, sf.INK), ('DAD', 22, sf.INK), ('JORDAN', 22, sf.INK)]
         t_you = c('and you win about')
         t_them = c('while each of the people')
         for k, (who, n, col) in enumerate(rows):
@@ -216,8 +216,8 @@ class Payoff(PagedScene):
             t0 = t_you if k == 0 else t_them + 0.2 * k
             p.add(Txt(t0 - 0.3, (180, y + 22), who, F('type', 44), fill=col))
             p.add(Fn(t0, lambda img, t, a, y=y, n=n, col=col, t0=t0, k=k: self.tallies(img, t, y, n, col, t0, k)))
-        p.add(Txt(c("That's about forty-five") - 0.1, (180, 720), '45% more wins than each of them.', F('serifb', 48)),
-              Stamp(c("That's about forty-five") + 1.0, (1560, 860), ['45% MORE', 'WINS'], angle=-8, size=72))
+        p.add(Txt(c("That's about fifty-five") - 0.1, (180, 720), '55% more wins than each of them.', F('serifb', 48)),
+              Stamp(c("That's about fifty-five") + 1.0, (1560, 860), ['55% MORE', 'WINS'], angle=-8, size=72))
 
         # a year of game nights: trophies
         p = self.page(plain(174), c('And it compounds') - 0.2)
@@ -225,7 +225,7 @@ class Payoff(PagedScene):
               Typed(c('Play once a week'), (W / 2, 150), 'A year of weekly game nights with the same family.  100 years of them:',
                     F('type', 32), anchor='mm', fill=SEP))
         tro = trophy(48)
-        shelf = [('YOU', 65, RED), ('MOM', 9, sf.INK), ('DAD', 9, sf.INK), ('JORDAN', 9, sf.INK)]
+        shelf = [('YOU', 73, RED), ('MOM', 7, sf.INK), ('DAD', 7, sf.INK), ('JORDAN', 7, sf.INK)]
         t_you = c('The player with the playbook')
         t_oth = c('Each of the others')
         for k, (who, n, col) in enumerate(shelf):
@@ -245,10 +245,10 @@ class Payoff(PagedScene):
                                                                               (1820, y + 56 + (130 if y == 230 else 0))],
                                                                              fill=SEP + (200,), width=4))
             p.add(d)
-        crown = deckle_print('ac_miss_america_gorman_neptune_1922.jpg', w=500, caption='ATLANTIC CITY, 1922', aspect=1.3, crop_focus=(0.5, 0.3))
-        p.add(Obj(c('champion two years out of three') + 0.4, crown, (1290, 515), how='drop', angle=3))
-        p.add(Txt(c('champion two years out of three'), (1820, 450), 'champion two years in three', F('hand', 40), fill=RED, anchor='ra'),
-              Txt(c('About one year in eleven'), (1820, 1010), 'each of the others: about one year in eleven', F('hand', 38), fill=SEP, anchor='ra'))
+        crown = deckle_print('ac_miss_america_gorman_neptune_1922.jpg', w=440, caption='ATLANTIC CITY, 1922', aspect=1.3, crop_focus=(0.5, 0.3))
+        p.add(Obj(c('champion almost three years') + 0.4, crown, (1330, 500), how='drop', angle=3))
+        p.add(Txt(c('champion almost three years'), (1820, 450), 'champion almost three years in four', F('hand', 40), fill=RED, anchor='ra'),
+              Txt(c('About one year in fifteen'), (1820, 1010), 'each of the others: about one year in fifteen', F('hand', 38), fill=SEP, anchor='ra'))
 
         # same dice
         p = self.page(photo_bg('games_mah_jong_bathing_beach_1924.jpg', (0.5, 0.6), darken=0.6), c('Same dice.') - 0.3, zoom=0.05)
@@ -286,7 +286,7 @@ def seal():
     d.ellipse([cx - R, cy - R, cx + R, cy + R], fill=RED + (230,))
     d.ellipse([cx - R + 14, cy - R + 14, cx + R - 14, cy + R - 14], outline=(240, 220, 200, 200), width=2)
     lay = sf.roughen(lay, 0.04, 21)
-    txt(lay, (cx, cy - 14), '+45%', F('fat', 66), fill=(246, 234, 214), anchor='mm')
+    txt(lay, (cx, cy - 14), '+55%', F('fat', 66), fill=(246, 234, 214), anchor='mm')
     txt(lay, (cx, cy + 48), 'MORE WINS', F('scb', 26), fill=(246, 234, 214), anchor='mm')
     return lay
 
@@ -298,7 +298,7 @@ class Playbook(PagedScene):
         p = self.page(certificate_bg())
         rules = [('One.', 'Land on it?  Buy it, unless it would leave you nearly broke.'),
                  ('Two.', 'At auction, bid up to one and a half times the price.'),
-                 ('Three.', 'Make every fair set-for-set trade.  Don’t haggle.  When it stalls, deal.'),
+                 ('Three.', 'Make every fair set-for-set trade.  Don’t haggle.  Stalled?  Sell only with a set.'),
                  ('Four.', 'Want the railroads?  Trade for the last one, or don’t bother.'),
                  ('Five.', 'Spend your cash on houses, and go to hotels.  Owe money?  Mortgage first.'),
                  ('Six.', 'Two sets?  Cheaper houses first.  Never one house on everything.'),
@@ -312,8 +312,8 @@ class Playbook(PagedScene):
         t_end = c('Stay in once anyone') + 0.2
         p.add(Obj(t_end, seal(), (1470, 710), how='drop', shadow=(6, 8, 6, 80)),
               Txt(t_end + 0.3, (300, 870), 'Same dice.', F('script', 64)),
-              Txt(t_end + 0.6, (300, 950), '45% more wins than each of them. A year of weekly game nights: champion two years in three.',
-                  F('type', 24), fill=SEP))
+              Txt(t_end + 0.6, (300, 945), '55% more wins than each of them.', F('type', 24), fill=SEP),
+              Txt(t_end + 0.8, (300, 982), 'A year of weekly game nights: champion almost three years in four.', F('type', 24), fill=SEP))
 
         # over the 1904 patent
         world, P = patent_world()

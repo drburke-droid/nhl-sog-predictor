@@ -20,7 +20,7 @@ from engine import AUDIO, OUT, SCENE_FILES, Scene
 from render import module_for
 
 X = 0.5  # crossfade, seconds
-CHAPTERS = {'01_cold_open': 'Five decisions worth $300', '02_the_promise': 'What you control', '03_how_we_tested_it': 'How I tested it', '04_buy_or_pass': 'Decision 1: Buy or pass',
+CHAPTERS = {'01_cold_open': 'Five decisions worth $350', '02_the_promise': 'What you control', '03_how_we_tested_it': 'How I tested it', '04_buy_or_pass': 'Decision 1: Buy or pass',
             '05_trading': 'Decision 2: Trading', '06_railroads': 'Decision 3: The railroads', '07a_spend_or_save': 'Decision 4: Spend or save',
             '07b_how_far_to_build': 'How far to build', '07c_which_set_first': 'Two sets: which first?',
             '07d_one_set_or_spread': 'One set, or a house on everything?', '07e_owe_money': 'Owe money? Mortgage first',

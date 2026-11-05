@@ -20,7 +20,7 @@ W, H = 1920, 1080
 FONT_FILES = {
     'deco': 'ofl/limelight/Limelight-Regular.ttf',
     'type': 'apache/specialelite/SpecialElite-Regular.ttf',
-    'hand': 'ofl/architectsdaughter/ArchitectsDaughter-Regular.ttf',
+    'hand': 'ofl/oldstandardtt/OldStandard-Italic.ttf',   # notes and asides: the period serif's italic (was a handwriting face)
     'serif': 'ofl/oldstandardtt/OldStandard-Regular.ttf',
     'serifb': 'ofl/oldstandardtt/OldStandard-Bold.ttf',
     'script': 'ofl/pinyonscript/PinyonScript-Regular.ttf',
@@ -42,7 +42,11 @@ GROUP = {'brown': (138, 90, 60), 'lightblue': (130, 178, 204), 'pink': (196, 104
 rng = np.random.default_rng(1935)
 
 
+FONT_SCALE = {'hand': 1.1}   # the italic sets smaller than the handwriting face it replaced, so the notes keep their size
+
+
 def font(name, size):
+    size = int(round(size * FONT_SCALE.get(name, 1)))
     path = os.path.join(FONTS, os.path.basename(FONT_FILES[name]))
     if not os.path.exists(path):
         os.makedirs(FONTS, exist_ok=True)
