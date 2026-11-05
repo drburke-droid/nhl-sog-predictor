@@ -344,11 +344,13 @@ if POSES:
     raise SystemExit
 
 # ---------------------------------------------------------------- render both plates
-suffix = "_test" if TEST else ""
-scene.render.filepath = os.path.join(DATA, f"plate_glass{suffix}.png")
-bpy.ops.render.render(write_still=True)
-for ob in glass_objs:
-    ob.hide_render = True
-scene.render.filepath = os.path.join(DATA, f"plate_bare{suffix}.png")
-bpy.ops.render.render(write_still=True)
-print("done")
+# (skipped when imported: blender_film.py builds the full Cycles project on top of this scene)
+if __name__ == "__main__":
+    suffix = "_test" if TEST else ""
+    scene.render.filepath = os.path.join(DATA, f"plate_glass{suffix}.png")
+    bpy.ops.render.render(write_still=True)
+    for ob in glass_objs:
+        ob.hide_render = True
+    scene.render.filepath = os.path.join(DATA, f"plate_bare{suffix}.png")
+    bpy.ops.render.render(write_still=True)
+    print("done")

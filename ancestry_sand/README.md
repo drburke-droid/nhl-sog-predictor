@@ -1,6 +1,6 @@
-# Grains of Ancestry
+# Every Grain of Us
 
-200,000 years of human migration and mixing, told as coloured sand poured into glass vessels shaped like
+(Working title: Grains of Ancestry.) 200,000 years of human migration and mixing, told as coloured sand poured into glass vessels shaped like
 the land each population lives on. 1920x1080, 30 fps, about 3 minutes, no audio.
 
 ```
@@ -29,10 +29,12 @@ python film.py video --workers 4                            # the film, no capti
 python film.py script                                       # the narration as a timed .srt, for a voice-over
 ```
 
-**The camera moves.** `camera.py` holds one path (pans, tilts and dollies keyed to the story: into
-East Africa for the exit, along the southern route, over Beringia, the Fertile Crescent, the Bantu
-expansion, the Atlantic in 1500, then low among the towers of Asia), shared by Blender and the
-compositor. Blender renders the glass at keyframes placed wherever reprojecting from the last one
+**The camera.** `camera.py` holds the camera path, shared by Blender and the compositor. By default
+(`FINALE`) it holds the whole map still for the first 2:23, then flies low among the population towers
+of Asia, across to Europe and Africa, and pulls back out for the ending. `SAND_CAMERA=story` selects the
+earlier path that follows the story around the world (into East Africa for the exit, along the southern
+route, over Beringia, the Fertile Crescent, the Bantu expansion, the Atlantic in 1500, then the towers).
+For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
 would be more than 1 px off; in between, the two nearest keyframes are reprojected through the plane
 halfway up the walls and cross-faded.
 
@@ -56,6 +58,28 @@ moving parts are composited per frame through the same camera:
   occlusion, cast shadows, a texture of individually lit grains of random size, glints), projects it
   into the Blender camera with the plane homography, and lays the glass over it. Flying sand follows 3D
   arcs with turbulence, is projected with the full camera matrix, and casts shadows on the table.
+
+### Full Cycles render (Blender project)
+
+The whole film can also be path traced in Blender, frame by frame, for the true Cycles look (real
+refraction of the sand through the glass, real shadows and depth of field):
+
+```
+python export_blender.py                 # sand records, flight paths, HUD overlay -> out/blender_film/ (~30 min)
+blender -b -P blender_film.py            # -> out/blender_film/every_grain_of_us.blend
+```
+
+`export_blender.py` runs the simulation once and writes every grain the film shows as a record (where it
+sits, its radius, the frames it is visible, and its colour easing from one value to the next), every
+flying grain with its path sampled at 40 points, and the HUD (year, legend, labels, closing highlights)
+as a transparent QuickTime Animation video. `blender_film.py` builds on `blender_scene.py` (table, glass,
+lights) and adds the sand as point clouds whose Geometry Nodes pick the records alive at the current
+frame, ease their colours, swell new grains in, fly the airborne grains along their paths and run the
+closing ripple, so the .blend renders with no Python at render time. Its `Edit` scene joins the
+rendered frames, the HUD and the title (editable text strips) into an MP4, and is where a voice-over
+goes. Render settings are tuned for speed: adaptive sampling up to 64 samples, OpenImageDenoise,
+6 bounces, no caustics, a fixed noise seed so the still camera does not shimmer.
+`blender_film_README.txt` (shipped next to the .blend) explains rendering it.
 
 ### Population, where people live, and ancestry within a region
 

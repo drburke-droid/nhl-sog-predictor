@@ -1,4 +1,4 @@
-"""Paint "Grains of Ancestry" (glass edition): the sandpile simulation (sand.py) composited into the
+"""Paint the glass edition: the sandpile simulation (sand.py) composited into the
 Blender-rendered glass world (blender_scene.py plates), with wind-blown sand flying between vessels.
 
     python film.py still 40 75 165         # PNG stills -> out/
@@ -522,7 +522,7 @@ class Painter:
         self.hud(img, sim, s)
         return np.clip(img, 0, 255).astype(np.uint8)
 
-    def hud(self, img, sim, s):
+    def hud(self, img, sim, s, title=True):
         title_a = 1.0 - smooth((s - 4.2) / 1.6)
         for v in Sd.ORDER:
             vi = Sd.VI[v]
@@ -577,11 +577,11 @@ class Painter:
                 y = 990 - spr.shape[0] / 2
                 self.shade(img, x - 30, y - 14, spr.shape[1] + 60, spr.shape[0] + 24, 0.55 * a)
                 self.blit(img, spr, x, y, a)
-        if title_a > 0.003:
+        if title and title_a > 0.003:
             self.shade(img, 0, 0, W, H, 0.55 * title_a)
-            t = self.text_sprite("Grains of Ancestry", self.f_title, INK * 255)
+            t = self.text_sprite(S.TITLE, self.f_title, INK * 255)
             self.blit(img, t, W / 2 - t.shape[1] / 2, 420, title_a)
-            st = self.text_sprite("200,000 years of human migration and mixing, as sand", self.f_sub, MUTED * 255)
+            st = self.text_sprite(S.SUBTITLE, self.f_sub, MUTED * 255)
             self.blit(img, st, W / 2 - st.shape[1] / 2, 530, title_a)
         if s > S.TODAY_S + 9.0:
             a = smooth((s - S.TODAY_S - 9.0) / 1.2)

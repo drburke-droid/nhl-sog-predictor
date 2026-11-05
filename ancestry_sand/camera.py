@@ -18,7 +18,9 @@ FOCAL_PX = LENS / SENSOR * W
 WIDE = (960.0, 505.0, 22.0, 26.0, 0.0)
 
 # (video second, pose). Between two keys the camera eases in and out; equal neighbouring poses hold.
-KEYS = [
+# STORY follows the story around the world; FINALE (the default) holds the wide shot until the
+# population explosion, then flies low among the towers and pulls back out for the ending.
+KEYS_STORY = [
     (0.0, WIDE),
     (17.0, WIDE),
     (25.0, (1075.0, 455.0, 36.0, 14.0, 0.0)),        # East Africa: early ventures, then the exit
@@ -41,6 +43,19 @@ KEYS = [
     (163.0, WIDE),
     (999.0, WIDE),
 ]
+
+KEYS_FINALE = [
+    (0.0, WIDE),
+    (143.0, WIDE),                                   # still, while 200,000 years go by
+    (150.0, (1340.0, 420.0, 57.0, 8.6, 10.0)),        # down among the towers of South and East Asia
+    (155.0, (1240.0, 395.0, 58.0, 8.6, -4.0)),
+    (159.5, (1010.0, 360.0, 55.0, 9.5, -12.0)),       # across to Europe and Africa
+    (166.0, WIDE),                                    # back out for the closing ripple
+    (999.0, WIDE),
+]
+
+import os as _os
+KEYS = KEYS_STORY if _os.environ.get("SAND_CAMERA", "finale") == "story" else KEYS_FINALE
 
 
 def ease(u):
