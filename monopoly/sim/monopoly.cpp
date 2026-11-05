@@ -141,6 +141,9 @@ struct Strat {
     bool rrTrade = false;     // also swap set-for-set to collect all four railroads
     int raiseOrder = 0;       // short of cash: 0 mortgage loose property before selling houses, 1 sell houses first
     int bonus = 0;            // extra starting cash for this player only (to price an edge in dollars)
+    int rrOffer = 0;          // pays this much cash for any railroad an opponent holds (the owner is assumed to accept)
+    bool sellNeedSet = false; // endgame: sells a set-finishing card only while holding a colour set of its own
+    bool rrLastOnly = false;  // with rrOffer: only offers cash for the last railroad it is missing
 };
 
 static uint64_t maskFromName(const std::string& w) {
@@ -236,6 +239,9 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "rrtrade") s.rrTrade = atoi(v.c_str()) != 0;
         else if (k == "raise") s.raiseOrder = (v == "mortgage" ? 0 : v == "sell" ? 1 : atoi(v.c_str()));
         else if (k == "bonus") s.bonus = atoi(v.c_str());
+        else if (k == "rroffer") s.rrOffer = atoi(v.c_str());
+        else if (k == "sellset") s.sellNeedSet = atoi(v.c_str()) != 0;
+        else if (k == "rrlast") s.rrLastOnly = atoi(v.c_str()) != 0;
         else { fprintf(stderr, "unknown key '%s'\n", k.c_str()); exit(1); }
     }
     return s;
@@ -316,6 +322,7 @@ struct Game {
     // -------- helpers
     int countOwned(int p, int g) const { int k = 0; for (int i = 0; i < GSZ[g]; i++) k += owner[GSQ[g][i]] == p; return k; }
     bool hasSet(int p, int g) const { return countOwned(p, g) == GSZ[g]; }
+    bool ownsAnySet(int p) const { for (int g = 0; g < 8; g++) if (hasSet(p, g)) return true; return false; }
     bool groupHasBuildings(int g) const { for (int i = 0; i < GSZ[g]; i++) if (houses[GSQ[g][i]]) return true; return false; }
     bool completesSet(int p, int s) const {
         int g = B[s].group; if (g < 0 || g > 7) return false;
@@ -697,8 +704,21 @@ struct Game {
         if (S[who]->trade == 2) return tvOf(gGet) - tvOf(gGive);
         return faceGet - faceGive;
     }
+    // a railroad buyer: offers a fixed cash price for every railroad an opponent holds
+    void buyRailroads(int a) {
+        if (S[a]->rrLastOnly && countOwned(a, 8) != 3) return;
+        for (int i = 0; i < GSZ[8]; i++) {
+            int s = GSQ[8][i], b = owner[s], price = S[a]->rrOffer;
+            if (b < 0 || b == a || !P[b].alive || S[b]->trade == 0) continue;
+            if (P[a].cash - price < S[a]->reserve) return;
+            owner[s] = a; P[a].cash -= price; P[b].cash += price; st->trades++; lastProgress = turns;
+            if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"rr_buy\",\"from\":%d,\"s\":%d,\"cash\":%d}\n", round, a, b, s, price);
+            updateMono(a);
+        }
+    }
     void tryTrades(int a) {
         if (!cfg.trading || S[a]->trade == 0 || P[a].cash < S[a]->tradeCash) return;
+        if (S[a]->rrOffer > 0) buyRailroads(a);
         for (int b = 0; b < n; b++) {
             if (b == a || !P[b].alive || S[b]->trade == 0 || P[b].cash < S[b]->tradeCash) continue;
             int cntA[9], cntB[9];
@@ -752,6 +772,7 @@ struct Game {
             for (int i = 0; i < GSZ[g]; i++) {
                 int s = GSQ[g][i], b = owner[s];
                 if (b < 0 || b == a || !P[b].alive || S[b]->trade == 0 || S[b]->sellPremium <= 0) continue;
+                if (S[b]->sellNeedSet && !ownsAnySet(b)) continue;
                 if (countOwned(b, g) > mine) continue;  // nobody sells to a player with fewer cards of the colour than they have
                 double key = (double)mine / GSZ[g] * 10 - countOwned(b, g);
                 if (key > bestKey) { bestKey = key; bestG = g; bestB = b; bestS = s; }
@@ -776,6 +797,7 @@ struct Game {
                 b = o; face += B[s].price;
             }
             if (!ok || b < 0 || !P[b].alive || S[b]->trade == 0 || S[b]->sellPremium <= 0) continue;
+            if (S[b]->sellNeedSet && !ownsAnySet(b)) continue;
             double ask = S[b]->trade == 2 ? face + std::max(0.0, TV[g]) : S[b]->sellPremium * face;
             double will = S[a]->trade == 2 ? face + std::max(0.0, TV[g]) : S[a]->buyPremium * face;
             int price = (int)std::ceil(ask);

@@ -134,10 +134,14 @@ class SpendOrSave(PagedScene):
               Line(c('and spend that too') - 0.2, [(640, 660), (900, 660)], width=6, dur=0.4),
               Line(c('and spend that too') + 0.2, [(875, 640), (905, 660), (875, 680)], width=6, dur=0.2),
               Obj(c('and spend that too'), houses_row(2, h=150, gap=16, seed=6), (940, 520), how='drop'))
-        p.add(Txt(c('That alone takes you'), (1180, 160), 'Mortgage to build:', F('sc', 40), fill=SEP),
-              Typed(c('from twenty-five percent'), (1180, 230), '25%', F('deco', 150), cps=10),
-              Txt(c('to twenty-eight') - 0.1, (1440, 290), '→', F('serif', 120), fill=SEP),
-              Typed(c('to twenty-eight'), (1560, 230), '28%', F('deco', 150), fill=GREEN, cps=10))
+        f_big, f_arrow = F('deco', 150), F('serif', 120)
+        dr = ImageDraw.Draw(Image.new('RGBA', (4, 4)))
+        b25 = dr.textbbox((1060, 230), '25%', font=f_big)
+        x28 = b25[2] + 150
+        p.add(Txt(c('That alone takes you'), (1060, 160), 'Mortgage to build:', F('sc', 40), fill=SEP),
+              Typed(c('from twenty-five percent'), (1060, 230), '25%', f_big, cps=10),
+              Txt(c('to twenty-eight') - 0.1, ((b25[2] + x28) / 2, (b25[1] + b25[3]) / 2), '→', f_arrow, fill=SEP, anchor='mm'),
+              Typed(c('to twenty-eight'), (x28, 230), '28%', f_big, fill=GREEN, cps=10))
 
 
 # ====================================================================== 07b

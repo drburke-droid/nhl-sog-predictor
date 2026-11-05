@@ -484,6 +484,35 @@ def exp_framing(n_games=100000):
 EXPERIMENTS = {'framing': exp_framing, 'endgame': exp_endgame, 'playbook': exp_playbook, 'controls': exp_controls, 'building': exp_building, 'real_race': exp_real_race, 'real_evolution': exp_real_evolution, 'realistic': exp_realistic, 'ecology': exp_ecology, 'ablation': exp_ablation, 'shark': exp_shark, 'length': exp_length, 'duel': exp_duel, 'table': exp_table, 'skip': exp_skip,
                'h2h': exp_h2h, 'players': exp_players}
 
+RR_PRICES = [200, 250, 300, 350, 400, 500, 600, 700, 800, 1000, 1200, 1500]
+COLLECTOR = 'everything;fav=rr;rrtrade=1;buymort=1'
+
+
+def exp_deepdive(n_games=100000):
+    """Follow-ups from the script review: paying cash for railroads, and when to sell in a stalled game."""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    cfg = END_WORLDS['with_auctions']
+    # railroads: offer a fixed cash price for every railroad an opponent holds (owners assumed to accept)
+    for p in RR_PRICES:
+        run('deepdive', 'rr_cash_%d' % p, ['everything;name=rr_cash_%d;rroffer=%d' % (p, p)] + [typ] * 3, n_games, tv=tv, **cfg)
+        run('deepdive', 'rr_all_out_%d' % p, [COLLECTOR + ';name=rr_all_out_%d;rroffer=%d' % (p, p)] + [typ] * 3, n_games, tv=tv, **cfg)
+    # the stalled game: when to sell the card that finishes someone's set, and for how much
+    for k, sp in [('sell_2.5x', 'everything'), ('never_sell', 'everything;sell=0'), ('sell_only_with_a_set', 'everything;sellset=1'),
+                  ('sell_1.5x', 'everything;sell=1.5'), ('sell_2x', 'everything;sell=2'), ('sell_3x', 'everything;sell=3'),
+                  ('sell_only_with_a_set_3x', 'everything;sellset=1;sell=3')]:
+        run('deepdive', 'endgame_' + k, [sp.replace('everything', 'everything;name=%s' % k, 1)] + [typ] * 3, n_games, tv=tv, **cfg)
+    # the collector, adding cash only for the last railroad it is missing
+    for p in [250, 300, 400, 500, 600, 800, 1000]:
+        run('deepdive', 'rr_last_%d' % p, [COLLECTOR + ';name=rr_last_%d;rroffer=%d;rrlast=1' % (p, p)] + [typ] * 3, n_games, tv=tv, **cfg)
+    # the playbook, selling in a stalled game only with a set of its own
+    run('deepdive', 'playbook_sellset', [PLAYBOOK + ';sellset=1'] + [typ] * 3, n_games, tv=tv, **cfg)
+    run('deepdive', 'playbook', [PLAYBOOK] + [typ] * 3, n_games, tv=tv, **cfg)
+
+
+EXPERIMENTS['deepdive'] = exp_deepdive
+
 if __name__ == '__main__':
     names = sys.argv[1:] or list(EXPERIMENTS)
     for n in names:
