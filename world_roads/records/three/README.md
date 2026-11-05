@@ -16,6 +16,7 @@ says why the rest of the top ten by score missed. Films A and B are the top ten 
 |---|---|
 | `facts_a.py`, `facts_b.py`, `facts_c.py` | Every number each film shows, into `facts_<film>.json` (the films read only these) |
 | `afilm.py`, `bfilm.py`, `cfilm.py` | The sections (hook, cards, how the score works, the rules, how sure the list is, close, credits) |
+| `facts_intro.py`, `intro.py`, `opening.py` | The opening of each film (why performances can't be compared across eras as they stand, and how the score allows for it): world records since 1950, the same number in different eras, step 1 (every performance converted to its season's scoring level: hockey's 1980s), step 2 (compared with the best of everyone else in the 15 seasons either side; the score in standard deviations), and in film B the women's throws of the 1980s. `opening.py` voices the lines first and times every scene, caption and animation to them |
 | `common.py` | The shared board ("16 ways to rank"), closing line, credits pages, the score's timeline and the assembly |
 | `photos3.py` | Portraits from Wikimedia Commons for the athletes the earlier films didn't need (free licences only; GFDL-only files are passed over) |
 | `VO_A.md`, `VO_B.md`, `VO_C.md` | The narration, timed to each cut |
@@ -29,7 +30,8 @@ curve through them, and the game measured from half a unit below its count, sinc
 ## Build
 
 ```
-python facts_a.py; python facts_b.py; python facts_c.py
+python facts_a.py; python facts_b.py; python facts_c.py; python facts_intro.py
+ELEVENLABS_API_KEY=... python opening.py   # opening_<film>.json and the opening's cues in VO_<film>.md
 python photos3.py fetch; python photos3.py crop         # portraits (minute-spaced image requests)
 ELEVENLABS_API_KEY=... python -c "import sys; sys.path.insert(0, '../outliers'); import narrate; narrate.build('VO_C.md', 'out_c', 419.4)"
 ./render.sh c && python cfilm.py assemble                # out_c/film_c_final.mp4 and film_c_final_voiced.mp4

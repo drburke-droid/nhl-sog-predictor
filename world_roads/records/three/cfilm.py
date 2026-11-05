@@ -241,11 +241,16 @@ class End:
                 color=MUTED, alpha=al)
 
 
-SECTIONS = {"hook": FM.SECTIONS["hook"], "curve": FM.SECTIONS["curve"], "fair": FM.SECTIONS["fair"],
+# ------------------------------------------------------------------ the opening: why eras matter, and how the score allows for it
+import intro as IN                                          # noqa: E402
+_OP = json.load(open(os.path.join(HERE, "opening_c.json"), encoding="utf-8"))   # python opening.py c: timed to the narration
+INTRO = IN.Intro([(n, d, s) for n, d, s in _OP["scenes"]])
+
+SECTIONS = {"intro": lambda: INTRO, "hook": FM.SECTIONS["hook"], "curve": FM.SECTIONS["curve"], "fair": FM.SECTIONS["fair"],
             "sure": Sure, "considered": Considered, "close": Close, "end": End}
 for _r in range(1, N + 1):
     SECTIONS[f"c{_r}"] = FM.SECTIONS[f"c{_r}"]
-ORDER = ["hook"] + [f"c{r}" for r in range(N, 0, -1)] + ["curve", "fair", "sure", "considered", "close", "end"]
+ORDER = ["intro", "hook"] + [f"c{r}" for r in range(N, 0, -1)] + ["curve", "fair", "sure", "considered", "close", "end"]
 PICKS = {"hook": [14.0, 19.5, 26.0], "fair": [36.0], "sure": [20.0], "considered": [12.0, 48.0], "close": [12.0],
          "end": [8.0, 20.0], "curve": [24.0]}
 FINAL = "film_c_final.mp4"

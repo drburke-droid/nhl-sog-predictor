@@ -1,0 +1,579 @@
+{
+ "scenes": [
+  [
+   "improve",
+   19,
+   {
+    "caps": [
+     [
+      1,
+      "Since 1950, world records in athletics and swimming have risen by about 23% in the typical event. The 100 m has gone from 10.2 to 9.58, the pole vault from 4.77 m to 6.31 m."
+     ],
+     [
+      10,
+      "Science, nutrition, full-time training and better technique: each generation starts from a higher floor."
+     ]
+    ],
+    "at": {}
+   }
+  ],
+  [
+   "tiles",
+   24,
+   {
+    "title": "The same event, a different sport",
+    "tiles": [
+     {
+      "big": "9.58",
+      "label": "100 m world record · 2009",
+      "context": "1950: 10.2"
+     },
+     {
+      "big": "6.31 m",
+      "label": "pole vault world record · 2026",
+      "context": "1950: 4.77 m"
+     },
+     {
+      "big": "14:26.79",
+      "label": "1500 m freestyle record · 2026",
+      "context": "1950: 18:35.70"
+     }
+    ],
+    "caps": [
+     [
+      1,
+      "A sprinter of 1950, with little weight training, sports science or modern technique, can't be compared with a full-time professional of today without allowing for it."
+     ],
+     [
+      18,
+      "In athletics and swimming a metre is a metre, so nothing is converted: the comparison does the work."
+     ]
+    ],
+    "at": {}
+   }
+  ],
+  [
+   "method",
+   33,
+   {
+    "example": {
+     "pts": [
+      [
+       2001,
+       [
+        1.5852
+       ]
+      ],
+      [
+       2002,
+       [
+        1.5878
+       ]
+      ],
+      [
+       2003,
+       [
+        1.5884
+       ]
+      ],
+      [
+       2004,
+       [
+        1.5883
+       ]
+      ],
+      [
+       2005,
+       [
+        1.5832
+       ]
+      ],
+      [
+       2006,
+       [
+        1.6023
+       ]
+      ],
+      [
+       2007,
+       [
+        1.6048
+       ]
+      ],
+      [
+       2008,
+       [
+        1.6191
+       ]
+      ],
+      [
+       2009,
+       [
+        1.6132
+       ]
+      ],
+      [
+       2010,
+       [
+        1.5949
+       ]
+      ],
+      [
+       2011,
+       [
+        1.608
+       ]
+      ],
+      [
+       2012,
+       [
+        1.6047
+       ]
+      ],
+      [
+       2013,
+       [
+        1.6119
+       ]
+      ],
+      [
+       2014,
+       [
+        1.6144
+       ]
+      ],
+      [
+       2015,
+       [
+        1.6076
+       ]
+      ],
+      [
+       2016,
+       [
+        1.6124
+       ]
+      ],
+      [
+       2017,
+       [
+        1.6147
+       ]
+      ],
+      [
+       2018,
+       [
+        1.6114
+       ]
+      ],
+      [
+       2019,
+       [
+        1.6173
+       ]
+      ],
+      [
+       2020,
+       [
+        1.5969
+       ]
+      ],
+      [
+       2021,
+       [
+        1.62
+       ]
+      ],
+      [
+       2022,
+       [
+        1.6208
+       ]
+      ],
+      [
+       2023,
+       [
+        1.6217
+       ]
+      ],
+      [
+       2024,
+       [
+        1.628
+       ]
+      ],
+      [
+       2025,
+       [
+        1.6492
+       ]
+      ],
+      [
+       2026,
+       [
+        1.6458
+       ]
+      ]
+     ],
+     "x": 1.6501990552610408,
+     "base": 1.6108446980447197,
+     "step": 0.008102210088787769,
+     "z": 4.86,
+     "trend": [
+      [
+       2001.0,
+       1.5896142409959169
+      ],
+      [
+       2001.4237288135594,
+       1.5901041790408876
+      ],
+      [
+       2001.8474576271187,
+       1.5906038581292516
+      ],
+      [
+       2002.2711864406779,
+       1.5911132782610087
+      ],
+      [
+       2002.6949152542372,
+       1.5916324394361596
+      ],
+      [
+       2003.1186440677966,
+       1.5921613416547036
+      ],
+      [
+       2003.542372881356,
+       1.592699984916641
+      ],
+      [
+       2003.9661016949153,
+       1.5932483692219719
+      ],
+      [
+       2004.3898305084747,
+       1.593806494570696
+      ],
+      [
+       2004.8135593220338,
+       1.5943743609628132
+      ],
+      [
+       2005.2372881355932,
+       1.594951968398324
+      ],
+      [
+       2005.6610169491526,
+       1.5955393168772283
+      ],
+      [
+       2006.084745762712,
+       1.5961364063995258
+      ],
+      [
+       2006.5084745762713,
+       1.5967432369652166
+      ],
+      [
+       2006.9322033898304,
+       1.5973598085743006
+      ],
+      [
+       2007.3559322033898,
+       1.597986121226778
+      ],
+      [
+       2007.7796610169491,
+       1.598622174922649
+      ],
+      [
+       2008.2033898305085,
+       1.5992679696619132
+      ],
+      [
+       2008.6271186440679,
+       1.5999235054445708
+      ],
+      [
+       2009.050847457627,
+       1.6005887822706215
+      ],
+      [
+       2009.4745762711864,
+       1.6012638001400659
+      ],
+      [
+       2009.8983050847457,
+       1.6019485590529035
+      ],
+      [
+       2010.322033898305,
+       1.6026430590091345
+      ],
+      [
+       2010.7457627118645,
+       1.6033473000087588
+      ],
+      [
+       2011.1694915254238,
+       1.6040612820517766
+      ],
+      [
+       2011.593220338983,
+       1.6047850051381873
+      ],
+      [
+       2012.0169491525423,
+       1.6055184692679916
+      ],
+      [
+       2012.4406779661017,
+       1.6062616744411895
+      ],
+      [
+       2012.864406779661,
+       1.6070146206577804
+      ],
+      [
+       2013.2881355932204,
+       1.607777307917765
+      ],
+      [
+       2013.7118644067796,
+       1.6085497362211423
+      ],
+      [
+       2014.135593220339,
+       1.6093319055679136
+      ],
+      [
+       2014.5593220338983,
+       1.610123815958078
+      ],
+      [
+       2014.9830508474577,
+       1.6109254673916358
+      ],
+      [
+       2015.406779661017,
+       1.611736859868587
+      ],
+      [
+       2015.8305084745762,
+       1.6125579933889311
+      ],
+      [
+       2016.2542372881355,
+       1.6133888679526691
+      ],
+      [
+       2016.677966101695,
+       1.6142294835598003
+      ],
+      [
+       2017.1016949152543,
+       1.6150798402103248
+      ],
+      [
+       2017.5254237288136,
+       1.6159399379042427
+      ],
+      [
+       2017.949152542373,
+       1.6168097766415541
+      ],
+      [
+       2018.3728813559321,
+       1.6176893564222583
+      ],
+      [
+       2018.7966101694915,
+       1.6185786772463562
+      ],
+      [
+       2019.2203389830509,
+       1.6194777391138475
+      ],
+      [
+       2019.6440677966102,
+       1.6203865420247323
+      ],
+      [
+       2020.0677966101696,
+       1.6213050859790104
+      ],
+      [
+       2020.4915254237287,
+       1.6222333709766812
+      ],
+      [
+       2020.915254237288,
+       1.623171397017746
+      ],
+      [
+       2021.3389830508474,
+       1.624119164102204
+      ],
+      [
+       2021.7627118644068,
+       1.6250766722300554
+      ],
+      [
+       2022.1864406779662,
+       1.6260439214013
+      ],
+      [
+       2022.6101694915253,
+       1.6270209116159378
+      ],
+      [
+       2023.0338983050847,
+       1.6280076428739692
+      ],
+      [
+       2023.457627118644,
+       1.629004115175394
+      ],
+      [
+       2023.8813559322034,
+       1.630010328520212
+      ],
+      [
+       2024.3050847457628,
+       1.6310262829084237
+      ],
+      [
+       2024.7288135593221,
+       1.6320519783400285
+      ],
+      [
+       2025.1525423728813,
+       1.633087414815026
+      ],
+      [
+       2025.5762711864406,
+       1.6341325923334178
+      ],
+      [
+       2026.0,
+       1.6351875108952025
+      ]
+     ],
+     "name": "Katie Ledecky",
+     "year": 2016,
+     "raw": 484.79,
+     "unit": "seconds",
+     "length": 800.0,
+     "label": "Katie Ledecky, 2016: 8:04.79"
+    },
+    "chart_title": "Women's 800 m freestyle: the fastest by anyone else each season · ▲ faster",
+    "caps": [
+     [
+      1,
+      "Then each performance is compared with the best by everyone else in the 15 seasons before and after."
+     ],
+     [
+      7.5,
+      "They trained, ate and competed with much the same science and coaching, so together they set the standard for the best of that time: the curve."
+     ],
+     [
+      16,
+      "The usual spread of the best around that curve is one standard deviation."
+     ],
+     [
+      24,
+      "Katie Ledecky's 8:04.79 in the 800 m freestyle in 2016 sits 4.9 standard deviations above the curve."
+     ],
+     [
+      29.73,
+      "The score is that count: how many standard deviations above the best of its time."
+     ]
+    ],
+    "at": {
+     "curve": 8.0,
+     "band": 17.0,
+     "example": 24
+    }
+   }
+  ],
+  [
+   "throws",
+   40,
+   {
+    "caps": [
+     [
+      1,
+      "Two of the oldest world records are in the women's throws: the shot put's 22.63 m from 1987 and the discus's 76.80 m from 1988."
+     ],
+     [
+      13,
+      "In the 1980s marks like these were routine at the top: 18 shot puts of 22 m or more by 3 women, and 50 discus throws of 72 m or more by 11. No woman has put the shot 22 m since 1988."
+     ],
+     [
+      27,
+      "So the curve for those years sits high, and the records stand only 2.3 (shot) and 3.2 (discus) standard deviations above it. The top ten in this film starts at 4.0."
+     ],
+     [
+      33.0,
+      "The method discounts the whole era, whatever lifted it, without singling anyone out."
+     ]
+    ],
+    "at": {
+     "band": 13,
+     "curve": 27,
+     "note": 33.0
+    },
+    "top10_min": 4.02
+   }
+  ]
+ ],
+ "cues": [
+  [
+   1,
+   "Athletes keep getting better. Since 1950, world records in athletics and swimming have improved by about twenty-three percent in the typical event."
+  ],
+  [
+   10,
+   "Science, nutrition, full-time training and better technique: every generation starts from a higher floor."
+  ],
+  [
+   20,
+   "A sprinter of 1950, with little weight training, sports science or modern technique, can't be compared with a full-time professional of today without allowing for it."
+  ],
+  [
+   31,
+   "In 1950 the hundred-metre world record was ten point two. Today it's nine fifty-eight."
+  ],
+  [
+   37,
+   "In athletics and swimming a metre is a metre, so nothing is converted."
+  ],
+  [
+   44,
+   "Instead, each mark is compared with the best by everyone else in the fifteen seasons before and after. They trained and competed with much the same science, so together they set the standard for the best of their time: the curve."
+  ],
+  [
+   59,
+   "The usual spread of the best around that curve is one standard deviation. The score is how many standard deviations a performance sits above it."
+  ],
+  [
+   67,
+   "Katie Ledecky's eight oh four seventy-nine in 2016 is almost five standard deviations above the curve."
+  ],
+  [
+   77,
+   "The method also handles a harder case. Two of the oldest world records are in the women's throws: the shot put from 1987 and the discus from 1988."
+  ],
+  [
+   89,
+   "In the 1980s, marks like these were routine at the top: eighteen shot puts of twenty-two metres or more, and fifty discus throws of seventy-two or more. No woman has put the shot twenty-two metres since 1988."
+  ],
+  [
+   103,
+   "So the curve for those years sits high, and the records stand only two point three and three point two standard deviations above it. The whole era is discounted, without singling anyone out."
+  ]
+ ],
+ "dur": 116
+}

@@ -1,0 +1,604 @@
+{
+ "scenes": [
+  [
+   "improve",
+   19,
+   {
+    "caps": [
+     [
+      1,
+      "Since 1950, world records in athletics and swimming have risen by about 23% in the typical event. The 100 m has gone from 10.2 to 9.58, the pole vault from 4.77 m to 6.31 m."
+     ],
+     [
+      11,
+      "Science, nutrition, full-time training and better technique: each generation starts from a higher floor."
+     ]
+    ],
+    "at": {}
+   }
+  ],
+  [
+   "tiles",
+   23,
+   {
+    "title": "Sixty home runs isn't always sixty home runs",
+    "tiles": [
+     {
+      "big": "60",
+      "label": "home runs · Babe Ruth · 1927",
+      "context": "teams hit 0.37 a game"
+     },
+     {
+      "big": "70",
+      "label": "home runs · Mark McGwire · 1998",
+      "context": "teams hit 1.04 a game"
+     },
+     {
+      "big": "62",
+      "label": "home runs · Aaron Judge · 2022",
+      "context": "teams hit 1.07 a game"
+     }
+    ],
+    "caps": [
+     [
+      1,
+      "Sixty home runs in 1927, when a team hit one about every three games, isn't the same feat as seventy in 1998, when teams hit one a game."
+     ],
+     [
+      13,
+      "And an athlete of the 1950s, with little weight training or sports science, can't be compared with a full-time professional of today without allowing for it."
+     ]
+    ],
+    "at": {}
+   }
+  ],
+  [
+   "rate",
+   21,
+   {
+    "nhl": {
+     "1982": 4.01,
+     "1986": 3.97,
+     "2004": 2.57,
+     "2025": 3.01
+    },
+    "caps": [
+     [
+      1,
+      "First, the game itself changes. When every team scores more, each goal is worth a little less, like money in an inflated economy. So every performance is first converted to the scoring level of the season being judged."
+     ],
+     [
+      11,
+      "NHL teams scored 3.97 goals a game in 1985–86 and 2.57 in 2003–04."
+     ],
+     [
+      17.41,
+      "Home runs, points and yards get the same treatment."
+     ]
+    ],
+    "at": {
+     "band": 10.5
+    }
+   }
+  ],
+  [
+   "method",
+   37,
+   {
+    "example": {
+     "pts": [
+      [
+       1986,
+       [
+        48.3643
+       ]
+      ],
+      [
+       1987,
+       [
+        51.6365
+       ]
+      ],
+      [
+       1988,
+       [
+        59.5578
+       ]
+      ],
+      [
+       1989,
+       [
+        68.6732
+       ]
+      ],
+      [
+       1990,
+       [
+        69.8166
+       ]
+      ],
+      [
+       1991,
+       [
+        59.1685
+       ]
+      ],
+      [
+       1992,
+       [
+        63.6521
+       ]
+      ],
+      [
+       1993,
+       [
+        56.6431
+       ]
+      ],
+      [
+       1995,
+       [
+        61.7208
+       ]
+      ],
+      [
+       1996,
+       [
+        53.2222
+       ]
+      ],
+      [
+       1997,
+       [
+        62.9705
+       ]
+      ],
+      [
+       1998,
+       [
+        74.8808
+       ]
+      ],
+      [
+       1999,
+       [
+        64.2475
+       ]
+      ],
+      [
+       2000,
+       [
+        48.1692
+       ]
+      ],
+      [
+       2001,
+       [
+        64.0
+       ]
+      ],
+      [
+       2002,
+       [
+        60.8947
+       ]
+      ],
+      [
+       2003,
+       [
+        49.0175
+       ]
+      ],
+      [
+       2004,
+       [
+        48.0371
+       ]
+      ],
+      [
+       2005,
+       [
+        54.9881
+       ]
+      ],
+      [
+       2006,
+       [
+        58.6856
+       ]
+      ],
+      [
+       2007,
+       [
+        58.8459
+       ]
+      ],
+      [
+       2008,
+       [
+        52.9986
+       ]
+      ],
+      [
+       2009,
+       [
+        50.4345
+       ]
+      ],
+      [
+       2010,
+       [
+        62.6904
+       ]
+      ],
+      [
+       2011,
+       [
+        50.4935
+       ]
+      ],
+      [
+       2012,
+       [
+        48.1287
+       ]
+      ],
+      [
+       2013,
+       [
+        60.9907
+       ]
+      ],
+      [
+       2014,
+       [
+        50.6058
+       ]
+      ],
+      [
+       2015,
+       [
+        51.6231
+       ]
+      ],
+      [
+       2016,
+       [
+        45.8547
+       ]
+      ]
+     ],
+     "x": 73.0,
+     "base": 59.36592584259976,
+     "step": 6.808299819848117,
+     "z": 2.0,
+     "trend": [
+      [
+       1986.0,
+       57.94433147790972
+      ],
+      [
+       1986.5084745762713,
+       58.19774155226632
+      ],
+      [
+       1987.0169491525423,
+       58.436750192596456
+      ],
+      [
+       1987.5254237288136,
+       58.66135739890034
+      ],
+      [
+       1988.0338983050847,
+       58.87156317117778
+      ],
+      [
+       1988.542372881356,
+       59.06736750942896
+      ],
+      [
+       1989.050847457627,
+       59.2487704136537
+      ],
+      [
+       1989.5593220338983,
+       59.415771883852166
+      ],
+      [
+       1990.0677966101696,
+       59.568371920024276
+      ],
+      [
+       1990.5762711864406,
+       59.70657052216996
+      ],
+      [
+       1991.084745762712,
+       59.83036769028936
+      ],
+      [
+       1991.593220338983,
+       59.93976342438235
+      ],
+      [
+       1992.1016949152543,
+       60.03475772444904
+      ],
+      [
+       1992.6101694915253,
+       60.11535059048933
+      ],
+      [
+       1993.1186440677966,
+       60.1815420225033
+      ],
+      [
+       1993.6271186440679,
+       60.23333202049092
+      ],
+      [
+       1994.135593220339,
+       60.270720584452164
+      ],
+      [
+       1994.6440677966102,
+       60.29370771438707
+      ],
+      [
+       1995.1525423728813,
+       60.30229341029561
+      ],
+      [
+       1995.6610169491526,
+       60.29647767217781
+      ],
+      [
+       1996.1694915254238,
+       60.27626050003364
+      ],
+      [
+       1996.677966101695,
+       60.24164189386313
+      ],
+      [
+       1997.1864406779662,
+       60.19262185366626
+      ],
+      [
+       1997.6949152542372,
+       60.129200379443056
+      ],
+      [
+       1998.2033898305085,
+       60.05137747119347
+      ],
+      [
+       1998.7118644067796,
+       59.95915312891757
+      ],
+      [
+       1999.2203389830509,
+       59.85252735261527
+      ],
+      [
+       1999.7288135593221,
+       59.73150014228661
+      ],
+      [
+       2000.2372881355932,
+       59.59607149793166
+      ],
+      [
+       2000.7457627118645,
+       59.4462414195503
+      ],
+      [
+       2001.2542372881355,
+       59.282009907142644
+      ],
+      [
+       2001.7627118644068,
+       59.103376960708566
+      ],
+      [
+       2002.2711864406779,
+       58.91034258024822
+      ],
+      [
+       2002.7796610169491,
+       58.70290676576143
+      ],
+      [
+       2003.2881355932204,
+       58.48106951724829
+      ],
+      [
+       2003.7966101694915,
+       58.244830834708885
+      ],
+      [
+       2004.3050847457628,
+       57.99419071814303
+      ],
+      [
+       2004.8135593220338,
+       57.72914916755093
+      ],
+      [
+       2005.322033898305,
+       57.44970618293236
+      ],
+      [
+       2005.8305084745762,
+       57.15586176428757
+      ],
+      [
+       2006.3389830508474,
+       56.84761591161629
+      ],
+      [
+       2006.8474576271187,
+       56.52496862491865
+      ],
+      [
+       2007.3559322033898,
+       56.18791990419481
+      ],
+      [
+       2007.864406779661,
+       55.836469749444454
+      ],
+      [
+       2008.3728813559321,
+       55.47061816066791
+      ],
+      [
+       2008.8813559322034,
+       55.09036513786485
+      ],
+      [
+       2009.3898305084745,
+       54.695710681035614
+      ],
+      [
+       2009.8983050847457,
+       54.28665479017984
+      ],
+      [
+       2010.406779661017,
+       53.86319746529771
+      ],
+      [
+       2010.915254237288,
+       53.42533870638942
+      ],
+      [
+       2011.4237288135594,
+       52.97307851345458
+      ],
+      [
+       2011.9322033898304,
+       52.50641688649359
+      ],
+      [
+       2012.4406779661017,
+       52.02535382550604
+      ],
+      [
+       2012.949152542373,
+       51.529889330492125
+      ],
+      [
+       2013.457627118644,
+       51.020023401452086
+      ],
+      [
+       2013.9661016949153,
+       50.495756038385466
+      ],
+      [
+       2014.4745762711864,
+       49.957087241292726
+      ],
+      [
+       2014.9830508474577,
+       49.40401701017339
+      ],
+      [
+       2015.4915254237287,
+       48.83654534502796
+      ],
+      [
+       2016.0,
+       48.254672245855915
+      ]
+     ],
+     "name": "Barry Bonds",
+     "year": 2001,
+     "raw": 73,
+     "unit": "home runs",
+     "label": "Barry Bonds, 2001: 73",
+     "best_other": {
+      "name": "Mark McGwire",
+      "year": 1998,
+      "value": "70",
+      "converted": 74.9
+     },
+     "clear": -0.28
+    },
+    "chart_title": "Home runs in a season: the most by anyone else each season, in 2001 terms",
+    "caps": [
+     [
+      1,
+      "Then each performance is compared with the best by everyone else in the 15 seasons before and after."
+     ],
+     [
+      9,
+      "They trained, ate and competed with much the same science and coaching, so together they set the standard for the best of that time: the curve."
+     ],
+     [
+      18,
+      "The usual spread of the best around that curve is one standard deviation."
+     ],
+     [
+      26,
+      "Barry Bonds's 73 in 2001 is the record, but only 2.0 standard deviations above the curve: McGwire's 70 in 1998 is worth about 75 in 2001 terms."
+     ],
+     [
+      34.06,
+      "The score is that count: how many standard deviations above the best of its time."
+     ]
+    ],
+    "at": {
+     "curve": 11.0,
+     "band": 19.0,
+     "example": 26
+    }
+   }
+  ]
+ ],
+ "cues": [
+  [
+   1,
+   "Athletes keep getting better. Since 1950, world records in athletics and swimming have improved by about twenty-three percent in the typical event."
+  ],
+  [
+   11,
+   "Science, nutrition, full-time training and better technique: every generation starts from a higher floor."
+  ],
+  [
+   20,
+   "And the game itself changes. Sixty home runs in 1927, when teams hit one every three games, isn't the same feat as seventy in 1998, when they hit one a game."
+  ],
+  [
+   32,
+   "An athlete of the 1950s, with little weight training or nutrition science, can't be compared with today's full-time professionals without allowing for it."
+  ],
+  [
+   43,
+   "So we look for the biggest statistical outliers in two steps. Step one: every performance is converted to the scoring level of the season being judged."
+  ],
+  [
+   53,
+   "In hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–04, about two and a half."
+  ],
+  [
+   64,
+   "Step two: each season is compared with the best by everyone else in the fifteen seasons before and after."
+  ],
+  [
+   72,
+   "They trained and competed with much the same science, so together they set the standard for the best of their time: the curve."
+  ],
+  [
+   81,
+   "The usual spread of the best around that curve is one standard deviation. The score is how many standard deviations a performance sits above it."
+  ],
+  [
+   89,
+   "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the curve: in his era, the best were that good."
+  ]
+ ],
+ "dur": 100
+}

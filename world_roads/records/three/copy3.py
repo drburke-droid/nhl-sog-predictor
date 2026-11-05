@@ -40,7 +40,7 @@ def chapters(film, labels):
     out = []
     for s in film.ORDER:
         if s in labels:
-            out.append(f"{mmss(O[s] if s != 'hook' else 0)} {labels[s]}")
+            out.append(f"{mmss(O[s])} {labels[s]}")
     return out, total
 
 
@@ -86,7 +86,7 @@ def main():
     F = afilm.FA
     cd = [f"{c['rank']}. {c['athlete']}, {c['season']}: {c['achievement']} ({c['z_e3']:.2f})" for c in
           sorted(F["cards"], key=lambda c: -c["rank"])]
-    lab = {"hook": "Intro", "curve": "How the score works", "fair": "Four rules that keep it fair",
+    lab = {"intro": "Comparing across eras: how the score works", "hook": "The biggest outliers", "curve": "Grading on a curve", "fair": "Four rules that keep it fair",
            "sure": "How sure is this list?", "close": "What this ranking is", "end": "Sources and photo credits"}
     lab.update({f"c{c['rank']}": f"#{c['rank']} {c['athlete']}" for c in F["cards"]})
     out["a"] = write("a", afilm, "The 10 Biggest Single-Game Outliers in Team Sports",
@@ -97,7 +97,7 @@ def main():
                      f"We took the best game of every season in {F['scale']['n_categories']} team-sport categories "
                      f"({F['scale']['n']:,} games), scaled every game to regulation length, and compared each with the five "
                      "best games by anyone else in each of the 15 seasons before and after, around a curved trend, "
-                     "converted by the league's scoring rate. The score is how many usual gaps a game sits above that "
+                     "converted by the league's scoring rate. The score is how many standard deviations a game sits above that "
                      "curve. A game makes the list only if it stands at least one step clear of every other game on its "
                      "graph.", cd, lab, [c["photo"] for c in F["cards"]],
                      "NBA box scores (Eoin Moore, Historical NBA Data and Player Box Scores, CC0, via Hugging Face); "
@@ -107,7 +107,7 @@ def main():
     F = bfilm.FB
     cd = [f"{c['rank']}. {c['athlete']}, {c['season']}: {c['achievement']} ({c['z_e3']:.2f})" for c in
           sorted(F["cards"], key=lambda c: -c["rank"])]
-    lab = {"hook": "Intro", "curve": "How the score works", "fair": "Four rules that keep it fair",
+    lab = {"intro": "Comparing across eras: how the score works", "hook": "The biggest outliers", "curve": "Grading on a curve", "fair": "Four rules that keep it fair",
            "sure": "How sure is this list?", "close": "What this ranking is", "end": "Sources and photo credits"}
     lab.update({f"c{c['rank']}": f"#{c['rank']} {c['athlete']}" for c in F["cards"]})
     out["b"] = write("b", bfilm, "The 10 Biggest Single Performances in Athletics and Swimming",
@@ -118,7 +118,7 @@ def main():
                      f"We took every season's best mark in {F['scale']['n_categories']} athletics and swimming events "
                      f"({F['scale']['n']:,} marks) and compared each with the best mark by anyone else in the 15 seasons "
                      "before and after, around a curved trend (races scored as speed; swimming's 2008–09 supersuit "
-                     "seasons treated as a shift). The score is how many usual gaps a mark sits above that curve. A mark "
+                     "seasons treated as a shift). The score is how many standard deviations a mark sits above that curve. A mark "
                      "makes the list only if it stands at least one step clear of every other mark on its graph.",
                      cd, lab, [c["photo"] for c in F["cards"]],
                      "World Athletics; World Aquatics; alltime-athletics.com (Peter Larsson).",
@@ -129,7 +129,7 @@ def main():
           f"{c['specs_in_top10']} of 16 versions)" for c in sorted(F["cards"], key=lambda c: -c["rank"])]
     near = [f"#{k['rank_by_score']} by score: {k['athlete']}, {k['season']}, {k['achievement']} ({k['z']:.2f}; "
             f"{k['specs_in_top10']} of 16). {k['why']}" for k in F["considered"]]
-    lab = {"hook": "Intro", "curve": "How the score works", "fair": "Four rules that keep it fair",
+    lab = {"intro": "Comparing across eras: how the score works", "hook": "The biggest outliers", "curve": "Grading on a curve", "fair": "Four rules that keep it fair",
            "sure": "How sure is this list?", "considered": "Five that came close", "close": "What this ranking is",
            "end": "Sources and photo credits"}
     lab.update({f"c{c['rank']}": f"#{c['rank']} {c['athlete']}" for c in F["cards"]})
@@ -140,7 +140,8 @@ def main():
                      "Which seasons stood furthest above everyone else of their era?",
                      f"We took every season's leader in {F['scale']['n_categories']} team-sport categories "
                      f"({F['scale']['n']:,} seasons) and compared each with the best of everyone else in the 15 seasons "
-                     "before and after, around a curved trend, with an adjustment for league scoring. A season makes the "
+                     "before and after, around a curved trend, with an adjustment for league scoring. The score is how many "
+                     "standard deviations a season sits above that curve. A season makes the "
                      "list only if it stands at least one step clear of every other season on its graph, and the five here "
                      "are the seasons in the top ten of at least 12 of 16 versions of the method.",
                      cd, lab, [c["photo"] for c in F["cards"]] + [k["photo"] for k in F["considered"]],
