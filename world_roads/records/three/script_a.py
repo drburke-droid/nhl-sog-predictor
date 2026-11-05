@@ -4,7 +4,8 @@ positions in the final cut.
 
     python script_a.py status                       # what each chunk would cost to voice
     ELEVENLABS_API_KEY=... python script_a.py voice opening   # voice one chunk (opening hook cards curve rules), and
-                                                    # out_a/preview/<n>_<chunk>.mp3 to listen to
+                                                    # out_a/preview/<n>_<chunk>.mp3 to listen to, and the
+                                                    # five spliced: out_a/preview/film_a_narration_all.mp3
     python opening.py a && python script_a.py       # once all are voiced: opening_a.json, timed_a.json and VO_A.md
 
 The hook keeps its pictures and music; script_a.py only says when each part of it plays (knots: the hook's own
@@ -232,6 +233,31 @@ def voice_chunk(name, cache):
     return mp3
 
 
+def splice():
+    """out_a/preview/film_a_narration_all.mp3: the five chunk previews in order, 2 s apart (the chunks stay as they
+    are, so one can be re-voiced and the whole spliced again)"""
+    import subprocess
+    d = os.path.join(HERE, "out_a", "preview")
+    parts = [os.path.join(d, f"{i + 1}_{c}.mp3") for i, c in enumerate(CHUNK_ORDER)]
+    missing = [p for p in parts if not os.path.exists(p)]
+    if missing:
+        raise SystemExit(f"not voiced yet: {missing}")
+    out = os.path.join(d, "film_a_narration_all.mp3")
+    args = ["ffmpeg", "-y", "-v", "error"]
+    for p in parts:
+        args += ["-i", p]
+    args += ["-f", "lavfi", "-t", "2", "-i", "anullsrc=r=48000:cl=mono"]
+    n = len(parts)
+    chain = "".join(f"[{i}:a]aresample=48000,aformat=channel_layouts=mono[a{i}];" for i in range(n))
+    seq = "".join(f"[a{i}]" + (f"[g{i}]" if i < n - 1 else "") for i in range(n))
+    gaps = f"[{n}:a]asplit={n - 1}" + "".join(f"[g{i}]" for i in range(n - 1)) + ";"
+    args += ["-filter_complex", chain + gaps + seq + f"concat=n={2 * n - 1}:v=0:a=1[out]", "-map", "[out]",
+             "-b:a", "128k", out]
+    subprocess.run(args, check=True)
+    print(out)
+    return out
+
+
 if __name__ == "__main__" and len(sys.argv) > 1:
     import narrate
     narrate.SAY = opening.SAY.get("a", {})
@@ -242,6 +268,11 @@ if __name__ == "__main__" and len(sys.argv) > 1:
     elif sys.argv[1] == "voice":                        # python script_a.py voice opening [hook cards curve rules]
         for _c in sys.argv[2:] or CHUNK_ORDER:
             voice_chunk(_c, _cache)
+        if all(os.path.exists(os.path.join(HERE, "out_a", "preview", f"{i + 1}_{c}.mp3"))
+               for i, c in enumerate(CHUNK_ORDER)):
+            splice()                                    # the whole narration again, with the new chunk in it
+    elif sys.argv[1] == "splice":                       # python script_a.py splice
+        splice()
     sys.exit(0)
 
 if __name__ == "__main__":
