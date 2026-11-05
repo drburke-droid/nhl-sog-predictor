@@ -131,9 +131,11 @@ class Promise(Scene):
         if t >= self.cue('So I tested'):
             al = int(255 * ramp(t, self.cue('So I tested'), 0.5))
             layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
-            ImageDraw.Draw(layer).line([(582, 748), (1420, 748)], fill=sf.SEPIA + (int(al * 0.7),), width=2)
+            cap, fcap = 'SAME DICE   ·   SAME BOARD   ·   TESTED ONE DECISION AT A TIME', sf.font('sc', 30)
+            dr = ImageDraw.Draw(layer)
+            dr.line([(582, 748), (582 + dr.textlength(cap, font=fcap), 748)], fill=sf.SEPIA + (int(al * 0.7),), width=2)
             img.alpha_composite(layer)
-            txt(img, (580, 768), 'SAME DICE   ·   SAME BOARD   ·   TESTED ONE DECISION AT A TIME', sf.font('sc', 30), fill=sf.SEPIA, alpha=al)
+            txt(img, (580, 768), cap, fcap, fill=sf.SEPIA, alpha=al)
         stamp_in(img, t, c_win + 0.2, (1620, 950), ['55% MORE', 'WINS'], angle=-9, size=60)
         return shake(img, t, c_win + 0.35)
 
