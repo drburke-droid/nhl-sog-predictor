@@ -58,5 +58,65 @@
   "source": "ebay.com , front of photo , back of photo",
   "changes": "cropped, background removed (rembg), toned in team colours",
   "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
+ },
+ "feller": {
+  "athlete": "Bob Feller",
+  "file": "Bob Feller 1953.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Bob_Feller_1953.jpg",
+  "author": "Bowman Gum",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "circa 1953 date QS:P,+1953-00-00T00:00:00Z/9,P1480,Q5727902",
+  "source": "http://www.vintagecardtraders.org/virtual/53bowman_color/53bowman_color.html",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Bowman Gum, Public domain, via Wikimedia Commons"
+ },
+ "wills": {
+  "athlete": "Maury Wills",
+  "file": "Maury Wills - Los Angeles Dodgers - 1961.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Maury_Wills_-_Los_Angeles_Dodgers_-_1961.jpg",
+  "author": "Unknown author",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "1961",
+  "source": "Manny's Baseball Land via tradingcarddb.com",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
+ },
+ "bottomley": {
+  "athlete": "Jim Bottomley",
+  "file": "Jim Bottomley - Cardinals.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Jim_Bottomley_-_Cardinals.jpg",
+  "author": "Kashin Publications",
+  "license": "Public domain",
+  "license_url": "//commons.wikimedia.org/wiki/File:Jim_Bottomley_-_Cardinals.jpg",
+  "date": "1929",
+  "source": "https://www.tcdb.com/ViewSet.cfm/sid/73728/1929-Kashin-Publications-(R316)",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Kashin Publications, Public domain, via Wikimedia Commons"
+ },
+ "olmstead": {
+  "athlete": "Bert Olmstead",
+  "file": "Bert Olmstead.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Bert_Olmstead.jpg",
+  "author": "Unknown author",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "between 1944 and 1946 date QS:P,+1944-00-00T00:00:00Z/8,P131",
+  "source": "File taken from Hockey Hall of Fame website , border cropped.",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
+ },
+ "box": {
+  "athlete": "Cloyce Box",
+  "file": "Cloyce Box - 1950 Bowman.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Cloyce_Box_-_1950_Bowman.jpg",
+  "author": "Bowman",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "1950",
+  "source": "http://www.vintagecardprices.com/card-profile/154959/1950-Bowman-Cloyce-Box-111-Football-Card-Value-Prices.htm",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Bowman, Public domain, via Wikimedia Commons"
  }
 }

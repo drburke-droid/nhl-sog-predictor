@@ -31,6 +31,7 @@ SC.PALETTE.update({
     "canadiens": dict(team="Montreal Canadiens", bg="#1A2366", accent="#E03A3E", light="#F2E3E4"),
     "chiefs": dict(team="Kansas City Chiefs", bg="#7A0B17", accent="#FFB612", light="#FBEAD0"),
 })
+SC.FRAMING.update({"box": (600, 1560, 640), "vanbrocklin": (720, 1610, 760), "olmstead": (760, 1600, 820)})  # clear of the score
 CREDITS = {}
 for p in (os.path.join(REC, "outliers", "photos", "credits.json"), os.path.join(REC, "singlegame", "film", "photos", "credits.json"),
           os.path.join(HERE, "photos", "credits.json")):
