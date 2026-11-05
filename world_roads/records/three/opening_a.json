@@ -19,7 +19,7 @@
   ],
   [
    "tiles",
-   35,
+   34,
    {
     "title": "Four home runs isn't always four home runs",
     "tiles": [
@@ -45,7 +45,7 @@
       "Four home runs in a game in 1932, when a team hit one about every other game, isn't the same feat as in 2017, when teams hit 1.26 a game."
      ],
      [
-      19,
+      20,
       "And an athlete of the 1950s, with little weight training or sports science, can't be compared with a full-time professional of today without allowing for it."
      ]
     ],
@@ -54,7 +54,7 @@
   ],
   [
    "rate",
-   23,
+   24,
    {
     "nhl": {
      "1982": 4.01,
@@ -72,7 +72,7 @@
       "NHL teams scored 3.97 goals a game in 1985–86 and 2.57 in 2003–04."
      ],
      [
-      20.13,
+      20.94,
       "Home runs, points and yards get the same treatment."
      ]
     ],
@@ -695,15 +695,15 @@
    "The games themselves also change... For example, four home runs by one player in a single game in 1932, when whole teams were only hitting about one every other game, is much more impressive than the same feat in 2017, when teams were hitting more than twice as many home runs."
   ],
   [
-   38,
+   39,
    "In the same way, an athlete of the 1950s, with little weight training or nutrition science, can't be fairly compared with today's full-time professionals, who build every part of their day around their sport, unless we allow for it."
   ],
   [
-   55,
+   54,
    "So we look for the biggest statistical outliers in two steps. Step one: every performance is converted to the scoring level of the season being judged."
   ],
   [
-   66,
+   65,
    "In hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–04, about two and a half. We need to adjust the data to account for this."
   ],
   [

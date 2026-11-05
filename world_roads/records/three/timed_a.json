@@ -1,6 +1,6 @@
 {
  "hook": {
-  "dur": 47.2,
+  "dur": 44.5,
   "knots": [
    [
     0.0,
@@ -8,27 +8,27 @@
    ],
    [
     7.2,
-    9.7
+    8.9
    ],
    [
     10.0,
-    18.5
+    16.6
    ],
    [
     12.4,
-    26.5
+    24.1
    ],
    [
     15.0,
-    32.2
+    29.5
    ],
    [
     17.4,
-    34.6
+    31.9
    ],
    [
     30.0,
-    47.2
+    44.5
    ]
   ],
   "music": [
@@ -38,30 +38,30 @@
    ],
    [
     9.6,
-    26.8
+    24.1
    ],
    [
     30.0,
-    47.2
+    44.5
    ],
    [
     60.0,
-    77.2
+    74.5
    ]
   ],
   "starts": [
    1.0,
-   9.7,
-   18.5,
-   26.5,
-   35.2
+   8.9,
+   16.6,
+   24.1,
+   32.5
   ],
   "ends": [
-   9.17,
-   18.049999999999997,
-   26.0,
-   34.73,
-   45.13
+   8.385918,
+   16.050816,
+   23.620204,
+   32.03449,
+   41.009184
   ],
   "words": {
    "graded": "Each one graded against the best games of everyone else in its era, 15 seasons either side.",
@@ -71,16 +71,16 @@
   }
  },
  "curve": {
-  "dur": 62.1,
+  "dur": 56.1,
   "at": {
-   "s95": 3.66,
-   "top5": 5.69,
-   "others": 12.7,
-   "curve": 15.45,
-   "easy": 22.5,
-   "band": 31.8,
-   "star": 38.6,
-   "lift": 45.0
+   "s95": 3.55,
+   "top5": 5.49,
+   "others": 12.2,
+   "curve": 14.51,
+   "easy": 20.5,
+   "band": 27.9,
+   "star": 34.6,
+   "lift": 40.7
   },
   "caps": [
    [
@@ -88,52 +88,52 @@
     "Picture a class test. One student scores 95. Leave them out, and take the five best scores by everyone else: about 80."
    ],
    [
-    12.7,
+    12.2,
     "Do the same for the 15 classes before and the 15 after. The line through all those top fives is the curve."
    ],
    [
-    22.5,
+    20.5,
     "A year with an easier test is scaled down first, just as every season is converted to the same scoring level."
    ],
    [
-    31.8,
+    27.9,
     "The top scores usually sit within about 3 points of the curve: one standard deviation."
    ],
    [
-    38.6,
+    34.6,
     "The 95 is 15 points above the curve: 15 ÷ 3 = 5 standard deviations. On our scale, a score of 5."
    ],
    [
-    45.0,
+    40.7,
     "If the top fives around it had scored about 92, the same 95 would be (95 − 92) ÷ 3 = 1 standard deviation up: a score of 1."
    ],
    [
-    53.7,
+    48.1,
     "Same score, different era. So every game in this film is graded against the best of everyone else in its own era."
    ]
   ],
   "starts": [
    1.0,
-   12.7,
-   22.5,
-   31.8,
-   38.6,
-   45.0,
-   53.7
+   12.2,
+   20.5,
+   27.9,
+   34.6,
+   40.7,
+   48.1
   ],
   "ends": [
-   12.21,
-   21.96,
-   31.339999999999996,
-   38.15,
-   44.46,
-   53.17,
-   60.230000000000004
+   11.729592,
+   20.003878,
+   27.415713999999998,
+   34.136531,
+   40.183469,
+   47.615714000000004,
+   54.232041
   ],
   "events": [
-   42.9,
-   49.5
+   38.9,
+   45.2
   ]
  },
- "estimate": true
+ "estimate": false
 }

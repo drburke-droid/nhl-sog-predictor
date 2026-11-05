@@ -2,8 +2,10 @@
 other sections keep their length and their lines' offsets (VO_A_body.md), and the whole script is written out with
 positions in the final cut.
 
-    ELEVENLABS_API_KEY=... python opening.py a      # the opening (opening_a.json)
-    ELEVENLABS_API_KEY=... python script_a.py       # timed_a.json and VO_A.md
+    python script_a.py status                       # what each chunk would cost to voice
+    ELEVENLABS_API_KEY=... python script_a.py voice opening   # voice one chunk (opening hook cards curve rules), and
+                                                    # out_a/preview/<n>_<chunk>.mp3 to listen to
+    python opening.py a && python script_a.py       # once all are voiced: opening_a.json, timed_a.json and VO_A.md
 
 The hook keeps its pictures and music; script_a.py only says when each part of it plays (knots: the hook's own
 clock against the film's), so the five lines land with their captions and the faces and title keep their music.
@@ -135,6 +137,10 @@ def main():
     narrate.SAY = opening.SAY.get("a", {})
     cache = os.path.join(HERE, "out_a", "voice")
     os.makedirs(cache, exist_ok=True)
+    if not os.environ.get("NARRATE_ESTIMATE"):              # timing the film never spends credits: voice by chunk first
+        todo = status(cache)
+        if any(todo.values()):
+            raise SystemExit("some chunks aren't voiced: python script_a.py voice <chunk> (or NARRATE_ESTIMATE=1)")
     op = json.load(open(os.path.join(HERE, "opening_a.json"), encoding="utf-8"))
     hook, cls = plan_hook(cache), plan_class(cache)
     B, heads = body()
@@ -175,6 +181,68 @@ def main():
         print(f"  {k:6s} last line ends {end:5.1f} of {d:.0f} s{flag}" + (f"; pushed late {late}" if late else ""))
     return total
 
+
+# ------------------------------------------------------------------ voicing in chunks
+CHUNK_ORDER = ["opening", "hook", "cards", "curve", "rules"]
+
+
+def chunks():
+    """the script in five chunks, each voiced (and re-voiced) on its own; every line is cached by its text, so a chunk
+    re-voiced after an edit costs only its changed lines"""
+    B, _ = body()
+    return {"opening": [ln for sc in opening.FILMS["a"] for ln in sc[2]], "hook": HOOK,
+            "cards": [t for k in [f"c{r}" for r in range(10, 0, -1)] for _, t in B[k]], "curve": CLASS,
+            "rules": [t for k in ("fair", "sure", "close") for _, t in B[k]]}
+
+
+def status(cache):
+    import narrate
+    out = {}
+    for name in CHUNK_ORDER:
+        lines = chunks()[name]
+        todo = [ln for ln in lines if not narrate.cached(ln, cache)]
+        out[name] = todo
+        print(f"  {name:8s} {len(lines):3d} lines, {len(todo):3d} to voice, {sum(len(narrate.say(x)) for x in todo):5d} "
+              "characters (credits)")
+    return out
+
+
+def voice_chunk(name, cache):
+    """voice a chunk's missing lines, then out_a/preview/<n>_<chunk>.mp3: its lines in order, for listening"""
+    import subprocess
+    import numpy as np
+    import narrate
+    from scipy.io import wavfile
+    lines = chunks()[name]
+    todo = [ln for ln in lines if not narrate.cached(ln, cache)]
+    spent = sum(len(narrate.say(x)) for x in todo)
+    for i, ln in enumerate(todo, 1):
+        narrate.tts(ln, cache)
+        print(f"  {name}: voiced {i}/{len(todo)}", flush=True)
+    gap = np.zeros(int(0.7 * narrate.SR), np.float32)
+    x = np.concatenate([np.concatenate([narrate.decode(narrate.tts(ln, cache)), gap]) for ln in lines])
+    d = os.path.join(HERE, "out_a", "preview")
+    os.makedirs(d, exist_ok=True)
+    wav = os.path.join(d, f"{name}.wav")
+    wavfile.write(wav, narrate.SR, (x / (np.abs(x).max() + 1e-9) * 0.89 * 32767).astype(np.int16))
+    mp3 = os.path.join(d, f"{CHUNK_ORDER.index(name) + 1}_{name}.mp3")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", wav, "-b:a", "128k", mp3], check=True)
+    os.remove(wav)
+    print(f"{name}: {len(todo)} lines voiced ({spent} credits), {len(lines)} in all -> {mp3} ({len(x) / narrate.SR:.0f} s)")
+    return mp3
+
+
+if __name__ == "__main__" and len(sys.argv) > 1:
+    import narrate
+    narrate.SAY = opening.SAY.get("a", {})
+    _cache = os.path.join(HERE, "out_a", "voice")
+    os.makedirs(_cache, exist_ok=True)
+    if sys.argv[1] == "status":                         # python script_a.py status
+        status(_cache)
+    elif sys.argv[1] == "voice":                        # python script_a.py voice opening [hook cards curve rules]
+        for _c in sys.argv[2:] or CHUNK_ORDER:
+            voice_chunk(_c, _cache)
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
