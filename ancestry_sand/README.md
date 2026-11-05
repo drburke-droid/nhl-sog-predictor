@@ -25,7 +25,8 @@ python make_walls.py && python make_table.py                # glass outlines and
 python camera.py --write                                    # glass keyframes along the camera path
 blender -b -P blender_scene.py -- --samples 32 --poses data/plate_poses.json   # ~1 min per keyframe on 4 cores
 python film.py still 40 112 147                             # stills -> out/
-python film.py video --workers 4                            # the film -> out/grains_of_ancestry_glass.mp4
+python film.py video --workers 4                            # the film, no captions (SAND_CAPTIONS=1 burns them in)
+python film.py script                                       # the narration as a timed .srt, for a voice-over
 ```
 
 **The camera moves.** `camera.py` holds one path (pans, tilts and dollies keyed to the story: into
