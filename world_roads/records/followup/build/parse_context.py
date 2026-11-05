@@ -226,6 +226,11 @@ def mlb():
 
 def nfl():
     """league totals from every player line: PFA team pages (summed per player over teams) and nflverse"""
+    try:
+        import analysis                    # noqa: F401  (bigfour's athletics helpers; the NFL needs none of them)
+    except ModuleNotFoundError:
+        import types
+        sys.modules["analysis"] = types.ModuleType("analysis")
     import bigfour as B                    # only this table needs the original pipeline (and its full cache)
     pl = []
     P = B.pfa_load()                       # top-40 lists only: re-sum every player for league totals
