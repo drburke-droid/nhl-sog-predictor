@@ -118,11 +118,11 @@ NOTES = {  # the plain-English reason, checked against the per-version facts tha
                    "the big raw totals of 1904-1915 (Waddell 349, Johnson 313) win, and a 20-season window reaches "
                    "Waddell's 1904 even with it.",
     "Babe Ruth": "It rests on the league adjustment: without it, the home-run boom Ruth started catches him "
-                 "(Gehrig, Wilson's 56 in 1930, Foxx's 58 in 1932); with it, a 7-season window ranks it 11th or 18th.",
-    "Bob Feller": "Always clear of its own era, but with 7- or 10-season windows it ranks 11th to 18th, and the "
+                 "(Gehrig, Wilson's 56 in 1930, Foxx's 58 in 1932); with it, a 7-season window ranks it 12th or 19th.",
+    "Bob Feller": "Always clear of its own era, but with 7- or 10-season windows it ranks 12th to 19th, and the "
                   "widest window without adjustment reaches Koufax's 382 in 1965.",
     "Maury Wills": "Without the league adjustment, the steals boom that followed him wins (Brock's 118 in 1974, "
-                   "Henderson's 130 in 1982); with 7-season windows it ranks 11th to 20th.",
+                   "Henderson's 130 in 1982); with 7-season windows it ranks 11th to 21st.",
     "Ted Williams": "Without the league adjustment, the high averages of the 1920s and 30s (Hornsby's .424, "
                     "Terry's .401) come within a step or ahead; with it, only the 15- and 20-season windows put it in "
                     "the ten.",

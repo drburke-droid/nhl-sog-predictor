@@ -35,6 +35,9 @@ sys.path.insert(0, HERE)
 import score as S                                          # noqa: E402  (league columns, paths)
 import gsmodel as G                                        # noqa: E402
 import context as X                                        # noqa: E402
+_read = X.read                                             # this film's NFL rates: the box scores (team_games.py league)
+X.read = lambda name: _read("nfl_league_games.csv" if name == "nfl_league.csv"
+                            and os.path.exists(os.path.join(X.CTX, "nfl_league_games.csv")) else name)
 import run_all as RA                                       # noqa: E402
 
 DATA = os.path.join(HERE, "data")

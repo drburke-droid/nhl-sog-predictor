@@ -298,6 +298,10 @@ def pfa_get(url, path, pause=3.0):
             data = b""
         B._last[0] = time.time()
         if data and b"One moment, please" not in data[:4000]:
+            try:
+                data.decode("utf-8")
+            except UnicodeDecodeError:                         # a few pages are Latin-1: saved as UTF-8, as fetch.get does
+                data = data.decode("latin-1").encode("utf-8")
             os.makedirs(os.path.dirname(path), exist_ok=True)
             open(path + ".tmp", "wb").write(data)
             os.replace(path + ".tmp", path)
@@ -488,10 +492,12 @@ def merge(depth=15):
 
 
 def league():
-    """league per-team-game rates for the stats the Reference league tables lack: the NFL (Pro Football Archives box
-    scores 1950-98, the AFL's games counted in 1960-69; nflverse from 1999). The NHL and MLB tables come from Hockey-
-    and Baseball-Reference (followup/build/parse_context.py), as in the season film; only if those are missing are
-    they computed from the game data here, as a stand-in."""
+    """league per-team-game rates. The NBA, NHL and MLB tables come from the season film's builder (followup/build/
+    parse_context.py: Basketball-, Hockey- and Baseball-Reference), so both films share them; only if one is missing is
+    it computed here from the game data, as a stand-in. The NFL table here is this film's own, nfl_league_games.csv
+    (topk.py reads it in place of nfl_league.csv): every box score 1950-98, the AFL's games counted in 1960-69, then
+    nflverse. The season film's NFL table sums the Pro Football Archives team pages instead; the two agree to within
+    0.5% a season, except 1950, whose season page links 12 of the 13 teams (not the Steelers)."""
     os.makedirs(CTX, exist_ok=True)
     have = lambda name, col: os.path.exists(os.path.join(CTX, name)) and col in open(os.path.join(CTX, name)).readline()
     if not have("nhl_league.csv", "assists_per_goal"):
@@ -523,7 +529,7 @@ def league():
                     tot[int(r["season"])][k] += float(r[c])
     keys = ["pass_yds", "rush_yds", "rec_yds", "pass_td", "int", "sacks"]
     old = json.load(open(os.path.join(CACHE, "nflold_totals.json")))           # 1932-1998, NFL and AFL together
-    with open(os.path.join(CTX, "nfl_league.csv"), "w", newline="") as f:
+    with open(os.path.join(CTX, "nfl_league_games.csv"), "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["season", "teams", "games_per_team"] + [k + "_per_team_g" for k in keys])
         for y in sorted(old["games"], key=int):
