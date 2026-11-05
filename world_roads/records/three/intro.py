@@ -28,12 +28,17 @@ def mmss(sec):
     return f"{m}:{sec - 60 * m:05.2f}" if m else f"{sec:.2f}"
 
 
-def captions(fig, t, al, caps, x=1190, y=330, width=40, size=26):
+def captions(fig, t, al, caps, x=1190, y=330, width=40, size=26, page=None):
+    """captions stacked as they arrive; with page (a time), the ones before it fade out then and the rest start again
+    at the top"""
     cur = max((c[0] for c in caps if c[0] <= t), default=None)
-    for t0, s in caps:
-        a = al * fade(t, t0, 99, 0.8, 0)
-        if a > 0:
-            y = FM.para(fig, x, y, s, width=width, size=size, color=INK if t0 == cur else INK2, alpha=a) + 20
+    y0 = y
+    for group in ([c for c in caps if page is None or c[0] < page], [c for c in caps if page is not None and c[0] >= page]):
+        y = y0
+        for t0, s in group:
+            a = al * fade(t, t0, page if page is not None and t0 < page else 99, 0.8, 0.6)
+            if a > 0:
+                y = FM.para(fig, x, y, s, width=width, size=size, color=INK if t0 == cur else INK2, alpha=a) + 20
     return y
 
 
@@ -192,7 +197,7 @@ def method(fig, t, al, spec):
         cnt = ex["z"] * prog
         title(fig, 150, 1040, f"{cnt:.1f}", size=64, color=GOLD, alpha=la)
         text(fig, 270, 1035, "standard deviations above the curve", size=24, color=INK2, alpha=la)
-    captions(fig, t, al, spec["caps"], size=25)
+    captions(fig, t, al, spec["caps"], size=25, page=at.get("page"))
 
 
 def throws(fig, t, al, spec):

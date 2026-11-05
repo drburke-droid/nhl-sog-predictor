@@ -83,7 +83,7 @@
   ],
   [
    "method",
-   60,
+   78,
    {
     "example": {
      "pts": [
@@ -671,12 +671,17 @@
      [
       45,
       "Adrian Peterson's record 296 rushing yards in 2007 stand 3.9 standard deviations above the curve: on a perfect bell curve, about 1 in 20,000. Here each season's class is its five best games."
+     ],
+     [
+      59,
+      "The curve is the average of the best, not of every player: against all players, these games would look far more extraordinary. The question here is who stood out most among the very best."
      ]
     ],
     "at": {
      "curve": 11.0,
      "band": 20.0,
-     "example": 45
+     "example": 45,
+     "page": 45
     }
    }
   ]
@@ -725,7 +730,11 @@
   [
    122,
    "Adrian Peterson's record two hundred and ninety-six rushing yards stand almost four standard deviations above the curve. On a perfect bell curve, a result that high would come up about once in twenty thousand tries."
+  ],
+  [
+   136,
+   "Remember, the curve is the average of the best, not of every player. Measured against all players, Peterson's game would look far more extraordinary. But we're not looking for who stood above the average player. We're looking for who stood out most among the very best."
   ]
  ],
- "dur": 137
+ "dur": 155
 }
