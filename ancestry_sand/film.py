@@ -100,24 +100,30 @@ class Plates:
         else:
             w = (s - ts[j]) / (ts[j + 1] - ts[j])
             pairs = [(self.keys[j][1], 1 - w), (self.keys[j + 1][1], w)]
-        acc = [np.zeros((H, W, 3), np.float32) for _ in range(3)]
+        acc = [np.zeros((H, W, 3), np.float32) for _ in range(4)]
         wsum = np.zeros((H, W, 1), np.float32)
+        bsum = 0.0
         for i, w in pairs:
             if w <= 1e-4:
                 continue
             b, ratio, spec, Pk = self.load(i)
             if np.allclose(Pk, P, atol=1e-9):
                 acc[0] += w * b; acc[1] += w * ratio; acc[2] += w * spec; wsum += w
+                acc[3] += w * b; bsum += w
                 continue
             Mg = C.hom(P, WALL_MID) @ np.linalg.inv(C.hom(Pk, WALL_MID))
             Mt = C.hom(P, 0.0) @ np.linalg.inv(C.hom(Pk, 0.0))
             ok = cv2.warpPerspective(np.ones((H, W), np.float32), Mg, (W, H), flags=cv2.INTER_LINEAR)[..., None]
-            acc[0] += w * ok * cv2.warpPerspective(b, Mt, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            bw = cv2.warpPerspective(b, Mt, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            acc[0] += w * ok * bw
+            acc[3] += w * bw; bsum += w           # the bare table everywhere, edges extended past the plate
             acc[1] += w * ok * cv2.warpPerspective(ratio, Mg, (W, H), flags=cv2.INTER_LINEAR, borderValue=(1, 1, 1))
             acc[2] += w * ok * cv2.warpPerspective(spec, Mg, (W, H), flags=cv2.INTER_LINEAR)
             wsum += w * ok
+        cover = np.clip(wsum * 1e3, 0, 1)                # 1 wherever any keyframe sees this pixel
         wsum = np.maximum(wsum, 1e-4)
-        b = acc[0] / wsum
+        # where no keyframe sees this part of the screen (edges in tilted shots), fall back to the bare table
+        b = cover * (acc[0] / wsum) + (1 - cover) * (acc[3] / max(bsum, 1e-4))
         ratio = np.where(wsum > 2e-4, acc[1] / wsum, 1.0)
         spec = acc[2] / wsum
         return b, ratio, spec
