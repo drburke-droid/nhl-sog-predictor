@@ -16,6 +16,18 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 Not here, because neither was saved to any repository: the BVD video (binocular vision dysfunction; AI-voice and
 no-voice versions plus Shorts, made with the neurogaze project) and the video of glasses lenses growing thicker up to -39D.
 
+## eye/clips/ (pieces for videos still being made)
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| aeaf_lock_glasses_trick_CAPTIONED_22s.mp4 | 16:9, 1080p | 0:22 | Phone AE/AF lock trick (from the 2023-11-28 blog post): zooms that follow the phone, a 1.2 s hold on the AE/AF LOCK banner, then a "with glasses / without glasses" side-by-side. Five step captions, a highlight box on the banner, a shutter flash, and a footnote on nearsighted prescriptions |
+| aeaf_lock_glasses_trick_CLEAN_22s.mp4 | 16:9, 1080p | 0:22 | Same cut and timing with no text or graphics, for editing into the explainer |
+
+Both have the original street sound, cleaned and kept low so it can be muted or replaced. Timeline (both versions):
+0:00 wide shot, 0:02.8 medium shot as the glasses come in, 0:04.7 close-up on the screen, 0:08.0 tighter as AE/AF LOCK appears,
+0:08.3-0:09.5 hold on the banner, 0:10.7 pull back for the glasses coming off, 0:12.5 close-up on the now-blurry viewfinder
+(shutter 0:13.2), 0:15.2 side-by-side comparison, 0:17.9-0:20.5 slow zoom on both. Scripts to re-render: `tools/aeaf_lock/`.
+
 ## speed_of_light/
 
 | File | Format | Length | What it is |
