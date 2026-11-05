@@ -1,5 +1,5 @@
 THE MONOPOLY DECISIONS YOU CONTROL: NARRATION BY SLIDE
-Times are from the 11:42 cut.
+Times are from the 13:00 cut.
 
 ======================================================================
 1. Cold open (0:00)
@@ -25,270 +25,274 @@ NARRATION: Thirty years later, the game had a new name. You know it as Monopoly.
 ON SCREEN: Title card: A STUDY OF THE LANDLORD’S GAME · THE DECISIONS YOU CONTROL · You can’t choose where you land. You can choose what you do next. · 13,400,000 GAMES · ATLANTIC CITY, N.J. · AFTER L. J. MAGIE, PATENT No. 748,626 (1904)
 NARRATION: Most Monopoly strategy videos tell you the same thing.
 
-[Slide 2.2 · 0:34–0:43]
+[Slide 2.2 · 0:34–0:42]
 ON SCREEN: The orange squares, enlarged · The colour everyone tells you to buy. · Orange: landed on more than any other set. · Two dice tumble across · You don’t choose where you land.
 NARRATION: Buy the orange properties, because people land on them more. And sure. But you don't get to choose where you land. The dice do that.
 
-[Slide 2.3 · 0:43–1:04]
+[Slide 2.3 · 0:42–1:02]
 ON SCREEN: 1. To buy, or to pass. · 2. To trade for a full set. · 3. To collect the railroads. · 4. To build, and how much cash to keep. · 5. To leave jail, or to stay. · Same dice. Same board. Tested, one decision at a time. · 45% MORE · WINS
-NARRATION: What you do choose is everything else. Whether to buy. When to trade. Whether to chase the railroads. When to build, and how much cash to keep. Whether to stay in jail. So I tested every one of those decisions. Same dice. Same board. And if you make them all well, you'll win about forty-five percent more games than anyone else at your table.
+NARRATION: What you do choose is everything else. Like whether to buy. When to trade. Whether to chase the railroads. When to build, and how much cash to keep. Whether to stay in jail. So I tested every one of those decisions. Same dice. Same board. And if you make them all well, you'll win about forty-five percent more games than anyone else at your table.
 
 ======================================================================
-3. How I tested it (1:04)
+3. How I tested it (1:01)
 ======================================================================
 
-[Slide 3.1 · 1:04–1:16]
+[Slide 3.1 · 1:01–1:13]
 ON SCREEN: Fig. 1. · THE GAME, PLAYED BY A COMPUTER · By the official rules: · the real board · the real cards · auctions · mortgages · the bank’s 32 houses / and 12 hotels
 NARRATION: Here's how I tested it. I built a computer version of Monopoly that plays by the official rules. The real board, the real cards, auctions, mortgages, and the bank's thirty-two houses and twelve hotels.
 
-[Slide 3.2 · 1:16–1:19]
+[Slide 3.2 · 1:13–1:17]
 ON SCREEN: Photo: GAME NIGHT, 1922 (four women playing mah-jong)
 NARRATION: Then I taught it to play the way people actually play.
 
-[Slide 3.3 · 1:19–1:28]
+[Slide 3.3 · 1:17–1:26]
 ON SCREEN: HOW PEOPLE ACTUALLY PLAY · 1. Buy what you land on, if you can afford it. · yours: finishes their reds · theirs: finishes your oranges · 2. Nobody hands you the card that finishes your set, · unless you hand them the card that finishes theirs. · A SET · FOR A SET
 NARRATION: Everyone typically buys what they land on, if they can afford it. And nobody hands you the card that finishes your set, unless you hand them the card that finishes theirs.
 
-[Slide 3.4 · 1:28–1:44]
+[Slide 3.4 · 1:26–1:42]
 ON SCREEN: STALLED · ROUND 58 · I’ll buy your Kentucky Ave. · for $550 cash. · It finishes my reds. · SOLD
 NARRATION: If you've played, you know what happens next. Sometimes the board locks up. Nobody can make a fair swap, and the game just... drags. So when that happens, my players do what real families do. They start dealing. Someone sells the card you need, for a price.
 
-[Slide 3.5 · 1:44–2:01]
+[Slide 3.5 · 1:42–1:59]
 ON SCREEN: MAKES THE DECISION · TYPICAL · 25% · of games, for a typical player · goes first: 28% goes last: 22% · so every tested player takes every seat
 NARRATION: To test a decision, one player makes it, and the other three play like a typical player. At a four-player table, a typical player wins about twenty-five percent of games. Going first helps: the first player wins about twenty-eight percent, the last about twenty-two, so every player I tested sat in every seat equally often.
 
-[Slide 3.6 · 2:01–2:09]
+[Slide 3.6 · 1:59–2:06]
 ON SCREEN: EVERY RESULT: · 100,000 GAMES · IN ALL · 13,400,000 games
 NARRATION: Every result you're about to see comes from a hundred thousand games. More than thirteen million games in all.
 
 ======================================================================
-4. Decision 1: Buy or pass (2:08)
+4. Decision 1: Buy or pass (2:06)
 ======================================================================
 
-[Slide 4.1 · 2:08–2:10]
+[Slide 4.1 · 2:06–2:07]
 ON SCREEN: Photo: A NEW STUTZ ROADSTER, 1920 · Plaque: DECISION ONE / TO BUY, OR TO PASS
 NARRATION: Decision one.
 
-[Slide 4.2 · 2:10–2:18]
+[Slide 4.2 · 2:07–2:15]
 ON SCREEN: Deed of Sale: KENTUCKY AVE., $220 · Buy it? · Or pass?
 NARRATION: You land on a property nobody owns. Buy it, or pass? The careful instinct is to protect your cash, so I tried that.
 
-[Slide 4.3 · 2:18–2:34]
+[Slide 4.3 · 2:15–2:31]
 ON SCREEN: PASS IF BUYING WOULD LEAVE YOU WITH LESS THAN ... · Cash left after buying · Games won (%) · Always buy · 25.1 · $500 · 22.7 · $100 · 25.3 · $200 · 25.2 · a hundred or two: / no cost · $300 · 24.6 · more careful, / fewer wins
 NARRATION: A player who passes whenever buying would leave them with less than five hundred dollars wins about twenty-three percent of games, instead of twenty-five. A small cushion is fine. Keep a hundred or two in hand and you lose nothing. But the more careful you get, the more it costs.
 
-[Slide 4.4 · 2:34–2:44]
+[Slide 4.4 · 2:31–2:40]
 ON SCREEN: YOURS · BUY IT · ... or the one that stops / someone else finishing theirs. · MORTGAGED · mortgage something else to pay for it
 NARRATION: And there's one card you never pass on: the one that finishes a set, or prevents someone else from finishing theirs. If you have to mortgage something to buy it, do it.
 
-[Slide 4.5 · 2:44–2:52]
+[Slide 4.5 · 2:40–2:47]
 ON SCREEN: Why does buying matter so much? · Every property is a trading chip. · You can’t make a deal with cards you don’t have.
 NARRATION: Why does buying matter so much? Because every property is a trading chip. You can't make a deal with cards you don't have.
 
-[Slide 4.6 · 2:52–3:02]
+[Slide 4.6 · 2:47–2:58]
 ON SCREEN: PASSED · How high do you bid?
 NARRATION: Now, in the official rules, a property you pass on doesn't just sit there. It goes to auction. So here's the other half of the decision. When someone else passes, how high do you bid?
 
-[Slide 4.7 · 3:02–3:13]
-ON SCREEN: AT AUCTION, BID UP TO ... · Games won (%) · the printed price · 25.1 · what a typical player does · 1.5 times the price · 26.5 · BID UP TO · 1.5 TIMES · half the price · 24.1
-NARRATION: Stop at the printed price, and you're a typical player. Bid up to one and a half times the price, and you win about twenty-six and a half percent of games. Lowball at half price, and you drop to about twenty-four.
+[Slide 4.7 · 2:58–3:17]
+ON SCREEN: YOUR TOP BID AT AUCTION · Games won (%) · half the printed price · 24.1 · the printed price · 25.1 · 1.5 times the price · 26.5 · what a typical player does · BID UP TO · 1.5 TIMES
+NARRATION: So set your top bid before the bidding starts. Hunt for bargains, never going past half the printed price, and you drop to about twenty-four percent. Stop at the printed price, and you're a typical player. Be willing to go up to one and a half times the printed price, and you win about twenty-six and a half percent of games.
 
-[Slide 4.8 · 3:13–3:23]
+[Slide 4.8 · 3:17–3:26]
 ON SCREEN: UNSOLD · Pass if left with under $500: · with auctions .......... 22.7 · without auctions ....... 23.2 · Nobody else picks it up at a bargain.
 NARRATION: And if your family skips the auctions, passing costs you a little less, because the property just sits there unsold, instead of going to somebody else at a bargain.
 
 ======================================================================
-5. Decision 2: Trading (3:22)
+5. Decision 2: Trading (3:26)
 ======================================================================
 
-[Slide 5.1 · 3:22–3:26]
+[Slide 5.1 · 3:26–3:29]
 ON SCREEN: Photo: THE CURB MARKET, WALL STREET, c. 1920 · Plaque: DECISION TWO / TO TRADE
 NARRATION: Decision two. Trading.
 
-[Slide 5.2 · 3:26–3:40]
-ON SCREEN: The one that surprised me most. · My St. James for your Ventnor? · Not that trading helps. How much. · We both get a set. · REFUSED · Never trades · 5 · percent · A fifth of a fair share. · a typical player: 25%
+[Slide 5.2 · 3:29–3:46]
+ON SCREEN: The one that surprised me most. · My St. James and $80 · for your Ventnor? · Not that trading helps. How much. · We both get a set. · REFUSED · Never trades · 5 · percent · A fifth of a fair share. · a typical player: 25%
 NARRATION: This is the one that surprised me most. Not that trading helps. Everyone knows trading helps. It's how much it matters. A player who refuses every trade wins about five percent of games. Five. A fifth of a fair share. Almost nothing else in this video comes close.
 
-[Slide 5.3 · 3:40–4:04]
-ON SCREEN: My St. James for your Ventnor? · A set for a set. · REPLY: Deal. · ACCEPTED · any difference settled at the printed prices · Your set is better than mine. · Throw in $200 and · it’s a deal. · The haggler: · 21%, instead of 25% · They walk away. Nobody gets a set. · NO DEAL
-NARRATION: So when the deal is on the table, a set for a set, take it. And if one side's cards cost more, settle the difference at the printed prices, and nothing more. Because the other way to ruin a trade is to haggle. "Your set is better than mine, so throw in some cash." A player who does that wins about twenty-one percent, instead of twenty-five. The other player walks away, and neither of you gets a set.
+[Slide 5.3 · 3:46–4:22]
+ON SCREEN: My St. James and $80 · for your Ventnor? · A set for a set. · REPLY: Deal. · ACCEPTED · settle the difference at the printed prices: · Ventnor $260 - St. James $180 = $80 · You add $80. Nothing more. · Your set is better than mine. · Throw in $200 and · it’s a deal. · $200, when the fair difference is $80 · The haggler: · 21%, instead of 25% · They walk away. Nobody gets a set. · NO DEAL
+NARRATION: So when the deal is on the table, a set for a set, take it. And if one side's card costs more, settle the difference at the printed prices, and nothing more. Say you swap your St. James Place, printed at one hundred and eighty dollars, for their Ventnor Avenue, at two hundred and sixty. You add the eighty-dollar difference, and that's it. Because the other way to ruin a trade is to haggle. "Your set is better than mine, so throw in two hundred." A player who does that wins about twenty-one percent, instead of twenty-five. The other player walks away, and neither of you gets a set.
 
-[Slide 5.4 · 4:04–4:12]
-ON SCREEN: OTHER WAYS TO TRADE · Games won (%) · Typical: take every fair swap · 25.1 · Wait until you have the / cash to build · no difference · Hold out for the better set · 25.6 · barely
-NARRATION: What about waiting until you've got the cash to build before trading? It makes no difference. Holding out for the better set? It barely helps.
+[Slide 5.4 · 4:22–4:50]
+ON SCREEN: OTHER WAYS TO TRADE · Games won (%) · Typical: take every fair swap · 25.1 · Wait until you have the / cash to start building · Hold out until you get / the stronger set · no difference · You: 2 light blues + 1 orange. Them: 2 oranges + 1 light blue. · The fair swap: you finish light blue, they finish orange, the stronger set. · 25.6 · barely
+NARRATION: What about waiting to trade until you've got the cash to start building houses? The thinking is that a set does you little good until you can build on it, so why rush? It makes no difference. What about holding out for the better set? Say you hold two light blues and an orange, and they hold two oranges and a light blue. The fair swap hands them orange, the stronger set. Refusing until you get a swap where you come out with the stronger set? It barely helps.
 
-[Slide 5.5 · 4:12–4:38]
-ON SCREEN: THE ENDGAME: THE BOARD HAS LOCKED UP · I’ll buy your Kentucky Ave. · for $550 cash. · It finishes my reds. · NO! · REPLY: Yes. Deal. · Wins / first to go broke: · refuse .. 24.2% / 28.7% · sell .... 25.1% / 25.1% · TAKE THE · DEAL
-NARRATION: And remember the endgame, when the board locks up and there's no fair swap left? Someone offers to buy the card that would finish their set, for two and a half times its printed price. Every instinct you have says no. Don't give them the set. Say yes. Players who refuse win a little less, and they're more likely to be the first one to go broke. The cash lets you build on what you've already got. In a stalled game, the deal is the move.
+[Slide 5.5 · 4:50–5:26]
+ON SCREEN: THE ENDGAME: THE BOARD HAS LOCKED UP · I’ll buy your Kentucky Ave. · for $550 cash. · It finishes my reds. · NO! · REPLY: Yes. Deal. · ... if you already have a set of your own · Games won (%), in a stalled game: · sell, with a set of your own .. 26.6 · always sell ................... 25.1 · never sell .................... 24.2 · sell at 1.5 times the price .... 23.2 · SELL, IF YOU · HAVE A SET
+NARRATION: And remember the endgame, when everything is bought and there's no fair swap left? Someone might offer to buy the card that would finish their set, for two and a half times its printed price. Every instinct you have says no. Don't give them the set. But what you actually should do is say yes, as long as you already have a set of your own. The cash lets you build on what you've already got. Players who sell like that win about twenty-six and a half percent. With no set of your own, say no. And don't sell cheap: below twice the printed price, you're better off refusing. In a stalled game, the right deal is the move.
 
 ======================================================================
-6. Decision 3: The railroads (4:38)
+6. Decision 3: The railroads (5:25)
 ======================================================================
 
-[Slide 6.1 · 4:38–4:41]
+[Slide 6.1 · 5:25–5:28]
 ON SCREEN: Photo: PENNSYLVANIA STATION, NEW YORK · Plaque: DECISION THREE / THE RAILROADS
 NARRATION: Decision three. Every table has one.
 
-[Slide 6.2 · 4:41–4:48]
+[Slide 6.2 · 5:28–5:36]
 ON SCREEN: Four railway tickets: READING R.R., PENNA. R.R., B. & O. R.R., SHORT LINE · ALL FOUR: $200 EVERY VISIT · Does it work?
 NARRATION: The railroad player. Buy all four, and collect two hundred dollars every time someone lands on one. Does it work?
 
-[Slide 6.3 · 4:48–5:05]
-ON SCREEN: THREE RAILROAD PLAYERS · Games won (%) · Owns all four · Buys them when it lands / on them · 25.1 · Chases them: mortgages, / bids double · typical: 25.1 · still 25.1 · Buying alone almost never gets you all four. · 4%
-NARRATION: I tried three versions. A player who just buys railroads when they land on them: no better than typical. A player who chases them, mortgaging other property and bidding double at auction: still no better. Here's why. Either way, buying gets you all four railroads in only about four percent of games.
+[Slide 6.3 · 5:36–6:10]
+ON SCREEN: THREE RAILROAD PLAYERS · Games won (%) · Games with all four · Buys them when it lands / on them · 25.1 · typical: 25.1 · Chases them: mortgages, / bids double · still 25.1 · A railroad only reaches auction if someone passes on it. · Buying alone almost never gets you all four. · 4 in 100 · Someone else usually buys one first.
+NARRATION: I tried three versions. A player who just buys railroads when they land on them: no better than typical. They're at the mercy of the dice, and someone else usually lands on one first and buys it. A player who chases them, mortgaging other property and bidding double at auction: still no better. Here's why. A railroad only goes to auction when someone passes on it, and almost everyone buys a railroad when they land on it. So either way, buying them outright or at auction gets you all four in only about four games out of a hundred. In the rest, someone else buys at least one before you get the chance.
 
-[Slide 6.4 · 5:05–5:17]
+[Slide 6.4 · 6:10–6:22]
 ON SCREEN: The version that works / is the one that trades. · I’ll give you Kentucky Ave. · You finish your reds. · I get Short Line and · all four railroads. Deal? · They get a set. · You get your four railroads.
 NARRATION: The version that works is the one that trades. When someone is holding your last railroad, offer them the card that finishes one of their colour sets. They get a set. You get your four railroads.
 
-[Slide 6.5 · 5:17–5:38]
-ON SCREEN: THREE RAILROAD PLAYERS · Games won (%) · Owns all four · Buys them when it lands / on them · 25.1 · 4% · Chases them: mortgages, / bids double · Trades for the last one · 27.0 · 28% · Holding all four: wins 53% of those games. · ONLY IF · YOU TRADE · Otherwise, don’t bother.
-NARRATION: Do that, and you'll own all four in about twenty-eight percent of your games, up from four. You'll win about twenty-seven percent of your games overall, and in the games where you do hold all four, you win fifty-three percent. So, go for the railroads only if you're willing to trade for them, and trade for them as well as your colour sets, not instead of them. Otherwise, don't bother.
+[Slide 6.5 · 6:22–6:41]
+ON SCREEN: THREE RAILROAD PLAYERS · Games won (%) · Games with all four · Buys them when it lands / on them · 25.1 · 4 in 100 · Chases them: mortgages, / bids double · 28 in 100 · In the games where it holds all four, it wins 53% of them. · Trades for the last one · 27.0 · Over all its games: 27%, against 25% for a typical player. · ONLY IF · YOU TRADE
+NARRATION: Trade like that, and you end up holding all four in about twenty-eight games out of a hundred, instead of four. In those games, you win more than half the time. Across all your games, that lifts your win rate from twenty-five percent to twenty-seven. So go for the railroads only if you're willing to trade for them, and trade for them as well as your colour sets, not instead of them.
+
+[Slide 6.6 · 6:41–6:56]
+ON SCREEN: BUYING RAILROADS FOR CASH · Offer this much for each railroad you’re missing (and the owner says yes): · Games won (%) · $300 each · 45.3 · $400 each · typical: 25.1 · 31.3 · $500 each · 20.1 · $1,000 each · 6.0 · Break-even: about $450 a railroad.
+NARRATION: And if someone will sell you railroads for cash? Paying up to about four hundred dollars each still pays off. Pay five hundred or more, and you'd win more often by not bothering. At a thousand dollars each, you'd win only about six percent of games.
 
 ======================================================================
-7. Decision 4a: Spend or save (5:38)
+7. Decision 4a: Spend or save (6:56)
 ======================================================================
 
-[Slide 7.1 · 5:38–5:42]
+[Slide 7.1 · 6:56–7:00]
 ON SCREEN: Photo: HOTEL TRAYMORE, ATLANTIC CITY, 1920 · Plaque: DECISION FOUR / TO BUILD
 NARRATION: Decision four is the big one. Building.
 
-[Slide 7.2 · 5:42–5:55]
+[Slide 7.2 · 7:00–7:13]
 ON SCREEN: The question every player asks: · Spend it all / on houses? · Or keep / some back? · someone’s hotel · A cushion feels responsible. · So I tried cushions of every size.
 NARRATION: And the first question is the one every player asks. Should I spend all my cash on houses, or keep some back, in case I land on someone's hotel? Keeping a cushion feels responsible. So I gave players different cushions, and watched.
 
-[Slide 7.3 · 5:55–6:16]
+[Slide 7.3 · 7:13–7:34]
 ON SCREEN: LEDGER — SPEND IT, OR KEEP SOME BACK? · Cash kept back · Games won (%) · $0 · $100 · 22.4 · $300 · 16.3 · $500 · 10.9 · $1,000 · 3.2 · First to go broke · It doesn’t / keep you safe. · 25.1% · 25.8% · 27.8% · 29.9% · 33.5% · more cash kept / back, MORE likely / to go broke first
 NARRATION: Keep nothing back, and you win about twenty-five percent. Keep a hundred dollars back, about twenty-two. Three hundred, about sixteen. Five hundred, about eleven. A thousand dollars, three. But that's winning. Surely the cushion keeps you safe? It doesn't. The more cash you keep back, the more likely you are to be the first one out.
 
-[Slide 7.4 · 6:16–6:24]
+[Slide 7.4 · 7:34–7:42]
 ON SCREEN: Boardwalk with a hotel: $2,000 · 13% · about half a fair share
 NARRATION: I even tried the smartest-sounding version: always keep enough to pay the biggest rent on the board. That player wins about thirteen percent.
 
-[Slide 7.5 · 6:24–6:34]
+[Slide 7.5 · 7:42–7:52]
 ON SCREEN: Here’s why. · Houses bring the money in. · Cash in hand earns nothing. · Get hit? Mortgage, or sell houses back to the bank. · You can always raise the money when you need it.
 NARRATION: Here's why. Houses are what bring the money in. Cash in your hand earns nothing. And if you do get hit, you can always mortgage, or sell houses back to the bank.
 
-[Slide 7.6 · 6:34–6:46]
+[Slide 7.6 · 7:52–8:04]
 ON SCREEN: SPEND IT · MORTGAGED · Mortgage to build: · 25% · → · 28%
 NARRATION: So spend it. Better still, mortgage the properties you aren't building on, and spend that too. That alone takes you from twenty-five percent to twenty-eight.
 
 ======================================================================
-8. Decision 4b: How far to build (6:45)
+8. Decision 4b: How far to build (8:03)
 ======================================================================
 
-[Slide 8.1 · 6:45–7:08]
+[Slide 8.1 · 8:03–8:26]
 ON SCREEN: How far should you build? · games won (%), building only that far · almost 0 · 1 house · 2 houses · 4.4 · 19.6 · 3 houses · 23.2 · 4 houses · hotels · 25.1 · “the sweet spot”? · Illinois Ave. rent: / 2 houses $300, 3 houses $750 · GO TO · HOTELS
 NARRATION: How far should you build? One house on each property almost never wins. Two houses, about four percent. Three houses, about twenty. Four, twenty-three. Hotels, twenty-five. You've probably heard that the third house is the sweet spot. It's usually the biggest jump in rent, and that's true. But stopping there costs you. Go to hotels.
 
 ======================================================================
-9. Decision 4c: Two sets, which first? (7:08)
+9. Decision 4c: Two sets, which first? (8:26)
 ======================================================================
 
-[Slide 9.1 · 7:08–7:14]
+[Slide 9.1 · 8:26–8:32]
 ON SCREEN: Orange and green deeds · The question people really argue about. · Which one / first?
 NARRATION: Now the question people really argue about. You own two full sets. Which one gets the houses first?
 
-[Slide 9.2 · 7:14–7:26]
+[Slide 9.2 · 8:32–8:44]
 ON SCREEN: A set-up card and a grid ticking off every pair of sets · 28 pairs
 NARRATION: I set up that exact moment. Middle of the game, every property already bought, a thousand dollars each, and you holding two sets. Then I tried every pair of sets on the board, all twenty-eight of them.
 
-[Slide 9.3 · 7:26–7:43]
+[Slide 9.3 · 8:44–9:01]
 ON SCREEN: THE RULE · Build the set with the cheaper houses first. · 1. light blue $50, orange $100 a house: beat everything · 2. pink, $100 a house · 3. red = yellow, $150 a house: a coin flip · 4. dark blue = green, $200 a house · brown: the odd one out ($50 a house) · Rents so low it only goes first ahead of dark blue or green, and only just.
 NARRATION: The rule is simple. Build the set with the cheaper houses first. Light blue and orange beat everything. Then pink. Red and yellow are a coin flip, and so are dark blue and green. The odd one out is brown. Its rents are so low that it only goes first ahead of dark blue or green, and only just.
 
-[Slide 9.4 · 7:43–7:58]
+[Slide 9.4 · 9:01–9:16]
 ON SCREEN: GETTING IT WRONG IS EXPENSIVE · You hold orange and green. · Games won (%) · orange first · 84.3 · green first · 63.3 · Same two sets. · Same dice. · Build orange first: 21 percentage points more wins.
 NARRATION: And getting it wrong is expensive. Holding orange and green? Build orange first, and you win eighty-four percent of the time. Build green first, sixty-three. Same two sets. Same dice.
 
 ======================================================================
-10. Decision 4d: One set, or a house on everything? (7:57)
+10. Decision 4d: One set, or a house on everything? (9:15)
 ======================================================================
 
-[Slide 10.1 · 7:57–8:10]
+[Slide 10.1 · 9:15–9:28]
 ON SCREEN: Hotels on one set, or a house on everything? · ONE SET UP FIRST · A HOUSE ON EVERYTHING · BEST IN · 0 OF 28 · Average games won: · the wrong set first .... 67.6% · a house on everything ... 65.8%
 NARRATION: So do you put hotels on one set, or a house on everything? Never a house on everything. In all twenty-eight pairs, spreading your houses evenly was never the best choice. On average, it did worse than building the wrong set first.
 
-[Slide 10.2 · 8:10–8:24]
+[Slide 10.2 · 9:28–9:42]
 ON SCREEN: Build one set up first. · Two cards: a cheap set going straight to hotels; an expensive set with three houses on both sets, then hotels
 NARRATION: Build one set up first. If it's a cheap set, like light blue, go straight to hotels. If it's an expensive one, like red, yellow or dark blue, get three houses on both sets first, then add the hotels.
 
 ======================================================================
-11. Decision 4e: Owe money? (8:23)
+11. Decision 4e: Owe money? (9:41)
 ======================================================================
 
-[Slide 11.1 · 8:23–8:47]
+[Slide 11.1 · 9:41–10:05]
 ON SCREEN: One last building question. · Rent bill for Illinois Ave. with a hotel, $1,100 · CAN’T PAY · Sell houses? · Or mortgage? · MORTGAGED · keep the houses standing · sell houses first .. 19.1% · first to go broke .. 28.5% · MORTGAGE FIRST
 NARRATION: One last building question. You land on a hotel, and you can't pay. Do you sell houses, or mortgage? Mortgage first: everything without houses on it, like loose properties, railroads and utilities. Sell houses last. Sell first, and you drop from about twenty-five percent to nineteen, and you're more likely to go broke first. Those houses are the only thing paying you back.
 
 ======================================================================
-12. Decision 5: Jail (8:47)
+12. Decision 5: Jail (10:05)
 ======================================================================
 
-[Slide 12.1 · 8:47–8:48]
+[Slide 12.1 · 10:05–10:06]
 ON SCREEN: Photo: PROHIBITION RAID, NEW YORK, 1921 · Plaque: DECISION FIVE / JAIL
 NARRATION: Decision five.
 
-[Slide 12.2 · 8:48–8:54]
+[Slide 12.2 · 10:06–10:12]
 ON SCREEN: A pawn; ink prison bars drop over it · PAY $50 and get out · STAY and roll for doubles
 NARRATION: You're in jail. Pay fifty dollars and get out, or stay and roll for doubles?
 
-[Slide 12.3 · 8:54–9:02]
+[Slide 12.3 · 10:12–10:20]
 ON SCREEN: The camera moves to the jail corner of the 1904 patent board · L. J. MAGIE, PATENT No. 748,626 · THE BOARD OF 1904 · “NO TRESPASSING. · GO TO JAIL.”
 NARRATION: Jail was there from the very beginning. Lizzie Magie's nineteen-oh-four board has a corner that reads: No Trespassing. Go to Jail.
 
-[Slide 12.4 · 9:02–9:21]
+[Slide 12.4 · 10:20–10:39]
 ON SCREEN: THE RULE · EARLY IN THE GAME · property still for sale · GET OUT · ONCE ANYONE HAS HOUSES · STAY IN · you still collect your rent · and can’t land on their hotels · games won .......... 26.5% (typical 25.1%) · first to go broke ... 23.0% (typical 25.1%)
 NARRATION: Here's the rule. Early in the game, get out. There's property to buy, and you want to be on the board. Once anyone has houses, stay in. You still collect your rent in jail, and every turn inside is a turn you can't land on their hotels. That takes you from twenty-five percent to twenty-six and a half, and it makes you less likely to be the first one out.
 
-[Slide 12.5 · 9:21–9:28]
+[Slide 12.5 · 10:39–10:46]
 ON SCREEN: JAIL: GAMES WON (%) · 25.1 · Always roll once, then pay · 25.0 · Always staying, or always rolling once: nothing gained. · Leave early, stay once / there are houses · 26.5 · TIMING
 NARRATION: Always staying, or always rolling once before you pay, gains you nothing. It's the timing that matters.
 
 ======================================================================
-13. The computer’s own player (9:27)
+13. The computer’s own player (10:45)
 ======================================================================
 
-[Slide 13.1 · 9:27–9:38]
+[Slide 13.1 · 10:45–10:56]
 ON SCREEN: One more test: let the computer invent a player. · Fig. 3. TRIAL AND ERROR · A family tree: rows of 24 boxes, winners ringed, generations 1 to 25 · keep the winners · mix their habits · tweak · repeat, 25 times
 NARRATION: One more test. I let the computer invent its own player, by trial and error. Start with twenty-four random players, keep the winners, mix and tweak their habits, and repeat, twenty-five times.
 
-[Slide 13.2 · 9:38–9:59]
+[Slide 13.2 · 10:56–11:17]
 ON SCREEN: THE COMPUTER’S PLAYER · the same habits you’ve just heard: · buys what it lands on · bids up at auction · makes every fair set-for-set swap · spends its cash on houses · leaves jail early, stays in late · Plus one: · two favourite colours · and went hard for them · 36%
 NARRATION: It ended up with the same habits you've just heard. Plus one. It picked two favourite colours, light blue and orange, and went hard for them: bidding up to double at auction, mortgaging other property to buy them, and never trading them away. Those are the two sets whose cheap houses reach hotels fastest. It wins about thirty-six percent of its games.
 
 ======================================================================
-14. The payoff (9:59)
+14. The payoff (11:17)
 ======================================================================
 
-[Slide 14.1 · 9:59–10:08]
+[Slide 14.1 · 11:17–11:26]
 ON SCREEN: So put it all together. · A red pawn · THE PLAYBOOK PLAYER · every decision made well · no favourite colour · Two dice
 NARRATION: So put it all together. One player who makes every one of these decisions well, and never picks a favourite colour. Same dice as everyone else.
 
-[Slide 14.2 · 10:08–10:25]
+[Slide 14.2 · 11:26–11:43]
 ON SCREEN: Three $100 banknotes slide in · How much is that worth? · extra cash a typical player needs to keep up: · $300 · of free cash at the start of every game · stamp WORTH $300 · Without auctions: about $200, · the same as passing Go.
 NARRATION: How much is that worth? Remember the three hundred dollars? I gave a typical player extra cash at the start, until they won as often as the playbook player. It took three hundred dollars. Even without auctions, it's about two hundred, the same as passing Go.
 
-[Slide 14.3 · 10:25–10:36]
+[Slide 14.3 · 11:43–11:54]
 ON SCREEN: GAME NIGHT LEDGER · A hundred game nights, the same four players. You follow the playbook. · Tally marks: YOU 33 · MOM 22 · DAD 22 · JORDAN 23 · 45% more wins than each of them. · stamp 45% MORE WINS
 NARRATION: Play these decisions well, and you win about thirty-three percent of your games, while each of the people you're playing wins about twenty-two percent. That's about forty-five percent more wins than each of them.
 
-[Slide 14.4 · 10:36–10:49]
+[Slide 14.4 · 11:54–12:07]
 ON SCREEN: And it compounds. · A year of weekly game nights with the same family. 100 years of them: · Trophies: YOU 65 · MOM 9 · DAD 9 · JORDAN 9 · champion two years in three · each of the others: about one year in eleven · Snapshot: ATLANTIC CITY, 1922 (the first Miss America)
 NARRATION: And it compounds. Play once a week for a year, with the same family. The player with the playbook finishes the year as champion two years out of three. Each of the others? About one year in eleven.
 
-[Slide 14.5 · 10:49–10:54]
+[Slide 14.5 · 12:07–12:12]
 ON SCREEN: Photo: mah-jong at the bathing beach, 1924 · Same dice. · No favourite colour. · Just better decisions.
 NARRATION: Same dice. No favourite colour. Just better decisions.
 
 ======================================================================
-15. The playbook (10:54)
+15. The playbook (12:12)
 ======================================================================
 
-[Slide 15.1 · 10:54–11:33]
+[Slide 15.1 · 12:12–12:51]
 ON SCREEN: Certificate: THE PLAYBOOK / CERTIFICATE OF BETTER DECISIONS · I. Land on it? Buy it, unless it would leave you nearly broke. · II. At auction, bid up to one and a half times the price. · III. Make every fair set-for-set trade. Don’t haggle. When it stalls, deal. · IV. Want the railroads? Trade for the last one, or don’t bother. · V. Spend your cash on houses, and go to hotels. Owe money? Mortgage first. · VI. Two sets? Cheaper houses first. Never one house on everything. · VII. Get out of jail early. Stay in once anyone has houses. · Footer: Same dice. 45% more wins than each of them. A year of weekly game nights: champion two years in three. · Wax seal: +45% MORE WINS
 NARRATION: Here's the playbook. One. Land on it? Buy it, unless it would leave you nearly broke. Two. At auction, bid up to one and a half times the price. Three. Make every fair set-for-set trade, and don't haggle. When the game stalls, deal. Four. Want the railroads? Trade for the last one, or don't bother. Five. Spend your cash on houses, and go to hotels. Owe money? Mortgage first. Six. Two sets? Cheaper houses first, and never one house on everything. Seven. Get out of jail early. Stay in once anyone has houses.
 
-[Slide 15.2 · 11:33–11:42]
+[Slide 15.2 · 12:51–13:00]
 ON SCREEN: Fade to the 1904 patent; the camera pulls back from Magie’s signature to the whole board · to show that the landlord always wins · Now you know how to be the landlord. · Which of these does your family get wrong? · Not affiliated with or endorsed by Hasbro. MONOPOLY is a trademark of Hasbro.
 NARRATION: Lizzie Magie made this game to show that the landlord always wins. Now you know how to be the landlord. Which of these does your family get wrong? Tell me in the comments.
