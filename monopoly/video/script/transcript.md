@@ -152,5 +152,5 @@ Here's the playbook. One. Land on it? Buy it, unless it would leave you nearly b
 Every figure is from `sim/results/summary.md`, "Final numbers for the video" (realistic play, endgame deals on, with
 auctions unless the line says otherwise; 100,000 games per result, 13.4 million in all), "Framing the payoff" and
 "Final: two complete sets". Spoken numbers are rounded: for example "about twenty-seven" is 27.0, "about
-thirty-three" is 32.6, "three hundred and fifty dollars" is the measured $364 (extra starting cash a typical player needs to match the playbook player), "about three hundred" without auctions is $302, "fifty-five percent more" is 34.2 against 21.9 wins per 100, "almost three years out of four" is 72.6%
+thirty-four" is 34.2, "three hundred and fifty dollars" is the measured $364 (extra starting cash a typical player needs to match the playbook player), "about three hundred" without auctions is $302, "fifty-five percent more" is 34.2 against 21.9 wins per 100, "almost three years out of four" is 72.6%
 and "one year in fifteen" is 6.6-6.8%.
