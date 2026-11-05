@@ -276,7 +276,7 @@ OFFLINE = [False]          # True: read only what is already cached (python team
 def pfa_get(url, path, pause=3.0):
     """a polite fetch for Pro Football Archives: cached, `pause` seconds apart, and when the host answers with its
     "One moment, please" slow-down page, nothing is cached and we wait (1, 2, 4 ... minutes) before asking again"""
-    import time, urllib.request, urllib.error
+    import http.client, time, urllib.request, urllib.error
     if os.path.exists(path) and os.path.getsize(path) > 0:
         return path
     if OFFLINE[0]:
@@ -293,7 +293,7 @@ def pfa_get(url, path, pause=3.0):
             if e.code == 404:
                 return None
             data = b""
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, OSError, http.client.HTTPException):   # incl. timeouts and connection resets
             B._last[0] = time.time()
             data = b""
         B._last[0] = time.time()
@@ -302,7 +302,7 @@ def pfa_get(url, path, pause=3.0):
             open(path + ".tmp", "wb").write(data)
             os.replace(path + ".tmp", path)
             return path
-        print(f"    host asked us to slow down ({url.rsplit('/', 1)[-1]}); waiting {60 * 2 ** min(attempt, 4)} s", flush=True)
+        print(f"    host asked us to slow down or dropped the connection ({url.rsplit('/', 1)[-1]}); waiting {60 * 2 ** min(attempt, 4)} s", flush=True)
         time.sleep(60 * 2 ** min(attempt, 4))
     raise RuntimeError(f"gave up on {url}")
 
