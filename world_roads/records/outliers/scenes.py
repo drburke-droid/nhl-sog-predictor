@@ -60,7 +60,8 @@ PALETTE.update({
     "celtics": dict(team="Boston Celtics", bg="#005C2A", accent="#D8B972", light="#E4F0E8"),
 })
 REC = os.path.dirname(HERE)
-PHOTO_DIRS = [os.path.join(HERE, "photos"), os.path.join(REC, "singlegame", "film", "photos")]
+PHOTO_DIRS = [os.path.join(HERE, "photos"), os.path.join(REC, "singlegame", "film", "photos"),
+              os.path.join(REC, "three", "photos")]
 
 
 def photo_path(key, sub=""):
@@ -885,6 +886,140 @@ class Pit:
                         color=self.acc, weight="bold", family="Inter Display", alpha=al, path_effects=outlined(6), zorder=9)
 
 
+@lru_cache(maxsize=64)
+def football(d, tone="full"):
+    """an American football from the side: brown leather, white laces and stripes"""
+    w, h = d, max(2, int(round(d * 0.6)))
+    im = _canvas(w, h)
+    g = ImageDraw.Draw(im)
+    Wd, Hd = w * SS, h * SS
+    body, lace = ((126, 72, 40, 255), (246, 240, 228, 255))
+    if tone == "dim":
+        body, lace = ((140, 146, 154, 150), (205, 208, 212, 150))
+    g.ellipse((SS, SS, Wd - SS, Hd - SS), fill=body)
+    lw = max(1, int(Hd * 0.07))
+    g.line((Wd * 0.36, Hd * 0.42, Wd * 0.64, Hd * 0.42), fill=lace, width=lw)
+    for k in range(5):
+        xk = Wd * (0.39 + 0.055 * k)
+        g.line((xk, Hd * 0.33, xk, Hd * 0.51), fill=lace, width=max(1, lw // 2 + 1))
+    for xs in (0.16, 0.84):
+        g.line((Wd * xs, Hd * 0.22, Wd * xs, Hd * 0.78), fill=lace, width=lw)
+    return _down(im, w, h)
+
+
+class TopK:
+    """the single-game chart (film A): each season's five best games by anyone else, converted into the athlete's
+    season, as five dots; the curve through them; the athlete's game, measured from half a unit below its count, one
+    tick per step"""
+
+    def __init__(self, c, pal, spec, explain=False):
+        r = c["ruler"]
+        self.c, self.p, self.s, self.explain = c, pal, spec, explain
+        self.acc = pal["accent"]
+        self.year = c["year"]
+        self.pts = [(int(s), [float(v) for v in vs]) for s, vs in r["window5"]]
+        self.raw, self.x, self.base, self.step = r["x_raw"], r["x"], r["base"], r["step"]
+        self.trend = np.array(r["trend"])
+        x0, y0, x1, y1 = BOX
+        self.w, self.h = x1 - x0, y1 - y0
+        self.pl, self.pr, self.pt, self.pb = 70, 18, 124, 40
+        ys = [s for s, _ in self.pts] + [self.year]
+        self.s0, self.s1 = min(ys), max(ys)
+        self.cw = (self.w - self.pl - self.pr) / (self.s1 - self.s0 + 1)
+        allv = [v for _, vs in self.pts for v in vs] + [self.raw, self.base]
+        lo, hi = min(allv), max(allv)
+        self.vmin = 0.0 if lo < 0.4 * hi else lo - 0.15 * (hi - lo)
+        self.vmax = hi + 0.10 * (hi - lo)
+        icon = spec.get("icon", "basketball")
+        d = int(min(self.cw * 1.6, 58))
+        self.sprite = np.asarray(football(d) if icon == "football" else model_sprite(icon, d))
+
+    def X(self, s):
+        return self.pl + (s - self.s0 + 0.5) * self.cw
+
+    def Y(self, v):
+        return self.h - self.pb - (v - self.vmin) / (self.vmax - self.vmin) * (self.h - self.pt - self.pb)
+
+    def draw(self, fig, t, al):
+        from look import ring as _ring
+        x0, y0, x1, y1 = BOX
+        ax = ax_px(fig, x0, y0, x1, y1)
+        ax.set_axis_off()
+        ax.set_xlim(0, self.w)
+        ax.set_ylim(self.h, 0)
+        ax.plot([self.pl - 8, self.w - self.pr], [self.Y(self.vmin)] * 2, color="#5a5f66", lw=px(1.5), alpha=al, zorder=3)
+        for v in MaxNLocator(5, integer=self.vmax < 40).tick_values(self.vmin, self.vmax):
+            if self.vmin <= v < self.vmax:
+                ax.plot([self.pl - 8, self.w - self.pr], [self.Y(v)] * 2, color="#ffffff", alpha=0.06 * al, lw=px(1), zorder=1)
+                ax.text(self.pl - 14, self.Y(v), f"{v:g}", ha="right", va="center", fontsize=fs(17), color=MUTED, alpha=al)
+        every = 5 if self.s1 - self.s0 <= 34 else 10
+        for s in range(self.s0, self.s1 + 1):
+            if s % every == 0:
+                ax.text(self.X(s), self.Y(self.vmin) + 24, str(s), ha="center", va="center", fontsize=fs(17), color=MUTED,
+                        alpha=al)
+        c = self.c
+        ax.text(0, 8, f"{self.s['word']} · other seasons converted to {c['season']}'s league rate", ha="left", va="top",
+                fontsize=fs(19), color=INK2, alpha=al)
+        ax.text(0, 36, "each dot: one of the five best games by anyone else that season", ha="left", va="top",
+                fontsize=fs(17), color=MUTED, alpha=al)
+        sweep = self.s0 + (self.s1 - self.s0 + 2) * ease(clamp((t - 1.2) / 8.8))
+        for s, vs in self.pts:
+            if s > sweep:
+                continue
+            pop = ease_out(clamp((sweep - s) / 1.5))
+            off = {}
+            for v in sorted(vs, reverse=True):
+                k = off.get(round(v, 6), 0)
+                off[round(v, 6)] = k + 1
+                dx = [0, -0.27, 0.27, -0.54, 0.54][min(k, 4)] * self.cw
+                _ring(ax, self.X(s) + dx, self.Y(v), "#b8bec6", size=10.5 * (0.5 + 0.5 * pop), alpha=0.9 * al * pop, z=4,
+                      ew=1.2)
+        tc = clamp((t - 11.0) / 3.0)
+        if tc > 0:
+            tr = self.trend
+            k = max(2, int(len(tr) * tc))
+            _poly(ax, [self.X(v) for v in tr[:k, 0]], [self.Y(v) for v in tr[:k, 1]], CURVE, 3.2, al * 0.95, z=6)
+            if tc >= 1:
+                ax.text(self.X(tr[-1, 0]) - 4, self.Y(tr[-1, 1]) - 16, "the curve", ha="right", va="bottom",
+                        fontsize=fs(18), color=CURVE, alpha=al, path_effects=outlined(5))
+        xc = self.X(self.year)
+        right = self.year < self.s1 - 2
+        prog = ease(clamp((t - 14.2) / 4.0))
+        if t >= 14.2:
+            top_v = self.base + (self.x - self.base) * prog
+            ax.plot([xc, xc], [self.Y(self.base), self.Y(top_v)], color=self.acc, lw=px(2.5), alpha=al, ls=(0, (2, 2)),
+                    zorder=7)
+            for kk in range(1, int((top_v - self.base) / self.step + 1e-9) + 1):
+                yk = self.Y(self.base + kk * self.step)
+                ax.plot([xc - self.cw * 0.7, xc + self.cw * 0.7], [yk, yk], color=self.acc, lw=px(2.4), alpha=al, zorder=8,
+                        path_effects=outlined(4))
+                ax.text(xc + (self.cw * 0.95 if right else -self.cw * 0.95), yk, f"{kk}", ha="left" if right else "right",
+                        va="center", fontsize=fs(17), color=self.acc, weight="semibold", alpha=al, zorder=8,
+                        path_effects=outlined(5))
+            yb = self.Y(self.base)
+            ax.plot([xc - self.cw * 0.7, xc + self.cw * 0.7], [yb, yb], color=CURVE, lw=px(2.4), alpha=al, zorder=8,
+                    path_effects=outlined(4))
+        ia = al * fade(t, 0.8, 99, 0.6, 0)
+        yv = self.Y(self.raw) if t >= 18.2 else self.Y(self.base + (self.x - self.base) * prog) if t >= 14.2 else None
+        if yv is not None:
+            hh, ww = self.sprite.shape[0], self.sprite.shape[1]
+            ax.imshow(self.sprite, extent=(xc - ww / 2, xc + ww / 2, yv + hh / 2, yv - hh / 2), alpha=ia, zorder=9)
+        if prog > 0.97:
+            ax.text(xc, self.Y(self.raw) - self.sprite.shape[0] / 2 - 8, f"{self.raw:g}", ha="center", va="bottom",
+                    fontsize=fs(30), color=self.acc, weight="bold", family="Inter Display", alpha=al, zorder=9,
+                    path_effects=outlined(6))
+        if self.explain:
+            items = [(4.0, 10.6, "each dot: one of the five best games\nby anyone else that season"),
+                     (11.5, 15.8, "the curve: where the top five usually land"),
+                     (15.6, 21.5, "each tick: one step,\nthe usual give-or-take"),
+                     (21.5, 27.5, f"a count of {self.raw:g} is measured from {self.x:g}:\nit stands for {self.x:g} to {self.x + 1:g}")]
+            for t0, t1, msg in items:
+                a = al * fade(t, t0, t1, 0.5, 0.6)
+                if a > 0:
+                    ax.text(self.w - 30, 92, msg, ha="right", va="top", fontsize=fs(20), color=INK, alpha=a, zorder=10,
+                            weight="semibold", path_effects=outlined(6))
+
+
 def make_scene(c, explain=False):
     pal = PALETTE[c.get("palette", c["rank"])]
     s = c.get("scene") or SCENE[c["rank"]]
@@ -894,6 +1029,10 @@ def make_scene(c, explain=False):
         return Javelin(c, pal, kind="shot")
     if s["kind"] == "pool":
         return Pool(c, pal)
+    if s["kind"] == "track":
+        return Track(c, pal)
+    if s["kind"] == "topk":
+        return TopK(c, pal, s, explain=explain)
     if s["kind"] == "vault":
         return Vault(c, pal)
     if s["kind"] == "pit":
@@ -931,6 +1070,7 @@ def face_disc(key, rank, d=150):
 class Pool:
     """the pool from above at the moment the athlete touches the wall: each season's fastest swim by anyone else
     is a swimmer still in the water, as far behind as that time would leave them; lines mark the curve and each step"""
+    WHEN, VIEW, WHO, END, CHECKER = "touched the wall", "pool", "swimmer", "wall", False
 
     def __init__(self, c, pal):
         r, sw = c["ruler"], c["swim"]
@@ -979,18 +1119,22 @@ class Pool:
             yk = self.top + k * self.lane_h
             ax.plot([20, self.wall], [yk, yk], color="#f2f2f2", lw=px(1.6), alpha=0.55 * al, ls=(0, (1, 2)), zorder=2)
         ax.plot([self.wall, self.wall], [self.top, self.bot], color="#f2f2f2", lw=px(5), alpha=0.9 * al, zorder=3)
+        if self.CHECKER:                                             # a finish line, not a wall
+            for k in range(int((self.bot - self.top) / 9)):
+                ax.plot([self.wall + (4 if k % 2 else -4)] * 2, [self.top + 9 * k, self.top + 9 * k + 9], color="#101418",
+                        lw=px(4), alpha=0.9 * al, zorder=3)
         step = 5 if self.span > 12 else 1
         d = 0
         while d <= self.span:
             ax.plot([self.X(d)] * 2, [self.top - (14 if d % (step * 2) == 0 else 7), self.top], color="#d8d4ca", lw=px(1.4),
                     alpha=al, zorder=3)
             if d % (step * 2) == 0:
-                ax.text(self.X(d), self.top - 20, f"{d} m" if d else "wall", ha="center", va="bottom", fontsize=fs(16),
+                ax.text(self.X(d), self.top - 20, f"{d} m" if d else self.END, ha="center", va="bottom", fontsize=fs(16),
                         color=MUTED, alpha=al)
             d += step
-        ax.text(0, 8, f"metres behind when {self.c['athlete'].split()[-1]} touched the wall · the pool seen from above",
+        ax.text(0, 8, f"metres behind when {self.c['athlete'].split()[-1]} {self.WHEN} · the {self.VIEW} seen from above",
                 ha="left", va="top", fontsize=fs(19), color=INK2, alpha=al)
-        ax.text(0, 36, f"each grey swimmer: the fastest by anyone else that season, {self.years[0]}–{self.years[1]}",
+        ax.text(0, 36, f"each grey {self.WHO}: the fastest by anyone else that season, {self.years[0]}–{self.years[1]}",
                 ha="left", va="top", fontsize=fs(17), color=MUTED, alpha=al)
         n = len(self.pts)
         for i, (s, _) in enumerate(sorted(self.pts)):                # everyone else swims in and stops where they'd be
@@ -1026,6 +1170,20 @@ class Pool:
                 lab = f"{int(tt // 60)}:{tt - 60 * int(tt // 60):05.2f}" if tt >= 60 else f"{tt:.2f}"
                 ax.text(xm - 24, self.my_y - 26, lab, ha="right", va="bottom", fontsize=fs(30), color=self.acc, weight="bold",
                         family="Inter Display", alpha=al, path_effects=outlined(6), zorder=9)
+
+
+class Track(Pool):
+    """the same picture on a running track: when the athlete crosses the line, each season's fastest by anyone else is
+    a runner still on the track, as far back as that time would leave them"""
+    WHEN, VIEW, WHO, END, CHECKER = "crossed the line", "track", "runner", "finish", True
+
+    def water(self):
+        yy, xx = np.mgrid[0:self.h, 0:self.w].astype(np.float32)
+        a = np.zeros((self.h, self.w, 4), np.float32)
+        grain = 0.5 + 0.5 * np.sin(xx * 1.7 + yy * 2.3) * np.sin(xx * 0.9 - yy * 1.3)
+        a[..., 0], a[..., 1], a[..., 2] = 150 + 14 * grain, 62 + 8 * grain, 48 + 6 * grain
+        a[self.top:self.bot, 20:self.wall, 3] = 205
+        return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
 class Vault:

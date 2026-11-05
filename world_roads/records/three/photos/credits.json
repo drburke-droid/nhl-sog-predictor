@@ -1,0 +1,62 @@
+{
+ "williams": {
+  "athlete": "Ted Williams",
+  "file": "Ted Williams (cropped).jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Ted_Williams_%28cropped%29.jpg",
+  "author": "Unknown author",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "1 March 1958",
+  "source": "https://newsroom.ap.org/editorial-photos-videos/detail?itemid=d06c59d048e5da11af9f0014c2589dfb&mediatype=photo",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
+ },
+ "duplantis": {
+  "athlete": "Armand Duplantis",
+  "file": "Armand Duplantis wins the Pole Vault at the 2026 Wanda Diamond League’s Weltklasse Zürich athletics competition.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Armand_Duplantis_wins_the_Pole_Vault_at_the_2026_Wanda_Diamond_League%E2%80%99s_Weltklasse_Z%C3%BCrich_athletics_competition.jpg",
+  "author": "Quejaytee",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "date": "26 August 2026, 13:50:00",
+  "source": "Own work",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Quejaytee, CC BY-SA 4.0, via Wikimedia Commons"
+ },
+ "mcintosh": {
+  "athlete": "Summer McIntosh",
+  "file": "Summer McIntosh at the 2024 Summer Olympic Games.webp",
+  "page": "https://commons.wikimedia.org/wiki/File:Summer_McIntosh_at_the_2024_Summer_Olympic_Games.webp",
+  "author": "Unknown author",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "date": "3 September 2026",
+  "source": "Team Canada - Canadian Olympic Committee",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, CC0, via Wikimedia Commons"
+ },
+ "bolt": {
+  "athlete": "Usain Bolt",
+  "file": "Usain Bolt smiling Berlin 2009.JPG",
+  "page": "https://commons.wikimedia.org/wiki/File:Usain_Bolt_smiling_Berlin_2009.JPG",
+  "author": "Erik van Leeuwen",
+  "license": "GFDL",
+  "license_url": "http://www.gnu.org/copyleft/fdl.html",
+  "date": "16 August 2009",
+  "source": "http://www.erki.nl/",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Erik van Leeuwen, GFDL, via Wikimedia Commons"
+ },
+ "vanbrocklin": {
+  "athlete": "Norm Van Brocklin",
+  "file": "Norm Van Brocklin 1974.JPG",
+  "page": "https://commons.wikimedia.org/wiki/File:Norm_Van_Brocklin_1974.JPG",
+  "author": "Unknown author",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "3 May 2014, 03:33:21",
+  "source": "ebay.com , front of photo , back of photo",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
+ }
+}

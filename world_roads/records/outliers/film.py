@@ -231,11 +231,14 @@ class Hook:
             k = h.get(b, 0)
             h[b] = k + 1
             self.tpos.append((d, b + 0.125, k))
+        self.N = F.get("n_cards", 10)                       # a five-card film passes n_cards and hook_order
+        if F.get("hook_order"):
+            self.ORDER = F["hook_order"]
         self.faces = {r: SC.face_disc(CARDS[r].get("photo") or PHOTO_KEY[r], CARDS[r].get("palette", r), 128)
-                      for r in range(1, 11)}
+                      for r in range(1, self.N + 1)}
         self.words = F.get("hook_words", {})
-        self.slot = {r: (W / 2 + (i - 4.5) * 158, 250) for i, r in enumerate(self.ORDER)}
-        self.rank_of = {CARDS[r]["athlete"]: r for r in range(1, 11)}
+        self.slot = {r: (W / 2 + (i - (self.N - 1) / 2) * 158, 250) for i, r in enumerate(self.ORDER)}
+        self.rank_of = {CARDS[r]["athlete"]: r for r in range(1, self.N + 1)}
 
     def X(self, z):
         return 200 + (z + 4.3) / 12.6 * 1520
@@ -312,10 +315,11 @@ class Hook:
                     ax.imshow(self.faces[r], extent=(x - d / 2, x + d / 2, y + d / 2, y - d / 2), alpha=fa * pop, zorder=8)
         ha = al * fade(t, 21.8, 99, 0.7, 0)                     # the title
         if ha > 0:
-            title(fig, W / 2, 560, "The 10 Biggest", size=104, ha="center", alpha=ha)
+            title(fig, W / 2, 560, self.words.get("title1", "The 10 Biggest"), size=104, ha="center", alpha=ha)
             title(fig, W / 2, 680, self.words.get("title2", "Statistical Outliers"), size=104, ha="center", alpha=ha)
-            title(fig, W / 2, 800, "in Sports History", size=104, ha="center", color=GOLD, alpha=ha)
-            text(fig, W / 2, 900, "Counting down from ten", size=32, color=INK2, ha="center", alpha=ha * fade(t, 24.5, 99, 0.6, 0))
+            title(fig, W / 2, 800, self.words.get("title3", "in Sports History"), size=104, ha="center", color=GOLD, alpha=ha)
+            text(fig, W / 2, 900, self.words.get("countdown", "Counting down from ten"), size=32, color=INK2, ha="center",
+                 alpha=ha * fade(t, 24.5, 99, 0.6, 0))
 
 
 @section
@@ -653,7 +657,8 @@ class Card:
         pk = self.c.get("palette", rank)
         self.pal = SC.PALETTE[pk]
         self.acc = self.pal["accent"]
-        self.scene = SC.make_scene(self.c, explain=(rank == 10))
+        self.first = F.get("n_cards", 10)                   # the first card shown explains how to read the chart
+        self.scene = SC.make_scene(self.c, explain=(rank == self.first))
         self.lines = card_lines(self.c)
         self.nums = ruler_numbers(self.c)
         key = self.c.get("photo") or PHOTO_KEY[rank]
@@ -715,7 +720,7 @@ class Card:
         for i, line in enumerate(self.lines):
             a = al * fade(t, 19.5 + 5.0 * i, 99, 0.8, 0)
             y = para(fig, 1230, y, line, width=44, size=23, color=INK if i == 0 else INK2, alpha=a) + 10
-        if c["rank"] == 10:
+        if c["rank"] == self.first:
             text(fig, 640, 1050, "Historical statistical dominance model: ranks depend on category, comparison window and "
                                  "era adjustment. Not a probability or a measure of ability.", size=16, color=MUTED,
                  ha="center", alpha=al * fade(t, 1.0, 10.5, 0.8, 0.8))
