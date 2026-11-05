@@ -24,7 +24,14 @@ You need Blender 4.2 or newer (free from blender.org). A graphics card makes a h
    Frames are written to a "render" folder next to the .blend (frame_0000.png ... frame_5339.png).
 
    You can stop at any time (Esc, or close Blender) and start again: finished frames are skipped.
-   Several computers can render at once if they share the folder (each skips frames another has started).
+   Several computers can render at once if they all write into the same folder: each skips frames that
+   are finished or that another computer has started (it leaves an empty placeholder file there).
+   On a second Windows PC, with the first PC's folders shared on the network (\\PC1\...):
+     blender -b "\\PC1\every_grain_of_us_blender\every_grain_of_us.blend" -S Film ^
+       -o "\\PC1\render\frame_####" -s 2670 -a -- --cycles-device OPTIX
+   (-o must match the first PC's output folder and file names exactly; -s 2670 starts it halfway through.)
+   A frame that was being rendered when a computer stopped leaves an empty (0 KB) file behind: at the end,
+   delete the 0 KB files and render again to fill those gaps.
 
    Command line (no window, a little faster):
      blender -b every_grain_of_us.blend -S Film -a -- --cycles-device OPTIX
