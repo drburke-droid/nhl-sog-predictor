@@ -3,7 +3,7 @@ long as its lines take, so captions and animations land as each line starts.
 
     ELEVENLABS_API_KEY=... python opening.py [a b c]   # -> opening_<film>.json, and VO_<film>.md with the opening added
 
-The rest of each script (from the hook on) is the committed pre-opening script shifted by the opening's length.
+The rest of each script (from the hook on) is VO_<film>_body.md, timed without an opening, shifted by its length.
 """
 import json, math, os, re, subprocess, sys
 
@@ -190,11 +190,8 @@ def plan(f):
 
 
 def script(f, dur, cues):
-    """VO_<f>.md: the opening's cues, then the committed pre-opening script shifted by the opening's length"""
-    old = subprocess.run(["git", "show", f"HEAD:world_roads/records/three/VO_{f.upper()}.md"], capture_output=True, text=True,
-                         check=True, cwd=HERE).stdout
-    if "## Opening" in old:
-        raise SystemExit("the committed script already has an opening")
+    """VO_<f>.md: the opening's cues, then VO_<F>_body.md shifted by the opening's length"""
+    old = open(os.path.join(HERE, f"VO_{f.upper()}_body.md"), encoding="utf-8").read()   # the script without an opening
     shift = dur - XF
 
     head, rest = old.split("\n## Hook", 1)
