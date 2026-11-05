@@ -3,7 +3,8 @@
     blender -b -P blender_film.py                  # -> out/blender_film/every_grain_of_us.blend
 
 Two scenes in one .blend:
-  Film  the table, the glass, the sand and the flying sand, rendered by Cycles to render/frame_####.png.
+  Film  the table, the glass, the sand and the flying sand, rendered by Cycles in 4K (3840x2160) to
+        render4k/frame_####.png, with motion blur and a golden-hour light for the finale.
         The sand is a point cloud of every grain the film ever shows; Geometry Nodes keeps the grains
         alive at the current frame and eases their colours, so it renders with no Python at render time.
         Settings are tuned for speed (adaptive sampling, denoising, fewer bounces, no caustics).
@@ -13,7 +14,7 @@ Two scenes in one .blend:
 import importlib.util, json, math, os, sys
 import numpy as np
 import bpy
-from mathutils import Matrix
+from mathutils import Matrix, Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -21,6 +22,8 @@ OUTD = os.environ.get("SAND_BLENDER_OUT", os.path.join(HERE, "out", "blender_fil
 BLEND = os.path.join(OUTD, "every_grain_of_us.blend")
 FONT_DIR = "/usr/share/fonts/opentype/inter"
 FPS = 30
+RES = (3840, 2160)
+RENDER_DIR = "render4k"
 
 spec = importlib.util.spec_from_file_location("blender_scene", os.path.join(HERE, "blender_scene.py"))
 BS = importlib.util.module_from_spec(spec)
@@ -130,7 +133,9 @@ def point_mesh(name, co, attrs):
     return ob
 
 
-def sand_material(name, emit_scale):
+def sand_material(name, emit_scale, rich=False):
+    """Sand: the grain's colour from the simulation. `rich`: every grain a little different in shade, hue
+    and shine (from a noise of its fixed centre, so it never flickers), and slightly translucent."""
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     nt = m.node_tree
@@ -138,13 +143,36 @@ def sand_material(name, emit_scale):
     col = nt.nodes.new("ShaderNodeAttribute"); col.attribute_name = "col"; col.attribute_type = "GEOMETRY"
     emi = nt.nodes.new("ShaderNodeAttribute"); emi.attribute_name = "emit"; emi.attribute_type = "GEOMETRY"
     mul = nt.nodes.new("ShaderNodeMath"); mul.operation = "MULTIPLY"; mul.inputs[1].default_value = emit_scale
-    nt.links.new(col.outputs["Color"], b.inputs["Base Color"])
     nt.links.new(col.outputs["Color"], b.inputs["Emission Color"])
     nt.links.new(emi.outputs["Fac"], mul.inputs[0])
     nt.links.new(mul.outputs[0], b.inputs["Emission Strength"])
     b.inputs["Roughness"].default_value = 0.5
     b.inputs["Specular IOR Level"].default_value = 0.45
     b.inputs["Coat Weight"].default_value = 0.15
+    if not rich:
+        nt.links.new(col.outputs["Color"], b.inputs["Base Color"])
+        return m
+    pi = nt.nodes.new("ShaderNodePointInfo")
+    sc = nt.nodes.new("ShaderNodeVectorMath"); sc.operation = "SCALE"; sc.inputs["Scale"].default_value = 61.7
+    wn = nt.nodes.new("ShaderNodeTexWhiteNoise"); wn.noise_dimensions = "3D"
+    sp = nt.nodes.new("ShaderNodeSeparateColor")
+    nt.links.new(pi.outputs["Position"], sc.inputs[0])
+    nt.links.new(sc.outputs["Vector"], wn.inputs["Vector"])
+    nt.links.new(wn.outputs["Color"], sp.inputs["Color"])
+
+    def madd(x, a, c):
+        n = nt.nodes.new("ShaderNodeMath"); n.operation = "MULTIPLY_ADD"
+        nt.links.new(x, n.inputs[0]); n.inputs[1].default_value = a; n.inputs[2].default_value = c
+        return n.outputs[0]
+
+    hsv = nt.nodes.new("ShaderNodeHueSaturation")
+    nt.links.new(col.outputs["Color"], hsv.inputs["Color"])
+    nt.links.new(madd(sp.outputs["Red"], 0.04, 0.48), hsv.inputs["Hue"])          # hue +-0.02
+    nt.links.new(madd(sp.outputs["Green"], 0.26, 0.87), hsv.inputs["Value"])     # brightness +-13%
+    nt.links.new(madd(sp.outputs["Blue"], 0.18, 0.92), hsv.inputs["Saturation"])
+    nt.links.new(hsv.outputs["Color"], b.inputs["Base Color"])
+    nt.links.new(madd(sp.outputs["Blue"], 0.3, 0.33), b.inputs["Roughness"])     # some grains shinier
+    b.inputs["Subsurface Weight"].default_value = 0.08                          # a little light inside
     return m
 
 
@@ -191,7 +219,7 @@ geo = T.store(spos.outputs["Geometry"], "col", "FLOAT_COLOR", col)
 geo = T.store(geo, "emit", "FLOAT", wv)
 setm = T.node("GeometryNodeSetMaterial")
 T.link(geo, setm.inputs["Geometry"])
-setm.inputs["Material"].default_value = sand_material("Sand", 0.5)
+setm.inputs["Material"].default_value = sand_material("Sand", 0.5, rich=True)
 T.link(setm.outputs["Geometry"], go.inputs[0])
 sand.modifiers.new("SandOverTime", "NODES").node_group = ng
 
@@ -245,13 +273,33 @@ alive = T.boolean("AND", T.boolean("AND", T.cmp("GREATER_THAN", u, 0.0), T.cmp("
 fade = T.math("MINIMUM", T.math("DIVIDE", uu, 0.15),
               T.math("ADD", T.math("DIVIDE", T.math("SUBTRACT", 1.0, uu), 0.05), 0.3), clamp=True)
 # evaluate the path samples while every grain is still present, then drop the grains not in flight
+pcur = T.mix("VECTOR", frac, p0, p1)
 spos = T.node("GeometryNodeSetPosition")
 T.link(grains, spos.inputs["Geometry"])
-T.link(T.mix("VECTOR", frac, p0, p1), spos.inputs["Position"])
+T.link(pcur, spos.inputs["Position"])
+
+
+def path_point(fr):
+    """Where each grain is at frame `fr` (for its velocity)."""
+    uu_ = T.math("SUBTRACT", T.math("DIVIDE", T.math("SUBTRACT", fr, T.attr("t0")), T.attr("dur")), T.attr("back"),
+                 clamp=True)
+    kf_ = T.math("MULTIPLY", uu_, KS - 1)
+    k0_ = T.math("FLOOR", T.math("MINIMUM", kf_, KS - 2))
+    i0_ = T.math("ADD", T.math("MULTIPLY", T.attr("pid"), KS), k0_)
+    return T.mix("VECTOR", T.math("SUBTRACT", kf_, k0_), sample(Pp, "FLOAT_VECTOR", i0_),
+                 sample(Pp, "FLOAT_VECTOR", T.math("ADD", i0_, 1.0)))
+
+
+# velocity (units per second) drives Cycles' motion blur; doubled so each grain streaks over a whole frame
+dv = T.node("ShaderNodeVectorMath", operation="SUBTRACT")
+T.link(path_point(T.math("ADD", frame, 1.0)), dv.inputs[0]); T.link(pcur, dv.inputs[1])
+vel = T.node("ShaderNodeVectorMath", operation="SCALE")
+T.link(dv.outputs["Vector"], vel.inputs[0]); vel.inputs["Scale"].default_value = FPS * 2.0
 rad = T.math("MULTIPLY", T.math("MULTIPLY", T.attr("shrink"), 0.013), T.math("MULTIPLY_ADD", fade, 0.6, 0.4))
 srad = T.node("GeometryNodeSetPointRadius")
 T.link(spos.outputs["Geometry"], srad.inputs["Points"]); T.link(rad, srad.inputs["Radius"])
 geo = T.store(srad.outputs["Points"], "emit", "FLOAT", fade)
+geo = T.store(geo, "velocity", "FLOAT_VECTOR", vel.outputs["Vector"])
 geo = T.store(geo, "keep", "BOOLEAN", alive)
 dele = T.node("GeometryNodeDeleteGeometry", domain="POINT")
 T.link(geo, dele.inputs["Geometry"]); T.link(T.boolean("NOT", T.attr("keep", "BOOLEAN")), dele.inputs["Selection"])
@@ -290,6 +338,39 @@ for ad in (cam.animation_data, cam_d.animation_data):
         for kp in fc.keyframe_points:
             kp.interpolation = "LINEAR"
 
+# ================================================================ golden hour for the finale
+# While the camera holds the whole map, the studio lights of blender_scene.py. As it comes down among the
+# towers, a low warm sun from the west-north-west lights the towers' faces gold and a
+# cool sun from the east-north-east outlines the towers from behind; the studio lights dim.
+GOLD0, GOLD1 = int(163.5 * FPS), int(171.0 * FPS)
+
+
+def sun(name, azimuth, elevation, colour, strength, angle):
+    ld = bpy.data.lights.new(name, "SUN")
+    ld.color = colour
+    ld.angle = math.radians(angle)
+    ob = bpy.data.objects.new(name, ld)
+    scene.collection.objects.link(ob)
+    a, e = math.radians(azimuth), math.radians(elevation)
+    towards_light = Vector((math.sin(a) * math.cos(e), math.cos(a) * math.cos(e), math.sin(e)))
+    ob.rotation_euler = (-towards_light).to_track_quat("-Z", "Y").to_euler()
+    for f, v in ((GOLD0, 0.0), (GOLD1, strength)):
+        ld.energy = v
+        ld.keyframe_insert("energy", frame=f)
+    return ob
+
+
+sun("GoldenSun", 290.0, 30.0, (1.0, 0.58, 0.30), 9.0, 3.0)      # from the WNW, 30 degrees up
+sun("BlueRim", 70.0, 20.0, (0.55, 0.72, 1.0), 0.9, 6.0)         # from the ENE, edging the towers
+for name, keep in (("key", 0.22), ("fill", 0.25), ("rim", 0.35), ("top", 0.15)):
+    ld = bpy.data.objects[name].data
+    e0 = ld.energy
+    ld.keyframe_insert("energy", frame=GOLD0)
+    ld.energy = e0 * keep
+    ld.keyframe_insert("energy", frame=GOLD1)
+    ld.energy = e0
+scene.frame_set(0)
+
 # ================================================================ render settings: quality per minute
 scene.frame_start, scene.frame_end = 0, NFRAMES - 1
 scene.render.fps = FPS
@@ -319,12 +400,17 @@ c.use_animated_seed = False      # the same noise pattern every frame: no shimme
 c.use_auto_tile = True
 scene.render.use_persistent_data = True       # keep the static table and glass between frames
 scene.render.filter_size = 1.5
-scene.render.use_motion_blur = False
+scene.render.resolution_x, scene.render.resolution_y = RES
+scene.render.resolution_percentage = 100      # 50 gives a quick 1920x1080 draft
+scene.render.use_motion_blur = True           # flying sand streaks; the camera blurs as it moves
+scene.render.motion_blur_shutter = 0.5
+c.motion_blur_position = "CENTER"
+sand.cycles.use_motion_blur = False           # resting sand never moves
 scene.render.image_settings.file_format = "PNG"
 scene.render.image_settings.color_mode = "RGB"
 scene.render.image_settings.color_depth = "8"
 scene.render.image_settings.compression = 15
-scene.render.filepath = "//render/frame_"
+scene.render.filepath = f"//{RENDER_DIR}/frame_"
 scene.render.use_overwrite = False            # stop and restart any time: finished frames are kept
 scene.render.use_placeholder = True           # several computers can share the job
 scene.render.use_file_extension = True
@@ -337,7 +423,7 @@ for n in list(scene.node_tree.nodes):
         scene.node_tree.nodes.remove(n)
 rl = scene.node_tree.nodes["Render Layers"]
 comp = scene.node_tree.nodes["Composite"]
-glare = ct.node("CompositorNodeGlare", glare_type="BLOOM", quality="HIGH", threshold=0.9, mix=-0.6, size=7)
+glare = ct.node("CompositorNodeGlare", glare_type="BLOOM", quality="HIGH", threshold=0.9, mix=-0.6, size=8)
 ct.link(rl.outputs["Image"], glare.inputs["Image"])
 ell = ct.node("CompositorNodeEllipseMask", width=0.98, height=1.0)
 blur = ct.node("CompositorNodeBlur", filter_type="FAST_GAUSS", use_relative=True, factor_x=30, factor_y=30)
@@ -353,7 +439,7 @@ bpy.ops.wm.save_as_mainfile(filepath=BLEND, compress=True)
 
 # ================================================================ Edit: frames + HUD + title -> MP4
 ed = bpy.data.scenes.new("Edit")
-ed.render.resolution_x, ed.render.resolution_y = 1920, 1080
+ed.render.resolution_x, ed.render.resolution_y = RES
 ed.render.resolution_percentage = 100
 ed.render.fps = FPS
 ed.frame_start, ed.frame_end = 0, NFRAMES - 1
@@ -361,7 +447,7 @@ ed.view_settings.view_transform = "Standard"
 ed.render.use_sequencer = True
 ed.render.use_compositing = False
 sed = ed.sequence_editor_create()
-frames = sed.sequences.new_image("Render", os.path.join(OUTD, "render", "frame_0000.png"), channel=1, frame_start=0)
+frames = sed.sequences.new_image("Render", os.path.join(OUTD, RENDER_DIR, "frame_0000.png"), channel=1, frame_start=0)
 for f in range(1, NFRAMES):
     frames.elements.append(f"frame_{f:04d}.png")
 if os.path.exists(os.path.join(OUTD, "hud.mov")):
@@ -386,8 +472,8 @@ fade_out(shade, 0.55)
 INK = (0xe8 / 255, 0xee / 255, 0xf8 / 255, 1.0)
 MUTED = (0x93 / 255, 0xa1 / 255, 0xb8 / 255, 1.0)
 for name, text, ch, fnt, size, y, colr in (
-        ("Title", S.TITLE, 4, "InterDisplay-SemiBold.otf", 84, 0.565, INK),
-        ("Subtitle", S.SUBTITLE, 5, "Inter-Regular.otf", 28, 0.494, MUTED)):
+        ("Title", S.TITLE, 4, "InterDisplay-SemiBold.otf", 84 * RES[0] // 1920, 0.565, INK),
+        ("Subtitle", S.SUBTITLE, 5, "Inter-Regular.otf", 28 * RES[0] // 1920, 0.494, MUTED)):
     t = sed.sequences.new_effect(name, "TEXT", channel=ch, frame_start=0, frame_end=t_off + 1)
     t.text = text
     t.font = bpy.data.fonts.load(os.path.join(FONT_DIR, fnt))

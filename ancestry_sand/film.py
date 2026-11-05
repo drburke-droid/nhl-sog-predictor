@@ -139,7 +139,8 @@ def hash01(a, b, salt):
 
 # ============================================================== painter
 class Painter:
-    def __init__(self):
+    def __init__(self, hud_scale=1):
+        self.k = k = hud_scale              # the HUD drawn k times larger (2: for a 3840x2160 overlay)
         self.plates = Plates()
         self.set_camera(0.0)
         self.vis = None
@@ -151,15 +152,15 @@ class Painter:
         self.illum = (0.80 + 0.32 * (1 - (xx / W) * 0.55 - (yy / H) * 0.45))[..., None]   # key light upper left
         r2 = ((xx / W - 0.5) / 0.78) ** 2 + ((yy / H - 0.5) / 0.8) ** 2
         self.vign = (1 - 0.32 * np.clip(r2, 0, 1.5) ** 1.6)[..., None].astype(np.float32)
-        self.f_label = font("Inter-SemiBold.otf", 14)
-        self.f_year = font("InterDisplay-SemiBold.otf", 58)
-        self.f_year_sub = font("Inter-Medium.otf", 20)
-        self.f_cap = font("Inter-Medium.otf", 29)
-        self.f_leg = font("Inter-Medium.otf", 14)
-        self.f_leg_h = font("Inter-SemiBold.otf", 12)
-        self.f_title = font("InterDisplay-SemiBold.otf", 84)
-        self.f_sub = font("Inter-Regular.otf", 28)
-        self.f_note = font("Inter-Regular.otf", 15)
+        self.f_label = font("Inter-SemiBold.otf", 14 * k)
+        self.f_year = font("InterDisplay-SemiBold.otf", 58 * k)
+        self.f_year_sub = font("Inter-Medium.otf", 20 * k)
+        self.f_cap = font("Inter-Medium.otf", 29 * k)
+        self.f_leg = font("Inter-Medium.otf", 14 * k)
+        self.f_leg_h = font("Inter-SemiBold.otf", 12 * k)
+        self.f_title = font("InterDisplay-SemiBold.otf", 84 * k)
+        self.f_sub = font("Inter-Regular.otf", 28 * k)
+        self.f_note = font("Inter-Regular.otf", 15 * k)
         self.cache = {}
         self.label_map = {}
         for v in Sd.ORDER:
@@ -197,8 +198,8 @@ class Painter:
                     cur = t
             lines.append(cur)
         asc, desc = fnt.getmetrics()
-        lh = asc + desc + spacing
-        pad = 7 if halo else 2
+        lh = asc + desc + spacing * self.k
+        pad = (7 if halo else 2) * self.k
         ww = int(max(fnt.getlength(l) for l in lines)) + 2 * pad
         hh = lh * len(lines) + 2 * pad
         im = Image.new("L", (ww, hh), 0)
@@ -211,7 +212,8 @@ class Painter:
         spr[..., :3] = rgb
         spr[..., 3] = a
         if halo:
-            hal = np.clip(cv2.GaussianBlur(cv2.dilate(a, np.ones((3, 3), np.uint8)), (0, 0), 2.2) * 1.5, 0, 0.85)
+            hal = np.clip(cv2.GaussianBlur(cv2.dilate(a, np.ones((2 * self.k + 1,) * 2, np.uint8)), (0, 0), 2.2 * self.k)
+                          * 1.5, 0, 0.85)
             out_a = a + hal * (1 - a)
             spr[..., :3] = (rgb * a[..., None] + 0.02 * (hal * (1 - a))[..., None]) / np.maximum(out_a, 1e-4)[..., None]
             spr[..., 3] = out_a
@@ -236,13 +238,13 @@ class Painter:
     def panel(self, img, x0, y0, x1, y1, a):
         """A soft dark backing behind HUD text, so it reads over sand in the close-ups."""
         key = ("panel", int(x0), int(y0), int(x1), int(y1))
+        pad = 40 * self.k
         if key not in self.cache:
-            pad = 40
             m = np.zeros((int(y1 - y0) + 2 * pad, int(x1 - x0) + 2 * pad), np.float32)
             m[pad:-pad, pad:-pad] = 1.0
-            self.cache[key] = cv2.GaussianBlur(m, (0, 0), 16)[..., None]
+            self.cache[key] = cv2.GaussianBlur(m, (0, 0), 16 * self.k)[..., None]
         m = self.cache[key]
-        xa, ya = int(x0) - 40, int(y0) - 40
+        xa, ya = int(x0) - pad, int(y0) - pad
         h, w = m.shape[:2]
         xb, yb = min(img.shape[1], xa + w), min(img.shape[0], ya + h)
         sx, sy = max(0, -xa), max(0, -ya)
@@ -523,6 +525,8 @@ class Painter:
         return np.clip(img, 0, 255).astype(np.uint8)
 
     def hud(self, img, sim, s, title=True):
+        k = self.k
+        IW, IH = img.shape[1], img.shape[0]
         title_a = 1.0 - smooth((s - 4.2) / 1.6)
         for v in Sd.ORDER:
             vi = Sd.VI[v]
@@ -531,7 +535,7 @@ class Painter:
             lab = S.VESSELS[v]["label"] + (f"  \u00d7{mag:g}" if mag else "")
             spr = self.text_sprite(lab, self.f_label, INK * 255, halo=True)
             x, y = self.project(np.array([self.label_map[v][0]]), np.array([self.label_map[v][1]]), np.array([0.0]))
-            x, y = float(x[0]), float(y[0])
+            x, y = float(x[0]) * k, float(y[0]) * k
             self.blit(img, spr, x - spr.shape[1] / 2, y - spr.shape[0] / 2, (0.8 if has else 0.4) * (1 - title_a * 0.7))
         ybp = ybp_at(s)
         if ybp >= 500:
@@ -541,53 +545,53 @@ class Painter:
             yr = int(round(2025 - ybp))
             big, small = (f"{yr}", "CE") if yr < 2024 else ("Today", "")
         spr = self.text_sprite(big, self.f_year, INK * 255)
-        self.panel(img, 30, 22, 330, 170, self.panel_a)
-        self.blit(img, spr, 44, 26, 0.95)
+        self.panel(img, 30 * k, 22 * k, 330 * k, 170 * k, self.panel_a)
+        self.blit(img, spr, 44 * k, 26 * k, 0.95)
         if small:
-            self.blit(img, self.text_sprite(small, self.f_year_sub, MUTED * 255), 48, 26 + spr.shape[0] + 2, 0.9)
+            self.blit(img, self.text_sprite(small, self.f_year_sub, MUTED * 255), 48 * k, 26 * k + spr.shape[0] + 2 * k, 0.9)
         tot = max(int(sim.counts.sum()), 1)
         ppl = Sd.world_pop(ybp) / tot
         ppl = float(f"{ppl:.2g}") if ppl < 1000 else round(ppl, -3)
         line = f"1 grain \u2248 {ppl:,.0f} people"
-        self.blit(img, self.text_sprite(line, self.f_year_sub, INK * 255), 48, 26 + spr.shape[0] + 30, 0.85)
-        lx, ly = 40, 700
+        self.blit(img, self.text_sprite(line, self.f_year_sub, INK * 255), 48 * k, 26 * k + spr.shape[0] + 30 * k, 0.85)
+        lx, ly = 40 * k, 700 * k
         if sim.first_seen:
-            self.blit(img, self.text_sprite("ANCESTRY  (COLOUR OF SAND)", self.f_leg_h, MUTED * 255), lx, ly - 24, 0.8)
+            self.blit(img, self.text_sprite("ANCESTRY  (COLOUR OF SAND)", self.f_leg_h, MUTED * 255), lx, ly - 24 * k, 0.8)
         nrow = sum(1 for c in range(K) if c in sim.first_seen)
         if nrow:
-            self.panel(img, lx - 8, ly - 30, lx + 250, ly + nrow * 19 + 4, self.panel_a)
+            self.panel(img, lx - 8 * k, ly - 30 * k, lx + 250 * k, ly + (nrow * 19 + 4) * k, self.panel_a)
         row = 0
         for c in range(K):
             if c not in sim.first_seen:
                 continue
             a = smooth((s - sim.first_seen[c]) / 0.8)
-            yy = ly + row * 19
-            reg = img[yy + 4:yy + 17, lx + 1:lx + 14]
+            yy = ly + row * 19 * k
+            reg = img[yy + 4 * k:yy + 17 * k, lx + 1 * k:lx + 14 * k]
             chip = np.zeros(reg.shape[:2], np.float32)
-            cv2.circle(chip, (6 * 16, 6 * 16), 6 * 16, 1.0, -1, cv2.LINE_AA, shift=4)
+            cv2.circle(chip, (6 * k * 16, 6 * k * 16), 6 * k * 16, 1.0, -1, cv2.LINE_AA, shift=4)
             m = chip[..., None] * a
             reg *= (1 - m); reg += COL[c] * 255 * m
-            self.blit(img, self.text_sprite(S.COMPONENTS[c][1], self.f_leg, INK * 255), lx + 20, yy, 0.85 * a)
+            self.blit(img, self.text_sprite(S.COMPONENTS[c][1], self.f_leg, INK * 255), lx + 20 * k, yy, 0.85 * a)
             row += 1
         for (s0, s1, text) in (CAP_SCHEDULE if SHOW_CAPTIONS else []):
             if s0 - 0.5 <= s <= s1 + 0.5:
                 a = smooth((s - s0 + 0.5) / 0.5) * smooth((s1 + 0.5 - s) / 0.5)
-                spr = self.text_sprite(text, self.f_cap, INK * 255, max_w=1300, align="center")
-                x = W / 2 - spr.shape[1] / 2 + 90
-                y = 990 - spr.shape[0] / 2
-                self.shade(img, x - 30, y - 14, spr.shape[1] + 60, spr.shape[0] + 24, 0.55 * a)
+                spr = self.text_sprite(text, self.f_cap, INK * 255, max_w=1300 * k, align="center")
+                x = IW / 2 - spr.shape[1] / 2 + 90 * k
+                y = 990 * k - spr.shape[0] / 2
+                self.shade(img, x - 30 * k, y - 14 * k, spr.shape[1] + 60 * k, spr.shape[0] + 24 * k, 0.55 * a)
                 self.blit(img, spr, x, y, a)
         if title and title_a > 0.003:
-            self.shade(img, 0, 0, W, H, 0.55 * title_a)
+            self.shade(img, 0, 0, IW, IH, 0.55 * title_a)
             t = self.text_sprite(S.TITLE, self.f_title, INK * 255)
-            self.blit(img, t, W / 2 - t.shape[1] / 2, 420, title_a)
+            self.blit(img, t, IW / 2 - t.shape[1] / 2, 420 * k, title_a)
             st = self.text_sprite(S.SUBTITLE, self.f_sub, MUTED * 255)
-            self.blit(img, st, W / 2 - st.shape[1] / 2, 530, title_a)
+            self.blit(img, st, IW / 2 - st.shape[1] / 2, 530 * k, title_a)
         if s > S.TODAY_S + 9.0:
             a = smooth((s - S.TODAY_S - 9.0) / 1.2)
             n = self.text_sprite("Ancestry from published ancient-DNA studies; population from long-run estimates. "
                                  "Magnified islands keep a minimum of sand to stay visible.", self.f_note, MUTED * 255)
-            self.blit(img, n, W - n.shape[1] - 40, 40, 0.8 * a)
+            self.blit(img, n, IW - n.shape[1] - 40 * k, 40 * k, 0.8 * a)
         t_i0, t_i1 = S.TODAY_S + 1.0, S.TODAY_S + 8.2
         if t_i0 <= s <= t_i1:
             a = smooth((s - t_i0) / 0.8) * smooth((t_i1 - s) / 0.8)
@@ -598,10 +602,10 @@ class Painter:
                 ex = (bx0 + bx1) / 2 + ((bx1 - bx0) / 2 + 26) * rr * np.cos(t)
                 ey = (by0 + by1) / 2 + ((by1 - by0) / 2 + 26) * rr * np.sin(t)
                 sx, sy = self.project(ex, ey, np.zeros_like(ex))
-                pts = np.round(np.stack([sx, sy], 1) * 16).astype(np.int32)
+                pts = np.round(np.stack([sx, sy], 1) * 16 * k).astype(np.int32)
                 col = tuple(float(v) for v in np.array([255, 235, 190]) * 0.8 * a)
                 ov = np.zeros_like(img)
-                cv2.polylines(ov, [pts], True, col, 2, cv2.LINE_AA, shift=4)
+                cv2.polylines(ov, [pts], True, col, 2 * k, cv2.LINE_AA, shift=4)
                 img += ov
 
 

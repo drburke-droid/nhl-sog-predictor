@@ -426,7 +426,7 @@ CLOCK = [
     (160.0, 0),
 ]
 TODAY_S = CLOCK[-1][0]
-DURATION = TODAY_S + 18.0      # hold on today for the closing captions
+DURATION = TODAY_S + 26.0      # today: the finale among the towers, then the reveal
 
 
 # ---------------------------------------------------------------- captions: (ybp, text) or (video s, text)

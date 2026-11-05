@@ -30,8 +30,9 @@ python film.py script                                       # the narration as a
 ```
 
 **The camera.** `camera.py` holds the camera path, shared by Blender and the compositor. By default
-(`FINALE`) it holds the whole map still until today's migrants have landed (2:43), then flies down
-among the population towers of South Asia and pans across to East and Southeast Asia for the ending. `SAND_CAMERA=story` selects the
+(`FINALE`) it holds the whole map still until today's migrants have landed (2:43), then comes down
+among the population towers of South Asia, pans across to East and Southeast Asia, and rises to
+reveal the whole world (the film runs 3:06). `SAND_CAMERA=story` selects the
 earlier path that follows the story around the world (into East Africa for the exit, along the southern
 route, over Beringia, the Fertile Crescent, the Bantu expansion, the Atlantic in 1500, then the towers).
 For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
@@ -65,7 +66,7 @@ The whole film can also be path traced in Blender, frame by frame, for the true 
 refraction of the sand through the glass, real shadows and depth of field):
 
 ```
-python export_blender.py                 # sand records, flight paths, HUD overlay -> out/blender_film/ (~30 min)
+python export_blender.py --scale 2       # sand records, flight paths, 4K HUD overlay -> out/blender_film/
 blender -b -P blender_film.py            # -> out/blender_film/every_grain_of_us.blend
 ```
 
@@ -77,8 +78,11 @@ lights) and adds the sand as point clouds whose Geometry Nodes pick the records 
 frame, ease their colours, swell new grains in, fly the airborne grains along their paths and run the
 closing ripple, so the .blend renders with no Python at render time. Its `Edit` scene joins the
 rendered frames, the HUD and the title (editable text strips) into an MP4, and is where a voice-over
-goes. Render settings are tuned for speed: adaptive sampling up to 64 samples, OpenImageDenoise,
-6 bounces, no caustics, a fixed noise seed so the still camera does not shimmer.
+goes. It renders in 4K with motion blur (the flying grains carry a velocity attribute), a golden-hour
+sun and cool rim light that fade in for the finale, and sand whose every grain varies a little in
+shade, hue and shine (noise of its fixed centre) with a touch of subsurface scattering. Render settings
+are tuned for speed: adaptive sampling up to 64 samples, OpenImageDenoise, 6 bounces, no caustics, a
+fixed noise seed so the still camera does not shimmer.
 `blender_film_README.txt` (shipped next to the .blend) explains rendering it.
 
 ### Population, where people live, and ancestry within a region

@@ -19,7 +19,7 @@ WIDE = (960.0, 505.0, 22.0, 26.0, 0.0)
 
 # (video second, pose). Between two keys the camera eases in and out; equal neighbouring poses hold.
 # STORY follows the story around the world; FINALE (the default) holds the wide shot until today,
-# then flies low among the population towers of Asia for the ending.
+# then flies low among the population towers of Asia and rises to reveal the whole world.
 KEYS_STORY = [
     (0.0, WIDE),
     (17.0, WIDE),
@@ -47,10 +47,11 @@ KEYS_STORY = [
 KEYS_FINALE = [
     (0.0, WIDE),
     (163.5, WIDE),                                   # still for 200,000 years, until today's arrivals land
-    (170.0, (1290.0, 425.0, 58.0, 7.5, 6.0)),         # then down among the towers of South Asia
-    (175.0, (1420.0, 440.0, 60.0, 7.0, 22.0)),        # and across to Southeast and East Asia
-    (178.5, (1460.0, 420.0, 62.0, 6.0, 28.0)),
-    (999.0, (1460.0, 420.0, 62.0, 6.0, 28.0)),
+    (172.0, (1290.0, 425.0, 58.0, 7.5, 6.0)),         # then slowly down among the towers of South Asia
+    (177.5, (1420.0, 440.0, 60.0, 7.0, 22.0)),        # across to Southeast and East Asia
+    (180.5, (1465.0, 425.0, 61.0, 6.4, 28.0)),
+    (185.3, (985.0, 560.0, 52.0, 22.0, 0.0)),         # and up, to reveal the whole world of towers
+    (999.0, (985.0, 560.0, 52.0, 22.0, 0.0)),
 ]
 
 import os as _os

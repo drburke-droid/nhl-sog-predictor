@@ -1,6 +1,6 @@
 """Export the whole film for a full Cycles render in Blender (blender_film.py then builds the .blend).
 
-    python export_blender.py [--no-hud | --hud-only]       # -> out/blender_film/
+    python export_blender.py [--no-hud | --hud-only] [--scale 2] [--workers 4]   # -> out/blender_film/
 
 grains.npz   every grain the film shows, as records: where it sits, its radius, the frames it is visible
              (tb <= frame < td), and its colour, easing from c0 to c1 (c = c1 + (c0 - c1) * 0.82^(frame - tc));
@@ -58,8 +58,8 @@ class Records:
 
 def hud_rgba(pt, sim, s):
     """The HUD as straight-alpha RGBA: drawn once over black and once over white."""
-    B = np.zeros((H, W, 3), np.float32)
-    Wt = np.full((H, W, 3), 255.0, np.float32)
+    B = np.zeros((H * pt.k, W * pt.k, 3), np.float32)
+    Wt = np.full((H * pt.k, W * pt.k, 3), 255.0, np.float32)
     pt.hud(B, sim, s, title=False)
     pt.hud(Wt, sim, s, title=False)
     a = np.clip(1 - (Wt - B).mean(2) / 255.0, 0, 1)
@@ -68,11 +68,47 @@ def hud_rgba(pt, sim, s):
     return np.dstack([rgb[..., ::-1], a[..., None] * 255]).astype(np.uint8)    # BGRA for cv2
 
 
-def main(hud=True, records=True):
+def hud_chunk(job):
+    """HUD frames f0..f1-1 at scale k into one QuickTime Animation file (re-simulating from the start)."""
+    f0, f1, k, path = job
+    sim, pt = Sd.Sand(), Painter(hud_scale=k)
+    ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra",
+                           "-s", f"{W * k}x{H * k}", "-r", str(FPS), "-i", "-", "-c:v", "qtrle", "-pix_fmt", "argb",
+                           "-g", "300", path], stdin=subprocess.PIPE)
+    t0 = time.time()
+    for f in range(f1):
+        s = f / FPS
+        sim.step(s)
+        if f >= f0:
+            pt.set_camera(s)
+            ff.stdin.write(hud_rgba(pt, sim, s).tobytes())
+            if (f - f0) % 300 == 0:
+                print(f"  hud [{f0}-{f1}] frame {f}  {time.time() - t0:.0f}s", flush=True)
+    ff.stdin.close(); ff.wait()
+    return path
+
+
+def export_hud(k=1, workers=4):
+    """hud.mov: the HUD for the whole film, k x 1920x1080, rendered in parallel chunks and joined."""
+    from multiprocessing import Pool
+    n = int(os.environ.get("SAND_EXPORT_FRAMES", round(S.DURATION * FPS)))
+    edges = np.linspace(0, n, workers + 1).round().astype(int)
+    jobs = [(int(edges[i]), int(edges[i + 1]), k, os.path.join(OUTD, f"hud_part{i}.mov")) for i in range(workers)]
+    t0 = time.time()
+    with Pool(workers) as pool:
+        parts = pool.map(hud_chunk, jobs)
+    lst = os.path.join(OUTD, "hud_parts.txt")
+    with open(lst, "w") as fh:
+        fh.writelines(f"file '{os.path.basename(p)}'\n" for p in parts)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy",
+                    os.path.join(OUTD, "hud.mov")], check=True)
+    for p in parts + [lst]:
+        os.remove(p)
+    print(f"wrote hud.mov ({W * k}x{H * k}) in {time.time() - t0:.0f}s")
+
+
+def main():
     os.makedirs(OUTD, exist_ok=True)
-    ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{W}x{H}",
-                           "-r", str(FPS), "-i", "-", "-c:v", "qtrle", "-pix_fmt", "argb", "-g", "300",
-                           os.path.join(OUTD, "hud.mov")], stdin=subprocess.PIPE) if hud else None
     sim, pt = Sd.Sand(), Painter()
     n = int(os.environ.get("SAND_EXPORT_FRAMES", round(S.DURATION * FPS)))     # (fewer: quick tests)
     R = Records()
@@ -135,17 +171,9 @@ def main(hud=True, records=True):
                              tc=np.full(new.sum(), f), ts=np.where(fresh[new], f, -1e6))
         R.a["td"][rec] = n                     # open until closed
         pkey, pci, prec = key, ci, rec
-        if hud:
-            pt.set_camera(s)
-            ff.stdin.write(hud_rgba(pt, sim, s).tobytes())
         if f % 300 == 0:
             print(f"frame {f}/{n}  records {R.n}  visible {len(key)}  {time.time() - t0:.0f}s", flush=True)
 
-    if ff:
-        ff.stdin.close(); ff.wait()
-    if not records:
-        print(f"wrote hud.mov in {time.time() - t0:.0f}s")
-        return
     m = R.n
     a = {k: v[:m] for k, v in R.a.items()}
     cell, lev = a["cell"].astype(np.int64), a["lev"].astype(np.int64)
@@ -162,4 +190,8 @@ def main(hud=True, records=True):
 
 
 if __name__ == "__main__":
-    main(hud="--no-hud" not in sys.argv, records="--hud-only" not in sys.argv)
+    arg = lambda name, d: int(sys.argv[sys.argv.index(name) + 1]) if name in sys.argv else d
+    if "--hud-only" not in sys.argv:
+        main()
+    if "--no-hud" not in sys.argv:
+        export_hud(k=arg("--scale", 1), workers=arg("--workers", 4))
