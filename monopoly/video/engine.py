@@ -30,8 +30,9 @@ SCENE_FILES = ['01_cold_open', '02_the_promise', '03_how_we_tested_it', '04_buy_
 
 
 def narration(scene):
+    """A scene's narration as one line of text (the script keeps one chunk per line; see tts.py)."""
     paras = open(SCRIPT).read().strip().split('\n\n')
-    return paras[SCENE_FILES.index(scene)]
+    return ' '.join(l.strip() for l in paras[SCENE_FILES.index(scene)].split('\n') if l.strip())
 
 
 def audio_length(scene):
