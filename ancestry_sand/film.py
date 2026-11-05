@@ -569,7 +569,7 @@ class Painter:
             reg *= (1 - m); reg += COL[c] * 255 * m
             self.blit(img, self.text_sprite(S.COMPONENTS[c][1], self.f_leg, INK * 255), lx + 20, yy, 0.85 * a)
             row += 1
-        for (s0, s1, text) in CAP_SCHEDULE:
+        for (s0, s1, text) in (CAP_SCHEDULE if SHOW_CAPTIONS else []):
             if s0 - 0.5 <= s <= s1 + 0.5:
                 a = smooth((s - s0 + 0.5) / 0.5) * smooth((s1 + 0.5 - s) / 0.5)
                 spr = self.text_sprite(text, self.f_cap, INK * 255, max_w=1300, align="center")
@@ -617,6 +617,18 @@ def caption_schedule():
 
 
 CAP_SCHEDULE = caption_schedule()
+# captions are off by default: the film is meant to carry a voice-over (see `film.py script`)
+SHOW_CAPTIONS = os.environ.get("SAND_CAPTIONS", "0") == "1"
+
+
+def cmd_script(args):
+    """Write the narration as an .srt cue sheet, timed to the film, for recording a voice-over."""
+    def ts(x):
+        ms = int(round(x * 1000)); return f"{ms // 3600000:02d}:{ms // 60000 % 60:02d}:{ms // 1000 % 60:02d},{ms % 1000:03d}"
+    with open(args.out, "w") as f:
+        for i, (s0, s1, text) in enumerate(CAP_SCHEDULE, 1):
+            f.write(f"{i}\n{ts(s0)} --> {ts(s1)}\n{text}\n\n")
+    print("wrote", args.out, len(CAP_SCHEDULE), "cues")
 
 
 # ============================================================== drivers
@@ -695,5 +707,6 @@ if __name__ == "__main__":
     sp = ap.add_subparsers(dest="cmd", required=True)
     a = sp.add_parser("still"); a.add_argument("times", nargs="+")
     b = sp.add_parser("video"); b.add_argument("--workers", type=int, default=4)
+    c = sp.add_parser("script"); c.add_argument("--out", default=os.path.join(OUT, "narration.srt"))
     args = ap.parse_args()
-    {"still": cmd_still, "video": cmd_video}[args.cmd](args)
+    {"still": cmd_still, "video": cmd_video, "script": cmd_script}[args.cmd](args)
