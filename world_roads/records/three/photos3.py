@@ -26,7 +26,7 @@ S.ONLY = sys.argv[2:] or None
 S.CHOICE = {                                                # crop boxes (left, top, width as fractions), set after a look
     "williams": (0.0, 0.0, 1.0), "duplantis": (0.08, 0.0, 0.84), "mcintosh": (0.37, 0.0, 0.45),
     "bolt": (0.01, 0.0, 0.98), "vanbrocklin": (0.1, 0.0, 0.9), "feller": (0.15, 0.3, 0.7), "wills": (0.05, 0.0, 0.9),
-    "bottomley": (0.05, 0.0, 0.8), "olmstead": (0.08, 0.0, 0.84), "box": (0.29, 0.0, 0.66), "sittler": (0.1, 0.0, 0.8),
+    "bottomley": (0.05, 0.0, 0.8), "olmstead": (0.08, 0.0, 0.84), "box": (0.29, 0.0, 0.66), "sittler": (0.15, 0.04, 0.7),
 }
 
 FREE = ("CC BY", "CC0", "Public domain")                    # GFDL-only files are passed over (the licence text must travel)

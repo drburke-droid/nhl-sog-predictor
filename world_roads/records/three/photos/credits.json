@@ -118,5 +118,17 @@
   "source": "http://www.vintagecardprices.com/card-profile/154959/1950-Bowman-Cloyce-Box-111-Football-Card-Value-Prices.htm",
   "changes": "cropped, background removed (rembg), toned in team colours",
   "short": "Photo: Bowman, Public domain, via Wikimedia Commons"
+ },
+ "sittler": {
+  "athlete": "Darryl Sittler",
+  "file": "DarrylSittler.png",
+  "page": "https://commons.wikimedia.org/wiki/File:DarrylSittler.png",
+  "author": "Unknown author",
+  "license": "Public domain",
+  "license_url": "",
+  "date": "1971",
+  "source": "Trading Card Database",
+  "changes": "cropped, background removed (rembg), toned in team colours",
+  "short": "Photo: Unknown author, Public domain, via Wikimedia Commons"
  }
 }
