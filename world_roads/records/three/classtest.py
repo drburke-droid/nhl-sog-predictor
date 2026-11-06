@@ -194,12 +194,13 @@ class ClassTestBest(ClassTest):
         for v in range(40, 101, 10):
             ax.plot([-16.4, 16.4], [v, v], color="#ffffff", alpha=0.06 * al, lw=px(1), zorder=1)
             ax.text(-16.9, v, f"{v}", ha="right", va="center", fontsize=fs(17), color=MUTED, alpha=al)
-        for y, lab in ((-15, "15 years\nbefore"), (-10, "−10"), (-5, "−5"), (0, "this\nyear"), (5, "+5"), (10, "+10"),
-                       (15, "15 years\nafter")):
+        u = self.spec.get("unit", "year")                   # film C's narration says semesters
+        for y, lab in ((-15, f"15 {u}s\nbefore"), (-10, "−10"), (-5, "−5"), (0, f"this\n{u}"), (5, "+5"), (10, "+10"),
+                       (15, f"15 {u}s\nafter")):
             ax.text(y, 35.2, lab, ha="center", va="top", fontsize=fs(17), color=MUTED if y else INK2, alpha=al,
                     linespacing=1.0)
-        head = "Test scores: each column is one year's class" if t < at["bests"] + 1.0 else \
-            "Test scores: each blue dot is the best score by everyone else in that year's class"
+        head = f"Test scores: each column is one {u}'s class" if t < at["bests"] + 1.0 else \
+            f"Test scores: each blue dot is the best score by everyone else in that {u}'s class"
         ax.text(-16.4, 104.5, head, ha="left", va="bottom", fontsize=fs(19), color=INK2, alpha=al)
         lift = LIFT * ease(clamp((t - at["lift"] - 1.0) / 3.5))
         dim_rest = 1.0 - 0.8 * ease(clamp((t - at["bests"]) / 1.5)) - 0.2 * ease(clamp((t - at["star"]) / 1.5))

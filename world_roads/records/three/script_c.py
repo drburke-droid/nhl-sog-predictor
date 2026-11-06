@@ -26,10 +26,11 @@ HOOK = [
 # grading on a curve: a class test built the way the film is (only the best score by everyone else counts, in this
 # class and in each of the 15 classes before and after), timed to these lines (classtest.ClassTestBest)
 CLASS = [
-    "Here's the same idea as a class test. One student scores ninety-five. Leave them out, and look at the rest of the "
+    "Here's the same idea as a classroom test. One student scores ninety-five. Leave them out, and look at the rest of the "
     "class: its best score is about eighty.",
     "That best score is the only one from this class that counts. Not the class average: the best by everyone else.",
-    "Now do the same for the fifteen classes before and the fifteen after. From each class, keep only its best score.",
+    "Now do the same for the fifteen semesters before and the fifteen semesters after. From each class, keep only its "
+    "best score.",
     "Those best scores all land around eighty, and the line through them is the elite curve.",
     "If one year's test was easier for everyone, its scores are scaled down first, just as every season is converted "
     "to the same scoring level.",
@@ -39,9 +40,9 @@ CLASS = [
     "deviation up.",
     "Same score, different era. So every season is graded against the best of everyone else in its own era."]
 CLASS_CAPS = [
-    "Picture a class test. One student scores 95. Leave them out: the best score by everyone else is about 80.",
+    "Picture a classroom test. One student scores 95. Leave them out: the best score by everyone else is about 80.",
     "Only that best score counts, not the class average.",
-    "Do the same for the 15 classes before and the 15 after: keep only each class's best score.",
+    "Do the same for the 15 semesters before and the 15 after: keep only each class's best score.",
     "The line through those best scores is the elite curve.",
     "A year with an easier test is scaled down first, just as every season is converted to the same scoring level.",
     "The best scores usually sit within about 3 points of the elite curve: one standard deviation.",
@@ -54,7 +55,7 @@ CLS = {"lines": CLASS, "caps": CLASS_CAPS, "pages": [2, 6],
        "at": {"s95": (0, "One student"), "top5": (0, "Leave them out"), "avg": (1, "Not the class average"),
               "others": (2, None), "bests": (2, "From each class"), "curve": (3, "and the line"), "easy": (4, None),
               "band": (5, None), "star": (6, None), "lift": (7, None)},
-       "extra": {"curve_word": "the elite curve"}}
+       "extra": {"curve_word": "the elite curve", "unit": "semester"}}
 
 FILM = timing.Film(
     "c", "The 5 Biggest Season-Long Outliers in Team Sports", HOOK,
