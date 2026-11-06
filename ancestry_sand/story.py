@@ -416,6 +416,22 @@ EVENTS = [
 
 # ---------------------------------------------------------------- the clock: (video seconds, ybp)
 # between keys, log(ybp + 200) is linear in video time
+# A short caption set, for showing the film with music and no narration (video seconds, text). Each line
+# under ten words, keeping the hedges of the full captions.
+SHORT_CAPTIONS = [
+    (7.0, 12.0, "200,000 years ago, our species lives only in Africa"),
+    (13.5, 19.0, "Each colour of sand is a strand of ancestry"),
+    (31.0, 37.0, "Out of Africa, between 70,000 and 50,000 years ago"),
+    (44.0, 51.0, "Along the way, mixing with Neanderthals and Denisovans"),
+    (71.5, 77.5, "At least 20,000 years ago: into the Americas"),
+    (84.0, 91.0, "About 11,000 years ago, farming begins"),
+    (99.0, 106.0, "Steppe herders and Bantu farmers spread far"),
+    (109.0, 117.0, "Austronesian sailors cross two oceans"),
+    (132.0, 140.0, "1500 CE: ships, epidemics and enslavement"),
+    (161.5, 167.5, "Today: almost every vessel holds sand from many places"),
+    (174.5, 183.0, "Every person alive descends from those first African grains"),
+]
+
 CLOCK = [
     (6.0, 200_000),
     (24.0, 70_000),

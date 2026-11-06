@@ -1,6 +1,7 @@
 """Export the whole film for a full Cycles render in Blender (blender_film.py then builds the .blend).
 
     python export_blender.py [--no-hud | --hud-only] [--scale 2] [--workers 4]   # -> out/blender_film/
+    python export_blender.py --captions-only --scale 2        # short captions overlay (music-only version)
 
 grains.npz   every grain the film shows, as records: where it sits, its radius, the frames it is visible
              (tb <= frame < td), and its colour, easing from c0 to c1 (c = c1 + (c0 - c1) * 0.82^(frame - tc));
@@ -107,6 +108,51 @@ def export_hud(k=1, workers=4):
     print(f"wrote hud.mov ({W * k}x{H * k}) in {time.time() - t0:.0f}s")
 
 
+def export_captions(k=1):
+    """captions.mov: story.SHORT_CAPTIONS as a transparent overlay (k x 1920x1080), styled like the HUD's
+    captions, plus captions_short.srt for players and platforms."""
+    from film import INK, smooth
+    pt = Painter(hud_scale=k)
+    IW, IH = W * k, H * k
+    n = int(round(S.DURATION * FPS))
+    caps = []
+    for s0, s1, text in S.SHORT_CAPTIONS:
+        spr = pt.text_sprite(text, pt.f_cap, INK * 255, max_w=1300 * k, align="center")
+        h, w = spr.shape[:2]
+        x, y = int(round(IW / 2 - w / 2 + 90 * k)), int(round(990 * k - h / 2))
+        px, py = 30 * k, 14 * k
+        ta = np.zeros((h + 24 * k, w + 60 * k), np.float32)
+        ta[py:py + h, px:px + w] = spr[..., 3]
+        rgb = np.zeros(ta.shape + (3,), np.float32)
+        rgb[py:py + h, px:px + w] = spr[..., :3]
+        a = ta + 0.55 * (1 - ta)                                 # text over a 55% dark box
+        col = rgb * (ta / np.maximum(a, 1e-4))[..., None]
+        caps.append((s0, s1, x - px, y - py, np.dstack([col[..., ::-1], np.zeros_like(a)]).astype(np.float32), a))
+    ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{IW}x{IH}",
+                           "-r", str(FPS), "-i", "-", "-c:v", "qtrle", "-pix_fmt", "argb", "-g", "300",
+                           os.path.join(OUTD, "captions.mov")], stdin=subprocess.PIPE)
+    buf = np.zeros((IH, IW, 4), np.uint8)
+    for f in range(n):
+        s = f / FPS
+        buf[:] = 0
+        for s0, s1, x0, y0, bgr, a in caps:
+            if s0 - 0.5 <= s <= s1 + 0.5:
+                al = smooth((s - s0 + 0.5) / 0.5) * smooth((s1 + 0.5 - s) / 0.5)
+                h, w = a.shape
+                reg = bgr.copy()
+                reg[..., 3] = a * al * 255
+                buf[y0:y0 + h, x0:x0 + w] = np.clip(reg, 0, 255).astype(np.uint8)
+        ff.stdin.write(buf.tobytes())
+    ff.stdin.close(); ff.wait()
+
+    def ts(v):
+        ms = int(round(v * 1000)); return f"{ms // 3600000:02d}:{ms // 60000 % 60:02d}:{ms // 1000 % 60:02d},{ms % 1000:03d}"
+    with open(os.path.join(OUTD, "captions_short.srt"), "w") as fh:
+        for i, (s0, s1, text) in enumerate(S.SHORT_CAPTIONS, 1):
+            fh.write(f"{i}\n{ts(s0)} --> {ts(s1)}\n{text}\n\n")
+    print(f"wrote captions.mov ({IW}x{IH}) and captions_short.srt")
+
+
 def main():
     os.makedirs(OUTD, exist_ok=True)
     sim, pt = Sd.Sand(), Painter()
@@ -191,6 +237,9 @@ def main():
 
 if __name__ == "__main__":
     arg = lambda name, d: int(sys.argv[sys.argv.index(name) + 1]) if name in sys.argv else d
+    if "--captions-only" in sys.argv:
+        export_captions(k=arg("--scale", 1))
+        sys.exit()
     if "--hud-only" not in sys.argv:
         main()
     if "--no-hud" not in sys.argv:
