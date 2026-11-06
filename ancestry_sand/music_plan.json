@@ -1,0 +1,116 @@
+{
+ "positive_global_styles": [
+  "cinematic documentary score",
+  "instrumental",
+  "orchestral strings with warm felt piano",
+  "organic hand percussion",
+  "continuous music with no silences or pauses",
+  "patient, evolving",
+  "emotional arc from intimate to vast",
+  "hopeful",
+  "polished modern film-score mix"
+ ],
+ "negative_global_styles": [
+  "vocals",
+  "lyrics",
+  "pop",
+  "EDM",
+  "trailer braams",
+  "comedic",
+  "lo-fi"
+ ],
+ "sections": [
+  {
+   "section_name": "Origins in Africa",
+   "duration_ms": 37400,
+   "lines": [],
+   "positive_local_styles": [
+    "begins with a soft solo felt piano motif",
+    "warm low drone",
+    "gentle marimba and shaker like falling sand",
+    "a heartbeat pulse enters halfway",
+    "slowly growing"
+   ],
+   "negative_local_styles": [
+    "big drums",
+    "brass"
+   ]
+  },
+  {
+   "section_name": "Spreading across the world",
+   "duration_ms": 46300,
+   "lines": [],
+   "positive_local_styles": [
+    "travelling string motif",
+    "flowing piano arpeggios",
+    "frame drum pulse",
+    "widening",
+    "later turns cold and spacious with icy shimmering pads and a solo cello"
+   ],
+   "negative_local_styles": [
+    "aggressive",
+    "electronic lead"
+   ]
+  },
+  {
+   "section_name": "Farmers, herders and ocean voyages",
+   "duration_ms": 47900,
+   "lines": [],
+   "positive_local_styles": [
+    "warmer and earthy",
+    "steady plucked-string ostinato",
+    "driving low toms in the middle",
+    "then wide oceanic swells and rolling cymbals",
+    "wonder"
+   ],
+   "negative_local_styles": [
+    "dark",
+    "minimal"
+   ]
+  },
+  {
+   "section_name": "1500 to the modern world",
+   "duration_ms": 28400,
+   "lines": [],
+   "positive_local_styles": [
+    "opens solemn and grave in a minor key with low strings and a lone horn",
+    "then an accelerating ostinato and a long crescendo",
+    "urgency"
+   ],
+   "negative_local_styles": [
+    "triumphant opening",
+    "upbeat"
+   ]
+  },
+  {
+   "section_name": "Climax among the towers",
+   "duration_ms": 20500,
+   "lines": [],
+   "positive_local_styles": [
+    "the biggest, fullest moment of the piece",
+    "soaring strings",
+    "wordless choir pads",
+    "majestic and golden",
+    "the opening piano motif returns in full orchestra"
+   ],
+   "negative_local_styles": [
+    "sparse",
+    "breakdown"
+   ]
+  },
+  {
+   "section_name": "The same sand",
+   "duration_ms": 5500,
+   "lines": [],
+   "positive_local_styles": [
+    "a warm major chord ringing out",
+    "the solo felt piano motif over it",
+    "gentle close"
+   ],
+   "negative_local_styles": [
+    "drums",
+    "abrupt"
+   ]
+  }
+ ]
+}
