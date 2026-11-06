@@ -1,6 +1,6 @@
 # YouTube copy: "The 5 Biggest Season-Long Outliers in Team Sports"
 
-**Upload `sports/biggest_season_outliers_team_sports_8m39s_voiced.mp4`** (8:38, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
+**Upload `sports/biggest_season_outliers_team_sports_9m49s_voiced.mp4`** (9:49, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
 To rebuild it: `python facts_c.py`, `./render.sh c`, `python cfilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_C.md`, cached by line).
 
@@ -31,22 +31,22 @@ Five that came close (the rest of the top ten by score):
 #6 by score: Babe Ruth, 1920, 54 home runs (5.56; 6 of 16). It rests on the league adjustment. Without it, the home-run boom he started catches him: Hack Wilson's 56 in 1930, Jimmie Foxx's 58 in 1932.
 #8 by score: Bob Feller, 1946, 348 strikeouts (5.03; 9 of 16). Always clear of its own era, but short comparison windows rank it 12th to 19th, and the widest unadjusted one reaches Sandy Koufax's 382 in 1965.
 #9 by score: Maury Wills, 1962, 104 stolen bases (4.78; 9 of 16). Without the league adjustment, the steals boom that followed him wins: Lou Brock's 118 in 1974, Rickey Henderson's 130 in 1982.
-#10 by score: Ted Williams, 1941, .406 batting average (4.77; 3 of 16). Without the adjustment, Rogers Hornsby's .424 and Bill Terry's .401 come within a step. With it, only the longer windows rank it in the ten.
+#10 by score: Ted Williams, 1941, .406 batting average (4.77; 3 of 16). Without the adjustment, Rogers Hornsby's .424 and Bill Terry's .401 come within one standard deviation. With it, only the longer windows rank it in the ten.
 
 Chapters:
 0:00 Comparing across eras: how the score works
-1:39 The biggest outliers
-2:08 #5 Ichiro Suzuki
-2:44 #4 Dennis Rodman
-3:19 #3 Wayne Gretzky
-3:55 #2 Joe DiMaggio
-4:30 #1 Wilt Chamberlain
-5:05 Grading on a curve
-5:49 Four rules that keep it fair
-6:28 How sure is this list?
-6:59 Five that came close
-7:51 What this ranking is
-8:12 Sources and photo credits
+2:07 The biggest outliers
+2:49 #5 Ichiro Suzuki
+3:24 #4 Dennis Rodman
+4:00 #3 Wayne Gretzky
+4:35 #2 Joe DiMaggio
+5:11 #1 Wilt Chamberlain
+5:46 Grading on a curve
+6:52 Four rules that keep it fair
+7:37 How sure is this list?
+8:08 Five that came close
+9:01 What this ranking is
+9:23 Sources and photo credits
 
 Sources: Baseball-Reference, Basketball-Reference, Hockey-Reference, Pro Football Archives, nflverse, Retrosheet.
 
