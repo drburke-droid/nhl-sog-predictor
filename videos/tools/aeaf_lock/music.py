@@ -4,7 +4,12 @@ from scipy.signal import fftconvolve, butter, sosfilt
 import pyloudnorm as pyln
 S='/tmp/claude-0/-home-user-nhl-sog-predictor/2efb7469-1609-5df1-93e2-5fa10a306726/scratchpad'
 R=48000
-DUR=float(sys.argv[1]) if len(sys.argv)>1 else 104.2
+import argparse
+ap=argparse.ArgumentParser(); ap.add_argument('dur',type=float); ap.add_argument('sfx',nargs='?')
+ap.add_argument('--timeline',default=S+'/work/timeline.json'); ap.add_argument('--sections',action='store_true')
+ap.add_argument('--intro-bars',type=int,default=4); ap.add_argument('--out',default=S+'/work/')
+A_=ap.parse_args(); DUR=A_.dur
+TL=json.load(open(A_.timeline)) if (A_.sfx or A_.sections) else None
 rng=np.random.default_rng(7)
 N=int(DUR*R)+R
 def z(): return np.zeros((N,2),np.float32)
@@ -15,11 +20,23 @@ def hp(x,fc,o=2): return sosfilt(butter(o,fc,'high',fs=R,output='sos'),x,axis=0)
 def bp(x,lo,hi,o=2): return sosfilt(butter(o,[lo,hi],'band',fs=R,output='sos'),x,axis=0)
 def add(bus,sig,t,pan=0.0,g=1.0):
     i=int(t*R)
-    if i>=N or i<0: return
+    if i>=N: return
+    if i<0:
+        if -i>=len(sig): return
+        sig=sig[-i:]; i=0
     sig=sig[:N-i]
     l=math.cos((pan+1)*math.pi/4); r=math.sin((pan+1)*math.pi/4)
     bus[i:i+len(sig),0]+=sig*g*l*1.414; bus[i:i+len(sig),1]+=sig*g*r*1.414
+SMAP={'intro':'intro','demo':'demo','compare':'compare','explain1':'explain','explain3':'explain','outro':'outro'}
+G=0.0
+if A_.sections:
+    G=TL['sections']['demo'][0]-A_.intro_bars*BAR
 def section(t):
+    if A_.sections:
+        best=None
+        for nm,(a,b) in TL['sections'].items():
+            if a<=t+0.05 and (best is None or a>best[1]): best=(nm,a)
+        return SMAP[best[0]] if best else 'intro'
     b=t/BAR
     if b<4: return 'intro'
     if b<20: return 'demo'
@@ -79,8 +96,8 @@ KICK,SNARE,RIM=kick(),snare(),rim(); HAT,OHAT=hat(),hat(True)
 PROG=[(41,[57,60,64,67]),(40,[55,59,62,64]),(38,[53,57,60,64]),(36,[52,55,59,62])]   # Fmaj9 Em7 Dm9 Cmaj9
 MEL=[(0,76),(1.5,79),(2.5,81),(4.5,79),(5.5,76),(6.5,74),(8,72),(9.5,74),(10.5,76),(12.5,74),(13.5,72),(14,69)]  # 4-bar phrase (beats)
 ep=z(); pad=z(); bass=z(); drums=z(); mel=z(); kick_env=np.zeros(N,np.float32)
-for b in range(NBARS):
-    t0=b*BAR
+for b in range(NBARS+1):
+    t0=G+b*BAR
     if t0>DUR+1: break
     sec=section(t0+0.01); root,ch=PROG[b%4]
     last=(t0+BAR>DUR-3.0)
@@ -117,7 +134,7 @@ for b in range(NBARS):
             if tt<DUR-1.5: add(mel,pluck(m,0.9),tt,pan=rng.uniform(-0.3,0.3),g=0.055)
 # riser into the demo
 n=int(BAR*R); t=np.arange(n)/R; rs=bp(rng.standard_normal(n),400,6000)*(t/BAR)**3*0.03
-add(pad,rs.astype(np.float32),3*BAR)
+add(pad,rs.astype(np.float32),G+(A_.intro_bars-1)*BAR)
 # delay on melody (ping-pong, 3/8 beat)
 d=int(0.75*BEAT*R); md=mel.copy()
 for k in range(1,5):
@@ -147,7 +164,7 @@ mix*=10**((-17.0-lu)/20); print('music LUFS before',round(lu,1),'peak',np.abs(mi
 def write(path,x):
     x=np.clip(x,-0.98,0.98); pcm=(x*32767).astype('<i2')
     with wave.open(path,'wb') as w: w.setnchannels(2); w.setsampwidth(2); w.setframerate(R); w.writeframes(pcm.tobytes())
-write(S+'/work/music.wav',mix)
+write(A_.out+'music.wav',mix)
 # ---------------- SFX
 def whoosh(dur=0.55,lo=300,hi=2600,rev=False):
     n=int(dur*R); t=np.arange(n)/R; u=t/dur
@@ -171,7 +188,7 @@ def shutter():
 def pop():
     n=int(0.18*R); t=np.arange(n)/R; f=650*np.exp(-t*12)+320
     return (np.sin(2*np.pi*np.cumsum(f)/R)*np.exp(-t*28)*np.minimum(1,t/0.002)).astype(np.float32)
-ev=json.load(open(S+'/work/timeline.json'))['sfx'] if len(sys.argv)>2 else []
+ev=TL['sfx'] if A_.sfx else []
 sfx=np.zeros((L,2),np.float32)
 def addS(sig,t,g,pan=0.0):
     i=int(t*R)
@@ -189,8 +206,8 @@ for t,k in ev:
 # reverb a touch of the sfx
 wet=np.stack([fftconvolve(sfx[:,c],ir[:,c]*0.5)[:L] for c in range(2)],1)
 sfx=sfx+wet*0.5
-write(S+'/work/sfx.wav',sfx)
+write(A_.out+'sfx.wav',sfx)
 full=mix+sfx; pk=np.abs(full).max()
 if pk>0.97: full*=0.97/pk
-write(S+'/work/mix.wav',full)
+write(A_.out+'mix.wav',full)
 print('wrote', L/R, 'events',len(ev), 'mix LUFS', round(meter.integrated_loudness(full.astype(np.float64)),1))

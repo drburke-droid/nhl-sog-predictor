@@ -25,8 +25,11 @@ The phone AE/AF lock trick from the 2023-11-28 blog post, filmed with a −3.00 
 | aeaf_lock_trick_1m44s.mp4 | 16:9, 1080p | 1:44 | The whole video with music and sound effects, no voice yet |
 | audio/aeaf_lock_music.wav | 48 kHz stereo | 1:44 | Music stem (original, synthesized for this video; -17 LUFS) |
 | audio/aeaf_lock_sfx.wav | 48 kHz stereo | 1:44 | Sound-effects stem (card whooshes, lock tick, shutter, wipe) |
+| aeaf_lock_trick_SHORT_56s.mp4 | vertical 1080x1920 | 0:56 | Shorts cut: hook, the five steps (quicker), with vs. without stacked, why it works, outro |
+| audio/aeaf_lock_SHORT_music.wav, audio/aeaf_lock_SHORT_sfx.wav | 48 kHz stereo | 0:56 | Music and sound-effects stems for the Short |
 
-Voiceover script, timed to the video: `copy/aeaf_lock_VO_script.md`. To add the voice, put the video's picture,
+Voiceover script, timed to both cuts: `copy/aeaf_lock_VO_script.md`. Titles, description, chapters and tags: `copy/aeaf_lock_YOUTUBE.md`;
+thumbnails `thumbnails/aeaf_lock_thumb_A/B/C.png` and a Shorts cover `thumbnails/aeaf_lock_short_cover.png`. To add the voice, put the video's picture,
 the two stems and the voice on separate tracks and lower the music under the voice.
 
 What happens when: 0:00 intro ("Make your phone camera depend on your glasses"); 0:10.5 the demo, which pauses on
@@ -35,7 +38,8 @@ ends tight on the blurry screen (photo taken at 0:47); 0:52.5 "How a −3.00 nea
 a wipe between the photos; 1:07 why it works; 1:18 up close clear, far away blurry; 1:28 the catch (no astigmatism);
 1:37.5 "Show your friends how you really see."
 Build scripts, the phone track and the two photos are in `tools/aeaf_lock/` (`make_aeaf.py` for the picture,
-`music.py` for the music and effects).
+`make_short.py` for the Short,
+`music.py` for the music and effects, `thumbs.py` and `short_cover.py` for the images).
 
 ## speed_of_light/
 

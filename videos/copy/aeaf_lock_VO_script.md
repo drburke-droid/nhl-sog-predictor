@@ -26,3 +26,19 @@ Music in the video is a bed at -17 LUFS; when the voice goes on, lower the music
 | 1:18 - 1:28 | "Up close: clear. Far away: blurry." | So things up close stay sharp, and the farther away they are, the blurrier they get. |
 | 1:28 - 1:37.5 | "It can't show astigmatism" | One catch: a camera can only blur evenly, so it can't show astigmatism, the "cyl" in your prescription. It works for nearsighted prescriptions. |
 | 1:37.5 - 1:44 | "Show your friends how you really see." | Give it a try, and show your friends how you really see. |
+
+## The Short (`eye/aeaf_lock_trick_SHORT_56s.mp4`)
+
+Quicker pace, about 2.8 words a second.
+
+| Window | On screen | Line |
+|---|---|---|
+| 0:00 - 0:04.5 | Hook | Make your phone camera see like you do without glasses. |
+| 0:04.5 - 0:09 | Step 1 | Point it at something far away. |
+| 0:09 - 0:17 | Step 2, glasses go over the lens | Hold your glasses in front of the camera. I'm using a minus three lens. |
+| 0:17 - 0:23.5 | Step 3, FOCUS LOCKED | Press and hold the screen until AE/AF LOCK appears. |
+| 0:23.5 - 0:29 | Step 4, glasses come off | Now take the glasses away. The focus stays locked. |
+| 0:29 - 0:35.5 | Step 5, blurry screen | And now your camera sees like you do without glasses. |
+| 0:35.5 - 0:42.5 | With vs. without | That's a minus three nearsighted person, with glasses... and without. |
+| 0:42.5 - 0:51.5 | Why it works | The lens pulls the camera's focus in close. Lock it, take the lens away, and your camera is nearsighted, just like you. |
+| 0:51.5 - 0:56 | "Show your friends how you really see." | Try it, and show your friends how you really see. |
