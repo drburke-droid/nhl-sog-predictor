@@ -1,6 +1,6 @@
 # YouTube copy: "The 10 Biggest Single-Game Outliers in Team Sports"
 
-**Upload `sports/biggest_single_game_outliers_12m09s_voiced.mp4`** (12:08, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
+**Upload `sports/biggest_single_game_outliers_12m14s_voiced.mp4`** (12:13, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
 To rebuild it: `python facts_a.py`, `./render.sh a`, `python afilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_A.md`, cached by line).
 
@@ -33,22 +33,22 @@ The countdown:
 
 Chapters:
 0:00 Comparing across eras: how the score works
-2:34 The biggest outliers
-3:18 #10 Derrick Thomas
-3:53 #9 Bert Olmstead
-4:29 #8 Darryl Sittler
-5:04 #7 Mark Whiten
-5:39 #6 Bob Cousy
-6:15 #5 Cloyce Box
-6:50 #4 Jim Bottomley
-7:26 #3 Norm Van Brocklin
-8:01 #2 Kobe Bryant
-8:36 #1 Wilt Chamberlain
-9:12 Grading on a curve
-10:07 Four rules that keep it fair
-10:50 How sure is this list?
-11:21 What this ranking is
-11:42 Sources and photo credits
+2:39 The biggest outliers
+3:23 #10 Derrick Thomas
+3:58 #9 Bert Olmstead
+4:34 #8 Darryl Sittler
+5:09 #7 Mark Whiten
+5:44 #6 Bob Cousy
+6:20 #5 Cloyce Box
+6:55 #4 Jim Bottomley
+7:31 #3 Norm Van Brocklin
+8:06 #2 Kobe Bryant
+8:41 #1 Wilt Chamberlain
+9:17 Grading on a curve
+10:12 Four rules that keep it fair
+10:55 How sure is this list?
+11:26 What this ranking is
+11:47 Sources and photo credits
 
 Sources: NBA box scores (Eoin Moore, Historical NBA Data and Player Box Scores, CC0, via Hugging Face); NHL_DB (Hugging Face, from NHL.com game data); Retrosheet; Pro Football Archives (NFL box scores 1950–1998); nflverse.
 
