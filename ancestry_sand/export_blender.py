@@ -2,6 +2,7 @@
 
     python export_blender.py [--no-hud | --hud-only] [--scale 2] [--workers 4]   # -> out/blender_film/
     python export_blender.py --captions-only --scale 2        # short captions overlay (music-only version)
+    python export_blender.py --hud-only --scale 2 --start 5415  # only the HUD from a frame on (hud_tail.mov)
 
 grains.npz   every grain the film shows, as records: where it sits, its radius, the frames it is visible
              (tb <= frame < td), and its colour, easing from c0 to c1 (c = c1 + (c0 - c1) * 0.82^(frame - tc));
@@ -89,11 +90,12 @@ def hud_chunk(job):
     return path
 
 
-def export_hud(k=1, workers=4):
-    """hud.mov: the HUD for the whole film, k x 1920x1080, rendered in parallel chunks and joined."""
+def export_hud(k=1, workers=4, start=0, name="hud.mov"):
+    """The HUD from frame `start` to the end, k x 1920x1080, rendered in parallel chunks and joined (hud.mov
+    for the whole film; with a start frame, a tail to lay after an earlier export, e.g. hud_tail.mov)."""
     from multiprocessing import Pool
     n = int(os.environ.get("SAND_EXPORT_FRAMES", round(S.DURATION * FPS)))
-    edges = np.linspace(0, n, workers + 1).round().astype(int)
+    edges = np.linspace(start, n, workers + 1).round().astype(int)
     jobs = [(int(edges[i]), int(edges[i + 1]), k, os.path.join(OUTD, f"hud_part{i}.mov")) for i in range(workers)]
     t0 = time.time()
     with Pool(workers) as pool:
@@ -102,10 +104,10 @@ def export_hud(k=1, workers=4):
     with open(lst, "w") as fh:
         fh.writelines(f"file '{os.path.basename(p)}'\n" for p in parts)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy",
-                    os.path.join(OUTD, "hud.mov")], check=True)
+                    os.path.join(OUTD, name)], check=True)
     for p in parts + [lst]:
         os.remove(p)
-    print(f"wrote hud.mov ({W * k}x{H * k}) in {time.time() - t0:.0f}s")
+    print(f"wrote {name} ({W * k}x{H * k}, frames {start}-{n - 1}) in {time.time() - t0:.0f}s")
 
 
 def export_captions(k=1):
@@ -243,4 +245,6 @@ if __name__ == "__main__":
     if "--hud-only" not in sys.argv:
         main()
     if "--no-hud" not in sys.argv:
-        export_hud(k=arg("--scale", 1), workers=arg("--workers", 4))
+        st = arg("--start", 0)
+        export_hud(k=arg("--scale", 1), workers=arg("--workers", 4), start=st,
+                   name="hud.mov" if st == 0 else "hud_tail.mov")

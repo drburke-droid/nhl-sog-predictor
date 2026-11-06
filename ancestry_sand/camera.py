@@ -19,7 +19,8 @@ WIDE = (960.0, 505.0, 22.0, 26.0, 0.0)
 
 # (video second, pose). Between two keys the camera eases in and out; equal neighbouring poses hold.
 # STORY follows the story around the world; FINALE (the default) holds the wide shot until today,
-# then flies low among the population towers of Asia and rises to reveal the whole world.
+# then flies low among the population towers of Asia, darts across the Pacific for a low tour of the
+# Americas, Europe, Africa and India, and rises to reveal the whole world.
 KEYS_STORY = [
     (0.0, WIDE),
     (17.0, WIDE),
@@ -50,8 +51,25 @@ KEYS_FINALE = [
     (172.0, (1290.0, 425.0, 58.0, 7.5, 6.0)),         # then slowly down among the towers of South Asia
     (177.5, (1420.0, 440.0, 60.0, 7.0, 22.0)),        # across to Southeast and East Asia
     (180.5, (1465.0, 425.0, 61.0, 6.4, 28.0)),
-    (185.3, (985.0, 560.0, 52.0, 22.0, 0.0)),         # and up, to reveal the whole world of towers
-    (999.0, (985.0, 560.0, 52.0, 22.0, 0.0)),
+]
+
+# Then the world tour, one smooth spline: east across the Pacific (the map's right edge, where the camera
+# wraps to the left edge mid-flight, between two frames), low over North America from the West Coast, down
+# South America, across to Europe, Africa and India, and up to reveal the whole world. x is unwrapped here
+# (positions after the wrap are written + WRAP); pose_at() subtracts WRAP after the cut.
+WRAP = 1680.0                      # map width at ~38 N: from the Bering Strait on the right to the left edge
+CUT = 5441.5 / 30.0                # the wrap falls halfway between frames 5441 and 5442
+WHIP = 1200.0                      # px/s across the wrap: a whip pan, blurred, so the cut does not show
+TOUR = [
+    (180.5, (1465.0, 425.0, 61.0, 6.4, 28.0)),                 # East Asia, at rest
+    (CUT, (1830.0, 330.0, 60.0, 7.4, 78.0), WHIP),             # whipping east over the Pacific, off the map
+    (CUT + 0.5, (360.0 + WRAP, 300.0, 62.0, 6.8, 88.0)),       # braking in over California, low, looking east
+    (187.8, (520.0 + WRAP, 330.0, 63.0, 6.6, 40.0)),           # across North America
+    (192.2, (610.0 + WRAP, 600.0, 62.0, 7.0, 15.0)),           # down South America
+    (196.3, (955.0 + WRAP, 275.0, 61.0, 7.2, 8.0)),            # over the Atlantic to Europe
+    (200.2, (1005.0 + WRAP, 515.0, 60.0, 7.4, 0.0)),           # Africa
+    (204.0, (1295.0 + WRAP, 420.0, 60.0, 7.2, 12.0)),          # India's towers
+    (208.0, (985.0 + WRAP, 560.0, 52.0, 22.0, 0.0)),           # and up, to reveal the whole world
 ]
 
 import os as _os
@@ -63,7 +81,36 @@ def ease(u):
     return u * u * u * (u * (u * 6 - 15) + 10)
 
 
+def _tour(s):
+    """The world tour: a cubic Hermite spline through TOUR (Catmull-Rom tangents, at rest at both ends),
+    with distance interpolated in log space."""
+    T = [k[0] for k in TOUR]
+    P = [list(k[1]) for k in TOUR]
+    VX = [k[2] if len(k) > 2 else None for k in TOUR]          # a set speed across a key (px/s, along x)
+    for p in P:
+        p[3] = math.log(p[3])
+    i = max(0, min(len(T) - 2, sum(1 for t in T if t <= s) - 1))
+    m = []
+    for j in (i, i + 1):
+        if j == 0 or j == len(T) - 1:
+            m.append([0.0] * 5)
+        else:
+            m.append([(b - a) / (T[j + 1] - T[j - 1]) for a, b in zip(P[j - 1], P[j + 1])])
+            if VX[j] is not None:
+                m[-1][0] = VX[j]
+    h = T[i + 1] - T[i]
+    u = min(max((s - T[i]) / h, 0.0), 1.0)
+    h00, h10, h01, h11 = 2 * u ** 3 - 3 * u ** 2 + 1, u ** 3 - 2 * u ** 2 + u, -2 * u ** 3 + 3 * u ** 2, u ** 3 - u ** 2
+    out = [h00 * a + h10 * h * ma + h01 * b + h11 * h * mb for a, b, ma, mb in zip(P[i], P[i + 1], m[0], m[1])]
+    out[3] = math.exp(out[3])
+    if s >= CUT:
+        out[0] -= WRAP
+    return tuple(out)
+
+
 def pose_at(s):
+    if KEYS is KEYS_FINALE and s >= TOUR[0][0]:
+        return _tour(s)
     for (s0, p0), (s1, p1) in zip(KEYS, KEYS[1:]):
         if s0 <= s < s1:
             e = ease((s - s0) / (s1 - s0))

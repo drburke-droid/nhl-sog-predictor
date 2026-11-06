@@ -87,7 +87,7 @@
    "duration_ms": 20500,
    "lines": [],
    "positive_local_styles": [
-    "the biggest, fullest moment of the piece",
+    "the biggest, fullest moment so far",
     "soaring strings",
     "wordless choir pads",
     "majestic and golden",
@@ -99,8 +99,25 @@
    ]
   },
   {
+   "section_name": "A flight around the world",
+   "duration_ms": 23500,
+   "lines": [],
+   "positive_local_styles": [
+    "a sudden surge of momentum",
+    "fast travelling strings and driving drums",
+    "sweeping and joyful",
+    "continuous forward motion",
+    "builds to the final peak"
+   ],
+   "negative_local_styles": [
+    "sparse",
+    "breakdown",
+    "slow"
+   ]
+  },
+  {
    "section_name": "The same sand",
-   "duration_ms": 5500,
+   "duration_ms": 5000,
    "lines": [],
    "positive_local_styles": [
     "a warm major chord ringing out",

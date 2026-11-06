@@ -317,6 +317,10 @@ cam_d.dof.aperture_fstop = 0.9
 prev, q_prev = None, None
 moving = [f for f in range(NFRAMES) if CM.pose_at(f / FPS) != CM.pose_at(max(f - 1, 0) / FPS)]
 keyf = sorted(set([0, NFRAMES - 1] + moving + [f - 1 for f in moving] + [f + 1 for f in moving if f + 1 < NFRAMES]))
+# On the world tour, also key a quarter-frame either side of every frame: motion blur then samples the true
+# path, and no frame's shutter (+-0.25 frame) spans the wrap across the Pacific, which falls between frames.
+tour0 = int(round(CM.TOUR[0][0] * FPS)) if CM.KEYS is CM.KEYS_FINALE else NFRAMES
+keyf = sorted(set(keyf) | {f + d for f in keyf if f >= tour0 for d in (-0.25, 0.25)})
 for f in keyf:
     pose = CM.pose_at(f / FPS)
     loc, r, uax, fwd = CM.basis(pose)
@@ -361,7 +365,12 @@ def sun(name, azimuth, elevation, colour, strength, angle):
 
 
 sun("GoldenSun", 290.0, 30.0, (1.0, 0.58, 0.30), 9.0, 3.0)      # from the WNW, 30 degrees up
-sun("BlueRim", 70.0, 20.0, (0.55, 0.72, 1.0), 0.9, 6.0)         # from the ENE, edging the towers
+rim = sun("BlueRim", 70.0, 20.0, (0.55, 0.72, 1.0), 0.9, 6.0)   # from the ENE, edging the towers
+if CM.KEYS is CM.KEYS_FINALE:          # on the world tour the camera turns east, into it: let it go
+    t0 = int(round(CM.TOUR[0][0] * FPS))
+    rim.data.keyframe_insert("energy", frame=t0)
+    rim.data.energy = 0.0
+    rim.data.keyframe_insert("energy", frame=t0 + 12)
 for name, keep in (("key", 0.22), ("fill", 0.25), ("rim", 0.35), ("top", 0.15)):
     ld = bpy.data.objects[name].data
     e0 = ld.energy

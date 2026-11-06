@@ -429,7 +429,7 @@ SHORT_CAPTIONS = [
     (109.0, 117.0, "Austronesian sailors cross two oceans"),
     (132.0, 140.0, "1500 CE: ships, epidemics and enslavement"),
     (161.5, 167.5, "Today: almost every vessel holds sand from many places"),
-    (174.5, 183.0, "Every person alive descends from those first African grains"),
+    (200.0, 207.5, "Every person alive descends from those first African grains"),
 ]
 
 CLOCK = [
@@ -442,7 +442,7 @@ CLOCK = [
     (160.0, 0),
 ]
 TODAY_S = CLOCK[-1][0]
-DURATION = TODAY_S + 26.0      # today: the finale among the towers, then the reveal
+DURATION = TODAY_S + 49.0      # today: the towers of Asia, a tour of the world, then the reveal
 
 
 # ---------------------------------------------------------------- captions: (ybp, text) or (video s, text)

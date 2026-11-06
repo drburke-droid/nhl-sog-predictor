@@ -8,9 +8,9 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 
 | File | Format | Length | What it is |
 |---|---|---|---|
-| every_grain_of_us_score.mp3 | audio | 3:06 | Score for the 4K Blender edition of Every Grain of Us, timed to its story beats (ElevenLabs Music, composed from `ancestry_sand/music_plan.json`; mastered to -16 LUFS, 48 kHz WAV delivered separately). |
-| every_grain_of_us_score_with_narration.mp3 | audio | 3:06 | The score with the voice-over (ElevenLabs "Lily", British) mixed in, music dipping under each line; script in `ancestry_sand/narration_script.json`, subtitles in every_grain_of_us_narration_lily.srt. |
-| every_grain_of_us_captions_short.srt | text | 3:06 | The 11 short captions for the music-only version (also delivered as a transparent 4K overlay, captions.mov, from `export_blender.py --captions-only --scale 2`). |
+| every_grain_of_us_score.mp3 | audio | 3:29 | Score for the 4K Blender edition of Every Grain of Us, timed to its story beats (ElevenLabs Music, composed from `ancestry_sand/music_plan.json`; mastered to -16 LUFS, 48 kHz WAV delivered separately). |
+| every_grain_of_us_score_with_narration.mp3 | audio | 3:29 | The score with the voice-over (ElevenLabs "Lily", British) mixed in, music dipping under each line; script in `ancestry_sand/narration_script.json`, subtitles in every_grain_of_us_narration_lily.srt. |
+| every_grain_of_us_captions_short.srt | text | 3:29 | The 11 short captions for the music-only version (also delivered as a transparent 4K overlay, captions.mov, from `export_blender.py --captions-only --scale 2`). |
 | grains_of_ancestry_glass_2m58s.mp4 | 16:9 | 2:58 | Glass edition (preferred): Blender-rendered glass vessels on a dark map table, a moving camera, population towers, wind-blown sand streaming between vessels. No audio and no captions (made for a voice-over); the narration script, timed to the film, is grains_of_ancestry_narration.srt. Thumbnail candidate: grains_of_ancestry_glass_thumb.png |
 | grains_of_ancestry_2m58s.mp4 | 16:9 | 2:58 | Grains of Ancestry: 200,000 years of human migration and mixing, as coloured sand in glass vessels shaped like the land (Neanderthal and Denisovan sand, out of Africa, founder effects, farming, steppe, Bantu, Austronesians, 1500 CE to today). No audio. Source and science notes: `ancestry_sand/`. Thumbnail candidate: grains_of_ancestry_thumb.png |
 

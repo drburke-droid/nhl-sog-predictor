@@ -3,7 +3,7 @@ the sound and (optionally) the short captions, with every path pointing at one f
 
     blender -b -P blender_compose.py -- --dir "C:\\Users\\me\\Downloads\\film\\render4k" [--out compose.blend]
 
-The folder must hold frame_0000.png ... frame_NNNN.png, hud.mov, every_grain_of_us_score_with_narration.wav
+The folder must hold frame_0000.png ... frame_NNNN.png, hud.mov (+ hud_tail.mov), every_grain_of_us_score_with_narration.wav
 and, for the music-only cut, every_grain_of_us_score.wav and captions_4k.mov. The strips are built from the
 local copies (out/blender_film, the scratch audio) so their lengths are right, then pointed at that folder.
 
@@ -22,6 +22,7 @@ arg = lambda name, d=None: argv[argv.index(name) + 1] if name in argv else d
 DIR = arg("--dir").rstrip("\\/")
 OUT = arg("--out", os.path.join(HERE, "out", "every_grain_of_us_compose.blend"))
 LOCAL = dict(hud=arg("--hud", os.path.join(HERE, "out", "blender_film", "hud.mov")),
+             hud_tail=arg("--hud-tail", os.path.join(HERE, "out", "blender_film", "hud_tail.mov")),
              captions=arg("--captions", os.path.join(HERE, "out", "blender_film", "captions.mov")),
              mix=arg("--mix"), music=arg("--music"))
 FONT_DIR = "/usr/share/fonts/opentype/inter"
@@ -52,10 +53,17 @@ frames.elements[0].filename = "frame_0000.png"
 for f in range(1, NFRAMES):
     frames.elements.append(f"frame_{f:04d}.png")
 
-# 2 HUD (year, legend, labels)
+# 2 HUD (year, legend, labels): hud.mov, and from the world tour on (TAIL) hud_tail.mov, which carries the
+# labels along the new camera path; the frames before it are the same in both
+TAIL = int(arg("--tail-start", 5415))
 hud = sed.sequences.new_movie("HUD", LOCAL["hud"], channel=2, frame_start=0)
 hud.filepath = win("hud.mov")
 hud.blend_type = "ALPHA_OVER"
+if os.path.exists(LOCAL["hud_tail"]):
+    hud.frame_final_end = TAIL
+    tail = sed.sequences.new_movie("HUD (world tour)", LOCAL["hud_tail"], channel=2, frame_start=TAIL)
+    tail.filepath = win("hud_tail.mov")
+    tail.blend_type = "ALPHA_OVER"
 
 # 3-4 title over a darkened opening; fades out between 4.2 and 5.8 s, as in the film
 t_on, t_off = int(4.2 * FPS), int(5.8 * FPS)
