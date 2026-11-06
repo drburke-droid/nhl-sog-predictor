@@ -1,0 +1,86 @@
+YOUTUBE LISTING: 200,000 years of human migration
+=================================================
+(Plain text: copy each part straight into YouTube Studio.)
+
+
+TITLE
+-----
+200,000 Years of Human Migration in 3 Minutes
+
+Alternatives (for a title test, or other platforms):
+  200,000 Years of Human Migration, Told in Sand
+  Every Human Alive Came From Here: 200,000 Years of Migration
+
+
+DESCRIPTION
+-----------
+Every person alive descends from the same small groups of people in Africa. This is 200,000 years of human migration and mixing, shown as coloured sand in glass vessels shaped like the land.
+
+HOW TO READ IT
+• Each colour of sand is a strand of ancestry: the ancestry components used in ancient-DNA studies. They are labels for ancient populations, not races.
+• Each glass vessel is a region, holding the average ancestry of the people who live there today.
+• Sand is proportional to population and piles up where people live: 1 grain ≈ 5 people 200,000 years ago, ≈ 55,000 people today. The towers at the end are the most crowded places on Earth.
+• White sand is Neanderthal ancestry; pale blue is Denisovan.
+
+CHAPTERS
+0:00 200,000 years ago: our species in Africa
+0:21 Out of Africa
+0:43 Mixing with Neanderthals and Denisovans
+0:57 Europe, East Asia and the steppe
+1:11 Into the Americas
+1:23 The first farmers
+1:38 Steppe herders and the Bantu expansion
+1:49 Austronesian voyages
+2:11 1500 CE: ships, epidemics and enslavement
+2:27 Settlers and modern migration
+2:41 Today
+2:54 The same sand
+
+WHAT'S SIMPLIFIED
+• Many dates are debated, so the film gives ranges or minimums: the main exit from Africa 70,000–50,000 years ago (earlier ventures, about 120,000 years ago, left little trace); Australia by at least 50,000 years ago (possibly 65,000); the Americas by at least 20,000 years ago (the White Sands footprints suggest 23,000–21,000).
+• Regions show today's average ancestry, so colonised countries such as the US, Canada and Australia look mostly European. Indigenous peoples and their ancestry continue there.
+• Ancestry is really continuous; the colours are broad, standard components. Population sizes before farming are rough estimates (within about 3×).
+• Polynesia is drawn as Hawai'i but stands for Polynesians as a people, whose ancestors reached Tonga and Samoa about 2,900 years ago.
+
+SOURCES
+Deep African history: Schlebusch et al. 2017 (Science); Ragsdale et al. 2023 (Nature); Hublin et al. 2017 (Nature)
+Neanderthal ancestry and its timing: Green et al. 2010; Prüfer et al. 2014; Iasi et al. 2024 (Science); Sümer et al. 2025 (Nature); Chen et al. 2020 (Cell)
+Denisovan ancestry: Reich et al. 2010; Browning et al. 2018 (Cell); Jacobs et al. 2019 (Cell)
+Australia and New Guinea: Clarkson et al. 2017 (Nature); O'Connell et al. 2018 (PNAS)
+Europe, farmers and the steppe: Lazaridis et al. 2014, 2016; Haak et al. 2015; Seguin-Orlando et al. 2014; Sikora et al. 2017
+Siberia and the Americas: Raghavan et al. 2014; Sikora et al. 2019; Bennett et al. 2021 and Pigati et al. 2023 (Science); Dillehay et al. 2015
+Farming: Zeder 2011 (Current Anthropology)
+South Asia: Narasimhan et al. 2019; Shinde et al. 2019
+Southeast Asia and the Pacific: McColl et al. 2018; Lipson et al. 2014, 2018; Skoglund et al. 2016; Posth et al. 2018; Ioannidis et al. 2020; Kirch 2011; Wilmshurst et al. 2011
+Africa: van de Loosdrecht et al. 2018 (Science); Llorente et al. 2015; Patin et al. 2017; Sengupta et al. 2021; Pierron et al. 2017 (PNAS, Madagascar)
+The Arctic and the Caribbean: Rasmussen et al. 2010; Moltke et al. 2015; Nägele et al. 2020; Fernandes et al. 2021
+The transatlantic slave trade: Eltis & Richardson 2010 (Atlas of the Transatlantic Slave Trade); Micheletti et al. 2020 (AJHG)
+Ancestry today: Bryc et al. 2015; Moreno-Estrada et al. 2014; Kehdy et al. 2015; Montinaro et al. 2015; Olalde et al. 2019 (Science); Almarri et al. 2021 (Cell)
+Population: McEvedy & Jones 1978; HYDE 3.2; UN World Population Prospects 2024; Denevan 1992; Koch et al. 2019
+Modern migration: 2020 US Census; 2021 Canadian Census
+
+MADE WITH
+Simulation and animation in Python; rendered in Blender (Cycles). Music and narration voice generated with ElevenLabs.
+
+#HumanMigration #Ancestry #Genetics
+
+
+PINNED COMMENT
+--------------
+Where the numbers come from, and what this simplifies:
+
+• Each colour is a standard ancestry component from ancient-DNA studies (labels for ancient populations, not races). Each vessel is a group of neighbouring countries, showing today's average ancestry.
+• Sand is proportional to population: 1 grain ≈ 5 people 200,000 years ago, ≈ 55,000 today. Before farming, population figures are rough (within about 3×).
+• Many dates are debated, so the film gives ranges: the main exit from Africa 70,000–50,000 years ago; Australia by at least 50,000 years ago (possibly 65,000); the Americas by at least 20,000 years ago (White Sands footprints suggest 23,000–21,000).
+• Colonised regions show today's average, so North America and Australia look mostly European; Indigenous peoples and their ancestry continue there.
+
+Key sources: Schlebusch 2017 and Ragsdale 2023 (deep African history); Prüfer 2014, Iasi 2024 and Sümer 2025 (Neanderthal ancestry); Browning 2018 and Jacobs 2019 (Denisovans); Haak 2015 and Lazaridis 2016 (Europe and the steppe); Narasimhan 2019 (South Asia); Raghavan 2014 and Bennett 2021 (the Americas); Skoglund 2016 and Posth 2018 (the Pacific); Patin 2017 (the Bantu expansion); Eltis & Richardson 2010 and Micheletti 2020 (the transatlantic slave trade). Full list in the description.
+
+Corrections from people who work on this are very welcome. Comments are moderated: questions and disagreement are welcome; race science is not.
+
+
+THUMBNAILS (1280x720, for YouTube's Test & Compare)
+----------
+youtube_thumbnail_a_towers.png    the golden-hour towers of Asia, "200,000 YEARS / OF HUMAN MIGRATION"
+youtube_thumbnail_b_streams.png   the whole world with migration streaming in, "WE ALL CAME FROM AFRICA"
+youtube_thumbnail_c_reveal.png    the final reveal of the world, "YOUR ANCESTORS, IN SAND"
