@@ -10,6 +10,8 @@ of-the-field rule, how sure the list is (16 versions of the method), and the fiv
 """
 import json, os, sys
 
+import numpy as np
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 REC = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
@@ -246,12 +248,24 @@ import intro as IN                                          # noqa: E402
 _OP = json.load(open(os.path.join(HERE, "opening_c.json"), encoding="utf-8"))   # python opening.py c: timed to the narration
 INTRO = IN.Intro([(n, d, s) for n, d, s in _OP["scenes"]])
 
-SECTIONS = {"intro": lambda: INTRO, "hook": FM.SECTIONS["hook"], "curve": FM.SECTIONS["curve"], "fair": FM.SECTIONS["fair"],
+_TP = os.path.join(HERE, "timed_c.json")                   # python script_c.py: the hook timed to its lines
+_HOOK = FM.SECTIONS["hook"]
+if os.path.exists(_TP):
+    import common as _CM                                    # noqa: E402
+    _T = json.load(open(_TP, encoding="utf-8"))
+    FC["hook_words"].update(_T["hook"]["words"])
+    HOOK_MUSIC = _T["hook"]["music"]                        # the hook's music on the film's clock (common.build_score)
+    HOOK_DUR = _T["hook"]["dur"]                            # for copy3.py's timeline
+    _HOOK = _CM.timed_hook(FM, _T["hook"])
+
+SECTIONS = {"intro": lambda: INTRO, "hook": _HOOK, "curve": FM.SECTIONS["curve"], "fair": FM.SECTIONS["fair"],
             "sure": Sure, "considered": Considered, "close": Close, "end": End}
 for _r in range(1, N + 1):
     SECTIONS[f"c{_r}"] = FM.SECTIONS[f"c{_r}"]
 ORDER = ["intro", "hook"] + [f"c{r}" for r in range(N, 0, -1)] + ["curve", "fair", "sure", "considered", "close", "end"]
-PICKS = {"hook": [14.0, 19.5, 26.0], "fair": [36.0], "sure": [20.0], "considered": [12.0, 48.0], "close": [12.0],
+PICKS = {"hook": [14.0, 19.5, 26.0] if not os.path.exists(_TP) else
+         [round(float(np.interp(x, [a for a, _ in _T["hook"]["knots"]], [b for _, b in _T["hook"]["knots"]])), 1)
+          for x in (14.0, 19.5, 26.0)], "fair": [36.0], "sure": [20.0], "considered": [12.0, 48.0], "close": [12.0],
          "end": [8.0, 20.0], "curve": [24.0]}
 FINAL = "film_c_final.mp4"
 

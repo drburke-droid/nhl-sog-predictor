@@ -19,7 +19,7 @@
   ],
   [
    "tiles",
-   23,
+   28,
    {
     "title": "Sixty home runs isn't always sixty home runs",
     "tiles": [
@@ -42,11 +42,11 @@
     "caps": [
      [
       1,
-      "Sixty home runs in 1927, when a team hit one about every three games, isn't the same feat as seventy in 1998, when teams hit one a game."
+      "Sixty home runs in 1927, when a team hit one about every three games, is a much bigger feat than seventy in 1998, when teams hit nearly three times as many."
      ],
      [
-      13,
-      "And an athlete of the 1950s, with little weight training or sports science, can't be compared with a full-time professional of today without allowing for it."
+      16,
+      "And an athlete of the 1950s, with little weight training or sports science, can't be compared with a full-time professional of today without controlling for these changes."
      ]
     ],
     "at": {}
@@ -54,7 +54,7 @@
   ],
   [
    "rate",
-   21,
+   24,
    {
     "nhl": {
      "1982": 4.01,
@@ -65,25 +65,25 @@
     "caps": [
      [
       1,
-      "First, the game itself changes. When every team scores more, each goal is worth a little less, like money in an inflated economy. So every performance is first converted to the scoring level of the season being judged."
+      "First, the game itself changes. When every team scores more, each goal is worth a little less, like money in an inflated economy. So every other season is first converted to the scoring level of the season being judged."
      ],
      [
-      11,
+      13,
       "NHL teams scored 3.97 goals a game in 1985–86 and 2.57 in 2003–04."
      ],
      [
-      17.41,
+      20.24,
       "Home runs, points and yards get the same treatment."
      ]
     ],
     "at": {
-     "band": 10.5
+     "band": 12.5
     }
    }
   ],
   [
    "method",
-   37,
+   45,
    {
     "example": {
      "pts": [
@@ -527,33 +527,34 @@
      },
      "clear": -0.28
     },
+    "curve_label": "the elite curve",
     "chart_title": "Home runs in a season: the most by anyone else each season, in 2001 terms",
     "caps": [
      [
       1,
-      "Then each performance is compared with the best by everyone else in the 15 seasons before and after."
+      "Then each performance is compared with only the best by everyone else in the 15 seasons before and after: each season's leader, the top one percent of their league."
      ],
      [
-      9,
-      "They trained, ate and competed with much the same science and coaching, so together they set the standard for the best of that time: the curve."
+      13,
+      "They trained, ate and competed with much the same science and coaching, so together they set the standard for the best of that time: the elite curve."
      ],
      [
-      18,
-      "The usual spread of the best around that curve is one standard deviation."
+      24,
+      "The usual spread of the best around the elite curve is one standard deviation."
      ],
      [
-      26,
-      "Barry Bonds's 73 in 2001 is the record, but only 2.0 standard deviations above the curve: McGwire's 70 in 1998 is worth about 75 in 2001 terms."
+      34,
+      "Barry Bonds's 73 in 2001 is the record, but only 2.0 standard deviations above the elite curve: McGwire's 70 in 1998 is worth about 75 in 2001 terms."
      ],
      [
-      34.06,
-      "The score is that count: how many standard deviations above the best of its time."
+      42.24,
+      "The score is that count: how many standard deviations above the elite curve."
      ]
     ],
     "at": {
-     "curve": 11.0,
-     "band": 19.0,
-     "example": 26
+     "curve": 15.0,
+     "band": 25.0,
+     "example": 34
     }
    }
   ]
@@ -569,36 +570,36 @@
   ],
   [
    20,
-   "And the game itself changes. Sixty home runs in 1927, when teams hit one every three games, isn't the same feat as seventy in 1998, when they hit one a game."
+   "The games themselves also change. Sixty home runs in 1927, when teams hit one every three games, is a much more impressive feat than hitting seventy in 1998, when teams were hitting nearly three times as many."
   ],
   [
-   32,
-   "An athlete of the 1950s, with little weight training or nutrition science, can't be compared with today's full-time professionals without allowing for it."
+   35,
+   "An athlete of the 1950s, with little weight training or nutrition science, can't be compared with today's full-time professionals without controlling for these changes."
   ],
   [
-   43,
-   "So we look for the biggest statistical outliers in two steps. Step one: every performance is converted to the scoring level of the season being judged."
+   48,
+   "So I looked for the biggest statistical outliers in team sports history in two steps. Step one: every other performance is converted to the scoring level of the season being judged."
   ],
   [
-   53,
-   "In hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–04, about two and a half."
-  ],
-  [
-   64,
-   "Step two: each season is compared with the best by everyone else in the fifteen seasons before and after."
+   60,
+   "For example, in hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–2004, about two and a half."
   ],
   [
    72,
-   "They trained and competed with much the same science, so together they set the standard for the best of their time: the curve."
+   "Step two: each season is compared with only the best of everyone else in the fifteen seasons before and after. Each of these players was in the top one percent of their league that season."
   ],
   [
-   81,
-   "The usual spread of the best around that curve is one standard deviation. The score is how many standard deviations a performance sits above it."
+   84,
+   "They trained and competed with much the same science, so together they set the standard for the best of their time. Let's call that the elite curve."
   ],
   [
-   89,
-   "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the curve: in his era, the best were that good."
+   95,
+   "The usual spread of the best around that curve is one standard deviation. The score we assign our athletes is how many standard deviations a performance sits above it."
+  ],
+  [
+   105,
+   "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the elite curve: in his era, the other best hitters were that good."
   ]
  ],
- "dur": 100
+ "dur": 116
 }

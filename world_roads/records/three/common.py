@@ -321,3 +321,22 @@ def sources_page(fig, t, lines, dur=12.5):
         a = al * fade(t, 0.4 + 0.5 * i, 99, 0.6, 0)
         text(fig, 96, y + 26, h, size=26, color=GOLD, weight="semibold", alpha=a)
         y = FM.para(fig, 330, y, s, width=92, size=25, color=INK2, alpha=a) + 30
+
+
+def timed_hook(FM, T):
+    """the season film's hook on a longer clock (T: timing.plan_hook's result): each part plays as its line is spoken"""
+    import numpy as np
+
+    class HookTimed(FM.Hook):
+        def __init__(self):
+            super().__init__()
+            self.own, self.film = np.array([a for a, _ in T["knots"]]), np.array([b for _, b in T["knots"]])
+            self.dur = T["dur"]
+
+        def draw(self, fig, t):
+            d, self.dur = self.dur, FM.Hook.dur
+            try:
+                super().draw(fig, float(np.interp(t, self.film, self.own)))
+            finally:
+                self.dur = d
+    return HookTimed

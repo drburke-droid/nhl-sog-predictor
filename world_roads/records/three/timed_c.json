@@ -1,0 +1,77 @@
+{
+ "hook": {
+  "dur": 42.68,
+  "knots": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    7.2,
+    12.5
+   ],
+   [
+    10.0,
+    15.8
+   ],
+   [
+    12.4,
+    23.7
+   ],
+   [
+    15.0,
+    27.68
+   ],
+   [
+    17.4,
+    30.08
+   ],
+   [
+    30.0,
+    42.68
+   ]
+  ],
+  "music": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    9.6,
+    22.28
+   ],
+   [
+    30.0,
+    42.68
+   ],
+   [
+    60.0,
+    72.68
+   ]
+  ],
+  "starts": [
+   1.0,
+   12.5,
+   15.8,
+   23.7,
+   30.68,
+   33.58
+  ],
+  "ends": [
+   12.043061,
+   15.288367000000001,
+   23.185918,
+   27.376530999999996,
+   33.046938999999995,
+   38.977143
+  ],
+  "words": {
+   "graded": "Each one graded against the best of its era.",
+   "most": "Most land near zero: right on the elite curve. These are the league leaders, the best in their sport.",
+   "five": "10 of 2,607 land 5 or more standard deviations above it.",
+   "ten": "Five stood well clear of the field.",
+   "axis": "score: standard deviations above the elite curve"
+  }
+ },
+ "estimate": false
+}

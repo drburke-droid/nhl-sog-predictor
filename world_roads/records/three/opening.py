@@ -63,23 +63,50 @@ def method(lines, example_cap, chart_title, example, cap_at=None):
 
 bo = I["c"]["example"]["best_other"]
 FILMS = {
-    "c": [IMPROVE,
-          ("tiles", 10, ["And the game itself changes. Sixty home runs in 1927, when teams hit one every three games, isn't "
-                         "the same feat as seventy in 1998, when they hit one a game.", OLD50], [
-              ((0, 0), "Sixty home runs in 1927, when a team hit one about every three games, isn't the same feat as "
-                       "seventy in 1998, when teams hit one a game."), ((1, 0), OLD50_CAP)], {},
+    "c": [IMPROVE,                                       # film C's wording, from the review doc (6 November)
+          ("tiles", 10, ["The games themselves also change. Sixty home runs in 1927, when teams hit one every three games, "
+                         "is a much more impressive feat than hitting seventy in 1998, when teams were hitting nearly three "
+                         "times as many.",
+                         "An athlete of the 1950s, with little weight training or nutrition science, can't be compared with "
+                         "today's full-time professionals without controlling for these changes."], [
+              ((0, 0), "Sixty home runs in 1927, when a team hit one about every three games, is a much bigger feat than "
+                       "seventy in 1998, when teams hit nearly three times as many."),
+              ((1, 0), "And an athlete of the 1950s, with little weight training or sports science, can't be compared with "
+                       "a full-time professional of today without controlling for these changes.")], {},
            {"title": "Sixty home runs isn't always sixty home runs",
             "tiles": [{"big": x["value"], "label": f"home runs · {x['who']} · {x['year']}",
                        "context": f"teams hit {x['rate']:.2f} a game"} for x in I["c"]["tiles"]]}),
-          RATE + ({"nhl": NH},),
-          method(["Step two: each season is compared with the best by everyone else in the fifteen seasons before and after.",
-                  SHARED, SD,
-                  "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the curve: "
-                  "in his era, the best were that good."],
-                 f"Barry Bonds's 73 in 2001 is the record, but only {I['c']['example']['z']:.1f} standard deviations above "
-                 f"the curve: {bo['name'].split()[-1]}'s {bo['value']} in {bo['year']} is worth about {bo['converted']:.0f} "
-                 "in 2001 terms.", "Home runs in a season: the most by anyone else each season, in 2001 terms",
-                 I["c"]["example"])],
+          ("rate", 10, [
+              "So I looked for the biggest statistical outliers in team sports history in two steps. Step one: every "
+              "other performance is converted to the scoring level of the season being judged.",
+              "For example, in hockey's run-and-gun 1980s, teams scored almost four goals a game. In 2003–2004, about "
+              "two and a half."], [
+              ((0, 0), "First, the game itself changes. When every team scores more, each goal is worth a little less, like "
+                       "money in an inflated economy. So every other season is first converted to the scoring level of "
+                       "the season being judged."),
+              ((1, 0), f"NHL teams scored {NH['1986']:.2f} goals a game in 1985–86 and {NH['2004']:.2f} in 2003–04."),
+              ((-1, -1.5), "Home runs, points and yards get the same treatment.")], {"band": (1, -0.5)}, {"nhl": NH}),
+          ("method", 20, [
+              "Step two: each season is compared with only the best of everyone else in the fifteen seasons before and "
+              "after. Each of these players was in the top one percent of their league that season.",
+              "They trained and competed with much the same science, so together they set the standard for the best of "
+              "their time. Let's call that the elite curve.",
+              "The usual spread of the best around that curve is one standard deviation. The score we assign our athletes "
+              "is how many standard deviations a performance sits above it.",
+              "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the elite "
+              "curve: in his era, the other best hitters were that good."], [
+              ((0, 0), "Then each performance is compared with only the best by everyone else in the 15 seasons before and "
+                       "after: each season's leader, the top one percent of their league."),
+              ((1, 0), "They trained, ate and competed with much the same science and coaching, so together they set the "
+                       "standard for the best of that time: the elite curve."),
+              ((2, 0), "The usual spread of the best around the elite curve is one standard deviation."),
+              ((3, 0), f"Barry Bonds's 73 in 2001 is the record, but only {I['c']['example']['z']:.1f} standard deviations "
+                       f"above the elite curve: {bo['name'].split()[-1]}'s {bo['value']} in {bo['year']} is worth about "
+                       f"{bo['converted']:.0f} in 2001 terms."),
+              ((-1, -1.0), "The score is that count: how many standard deviations above the elite curve.")],
+           {"curve": (1, 2.0), "band": (2, 1.0), "example": (3, 0)},
+           {"example": I["c"]["example"], "curve_label": "the elite curve",
+            "chart_title": "Home runs in a season: the most by anyone else each season, in 2001 terms"})],
     "a": [("improve", 12, [                               # film A's wording, from the review doc (5 November)
               "Athletes keep getting better... Since 1950, world records in athletics and swimming have improved by "
               "about twenty-three percent.",
@@ -227,7 +254,7 @@ def plan(f):
         t0 += dur
     json.dump({"scenes": scenes, "cues": cues, "dur": t0}, open(os.path.join(HERE, f"opening_{f}.json"), "w",
                                                                   encoding="utf-8"), indent=1, ensure_ascii=False)
-    if f != "a":                                            # film A's whole script is written by script_a.py
+    if f == "b":                                            # films A and C: script_a.py, script_c.py write the script
         script(f, t0, cues)
     print(f, "opening", t0, "s:", [(n, d_) for n, d_, _ in scenes])
 
