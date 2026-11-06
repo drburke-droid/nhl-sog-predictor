@@ -6,11 +6,16 @@ the chapters below. The "Voice: AI" line assumes the ElevenLabs voice is in; dro
 
 **A/B/C test: thumbnails and titles, paired so the title doesn't repeat the thumbnail's words**
 
+Recommended first pick: C, with "A Cool Trick to Show People How You See Without Glasses". Other titles in the
+same style, if you'd rather swap one in: "This Neat Trick Shows How You See Without Your Glasses",
+"A Neat Phone Trick: Show Friends How You See Without Glasses", "A Cool Trick to Show Your Friends How Bad Your
+Eyesight Is Without Glasses" (the blog post's own title, 70 characters, so it may be cut off on phones).
+
 | | Thumbnail | Title |
 |---|---|---|
-| A | `aeaf_lock_thumb_A.png`: MAKE YOUR PHONE NEARSIGHTED (skyline, sharp half and blurry half) | Show Your Friends How Blurry the World Looks Without Your Glasses |
-| B | `aeaf_lock_thumb_B.png`: MY EYES / NO GLASSES (the blurry phone screen in a sharp world) | This iPhone Camera Trick Copies Your Prescription |
-| C | `aeaf_lock_thumb_C.png`: WHAT −3.00 LOOKS LIKE (a glasses lens shows the sharp view) | See Exactly What Nearsighted People See (Easy Phone Trick) |
+| A | `aeaf_lock_thumb_A.png`: MAKE YOUR PHONE NEARSIGHTED (skyline, sharp half and blurry half) | A Neat Trick to Show Your Friends How Bad Your Eyesight Is |
+| B | `aeaf_lock_thumb_B.png`: MY EYES / NO GLASSES (the blurry phone screen in a sharp world) | A Cool Phone Trick That Shows People How Blurry You See |
+| C | `aeaf_lock_thumb_C.png`: WHAT −3.00 LOOKS LIKE (a glasses lens shows the sharp view) | A Cool Trick to Show People How You See Without Glasses |
 
 **Description**
 
@@ -50,7 +55,7 @@ optometrist, eyesight, camera focus lock
 
 ## The Short
 
-**Title:** Make your phone see like you do without glasses
+**Title:** A neat trick to show people how you see without glasses
 
 **Description**
 
