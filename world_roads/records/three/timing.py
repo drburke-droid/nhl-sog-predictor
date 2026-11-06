@@ -25,9 +25,10 @@ class Film:
     10.0 ("most"), 12.4 ("five") and 18.0 (the faces and "stood clear"); hook_words: the hook's captions; chunks:
     {name: a list of lines, or ('body', [sections])}; title: the script's heading"""
 
-    def __init__(self, key, title, hook, hook_at, hook_words, chunks):
+    def __init__(self, key, title, hook, hook_at, hook_words, chunks, cls=None):
         self.key, self.title, self.hook, self.hook_at, self.hook_words, self.chunks = key, title, hook, hook_at, \
             hook_words, chunks
+        self.cls = cls          # the class test timed to its lines: {lines, caps, at: {key: (line, phrase)}, pages: [line]}
         self.out = os.path.join(HERE, f"out_{key}")
         self.cache = os.path.join(self.out, "voice")
         self.body_path = os.path.join(HERE, f"VO_{key.upper()}_body.md")
@@ -76,6 +77,17 @@ def plan_hook(film):
              (HOOK_LEN + 30.0, faces + HOOK_LEN - HOOK_FACES + 30.0)]
     return {"dur": round(dur, 2), "knots": [[round(a, 2), round(b, 2)] for a, b in knots],
             "music": [[round(a, 2), round(b, 2)] for a, b in music], "starts": s, "ends": e, "words": film.hook_words}
+
+
+def plan_class(film):
+    c = film.cls
+    lines = c["lines"]
+    s, e = voice(lines, film.cache)
+    at = {k: (s[i] if not ph else at_word(lines[i], ph, s[i], e[i])) for k, (i, ph) in c["at"].items()}
+    dur = math.ceil((e[-1] + opening.TAIL + 0.5) * 10) / 10
+    events = (round(at["star"] + 0.8 + 3.5, 2), round(at["lift"] + 1.0 + 3.5, 2))   # the counter lands on 5, then on 1
+    return dict(c.get("extra", {}), dur=dur, at=at, caps=[[s[i], cap] for i, cap in enumerate(c["caps"])],
+                pages=[s[i] for i in c.get("pages", [])], starts=s, ends=e, events=events)
 
 
 def body(film):
@@ -191,6 +203,8 @@ def main(film, module_name, extra=None):
     hook = plan_hook(film)
     B, heads = body(film)
     T = dict(extra or {}, hook=hook, estimate=bool(os.environ.get("NARRATE_ESTIMATE")))
+    if film.cls:
+        T["curve"] = plan_class(film)
     json.dump(T, open(film.timed_path, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
 
     sys.argv = [sys.argv[0], "x"]
@@ -217,8 +231,11 @@ def main(film, module_name, extra=None):
             real, end = fit(B[k], film.cache)
             late = [round(r - off - 0.15, 1) for r, (off, _) in zip(real, B[k]) if r - off - 0.15 > 0.3]
             report.append((k, round(end, 1), durs[k], late))
+        elif k == "curve" and "curve" in T:
+            L += [f"## How the score works: grading on a curve ({mmss(O[k])})", ""]
+            L += [f"**{mmss(O[k] + st)}** {ln}\n" for st, ln in zip(T["curve"]["starts"], film.cls["lines"])]
     open(os.path.join(HERE, f"VO_{film.key.upper()}.md"), "w", encoding="utf-8").write("\n".join(L))
-    print(f"total {total:.1f} s; hook {hook['dur']} s" +
+    print(f"total {total:.1f} s; hook {hook['dur']} s" + (f", curve {T['curve']['dur']} s" if "curve" in T else "") +
           ("  (ESTIMATED: lines not yet voiced are timed by their length)" if T["estimate"] else ""))
     for k, end, d, late in report:
         flag = "  OVER" if end > d - 0.8 else ""

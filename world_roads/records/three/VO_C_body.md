@@ -1,8 +1,8 @@
 # Narration script: The 5 Biggest Season-Long Outliers in Team Sports
 
 The script from the countdown on, for script_c.py. Each cue is "**+s**": seconds after its section starts (a line
-that would run into the next pushes it later). The opening and the hook are timed to their narration (opening.py,
-script_c.py); this file holds the sections of fixed length (each card is 36 seconds). Never say "proved",
+that would run into the next pushes it later). The opening, the hook and grading on a curve are timed to their
+narration (opening.py, script_c.py); this file holds the sections of fixed length (each card is 36 seconds). Never say "proved",
 "greatest athlete" or "certain". Every number here is on screen or in facts_c.json.
 
 ## c5 · #5 Ichiro Suzuki, 2004
@@ -45,18 +45,6 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 **+18.6** Teams scored a lot in 1962, and the score allows for it. Even so, Wilt's season stands seven point oh five standard deviations above the curve: the biggest season-long outlier in team sports.
 
-## curve · Grading on a curve
-
-**+1.2** Here's the same idea as a class test. Most of the class scores around seventy, give or take about five points.
-
-**+9.2** Call that usual give-or-take one step.
-
-**+15.2** A student who scores ninety-five is twenty-five points above the class average: five steps. A score of five.
-
-**+26.2** Put the same ninety-five in a class that averages ninety, and it's one step above: a score of one.
-
-**+35.2** Same number, different class. So every season is graded against its own era.
-
 ## fair · Four rules that keep it fair
 
 **+0.8** Four rules keep it fair. First, inflation: when every team scores more, each point is worth a little less, so other seasons are converted into the athlete's own season.
@@ -65,7 +53,7 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 **+18.8** Third, one entry each: an athlete's highest-scoring season.
 
-**+26.8** And fourth, a season must stand at least one step clear of every other season on its graph. Stephen Curry's four hundred and two threes score five point six nine, but Ray Allen's 2006 comes within a step, so Curry is left out.
+**+26.8** And fourth, a season must stand at least one standard deviation clear of every other season on its graph. Stephen Curry's four hundred and two threes score five point six nine, but Ray Allen's 2006 comes within one standard deviation, so Curry is left out.
 
 ## sure · How sure is this list?
 
@@ -77,15 +65,15 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 ## considered · Five that came close
 
-**+2.0** Dazzy Vance's two hundred and sixty-two strikeouts in 1924 rest on the league adjustment. Without it, the bigger totals of Rube Waddell and Walter Johnson win.
+**+2.4** Dazzy Vance's two hundred and sixty-two strikeouts in 1924 rest on the league adjustment. Without it, the bigger totals of Rube Waddell and Walter Johnson win.
 
-**+11.0** So do Babe Ruth's fifty-four home runs in 1920: without the adjustment, the home-run boom he started catches him.
+**+12.8** So do Babe Ruth's fifty-four home runs in 1920: without the adjustment, the home-run boom he started catches him.
 
-**+20.0** Bob Feller's three hundred and forty-eight strikeouts in 1946 slip out of the ten with shorter comparison windows.
+**+22.8** Bob Feller's three hundred and forty-eight strikeouts in 1946 slip out of the ten with shorter comparison windows.
 
-**+29.0** Without the adjustment, Maury Wills's hundred and four steals are overtaken by Lou Brock and Rickey Henderson.
+**+32.8** Without the adjustment, Maury Wills's hundred and four steals are overtaken by Lou Brock and Rickey Henderson.
 
-**+38.0** And Ted Williams's four oh six: without the adjustment, Rogers Hornsby and Bill Terry come within a step.
+**+42.8** And Ted Williams's four oh six: without the adjustment, Rogers Hornsby and Bill Terry come within one standard deviation.
 
 ## close · Close
 

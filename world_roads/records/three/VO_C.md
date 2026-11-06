@@ -1,6 +1,6 @@
 # Narration script: The 5 Biggest Season-Long Outliers in Team Sports
 
-Timecodes are positions in the final cut (9:19), in seconds and tenths. Written by script_c.py from opening.py (the opening), the hook's lines and VO_C_body.md (the rest). Names are spelled normally here; say.json respells a few for the voice. Never say "proved", "greatest athlete" or "certain".
+Timecodes are positions in the final cut (9:50), in seconds and tenths. Written by script_c.py from opening.py (the opening), the hook's lines and VO_C_body.md (the rest). Names are spelled normally here; say.json respells a few for the voice. Never say "proved", "greatest athlete" or "certain".
 
 ## Opening: why eras matter, and how the score allows for them (0:00)
 
@@ -78,50 +78,58 @@ Timecodes are positions in the final cut (9:19), in seconds and tenths. Written 
 
 **5:29.7** Teams scored a lot in 1962, and the score allows for it. Even so, Wilt's season stands seven point oh five standard deviations above the curve: the biggest season-long outlier in team sports.
 
-## Grading on a curve (5:46.5)
+## How the score works: grading on a curve (5:46.5)
 
-**5:47.7** Here's the same idea as a class test. Most of the class scores around seventy, give or take about five points.
+**5:47.5** Here's the same idea as a class test. One student scores ninety-five. Leave them out, and look at the rest of the class: its best score is about eighty.
 
-**5:55.7** Call that usual give-or-take one step.
+**5:57.9** That best score is the only one from this class that counts. Not the class average: the best by everyone else.
 
-**6:01.7** A student who scores ninety-five is twenty-five points above the class average: five steps. A score of five.
+**6:04.0** Now do the same for the fifteen classes before and the fifteen after. From each class, keep only its best score.
 
-**6:12.7** Put the same ninety-five in a class that averages ninety, and it's one step above: a score of one.
+**6:11.9** Those best scores all land around eighty, and the line through them is the elite curve.
 
-**6:21.7** Same number, different class. So every season is graded against its own era.
+**6:17.1** If one year's test was easier for everyone, its scores are scaled down first, just as every season is converted to the same scoring level.
 
-## Four rules that keep it fair (6:29.9)
+**6:24.8** The best scores usually sit within about three points of the elite curve. That's one standard deviation.
 
-**6:30.7** Four rules keep it fair. First, inflation: when every team scores more, each point is worth a little less, so other seasons are converted into the athlete's own season.
+**6:30.8** So the student's ninety-five is fifteen points above the elite curve: five standard deviations.
 
-**6:41.7** Second, you're graded against your rivals, not yourself.
+**6:37.3** But if the best scores in those years had been around ninety-two, the same ninety-five would be just one standard deviation up.
 
-**6:48.7** Third, one entry each: an athlete's highest-scoring season.
+**6:45.3** Same score, different era. So every season is graded against the best of everyone else in its own era.
 
-**6:56.7** And fourth, a season must stand at least one step clear of every other season on its graph. Stephen Curry's four hundred and two threes score five point six nine, but Ray Allen's 2006 comes within a step, so Curry is left out.
+## Four rules that keep it fair (6:53.0)
 
-## How sure is this list? (7:09.3)
+**6:53.8** Four rules keep it fair. First, inflation: when every team scores more, each point is worth a little less, so other seasons are converted into the athlete's own season.
 
-**7:10.7** How sure is this list? We ranked every season sixteen ways: different comparison windows, straight or curved trends, with or without the league adjustment.
+**7:04.8** Second, you're graded against your rivals, not yourself.
 
-**7:22.7** Wilt, DiMaggio and Gretzky made the top ten in all sixteen. Rodman and Ichiro, in at least twelve. Those are the five.
+**7:11.8** Third, one entry each: an athlete's highest-scoring season.
 
-**7:32.7** The other five in the top ten by score each rest on one choice of method.
+**7:19.8** And fourth, a season must stand at least one standard deviation clear of every other season on its graph. Stephen Curry's four hundred and two threes score five point six nine, but Ray Allen's 2006 comes within one standard deviation, so Curry is left out.
 
-## Five that came close (7:40.7)
+## How sure is this list? (7:37.4)
 
-**7:42.7** Dazzy Vance's two hundred and sixty-two strikeouts in 1924 rest on the league adjustment. Without it, the bigger totals of Rube Waddell and Walter Johnson win.
+**7:38.8** How sure is this list? We ranked every season sixteen ways: different comparison windows, straight or curved trends, with or without the league adjustment.
 
-**7:51.7** So do Babe Ruth's fifty-four home runs in 1920: without the adjustment, the home-run boom he started catches him.
+**7:50.8** Wilt, DiMaggio and Gretzky made the top ten in all sixteen. Rodman and Ichiro, in at least twelve. Those are the five.
 
-**8:00.7** Bob Feller's three hundred and forty-eight strikeouts in 1946 slip out of the ten with shorter comparison windows.
+**8:00.8** The other five in the top ten by score each rest on one choice of method.
 
-**8:09.7** Without the adjustment, Maury Wills's hundred and four steals are overtaken by Lou Brock and Rickey Henderson.
+## Five that came close (8:08.8)
 
-**8:18.7** And Ted Williams's four oh six: without the adjustment, Rogers Hornsby and Bill Terry come within a step.
+**8:11.2** Dazzy Vance's two hundred and sixty-two strikeouts in 1924 rest on the league adjustment. Without it, the bigger totals of Rube Waddell and Walter Johnson win.
 
-## Close (8:32.1)
+**8:21.6** So do Babe Ruth's fifty-four home runs in 1920: without the adjustment, the home-run boom he started catches him.
 
-**8:32.7** Not a ranking of the greatest athletes. A ranking of how far one season stood from everyone else of its time.
+**8:31.6** Bob Feller's three hundred and forty-eight strikeouts in 1946 slip out of the ten with shorter comparison windows.
 
-**8:39.7** Which season would you choose?
+**8:41.6** Without the adjustment, Maury Wills's hundred and four steals are overtaken by Lou Brock and Rickey Henderson.
+
+**8:51.6** And Ted Williams's four oh six: without the adjustment, Rogers Hornsby and Bill Terry come within one standard deviation.
+
+## Close (9:02.2)
+
+**9:02.8** Not a ranking of the greatest athletes. A ranking of how far one season stood from everyone else of its time.
+
+**9:09.8** Which season would you choose?

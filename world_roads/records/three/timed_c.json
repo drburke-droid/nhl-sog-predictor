@@ -73,5 +73,89 @@
    "axis": "score: standard deviations above the elite curve"
   }
  },
- "estimate": false
+ "estimate": false,
+ "curve": {
+  "curve_word": "the elite curve",
+  "dur": 67.1,
+  "at": {
+   "s95": 3.49,
+   "top5": 5.58,
+   "avg": 14.51,
+   "others": 17.5,
+   "bests": 22.12,
+   "curve": 27.67,
+   "easy": 30.6,
+   "band": 38.3,
+   "star": 44.3,
+   "lift": 50.8
+  },
+  "caps": [
+   [
+    1.0,
+    "Picture a class test. One student scores 95. Leave them out: the best score by everyone else is about 80."
+   ],
+   [
+    11.4,
+    "Only that best score counts, not the class average."
+   ],
+   [
+    17.5,
+    "Do the same for the 15 classes before and the 15 after: keep only each class's best score."
+   ],
+   [
+    25.4,
+    "The line through those best scores is the elite curve."
+   ],
+   [
+    30.6,
+    "A year with an easier test is scaled down first, just as every season is converted to the same scoring level."
+   ],
+   [
+    38.3,
+    "The best scores usually sit within about 3 points of the elite curve: one standard deviation."
+   ],
+   [
+    44.3,
+    "The 95 is 15 points above the elite curve: 15 ÷ 3 = 5 standard deviations. On our scale, a score of 5."
+   ],
+   [
+    50.8,
+    "If the best scores around it had been about 92, the same 95 would be (95 − 92) ÷ 3 = 1 standard deviation up: a score of 1."
+   ],
+   [
+    58.8,
+    "Same score, different era. So every season in this film is graded against the best of everyone else in its own era."
+   ]
+  ],
+  "pages": [
+   17.5,
+   44.3
+  ],
+  "starts": [
+   1.0,
+   11.4,
+   17.5,
+   25.4,
+   30.6,
+   38.3,
+   44.3,
+   50.8,
+   58.8
+  ],
+  "ends": [
+   10.945918,
+   17.009592,
+   24.885917999999997,
+   30.095305999999997,
+   37.750816,
+   43.77898,
+   50.301429,
+   58.290408,
+   65.297755
+  ],
+  "events": [
+   48.6,
+   55.3
+  ]
+ }
 }

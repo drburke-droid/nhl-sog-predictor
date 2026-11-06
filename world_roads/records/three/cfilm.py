@@ -58,10 +58,11 @@ FC["fair_rules"] = [
     (20.0, "One entry each",
      "Each athlete appears once, with their highest-scoring season. DiMaggio's entry is a streak, not a season total."),
     (27.0, "Clear of the field",
-     "A season counts only if it beats every other season on its own graph by at least one step. Stephen Curry's 402 "
+     "A season counts only if it beats every other season on its own graph by at least one standard deviation. "
+     "Stephen Curry's 402 "
      f"threes (2015–16) score {cu['z']:.2f}, but {cu['best_other']['name']}'s {cu['best_other']['value']} in "
      f"{cu['best_other']['season'].replace('-', '–')}, converted to 2015–16's three-point rate, is about "
-     f"{cu['best_other']['converted']:.0f}: within a step. It's left out.")]
+     f"{cu['best_other']['converted']:.0f}: within one standard deviation. It's left out.")]
 FM.F = FC
 FM.CARDS = CARDS
 FM.CREDITS = CREDITS
@@ -204,7 +205,7 @@ class End:
             ("Model", f"{sc['n']:,} season-leading performances in {sc['n_categories']} team-sport categories. Each is "
                       "compared with the best of everyone else in the 15 seasons before and after, around a curved trend, "
                       "with a league-scoring adjustment estimated from the data. A season must clear every other season on "
-                      "its own graph by at least one step. Seasons are labelled by the year they end."),
+                      "its own graph by at least one standard deviation. Seasons are labelled by the year they end."),
             ("Caveats", "Scores are statistical distances, not probabilities or measures of ability. Player minutes, "
                         "possessions and ice time are not standardised. The five are the seasons in the top ten of at "
                         "least 12 of 16 versions of the method."),
@@ -255,6 +256,9 @@ SC.STACK_TICK = "each tick: one standard deviation,\nthe usual spread of the bes
 SC.STACK_CURVE = "the elite curve: where the best usually land"
 SC.CURVE_WORD = "the elite curve"
 
+for _k in FC["considered"]:
+    _k["why"] = _k["why"].replace("within a step", "within one standard deviation")
+
 _TP = os.path.join(HERE, "timed_c.json")                   # python script_c.py: the hook timed to its lines
 _HOOK = FM.SECTIONS["hook"]
 if os.path.exists(_TP):
@@ -264,8 +268,21 @@ if os.path.exists(_TP):
     HOOK_MUSIC = _T["hook"]["music"]                        # the hook's music on the film's clock (common.build_score)
     HOOK_DUR = _T["hook"]["dur"]                            # for copy3.py's timeline
     _HOOK = _CM.timed_hook(FM, _T["hook"])
+    if "curve" in _T:                                       # grading on a curve, rebuilt (review, 6 November)
+        import classtest                                    # noqa: E402
+        CURVE_EVENTS = tuple(_T["curve"]["events"])         # sparkles as the counter lands on 5, then 1
+        CURVE_DUR = _T["curve"]["dur"]
 
-SECTIONS = {"intro": lambda: INTRO, "hook": _HOOK, "curve": FM.SECTIONS["curve"], "fair": FM.SECTIONS["fair"],
+class FairC(FM.Fair):
+    dur = 45.0                                              # rule 4's line runs longer in standard deviations
+
+
+FAIR_DUR = FairC.dur
+Considered.STEP, Considered.dur = 10.0, 54.0               # a row per line, each line clear of the next
+
+SECTIONS = {"intro": lambda: INTRO, "hook": _HOOK,
+            "curve": (lambda: classtest.ClassTestBest(_T["curve"])) if os.path.exists(_TP) and "curve" in _T
+            else FM.SECTIONS["curve"], "fair": FairC,
             "sure": Sure, "considered": Considered, "close": Close, "end": End}
 for _r in range(1, N + 1):
     SECTIONS[f"c{_r}"] = FM.SECTIONS[f"c{_r}"]
