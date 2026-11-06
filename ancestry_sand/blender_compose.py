@@ -7,7 +7,7 @@ The folder must hold frame_0000.png ... frame_NNNN.png, hud.mov, every_grain_of_
 and, for the music-only cut, every_grain_of_us_score.wav and captions_4k.mov. The strips are built from the
 local copies (out/blender_film, the scratch audio) so their lengths are right, then pointed at that folder.
 
-Channels, bottom to top: 1 frames, 2 HUD, 3 title shade, 4 title, 5 subtitle, 6 music + narration (on),
+Channels, bottom to top: 1 frames, 2 HUD, 3 title shade, 4 title (5 subtitle, if story.SUBTITLE), 6 music + narration (on),
 7 music only (muted), 8 short captions (muted).
 """
 import ntpath, os, sys
@@ -57,7 +57,7 @@ hud = sed.sequences.new_movie("HUD", LOCAL["hud"], channel=2, frame_start=0)
 hud.filepath = win("hud.mov")
 hud.blend_type = "ALPHA_OVER"
 
-# 3-5 title over a darkened opening; fades out between 4.2 and 5.8 s, as in the film
+# 3-4 title over a darkened opening; fades out between 4.2 and 5.8 s, as in the film
 t_on, t_off = int(4.2 * FPS), int(5.8 * FPS)
 
 
@@ -75,8 +75,10 @@ fade_out(shade, 0.55)
 INK = (0xe8 / 255, 0xee / 255, 0xf8 / 255, 1.0)
 MUTED = (0x93 / 255, 0xa1 / 255, 0xb8 / 255, 1.0)
 for name, text, ch, fnt, size, y, colr in (
-        ("Title", S.TITLE, 4, "InterDisplay-SemiBold.otf", 168, 0.565, INK),
-        ("Subtitle", S.SUBTITLE, 5, "Inter-Regular.otf", 56, 0.494, MUTED)):
+        ("Title", S.TITLE, 4, "InterDisplay-SemiBold.otf", 150, 0.54, INK),
+        ("Subtitle", S.SUBTITLE, 5, "Inter-Regular.otf", 56, 0.47, MUTED)):
+    if not text:
+        continue
     t = sed.sequences.new_effect(name, "TEXT", channel=ch, frame_start=0, frame_end=t_off + 1)
     t.text = text
     t.font = bpy.data.fonts.load(os.path.join(FONT_DIR, fnt))

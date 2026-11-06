@@ -585,8 +585,9 @@ class Painter:
             self.shade(img, 0, 0, IW, IH, 0.55 * title_a)
             t = self.text_sprite(S.TITLE, self.f_title, INK * 255)
             self.blit(img, t, IW / 2 - t.shape[1] / 2, 420 * k, title_a)
-            st = self.text_sprite(S.SUBTITLE, self.f_sub, MUTED * 255)
-            self.blit(img, st, IW / 2 - st.shape[1] / 2, 530 * k, title_a)
+            if S.SUBTITLE:
+                st = self.text_sprite(S.SUBTITLE, self.f_sub, MUTED * 255)
+                self.blit(img, st, IW / 2 - st.shape[1] / 2, 530 * k, title_a)
         if s > S.TODAY_S + 9.0:
             a = smooth((s - S.TODAY_S - 9.0) / 1.2)
             n = self.text_sprite("Ancestry from published ancient-DNA studies; population from long-run estimates. "

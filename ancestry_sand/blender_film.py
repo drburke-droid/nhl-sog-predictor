@@ -472,8 +472,10 @@ fade_out(shade, 0.55)
 INK = (0xe8 / 255, 0xee / 255, 0xf8 / 255, 1.0)
 MUTED = (0x93 / 255, 0xa1 / 255, 0xb8 / 255, 1.0)
 for name, text, ch, fnt, size, y, colr in (
-        ("Title", S.TITLE, 4, "InterDisplay-SemiBold.otf", 84 * RES[0] // 1920, 0.565, INK),
-        ("Subtitle", S.SUBTITLE, 5, "Inter-Regular.otf", 28 * RES[0] // 1920, 0.494, MUTED)):
+        ("Title", S.TITLE, 4, "InterDisplay-SemiBold.otf", 75 * RES[0] // 1920, 0.54, INK),
+        ("Subtitle", S.SUBTITLE, 5, "Inter-Regular.otf", 28 * RES[0] // 1920, 0.47, MUTED)):
+    if not text:
+        continue
     t = sed.sequences.new_effect(name, "TEXT", channel=ch, frame_start=0, frame_end=t_off + 1)
     t.text = text
     t.font = bpy.data.fonts.load(os.path.join(FONT_DIR, fnt))

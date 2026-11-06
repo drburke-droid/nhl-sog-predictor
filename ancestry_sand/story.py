@@ -4,8 +4,8 @@ Times are in years before present (ybp). Fractions are the share of the destinat
 comes from the source by the end of the event. See README.md for the sources behind each number.
 """
 
-TITLE = "Every Grain of Us"
-SUBTITLE = "200,000 years of human migration and mixing, told in sand"
+TITLE = "200,000 years of human migration"
+SUBTITLE = ""                    # none: the title says it
 
 # ---------------------------------------------------------------- ancestry components (sand colours)
 # key, legend label, colour
