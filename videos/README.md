@@ -16,26 +16,26 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 Not here, because neither was saved to any repository: the BVD video (binocular vision dysfunction; AI-voice and
 no-voice versions plus Shorts, made with the neurogaze project) and the video of glasses lenses growing thicker up to -39D.
 
-## eye/clips/ (pieces for videos still being made)
+## eye/: the AE/AF lock trick (in progress, waiting on the voiceover)
 
-The phone AE/AF lock trick (blog post of 2023-11-28), filmed with a −3.00 D lens.
+The phone AE/AF lock trick from the 2023-11-28 blog post, filmed with a −3.00 lens.
 
 | File | Format | Length | What it is |
 |---|---|---|---|
-| aeaf_lock_glasses_trick_FULL_with_explainer_1m15s.mp4 | 16:9, 1080p | 1:15 | Captioned demo (0:00-0:25), then the explainer (0:25-1:15) |
-| aeaf_lock_glasses_trick_CLEAN_25s.mp4 | 16:9, 1080p | 0:25 | The demo with no text or graphics, same cut and timing, for editing into the explainer |
-| aeaf_lock_explainer_graphics_50s.mp4 | 16:9, 1080p | 0:50 | The explainer on its own (silent) |
+| aeaf_lock_trick_1m44s.mp4 | 16:9, 1080p | 1:44 | The whole video with music and sound effects, no voice yet |
+| audio/aeaf_lock_music.wav | 48 kHz stereo | 1:44 | Music stem (original, synthesized for this video; -17 LUFS) |
+| audio/aeaf_lock_sfx.wav | 48 kHz stereo | 1:44 | Sound-effects stem (card whooshes, lock tick, shutter, wipe) |
 
-Demo (both versions): 0:00 wide, 0:02.8 medium as the glasses come in, 0:04.7 close-up on the screen, 0:08.0 tighter as
-AE/AF LOCK appears, 0:08.3-0:09.5 hold on the banner, 0:10.7 pull back as the glasses come off, 0:12.5 close-up on the
-blurry viewfinder (shutter 0:13.2), 0:15.2 the two photos side by side, 0:19.5 full-frame wipe between them (aligned on the
-skyline; the foreground differs a little because the photos were taken from slightly different spots).
-Original street sound, cleaned and kept low.
+Voiceover script, timed to the video: `copy/aeaf_lock_VO_script.md`. To add the voice, put the video's picture,
+the two stems and the voice on separate tracks and lower the music under the voice.
 
-Explainer: 0:00 how it works (ray diagram: through the −3.00 D lens far light seems to come from 33 cm, so the camera
-focuses there and stays there once the lens is gone); 0:13.5 up close looks clear, far away blurry (blur = 3.00 − 1/distance,
-sample charts at 33 cm, 1 m and 6 m); 0:27 limitations (no cylinder, minus Rx only, about −0.50 to −10.00 D);
-0:42.6 the four steps. Scripts and the two photos are in `tools/aeaf_lock/`.
+What happens when: 0:00 intro ("Make your phone camera depend on your glasses"); 0:10.5 the demo, which pauses on
+five step cards (0:10.5, 0:16.5, 0:27, 0:35.5, 0:43), plays slowed down between them, holds on FOCUS LOCKED at 0:32.5 and
+ends tight on the blurry screen (photo taken at 0:47); 0:52.5 "How a −3.00 nearsighted person sees" side by side, 0:59.5
+a wipe between the photos; 1:07 why it works; 1:18 up close clear, far away blurry; 1:28 the catch (no astigmatism);
+1:37.5 "Show your friends how you really see."
+Build scripts, the phone track and the two photos are in `tools/aeaf_lock/` (`make_aeaf.py` for the picture,
+`music.py` for the music and effects).
 
 ## speed_of_light/
 
