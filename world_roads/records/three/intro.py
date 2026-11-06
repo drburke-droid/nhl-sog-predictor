@@ -168,8 +168,12 @@ def method(fig, t, al, spec):
         k = max(2, int(len(tr) * tc))
         ax.plot(tr[:k, 0], [conv(v) for v in tr[:k, 1]], color=TREND, lw=px(3.2), alpha=al, zorder=4)
         if tc >= 1:
-            ax.text(tr[-1, 0], conv(tr[-1, 1]), "  " + spec.get("curve_label", "the curve"), ha="left", va="center", fontsize=fs(18), color=INK2,
-                    alpha=al, path_effects=outlined(5))
+            if "curve_label" in spec:                           # a longer name sits above the curve's end, inside the chart
+                ax.annotate(spec["curve_label"], (tr[-1, 0], conv(tr[-1, 1])), xytext=(0, px(12)), textcoords="offset points",
+                            ha="right", va="bottom", fontsize=fs(18), color=INK2, alpha=al, path_effects=outlined(5))
+            else:
+                ax.text(tr[-1, 0], conv(tr[-1, 1]), "  the curve", ha="left", va="center", fontsize=fs(18), color=INK2,
+                        alpha=al, path_effects=outlined(5))
     ba = al * fade(t, at["band"], 99, 1.0, 0)
     if ba > 0:
         up = [conv(v + ex["step"]) for v in tr[:, 1]]

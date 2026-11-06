@@ -505,7 +505,7 @@ class Stack:
             xs = [self.X(s) - 0.0 for s in tr[:k, 0]]
             _poly(ax, xs, [self.Y(v) for v in tr[:k, 1]], CURVE, 3.2, al * 0.95, z=6)
             if tc >= 1:
-                ax.text(self.X(tr[-1, 0]) - 4, self.Y(tr[-1, 1]) - 16, "the curve", ha="right", va="bottom",
+                ax.text(self.X(tr[-1, 0]) - 4, self.Y(tr[-1, 1]) - 16, CURVE_WORD, ha="right", va="bottom",
                         fontsize=fs(18), color=CURVE, alpha=al, path_effects=outlined(5))
         # the ruler on the athlete's stack
         if t >= 14.2:
@@ -533,8 +533,8 @@ class Stack:
         """card #10 only: how to read the chart"""
         s0 = next(s for s in self.cols[3:] if s in self.vals)       # a column of someone else's, never the athlete's
         items = [(4.0, 10.6, s0, self.vals[s0] * 0.62, self.s.get("bin_label", "each bin: the most hits by anyone\nelse that season")),
-                 (11.5, 15.8, self.cols[-6], None, "the curve: where they usually land"),
-                 (15.6, 21.5, self.year, None, "each tick: one step,\nthe usual give-or-take")]
+                 (11.5, 15.8, self.cols[-6], None, STACK_CURVE),
+                 (15.6, 21.5, self.year, None, STACK_TICK)]
         left = (self.year - self.cols[0]) < len(self.cols) / 3          # near the left edge: label to the right
         for t0, t1, s, v, msg in items:
             a = al * fade(t, t0, t1, 0.5, 0.6)
@@ -908,6 +908,9 @@ def football(d, tone="full"):
 
 
 TOPK_TICK = "each tick: one step,\nthe usual give-or-take"         # a film may reword it (film A: standard deviations)
+STACK_TICK = "each tick: one step,\nthe usual give-or-take"        # the same for the stack chart (film C)
+STACK_CURVE = "the curve: where they usually land"
+CURVE_WORD = "the curve"                                             # the curve's label on the stack and top-five charts
 
 
 class TopK:
@@ -983,7 +986,7 @@ class TopK:
             k = max(2, int(len(tr) * tc))
             _poly(ax, [self.X(v) for v in tr[:k, 0]], [self.Y(v) for v in tr[:k, 1]], CURVE, 3.2, al * 0.95, z=6)
             if tc >= 1:
-                ax.text(self.X(tr[-1, 0]) - 4, self.Y(tr[-1, 1]) - 16, "the curve", ha="right", va="bottom",
+                ax.text(self.X(tr[-1, 0]) - 4, self.Y(tr[-1, 1]) - 16, CURVE_WORD, ha="right", va="bottom",
                         fontsize=fs(18), color=CURVE, alpha=al, path_effects=outlined(5))
         xc = self.X(self.year)
         right = self.year < self.s1 - 2

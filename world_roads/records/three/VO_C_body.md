@@ -9,7 +9,7 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 **+1.2** Number five. Ichiro Suzuki, Seattle, 2004: two hundred and sixty-two hits.
 
-**+7.2** Each bin holds the most hits by anyone else that season, fifteen years either side, converted to 2004's league hit rate. The line is the curve. Each tick above it is one step.
+**+7.2** Each bin holds the most hits by anyone else that season, fifteen years either side, converted to 2004's league hit rate. The line is the elite curve. Each tick above it is one standard deviation.
 
 **+20.2** It broke George Sisler's record of two hundred and fifty-seven, set in 1920. The next best in 2004 had two hundred and twenty-one.
 
@@ -17,7 +17,7 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 **+0.8** Four. Dennis Rodman, Detroit, 1992–93: eighteen point three rebounds a game.
 
-**+9.8** The curve sits near thirteen. Allowing for how many rebounds the whole league grabbed, Rodman's season is more than five and a half steps above it.
+**+9.8** The elite curve sits near thirteen. Allowing for how many rebounds the whole league grabbed, Rodman's season is more than five and a half standard deviations above it.
 
 **+21.8** He led the league in rebounding seven seasons running. This is the one furthest from everyone else.
 
@@ -33,7 +33,7 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 **+1.0** Two. Joe DiMaggio, New York, 1941: a hit in fifty-six games in a row.
 
-**+10.0** Most seasons, the longest streak by anyone else is in the twenties. One step is about four games, and DiMaggio is seven steps up.
+**+10.0** Most seasons, the longest streak by anyone else is in the twenties. One standard deviation is about four games, and DiMaggio is seven standard deviations up.
 
 **+22.0** The closest anyone has come since: Pete Rose's forty-four, in 1978.
 
@@ -43,7 +43,7 @@ script_c.py); this file holds the sections of fixed length (each card is 36 seco
 
 **+10.6** The next best scorer that season, Walt Bellamy, averaged thirty-one point six.
 
-**+18.6** Teams scored a lot in 1962, and the score allows for it. Even so, Wilt's season stands seven point oh five steps above the curve: the biggest season-long outlier in team sports.
+**+18.6** Teams scored a lot in 1962, and the score allows for it. Even so, Wilt's season stands seven point oh five standard deviations above the curve: the biggest season-long outlier in team sports.
 
 ## curve · Grading on a curve
 

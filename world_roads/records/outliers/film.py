@@ -707,7 +707,7 @@ class Card:
             elif c["category"] in ("ath_M_LJ", "ath_W_TJ", "ath_M_PV"):
                 friendly = f"Curve about {r['base']:.2f} m · one step about {100 * r['step']:.1f} cm"
             else:
-                friendly = f"Curve about {sig(r['base'], 3)} {u} · one step about {sig(r['step'], 2)} {u}"
+                friendly = f"Curve about {sig(r['base'], 3)} {u} · {F.get('step_label', 'one step')} about {sig(r['step'], 2)} {u}"
             text(fig, 1230, 556, "OUTLIER SCORE", size=21, color=INK2, weight="semibold", alpha=sa)
             title(fig, 1230, 662, f"{c['z_e3'] * prog:.2f}", size=116, color=acc, alpha=sa)
             text(fig, 1230, 702, F.get("score_label", "steps above the curve"), size=24, color=INK, alpha=sa)

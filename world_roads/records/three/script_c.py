@@ -20,7 +20,7 @@ HOOK = [
     "Most land near zero: right on the elite curve. That makes sense: these are the league leaders, the best in their "
     "sport.",
     "But ten landed five or more standard deviations above it.",
-    "And five of them stood well clear of the field.",
+    "And five of them stood well clear of everyone else.",
     "These are the five biggest season-long outliers in team sports, counting down from five."]
 
 FILM = timing.Film(
@@ -29,7 +29,7 @@ FILM = timing.Film(
     {"graded": "Each one graded against the best of its era.",
      "most": "Most land near zero: right on the elite curve. These are the league leaders, the best in their sport.",
      "five": f"{SC['at_least_5']} of {SC['n']:,} land 5 or more standard deviations above it.",
-     "ten": "Five stood well clear of the field.",
+     "ten": "Five stood well clear of everyone else.",
      "axis": "score: standard deviations above the elite curve"},
     {"opening": "opening", "hook": HOOK, "cards": ("body", [f"c{r}" for r in range(5, 0, -1)]),
      "rules": ("body", ["curve", "fair", "sure", "considered", "close"])})

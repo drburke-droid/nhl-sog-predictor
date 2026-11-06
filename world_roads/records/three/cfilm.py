@@ -248,6 +248,13 @@ import intro as IN                                          # noqa: E402
 _OP = json.load(open(os.path.join(HERE, "opening_c.json"), encoding="utf-8"))   # python opening.py c: timed to the narration
 INTRO = IN.Intro([(n, d, s) for n, d, s in _OP["scenes"]])
 
+# the score in standard deviations above "the elite curve" on screen, as the narration now says (review, 6 November)
+FC["score_label"] = "standard deviations above the elite curve"
+FC["step_label"] = "standard deviation"
+SC.STACK_TICK = "each tick: one standard deviation,\nthe usual spread of the best"
+SC.STACK_CURVE = "the elite curve: where the best usually land"
+SC.CURVE_WORD = "the elite curve"
+
 _TP = os.path.join(HERE, "timed_c.json")                   # python script_c.py: the hook timed to its lines
 _HOOK = FM.SECTIONS["hook"]
 if os.path.exists(_TP):

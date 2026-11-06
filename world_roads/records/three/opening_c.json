@@ -83,7 +83,7 @@
   ],
   [
    "method",
-   45,
+   57,
    {
     "example": {
      "pts": [
@@ -540,21 +540,17 @@
      ],
      [
       24,
-      "The usual spread of the best around the elite curve is one standard deviation."
+      "The usual spread of the best around the elite curve is one standard deviation: about two-thirds of these elite seasons sit within one of it, and 95% within two."
      ],
      [
-      34,
-      "Barry Bonds's 73 in 2001 is the record, but only 2.0 standard deviations above the elite curve: McGwire's 70 in 1998 is worth about 75 in 2001 terms."
-     ],
-     [
-      42.24,
-      "The score is that count: how many standard deviations above the elite curve."
+      42,
+      "Barry Bonds's 73 in 2001 is the record, but only 2.0 standard deviations above the elite curve: McGwire's 70 in 1998 is worth about 75 in 2001 terms. Not enough to crack this list."
      ]
     ],
     "at": {
      "curve": 15.0,
      "band": 25.0,
-     "example": 34
+     "example": 42
     }
    }
   ]
@@ -594,12 +590,12 @@
   ],
   [
    95,
-   "The usual spread of the best around that curve is one standard deviation. The score we assign our athletes is how many standard deviations a performance sits above it."
+   "The usual spread of the best around that curve is one standard deviation. The score we assign our athletes is how many standard deviations a performance sits above it. About two thirds of these elite seasons sit within one standard deviation of the elite curve, and ninety-five percent within two."
   ],
   [
-   105,
-   "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the elite curve: in his era, the other best hitters were that good."
+   113,
+   "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the elite curve. Impressive for sure, but in his era, the other best hitters were that good. And two standard deviations doesn't crack the top of our list."
   ]
  ],
- "dur": 116
+ "dur": 128
 }

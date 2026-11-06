@@ -92,18 +92,20 @@ FILMS = {
               "They trained and competed with much the same science, so together they set the standard for the best of "
               "their time. Let's call that the elite curve.",
               "The usual spread of the best around that curve is one standard deviation. The score we assign our athletes "
-              "is how many standard deviations a performance sits above it.",
+              "is how many standard deviations a performance sits above it. About two thirds of these elite seasons sit "
+              "within one standard deviation of the elite curve, and ninety-five percent within two.",
               "Barry Bonds's seventy-three home runs are the record, but only two standard deviations above the elite "
-              "curve: in his era, the other best hitters were that good."], [
+              "curve. Impressive for sure, but in his era, the other best hitters were that good. And two standard "
+              "deviations doesn't crack the top of our list."], [
               ((0, 0), "Then each performance is compared with only the best by everyone else in the 15 seasons before and "
                        "after: each season's leader, the top one percent of their league."),
               ((1, 0), "They trained, ate and competed with much the same science and coaching, so together they set the "
                        "standard for the best of that time: the elite curve."),
-              ((2, 0), "The usual spread of the best around the elite curve is one standard deviation."),
+              ((2, 0), "The usual spread of the best around the elite curve is one standard deviation: about two-thirds "
+                       "of these elite seasons sit within one of it, and 95% within two."),
               ((3, 0), f"Barry Bonds's 73 in 2001 is the record, but only {I['c']['example']['z']:.1f} standard deviations "
                        f"above the elite curve: {bo['name'].split()[-1]}'s {bo['value']} in {bo['year']} is worth about "
-                       f"{bo['converted']:.0f} in 2001 terms."),
-              ((-1, -1.0), "The score is that count: how many standard deviations above the elite curve.")],
+                       f"{bo['converted']:.0f} in 2001 terms. Not enough to crack this list.")],
            {"curve": (1, 2.0), "band": (2, 1.0), "example": (3, 0)},
            {"example": I["c"]["example"], "curve_label": "the elite curve",
             "chart_title": "Home runs in a season: the most by anyone else each season, in 2001 terms"})],

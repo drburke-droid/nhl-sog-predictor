@@ -55,21 +55,21 @@
    15.8,
    23.7,
    30.68,
-   33.58
+   33.88
   ],
   "ends": [
    12.043061,
    15.288367000000001,
    23.185918,
    27.376530999999996,
-   33.046938999999995,
-   38.977143
+   33.41265299999999,
+   39.277143
   ],
   "words": {
    "graded": "Each one graded against the best of its era.",
    "most": "Most land near zero: right on the elite curve. These are the league leaders, the best in their sport.",
    "five": "10 of 2,607 land 5 or more standard deviations above it.",
-   "ten": "Five stood well clear of the field.",
+   "ten": "Five stood well clear of everyone else.",
    "axis": "score: standard deviations above the elite curve"
   }
  },
