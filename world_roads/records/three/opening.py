@@ -110,18 +110,20 @@ FILMS = {
               "Adrian Peterson's record two hundred and ninety-six rushing yards stand almost four standard deviations "
               "above the curve. On a perfect bell curve, a result that high would come up about once in twenty thousand "
               "tries.",
-              "Remember, the curve is the average of the best, not of every player. Measured against all players, "
-              "Peterson's game would look far more extraordinary. But we're not looking for who stood above the average "
-              "player. We're looking for who stood out most among the very best."], [
+              "Remember, the curve is the average of the best, not of every player. In 2007 the tenth-best rushing game "
+              "by anyone else was a hundred and fifty-four yards; Peterson ran for nearly twice that. Measured against an "
+              "ordinary running back's Sunday, he'd be off the chart. But we're not asking who beat the average player. "
+              "We're asking who stood out most among the very best."], [
               ((0, 0), MCAPS[0]), ((1, 0), MCAPS[1]), ((2, 0), MCAPS[2]),
               ((3, 0), "On a bell curve, about 68% of results fall within one standard deviation either side, 95% within "
                        "two and 99.7% within three."),
               ((4, 0), f"Adrian Peterson's record 296 rushing yards in 2007 stand {I['a']['example']['z']:.1f} standard "
                        "deviations above the curve: on a perfect bell curve, about 1 in 20,000. Here each season's class "
                        "is its five best games."),
-              ((5, 0), "The curve is the average of the best, not of every player: against all players, these games "
-                       "would look far more extraordinary. The question here is who stood out most among the very best.")],
-           {"curve": (1, 2.0), "band": (2, 1.0), "example": (4, 0), "page": (4, 0)},
+              ((5, 0), "The curve is the average of the best, not of every player. The dashed line is each season's "
+                       "tenth-best game: in 2007, 154 yards to Peterson's 296. Against every player these games would be "
+                       "off the chart; the question here is who stood out most among the very best.")],
+           {"curve": (1, 2.0), "band": (2, 1.0), "example": (4, 0), "page": (4, 0), "field": (5, 0)},
            {"example": I["a"]["example"],
             "chart_title": "Rushing yards in a game: the five best by anyone else each season, in 2007 terms"})],
     "b": [IMPROVE,

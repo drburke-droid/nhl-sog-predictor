@@ -118,6 +118,18 @@ def main():
            "trend": [[float(s), float(k * sum(c * (s - 2007) ** d for d, c in enumerate(coef)))] for s in np.linspace(min(yrs), max(yrs), 60)],
            "name": p["name"], "year": 2007, "raw": float(p["perf"]), "unit": "rushing yards",
            "label": f"Adrian Peterson, 2007: {float(p['perf']):.0f}"}
+    # the rest of the field: each season's tenth-best game by anyone else, in 2007 terms (the curve is the best, not
+    # everyone: this line shows how far below the best the rest of a season's top ten sits)
+    fld = []
+    for s, vs in exA["pts"]:
+        others = sorted((e for e in DA.seasons[p["cat"]][s] if not (s == 2007 and "Peterson" in e.name)),
+                        key=lambda e: -float(e.perf))
+        if len(others) >= 10:
+            fld.append([s, round(float(others[9].perf) * vs[0] / float(others[0].perf), 1)])
+    fc = np.polyfit([a for a, _ in fld], [b for _, b in fld], 2)
+    exA["field"] = {"rank": 10, "pts": fld, "trend": [[float(s), float(np.polyval(fc, s))] for s in np.linspace(min(yrs), max(yrs), 60)],
+                    "own_year": next(b for a, b in fld if a == 2007), "label": "the tenth-best game each season"}
+    exA["field"]["gap_text"] = f"{exA['raw'] - exA['field']['own_year']:.0f} more yards than\n2007's tenth-best game"
     out["a"] = {"tiles": tiles, "example": exA}
     # ---- film B: world records then and now; Ledecky's 800 m as the worked example; the women's throws
     import review_B as RB

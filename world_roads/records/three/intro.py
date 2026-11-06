@@ -137,6 +137,9 @@ def method(fig, t, al, spec):
     style_axes(ax)
     pts = [(s, [conv(v) for v in vs]) for s, vs in ex["pts"]]
     allv = [v for _, vs in pts for v in vs] + [conv(ex["x"]), conv(ex["base"])]
+    fld = ex.get("field") if "field" in spec["at"] else None     # the rest of the field, drawn when its line is spoken
+    if fld:
+        allv += [conv(v) for _, v in fld["trend"]]
     lo, hi = min(allv), max(allv)
     pad = 0.1 * (hi - lo)
     ys = [s for s, _ in pts] + [ex["year"]]
@@ -179,6 +182,26 @@ def method(fig, t, al, spec):
                         arrowprops=dict(arrowstyle="<->", color=INK2, lw=px(2)), alpha=ba)
             ax.text(xm + 0.6, conv(np.interp(xm, tr[:, 0], tr[:, 1]) + ex["step"] * 0.5), "one standard deviation",
                     ha="left", va="center", fontsize=fs(19), color=INK2, alpha=ba, path_effects=outlined(5))
+    if fld:
+        fa = al * fade(t, at["field"], 99, 1.0, 0)
+        if fa > 0:
+            ftr = np.array(fld["trend"])
+            fk = max(2, int(len(ftr) * clamp((t - at["field"]) / 2.5)))
+            ax.plot(ftr[:fk, 0], [conv(v) for v in ftr[:fk, 1]], color=INK2, lw=px(2.4), ls=(0, (4, 3)), alpha=fa, zorder=4)
+            for s_, v in fld["pts"]:
+                ring(ax, s_, conv(v), "#6f757d", size=7, alpha=fa * 0.8, z=3, ew=1.0)
+            ax.text(ftr[-1, 0], conv(ftr[-1, 1]), "  " + fld["label"], ha="left", va="center", fontsize=fs(18), color=INK2,
+                    alpha=fa, path_effects=outlined(5))
+            ga = al * fade(t, at["field"] + 2.5, 99, 0.8, 0)
+            if ga > 0:                                              # how far the athlete is above the rest of the field
+                y0 = ex["year"]
+                lo, hi = conv(fld["own_year"]), conv(ex["raw"])
+                ring(ax, y0, lo, INK, size=11, alpha=ga, z=9, ew=1.5)          # that season's tenth-best game
+                ax.plot([y0, y0 + 1.2], [lo, lo], color=GOLD, lw=px(1.5), alpha=ga, zorder=8)
+                ax.annotate("", (y0 + 1.2, hi), (y0 + 1.2, lo), arrowprops=dict(arrowstyle="<->", color=GOLD, lw=px(2.2)),
+                            alpha=ga, zorder=9)
+                ax.text(y0 + 1.7, hi - 0.22 * (hi - lo), fld["gap_text"], ha="left", va="center", fontsize=fs(20), color=GOLD,
+                        weight="semibold", alpha=ga, path_effects=outlined(6), zorder=9)
     la = al * fade(t, at["example"], 99, 0.6, 0)
     if la > 0:
         y0 = ex["year"]
