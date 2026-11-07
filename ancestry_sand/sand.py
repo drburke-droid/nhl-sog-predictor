@@ -342,6 +342,7 @@ class Path:
 class Sand:
     def __init__(self, seed=11):
         self.rng = np.random.default_rng(seed)
+        self.rng_fly = np.random.default_rng(seed + 101)     # flying grains beyond the old fixed-rate draw
         self.s = 0.0
         self.Ht = np.zeros(NCELL, np.float32)
         # each cell's target is a whole number of grains: the density target, dithered once, so sand
@@ -777,7 +778,8 @@ class Sand:
             self.growth[dst] = dict(n0=e["n"], t0=None, landed=0)
             e["cols"] = cols
             e["landed"] = 0
-            self.emit(e, np.repeat(cols, 12), size=1.2, spread=0.7)       # founders + the dust they raise
+            self.emit(e, np.repeat(cols, 12), size=1.2, spread=0.7,         # only the founders themselves fly
+                      keep=np.arange(0, 12 * len(cols), 12))
         elif k == "flow":
             src, dst = VI[e["src"]], VI[e["dst"]]
             e["Psrc"] = S.restrict(self.modern_P(src), e.get("only"))
@@ -790,18 +792,34 @@ class Sand:
         elif k == "extinct":
             self.extinct[VI[e["jar"]]] = (e["s0"], e["s1"])
 
-    def emit(self, e, cols, size=1.0, spread=1.0):
-        """Launch flying grains (pure visuals) from random spots in the source's sand."""
+    def emit(self, e, cols, size=1.0, spread=1.0, keep=None, extra=None):
+        """Launch flying grains from random spots in the source's sand toward the landing point. Every flying
+        grain is one that lands (a flow's stream carries exactly the grains it pours in). The random draws are
+        the same as when streams were drawn at a fixed rate (cols: that many), so the rest of the simulation is
+        unchanged; keep: which of them really fly; extra: colours of more grains to fly (drawn separately)."""
         n = len(cols)
         src = VI[e["src"]]
         occ = self.occupied(src)
         start = CELL_XY[self.rng.choice(occ, size=n)] if len(occ) else np.tile(META[e["src"]]["anchor"], (n, 1))
-        self.particles.append(dict(
-            ev=e["i"], col=np.asarray(cols, np.int64), t0=self.s + self.rng.random(n) * 0.25 * spread,
-            dur=e["fly"] * (0.88 + 0.24 * self.rng.random(n)), start=start,
-            end=e["pour_xy"] + self.rng.normal(0, 5.0, (n, 2)), size=size * (0.7 + 0.6 * self.rng.random(n)),
-            ph=self.rng.random((n, 6)) * 2 * math.pi, lat=self.rng.normal(0, 1, n),
-            amp=0.6 + 0.8 * self.rng.random(n), path=e["path"]))
+        d = dict(ev=e["i"], col=np.asarray(cols, np.int64), t0=self.s + self.rng.random(n) * 0.25 * spread,
+                 dur=e["fly"] * (0.88 + 0.24 * self.rng.random(n)), start=start,
+                 end=e["pour_xy"] + self.rng.normal(0, 5.0, (n, 2)), size=size * (0.7 + 0.6 * self.rng.random(n)),
+                 ph=self.rng.random((n, 6)) * 2 * math.pi, lat=self.rng.normal(0, 1, n),
+                 amp=0.6 + 0.8 * self.rng.random(n), path=e["path"])
+        if keep is not None:
+            for k in ("col", "t0", "dur", "start", "end", "size", "ph", "lat", "amp"):
+                d[k] = d[k][keep]
+        if extra is not None and len(extra):
+            r, m = self.rng_fly, len(extra)
+            st = CELL_XY[r.choice(occ, size=m)] if len(occ) else np.tile(META[e["src"]]["anchor"], (m, 1))
+            more = dict(col=np.asarray(extra, np.int64), t0=self.s + r.random(m) * 0.25 * spread,
+                        dur=e["fly"] * (0.88 + 0.24 * r.random(m)), start=st,
+                        end=e["pour_xy"] + r.normal(0, 5.0, (m, 2)), size=size * (0.7 + 0.6 * r.random(m)),
+                        ph=r.random((m, 6)) * 2 * math.pi, lat=r.normal(0, 1, m), amp=0.6 + 0.8 * r.random(m))
+            for k, v in more.items():
+                d[k] = np.concatenate([d[k], v])
+        if len(d["col"]):
+            self.particles.append(d)
 
     def run_events(self, dt):
         for e in self.events:
@@ -825,13 +843,23 @@ class Sand:
                     e["done"] = True
             elif k == "flow":
                 if self.s <= e["s1"]:
-                    # the visible stream: grains in proportion to the source's gene pool
+                    # the visible stream: exactly the grains this flow pours in, one flying grain per landing grain
+                    # (the old fixed-rate draw is still made, so the simulation's random stream is unchanged)
                     rate = float(np.clip(e["M"] / max(e["s1"] - e["s0"], 0.5) * 0.5, 120, 420))
                     e["emit_acc"] += rate * dt
                     n = int(e["emit_acc"])
+                    e["fly_acc"] = e.get("fly_acc", 0.0) + e["M"] / max(e["s1"] - e["s0"], 0.5) * dt
+                    want = int(e["fly_acc"])
+                    e["fly_acc"] -= want
+                    p_src = e["Psrc"] / e["Psrc"].sum()
                     if n:
                         e["emit_acc"] -= n
-                        self.emit(e, self.rng.choice(K, size=n, p=e["Psrc"] / e["Psrc"].sum()))
+                        cols = self.rng.choice(K, size=n, p=p_src)
+                        k = min(n, want)
+                        self.emit(e, cols, keep=np.arange(k),
+                                  extra=self.rng_fly.choice(K, size=want - k, p=p_src) if want > k else None)
+                    elif want:
+                        self.emit(e, np.zeros(0, np.int64), extra=self.rng_fly.choice(K, size=want, p=p_src))
                 if e["arr0"] <= self.s:
                     span = max(e["arr1"] - e["arr0"], 0.5)
                     prog = min(1.0, (self.s - e["arr0"]) / span)
