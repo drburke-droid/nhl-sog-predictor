@@ -87,6 +87,17 @@ are tuned for speed: adaptive sampling up to 64 samples, OpenImageDenoise, 6 bou
 fixed noise seed so the still camera does not shimmer.
 `blender_film_README.txt` (shipped next to the .blend) explains rendering it.
 
+### City towers
+
+Height stands for city size. The 66 urban agglomerations of about 5 million people or more (UN World
+Urbanization Prospects 2018, 2025 estimates, rounded; `story.MEGACITIES`) each get a tower of the same
+3-cell footprint holding their people at the film's current people-per-grain, so a tower's height is
+its population (Tokyo 37 million: ~215 grains; a 5-million city ~30; about 6 grains per million). They
+grow with urbanization (`story.urban_frac`: a quarter of today's size in 1950, half by 1975). A tower
+replaces the countryside beneath it; on a crowded island where the countryside already stands higher
+(the Caribbean) the city shares that level. Everyone else is spread by density (towns and smaller
+cities, without the megacities) and levelled off at 60 grains, so only cities rise above the land.
+
 ### Population, where people live, and ancestry within a region
 
 - **Sand stands for people.** The total amount of sand follows long-run world population estimates, and

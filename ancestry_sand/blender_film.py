@@ -357,6 +357,8 @@ def sun(name, azimuth, elevation, colour, strength, angle):
     ld.angle = math.radians(angle)
     ob = bpy.data.objects.new(name, ld)
     scene.collection.objects.link(ob)
+    ob.visible_glossy = False            # lights the scene, but never glints in the glass or the table
+    ob.visible_transmission = False
     a, e = math.radians(azimuth), math.radians(elevation)
     towards_light = Vector((math.sin(a) * math.cos(e), math.cos(a) * math.cos(e), math.sin(e)))
     ob.rotation_euler = (-towards_light).to_track_quat("-Z", "Y").to_euler()
@@ -373,12 +375,21 @@ if CM.KEYS is CM.KEYS_FINALE:          # on the world tour the camera turns east
     rim.data.keyframe_insert("energy", frame=t0)
     rim.data.energy = 0.0
     rim.data.keyframe_insert("energy", frame=t0 + 12)
+FLY0 = GOLD1 if CM.KEYS is CM.KEYS_FINALE else None          # as the flight reaches the first city
 for name, keep in (("key", 0.22), ("fill", 0.25), ("rim", 0.35), ("top", 0.15)):
     ld = bpy.data.objects[name].data
     e0 = ld.energy
     ld.keyframe_insert("energy", frame=GOLD0)
     ld.energy = e0 * keep
     ld.keyframe_insert("energy", frame=GOLD1)
+    if FLY0 is not None:
+        # off for the low flight: down among the walls they only glint in the glass; back for the reveal
+        ld.keyframe_insert("energy", frame=FLY0)
+        ld.energy = 0.0
+        ld.keyframe_insert("energy", frame=FLY0 + 45)
+        ld.keyframe_insert("energy", frame=int(round((CM.TOUR_END - 4.0) * FPS)))
+        ld.energy = e0 * keep
+        ld.keyframe_insert("energy", frame=int(round(CM.TOUR_END * FPS)))
     ld.energy = e0
 scene.frame_set(0)
 
