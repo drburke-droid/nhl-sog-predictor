@@ -1,5 +1,8 @@
 # Every Grain of Us
 
+The film's look and sound are a named, reusable style, **Sandglass**: see `.claude/skills/sandglass/`
+(a Claude Code skill: the style specification, how to adapt this code to a new subject, and helper scripts).
+
 (Working title: Grains of Ancestry.) 200,000 years of human migration and mixing, told as coloured sand poured into glass vessels shaped like
 the land each population lives on. 1920x1080, 30 fps, about 3 minutes, no audio.
 
