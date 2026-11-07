@@ -10,14 +10,18 @@ from PIL import Image, ImageDraw
 from engine import H, W, clamp, die_face, ease_out, sf, txt
 from kit import F, Counter, Fn, Grid100, Line, Obj, PagedScene, Stamp, Txt, Typed, card, ledger_paper, ledger_row, main, paste, pawn_layer, ring, \
     tick, with_alpha
-from twenties import GOLD, NIGHT, PHOTOS, caption_bar, deco_opener, deco_title, photo_bg, photo_page, Plaque
+from twenties import EXTRA_CROP, GOLD, NIGHT, PHOTOS, caption_bar, deco_opener, deco_title, photo_bg, photo_page, Plaque
 
 SEP, RED, GREEN, INK = sf.SEPIA, sf.STAMP, sf.NOTE_GREEN, sf.INK
 STEEL = (96, 104, 112)
 
 # period photos (art/source/utilities); a page falls back to a dark Deco plate while one is missing
 UTIL_PHOTOS = os.path.join(os.path.dirname(PHOTOS), 'utilities')
-PHOTO = {'title': [], 'price': [], 'rent': [], 'end': []}
+PHOTO = {'title': ['power_washington_dynamos_c1922.jpg'], 'price': ['water_cincinnati_filtration_plant_c1905.jpg'],
+         'rent': ['power_detroit_edison_plant_c1905.jpg'], 'end': ['lights_use_electric_light_sign_1913.jpg']}
+EXTRA_CROP.update({'power_washington_dynamos_c1922.jpg': (0.07, 0.02, 0.02, 0.07), 'lights_use_electric_light_sign_1913.jpg': (0.0, 0.09, 0.03, 0.08)})
+CAPTION = {'title': 'DYNAMOS, c. 1920', 'price': 'CINCINNATI WATER WORKS, c. 1905', 'rent': 'DETROIT EDISON PLANT, c. 1905'}
+FOCUS = {'title': (0.5, 0.55), 'price': (0.5, 0.5), 'rent': (0.55, 0.45), 'end': (0.5, 0.4)}
 
 
 def photo_name(key):
@@ -41,7 +45,8 @@ def opener(scene, kicker, title, key, caption=None, t0=0, focus=(0.5, 0.45)):
     """A section title on a period photo, or on a dark plate until the photo is in."""
     name = photo_name(key)
     if name:
-        return deco_opener(scene, 0, title, name, caption, kicker=kicker, t0=t0, focus=focus)
+        return deco_opener(scene, 0, title, name, caption or CAPTION.get(key), crop_focus=FOCUS.get(key, (0.5, 0.5)), kicker=kicker, t0=t0,
+                           focus=focus)
     p = scene.page(night_plate(7 + len(title)), t0, enter='fade', zoom=0.04)
     lines = title.count('\n') + 1
     p.add(Plaque(t0 + 0.15, deco_title(kicker, title, w=1180, h=330 + 110 * lines), (W / 2, H / 2 - 30)))
@@ -363,10 +368,10 @@ class TheFix(PagedScene):
             tick(p, t0 + 0.8, 170, y + 6, size=40, seed=k)
         end = photo_name('end')
         t0 = c('Would you play') - 0.2
-        p = self.page(photo_bg(end, darken=0.25) if end else night_plate(19), t0, enter='fade', zoom=0.04)
-        p.add(Fn(t0, lambda img, t, a: banner(img, t, c('Would you play'), 'Would you play the double-rent rule?', 540, F('deco', 64), RED)),
-              Txt(c('Tell me in the comments'), (W - 40, H - 22), 'Not affiliated with or endorsed by Hasbro. MONOPOLY is a trademark of Hasbro.',
-                  F('type', 20), fill=(220, 210, 190) if end or True else SEP, anchor='rb'))
+        p = self.page(photo_bg(end, FOCUS['end'], darken=0.2) if end else night_plate(19), t0, enter='fade', zoom=0.05, focus=(0.0, 0.3))
+        p.add(Fn(t0, lambda img, t, a: banner(img, t, c('Would you play'), 'Would you play the double-rent rule?', 900, F('deco', 64), RED)),
+              Txt(c('Tell me in the comments'), (60, H - 80), 'Not affiliated with or endorsed by Hasbro. MONOPOLY is a trademark of Hasbro.',
+                  F('type', 22), fill=(226, 216, 196), anchor='lb'))
 
 
 SCENES = {'u01_cold_open': ColdOpen, 'u02_the_rules': TheRules, 'u03_the_test': TheTest, 'u04_worthless': Worthless,

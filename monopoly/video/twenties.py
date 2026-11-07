@@ -18,6 +18,7 @@ GOLD_DARK = (150, 116, 52)
 NIGHT = (17, 14, 11)
 
 _CACHE = {}
+EXTRA_CROP = {}  # photo name -> (left, top, right, bottom) fractions to cut after the border trim, for writing on the plate
 
 
 def trim(im, cap=0.12, margin=0.02):
@@ -43,6 +44,9 @@ def photo(name, tone=True):
     key = (name, tone)
     if key not in _CACHE:
         im = trim(Image.open(os.path.join(PHOTOS, name)).convert('L'))
+        if os.path.basename(name) in EXTRA_CROP:
+            l, t, r, b = EXTRA_CROP[os.path.basename(name)]
+            im = im.crop((int(im.size[0] * l), int(im.size[1] * t), int(im.size[0] * (1 - r)), int(im.size[1] * (1 - b))))
         im = ImageOps.autocontrast(im, cutoff=1)
         if tone:
             a = np.asarray(im, np.float32) / 255
