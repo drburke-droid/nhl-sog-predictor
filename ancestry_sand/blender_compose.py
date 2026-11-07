@@ -2,6 +2,7 @@
 the sound and (optionally) the short captions, with every path pointing at one folder on the user's PC.
 
     blender -b -P blender_compose.py -- [--dir "C:\\Users\\me\\Downloads\\film\\render4k"] [--out compose.blend]
+        [--hud-parts "path/hud_part1.mov@0,path/hud_part2.mov@2220,..."]   (the HUD in pieces, each under 100 MB)
     (default --dir //render4k: everything relative to the .blend, which sits in the project folder)
 
 The folder must hold frame_0000.png ... frame_NNNN.png, hud.mov (+ hud_tail.mov), every_grain_of_us_score_with_narration.wav
@@ -58,10 +59,18 @@ for f in range(1, NFRAMES):
 # 2 HUD (year, legend, labels): hud.mov, and from the world tour on (TAIL) hud_tail.mov, which carries the
 # labels along the new camera path; the frames before it are the same in both
 TAIL = int(arg("--tail-start", 5415))
-hud = sed.sequences.new_movie("HUD", LOCAL["hud"], channel=2, frame_start=0)
-hud.filepath = win("hud.mov")
-hud.blend_type = "ALPHA_OVER"
-if os.path.exists(LOCAL["hud_tail"]):
+PARTS = arg("--hud-parts")       # "local/hud_part1.mov@0,local/hud_part2.mov@2220,...": the HUD in pieces (each under
+if PARTS:                        # GitHub's 100 MB file limit), laid end to end on channel 2
+    for i, spec in enumerate(PARTS.split(",")):
+        path, start = spec.rsplit("@", 1)
+        st = sed.sequences.new_movie(f"HUD {i + 1}", path, channel=2, frame_start=int(start))
+        st.filepath = win(os.path.basename(path))
+        st.blend_type = "ALPHA_OVER"
+else:
+    hud = sed.sequences.new_movie("HUD", LOCAL["hud"], channel=2, frame_start=0)
+    hud.filepath = win("hud.mov")
+    hud.blend_type = "ALPHA_OVER"
+if not PARTS and os.path.exists(LOCAL["hud_tail"]):
     hud.frame_final_end = TAIL
     tail = sed.sequences.new_movie("HUD (world tour)", LOCAL["hud_tail"], channel=2, frame_start=TAIL)
     tail.filepath = win("hud_tail.mov")

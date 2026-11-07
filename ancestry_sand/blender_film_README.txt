@@ -1,6 +1,12 @@
 EVERY GRAIN OF US: the full-Cycles Blender project (4K)
 ======================================================
 
+GETTING IT FROM GITHUB
+  This folder is releases/every_grain_of_us_v3_2/ in the repository, on branch claude/sweet-faraday-uk5z62.
+  Easiest: on the repository's GitHub page pick that branch, then Code > Download ZIP, and take this
+  folder out of the zip. (Or download each file from the folder's page with the download button.)
+  Keep every file together in one folder, as here.
+
 QUICK START: extract this folder, render, assemble
   1. Extract the whole folder somewhere with about 75 GB free, and keep everything together in it.
   2. Open every_grain_of_us.blend, Render > Render Animation (frames go into "render4k" here).
@@ -13,13 +19,16 @@ What is in this folder
                                    3840x2160), into a "render4k" folder here
   every_grain_of_us_compose.blend  ASSEMBLE: joins the frames, the on-screen text, the title and the
                                    sound into the finished MP4 (every path is relative to this folder)
-  hud.mov                          the on-screen text in 4K (year, "1 grain = N people", legend, place and
-                                   city names), transparent
+  hud_part1.mov, hud_part2.mov, hud_part3.mov
+                                   the on-screen text in 4K (year, "1 grain = N people", legend, place and
+                                   city names), transparent; in three parts (frames 0-2219, 2220-5039,
+                                   5040-6659) so each file stays under GitHub's 100 MB limit. The compose
+                                   file plays them one after another.
   every_grain_of_us_score_with_narration.wav   the epic score + Lily's voice-over (used by default)
   every_grain_of_us_score.wav                  the epic score alone (for the captions version)
   captions_4k.mov                  short captions, transparent (for the music-only version)
   narration.srt, captions_short.srt   subtitle files for YouTube
-  render4k\                        empty: the frames go here
+  render4k\                        the frames go here (empty apart from a note)
   alt_music_take2\                 the other take of the epic score (same two file names): to use it,
                                    copy both files over the ones beside the .blend files
 
