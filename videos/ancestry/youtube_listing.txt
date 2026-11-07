@@ -19,7 +19,8 @@ Every person alive descends from the same small groups of people in Africa. This
 HOW TO READ IT
 • Each colour of sand is a strand of ancestry: the ancestry components used in ancient-DNA studies. They are labels for ancient populations, not races.
 • Each glass vessel is a region, holding the average ancestry of the people who live there today.
-• Sand is proportional to population and piles up where people live: 1 grain ≈ 5 people 200,000 years ago, ≈ 55,000 people today. The towers at the end are the most crowded places on Earth.
+• Sand is proportional to population, so the map starts as a sparse scatter and fills as humanity grows: 1 grain ≈ 120 people 200,000 years ago, ≈ 56,000 today.
+• The towers are the world's great cities (about 5 million people or more), all the same width, so a tower's height is its population: Tokyo is the tallest.
 • White sand is Neanderthal ancestry; pale blue is Denisovan.
 
 CHAPTERS
@@ -40,7 +41,8 @@ CHAPTERS
 WHAT'S SIMPLIFIED
 • Many dates are debated, so the film gives ranges or minimums: the main exit from Africa 70,000–50,000 years ago (earlier ventures, about 120,000 years ago, left little trace); Australia by at least 50,000 years ago (possibly 65,000); the Americas by at least 20,000 years ago (the White Sands footprints suggest 23,000–21,000).
 • Regions show today's average ancestry, so colonised countries such as the US, Canada and Australia look mostly European. Indigenous peoples and their ancestry continue there.
-• Ancestry is really continuous; the colours are broad, standard components. Population sizes before farming are rough estimates (within about 3×).
+• Ancestry is really continuous; the colours are broad, standard components. Population sizes before farming are rough estimates (within about 3×), and to keep the early map readable a grain stands for fewer people then than today.
+• City sizes are 2025 urban-agglomeration estimates (UN World Urbanization Prospects), rounded.
 • Polynesia is drawn as Hawai'i but stands for Polynesians as a people, whose ancestors reached Tonga and Samoa about 2,900 years ago.
 
 SOURCES
@@ -57,7 +59,7 @@ Africa: van de Loosdrecht et al. 2018 (Science); Llorente et al. 2015; Patin et 
 The Arctic and the Caribbean: Rasmussen et al. 2010; Moltke et al. 2015; Nägele et al. 2020; Fernandes et al. 2021
 The transatlantic slave trade: Eltis & Richardson 2010 (Atlas of the Transatlantic Slave Trade); Micheletti et al. 2020 (AJHG)
 Ancestry today: Bryc et al. 2015; Moreno-Estrada et al. 2014; Kehdy et al. 2015; Montinaro et al. 2015; Olalde et al. 2019 (Science); Almarri et al. 2021 (Cell)
-Population: McEvedy & Jones 1978; HYDE 3.2; UN World Population Prospects 2024; Denevan 1992; Koch et al. 2019
+Population: McEvedy & Jones 1978; HYDE 3.2; UN World Population Prospects 2024; Denevan 1992; Koch et al. 2019; cities: UN World Urbanization Prospects 2018; foragers by habitat: Binford 2001; Kelly 2013
 Modern migration: 2020 US Census; 2021 Canadian Census
 
 MADE WITH
@@ -71,7 +73,7 @@ PINNED COMMENT
 Where the numbers come from, and what this simplifies:
 
 • Each colour is a standard ancestry component from ancient-DNA studies (labels for ancient populations, not races). Each vessel is a group of neighbouring countries, showing today's average ancestry.
-• Sand is proportional to population: 1 grain ≈ 5 people 200,000 years ago, ≈ 55,000 today. Before farming, population figures are rough (within about 3×).
+• Sand is proportional to population: 1 grain ≈ 120 people 200,000 years ago, ≈ 56,000 today. Before farming, population figures are rough (within about 3×). The towers are cities of ~5 million+, all the same width, so height = population.
 • Many dates are debated, so the film gives ranges: the main exit from Africa 70,000–50,000 years ago; Australia by at least 50,000 years ago (possibly 65,000); the Americas by at least 20,000 years ago (White Sands footprints suggest 23,000–21,000).
 • Colonised regions show today's average, so North America and Australia look mostly European; Indigenous peoples and their ancestry continue there.
 

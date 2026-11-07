@@ -2,19 +2,23 @@ EVERY GRAIN OF US: the full-Cycles Blender project (4K)
 ======================================================
 
 What is in this folder
-  every_grain_of_us.blend   the whole film (3:42, 6,660 frames at 30 fps, 3840x2160), two scenes:
-                              Film  table, glass, sand and flying sand, rendered by Cycles
-                              Edit  joins the rendered frames, the on-screen text and the title
-                                    into an MP4 (add the voice-over here too)
-  hud.mov                   the on-screen text in 4K (year, "1 grain = N people", legend, labels),
-                            transparent. Keep it next to the .blend.
-  narration.srt             the timed script, for recording the voice-over
+  every_grain_of_us.blend          RENDER: the whole film in Cycles (3:42, 6,660 frames at 30 fps,
+                                   3840x2160), into a "render4k" folder here
+  every_grain_of_us_compose.blend  ASSEMBLE: joins the frames, the on-screen text, the title and the
+                                   sound into the finished MP4
+  hud.mov                          the on-screen text in 4K (year, "1 grain = N people", legend, place and
+                                   city names), transparent
+  every_grain_of_us_score_with_narration.wav   music + Lily's voice-over (used by default)
+  every_grain_of_us_score.wav                  music only (for the captions version)
+  captions_4k.mov                  short captions, transparent (for the music-only version)
+  narration.srt, captions_short.srt   subtitle files for YouTube
+Keep everything together in this folder.
 
 You need Blender 4.2 or newer (free from blender.org); for an NVIDIA RTX 50-series card (5080, 5090),
 Blender 4.4 or newer. A graphics card makes a huge difference.
 
-This is a new project: frames from the earlier 1080p version cannot be mixed in. It renders into a new
-"render4k" folder.
+This version changes every frame: render it into a fresh folder (do not mix in frames from earlier
+versions).
 
 
 1. TURN ON YOUR GRAPHICS CARD (once)
@@ -48,13 +52,13 @@ This is a new project: frames from the earlier 1080p version cannot be mixed in.
 
 
 3. MAKE THE MP4
-   Put all the frames in the "render4k" folder next to the .blend.
-   Switch to the "Edit" scene (scene menu, top right of the window).
-   Render > Render Animation. Out comes every_grain_of_us.mp4 (4K) next to the .blend.
+   Once all 6,660 frames are in "render4k", open every_grain_of_us_compose.blend and
+   Render > Render Animation. Out comes every_grain_of_us_4k.mp4 (4K, with sound) in this folder.
 
-   Change the title: in the Video Sequencer, click the "Title" strip, press N, and edit the text under
-   Effect Strip. The subtitle is the "Subtitle" strip.
-   Add the voice-over: Add > Sound, on a free channel, starting at frame 0. It is exported with the MP4.
+   Voice-over or captions: the narrated mix is on by default. For music with short captions instead,
+   select "Music + narration" and press H (mute), select "Music only" and "Short captions" and press
+   Alt+H (unmute), change the file name in Output Properties, and render again.
+   Change the title: click the "Title" strip, press N, and edit the text under Effect Strip.
 
 
 WHAT IS IN THE LOOK
@@ -62,7 +66,10 @@ WHAT IS IN THE LOOK
    The opening: diorama close-ups, low over the first sparse grains of people in Africa, a look north to
      the Neanderthals of Europe, back to East Africa for the exit, then out to the whole map by 0:45.
    Motion blur: the migrating sand streaks through the air; the camera blurs as it moves.
-   The finale: down among the population towers, then a low flight through the world's great cities
+   Sand tracks world population: a sparse scatter at first (1 grain ~ 120 people), filling as people
+     multiply (1 grain ~ 56,000 today). The towers are the great cities, all the same width, so their
+     height is their population; they rise with urbanization in the last century.
+   The finale: down among the city towers, then a low flight through the world's great cities
      (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,
      Hong Kong, Shanghai, Beijing, Seoul, Tokyo, a whip across the Pacific to Los Angeles, Mexico City,
      New York, Lima, Sao Paulo, Buenos Aires, across the Atlantic to London, Paris, Istanbul, Moscow,
