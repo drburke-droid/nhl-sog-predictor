@@ -34,8 +34,7 @@ ARCHAIC = {"NEA", "DEN"}
 #         territories (French Guiana from France) and carves islands out (Hawai'i from the USA)
 #   clip: cut the countries listed in clip_codes (default: all) to this lon/lat box first
 #         (European vs Asian Russia)
-#   inset: (magnification, (lon, lat) of the inset's centre) for islands too small to hold sand;
-#          geo: the real location, joined to the inset by a hairline
+#   buffer: thicken island chains too small to hold sand at true size (degrees)
 EUROPE = ["PRT", "ESP", "FRA", "ITA", "CHE", "AUT", "DEU", "BEL", "NLD", "LUX", "GBR", "IRL", "ISL", "NOR", "SWE",
           "FIN", "DNK", "POL", "CZE", "SVK", "HUN", "SVN", "HRV", "BIH", "SRB", "MNE", "KOS", "ALB", "MKD", "GRC",
           "BGR", "ROU", "BLR", "LTU", "LVA", "EST", "AND", "MCO", "LIE", "SMR", "VAT", "MLT", "FRO", "IMN"]
@@ -47,7 +46,7 @@ VESSELS = {
     "WAF": dict(label="West Africa", codes=["NGA", "GHA", "CIV", "SEN", "MLI", "BFA", "NER", "GIN", "SLE", "LBR",
                                             "TGO", "BEN", "GMB", "GNB", "TCD"]),
     "NAF": dict(label="North Africa", codes=["MAR", "DZA", "TUN", "LBY", "EGY", "SAH", "MRT"]),
-    "MDG": dict(label="Madagascar", codes=["MDG"], inset=(1.5, (49, -19.5))),
+    "MDG": dict(label="Madagascar", codes=["MDG"]),
     "LEV": dict(label="Near East", codes=["TUR", "SYR", "LBN", "ISR", "PSX", "JOR", "IRQ", "SAU", "YEM", "OMN", "ARE",
                                           "QAT", "KWT", "BHR", "CYP", "CYN"]),
     "IRN": dict(label="Iran & Caucasus", codes=["IRN", "ARM", "AZE", "GEO", "AFG"]),
@@ -61,12 +60,11 @@ VESSELS = {
     "ISE": dict(label="Island SE Asia", codes=["PHL", "IDN", "MYS", "BRN", "TLS", "SGP"], bbox=(90, 134, -12, 22)),
     "PNG": dict(label="New Guinea", codes=["PNG", "IDN"], bbox=(134, 160, -12, 0)),
     "AUS": dict(label="Australia", codes=["AUS"]),
-    "POL": dict(label="Polynesia", codes=["USA"], bbox=(-161, -154, 18, 23), inset=(4.2, (-141, 3)),
-                note="(Hawai'i shown)"),
+    "POL": dict(label="Polynesia", codes=["USA"], bbox=(-161, -154, 18, 23), note="(Hawai'i shown)",
+                buffer=0.7),           # at true size, the islands thickened just enough to hold a few grains
     "NAM": dict(label="North America", codes=["USA", "CAN"], bbox=(-180, -50, 24, 85)),
     "MES": dict(label="Mexico & C. America", codes=["MEX", "GTM", "BLZ", "HND", "SLV", "NIC", "CRI", "PAN"]),
-    "CAR": dict(label="Caribbean", codes=["CUB", "HTI", "DOM", "JAM", "PRI"], inset=(1.8, (-43, 24)),
-                geo=(-74, 20)),
+    "CAR": dict(label="Caribbean", codes=["CUB", "HTI", "DOM", "JAM", "PRI"], buffer=0.3),
     "AMZ": dict(label="Brazil & north", codes=["BRA", "COL", "VEN", "GUY", "SUR", "FRA"], bbox=(-80, -30, -35, 13)),
     "ADS": dict(label="Andes", codes=["PER", "BOL", "ECU"]),
     "GRL": dict(label="Greenland", codes=["GRL"]),
@@ -82,14 +80,14 @@ INITIAL = {
     "EAF": ("EAF", 0.55),
     "WAF": ("WAF", 0.45),
     "NAF": ("EAF", 0.22),
-    "EUR": ("NEA", 0.06),           # archaic peoples were few: a sparse scatter of sand
-    "LEV": ("NEA", 0.06),
-    "IRN": ("NEA", 0.06),
-    "STP": ("NEA", 0.045),
-    "SIB": ("DEN", 0.035),
-    "EAS": ("DEN", 0.05),
-    "SEA": ("DEN", 0.05),
-    "ISE": ("DEN", 0.05),
+    "EUR": ("NEA", 1.0),            # archaic peoples: sand at the same density as people in Africa then
+    "LEV": ("NEA", 1.0),            # (x this factor), so a grain means the same number of people
+    "IRN": ("NEA", 1.0),
+    "STP": ("NEA", 0.75),
+    "SIB": ("DEN", 0.6),
+    "EAS": ("DEN", 1.0),
+    "SEA": ("DEN", 1.0),
+    "ISE": ("DEN", 1.0),
 }
 
 
@@ -117,6 +115,11 @@ POP = {
     "AMZ": [2, 8, 4, 70, 298], "ADS": [4, 12, 3, 15, 64], "SCN": [0.5, 2, 1.5, 25, 76],
     "GRL": [0.001, 0.003, 0.008, 0.02, 0.056], "NZL": [0.0, 0.1, 0.1, 2, 5.2],
 }
+# Before farming, people spread by habitable land: forager densities were lower in the Arctic and sub-Arctic,
+# the great deserts and the high Andes (Binford 2001; Kelly 2013). Share of a vessel's area counted as
+# habitable, for the pre-farming sand (1 elsewhere).
+HABITABLE = {"SIB": 0.35, "NAM": 0.5, "STP": 0.6, "NAF": 0.5, "AUS": 0.45, "SCN": 0.7, "ADS": 0.75, "IRN": 0.8}
+
 MIN_VISIBLE = 0.35      # magnified island peoples (Hawai'i, the Caribbean...) keep at least this many grains per cell
 
 # ---------------------------------------------------------------- where each ancestry lives within a vessel

@@ -45,12 +45,15 @@ def s_at(ybp):
     return float(np.interp(-math.log(ybp + 200.0), -CK_U, CK_S))
 
 
+FILL_EXP = 0.38
+
+
 def fill_at(ybp):
-    """Share of a vessel's capacity in use: population growth, very roughly. Starts sparse (a few grains
-    scattered over each vessel) and fills as people multiply, fastest after farming."""
-    pts = [(200_000, 0.05), (120_000, 0.055), (70_000, 0.065), (45_000, 0.09), (20_000, 0.13), (12_000, 0.17),
-           (4_000, 0.45), (2_000, 0.62), (500, 0.76), (0, 1.0)]
-    return float(np.interp(-ybp, [-p[0] for p in pts], [p[1] for p in pts]))
+    """Share of the map's capacity in use, from world population: (people then / people today)^0.38. Sand
+    tracks population, so the map starts as a sparse scatter and fills as people multiply; a grain stands
+    for ~50 people 200,000 years ago, ~1,000 at the dawn of farming, ~55,000 today (the exponent keeps that
+    range within reason: one grain per person-equivalent would leave 2 grains at the start)."""
+    return float((world_pop(ybp) / world_pop(0.0)) ** FILL_EXP)
 
 
 _WP = np.array(S.WORLD_POP, float)
@@ -288,8 +291,9 @@ class Sand:
             i, c = VI[v], KI[comp]
             self.P[i, c] = 1.0
             if ARCH[c]:
-                self.fixed_fill[i] = fill
-            n = int(round((fill if ARCH[c] else fill_at(200_000)) * HFULL * len(VCELLS[i])))
+                self.fixed_fill[i] = fill * fill_at(200_000)
+            n = int(round((self.fixed_fill[i] if ARCH[c] else fill_at(200_000)) * HFULL * len(VCELLS[i])
+                          * S.HABITABLE.get(v, 1.0)))
             cells = self.rng.choice(VCELLS[i], size=n)
             for _ in range(HMAX):
                 cells = self.add(cells, np.full(len(cells), c, np.int8))
@@ -458,8 +462,8 @@ class Sand:
         population tables after, blending between 10,000 years ago and 1 CE. Small peoples keep a
         minimum visible amount."""
         if self.fixed_fill[v] is not None:
-            return self.fixed_fill[v] * HFULL * NCELLS_V[v]
-        area = fill_at(ybp) * HFULL * NCELLS_V[v]
+            return self.fixed_fill[v] * HFULL * NCELLS_V[v] * S.HABITABLE.get(ORDER[v], 1.0)
+        area = fill_at(ybp) * HFULL * NCELLS_V[v] * S.HABITABLE.get(ORDER[v], 1.0)
         w = self.farm_w(ybp)
         if w > 0:
             if self._share_t != ybp:

@@ -532,8 +532,14 @@ class Painter:
         IW, IH = img.shape[1], img.shape[0]
         title_a = 1.0 - smooth((s - 4.2) / 1.6)
         # on the low flight through the cities, region names step aside for the cities' own
+        # (and while the camera moves - the opening's close-ups, the flight - they would only slide about)
         flying = C.KEYS is C.KEYS_FINALE and C.TOUR_START < s < C.TOUR_END + 2
-        region_a = 1.0 - (smooth((s - C.TOUR_START - 5.5) / 1.5) * smooth((C.TOUR_END - 1.0 - s) / 1.5) if flying else 0.0)
+        region_a = 1.0
+        if C.KEYS is C.KEYS_FINALE:
+            open_end = C.OPENING[-1][0]
+            region_a = smooth((s - open_end + 1.6) / 1.4)                         # in as the wide shot settles
+            if s > C.TOUR_START:
+                region_a = (1 - smooth((s - C.TOUR_START) / 1.2)) + smooth((s - C.TOUR_END) / 0.8)
         for v in Sd.ORDER:
             vi = Sd.VI[v]
             has = sim.counts[vi].sum() > 0
@@ -609,8 +615,8 @@ class Painter:
                 self.blit(img, st, IW / 2 - st.shape[1] / 2, 530 * k, title_a)
         if s > S.TODAY_S + 9.0:
             a = smooth((s - S.TODAY_S - 9.0) / 1.2)
-            n = self.text_sprite("Ancestry from published ancient-DNA studies; population from long-run estimates. "
-                                 "Magnified islands keep a minimum of sand to stay visible.", self.f_note, MUTED * 255)
+            n = self.text_sprite("Ancestry from published ancient-DNA studies; population from long-run estimates.",
+                                 self.f_note, MUTED * 255)
             self.blit(img, n, IW - n.shape[1] - 40 * k, 40 * k, 0.8 * a)
         t_i0, t_i1 = S.TODAY_S + 1.0, S.TODAY_S + 8.2
         if t_i0 <= s <= t_i1:
