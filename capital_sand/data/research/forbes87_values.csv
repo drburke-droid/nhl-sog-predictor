@@ -1,0 +1,408 @@
+name,year,month_if_known,list,net_worth_busd,source
+Abigail Johnson,1996,10,forbes400,2.5,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 145 in CORGIS 1996
+Abigail Johnson,1997,10,forbes400,3.4,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Abigail Johnson,2000,7,world,7.4,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: No.31
+Abigail Johnson,2001,7,world,9.1,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 30 in CORGIS 2001
+Akira Mori,1996,7,world,3.9,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 60 in CORGIS 1996
+Akira Mori,2001,7,world,3.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 130 in CORGIS 2001
+Alice Walton,1991,10,forbes400,4.4,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Alice Walton,1996,10,forbes400,4.7,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 41 in CORGIS 1996
+Alice Walton,1997,10,forbes400,6.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Alice Walton,2001,7,world,18.5,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 10 in CORGIS 2001
+Alice Walton,2001,10,forbes400,17.5,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: tied No.5
+Amancio Ortega,2001,7,world,6.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 43 in CORGIS 2001
+Anne Cox Chambers,1996,10,forbes400,4.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 58 in CORGIS 1996
+Anne Cox Chambers,1997,10,forbes400,5.0,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Anne Cox Chambers,2001,7,world,11.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 21 in CORGIS 2001
+Azim Premji,2001,7,world,6.9,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 42 in CORGIS 2001
+Barbara Cox Anthony,1996,10,forbes400,4.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 57 in CORGIS 1996
+Barbara Cox Anthony,1997,10,forbes400,5.0,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Barbara Cox Anthony,2001,7,world,11.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 21 in CORGIS 2001
+Barbara Cox Anthony & Anne Cox Chambers,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says | NOTE: joint entry
+"Bass family (Robert, Lee, Sid, Edward)",1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Bernard Arnault,2001,7,world,10.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 26 in CORGIS 2001
+Bill Gates,1987,10,forbes400,1.25,Wikipedia 'Bill Gates' (1987 Forbes 400: $1.25 billion) https://en.wikipedia.org/wiki/Bill_Gates
+Bill Gates,1990,10,forbes400,2.5,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/ | NOTE: No.16; 1990 value quoted in 1991 article
+Bill Gates,1991,10,forbes400,4.8,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Bill Gates,1992,7,world,6.4,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Bill Gates,1992,10,forbes400,6.3,Harvard Crimson 1992-10-06 https://www.thecrimson.com/article/1992/10/6/gates-named-richest-in-us-pwilliam/ | NOTE: No.1 (VERDICT also 6.3)
+Bill Gates,1993,7,world,7.4,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Bill Gates,1993,10,forbes400,6.165,"AP via Roanoke Times 1993-10-04 (Forbes Oct 18 1993) https://scholar.lib.vt.edu/VA-news/ROA-Times/issues/1993/rt9310/931004/10040022.htm (page now 410; text seen in search index) | NOTE: No.2, 'down from $6.3 billion'"
+Bill Gates,1994,7,world,8.2,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: AP July 1995 says Gates 'rose from $8.1 billion' a year earlier
+Bill Gates,1994,10,forbes400,9.35,AP via Roanoke Times/Virginian-Pilot 1994-10-03 (Forbes Oct 17 1994) https://scholar.lib.vt.edu/VA-news/ROA-Times/issues/1994/rt9410/941003/10040020.htm (page now 410; text seen in search index) | NOTE: No.1; Spokesman 1995 confirms 9.35
+Bill Gates,1995,7,world,12.9,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Bill Gates,1995,10,forbes400,14.8,AP via Spokesman-Review 1995-10-02 https://spokesman.com/stories/1995/oct/02/for-second-straight-year-gates-leads-list-of | NOTE: No.1
+Bill Gates,1996,7,world,18.0,"AP 1996 on Forbes July 15 1996 list ('$18 billion ... up 40% from $12.9 billion'), seen in search index; matches Wikipedia table | NOTE: Forbes 400 three months later: 18.5 (CORGIS 1996 also 18.5)"
+Bill Gates,1996,10,forbes400,18.5,AP via Deseret News 1996-09-30 (Forbes 400 Oct 14 1996; also gives 1995 values) https://www.deseret.com/1996/9/30/19268729/rich-roll-in-ever-larger-piles-of-dough/ | NOTE: also in CORGIS 1996
+Bill Gates,1997,7,world,36.4,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Bill Gates,1997,10,forbes400,39.8,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Bill Gates,1998,7,world,51.0,WSWS 1998-06-23 on Forbes July 6 1998 list (also 1997 comparisons) https://www.wsws.org/en/articles/1998/06/list-j23.html | NOTE: matches Wikipedia table
+Bill Gates,1998,10,forbes400,58.0,Verdict 'Forbes 100th birthday' list of Forbes 400 No.1 by year https://www.verdict.co.uk/forbes-100th-birthday/ | NOTE: AP Sept 1999 says 'up from $59 billion a year ago'
+Bill Gates,1999,7,world,90.0,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139 | NOTE: also AP/Reuters/Wikipedia
+Bill Gates,1999,10,forbes400,85.0,AP via CBS 1999-09-24 (Forbes 400 Oct 11 1999) https://www.cbsnews.com/news/the-richest-of-them-all | NOTE: No.1
+Bill Gates,2000,3,other,82.0,Japan Times 2000-03-09 citing Forbes Global Mar 20 2000 issue (paywalled; quoted in search index) https://japantimes.co.jp/news/2000/03/09/business/softbanks-son-set-to-pace-gates | NOTE: Forbes Global Mar 20 2000 comparison figure
+Bill Gates,2000,7,world,60.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i
+Bill Gates,2000,10,forbes400,63.0,Reuters via CIOL 2000-09-22 (Forbes 400 Oct 9 2000) https://www.ciol.com/oracles-ellison-challenges-gates-us-richest | NOTE: No.1
+Bill Gates,2001,7,world,58.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 1 in CORGIS 2001
+Bill Gates,2001,9,other,46.8,AP via HeraldNet 2001-09-27 (Forbes 400 as of 2001-08-27; recalculated to 2001-09-24) https://www.heraldnet.com/business/whos-no-1-its-gates-again/ | NOTE: Forbes recalculation to 2001-09-24 after 9/11 (list value 54.0 as of 08-27)
+Bill Gates,2001,10,forbes400,54.0,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: No.1; as of 2001-08-27
+Birgit Rausing & family,2001,7,world,9.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 31 in CORGIS 2001; CORGIS labels it 'Kirsten Rausing' but Forbes-derived Kaggle 2001 row is 'Birgit Rausing & family' (Gad Rausing's widow)
+Brenninkmeyer family,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Cargill family,1997,7,world,8.8,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Carlos Slim,1994,7,world,6.6,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Carlos Slim,1996,7,world,6.1,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 18 in CORGIS 1996
+Carlos Slim,2001,7,world,10.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 25 in CORGIS 2001
+Charles Koch,1996,10,forbes400,2.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 202 in CORGIS 1996
+Charles Koch,2001,7,world,3.2,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 138 in CORGIS 2001
+Charles Schwab,1999,7,world,8.7,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Cheng Yu-tung,1996,7,world,5.5,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 24 in CORGIS 1996
+Chung Ju-yung,1995,7,world,6.2,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Chung Ju-yung,1996,7,world,5.9,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 20 in CORGIS 1996
+David Koch,1996,10,forbes400,2.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 203 in CORGIS 1996
+David Koch,2001,7,world,3.2,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 138 in CORGIS 2001
+David Sainsbury & family,1992,7,world,6.2,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Donald Newhouse,1988,10,forbes400,2.6,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Donald Newhouse,1996,10,forbes400,4.5,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 48 in CORGIS 1996
+Donald Newhouse,1997,10,forbes400,4.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Donald Newhouse,1999,7,world,4.5,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Donald Newhouse,2001,7,world,5.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 70 in CORGIS 2001
+Edward Johnson III,1996,10,forbes400,1.3,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 312 in CORGIS 1996
+Edward Johnson III,2001,7,world,4.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 79 in CORGIS 2001
+Eitaro Itoyama,1990,7,world,5.8,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Engelhorn family,1997,7,world,11.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Erivan Haub,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says | NOTE: '$5 billion-plus'
+Erivan Haub,1992,7,world,6.9,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Erivan Haub,1993,7,world,6.2,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Forrest E. Mars & family,1990,7,world,6.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Forrest E. Mars & family,1991,7,world,6.8,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/
+Forrest Mars Jr.,1996,10,forbes400,3.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 103 in CORGIS 1996
+Forrest Mars Jr.,1997,10,forbes400,3.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Forrest Mars Jr.,2001,7,world,9.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 31 in CORGIS 2001
+Forrest Mars Sr.,1996,10,forbes400,3.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 102 in CORGIS 1996
+Forrest Mars Sr.,1997,10,forbes400,3.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Forrest Mars Sr. & family,1998,7,world,13.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Francois Pinault,2001,7,world,6.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 47 in CORGIS 2001
+George Soros,1997,10,forbes400,3.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Gerard Mulliez,1996,7,world,5.7,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 21 in CORGIS 1996
+Gordon Moore,1996,10,forbes400,3.7,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 64 in CORGIS 1996
+Gordon Moore,1997,10,forbes400,8.8,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Gordon Moore,2001,7,world,5.4,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 60 in CORGIS 2001
+Haas family,1997,7,world,12.3,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Haniel family,1992,7,world,6.4,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Haniel family,1996,7,world,8.1,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 12 in CORGIS 1996
+Haniel family,1997,7,world,9.3,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Hans & Gad Rausing,1990,7,world,9.6,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Hans & Gad Rausing,1991,7,world,9.0,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/
+Hans & Gad Rausing,1992,7,world,7.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Hans & Gad Rausing,1994,7,world,9.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Hans & Gad Rausing,1996,7,world,9.0,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 10 in CORGIS 1996
+Hans & Gad Rausing,1997,7,world,9.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Hans Rausing,1987,10,world,6.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Hans Rausing,1995,7,world,9.0,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/ | NOTE: AP names Hans Rausing; Wikipedia table says 'Hans and Gad Rausing'
+Hans Rausing,2001,7,world,7.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 40 in CORGIS 2001
+Haruhiko Yoshimoto,1987,10,world,6.2,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Haruhiko Yoshimoto,1988,7,world,7.8,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Haruhiko Yoshimoto & family,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says | NOTE: '$5 billion-plus'
+Hasso Plattner,1996,7,world,1.8,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 219 in CORGIS 1996
+Hasso Plattner,2001,7,world,5.4,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 60 in CORGIS 2001
+Helen Walton,1996,10,forbes400,4.7,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 40 in CORGIS 1996
+Helen Walton,1997,10,forbes400,6.4,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Helen Walton,2001,7,world,18.5,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 10 in CORGIS 2001
+Helen Walton,2001,10,forbes400,17.5,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: tied No.5
+Henry Hillman,1988,10,forbes400,2.5,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Henry Hillman,1991,10,forbes400,3.3,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Ingvar Kamprad,1996,7,world,1.7,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 234 in CORGIS 1996
+Ingvar Kamprad,2001,7,world,13.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 17 in CORGIS 2001
+Jacqueline Mars,1996,10,forbes400,3.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 99 in CORGIS 1996
+Jacqueline Mars,1997,10,forbes400,3.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Jacqueline Mars,2001,7,world,9.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 31 in CORGIS 2001
+Jay & Robert Pritzker,1997,7,world,6.0,WSWS 1998-06-23 on Forbes July 6 1998 list (also 1997 comparisons) https://www.wsws.org/en/articles/1998/06/list-j23.html | NOTE: 1997 figure quoted in 1998 comparison
+Jay & Robert Pritzker,1998,7,world,13.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: Pritzker 13.5 also in WSWS
+Jay Pritzker,1997,10,forbes400,6.0,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Jay Van Andel,1991,10,forbes400,2.9,UPI 1991-10-06 https://www.upi.com/Archives/1991/10/06/Forbes-Kluge-richest-American-with-59-billion-fortune/5007686721600/ | NOTE: No.11
+Jay Van Andel,1996,10,forbes400,3.2,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 87 in CORGIS 1996
+Jay Van Andel,2001,7,world,1.4,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 363 in CORGIS 2001
+Jay Walker,1999,7,world,10.2,Reuters via Wired 1999-06-21 https://www.wired.com/1999/06/the-billionaires-club/ | NOTE: No.25
+Jay and Arthur Pritzker,1996,10,forbes400,3.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 100 in CORGIS 1996
+Jeff Bezos,1999,7,world,10.1,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Jeff Bezos,1999,10,forbes400,7.8,AP via CBS 1999-09-24 (Forbes 400 Oct 11 1999) https://www.cbsnews.com/news/the-richest-of-them-all | NOTE: No.18
+Jim C. Walton,1991,10,forbes400,4.4,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Jim C. Walton,1996,10,forbes400,4.8,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 39 in CORGIS 1996
+Jim C. Walton,1997,10,forbes400,6.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Jim C. Walton,2001,7,world,18.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 7 in CORGIS 2001
+Jim C. Walton,2001,10,forbes400,17.5,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: tied No.5
+Johanna Quandt,1996,7,world,8.1,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 11 in CORGIS 1996
+Johanna Quandt,2001,7,world,17.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 12 in CORGIS 2001
+John Kluge,1988,10,forbes400,3.2,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+John Kluge,1989,7,world,3.2,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/ | NOTE: about
+John Kluge,1989,10,forbes400,5.2,Verdict 'Forbes 100th birthday' list of Forbes 400 No.1 by year https://www.verdict.co.uk/forbes-100th-birthday/ | NOTE: No.1
+John Kluge,1990,7,world,5.2,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+John Kluge,1990,10,forbes400,5.6,Verdict 'Forbes 100th birthday' list of Forbes 400 No.1 by year https://www.verdict.co.uk/forbes-100th-birthday/ | NOTE: No.1; consistent with AP 1991 'up $300 million' to 5.9
+John Kluge,1991,10,forbes400,5.9,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+John Kluge,1994,10,forbes400,5.9,AP via Roanoke Times/Virginian-Pilot 1994-10-03 (Forbes Oct 17 1994) https://scholar.lib.vt.edu/VA-news/ROA-Times/issues/1994/rt9410/941003/10040020.htm (page now 410; text seen in search index) | NOTE: No.3 per Virginian-Pilot headline; 5.9 figure in same AP story (medium confidence)
+John Kluge,1995,10,forbes400,6.7,AP via Spokesman-Review 1995-10-02 https://spokesman.com/stories/1995/oct/02/for-second-straight-year-gates-leads-list-of | NOTE: No.3
+John Kluge,1996,10,forbes400,7.2,AP via Deseret News 1996-09-30 (Forbes 400 Oct 14 1996; also gives 1995 values) https://www.deseret.com/1996/9/30/19268729/rich-roll-in-ever-larger-piles-of-dough/ | NOTE: also in CORGIS 1996
+John Kluge,1997,7,world,7.2,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+John Kluge,1997,10,forbes400,7.8,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+John Kluge,1999,7,world,10.5,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+John Kluge,2001,7,world,10.9,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 24 in CORGIS 2001
+John Mars,1996,10,forbes400,3.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 98 in CORGIS 1996
+John Mars,1997,10,forbes400,3.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+John Mars,2001,7,world,9.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 31 in CORGIS 2001
+John T. Walton,1991,10,forbes400,4.4,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+John T. Walton,1996,10,forbes400,4.8,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 38 in CORGIS 1996
+John T. Walton,1997,10,forbes400,6.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+John T. Walton,2001,7,world,18.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 8 in CORGIS 2001
+John T. Walton,2001,10,forbes400,17.5,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: tied No.5
+Karl & Theo Albrecht,1994,7,world,7.3,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Karl & Theo Albrecht,1996,7,world,9.0,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 9 in CORGIS 1996
+Karl & Theo Albrecht,1997,7,world,11.5,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Karl & Theo Albrecht,1998,7,world,11.7,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Karl & Theo Albrecht,1999,7,world,13.6,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Karl & Theo Albrecht,2000,7,world,20.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: joint entry
+Karl & Theo Albrecht,2001,7,world,25.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 5 in CORGIS 2001
+Kenji Osano,1987,10,world,5.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Kenkichi Nakajima,1990,7,world,8.4,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Kenkichi Nakajima & family,1991,7,world,6.1,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/
+Kenneth Colin Irving,1988,7,world,8.0,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Kenneth Colin Irving & family,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Kenneth Thomson,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Kenneth Thomson,1991,7,world,6.8,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/
+Kenneth Thomson,1992,7,world,6.2,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Kenneth Thomson,1995,7,world,6.5,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Kenneth Thomson,1996,7,world,7.4,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 14 in CORGIS 1996
+Kenneth Thomson,1997,7,world,11.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Kenneth Thomson,1998,7,world,14.4,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Kenneth Thomson,2000,7,world,16.1,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i
+Kenneth Thomson,2001,7,world,16.4,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 14 in CORGIS 2001
+Kirk Kerkorian,1996,10,forbes400,3.4,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 76 in CORGIS 1996
+Kirk Kerkorian,1997,10,forbes400,3.7,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Kirk Kerkorian,1999,7,world,7.3,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Kirk Kerkorian,2001,7,world,6.4,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 46 in CORGIS 2001
+Kitaro Watanabe,1990,7,world,9.2,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Kitaro Watanabe,1991,7,world,7.7,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: UPI: 'more than $7 billion'
+Kwek Leng Beng,1996,7,world,5.7,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 23 in CORGIS 1996
+Kwok brothers,1996,7,world,11.2,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 6 in CORGIS 1996
+Kwok brothers,1997,7,world,12.3,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Kwok brothers,2001,7,world,11.5,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 23 in CORGIS 2001
+Lakshmi Mittal,1996,7,world,1.5,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 261 in CORGIS 1996
+Lakshmi Mittal,2001,7,world,1.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 272 in CORGIS 2001
+Larry Ellison,1995,10,forbes400,4.2,AP via Deseret News 1996-09-30 (Forbes 400 Oct 14 1996; also gives 1995 values) https://www.deseret.com/1996/9/30/19268729/rich-roll-in-ever-larger-piles-of-dough/ | NOTE: No.16; 1995 value quoted in 1996 article
+Larry Ellison,1996,10,forbes400,6.0,AP via Deseret News 1996-09-30 (Forbes 400 Oct 14 1996; also gives 1995 values) https://www.deseret.com/1996/9/30/19268729/rich-roll-in-ever-larger-piles-of-dough/ | NOTE: also in CORGIS 1996
+Larry Ellison,1997,10,forbes400,9.2,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Larry Ellison,1999,7,world,9.5,"AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: AP 2000: 'Last year, Ellison was No. 30 with $9.5 billion'; WSWS 1999 also 9.5"
+Larry Ellison,1999,10,forbes400,13.0,Reuters via CIOL 2000-09-22 (Forbes 400 Oct 9 2000) https://www.ciol.com/oracles-ellison-challenges-gates-us-richest | NOTE: DERIVED: 2000 article says No.12 last year and worth rose by $45bn to $58bn
+Larry Ellison,2000,7,world,47.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i
+Larry Ellison,2000,10,forbes400,58.0,Reuters via CIOL 2000-09-22 (Forbes 400 Oct 9 2000) https://www.ciol.com/oracles-ellison-challenges-gates-us-richest | NOTE: No.2
+Larry Ellison,2001,7,world,26.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 4 in CORGIS 2001
+Larry Ellison,2001,10,forbes400,21.9,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: No.4
+Lee Shau Kee,1995,7,world,6.5,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Lee Shau Kee,1996,7,world,12.7,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 4 in CORGIS 1996
+Lee Shau Kee,1997,7,world,14.7,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Lee Shau Kee,1998,7,world,12.7,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Lee Shau Kee,2001,7,world,5.9,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 52 in CORGIS 2001
+Leo Kirch,2001,7,world,12.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 20 in CORGIS 2001
+Li Ka-shing,1995,7,world,5.9,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Li Ka-shing,1996,7,world,10.6,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 7 in CORGIS 1996
+Li Ka-shing,1997,7,world,11.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Li Ka-shing,1999,7,world,12.7,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139 | NOTE: Wikipedia table says 12.6
+Li Ka-shing,2001,7,world,12.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 18 in CORGIS 2001
+Liliane Bettencourt,1996,7,world,5.0,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 33 in CORGIS 1996
+Liliane Bettencourt,1997,7,world,8.4,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Liliane Bettencourt,1999,7,world,13.9,"Reuters via Wired 1999-06-21 https://www.wired.com/1999/06/the-billionaires-club/ | NOTE: listed in Forbes 'coupon clipper' section, not working-rich ranking"
+Liliane Bettencourt,2001,7,world,15.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 15 in CORGIS 2001
+Mars family,1993,7,world,9.2,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Mars family,1997,7,world,12.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Masayoshi Son,1996,7,world,4.6,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 44 in CORGIS 1996
+Masayoshi Son,1999,7,world,6.4,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139 | NOTE: Japan Times 2000 also quotes Forbes '$6.4 billion in July' 1999
+Masayoshi Son,2000,2,other,68.5,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: peak 'reached in mid-February' 2000 as stated by Forbes/AP in June 2000 list coverage
+Masayoshi Son,2000,3,other,64.0,Japan Times 2000-03-09 citing Forbes Global Mar 20 2000 issue (paywalled; quoted in search index) https://japantimes.co.jp/news/2000/03/09/business/softbanks-son-set-to-pace-gates | NOTE: Forbes Global Mar 20 2000: holdings $64bn vs Gates $82bn (not a list entry)
+Masayoshi Son,2000,7,world,19.4,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: No.8; AP adds 'well below his $68.5 billion peak reached in mid-February'
+Masayoshi Son,2001,7,world,5.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 55 in CORGIS 2001
+Michael Dell,1996,10,forbes400,1.1,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 374 in CORGIS 1996
+Michael Dell,1997,7,world,3.3,WSWS 1998-06-23 on Forbes July 6 1998 list (also 1997 comparisons) https://www.wsws.org/en/articles/1998/06/list-j23.html | NOTE: 1997 figure quoted in 1998 comparison
+Michael Dell,1997,10,forbes400,5.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Michael Dell,1998,7,world,10.0,WSWS 1998-06-23 on Forbes July 6 1998 list (also 1997 comparisons) https://www.wsws.org/en/articles/1998/06/list-j23.html
+Michael Dell,1999,7,world,16.5,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Michael Dell,1999,10,forbes400,20.0,AP via CBS 1999-09-24 (Forbes 400 Oct 11 1999) https://www.cbsnews.com/news/the-richest-of-them-all | NOTE: No.5
+Michael Dell,2000,7,world,17.8,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: Wikipedia table says 19.1
+Michael Dell,2001,7,world,10.5,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 27 in CORGIS 2001
+Michael Otto,1996,7,world,5.2,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 27 in CORGIS 1996
+Michael Otto,2001,7,world,5.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 70 in CORGIS 2001
+Micky Arison,1996,10,forbes400,1.7,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 241 in CORGIS 1996
+Micky Arison,2001,7,world,4.1,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 96 in CORGIS 2001
+Minoru & Akira Mori,1993,7,world,7.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Nancy Walton Laurie,2001,7,world,2.2,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 209 in CORGIS 2001
+Nina Wang,1997,7,world,7.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+"Oeri, Hoffmann & Sacher families",1996,7,world,13.1,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 3 in CORGIS 1996
+"Oeri, Hoffmann & Sacher families",1997,7,world,14.3,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+"Oeri, Hoffmann & Sacher families",1999,7,world,17.0,AP via CBS 1999-06-21 https://www.cbsnews.com/news/gates-tops-billionaire-list | NOTE: No.5
+Paul Allen,1991,10,forbes400,2.4,UPI 1991-10-06 https://www.upi.com/Archives/1991/10/06/Forbes-Kluge-richest-American-with-59-billion-fortune/5007686721600/ | NOTE: No.16
+Paul Allen,1995,10,forbes400,6.1,"AP via Spokesman-Review 1995-10-02 https://spokesman.com/stories/1995/oct/02/for-second-straight-year-gates-leads-list-of | NOTE: No.4, up from No.16"
+Paul Allen,1996,10,forbes400,7.5,AP via Deseret News 1996-09-30 (Forbes 400 Oct 14 1996; also gives 1995 values) https://www.deseret.com/1996/9/30/19268729/rich-roll-in-ever-larger-piles-of-dough/ | NOTE: also in CORGIS 1996
+Paul Allen,1997,7,world,14.1,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Paul Allen,1997,10,forbes400,17.0,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Paul Allen,1998,7,world,21.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Paul Allen,1999,7,world,30.0,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Paul Allen,1999,10,forbes400,40.0,AP via CBS 1999-09-24 (Forbes 400 Oct 11 1999) https://www.cbsnews.com/news/the-richest-of-them-all | NOTE: No.2
+Paul Allen,2000,7,world,28.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i
+Paul Allen,2000,10,forbes400,36.0,Reuters via CIOL 2000-09-22 (Forbes 400 Oct 9 2000) https://www.ciol.com/oracles-ellison-challenges-gates-us-richest | NOTE: No.3
+Paul Allen,2001,7,world,30.4,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 3 in CORGIS 2001
+Paul Allen,2001,9,other,24.2,AP via HeraldNet 2001-09-27 (Forbes 400 as of 2001-08-27; recalculated to 2001-09-24) https://www.heraldnet.com/business/whos-no-1-its-gates-again/ | NOTE: Forbes recalculation to 2001-09-24
+Paul Allen,2001,10,forbes400,28.2,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: No.3
+Paul Reichmann,1987,10,world,5.6,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Paul Sacher,1995,7,world,8.6,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/ | NOTE: Wikipedia: 'Paul Sacher & Hoffman family'
+Paul Sacher & Hoffmann family,1994,7,world,7.8,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Phil Knight,1996,10,forbes400,5.3,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 26 in CORGIS 1996
+Phil Knight,1997,10,forbes400,5.4,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Phil Knight,1999,7,world,5.8,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Phil Knight,2001,7,world,4.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 92 in CORGIS 2001
+Philip Anschutz,1996,10,forbes400,2.2,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 167 in CORGIS 1996
+Philip Anschutz,1997,10,forbes400,5.2,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Philip Anschutz,1999,7,world,16.5,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Philip Anschutz,2001,7,world,15.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 16 in CORGIS 2001
+Prince Alwaleed bin Talal,1997,7,world,11.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Prince Alwaleed bin Talal,1998,7,world,13.3,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Prince Alwaleed bin Talal,1999,7,world,15.0,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Prince Alwaleed bin Talal,2000,7,world,20.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i
+Prince Alwaleed bin Talal,2001,7,world,20.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 6 in CORGIS 2001
+Quandt family,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Quandt family,1997,7,world,11.7,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+"Reichmann brothers (Paul, Albert, Ralph)",1989,7,world,8.0,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/
+"Reichmann brothers (Paul, Albert, Ralph)",1990,7,world,9.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+"Reichmann brothers (Paul, Albert, Ralph)",1991,7,world,7.1,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: UPI: '$7 billion'
+Richard DeVos,1991,10,forbes400,2.9,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Richard DeVos,1996,10,forbes400,3.2,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 86 in CORGIS 1996
+Richard DeVos,2001,7,world,1.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 312 in CORGIS 2001
+Robert Kuok,1996,7,world,5.7,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 22 in CORGIS 1996
+Robert Pritzker,1996,10,forbes400,3.0,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 101 in CORGIS 1996
+Robert Pritzker,1997,10,forbes400,6.0,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Robert Pritzker,2001,7,world,5.5,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 57 in CORGIS 2001
+Ronald Perelman,1997,10,forbes400,6.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Ross Perot,1988,10,forbes400,3.0,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Ross Perot,1989,7,world,3.0,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/ | NOTE: approximately
+Ross Perot,1996,10,forbes400,3.3,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 83 in CORGIS 1996
+Ross Perot,1997,10,forbes400,3.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Ross Perot,2001,7,world,3.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 104 in CORGIS 2001
+Rupert Murdoch,1996,10,forbes400,3.2,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 85 in CORGIS 1996
+Rupert Murdoch,1997,10,forbes400,3.9,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Rupert Murdoch,1999,7,world,7.2,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Rupert Murdoch,2001,7,world,7.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 39 in CORGIS 2001
+S. Robson Walton,1991,10,forbes400,4.4,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+S. Robson Walton,1996,10,forbes400,4.7,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 42 in CORGIS 1996
+S. Robson Walton,1997,10,forbes400,6.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+S. Robson Walton,1999,7,world,15.8,"Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139 | NOTE: AP/CBS: 'Walton family members Nos. 8-11, $16 billion each' (members not named)"
+S. Robson Walton,2000,7,world,20.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i
+S. Robson Walton,2001,7,world,18.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 9 in CORGIS 2001
+S. Robson Walton,2001,10,forbes400,17.5,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: tied No.5
+Salim Ahmed Bin Mahfouz,1987,10,world,6.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Sam Walton,1987,10,forbes400,8.5,Verdict 'Forbes 100th birthday' list of Forbes 400 No.1 by year https://www.verdict.co.uk/forbes-100th-birthday/ | NOTE: No.1; valued before Oct-1987 crash
+Sam Walton,1987,10,world,7.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: conflicts with Forbes 400 Oct-1987 value of 8.5
+Sam Walton,1988,10,forbes400,6.7,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/ | NOTE: No.1; holdings as of 1988-08-30
+Sam Walton,1989,7,world,8.7,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/ | NOTE: ranked 3rd
+Sam Walton,1991,10,forbes400,4.4,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Samuel I. & Donald Newhouse,1990,7,world,5.2,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says | NOTE: joint entry
+Samuel I. & Donald Newhouse,1993,7,world,7.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Samuel I. & Donald Newhouse,1997,7,world,9.0,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Samuel I. Newhouse Jr.,1988,10,forbes400,2.6,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Samuel I. Newhouse Jr.,1996,10,forbes400,4.5,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 49 in CORGIS 1996
+Samuel I. Newhouse Jr.,1997,10,forbes400,4.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Samuel I. Newhouse Jr.,1999,7,world,4.5,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Samuel I. Newhouse Jr.,2001,7,world,5.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 70 in CORGIS 2001
+Shari Arison,2001,7,world,3.7,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 109 in CORGIS 2001
+Sheldon Adelson,2001,7,world,1.0,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 490 in CORGIS 2001
+Shigeru Kobayashi,1987,10,world,7.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Shin Kyuk-ho,1989,7,world,8.0,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/
+Shin Kyuk-ho,1990,7,world,7.5,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says | NOTE: AP: '$7 billion to $8 billion'; 7.5 from Wikipedia table
+Shin Kyuk-ho,1991,7,world,6.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Shin Kyuk-ho,1992,7,world,6.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Sid & Lee Bass & brothers,1993,7,world,6.8,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Stefan Persson,1996,7,world,1.4,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 285 in CORGIS 1996
+Stefan Persson,2001,7,world,5.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 64 in CORGIS 2001
+Steve Ballmer,1992,10,forbes400,1.1,Harvard Crimson 1992-10-06 https://www.thecrimson.com/article/1992/10/6/gates-named-richest-in-us-pwilliam/
+Steve Ballmer,1996,10,forbes400,3.7,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 66 in CORGIS 1996
+Steve Ballmer,1997,7,world,7.5,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Steve Ballmer,1997,10,forbes400,8.3,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Steve Ballmer,1999,7,world,19.5,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Steve Ballmer,1999,10,forbes400,23.0,AP via CBS 1999-09-24 (Forbes 400 Oct 11 1999) https://www.cbsnews.com/news/the-richest-of-them-all | NOTE: No.4
+Steve Ballmer,2001,7,world,16.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 13 in CORGIS 2001
+Steve Ballmer,2001,10,forbes400,15.1,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: No.10
+Steve Jobs,2001,7,world,1.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 387 in CORGIS 2001
+Sumner Redstone,1988,10,forbes400,1.4,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Sumner Redstone,1995,10,forbes400,4.8,AP via Spokesman-Review 1995-10-02 https://spokesman.com/stories/1995/oct/02/for-second-straight-year-gates-leads-list-of | NOTE: No.5
+Sumner Redstone,1996,10,forbes400,3.4,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 77 in CORGIS 1996
+Sumner Redstone,1997,10,forbes400,3.1,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Sumner Redstone,1999,7,world,8.7,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Sumner Redstone,2001,7,world,12.6,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 18 in CORGIS 2001
+Taikichiro Mori,1987,10,world,15.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Taikichiro Mori,1988,7,world,18.0,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/
+Taikichiro Mori,1989,7,world,14.2,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/
+Taikichiro Mori,1990,7,world,14.6,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Taikichiro Mori,1991,7,world,15.0,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/ | NOTE: ranked No.1 individual
+Taikichiro Mori,1992,7,world,13.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Tan Yu,1996,7,world,7.0,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 16 in CORGIS 1996
+Ted Arison,1996,7,world,2.0,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 193 in CORGIS 1996
+Ted Turner,1996,10,forbes400,2.1,CORGIS billionaires.csv year 1996; US values match Forbes 400 (Oct 14 1996) not the July world list https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 183 in CORGIS 1996
+Ted Turner,1997,10,forbes400,3.5,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Ted Turner,1999,7,world,7.8,WSWS 1999-06-30 on Forbes July 5 1999 list https://www.wsws.org/en/articles/1999/06/rich-j30.html
+Ted Turner,2000,10,forbes400,9.1,Reuters via CIOL 2000-09-22 (Forbes 400 Oct 9 2000) https://www.ciol.com/oracles-ellison-challenges-gates-us-richest | NOTE: No.21
+Ted Turner,2001,7,world,8.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 35 in CORGIS 2001
+Thomas Pritzker,2001,7,world,5.5,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 57 in CORGIS 2001
+Tsai Wan-lin,1995,7,world,8.5,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Tsai Wan-lin,1996,7,world,12.2,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 5 in CORGIS 1996
+Tsai Wan-lin,2001,7,world,3.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 104 in CORGIS 2001
+Tsai Wan-lin & family,1994,7,world,7.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Tsai Wan-lin & family,1997,7,world,11.3,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Walter Annenberg,1997,10,forbes400,3.8,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Walter Haefner,1996,7,world,5.5,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 25 in CORGIS 1996
+Walton family,1990,7,world,13.3,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says | NOTE: Wikipedia table says 13.5
+Walton family,1991,7,world,18.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: UPI/AP 1991 say '$18 billion'; families ranked separately from individuals
+Walton family,1992,7,world,23.8,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Walton family,1993,7,world,25.3,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Walton family,1994,7,world,22.6,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Walton family,1995,7,world,23.4,"AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/ | NOTE: richest family, listed separately; Wikipedia table says 23.5"
+Walton family,1996,7,world,22.9,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Walton family,1997,7,world,27.6,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Walton family,1998,7,world,48.0,WSWS 1998-06-23 on Forbes July 6 1998 list (also 1997 comparisons) https://www.wsws.org/en/articles/1998/06/list-j23.html | NOTE: matches Wikipedia table
+Warren Buffett,1989,7,world,3.5,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/ | NOTE: about
+Warren Buffett,1990,10,forbes400,3.3,AP/Seattle P-I 1991-10-07 ('grew to $4.2 billion from $3.3 billion') via https://tech-insider.org/personal-computers/research/1991/1007.html | NOTE: No.2 in 1990; value quoted in 1991 AP story
+Warren Buffett,1991,10,forbes400,4.2,Deseret News 1991-10-07 Forbes 400 top-10 table https://www.deseret.com/1991/10/7/18944848/entertainment-mogul-tops-richest-list-again/
+Warren Buffett,1993,7,world,6.6,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Warren Buffett,1993,10,forbes400,8.3,AP via Roanoke Times 1993-10-04 (Forbes Oct 18 1993) https://scholar.lib.vt.edu/VA-news/ROA-Times/issues/1993/rt9310/931004/10040022.htm (page now 410; text seen in search index) | NOTE: No.1 (only year); VERDICT also 8.3
+Warren Buffett,1994,7,world,7.9,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: AP July 1995 confirms 'up from $7.9 billion'
+Warren Buffett,1994,10,forbes400,9.2,AP via Roanoke Times/Virginian-Pilot 1994-10-03 (Forbes Oct 17 1994) https://scholar.lib.vt.edu/VA-news/ROA-Times/issues/1994/rt9410/941003/10040020.htm (page now 410; text seen in search index) | NOTE: No.2
+Warren Buffett,1995,7,world,10.7,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Warren Buffett,1995,10,forbes400,11.8,AP via Spokesman-Review 1995-10-02 https://spokesman.com/stories/1995/oct/02/for-second-straight-year-gates-leads-list-of | NOTE: No.2
+Warren Buffett,1996,7,world,15.3,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: CORGIS 1996 instead has Buffett 15.0 (Forbes 400 value)
+Warren Buffett,1996,10,forbes400,15.0,AP via Deseret News 1996-09-30 (Forbes 400 Oct 14 1996; also gives 1995 values) https://www.deseret.com/1996/9/30/19268729/rich-roll-in-ever-larger-piles-of-dough/ | NOTE: also in CORGIS 1996
+Warren Buffett,1997,7,world,23.2,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Warren Buffett,1997,10,forbes400,21.0,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Warren Buffett,1998,7,world,33.0,WSWS 1998-06-23 on Forbes July 6 1998 list (also 1997 comparisons) https://www.wsws.org/en/articles/1998/06/list-j23.html | NOTE: matches Wikipedia table
+Warren Buffett,1999,7,world,36.0,Irish Times 1999-06-21 (Forbes July 5 1999; cut-off 1999-04-30) https://www.irishtimes.com/business/gates-richest-in-world-forbes-1.198139
+Warren Buffett,1999,10,forbes400,31.0,AP via CBS 1999-09-24 (Forbes 400 Oct 11 1999) https://www.cbsnews.com/news/the-richest-of-them-all | NOTE: No.3
+Warren Buffett,2000,7,world,28.0,AP via CBS 2000-06-15 (Forbes July 3 2000) https://cbsnews.com/news/gates-still-the-richest-says-iforbes-i | NOTE: Wikipedia table says 25.6; AP 2001 'rose $4 billion' to 32.3 supports ~28
+Warren Buffett,2000,10,forbes400,28.0,Reuters via CIOL 2000-09-22 (Forbes 400 Oct 9 2000) https://www.ciol.com/oracles-ellison-challenges-gates-us-richest | NOTE: No.4
+Warren Buffett,2001,7,world,32.3,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 2 in CORGIS 2001
+Warren Buffett,2001,9,other,30.4,AP via HeraldNet 2001-09-27 (Forbes 400 as of 2001-08-27; recalculated to 2001-09-24) https://www.heraldnet.com/business/whos-no-1-its-gates-again/ | NOTE: Forbes recalculation to 2001-09-24
+Warren Buffett,2001,10,forbes400,33.2,Honolulu Star-Bulletin 2002-09-14 table with 2001 Forbes 400 values https://archives.starbulletin.com/2002/09/14/news/story3.html | NOTE: No.2
+William Hewlett,1997,10,forbes400,4.1,Christian Science Monitor 1997-10-02 Forbes 400 top-40 https://csmonitor.com/1997/1002/100297.us.us.6.html
+Wonowidjojo family,1996,7,world,6.7,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 17 in CORGIS 1996
+Wonowidjojo family,1997,7,world,7.3,AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/
+Yohachiro Iwasaki,1987,10,world,5.6,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Yohachiro Iwasaki,1990,7,world,5.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Yoshiaki Tsutsumi,1987,10,world,20.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Yoshiaki Tsutsumi,1988,7,world,18.9,AP via Deseret News 1988-10-11 (Forbes 400 Oct 24 1988 issue; foreign figures from Forbes world list) https://www.deseret.com/1988/10/11/18781150/is-america-amassing-billionaires-forbes-counts-2-more-this-year/ | NOTE: also confirmed by AP 1989 ('last year's $18.9 billion')
+Yoshiaki Tsutsumi,1989,7,world,15.0,AP via Deseret News 1989-07-08 (Forbes July 24 1989 issue) https://www.deseret.com/1989/7/8/18814766/japanese-tycoon-again-listed-as-world-s-richest-person/ | NOTE: reported as 'at least $15 billion'; Mori said to trail by $1bn
+Yoshiaki Tsutsumi,1990,7,world,16.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+Yoshiaki Tsutsumi,1991,7,world,14.0,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/ | NOTE: 'more than $14 billion'; Forbes said up to $35bn if he owns all of holding co.
+Yoshiaki Tsutsumi,1992,7,world,10.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Yoshiaki Tsutsumi,1993,7,world,9.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+Yoshiaki Tsutsumi,1994,7,world,8.5,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires | NOTE: AP Oct 1994 also quotes Forbes at $8.5bn
+Yoshiaki Tsutsumi,1995,7,world,9.0,AP via Spokesman-Review 1995-07-05 (Forbes July 17 1995 issue) https://www.spokesman.com/stories/1995/jul/05/bill-gates-called-worlds-richest-man-microsoft/
+Yoshiaki Tsutsumi,1996,7,world,9.2,CORGIS billionaires.csv (PIIE Freund-Oliver from Forbes) year 1996 https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 8 in CORGIS 1996
+Yoshiaki Tsutsumi,1997,7,world,8.0,"AP via Spokesman-Review 1997-07-14 top-25 (Forbes July 28 1997 issue) https://www.spokesman.com/stories/1997/jul/14/nothing-micro-or-soft-about-gates-fortune/ | NOTE: Tsutsumi No.22, down from No.7 in 1996"
+Yoshiaki Tsutsumi,2001,7,world,2.8,CORGIS billionaires.csv year 2001 (= Forbes world list June 2001; matches AP and Forbes-derived Kaggle 1997-2023 data) https://corgis-edu.github.io/corgis/csv/billionaires/ | NOTE: rank 167 in CORGIS 2001
+du Pont family,1990,7,world,10.0,AP via Deseret News 1990-07-10 (Forbes July 23 1990 issue) https://www.deseret.com/1990/7/10/18870785/japan-man-is-richest-forbes-says
+du Pont family,1991,7,world,10.0,UPI 1991-07-08 (Forbes July 22 1991 issue) https://www.upi.com/Archives/1991/07/08/Forbes-Japanese-real-estate-tycoon-becomes-richest-man/9326678945600/
+du Pont family,1993,7,world,8.6,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires
+du Pont family,1994,7,world,9.0,Wikipedia 'The World's Billionaires' annual top-10 table https://en.wikipedia.org/wiki/The_World%27s_Billionaires

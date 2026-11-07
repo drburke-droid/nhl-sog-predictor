@@ -62,6 +62,8 @@ def build(dl, research):
     gil = os.path.join(research, "gilded", "anchors.csv")
     if os.path.exists(gil):
         for r in csv.DictReader(open(gil)):
+            if "Klepper" in r.get("kind", ""):      # lifetime figures with gifts added back: not a fortune on a date
+                continue
             vals = [r.get(k) for k in ("net_worth_musd", "low_musd", "high_musd")]
             try:
                 v = float(vals[0]) if vals[0] else np.sqrt(float(vals[1]) * float(vals[2]))
