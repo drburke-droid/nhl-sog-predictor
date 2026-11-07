@@ -1,7 +1,8 @@
 """A small .blend that only assembles the finished film: the rendered 4K frames, the HUD overlay, the title,
 the sound and (optionally) the short captions, with every path pointing at one folder on the user's PC.
 
-    blender -b -P blender_compose.py -- --dir "C:\\Users\\me\\Downloads\\film\\render4k" [--out compose.blend]
+    blender -b -P blender_compose.py -- [--dir "C:\\Users\\me\\Downloads\\film\\render4k"] [--out compose.blend]
+    (default --dir //render4k: everything relative to the .blend, which sits in the project folder)
 
 The folder must hold frame_0000.png ... frame_NNNN.png, hud.mov (+ hud_tail.mov), every_grain_of_us_score_with_narration.wav
 and, for the music-only cut, every_grain_of_us_score.wav and captions_4k.mov. The strips are built from the
@@ -19,7 +20,8 @@ import story as S
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 arg = lambda name, d=None: argv[argv.index(name) + 1] if name in argv else d
-DIR = arg("--dir").rstrip("\\/")
+DIR = arg("--dir", "//render4k").rstrip("\\/")
+REL = DIR.startswith("//")                 # paths relative to the .blend: frames in DIR, other files beside it
 OUT = arg("--out", os.path.join(HERE, "out", "every_grain_of_us_compose.blend"))
 LOCAL = dict(hud=arg("--hud", os.path.join(HERE, "out", "blender_film", "hud.mov")),
              hud_tail=arg("--hud-tail", os.path.join(HERE, "out", "blender_film", "hud_tail.mov")),
@@ -28,7 +30,7 @@ LOCAL = dict(hud=arg("--hud", os.path.join(HERE, "out", "blender_film", "hud.mov
 FONT_DIR = "/usr/share/fonts/opentype/inter"
 FPS, RES = 30, (3840, 2160)
 NFRAMES = int(round(S.DURATION * FPS))
-win = lambda name: ntpath.join(DIR, name)            # a path in the user's (Windows) folder
+win = lambda name: "//" + name if REL else ntpath.join(DIR, name)   # beside the .blend, or in the user's folder
 
 # the Video Editing template: opens straight into the sequencer with a preview
 bpy.ops.wm.read_homefile(app_template="Video_Editing")
@@ -48,7 +50,7 @@ for s in list(sed.sequences_all):
 
 # 1 frames
 frames = sed.sequences.new_image("Frames", os.path.join(HERE, "frame_0000.png"), channel=1, frame_start=0)
-frames.directory = DIR
+frames.directory = DIR + "/" if REL else DIR
 frames.elements[0].filename = "frame_0000.png"
 for f in range(1, NFRAMES):
     frames.elements.append(f"frame_{f:04d}.png")
@@ -123,7 +125,7 @@ r.ffmpeg.audio_codec = "AAC"
 r.ffmpeg.audio_bitrate = 320
 r.ffmpeg.audio_channels = "STEREO"
 r.ffmpeg.audio_mixrate = 48000
-r.filepath = ntpath.join(ntpath.dirname(DIR), "every_grain_of_us_4k.mp4")
+r.filepath = "//every_grain_of_us_4k.mp4" if REL else ntpath.join(ntpath.dirname(DIR), "every_grain_of_us_4k.mp4")
 ed.sync_mode = "AUDIO_SYNC"                   # preview plays in time with the sound, dropping frames if needed
 
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True, relative_remap=False)   # keep the Windows paths absolute

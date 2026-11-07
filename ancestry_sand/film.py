@@ -558,7 +558,7 @@ class Painter:
                 cx = cx - C.WRAP if cx > 1900 else cx
                 ci, cj = int(cx // Sd.CELL), int(cy // Sd.CELL)
                 top = sim.h.reshape(Sd.HC, Sd.WC)[max(cj - 4, 0):cj + 5, max(ci - 4, 0):ci + 5].max()
-                x, y = self.project(np.array([cx]), np.array([cy]), np.array([top * GRAIN_DZ + 8.0]))
+                x, y = self.project(np.array([cx]), np.array([cy]), np.array([top * GRAIN_DZ * 0.35]))   # a third up the tower
                 x, y = float(x[0]) * k, float(y[0]) * k
                 spr = self.text_sprite(name, self.f_city, INK * 255, halo=True)
                 self.blit(img, spr, x - spr.shape[1] / 2, y - spr.shape[0] - 6 * k, 0.95 * a)

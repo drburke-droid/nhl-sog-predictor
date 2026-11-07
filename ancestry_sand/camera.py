@@ -278,7 +278,7 @@ def P_of(pose):
     E = np.hstack([R, (-R @ loc)[:, None]]) @ np.vstack([M, [0, 0, 0, 1]])
     Kk = np.array([[FOCAL_PX, 0, W / 2], [0, FOCAL_PX, H / 2], [0, 0, 1]])
     P = Kk @ E
-    return P / P[2, 3]
+    return P / abs(P[2, 3])          # (never flip the sign: w > 0 stays 'in front of the camera')
 
 
 def hom(P, z=0.0):
