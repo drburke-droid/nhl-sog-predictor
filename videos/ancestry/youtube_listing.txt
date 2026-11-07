@@ -20,6 +20,7 @@ HOW TO READ IT
 • Each colour of sand is a strand of ancestry: the ancestry components used in ancient-DNA studies. They are labels for ancient populations, not races.
 • Each glass vessel is a region, holding the average ancestry of the people who live there today.
 • Sand is proportional to population, so the map starts as a sparse scatter and fills as humanity grows: 1 grain ≈ 120 people 200,000 years ago, ≈ 56,000 today.
+• Each streak of flying sand is a fifth of a grain (≈ 11,000 people today, ≈ 2,200 in the 1650s), so every migration stream is drawn to scale.
 • The mountains are the world's cities: every one of 1 million people or more. The bigger the city, the higher the summit and the wider the base. Tokyo is the tallest. Coastal cities spill over the glass.
 • White sand is Neanderthal ancestry; pale blue is Denisovan.
 
@@ -42,7 +43,6 @@ WHAT'S SIMPLIFIED
 • Many dates are debated, so the film gives ranges or minimums: the main exit from Africa 70,000–50,000 years ago (earlier ventures, about 120,000 years ago, left little trace); Australia by at least 50,000 years ago (possibly 65,000); the Americas by at least 20,000 years ago (the White Sands footprints suggest 23,000–21,000).
 • Regions show today's average ancestry, so colonised countries such as the US, Canada and Australia look mostly European. Indigenous peoples and their ancestry continue there.
 • Ancestry is really continuous; the colours are broad, standard components. Population sizes before farming are rough estimates (within about 3×), and to keep the early map readable a grain stands for fewer people then than today.
-• Migration streams are drawn three times denser than the sand they deliver, so they can be seen; every stream keeps its true size relative to the others.
 • City mountains are drawn bigger than their share of the sand so they can be seen: a summit's height ranks cities by size (it grows a little slower than population, so Tokyo isn't a needle), and the mountains borrow sand from the surrounding countryside.
 • City sizes are 2025 urban-agglomeration projections (UN World Urbanization Prospects 2018).
 • Polynesia is drawn as Hawai'i but stands for Polynesians as a people, whose ancestors reached Tonga and Samoa about 2,900 years ago.

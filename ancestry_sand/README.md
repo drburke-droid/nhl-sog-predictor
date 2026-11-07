@@ -131,10 +131,10 @@ land. All the mountains are computed at once each frame (`sand.CF`: one entry pe
   composition P; the grains are a physical picture of it:
   - *founding*: a handful of real grains flies from the source and the newcomers multiply by budding
     copies of themselves. A small random sample is how the founder effect shows up.
-  - *gene flow*: grains stream along the route and land on top. The stream flies `story.FLY_PER_GRAIN` (3)
-    grains for every grain that lands, the same multiple for every flow, so streams stay in proportion to
-    one another: a small flow is a thin trickle and a large one a broad river (1 would be literal but hard
-    to see in the wide shot). As many grains of the colours now over
+  - *gene flow*: grains stream along the route and land on top. A flying streak is a fifth of a grain
+    (`story.FLY_PER_GRAIN` = 5 streaks per landing grain, the same for every flow), so streams stay in
+    proportion to one another and the screen says what a streak stands for ("1 streak = N people", under
+    the grain scale, until the flight through the cities). As many grains of the colours now over
     their share make way elsewhere in the vessel.
   - *jostling*: neighbouring grains keep swapping places, so a new layer slowly blends in.
   - *isolation and drift*: in an isolated vessel, grains of the ancestral colour turn one by one into a

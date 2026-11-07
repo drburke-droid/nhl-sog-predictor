@@ -238,6 +238,23 @@ class Painter:
         reg *= (1 - a)
         reg += s[..., :3] * a
 
+    def streak_text(self, sim, s):
+        """'1 streak = N people' and its opacity: a flying grain stands for a share of a grain (1/FLY_PER_GRAIN),
+        shown while the migrations run and fading out as the camera comes down at the end."""
+        if S.FLY_PER_GRAIN <= 1:
+            return None, 0.0
+        ppl = Sd.world_pop(ybp_at(s)) / max(int(sim.counts.sum()), 1) / S.FLY_PER_GRAIN
+        ppl = float(f"{ppl:.2g}")
+        a = 0.8 * (1 - smooth((s - (S.TODAY_S + 2.0)) / 1.5))
+        return f"1 streak \u2248 {ppl:,.0f} people", a
+
+    def streak_line(self, img, sim, s):
+        text, a = self.streak_text(sim, s)
+        if text and a > 0.003:
+            k = self.k
+            year_h = self.text_sprite("0", self.f_year, INK * 255).shape[0]
+            self.blit(img, self.text_sprite(text, self.f_year_sub, INK * 255), 48 * k, 26 * k + year_h + 30 * k + 23 * k, a)
+
     def panel(self, img, x0, y0, x1, y1, a):
         """A soft dark backing behind HUD text, so it reads over sand in the close-ups."""
         key = ("panel", int(x0), int(y0), int(x1), int(y1))
@@ -579,6 +596,7 @@ class Painter:
         ppl = float(f"{ppl:.2g}") if ppl < 1000 else round(ppl, -3)
         line = f"1 grain \u2248 {ppl:,.0f} people"
         self.blit(img, self.text_sprite(line, self.f_year_sub, INK * 255), 48 * k, 26 * k + spr.shape[0] + 30 * k, 0.85)
+        self.streak_line(img, sim, s)
         lx, ly = 40 * k, 700 * k
         if sim.first_seen:
             self.blit(img, self.text_sprite("ANCESTRY  (COLOUR OF SAND)", self.f_leg_h, MUTED * 255), lx, ly - 24 * k, 0.8)

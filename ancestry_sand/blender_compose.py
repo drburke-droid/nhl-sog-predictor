@@ -3,6 +3,7 @@ the sound and (optionally) the short captions, with every path pointing at one f
 
     blender -b -P blender_compose.py -- [--dir "C:\\Users\\me\\Downloads\\film\\render4k"] [--out compose.blend]
         [--hud-parts "path/hud_part1.mov@0,path/hud_part2.mov@2220,..."]   (the HUD in pieces, each under 100 MB)
+        [--streak path/streak_scale.mov]     (the '1 streak = N people' line as its own overlay)
     (default --dir //render4k: everything relative to the .blend, which sits in the project folder)
 
 The folder must hold frame_0000.png ... frame_NNNN.png, hud.mov (+ hud_tail.mov), every_grain_of_us_score_with_narration.wav
@@ -75,6 +76,13 @@ if not PARTS and os.path.exists(LOCAL["hud_tail"]):
     tail = sed.sequences.new_movie("HUD (world tour)", LOCAL["hud_tail"], channel=2, frame_start=TAIL)
     tail.filepath = win("hud_tail.mov")
     tail.blend_type = "ALPHA_OVER"
+
+# 9 the '1 streak = N people' line, when the HUD was exported before it was part of the HUD
+STREAK = arg("--streak")
+if STREAK:
+    st = sed.sequences.new_movie("Streak scale", STREAK, channel=9, frame_start=0)
+    st.filepath = win(os.path.basename(STREAK))
+    st.blend_type = "ALPHA_OVER"
 
 # 3-4 title over a darkened opening; fades out between 4.2 and 5.8 s, as in the film
 t_on, t_off = int(4.2 * FPS), int(5.8 * FPS)

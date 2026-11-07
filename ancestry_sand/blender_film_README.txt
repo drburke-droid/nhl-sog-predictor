@@ -26,6 +26,7 @@ What is in this folder
                                    file plays them one after another.
   every_grain_of_us_score_with_narration.wav   the epic score + Lily's voice-over (used by default)
   every_grain_of_us_score.wav                  the epic score alone (for the captions version)
+  streak_scale.mov                 the "1 streak = N people" line under the grain scale, transparent
   captions_4k.mov                  short captions, transparent (for the music-only version)
   narration.srt, captions_short.srt   subtitle files for YouTube
   render4k\                        the frames go here (empty apart from a note)
@@ -44,10 +45,12 @@ New in version 3.2 (the complete package): the cities are mountains of poured sa
 deeper, richer grade, as in the thumbnails; the music is the epic score (a driving cello figure in
 6/8 that builds to the full orchestra for the flight through the cities); and the clicks at the ends
 of a few voice-over lines are gone.
-Updated: the migration streams are now in proportion. Each stream flies three grains for every grain
-that lands, the same for every migration, so a flow twice as large is twice as dense (before, every stream
-was drawn at about the same density whatever its size). Only every_grain_of_us.blend changed; the HUD,
-sound and compose file are the same.
+Updated: the migration streams are now in proportion. A flying streak is a fifth of a grain, so each
+stream flies five streaks for every grain that lands, the same for every migration (a flow twice as large is
+twice as dense; before, every stream was drawn at about the same density whatever its size). The screen
+says so under the grain scale: "1 streak = N people" (2,200 in the 1650s, 11,000 today), from the new
+streak_scale.mov overlay. Changed: every_grain_of_us.blend, every_grain_of_us_compose.blend and the new
+streak_scale.mov; the HUD parts and the sound are the same.
 
 
 1. TURN ON YOUR GRAPHICS CARD (once)

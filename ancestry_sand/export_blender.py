@@ -110,6 +110,41 @@ def export_hud(k=1, workers=4, start=0, name="hud.mov"):
     print(f"wrote {name} ({W * k}x{H * k}, frames {start}-{n - 1}) in {time.time() - t0:.0f}s")
 
 
+def export_streak(k=2, name="streak_scale.mov"):
+    """The '1 streak = N people' line alone, as its own transparent overlay (for a HUD exported before the line
+    existed; a fresh full HUD export already draws it). Same place and type as in the HUD."""
+    from film import INK
+    sim, pt = Sd.Sand(), Painter(hud_scale=k)
+    n = int(os.environ.get("SAND_EXPORT_FRAMES", round(S.DURATION * FPS)))
+    w, h = W * k, H * k
+    ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{w}x{h}",
+                           "-r", str(FPS), "-i", "-", "-c:v", "qtrle", "-pix_fmt", "argb", "-g", "300",
+                           os.path.join(OUTD, name)], stdin=subprocess.PIPE)
+    year_h = pt.text_sprite("0", pt.f_year, (255, 255, 255)).shape[0]
+    x0, y0 = 48 * k, 26 * k + year_h + 30 * k + 23 * k
+    cache, t0 = {}, time.time()
+    for f in range(n):
+        s_ = f / FPS
+        sim.step(s_)
+        text, a = pt.streak_text(sim, s_)
+        key = (text, int(round(a * 255))) if text and a > 0.003 else None
+        if key not in cache:
+            fr = np.zeros((h, w, 4), np.uint8)
+            if key:
+                spr = pt.text_sprite(text, pt.f_year_sub, INK * 255)
+                sh, sw = spr.shape[:2]
+                fr[y0:y0 + sh, x0:x0 + sw, :3] = np.clip(spr[..., 2::-1], 0, 255).astype(np.uint8)      # BGR
+                fr[y0:y0 + sh, x0:x0 + sw, 3] = np.clip(spr[..., 3] * a * 255, 0, 255).astype(np.uint8)
+            cache[key] = fr.tobytes()
+            if len(cache) > 64:                      # keep memory small: the line changes slowly
+                cache = {key: cache[key]}
+        ff.stdin.write(cache[key])
+        if f % 600 == 0:
+            print(f"  streak frame {f}/{n}  {time.time() - t0:.0f}s  {text} a={a:.2f}", flush=True)
+    ff.stdin.close(); ff.wait()
+    print(f"wrote {name} ({w}x{h}, {n} frames) in {time.time() - t0:.0f}s")
+
+
 def export_captions(k=1):
     """captions.mov: story.SHORT_CAPTIONS as a transparent overlay (k x 1920x1080), styled like the HUD's
     captions, plus captions_short.srt for players and platforms."""
@@ -241,6 +276,9 @@ def main():
 
 if __name__ == "__main__":
     arg = lambda name, d: int(sys.argv[sys.argv.index(name) + 1]) if name in sys.argv else d
+    if "--streak-only" in sys.argv:
+        export_streak(k=arg("--scale", 2))
+        sys.exit()
     if "--captions-only" in sys.argv:
         export_captions(k=arg("--scale", 1))
         sys.exit()

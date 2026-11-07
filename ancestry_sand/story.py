@@ -147,7 +147,7 @@ MEGACITIES = [
 import os as _os
 # Migration streams: flying grains drawn per grain that lands. Every stream uses the same multiple, so streams
 # stay in proportion to one another (a flow twice as large is twice as dense); >1 only makes them easier to see.
-FLY_PER_GRAIN = int(_os.environ.get("SAND_FLY_PER_GRAIN", "3"))
+FLY_PER_GRAIN = int(_os.environ.get("SAND_FLY_PER_GRAIN", "5"))   # 1 streak = a fifth of a grain (on screen)
 CITY_H5 = 22.0          # summit height of a 5-million city, in grain levels
 CITY_EXP = 0.8          # summit height grows as population^0.8: in order of size, without needles
 CITY_SLOPE = 6.0        # mean flank slope, grain levels per cell (about 48 degrees): a pile, not a tower
