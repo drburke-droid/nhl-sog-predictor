@@ -115,6 +115,50 @@ POP = {
     "AMZ": [2, 8, 4, 70, 298], "ADS": [4, 12, 3, 15, 64], "SCN": [0.5, 2, 1.5, 25, 76],
     "GRL": [0.001, 0.003, 0.008, 0.02, 0.056], "NZL": [0.0, 0.1, 0.1, 2, 5.2],
 }
+# The world's urban agglomerations of about 5 million people or more: (name, lon, lat, millions in 2025,
+# rounded; UN World Urbanization Prospects 2018). Each is a tower of the same footprint, so its height
+# stands for its population; the rest of a region's people are spread by density, with no towers.
+MEGACITIES = [
+    ("Tokyo", 139.7, 35.7, 37.0), ("Delhi", 77.2, 28.6, 33.0), ("Shanghai", 121.5, 31.2, 29.5),
+    ("Dhaka", 90.4, 23.8, 23.9), ("S\u00e3o Paulo", -46.6, -23.5, 22.8), ("Cairo", 31.2, 30.0, 22.6),
+    ("Mexico City", -99.1, 19.4, 22.5), ("Beijing", 116.4, 39.9, 22.1), ("Mumbai", 72.9, 19.1, 21.7),
+    ("Osaka", 135.5, 34.7, 18.9), ("New York", -74.0, 40.7, 18.9), ("Chongqing", 106.5, 29.6, 17.8),
+    ("Karachi", 67.0, 24.9, 17.6), ("Kinshasa", 15.3, -4.3, 17.0), ("Lagos", 3.4, 6.5, 16.5),
+    ("Istanbul", 29.0, 41.0, 16.0), ("Buenos Aires", -58.4, -34.6, 15.6), ("Kolkata", 88.4, 22.6, 15.5),
+    ("Manila", 121.0, 14.6, 14.9), ("Guangzhou", 113.3, 23.1, 14.6), ("Lahore", 74.3, 31.5, 14.4),
+    ("Tianjin", 117.2, 39.1, 14.2), ("Bangalore", 77.6, 13.0, 14.0), ("Rio de Janeiro", -43.2, -22.9, 13.8),
+    ("Shenzhen", 114.1, 22.5, 13.5), ("Moscow", 37.6, 55.8, 12.7), ("Los Angeles", -118.2, 34.1, 12.5),
+    ("Chennai", 80.3, 13.1, 12.3), ("Bogot\u00e1", -74.1, 4.7, 11.8), ("Jakarta", 106.8, -6.2, 11.4),
+    ("Lima", -77.0, -12.0, 11.4), ("Paris", 2.35, 48.9, 11.3), ("Bangkok", 100.5, 13.8, 11.2),
+    ("Hyderabad", 78.5, 17.4, 11.1), ("Seoul", 127.0, 37.6, 10.0), ("Chengdu", 104.1, 30.7, 9.9),
+    ("London", -0.1, 51.5, 9.8), ("Nagoya", 136.9, 35.2, 9.6), ("Tehran", 51.4, 35.7, 9.5),
+    ("Nanjing", 118.8, 32.1, 9.4), ("Ho Chi Minh City", 106.7, 10.8, 9.3), ("Luanda", 13.2, -8.8, 9.3),
+    ("Chicago", -87.6, 41.9, 8.9), ("Wuhan", 114.3, 30.6, 8.6), ("Ahmedabad", 72.6, 23.0, 8.6),
+    ("Kuala Lumpur", 101.7, 3.1, 8.6), ("Xi'an", 108.9, 34.3, 8.3), ("Dar es Salaam", 39.3, -6.8, 7.8),
+    ("Hong Kong", 114.2, 22.3, 7.7), ("Baghdad", 44.4, 33.3, 7.7), ("Riyadh", 46.7, 24.7, 7.5),
+    ("Santiago", -70.7, -33.4, 6.9), ("Madrid", -3.7, 40.4, 6.7), ("Toronto", -79.4, 43.7, 6.4),
+    ("Johannesburg", 28.0, -26.2, 6.2), ("Khartoum", 32.5, 15.6, 6.2), ("Singapore", 103.8, 1.35, 6.0),
+    ("Abidjan", -4.0, 5.3, 5.9), ("Yangon", 96.2, 16.8, 5.6), ("Addis Ababa", 38.7, 9.0, 5.5),
+    ("Nairobi", 36.8, -1.3, 5.3), ("Melbourne", 145.0, -37.8, 5.2), ("Sydney", 151.2, -33.9, 5.1),
+    ("Antananarivo", 47.5, -18.9, 4.0), ("Santo Domingo", -69.9, 18.5, 3.6), ("Port-au-Prince", -72.3, 18.5, 2.9),
+]
+CITY_FOOTPRINT = 3      # cells per city tower (the same for every city)
+BACKGROUND_CAP = 60     # grains: the most the countryside piles up; only cities rise above it
+
+
+def urban_frac(year):
+    """A megacity's population as a share of today's, by calendar year (world urban growth, roughly:
+    UN WUP; Bairoch 1988): most were small until 1900 and grew fastest after 1950."""
+    pts = [(1, 0.01), (1500, 0.02), (1800, 0.04), (1900, 0.10), (1950, 0.25), (1975, 0.45), (2000, 0.75),
+           (2015, 0.92), (2025, 1.0)]
+    if year <= pts[0][0]:
+        return 0.0
+    for (y0, f0), (y1, f1) in zip(pts, pts[1:]):
+        if year <= y1:
+            return f0 + (f1 - f0) * (year - y0) / (y1 - y0)
+    return 1.0
+
+
 # Before farming, people spread by habitable land: forager densities were lower in the Arctic and sub-Arctic,
 # the great deserts and the high Andes (Binford 2001; Kelly 2013). Share of a vessel's area counted as
 # habitable, for the pre-farming sand (1 elsewhere).

@@ -122,9 +122,9 @@ VALID = np.where(VID >= 0)[0]
 
 
 def build_density():
-    """Where people live today, per cell: city and town populations (Natural Earth populated places)
-    spread into tight urban peaks plus wider halos for the surrounding farmland, compressed a little,
-    and scaled to mean 1 within each vessel. Inset (magnified) vessels are left uniform."""
+    """Where people live today outside the great cities, per cell: town and city populations (Natural Earth
+    populated places, without the megacities, which are towers of their own) spread into halos for the
+    surrounding countryside, scaled to mean 1 within each vessel. Inset (magnified) vessels are uniform."""
     import json, os
     from proj import to_px
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ne_10m_populated_places_simple.geojson")
@@ -136,11 +136,12 @@ def build_density():
     lon = np.array([x["properties"]["longitude"] for x in f], float)
     lat = np.array([x["properties"]["latitude"] for x in f], float)
     pop = np.array([max(x["properties"].get("pop_max") or 0, 1000) for x in f], float)
+    pop[pop >= 3e6] = 0.0                                       # the megacities: towers, not countryside
     x, y = to_px(lon, lat)
     ix = np.clip((x / CELL).astype(int), 0, WC - 1); iy = np.clip((y / CELL).astype(int), 0, HC - 1)
     g = np.zeros((HC, WC), np.float32)
     np.add.at(g, (iy, ix), pop)
-    parts = [(1.2, 0.45), (5.0, 0.35), (16.0, 0.20)]            # (sigma in cells, weight)
+    parts = [(2.5, 0.35), (5.0, 0.40), (16.0, 0.25)]            # (sigma in cells, weight)
     d = sum(w * cv2.GaussianBlur(g, (0, 0), sg) / max(cv2.GaussianBlur(g, (0, 0), sg).sum(), 1) for sg, w in parts)
     d = d.ravel() ** (1.0 if TOWERS else 0.7)
     out = np.ones(NCELL, np.float32)
@@ -156,6 +157,23 @@ def build_density():
 
 
 DENS = build_density()
+
+
+def build_cities():
+    """Each megacity's footprint: the CITY_FOOTPRINT cells nearest to it, in the vessel it falls in."""
+    from proj import to_px
+    out = []
+    for name, lon, lat, mil in S.MEGACITIES:
+        x, y = (float(v) for v in to_px(lon, lat))
+        d = np.hypot(CELL_XY[VALID, 0] - x, CELL_XY[VALID, 1] - y)
+        if d.min() > 15.0:                                      # nowhere near any land on the map
+            continue
+        vi = VID[VALID[np.argmin(d)]]
+        cells = VCELLS[vi]
+        dd = np.hypot(CELL_XY[cells, 0] - x, CELL_XY[cells, 1] - y)
+        out.append((name, vi, cells[np.argsort(dd)[:S.CITY_FOOTPRINT]], mil * 1e6))
+    return out
+
 
 
 def build_affinity():
@@ -185,6 +203,7 @@ def build_affinity():
 
 GMAX = HFULL * NCELLS_V.sum()
 CELL_XY = np.stack([(np.arange(NCELL) % WC + 0.5) * CELL, (np.arange(NCELL) // WC + 0.5) * CELL], 1)
+CITIES = build_cities()
 from scipy.spatial import cKDTree
 VTREE = [cKDTree(CELL_XY[c]) for c in VCELLS]
 LA = build_affinity()
@@ -446,14 +465,45 @@ class Sand:
         return w * w * (3 - 2 * w)
 
     def cell_targets(self):
-        """Target pile height per cell: each vessel's grains spread in proportion to where its people
-        live (evenly before farming, by today's population density once settled life takes over)."""
-        w = self.farm_w(ybp_at(self.s))
-        we = (1 - w) + w * DENS[VALID]
-        sums = np.bincount(VID[VALID], we, minlength=NV)
+        """Target pile height per cell. The great cities: each a tower of the same footprint holding its
+        people (at today's people per grain, scaled by how big it was then), so a tower's height is its
+        city's size; it replaces the countryside beneath it rather than standing on it (and on a crowded
+        island where the countryside is higher still, the city simply shares that level). The rest of each
+        vessel's grains spread where its people live (evenly before farming, by density once settled life
+        takes over), levelled off at BACKGROUND_CAP so only cities rise above the land."""
+        ybp = ybp_at(self.s)
+        w = self.farm_w(ybp)
         N = self.counts.sum(1).astype(float)
-        H = np.zeros(NCELL, np.float32)
-        H[VALID] = np.minimum(N[VID[VALID]] * we / np.maximum(sums[VID[VALID]], 1e-9), HMAX - 6)
+        cg = np.zeros(NCELL, np.float32)
+        uf = S.urban_frac(2025.0 - ybp)
+        Cv = np.zeros(NV)
+        if uf > 0 and N.sum() > 0:
+            ppg = world_pop(ybp) / N.sum()
+            for name, vi, cells, pop in CITIES:
+                g = pop * uf / ppg
+                cg[cells] += g / len(cells)
+                Cv[vi] += g
+            scale = np.minimum(1.0, 0.6 * N / np.maximum(Cv, 1e-9))     # cities hold at most 60% of a vessel
+            cg[VALID] *= scale[VID[VALID]]
+        we = (1 - w) + w * DENS[VALID]
+        vid = VID[VALID]
+        bgf = np.zeros(NCELL, np.float32)
+        B = N.copy()
+        for _ in range(2):                    # countryside = what the cities do not take
+            bg = B[vid] * we / np.maximum(np.bincount(vid, we, minlength=NV)[vid], 1e-9)
+            for _ in range(6):                # level off at the cap, refill elsewhere
+                over = bg > S.BACKGROUND_CAP
+                if not over.any():
+                    break
+                ex = np.bincount(vid[over], bg[over] - S.BACKGROUND_CAP, minlength=NV)
+                bg[over] = S.BACKGROUND_CAP
+                room = np.where(over, 0.0, we)
+                bg += ex[vid] * room / np.maximum(np.bincount(vid, room, minlength=NV)[vid], 1e-9)
+            bgf[VALID] = bg
+            extra = np.bincount(vid, np.maximum(cg[VALID] - bg, 0.0), minlength=NV)
+            B = np.maximum(N - extra, 0.0)
+        H = np.maximum(bgf, cg)
+        H = np.minimum(H, HMAX - 6)
         self.Ht = H
         self.Hq = np.floor(H + self.U).astype(np.int32)
 
