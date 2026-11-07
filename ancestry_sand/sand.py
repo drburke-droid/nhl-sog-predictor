@@ -141,8 +141,12 @@ def build_density():
     lon = np.array([x["properties"]["longitude"] for x in f], float)
     lat = np.array([x["properties"]["latitude"] for x in f], float)
     pop = np.array([max(x["properties"].get("pop_max") or 0, 1000) for x in f], float)
-    pop[pop >= 3e6] = 0.0                                       # the megacities: towers, not countryside
     x, y = to_px(lon, lat)
+    cl = [c[1:3] for c in list(S.MEGACITIES) + list(S.CITY_HILLS)]
+    cx, cy = to_px(np.array([c[0] for c in cl]), np.array([c[1] for c in cl]))
+    from scipy.spatial import cKDTree
+    near_city = cKDTree(np.stack([cx, cy], 1)).query(np.stack([x, y], 1))[0] < 6.0
+    pop[(pop >= 3e6) | near_city] = 0.0                         # the cities are mountains, not countryside
     ix = np.clip((x / CELL).astype(int), 0, WC - 1); iy = np.clip((y / CELL).astype(int), 0, HC - 1)
     g = np.zeros((HC, WC), np.float32)
     np.add.at(g, (iy, ix), pop)
@@ -165,27 +169,33 @@ DENS = build_density()
 
 
 def build_cities():
-    """Each megacity's mountain: the cells of its vessel within reach of its widest base, their offset from
-    the summit (in cells), and its fixed irregularities: two to four shoulders (lesser summits on the
-    flanks, like a city's satellite towns), a few broad ridges and gullies, and grain-scale roughness."""
+    """Each city's mountain (the 66 megacities, then every other city of 1 million or more as a hill of
+    the same kind): the cells within reach of its widest base (its own vessel's land, and the sea beside
+    it), their offset from the summit (in cells), and its fixed irregularities: two to four shoulders
+    (lesser summits on the flanks, like a city's satellite towns), a few broad ridges and gullies, and
+    grain-scale roughness."""
     from proj import to_px
     out = []
     rng = np.random.default_rng(23)
-    for name, lon, lat, mil in S.MEGACITIES:
-        x, y = (float(v) for v in to_px(lon, lat))
-        d = np.hypot(CELL_XY[VALID, 0] - x, CELL_XY[VALID, 1] - y)
-        if d.min() > 15.0:                                      # nowhere near any land on the map
+    for name, lon, lat, mil in list(S.MEGACITIES) + list(S.CITY_HILLS):
+        x, y = (float(np.ravel(v)[0]) for v in to_px(lon, lat))
+        dv, j = _VALID_TREE.query((x, y))
+        if dv > 15.0:                                           # nowhere near any land on the map
             continue
-        vi = VID[VALID[np.argmin(d)]]
+        vi = VID[VALID[j]]
         cells = VCELLS[vi]
         centre = cells[np.argmin(np.hypot(CELL_XY[cells, 0] - x, CELL_XY[cells, 1] - y))]   # nearest land
-        reach = S.city_height(mil) / S.CITY_SLOPE * 1.3 + 1.0
-        sea = np.where((VID < 0) & (np.hypot(*(CELL_XY - CELL_XY[centre]).T) / CELL <= reach))[0]
-        sea = sea[VID[VALID[_VALID_TREE.query(CELL_XY[sea])[1]]] == vi]   # beside its own vessel, not another's
-        cells = np.concatenate([cells, sea])
-        off = (CELL_XY[cells] - CELL_XY[centre]) / CELL
-        near = np.hypot(*off.T) <= reach
-        off = off[near]
+        reach = float(S.city_height(mil)) / S.CITY_SLOPE * 1.3 + 1.0
+        cx, cy = centre % WC, centre // WC
+        r = int(np.ceil(reach)) + 1
+        gx, gy = np.meshgrid(np.arange(max(cx - r, 0), min(cx + r + 1, WC)), np.arange(max(cy - r, 0), min(cy + r + 1, HC)))
+        box = (gy * WC + gx).ravel()
+        box = box[np.hypot(*(CELL_XY[box] - CELL_XY[centre]).T) / CELL <= reach]
+        land = box[VID[box] == vi]
+        sea = box[VID[box] < 0]
+        sea = sea[VID[VALID[_VALID_TREE.query(CELL_XY[sea])[1]]] == vi] if len(sea) else sea   # beside its own vessel
+        cl = np.concatenate([land, sea])
+        off = (CELL_XY[cl] - CELL_XY[centre]) / CELL
         ns = int(rng.integers(2, 5))
         ang = rng.uniform(0, 2 * np.pi, ns)
         sat = np.stack([np.cos(ang), np.sin(ang), rng.uniform(0.3, 0.65, ns),       # direction, distance (x R)
@@ -193,10 +203,28 @@ def build_cities():
         ka = rng.uniform(0, 2 * np.pi, 3)
         wav = np.stack([np.cos(ka), np.sin(ka)], 1) * rng.uniform(5.0, 9.0, (3, 1))  # ridges ~1/2 to 1/4 of R apart
         ph = rng.uniform(0, 2 * np.pi, 3)
-        jit = rng.uniform(0.88, 1.12, near.sum())
-        out.append(dict(name=name, vi=vi, cells=cells[near], off=off, dd=np.hypot(*off.T), sat=sat, wav=wav, ph=ph,
+        jit = rng.uniform(0.88, 1.12, len(cl))
+        out.append(dict(name=name, vi=vi, cells=cl, off=off, dd=np.hypot(*off.T), sat=sat, wav=wav, ph=ph,
                         jit=jit, centre=centre, mil=mil))
     return out
+
+
+def _flatten(cities):
+    """The cities' cells as flat arrays (one entry per city cell), for computing every mountain at once."""
+    n = len(cities)
+    F = dict(city=np.concatenate([np.full(len(c["cells"]), i) for i, c in enumerate(cities)]),
+             cell=np.concatenate([c["cells"] for c in cities]), off=np.concatenate([c["off"] for c in cities]),
+             dd=np.concatenate([c["dd"] for c in cities]), jit=np.concatenate([c["jit"] for c in cities]),
+             wav=np.stack([c["wav"] for c in cities]), ph=np.stack([c["ph"] for c in cities]),
+             mil=np.array([c["mil"] for c in cities]), vi=np.array([c["vi"] for c in cities]),
+             centre=np.array([c["centre"] for c in cities]))
+    sat = np.zeros((n, 4, 5)); sat[:, :, 4] = 1.0                 # unused shoulders: zero height
+    for i, c in enumerate(cities):
+        sat[i, :len(c["sat"])] = c["sat"]
+    F["sat"] = sat
+    F["order"] = np.argsort(F["cell"], kind="stable")            # entries grouped by cell, for the per-cell max
+    F["ucell"], F["starts"] = np.unique(F["cell"][F["order"]], return_index=True)
+    return F
 
 
 
@@ -230,6 +258,7 @@ CELL_XY = np.stack([(np.arange(NCELL) % WC + 0.5) * CELL, (np.arange(NCELL) // W
 from scipy.spatial import cKDTree
 _VALID_TREE = cKDTree(CELL_XY[VALID])
 CITIES = build_cities()
+CF = _flatten(CITIES)
 # Sand spilling over the glass: the cells beyond a vessel's wall that a coastal city's mountain spreads onto.
 # They join the city's vessel for the mountain alone (VCELLS, VALID and the countryside stay on land).
 SPILL = np.zeros(NCELL, bool)
@@ -499,18 +528,34 @@ class Sand:
         w = float(np.clip((10_000 - ybp) / 8_000, 0, 1))
         return w * w * (3 - 2 * w)
 
-    def city_shape(self, c, h, R):
-        """Height of city c's mountain on its cells, for summit h and mean base radius R (cells): a cone
-        with slightly concave flanks, lesser summits on its shoulders, ridges and gullies that deepen down
-        the slopes, and grain-scale roughness; the summit itself stands at exactly h."""
-        u = c["dd"] / R
+    def city_rise(self, h, R, bgf):
+        """How far every city's mountain stands above the countryside, per cell, for summit heights h and
+        mean base radii R (cells) per city (h = 0: no mountain yet): a cone with slightly concave flanks,
+        lesser summits on its shoulders, ridges and gullies that deepen down the slopes, and grain-scale
+        roughness; the summit itself stands at exactly h. Where mountains overlap, the higher one counts."""
+        rise = np.zeros(NCELL, np.float32)
+        on = h > 0
+        if not on.any():
+            return rise
+        every = on.all()
+        act = slice(None) if every else on[CF["city"]]           # only the cities that have risen yet
+        i, off, cell = CF["city"][act], CF["off"][act], CF["cell"][act]
+        Ri = R[i]
+        u = CF["dd"][act] / Ri
         f = np.clip(1 - u, 0, 1) ** 1.35
-        for dx, dy, dist, hs, rs in c["sat"]:
-            us = np.hypot(c["off"][:, 0] - dx * dist * R, c["off"][:, 1] - dy * dist * R) / (rs * R)
+        sat = CF["sat"][i]
+        for k in range(4):
+            dx, dy, dist, hs, rs = sat[:, k].T
+            us = np.hypot(off[:, 0] - dx * dist * Ri, off[:, 1] - dy * dist * Ri) / (rs * Ri)
             f = np.maximum(f, hs * np.clip(1 - us, 0, 1) ** 1.35)
-        rid = np.cos((c["off"] / R) @ c["wav"].T + c["ph"]).mean(1)
-        f = f * (1 + 0.22 * rid * np.minimum(u * 2.5, 1)) * np.where(u < 0.08, 1.0, c["jit"])
-        return h * f
+        rid = np.cos(np.einsum("mj,mkj->mk", off / Ri[:, None], CF["wav"][i]) + CF["ph"][i]).mean(1)
+        f = f * (1 + 0.22 * rid * np.minimum(u * 2.5, 1)) * np.where(u < 0.08, 1.0, CF["jit"][act])
+        val = h[i] * f - bgf[cell]
+        if every:                             # the highest per cell
+            rise[CF["ucell"]] = np.maximum(np.maximum.reduceat(val[CF["order"]], CF["starts"]), 0.0)
+        else:
+            np.maximum.at(rise, cell, val.astype(np.float32))
+        return rise
 
     def cell_targets(self):
         """Target pile height per cell. The great cities are mountains of poured sand: summit height for
@@ -545,15 +590,10 @@ class Sand:
             if uf <= 0:
                 break
             for k in range(3):                # steepen (or relax) until the mountains fit their share
-                rise[:] = 0
-                for c in CITIES:
-                    h = S.city_height(c["mil"] * uf)
-                    if h < 4.0:
-                        continue
-                    h = max(h, bgf[c["centre"]] + S.CITY_RELIEF * h)   # on a crowded plain, still a hill
-                    R = max(h / (S.CITY_SLOPE * steep[c["vi"]]), 1.5)
-                    cl = c["cells"]
-                    rise[cl] = np.maximum(rise[cl], self.city_shape(c, h, R) - bgf[cl])
+                h = S.city_height(CF["mil"] * uf)
+                h = np.where(h < 4.0, 0.0, np.maximum(h, bgf[CF["centre"]] + S.CITY_RELIEF * h))  # on a crowded plain, still a hill
+                R = np.maximum(h / (S.CITY_SLOPE * steep[CF["vi"]]), S.CITY_MIN_R)
+                rise = self.city_rise(h, R, bgf)
                 extra = np.bincount(VID[rise > 0], rise[rise > 0], minlength=NV)
                 new = np.maximum(steep * np.sqrt(np.maximum(extra, 1e-9) / np.maximum(cap, 1e-9)), 1.0)
                 new = np.where(extra > 0, new, steep)

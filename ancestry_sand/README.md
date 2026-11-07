@@ -89,10 +89,13 @@ fixed noise seed so the still camera does not shimmer.
 
 ### City mountains
 
-Height stands for city size. The 66 urban agglomerations of about 5 million people or more (UN World
-Urbanization Prospects 2018, 2025 estimates, rounded; `story.MEGACITIES`) each get a mountain of poured
-sand. Its summit height is `story.city_height`: 22 grain levels for a 5-million city, growing as
-population^0.8 (Tokyo 109, New York 64, Los Angeles 46, Toronto 27), so the order is always by size
+Height stands for city size. Every urban agglomeration of 1 million people or more in 2025 gets a
+mountain of poured sand: the 66 largest by hand (`story.MEGACITIES`, about 5 million or more, rounded; the
+camera's flight visits them) and 574 more as hills of the same kind (`story.CITY_HILLS`, read from
+`data/wup2018_cities_1m.csv`, extracted from UN World Urbanization Prospects 2018, File 12; places within
+0.3 degrees of a megacity are that megacity). A 1-million city is a low mound of 6.6 levels, Calgary 9;
+no base is narrower than 2.2 cells (`CITY_MIN_R`), so small cities are mounds, not spikes. Its summit height is `story.city_height`: 22 grain levels for a 5-million city, growing as
+population^0.8 (Tokyo 109, New York 64, Los Angeles 46, Toronto 27, Vancouver 13.5), so the order is always by size
 without the giants turning into needles. Its flanks keep to a sand-pile slope (`CITY_SLOPE`, about 6
 levels per cell, ~48 degrees), so a bigger city spreads a wider base; two to four lesser summits on its
 shoulders, a few ridges and gullies, and grain-scale roughness keep it irregular. A coastal or island
@@ -102,8 +105,9 @@ mountains may hold at most 70% of a region's sand (`CITY_SHARE`); where they wou
 regions such as the Southern Cone or Mexico), that region's mountains stand steeper instead. They grow
 with urbanization (`story.urban_frac`: a quarter of today's size in 1950, half by 1975). Where the
 countryside is already high (Java, Japan), a city still rises at least 45% of its height above it
-(`CITY_RELIEF`). Everyone else is spread by density (towns and smaller cities, without the megacities)
-and levelled off at 60 grains, so only cities rise above the land.
+(`CITY_RELIEF`). Everyone else is spread by density (towns and smaller cities: Natural Earth populated places,
+without those the city mountains stand for) and levelled off at 60 grains, so only cities rise above the
+land. All the mountains are computed at once each frame (`sand.CF`: one entry per city cell).
 
 - **Deep piles.** Density is uncapped and piles stack up to 600 grains, so crowded places can rise
   high (`SAND_TOWERS=0` caps density at 6x the mean instead).

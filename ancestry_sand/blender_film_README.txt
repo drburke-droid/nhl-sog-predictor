@@ -20,8 +20,9 @@ Blender 4.4 or newer. A graphics card makes a huge difference.
 This version changes every frame: render it into a fresh folder (do not mix in frames from earlier
 versions).
 
-New in version 3: the great cities are mountains of poured sand again (the bigger the city, the higher
-the summit and the wider the base; coastal and island cities spill over the glass), and the whole film
+New in version 3: the cities are mountains of poured sand again (every city of 1 million or more; the
+bigger the city, the higher the summit and the wider the base; coastal and island cities spill over the
+glass), and the whole film
 has a deeper, richer grade, as in the thumbnails. The sound, captions and compose file are the same as
 in version 2; hud.mov is new (the city names sit on the new mountains).
 
@@ -72,9 +73,10 @@ WHAT IS IN THE LOOK
      the Neanderthals of Europe, back to East Africa for the exit, then out to the whole map by 0:45.
    Motion blur: the migrating sand streaks through the air; the camera blurs as it moves.
    Sand tracks world population: a sparse scatter at first (1 grain ~ 120 people), filling as people
-     multiply (1 grain ~ 56,000 today). The great cities rise as mountains of poured sand with
-     sand-pile slopes: the bigger the city, the higher the summit and the wider the base (Tokyo is the
-     tallest); coastal and island cities spill over the glass onto the sea. They rise with
+     multiply (1 grain ~ 56,000 today). Every city of 1 million people or more rises as a mountain
+     of poured sand with sand-pile slopes: the bigger the city, the higher the summit and the wider the
+     base (Tokyo is the tallest; a 1-million city is a low hill); coastal and island cities spill over
+     the glass onto the sea. They rise with
      urbanization in the last century.
    The finale: down among the city mountains, then a low flight through the world's great cities
      (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,

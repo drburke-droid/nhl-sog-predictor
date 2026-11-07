@@ -147,14 +147,35 @@ MEGACITIES = [
 CITY_H5 = 22.0          # summit height of a 5-million city, in grain levels
 CITY_EXP = 0.8          # summit height grows as population^0.8: in order of size, without needles
 CITY_SLOPE = 6.0        # mean flank slope, grain levels per cell (about 48 degrees): a pile, not a tower
+CITY_MIN_R = 2.2        # cells: the narrowest base, so a small city is a low mound, not a spike
 CITY_RELIEF = 0.45      # where the countryside is already high, a city still rises this share of its height above it
 CITY_SHARE = 0.7        # city mountains hold at most this share of a region's sand (beyond it they steepen)
 BACKGROUND_CAP = 60     # grains: the most the countryside piles up; only cities rise above it
 
 
 def city_height(millions):
-    """A city mountain's summit height in grain levels: 22 for 5 million, 2x population = 1.74x height."""
-    return CITY_H5 * (max(millions, 0.0) / 5.0) ** CITY_EXP
+    """A city mountain's summit height in grain levels: 22 for 5 million, 2x population = 1.74x height
+    (a 1-million city: 6.6; Calgary, 1.7 million: 9.2). Works on numbers or numpy arrays."""
+    import numpy as np
+    return CITY_H5 * (np.maximum(millions, 0.0) / 5.0) ** CITY_EXP
+
+
+def _load_city_hills():
+    """Every other urban agglomeration of 1 million people or more in 2025 (UN World Urbanization Prospects
+    2018, File 12: data/wup2018_cities_1m.csv): (name, lon, lat, millions). Each is a hill of the same kind
+    as the megacity mountains. Places within 0.3 degrees of a megacity are that megacity."""
+    import csv, os
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "wup2018_cities_1m.csv")
+    out = []
+    for r in csv.DictReader(open(path, encoding="utf-8")):
+        lat, lon, mil = float(r["lat"]), float(r["lon"]), float(r["pop2025_thousands"]) / 1000.0
+        if any(abs(lat - la) < 0.3 and abs((lon - lo + 180.0) % 360.0 - 180.0) < 0.3 for _, lo, la, _ in MEGACITIES):
+            continue
+        out.append((r["name"], lon, lat, mil))
+    return out
+
+
+CITY_HILLS = _load_city_hills()
 
 
 def urban_frac(year):

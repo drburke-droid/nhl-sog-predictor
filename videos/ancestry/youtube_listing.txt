@@ -20,7 +20,7 @@ HOW TO READ IT
 • Each colour of sand is a strand of ancestry: the ancestry components used in ancient-DNA studies. They are labels for ancient populations, not races.
 • Each glass vessel is a region, holding the average ancestry of the people who live there today.
 • Sand is proportional to population, so the map starts as a sparse scatter and fills as humanity grows: 1 grain ≈ 120 people 200,000 years ago, ≈ 56,000 today.
-• The mountains are the world's great cities (about 5 million people or more): the bigger the city, the higher the summit and the wider the base. Tokyo is the tallest. Coastal cities spill over the glass.
+• The mountains are the world's cities: every one of 1 million people or more. The bigger the city, the higher the summit and the wider the base. Tokyo is the tallest. Coastal cities spill over the glass.
 • White sand is Neanderthal ancestry; pale blue is Denisovan.
 
 CHAPTERS
@@ -43,7 +43,7 @@ WHAT'S SIMPLIFIED
 • Regions show today's average ancestry, so colonised countries such as the US, Canada and Australia look mostly European. Indigenous peoples and their ancestry continue there.
 • Ancestry is really continuous; the colours are broad, standard components. Population sizes before farming are rough estimates (within about 3×), and to keep the early map readable a grain stands for fewer people then than today.
 • City mountains are drawn bigger than their share of the sand so they can be seen: a summit's height ranks cities by size (it grows a little slower than population, so Tokyo isn't a needle), and the mountains borrow sand from the surrounding countryside.
-• City sizes are 2025 urban-agglomeration estimates (UN World Urbanization Prospects), rounded.
+• City sizes are 2025 urban-agglomeration projections (UN World Urbanization Prospects 2018).
 • Polynesia is drawn as Hawai'i but stands for Polynesians as a people, whose ancestors reached Tonga and Samoa about 2,900 years ago.
 
 SOURCES
@@ -74,7 +74,7 @@ PINNED COMMENT
 Where the numbers come from, and what this simplifies:
 
 • Each colour is a standard ancestry component from ancient-DNA studies (labels for ancient populations, not races). Each vessel is a group of neighbouring countries, showing today's average ancestry.
-• Sand is proportional to population: 1 grain ≈ 120 people 200,000 years ago, ≈ 56,000 today. Before farming, population figures are rough (within about 3×). The mountains are cities of ~5 million+: the bigger the city, the higher the summit.
+• Sand is proportional to population: 1 grain ≈ 120 people 200,000 years ago, ≈ 56,000 today. Before farming, population figures are rough (within about 3×). The mountains are the ~640 cities of 1 million+: the bigger the city, the higher the summit.
 • Many dates are debated, so the film gives ranges: the main exit from Africa 70,000–50,000 years ago; Australia by at least 50,000 years ago (possibly 65,000); the Americas by at least 20,000 years ago (White Sands footprints suggest 23,000–21,000).
 • Colonised regions show today's average, so North America and Australia look mostly European; Indigenous peoples and their ancestry continue there.
 
