@@ -5,3 +5,4 @@ app.log
 *.vbs
 analysis.py
 nhl_history.db
+*.blend1
