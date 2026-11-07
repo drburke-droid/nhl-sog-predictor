@@ -16,16 +16,20 @@ import wave
 import numpy as np
 
 import sfx
-from engine import AUDIO, OUT, SCENE_FILES, Scene
+from engine import AUDIO, OUT, PROJECT, PROJECT_NAME, SCENE_FILES, Scene
 from render import module_for
 
 X = 0.5  # crossfade, seconds
-CHAPTERS = {'01_cold_open': 'Five decisions worth $350', '02_the_promise': 'What you control', '03_how_we_tested_it': 'How I tested it', '04_buy_or_pass': 'Decision 1: Buy or pass',
+CHAPTERS_DECISIONS = {'01_cold_open': 'Five decisions worth $350', '02_the_promise': 'What you control', '03_how_we_tested_it': 'How I tested it', '04_buy_or_pass': 'Decision 1: Buy or pass',
             '05_trading': 'Decision 2: Trading', '06_railroads': 'Decision 3: The railroads', '07a_spend_or_save': 'Decision 4: Spend or save',
             '07b_how_far_to_build': 'How far to build', '07c_which_set_first': 'Two sets: which first?',
             '07d_one_set_or_spread': 'One set, or a house on everything?', '07e_owe_money': 'Owe money? Mortgage first',
             '08_jail': 'Decision 5: Jail', '09_the_computers_player': 'The computer’s own player', '10_the_payoff': 'What it’s worth',
             '11_the_playbook': 'The playbook'}
+CHAPTERS_UTILITIES = {'u01_cold_open': 'Two squares you should never buy', 'u02_the_rules': 'How utilities work', 'u03_the_test': 'How I tested it',
+                      'u04_worthless': 'Proof they are worthless', 'u05_the_ceiling': 'Why: the ceiling', 'u06_fix_the_price': 'Fix 1: the price',
+                      'u07_fix_the_rent': 'Fix 2: the rent', 'u08_the_fix': 'The fix'}
+CHAPTERS = CHAPTERS_UTILITIES if PROJECT_NAME == 'utilities' else CHAPTERS_DECISIONS
 
 
 def probe(path, what='format=duration'):
@@ -98,14 +102,14 @@ if __name__ == '__main__':
         out = 'v%d' % k
         chain.append('[%s][%d:v]xfade=transition=fade:duration=%.3f:offset=%.3f[%s]' % (last, k, X, starts[k], out))
         last = out
-    final = os.path.join(OUT, 'monopoly_decisions.mp4')
+    final = os.path.join(OUT, PROJECT['title'] + '.mp4')
     cmd += ['-filter_complex', ';'.join(chain), '-map', '[%s]' % last, '-map', '%d:a' % len(clips),
             '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p',
             '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-movflags', '+faststart', '-t', '%.3f' % total, final]
     subprocess.run(cmd, check=True)
     print(final)
     if '--preview' in sys.argv:
-        prev = os.path.join(OUT, 'monopoly_decisions_720p.mp4')
+        prev = os.path.join(OUT, PROJECT['title'] + '_720p.mp4')
         subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', final, '-vf', 'scale=1280:720', '-c:v', 'libx264', '-preset', 'medium',
                         '-crf', '27', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', prev], check=True)
         print(prev)

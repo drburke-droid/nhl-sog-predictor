@@ -21,12 +21,23 @@ import style_frames as sf  # noqa: E402  (paper, ink, stamps, board, banknotes, 
 
 W, H, FPS = 1920, 1080, 30
 WPM = 155
-AUDIO = os.path.join(HERE, 'audio')
-OUT = os.path.join(HERE, 'out')
-SCRIPT = os.path.join(HERE, 'script', 'narration_elevenlabs.txt')
-SCENE_FILES = ['01_cold_open', '02_the_promise', '03_how_we_tested_it', '04_buy_or_pass', '05_trading', '06_railroads',
-               '07a_spend_or_save', '07b_how_far_to_build', '07c_which_set_first', '07d_one_set_or_spread', '07e_owe_money',
-               '08_jail', '09_the_computers_player', '10_the_payoff', '11_the_playbook']
+# Each video is a project: its own script, voice-over, renders and scenes. VIDEO=utilities python3 render.py ... picks one.
+PROJECTS = {
+    'decisions': dict(sub='', script='narration_elevenlabs.txt', title='monopoly_decisions',
+                      scenes=['01_cold_open', '02_the_promise', '03_how_we_tested_it', '04_buy_or_pass', '05_trading', '06_railroads',
+                              '07a_spend_or_save', '07b_how_far_to_build', '07c_which_set_first', '07d_one_set_or_spread',
+                              '07e_owe_money', '08_jail', '09_the_computers_player', '10_the_payoff', '11_the_playbook']),
+    'utilities': dict(sub='utilities', script='utilities_narration.txt', title='monopoly_utilities',
+                      scenes=['u01_cold_open', 'u02_the_rules', 'u03_the_test', 'u04_worthless', 'u05_the_ceiling',
+                              'u06_fix_the_price', 'u07_fix_the_rent', 'u08_the_fix']),
+}
+PROJECT_NAME = os.environ.get('VIDEO', 'decisions')
+PROJECT = PROJECTS[PROJECT_NAME]
+AUDIO = os.path.join(HERE, 'audio', PROJECT['sub'])
+OUT = os.path.join(HERE, 'out', PROJECT['sub'])
+SCRIPT = os.path.join(HERE, 'script', PROJECT['script'])
+SCENE_FILES = PROJECT['scenes']
+os.makedirs(OUT, exist_ok=True)
 
 
 def narration(scene):

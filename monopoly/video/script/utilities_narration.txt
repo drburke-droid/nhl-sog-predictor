@@ -1,0 +1,53 @@
+There are two squares on every Monopoly board that you're better off never buying.
+The Electric Company, and the Water Works.
+I played more than five million games to prove it.
+Skip them every single time, and you win a little more often than the player who buys them.
+So I asked a different question. What would it take to fix them?
+A lower price? Or a bigger rent? I tested both.
+And the fix turned out to be surprisingly simple.
+
+First, how they work. Each utility costs a hundred and fifty dollars.
+Instead of a fixed rent, the rent depends on the dice roll that brought the player there.
+Own one utility, and they pay four times the roll.
+Own both, and it's ten times. On an average roll of seven, that's twenty-eight dollars, or seventy.
+There's also a Chance card that sends players to the nearest utility, and that one always pays ten times.
+Each utility gets landed on about once every thirty turns.
+
+To test them, I used the same computer version of Monopoly as my last video, played by the official rules, the way people actually play.
+In each test, one player follows a rule, and the other three play like a typical player, who buys whatever they land on.
+A typical player wins about twenty-five percent of games.
+Every result you're about to see comes from a hundred thousand games.
+
+Test one. A player who never buys a utility, not once, wins about twenty-five and a half percent.
+A player who buys them wins twenty-five.
+Skipping them is slightly better. Test two.
+What if I just gave you both utilities, free, before the first roll?
+You'd win about thirty-eight percent. That sounds good, until you compare.
+Hand a player the cheapest colour set on the board, the two browns, and they win fifty-eight percent.
+All four railroads, eighty-seven. The oranges, ninety-nine.
+Dollar for dollar, the utilities are the worst thing on the board.
+
+Here's the strange part. Per dollar, their rent isn't bad.
+Against three opponents, both utilities earn back their price in about twenty-two rounds of play.
+Two railroads take thirty-two. A colour set with no houses takes about sixty.
+The problem is the ceiling. You can't build on a utility.
+Both together bring in about thirteen and a half dollars a round.
+A colour set with hotels brings in between a hundred and forty and three hundred and sixty-five. The utilities never grow up.
+
+So, fix one: make them cheaper. Keep the rent the same, and cut the price.
+At about a hundred and twenty dollars each, buying them finally beats skipping them.
+At about eighty-five, they'd be worth as much per dollar as the railroads.
+But here's the catch. Even if they were free, they'd still only lift you to under forty percent. A lower price can't fix a small income.
+
+Fix two: keep the price, and raise the rent.
+At six and fifteen times the dice, skipping them starts to hurt, about as much as skipping the railroads does today.
+At eight and twenty times, double today's rent, they'd be worth as much per dollar as the railroads.
+At twelve and thirty, owning both would be worth as much as a colour set: the browns.
+And to match all four railroads, you'd need thirty-two and eighty times the dice. That's eight times today's rent.
+
+So here's my fix. Keep the price at a hundred and fifty, and double the rent: eight times the dice with one utility, twenty times with both.
+It's one change, it's easy to remember, and it turns two dead squares into something worth buying.
+Until the rules change, here's what to do in a normal game.
+Don't chase the utilities. Don't bid them up at auction.
+And if the money would go further on houses, skip them.
+It won't cost you a thing. Would you play the double-rent house rule? Tell me in the comments.

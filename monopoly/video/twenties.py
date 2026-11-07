@@ -233,11 +233,11 @@ def photo_page(scene, name, t0, caption=None, crop_focus=(0.5, 0.5), zoom=0.07, 
     return p
 
 
-def deco_opener(scene, n, title, name, caption=None, crop_focus=(0.5, 0.5), focus=(0.5, 0.45)):
-    """A decision opens on a period photo with a black-and-gold Deco plaque rising over it."""
-    p = photo_page(scene, name, 0, caption, crop_focus, zoom=0.06, focus=focus)
+def deco_opener(scene, n, title, name, caption=None, crop_focus=(0.5, 0.5), focus=(0.5, 0.45), kicker=None, t0=0):
+    """A section opens on a period photo with a black-and-gold Deco plaque rising over it (kicker: DECISION ONE by default)."""
+    p = photo_page(scene, name, t0, caption, crop_focus, zoom=0.06, focus=focus)
     words = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']
     lines = title.count('\n') + 1
-    plate = deco_title('DECISION  %s' % words[n - 1], title, w=1180, h=330 + 110 * lines)
-    p.add(Plaque(0.15, plate, (W / 2, H / 2 - 30)))
+    plate = deco_title(kicker or 'DECISION  %s' % words[n - 1], title, w=1180, h=330 + 110 * lines)
+    p.add(Plaque(t0 + 0.15, plate, (W / 2, H / 2 - 30)))
     return p

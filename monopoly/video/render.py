@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from engine import SCENE_FILES
 
-MODULES = ['scenes_intro', 'scenes_a', 'scenes_b', 'scenes_c']
+MODULES = ['scenes_intro', 'scenes_a', 'scenes_b', 'scenes_c', 'scenes_util']
 
 
 def module_for(scene):
