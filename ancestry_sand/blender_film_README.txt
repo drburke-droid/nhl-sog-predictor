@@ -44,9 +44,10 @@ New in version 3.2 (the complete package): the cities are mountains of poured sa
 deeper, richer grade, as in the thumbnails; the music is the epic score (a driving cello figure in
 6/8 that builds to the full orchestra for the flight through the cities); and the clicks at the ends
 of a few voice-over lines are gone.
-Updated: the migration streams now carry exactly the grains that land (one flying grain per landing
-grain), so every stream is in proportion; before, small flows were drawn as dense decorative streams.
-Only every_grain_of_us.blend changed; the HUD, sound and compose file are the same.
+Updated: the migration streams are now in proportion. Each stream flies three grains for every grain
+that lands, the same for every migration, so a flow twice as large is twice as dense (before, every stream
+was drawn at about the same density whatever its size). Only every_grain_of_us.blend changed; the HUD,
+sound and compose file are the same.
 
 
 1. TURN ON YOUR GRAPHICS CARD (once)

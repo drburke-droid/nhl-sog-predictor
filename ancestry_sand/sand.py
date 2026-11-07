@@ -778,8 +778,9 @@ class Sand:
             self.growth[dst] = dict(n0=e["n"], t0=None, landed=0)
             e["cols"] = cols
             e["landed"] = 0
-            self.emit(e, np.repeat(cols, 12), size=1.2, spread=0.7,         # only the founders themselves fly
-                      keep=np.arange(0, 12 * len(cols), 12))
+            k = min(S.FLY_PER_GRAIN, 12)                                       # founders fly (k streaks each)
+            self.emit(e, np.repeat(cols, 12), size=1.2, spread=0.7,
+                      keep=(np.arange(len(cols))[:, None] * 12 + np.arange(k)).ravel())
         elif k == "flow":
             src, dst = VI[e["src"]], VI[e["dst"]]
             e["Psrc"] = S.restrict(self.modern_P(src), e.get("only"))
@@ -843,12 +844,12 @@ class Sand:
                     e["done"] = True
             elif k == "flow":
                 if self.s <= e["s1"]:
-                    # the visible stream: exactly the grains this flow pours in, one flying grain per landing grain
+                    # the visible stream: FLY_PER_GRAIN flying grains per grain this flow pours in (the same for every flow)
                     # (the old fixed-rate draw is still made, so the simulation's random stream is unchanged)
                     rate = float(np.clip(e["M"] / max(e["s1"] - e["s0"], 0.5) * 0.5, 120, 420))
                     e["emit_acc"] += rate * dt
                     n = int(e["emit_acc"])
-                    e["fly_acc"] = e.get("fly_acc", 0.0) + e["M"] / max(e["s1"] - e["s0"], 0.5) * dt
+                    e["fly_acc"] = e.get("fly_acc", 0.0) + S.FLY_PER_GRAIN * e["M"] / max(e["s1"] - e["s0"], 0.5) * dt
                     want = int(e["fly_acc"])
                     e["fly_acc"] -= want
                     p_src = e["Psrc"] / e["Psrc"].sum()
