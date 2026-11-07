@@ -368,7 +368,7 @@ def sun(name, azimuth, elevation, colour, strength, angle):
     return ob
 
 
-sun("GoldenSun", 290.0, 30.0, (1.0, 0.58, 0.30), 9.0, 3.0)      # from the WNW, 30 degrees up
+sun("GoldenSun", 290.0, 30.0, (1.0, 0.58, 0.30), 7.0, 3.0)      # from the WNW, 30 degrees up
 rim = sun("BlueRim", 70.0, 20.0, (0.55, 0.72, 1.0), 0.9, 6.0)   # from the ENE, edging the towers
 if CM.KEYS is CM.KEYS_FINALE:          # on the world tour the camera turns east, into it: let it go
     t0 = int(round(CM.TOUR_START * FPS)) + 150         # as the flight begins (camera low, turning east)
@@ -424,6 +424,10 @@ scene.render.use_persistent_data = True       # keep the static table and glass 
 scene.render.filter_size = 1.5
 scene.render.resolution_x, scene.render.resolution_y = RES
 scene.render.resolution_percentage = 100      # 50 gives a quick 1920x1080 draft
+# the grade (matches the thumbnails): deeper blacks and richer colour than the default, a touch darker
+scene.view_settings.view_transform = "AgX"
+scene.view_settings.look = "AgX - High Contrast"
+scene.view_settings.exposure = -0.15
 scene.render.use_motion_blur = True           # flying sand streaks; the camera blurs as it moves
 scene.render.motion_blur_shutter = 0.5
 c.motion_blur_position = "CENTER"

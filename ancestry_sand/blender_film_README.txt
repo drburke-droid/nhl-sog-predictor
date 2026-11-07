@@ -67,14 +67,17 @@ WHAT IS IN THE LOOK
      the Neanderthals of Europe, back to East Africa for the exit, then out to the whole map by 0:45.
    Motion blur: the migrating sand streaks through the air; the camera blurs as it moves.
    Sand tracks world population: a sparse scatter at first (1 grain ~ 120 people), filling as people
-     multiply (1 grain ~ 56,000 today). The towers are the great cities, all the same width, so their
-     height is their population; they rise with urbanization in the last century.
-   The finale: down among the city towers, then a low flight through the world's great cities
+     multiply (1 grain ~ 56,000 today). The great cities rise as mountains of poured sand with
+     sand-pile slopes: the bigger the city, the higher the summit and the wider the base (Tokyo is the
+     tallest); coastal and island cities spill over the glass onto the sea. They rise with
+     urbanization in the last century.
+   The finale: down among the city mountains, then a low flight through the world's great cities
      (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,
      Hong Kong, Shanghai, Beijing, Seoul, Tokyo, a whip across the Pacific to Los Angeles, Mexico City,
      New York, Lima, Sao Paulo, Buenos Aires, across the Atlantic to London, Paris, Istanbul, Moscow,
-     Cairo, Lagos and Kinshasa, then up to reveal the whole world. A golden low sun lights the towers.
+     Cairo, Lagos and Kinshasa, then up to reveal the whole world. A golden low sun lights the mountains.
    Richer sand: every grain a little different in shade, hue and shine, and slightly translucent.
+   The grade: AgX with the High Contrast look, a touch darker (exposure -0.15), as in the thumbnails.
 
 SPEED AND QUALITY
    The project is set for high quality at a sensible speed:
@@ -83,7 +86,7 @@ SPEED AND QUALITY
      light bounces trimmed to what glass and sand need (6 total, 6 through glass)
      no caustics, a fixed noise pattern so the still camera does not shimmer
      the sand as a point cloud (spheres traced directly, no meshes), only the grains that can be seen
-   Before the full run, test one frame: go to a frame (e.g. 5330, among the towers) and press F12.
+   Before the full run, test one frame: go to a frame (e.g. 5640, among the city mountains) and press F12.
 
    To go faster:  Render Properties > Sampling > Render > Max Samples 32 (a little noisier), or
                   Output Properties > Resolution 50% for a 1920x1080 draft of the whole film.
@@ -99,5 +102,5 @@ SPEED AND QUALITY
 THE STORY ON SCREEN
    Diorama close-ups of the first people open the film; at 0:45 the camera settles on the whole map and
    holds it for 200,000 years, through the arrival of today's migrants. At 2:43 it comes down among the
-   population towers and flies through the world's great cities, ending in Africa, where the story began,
+   city mountains and flies through the world's great cities, ending in Africa, where the story began,
    and rises to reveal the whole world. The timed script for the voice-over is narration.srt.

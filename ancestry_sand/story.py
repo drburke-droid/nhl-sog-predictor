@@ -116,8 +116,10 @@ POP = {
     "GRL": [0.001, 0.003, 0.008, 0.02, 0.056], "NZL": [0.0, 0.1, 0.1, 2, 5.2],
 }
 # The world's urban agglomerations of about 5 million people or more: (name, lon, lat, millions in 2025,
-# rounded; UN World Urbanization Prospects 2018). Each is a tower of the same footprint, so its height
-# stands for its population; the rest of a region's people are spread by density, with no towers.
+# rounded; UN World Urbanization Prospects 2018). Each is a mountain of poured sand: its summit height
+# stands for its population (city_height), its flanks keep to a sand-pile slope, so bigger cities spread
+# wider bases, and shoulders and ridges keep it irregular. The rest of a region's people are spread by
+# density, levelled off below the mountains.
 MEGACITIES = [
     ("Tokyo", 139.7, 35.7, 37.0), ("Delhi", 77.2, 28.6, 33.0), ("Shanghai", 121.5, 31.2, 29.5),
     ("Dhaka", 90.4, 23.8, 23.9), ("S\u00e3o Paulo", -46.6, -23.5, 22.8), ("Cairo", 31.2, 30.0, 22.6),
@@ -142,8 +144,17 @@ MEGACITIES = [
     ("Nairobi", 36.8, -1.3, 5.3), ("Melbourne", 145.0, -37.8, 5.2), ("Sydney", 151.2, -33.9, 5.1),
     ("Antananarivo", 47.5, -18.9, 4.0), ("Santo Domingo", -69.9, 18.5, 3.6), ("Port-au-Prince", -72.3, 18.5, 2.9),
 ]
-CITY_FOOTPRINT = 3      # cells per city tower (the same for every city)
+CITY_H5 = 22.0          # summit height of a 5-million city, in grain levels
+CITY_EXP = 0.8          # summit height grows as population^0.8: in order of size, without needles
+CITY_SLOPE = 6.0        # mean flank slope, grain levels per cell (about 48 degrees): a pile, not a tower
+CITY_RELIEF = 0.45      # where the countryside is already high, a city still rises this share of its height above it
+CITY_SHARE = 0.7        # city mountains hold at most this share of a region's sand (beyond it they steepen)
 BACKGROUND_CAP = 60     # grains: the most the countryside piles up; only cities rise above it
+
+
+def city_height(millions):
+    """A city mountain's summit height in grain levels: 22 for 5 million, 2x population = 1.74x height."""
+    return CITY_H5 * (max(millions, 0.0) / 5.0) ** CITY_EXP
 
 
 def urban_frac(year):

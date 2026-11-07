@@ -32,9 +32,9 @@ python film.py script                                       # the narration as a
 **The camera.** `camera.py` holds the camera path, shared by Blender and the compositor. By default
 (`FINALE`) it opens on diorama close-ups (splines through `OPENING`: low over the first sparse grains in
 Africa, a look north to Neanderthal Europe, back to East Africa for the exit), settles on the whole map by
-0:45 and holds it until today, then comes down among the population towers and flies low through the
+0:45 and holds it until today, then comes down among the city mountains and flies low through the
 world's great cities (`CITIES`, timed from their distances, looking ahead; `_clearance()` lifts the camera
-over any tower in its way, using the settled heights export_blender.py saves in `data/tour_heights.npy`),
+over any mountain in its way, using the settled heights export_blender.py saves in `data/tour_heights.npy`),
 whips across the Pacific (the map wraps between two frames), and ends in Africa before rising to reveal
 the world (3:42 in all). `SAND_CAMERA=story` selects the earlier path that follows the story around the
 world. For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
@@ -42,8 +42,8 @@ would be more than 1 px off; in between, the two nearest keyframes are reproject
 halfway up the walls and cross-faded.
 
 **Every grain is a ball.** Each visible grain is drawn as a lit sphere in 3D, as in the full Blender
-renders: the top layers of every pile and every grain on the side of a tower. Sand piles up where
-people actually live, so dense places rise as towers above the glass. They cast long shadows, and
+renders: the top layers of every pile and every grain on a mountain's flank. Sand piles up where
+people actually live, and the great cities rise as mountains above the glass. They cast long shadows, and
 depth of field matches the Blender lens (f/0.9, focused on the camera's target).
 
 Blender 4.2 LTS (Cycles, CPU) renders the static world once: the table, plus a thick bevelled glass wall
@@ -87,35 +87,26 @@ are tuned for speed: adaptive sampling up to 64 samples, OpenImageDenoise, 6 bou
 fixed noise seed so the still camera does not shimmer.
 `blender_film_README.txt` (shipped next to the .blend) explains rendering it.
 
-### City towers
+### City mountains
 
 Height stands for city size. The 66 urban agglomerations of about 5 million people or more (UN World
-Urbanization Prospects 2018, 2025 estimates, rounded; `story.MEGACITIES`) each get a tower of the same
-3-cell footprint holding their people at the film's current people-per-grain, so a tower's height is
-its population (Tokyo 37 million: ~215 grains; a 5-million city ~30; about 6 grains per million). They
-grow with urbanization (`story.urban_frac`: a quarter of today's size in 1950, half by 1975). A tower
-replaces the countryside beneath it; on a crowded island where the countryside already stands higher
-(the Caribbean) the city shares that level. Everyone else is spread by density (towns and smaller
-cities, without the megacities) and levelled off at 60 grains, so only cities rise above the land.
+Urbanization Prospects 2018, 2025 estimates, rounded; `story.MEGACITIES`) each get a mountain of poured
+sand. Its summit height is `story.city_height`: 22 grain levels for a 5-million city, growing as
+population^0.8 (Tokyo 109, New York 64, Los Angeles 46, Toronto 27), so the order is always by size
+without the giants turning into needles. Its flanks keep to a sand-pile slope (`CITY_SLOPE`, about 6
+levels per cell, ~48 degrees), so a bigger city spreads a wider base; two to four lesser summits on its
+shoulders, a few ridges and gullies, and grain-scale roughness keep it irregular. A coastal or island
+city's mountain spills over the glass onto the sea beside it (`sand.SPILL`: those cells join the city's
+vessel for the mountain alone), so Tokyo is a whole cone rather than a slab squeezed onto Honshu. City
+mountains may hold at most 70% of a region's sand (`CITY_SHARE`); where they would need more (sparse
+regions such as the Southern Cone or Mexico), that region's mountains stand steeper instead. They grow
+with urbanization (`story.urban_frac`: a quarter of today's size in 1950, half by 1975). Where the
+countryside is already high (Java, Japan), a city still rises at least 45% of its height above it
+(`CITY_RELIEF`). Everyone else is spread by density (towns and smaller cities, without the megacities)
+and levelled off at 60 grains, so only cities rise above the land.
 
-### Population, where people live, and ancestry within a region
-
-- **Sand stands for people.** The total amount of sand follows long-run world population estimates, and
-  each vessel's share follows historical estimates (1 CE, 1500, 1800, 1950, today). The on-screen
-  "1 grain ≈ N people" line rises from a few people per grain to about 55,000 today.
-- **Sand settles where people live.** Each cell's target height comes from a smoothed density map of
-  Natural Earth populated places. Northern Canada, Siberia, the Sahara and inland Australia stay thinly
-  covered, while the Nile, the Ganges plain and eastern China pile high.
-- **Ancestry varies within a region.** `story.ANCESTRY_GEO` gives hotspots where a component is more
-  common inside a vessel: for example, Native American ancestry in the US Southwest, Alaska and the
-  Amazon, African ancestry in the US South and Bahia, and European ancestry in southern Brazil.
-  Grains swap places towards their hotspots, and new grains grow there preferentially. These
-  movements never change a vessel's totals.
-- **Magnified islands.** The Caribbean, Hawai'i and Madagascar are drawn at
-  true size in glass, plus a framed, labelled inset (×k) that holds their sand. They keep a minimum
-  amount of sand so they stay visible.
-- **Towers.** Density is uncapped and piles stack up to 600 grains, so the most crowded places rise as
-  towers (`SAND_TOWERS=0` caps density at 6x the mean instead).
+- **Deep piles.** Density is uncapped and piles stack up to 600 grains, so crowded places can rise
+  high (`SAND_TOWERS=0` caps density at 6x the mean instead).
 - **Sand settles, then lies still.** Each cell's target is a whole number of grains (the density
   target, dithered once). Grains above target move to nearby cells below it, and once every cell holds
   its target nothing moves, except where people really arrive, grow or mix.
@@ -126,9 +117,9 @@ cities, without the megacities) and levelled off at 60 grains, so only cities ri
   of countries), the event timeline, the clock (video seconds against years ago, log-scaled) and the captions.
 - **vessels.py** turns each group of countries into a glass vessel: the union of their outlines, a
   supersampled glass sprite (rim, highlight, tint), and a hex lattice of grain slots inside the glass,
-  ordered bottom-up so sand settles to the bottom of each shape. Islands too small to hold sand
-  (the Caribbean, Hawai'i for Polynesia, Madagascar) are drawn as magnified insets joined
-  to their real location by a hairline.
+  ordered bottom-up so sand settles to the bottom of each shape. Island chains too thin to hold sand
+  (the Caribbean, Hawai'i for Polynesia) are thickened just enough (`buffer`); vessels can still be drawn
+  as magnified insets (`inset`), which the film no longer uses.
 - **render.py** runs the simulation and paints the frames. Every vessel carries an exact gene-pool
   composition P; the grains are a physical picture of it:
   - *founding*: a handful of real grains flies from the source and the newcomers multiply by budding
