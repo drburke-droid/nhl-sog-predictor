@@ -1,30 +1,40 @@
 EVERY GRAIN OF US: the full-Cycles Blender project (4K)
 ======================================================
 
+QUICK START: extract this folder, render, assemble
+  1. Extract the whole folder somewhere with about 75 GB free, and keep everything together in it.
+  2. Open every_grain_of_us.blend, Render > Render Animation (frames go into "render4k" here).
+  3. When all 6,660 frames are done, open every_grain_of_us_compose.blend, Render > Render Animation.
+     Out comes every_grain_of_us_4k.mp4: the film, the on-screen text, the title, the music and
+     Lily's voice-over, in 4K. Details for each step below.
+
 What is in this folder
   every_grain_of_us.blend          RENDER: the whole film in Cycles (3:42, 6,660 frames at 30 fps,
                                    3840x2160), into a "render4k" folder here
   every_grain_of_us_compose.blend  ASSEMBLE: joins the frames, the on-screen text, the title and the
-                                   sound into the finished MP4
+                                   sound into the finished MP4 (every path is relative to this folder)
   hud.mov                          the on-screen text in 4K (year, "1 grain = N people", legend, place and
                                    city names), transparent
-  every_grain_of_us_score_with_narration.wav   music + Lily's voice-over (used by default)
-  every_grain_of_us_score.wav                  music only (for the captions version)
+  every_grain_of_us_score_with_narration.wav   the epic score + Lily's voice-over (used by default)
+  every_grain_of_us_score.wav                  the epic score alone (for the captions version)
   captions_4k.mov                  short captions, transparent (for the music-only version)
   narration.srt, captions_short.srt   subtitle files for YouTube
-Keep everything together in this folder.
+  render4k\                        empty: the frames go here
+  alt_music_take2\                 the other take of the epic score (same two file names): to use it,
+                                   copy both files over the ones beside the .blend files
 
 You need Blender 4.2 or newer (free from blender.org); for an NVIDIA RTX 50-series card (5080, 5090),
 Blender 4.4 or newer. A graphics card makes a huge difference.
 
-This version changes every frame: render it into a fresh folder (do not mix in frames from earlier
-versions).
+This version changes every frame: render it into a fresh, empty render4k folder (do not mix in frames
+from earlier versions).
 
-New in version 3.1: the cities are mountains of poured sand again, every city of 1 million people or
-more (the bigger the city, the higher the summit and the wider the base; a 1-million city is a low
-mound; coastal and island cities spill over the glass), and the whole film has a deeper, richer grade,
-as in the thumbnails. The sound, captions and compose file are the same as in version 2; hud.mov is
-new (the city names sit on the new mountains). Version 3.1 replaces version 3: use this .blend.
+New in version 3.2 (the complete package): the cities are mountains of poured sand, every city of
+1 million people or more (the bigger the city, the higher the summit and the wider the base; a
+1-million city is a low mound; coastal and island cities spill over the glass); the whole film has a
+deeper, richer grade, as in the thumbnails; the music is the epic score (a driving cello figure in
+6/8 that builds to the full orchestra for the flight through the cities); and the clicks at the ends
+of a few voice-over lines are gone.
 
 
 1. TURN ON YOUR GRAPHICS CARD (once)
@@ -60,6 +70,7 @@ new (the city names sit on the new mountains). Version 3.1 replaces version 3: u
 3. MAKE THE MP4
    Once all 6,660 frames are in "render4k", open every_grain_of_us_compose.blend and
    Render > Render Animation. Out comes every_grain_of_us_4k.mp4 (4K, with sound) in this folder.
+   (Check first: render4k holds frame_0000.png to frame_6659.png, and no file is 0 KB.)
 
    Voice-over or captions: the narrated mix is on by default. For music with short captions instead,
    select "Music + narration" and press H (mute), select "Music only" and "Short captions" and press
@@ -76,8 +87,7 @@ WHAT IS IN THE LOOK
      multiply (1 grain ~ 56,000 today). Every city of 1 million people or more rises as a mountain
      of poured sand with sand-pile slopes: the bigger the city, the higher the summit and the wider the
      base (Tokyo is the tallest; a 1-million city is a low hill); coastal and island cities spill over
-     the glass onto the sea. They rise with
-     urbanization in the last century.
+     the glass onto the sea. They rise with urbanization in the last century.
    The finale: down among the city mountains, then a low flight through the world's great cities
      (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,
      Hong Kong, Shanghai, Beijing, Seoul, Tokyo, a whip across the Pacific to Los Angeles, Mexico City,
