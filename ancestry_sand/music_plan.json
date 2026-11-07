@@ -25,13 +25,15 @@
    "duration_ms": 37400,
    "lines": [],
    "positive_local_styles": [
-    "begins with a soft solo felt piano motif",
-    "warm low drone",
-    "gentle marimba and shaker like falling sand",
-    "a heartbeat pulse enters halfway",
-    "slowly growing"
+    "opens straight away on a warm, intriguing felt piano motif over a gentle pulse",
+    "light hand percussion and marimba",
+    "a sense of discovery",
+    "shaker like falling sand",
+    "steadily growing"
    ],
    "negative_local_styles": [
+    "silence",
+    "long ambient intro",
     "big drums",
     "brass"
    ]
@@ -83,41 +85,43 @@
    ]
   },
   {
-   "section_name": "Climax among the towers",
-   "duration_ms": 20500,
+   "section_name": "Today: the descent",
+   "duration_ms": 11000,
    "lines": [],
    "positive_local_styles": [
-    "the biggest, fullest moment so far",
-    "soaring strings",
-    "wordless choir pads",
-    "majestic and golden",
-    "the opening piano motif returns in full orchestra"
+    "anticipation",
+    "rising strings and a building drum roll",
+    "the opening piano motif in octaves",
+    "crescendo"
    ],
    "negative_local_styles": [
     "sparse",
-    "breakdown"
+    "breakdown",
+    "silence"
    ]
   },
   {
-   "section_name": "A flight around the world",
-   "duration_ms": 23500,
+   "section_name": "Flight through the world's cities",
+   "duration_ms": 45000,
    "lines": [],
    "positive_local_styles": [
-    "a sudden surge of momentum",
-    "fast travelling strings and driving drums",
-    "sweeping and joyful",
-    "continuous forward motion",
+    "grand adventurous orchestral flight theme",
+    "driving strings and pounding percussion",
+    "soaring brass and choir pads",
+    "continuous momentum",
+    "epic title-sequence energy",
     "builds to the final peak"
    ],
    "negative_local_styles": [
     "sparse",
     "breakdown",
-    "slow"
+    "slow",
+    "silence"
    ]
   },
   {
    "section_name": "The same sand",
-   "duration_ms": 5000,
+   "duration_ms": 6000,
    "lines": [],
    "positive_local_styles": [
     "a warm major chord ringing out",

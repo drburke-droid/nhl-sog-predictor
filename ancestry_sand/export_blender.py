@@ -219,6 +219,8 @@ def main():
                              tc=np.full(new.sum(), f), ts=np.where(fresh[new], f, -1e6))
         R.a["td"][rec] = n                     # open until closed
         pkey, pci, prec = key, ci, rec
+        if f == int(round((S.TODAY_S + 10.0) * FPS)) - 1:   # the settled towers, for the camera's flight
+            np.save(os.path.join(HERE, "data", "tour_heights.npy"), sim.h.astype(np.int32))
         if f % 300 == 0:
             print(f"frame {f}/{n}  records {R.n}  visible {len(key)}  {time.time() - t0:.0f}s", flush=True)
 

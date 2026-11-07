@@ -7,10 +7,11 @@ camera dollies in rather than zooming, which keeps real perspective on the tower
 
 World units: 1 Blender unit = 100 map px; map (x, y, z px) -> (x/100 - 9.6, 5.4 - y/100, z/100).
 """
-import math
+import math, os
 import numpy as np
 
 W, H = 1920, 1080
+FPS = 30
 LENS = 45.654884338378906           # the wide shot's lens (fit to the map in blender_scene.py)
 SENSOR = 36.0
 FOCAL_PX = LENS / SENSOR * W
@@ -45,35 +46,102 @@ KEYS_STORY = [
     (999.0, WIDE),
 ]
 
-KEYS_FINALE = [
-    (0.0, WIDE),
-    (163.5, WIDE),                                   # still for 200,000 years, until today's arrivals land
-    (172.0, (1290.0, 425.0, 58.0, 7.5, 6.0)),         # then slowly down among the towers of South Asia
-    (177.5, (1420.0, 440.0, 60.0, 7.0, 22.0)),        # across to Southeast and East Asia
-    (180.5, (1465.0, 425.0, 61.0, 6.4, 28.0)),
+KEYS_FINALE = [(0.0, WIDE), (999.0, WIDE)]          # the wide shot, between the opening and the finale
+
+# ---- the opening: diorama close-ups of the first people, then out to the whole map by 0:45
+OPENING = [
+    (0.0, (1005.0, 668.0, 64.0, 3.8, -12.0)),        # low over the first people of southern Africa, under the title
+    (6.5, (1012.0, 575.0, 63.0, 4.2, -2.0)),          # north over Central Africa
+    (12.5, (1060.0, 485.0, 60.0, 5.0, 10.0)),         # East Africa
+    (18.5, (1035.0, 365.0, 52.0, 9.0, 6.0)),          # rising, looking north: Neanderthal Europe beyond the Levant
+    (24.5, (1090.0, 420.0, 55.0, 7.0, 18.0)),         # the early ventures out of Africa
+    (30.5, (1080.0, 462.0, 60.0, 5.0, 22.0)),         # back down to East Africa for the main exit
+    (37.5, (1235.0, 470.0, 52.0, 9.5, 30.0)),         # following them along the coast toward South Asia
+    (45.0, WIDE),                                      # and out to the whole map
 ]
 
-# Then the world tour, one smooth spline: east across the Pacific (the map's right edge, where the camera
-# wraps to the left edge mid-flight, between two frames), low over North America from the West Coast, down
-# South America, across to Europe, Africa and India, and up to reveal the whole world. x is unwrapped here
-# (positions after the wrap are written + WRAP); pose_at() subtracts WRAP after the cut.
+# ---- the finale: down from the wide shot into the towers, then a low flight through the world's great
+# cities, looking ahead, lifted over any tower in its way: Asia, a whip across the Pacific (the camera wraps
+# from the map's right edge to its left between two frames), the Americas, the Atlantic, Europe, and Africa,
+# where the story began; then up to reveal the whole world. x is unwrapped (+ WRAP after the Pacific).
+TOUR_START = 163.5
 WRAP = 1680.0                      # map width at ~38 N: from the Bering Strait on the right to the left edge
-CUT = 5441.5 / 30.0                # the wrap falls halfway between frames 5441 and 5442
-WHIP = 1200.0                      # px/s across the wrap: a whip pan, blurred, so the cut does not show
-TOUR = [
-    (180.5, (1465.0, 425.0, 61.0, 6.4, 28.0)),                 # East Asia, at rest
-    (CUT, (1830.0, 330.0, 60.0, 7.4, 78.0), WHIP),             # whipping east over the Pacific, off the map
-    (CUT + 0.5, (360.0 + WRAP, 300.0, 62.0, 6.8, 88.0)),       # braking in over California, low, looking east
-    (187.8, (520.0 + WRAP, 330.0, 63.0, 6.6, 40.0)),           # across North America
-    (192.2, (610.0 + WRAP, 600.0, 62.0, 7.0, 15.0)),           # down South America
-    (196.3, (955.0 + WRAP, 275.0, 61.0, 7.2, 8.0)),            # over the Atlantic to Europe
-    (200.2, (1005.0 + WRAP, 515.0, 60.0, 7.4, 0.0)),           # Africa
-    (204.0, (1295.0 + WRAP, 420.0, 60.0, 7.2, 12.0)),          # India's towers
-    (208.0, (985.0 + WRAP, 560.0, 52.0, 22.0, 0.0)),           # and up, to reveal the whole world
+CITIES = [
+    ("Mumbai", 72.9, 19.1), ("Delhi", 77.2, 28.6), ("Dhaka", 90.4, 23.8), ("Bangkok", 100.5, 13.8),
+    ("Singapore", 103.8, 1.35), ("Jakarta", 106.8, -6.2), ("Manila", 121.0, 14.6), ("Hong Kong", 114.2, 22.3),
+    ("Shanghai", 121.5, 31.2), ("Beijing", 116.4, 39.9), ("Seoul", 127.0, 37.6), ("Tokyo", 139.7, 35.7),
+    ("Los Angeles", -118.2, 34.1), ("Mexico City", -99.1, 19.4), ("New York", -74.0, 40.7), ("Lima", -77.0, -12.0),
+    ("S\u00e3o Paulo", -46.6, -23.5), ("Buenos Aires", -58.4, -34.6), ("London", -0.1, 51.5), ("Paris", 2.35, 48.9),
+    ("Istanbul", 29.0, 41.0), ("Moscow", 37.6, 55.8), ("Cairo", 31.2, 30.0), ("Lagos", 3.4, 6.5),
+    ("Kinshasa", 15.3, -4.3),
 ]
+FLY_TILT = 64.0                    # degrees from straight down: looking ahead, 26 degrees below the horizon
+_HDATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "tour_heights.npy")
 
-import os as _os
-KEYS = KEYS_STORY if _os.environ.get("SAND_CAMERA", "finale") == "story" else KEYS_FINALE
+
+def _heights():
+    """Sand height per 3-px cell once the sand has settled today (grains), saved by export_blender.py."""
+    global _HC
+    try:
+        return _HC
+    except NameError:
+        _HC = np.load(_HDATA).reshape(360, 640) if os.path.exists(_HDATA) else None
+        return _HC
+
+
+def _tower_top(x, y, r=4):
+    """Tallest sand near map px (x, y), Blender units (0 off the map or without heights)."""
+    H = _heights()
+    if H is None:
+        return 0.0
+    ci, cj = int(x // 3), int(y // 3)
+    win = H[max(cj - r, 0):max(cj + r + 1, 0), max(ci - r, 0):max(ci + r + 1, 0)]
+    return float(win.max()) * 0.0055 if win.size else 0.0
+
+
+def _build_tour():
+    from proj import to_px
+    keys = [(TOUR_START, WIDE), (168.2, (1225.0, 470.0, 60.0, 4.2, 15.0))]   # down over the Arabian Sea
+    pts, wrapped = [], False
+    for name, lo, la in CITIES:
+        x, y = (float(v) for v in to_px(lo, la))
+        if pts and not wrapped and x < pts[-1][1] - 600:
+            wrapped = True                                     # across the Pacific
+        pts.append((name, x + (WRAP if wrapped else 0.0), y))
+    t, times = 171.0, []
+    for i, (name, x, y) in enumerate(pts):
+        if i:
+            d = math.hypot(x - pts[i - 1][1], y - pts[i - 1][2]) / 100.0
+            if (x > WRAP) != (pts[i - 1][1] > WRAP):
+                t += 1.9                                       # the Pacific: a fast whip, little empty sea
+            elif d > 3.0:
+                t += 2.4                                       # the Atlantic: the same
+            else:
+                t += min(max(1.0 + 0.5 * d, 1.7), 3.2)
+        times.append(t)
+    last = 216.4                                               # Kinshasa: the music's flight section ends at 3:36
+    times = [171.0 + (v - 171.0) * (last - 171.0) / (times[-1] - 171.0) for v in times]
+    heads = []
+    for i in range(len(pts)):
+        a, b = pts[max(i - 1, 0)], pts[min(i + 1, len(pts) - 1)]
+        hd = math.degrees(math.atan2(b[1] - a[1], -(b[2] - a[2])))
+        if heads:
+            while hd - heads[-1] > 180:
+                hd -= 360
+            while hd - heads[-1] < -180:
+                hd += 360
+        heads.append(hd)
+    for (name, x, y), t, hd in zip(pts, times, heads):
+        top = _tower_top(x % WRAP if x > 1900 else x, y)
+        h = min(max(0.8 * top + 0.45, 0.65), 1.25)             # fly low: just below the tallest towers
+        keys.append((t, (x, y, FLY_TILT, h / math.cos(math.radians(FLY_TILT)), hd)))
+    reveal = times[-1] + 4.6
+    keys.append((reveal, (985.0 + WRAP, 560.0, 52.0, 22.0, 360.0 * round(heads[-1] / 360.0))))
+    cities = [(name, x, y, t) for (name, x, y), t in zip(pts, times)]
+    return keys, cities, reveal
+
+
+KEYS = KEYS_STORY if os.environ.get("SAND_CAMERA", "finale") == "story" else KEYS_FINALE
 
 
 def ease(u):
@@ -81,12 +149,13 @@ def ease(u):
     return u * u * u * (u * (u * 6 - 15) + 10)
 
 
-def _tour(s):
-    """The world tour: a cubic Hermite spline through TOUR (Catmull-Rom tangents, at rest at both ends),
-    with distance interpolated in log space."""
-    T = [k[0] for k in TOUR]
-    P = [list(k[1]) for k in TOUR]
-    VX = [k[2] if len(k) > 2 else None for k in TOUR]          # a set speed across a key (px/s, along x)
+TOUR, TOUR_CITIES, TOUR_END = _build_tour()
+
+
+def _spline(K, s):
+    """Cubic Hermite through keys K [(t, pose)] (Catmull-Rom tangents, at rest at both ends); distance in log."""
+    T = [k[0] for k in K]
+    P = [list(k[1]) for k in K]
     for p in P:
         p[3] = math.log(p[3])
     i = max(0, min(len(T) - 2, sum(1 for t in T if t <= s) - 1))
@@ -96,21 +165,82 @@ def _tour(s):
             m.append([0.0] * 5)
         else:
             m.append([(b - a) / (T[j + 1] - T[j - 1]) for a, b in zip(P[j - 1], P[j + 1])])
-            if VX[j] is not None:
-                m[-1][0] = VX[j]
     h = T[i + 1] - T[i]
     u = min(max((s - T[i]) / h, 0.0), 1.0)
     h00, h10, h01, h11 = 2 * u ** 3 - 3 * u ** 2 + 1, u ** 3 - 2 * u ** 2 + u, -2 * u ** 3 + 3 * u ** 2, u ** 3 - u ** 2
     out = [h00 * a + h10 * h * ma + h01 * b + h11 * h * mb for a, b, ma, mb in zip(P[i], P[i + 1], m[0], m[1])]
     out[3] = math.exp(out[3])
+    return out
+
+
+def _find_cut():
+    """The wrap: when the view centre passes the map's right edge beyond Japan (x 1840), on a half frame."""
+    i = next(j for j, (_, x, _, _) in enumerate(TOUR_CITIES) if x > WRAP)
+    t0, t1 = TOUR_CITIES[i - 1][3], TOUR_CITIES[i][3]
+    s = t0
+    while s < t1 and _spline(TOUR, s)[0] < 1840.0:
+        s += 0.002
+    return (math.floor(s * FPS) + 0.5) / FPS
+
+
+CUT = _find_cut()
+
+
+def _clearance():
+    """Extra camera height (as extra distance along the view) so it never passes through a tower: per
+    frame, the lens and the first 0.4 units of its view stay clear of the sand, then the lift is eased."""
+    n0, n1 = int(TOUR_START * FPS), int(math.ceil(TOUR_END * FPS)) + 2
+    lift = np.zeros(n1 - n0 + 1)
+    for f in range(n0, n1 + 1):
+        p = _spline(TOUR, f / FPS)
+        if f / FPS >= CUT:
+            p[0] -= WRAP
+        extra = 0.0
+        for _ in range(3):
+            q = list(p)
+            q[3] = p[3] + extra / math.cos(math.radians(p[2]))
+            loc, r, u, fw = basis(tuple(q))
+            need = 0.0
+            for d in (0.0, 0.1, 0.2, 0.3, 0.4):
+                pt = loc + fw * d
+                px, py = (pt[0] + 9.6) * 100.0, (5.4 - pt[1]) * 100.0
+                need = max(need, _tower_top(px, py, r=2) + 0.08 - pt[2])
+            if need <= 0:
+                break
+            extra += need
+        lift[f - n0] = extra
+    w = 12                                                     # ease the lifts in and out (+-0.4 s)
+    pad = np.pad(lift, w, mode="edge")
+    mx = np.array([pad[i:i + 2 * w + 1].max() for i in range(len(lift))])
+    k = np.hanning(2 * w + 3)[1:-1]
+    sm = np.convolve(np.pad(mx, w, mode="edge"), k / k.sum(), mode="valid")
+    return n0, np.maximum(sm, mx * 0.0)
+
+
+def _tour(s):
+    out = _spline(TOUR, s)
     if s >= CUT:
         out[0] -= WRAP
+    global _CL
+    try:
+        _CL
+    except NameError:
+        _CL = None
+        _CL = _clearance()
+    if _CL is not None:
+        n0, lift = _CL
+        x = s * FPS - n0
+        e = float(np.interp(x, np.arange(len(lift)), lift))
+        out[3] += e / math.cos(math.radians(out[2]))
     return tuple(out)
 
 
 def pose_at(s):
-    if KEYS is KEYS_FINALE and s >= TOUR[0][0]:
-        return _tour(s)
+    if KEYS is KEYS_FINALE:
+        if s <= OPENING[-1][0]:
+            return tuple(_spline(OPENING, s))
+        if s >= TOUR_START:
+            return _tour(s)
     for (s0, p0), (s1, p1) in zip(KEYS, KEYS[1:]):
         if s0 <= s < s1:
             e = ease((s - s0) / (s1 - s0))
@@ -118,6 +248,12 @@ def pose_at(s):
             out[3] = math.exp(math.log(p0[3]) + (math.log(p1[3]) - math.log(p0[3])) * e)   # dolly in log
             return tuple(out)
     return KEYS[-1][1]
+
+
+def fstop_at(s):
+    """Aperture: wide open (f/0.9, the miniature look) for most shots, stopped down when the camera flies
+    low so the towers around it stay sharp."""
+    return 0.9 * min(max(7.0 / pose_at(s)[3], 1.0), 4.0)
 
 
 def basis(pose):
@@ -157,7 +293,6 @@ def hom(P, z=0.0):
 # reprojection would be off by more than MAX_ERR px anywhere on screen (the walls' parallax).
 MAX_ERR = 1.0
 WALL_H = 14.0
-FPS = 30
 _xs, _ys = np.meshgrid(np.linspace(0, 1920, 25), np.linspace(60, 900, 15))
 _G0 = np.stack([_xs.ravel(), _ys.ravel(), np.zeros(_xs.size), np.ones(_xs.size)])
 _G1 = _G0.copy()

@@ -82,14 +82,14 @@ INITIAL = {
     "EAF": ("EAF", 0.55),
     "WAF": ("WAF", 0.45),
     "NAF": ("EAF", 0.22),
-    "EUR": ("NEA", 0.30),
-    "LEV": ("NEA", 0.30),
-    "IRN": ("NEA", 0.30),
-    "STP": ("NEA", 0.22),
-    "SIB": ("DEN", 0.18),
-    "EAS": ("DEN", 0.25),
-    "SEA": ("DEN", 0.25),
-    "ISE": ("DEN", 0.25),
+    "EUR": ("NEA", 0.06),           # archaic peoples were few: a sparse scatter of sand
+    "LEV": ("NEA", 0.06),
+    "IRN": ("NEA", 0.06),
+    "STP": ("NEA", 0.045),
+    "SIB": ("DEN", 0.035),
+    "EAS": ("DEN", 0.05),
+    "SEA": ("DEN", 0.05),
+    "ISE": ("DEN", 0.05),
 }
 
 
@@ -427,9 +427,9 @@ SHORT_CAPTIONS = [
     (84.0, 91.0, "About 11,000 years ago, farming begins"),
     (99.0, 106.0, "Steppe herders and Bantu farmers spread far"),
     (109.0, 117.0, "Austronesian sailors cross two oceans"),
-    (132.0, 140.0, "1500 CE: ships, epidemics and enslavement"),
+    (132.0, 140.0, "1500 CE: ships link every continent"),
     (161.5, 167.5, "Today: almost every vessel holds sand from many places"),
-    (200.0, 207.5, "Every person alive descends from those first African grains"),
+    (212.5, 220.0, "Every person alive descends from those first African grains"),
 ]
 
 CLOCK = [
@@ -442,7 +442,7 @@ CLOCK = [
     (160.0, 0),
 ]
 TODAY_S = CLOCK[-1][0]
-DURATION = TODAY_S + 49.0      # today: the towers of Asia, a tour of the world, then the reveal
+DURATION = TODAY_S + 62.0      # today: a low flight through the world's cities, then the reveal
 
 
 # ---------------------------------------------------------------- captions: (ybp, text) or (video s, text)

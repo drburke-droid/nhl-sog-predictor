@@ -19,19 +19,19 @@ Then, between seventy and fifty thousand years ago, a small band crosses out of 
 They spread fast, along the coasts to South Asia, and by boat to Australia.
 
 6
-00:00:43,900 --> 00:00:53,745
-Along the way they mix with Neanderthals. People outside Africa carry about two percent Neanderthal DNA; many Africans, a little too.
+00:00:43,900 --> 00:00:54,256
+Along the way they mix with Neanderthals. People outside Africa carry about two percent Neanderthal DNA, and many Africans carry a smaller trace.
 
 7
-00:00:54,145 --> 00:00:57,489
+00:00:54,656 --> 00:00:57,000
 In Island Southeast Asia, they meet Denisovans.
 
 8
-00:00:57,889 --> 00:01:05,180
+00:00:58,400 --> 00:01:05,691
 People reach Europe and East Asia. Our cousins disappear, but a little of their sand lives on in us.
 
 9
-00:01:05,800 --> 00:01:10,026
+00:01:06,091 --> 00:01:10,317
 Long apart, each region's sand drifts into its own colour.
 
 10
@@ -63,8 +63,8 @@ Austronesian sailors from Taiwan cross two oceans…
 …to Polynesia, and to Madagascar, where Asian and African ancestry meet.
 
 17
-00:02:11,800 --> 00:02:26,429
-By fifteen hundred, ships link every continent. Epidemics, war and enslavement devastate the Indigenous peoples of the Americas, and twelve and a half million Africans are taken across the Atlantic in chains.
+00:02:11,800 --> 00:02:22,110
+By fifteen hundred, ships link every continent, and the Americas are transformed by conquest, disease and the transatlantic slave trade.
 
 18
 00:02:27,800 --> 00:02:32,537
@@ -79,5 +79,5 @@ Modern migration keeps stirring the sand, and people gather in cities.
 Today, almost every vessel holds sand from many places. Yet islands of ancestry endure, from New Guinea to the Andes.
 
 21
-00:03:19,500 --> 00:03:28,138
+00:03:32,000 --> 00:03:40,638
 And underneath… it was always the same sand. Every person alive descends from those first African grains.

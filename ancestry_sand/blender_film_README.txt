@@ -2,7 +2,7 @@ EVERY GRAIN OF US: the full-Cycles Blender project (4K)
 ======================================================
 
 What is in this folder
-  every_grain_of_us.blend   the whole film (3:06, 5,580 frames at 30 fps, 3840x2160), two scenes:
+  every_grain_of_us.blend   the whole film (3:42, 6,660 frames at 30 fps, 3840x2160), two scenes:
                               Film  table, glass, sand and flying sand, rendered by Cycles
                               Edit  joins the rendered frames, the on-screen text and the title
                                     into an MP4 (add the voice-over here too)
@@ -26,8 +26,8 @@ This is a new project: frames from the earlier 1080p version cannot be mixed in.
 2. RENDER THE FRAMES (the long part)
    Open every_grain_of_us.blend. The "Film" scene is open.
    Render > Render Animation (Ctrl+F12).
-   Frames are written to a "render4k" folder next to the .blend (frame_0000.png ... frame_5579.png).
-   Leave about 60 GB free for them (about 10 MB a frame).
+   Frames are written to a "render4k" folder next to the .blend (frame_0000.png ... frame_6659.png).
+   Leave about 70 GB free for them (about 10 MB a frame).
 
    You can stop at any time (Esc, or close Blender) and start again: finished frames are skipped.
 
@@ -39,9 +39,9 @@ This is a new project: frames from the earlier 1080p version cannot be mixed in.
    finished or started (it leaves an empty placeholder file). Share the first PC's project folder on
    the network, then on the second PC (Command Prompt, one line; use the first PC's IP address):
      blender -b "\\192.168.1.50\every_grain_of_us_blender\every_grain_of_us.blend" -S Film
-       -o "\\192.168.1.50\every_grain_of_us_blender\render4k\frame_####" -s 2790 -a -- --cycles-device OPTIX
-   (-s 2790 starts it halfway through; run it again without -s at the end to pick up what is left.)
-   Or simply split the film: one PC renders frames 0-2789 and the other 2790-5579 (Output Properties >
+       -o "\\192.168.1.50\every_grain_of_us_blender\render4k\frame_####" -s 3330 -a -- --cycles-device OPTIX
+   (-s 3330 starts it halfway through; run it again without -s at the end to pick up what is left.)
+   Or simply split the film: one PC renders frames 0-3329 and the other 3330-6659 (Output Properties >
    Frame Start / End), each into its own folder, and copy all the frames into one folder at the end.
    A frame that was being rendered when a computer stopped leaves an empty (0 KB) file behind: at the end,
    delete the 0 KB files and render again to fill those gaps.
@@ -59,12 +59,15 @@ This is a new project: frames from the earlier 1080p version cannot be mixed in.
 
 WHAT IS IN THE LOOK
    4K (3840x2160) throughout, with the on-screen text drawn natively at 4K.
+   The opening: diorama close-ups, low over the first sparse grains of people in Africa, a look north to
+     the Neanderthals of Europe, back to East Africa for the exit, then out to the whole map by 0:45.
    Motion blur: the migrating sand streaks through the air; the camera blurs as it moves.
-   Golden hour: when the camera comes down among the towers, a low warm sun lights their faces gold and
-     a cool light edges them from behind.
+   The finale: down among the population towers, then a low flight through the world's great cities
+     (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,
+     Hong Kong, Shanghai, Beijing, Seoul, Tokyo, a whip across the Pacific to Los Angeles, Mexico City,
+     New York, Lima, Sao Paulo, Buenos Aires, across the Atlantic to London, Paris, Istanbul, Moscow,
+     Cairo, Lagos and Kinshasa, then up to reveal the whole world. A golden low sun lights the towers.
    Richer sand: every grain a little different in shade, hue and shine, and slightly translucent.
-   A longer finale: down among the towers of South Asia, across to East and Southeast Asia, then up to
-     reveal the whole world.
 
 SPEED AND QUALITY
    The project is set for high quality at a sensible speed:
@@ -80,16 +83,14 @@ SPEED AND QUALITY
    To go cleaner: Max Samples 128 and Noise Threshold 0.02.
 
    Rough time per 4K frame (scaled from measurements on a processor and Blender's public benchmark):
-     NVIDIA RTX 5090 / 4090         about 12-18 seconds   whole film about 19-28 hours
-     NVIDIA RTX 5080 / 4080         about 15-22 seconds   about 23-34 hours
-     NVIDIA RTX 4070 / 3080         about 25-35 seconds   about 2 days
-   Two computers sharing the job divide this between them. The frames among the towers at the end are
-   the slowest.
+     NVIDIA RTX 5090 / 4090         about 12-18 seconds   whole film about 22-33 hours
+     NVIDIA RTX 5080 / 4080         about 15-22 seconds   about 28-41 hours
+   Two computers sharing the job divide this between them. The low flight through the cities is
+   the slowest part.
 
 
 THE STORY ON SCREEN
-   The camera holds the whole map still for 200,000 years, through the arrival of today's migrants
-   (including the stream across the Pacific to western North America). At 2:43 it comes slowly down
-   among the population towers of South Asia as the light turns golden and a last ripple of light runs
-   out from East Africa, pans across to East and Southeast Asia, and at 3:00 rises to reveal the whole
-   world. The timed script for the voice-over is narration.srt.
+   Diorama close-ups of the first people open the film; at 0:45 the camera settles on the whole map and
+   holds it for 200,000 years, through the arrival of today's migrants. At 2:43 it comes down among the
+   population towers and flies through the world's great cities, ending in Africa, where the story began,
+   and rises to reveal the whole world. The timed script for the voice-over is narration.srt.

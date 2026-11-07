@@ -46,8 +46,10 @@ def s_at(ybp):
 
 
 def fill_at(ybp):
-    """Share of a vessel's capacity in use: population growth, very roughly."""
-    pts = [(200_000, 0.30), (12_000, 0.34), (4_000, 0.62), (500, 0.76), (0, 1.0)]
+    """Share of a vessel's capacity in use: population growth, very roughly. Starts sparse (a few grains
+    scattered over each vessel) and fills as people multiply, fastest after farming."""
+    pts = [(200_000, 0.05), (120_000, 0.055), (70_000, 0.065), (45_000, 0.09), (20_000, 0.13), (12_000, 0.17),
+           (4_000, 0.45), (2_000, 0.62), (500, 0.76), (0, 1.0)]
     return float(np.interp(-ybp, [-p[0] for p in pts], [p[1] for p in pts]))
 
 

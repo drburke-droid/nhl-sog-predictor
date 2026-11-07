@@ -30,12 +30,14 @@ python film.py script                                       # the narration as a
 ```
 
 **The camera.** `camera.py` holds the camera path, shared by Blender and the compositor. By default
-(`FINALE`) it holds the whole map still until today's migrants have landed (2:43), then comes down
-among the population towers of South Asia, pans across to East and Southeast Asia, and rises to
-reveal the whole world (the film runs 3:06). `SAND_CAMERA=story` selects the
-earlier path that follows the story around the world (into East Africa for the exit, along the southern
-route, over Beringia, the Fertile Crescent, the Bantu expansion, the Atlantic in 1500, then the towers).
-For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
+(`FINALE`) it opens on diorama close-ups (splines through `OPENING`: low over the first sparse grains in
+Africa, a look north to Neanderthal Europe, back to East Africa for the exit), settles on the whole map by
+0:45 and holds it until today, then comes down among the population towers and flies low through the
+world's great cities (`CITIES`, timed from their distances, looking ahead; `_clearance()` lifts the camera
+over any tower in its way, using the settled heights export_blender.py saves in `data/tour_heights.npy`),
+whips across the Pacific (the map wraps between two frames), and ends in Africa before rising to reveal
+the world (3:42 in all). `SAND_CAMERA=story` selects the earlier path that follows the story around the
+world. For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
 would be more than 1 px off; in between, the two nearest keyframes are reprojected through the plane
 halfway up the walls and cross-faded.
 

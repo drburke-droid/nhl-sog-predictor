@@ -53,9 +53,11 @@ def load_plate(name):
 
 
 def project_P(P, x, y, z):
-    """Map px (x, y) at height z (map px) -> screen px, through camera matrix P."""
+    """Map px (x, y) at height z (map px) -> screen px, through camera matrix P. Points behind the camera
+    come out far off screen (never mirrored back onto it)."""
     q = P @ np.stack([x, y, z, np.ones_like(x)])
-    return q[0] / q[2], q[1] / q[2]
+    w = np.where(q[2] > 1e-6, q[2], np.nan)
+    return np.nan_to_num(q[0] / w, nan=-1e6), np.nan_to_num(q[1] / w, nan=-1e6)
 
 
 WALL_MID = C.WALL_H / 2          # glass plates are reprojected through the plane halfway up the walls
@@ -161,6 +163,7 @@ class Painter:
         self.f_title = font("InterDisplay-SemiBold.otf", 84 * k)
         self.f_sub = font("Inter-Regular.otf", 28 * k)
         self.f_note = font("Inter-Regular.otf", 15 * k)
+        self.f_city = font("InterDisplay-SemiBold.otf", 22 * k)
         self.cache = {}
         self.label_map = {}
         for v in Sd.ORDER:
@@ -528,6 +531,9 @@ class Painter:
         k = self.k
         IW, IH = img.shape[1], img.shape[0]
         title_a = 1.0 - smooth((s - 4.2) / 1.6)
+        # on the low flight through the cities, region names step aside for the cities' own
+        flying = C.KEYS is C.KEYS_FINALE and C.TOUR_START < s < C.TOUR_END + 2
+        region_a = 1.0 - (smooth((s - C.TOUR_START - 5.5) / 1.5) * smooth((C.TOUR_END - 1.0 - s) / 1.5) if flying else 0.0)
         for v in Sd.ORDER:
             vi = Sd.VI[v]
             has = sim.counts[vi].sum() > 0
@@ -536,7 +542,20 @@ class Painter:
             spr = self.text_sprite(lab, self.f_label, INK * 255, halo=True)
             x, y = self.project(np.array([self.label_map[v][0]]), np.array([self.label_map[v][1]]), np.array([0.0]))
             x, y = float(x[0]) * k, float(y[0]) * k
-            self.blit(img, spr, x - spr.shape[1] / 2, y - spr.shape[0] / 2, (0.8 if has else 0.4) * (1 - title_a * 0.7))
+            self.blit(img, spr, x - spr.shape[1] / 2, y - spr.shape[0] / 2,
+                      (0.8 if has else 0.4) * (1 - title_a * 0.7) * region_a)
+        if flying:
+            for name, cx, cy, t in C.TOUR_CITIES:
+                a = smooth((s - t + 1.6) / 0.5) * smooth((t + 0.6 - s) / 0.5)
+                if a < 0.01:
+                    continue
+                cx = cx - C.WRAP if cx > 1900 else cx
+                ci, cj = int(cx // Sd.CELL), int(cy // Sd.CELL)
+                top = sim.h.reshape(Sd.HC, Sd.WC)[max(cj - 4, 0):cj + 5, max(ci - 4, 0):ci + 5].max()
+                x, y = self.project(np.array([cx]), np.array([cy]), np.array([top * GRAIN_DZ + 8.0]))
+                x, y = float(x[0]) * k, float(y[0]) * k
+                spr = self.text_sprite(name, self.f_city, INK * 255, halo=True)
+                self.blit(img, spr, x - spr.shape[1] / 2, y - spr.shape[0] - 6 * k, 0.95 * a)
         ybp = ybp_at(s)
         if ybp >= 500:
             v = int(round(ybp / 100.0) * 100) if ybp >= 10_000 else (int(round(ybp / 10.0) * 10) if ybp >= 1_000 else int(round(ybp)))

@@ -27,8 +27,12 @@ def main():
             # the island at true size: a small solid glass shape (its own outline, filled)
             polys = [Polygon(e, hs).buffer(0) for e, hs in g["true_rings"]]
             u = unary_union([p for p in polys if p.area > 0.3]).buffer(0.8, 6)
-            out[vid + "_true"] = [[np.round(np.array(p.exterior.coords), 2).tolist()]
-                                  for p in getattr(u, "geoms", [u]) if p.area > 0.5]
+            vessel = unary_union([Polygon(e, hs).buffer(0) for e, hs in g["rings"]])
+            # ...unless the magnified island sits on top of it (Madagascar): a solid shape there would
+            # cap the sand in the vessel, so the magnified island stands for itself
+            if u.intersection(vessel).area < 0.05 * u.area:
+                out[vid + "_true"] = [[np.round(np.array(p.exterior.coords), 2).tolist()]
+                                      for p in getattr(u, "geoms", [u]) if p.area > 0.5]
             # the magnifier: a thin glass frame around the inset
             f = Polygon(g["frame"])
             fr = f.buffer(1.4, 8).difference(f.buffer(-1.4, 8))
