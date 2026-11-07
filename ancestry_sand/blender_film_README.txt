@@ -20,11 +20,11 @@ Blender 4.4 or newer. A graphics card makes a huge difference.
 This version changes every frame: render it into a fresh folder (do not mix in frames from earlier
 versions).
 
-New in version 3: the cities are mountains of poured sand again (every city of 1 million or more; the
-bigger the city, the higher the summit and the wider the base; coastal and island cities spill over the
-glass), and the whole film
-has a deeper, richer grade, as in the thumbnails. The sound, captions and compose file are the same as
-in version 2; hud.mov is new (the city names sit on the new mountains).
+New in version 3.1: the cities are mountains of poured sand again, every city of 1 million people or
+more (the bigger the city, the higher the summit and the wider the base; a 1-million city is a low
+mound; coastal and island cities spill over the glass), and the whole film has a deeper, richer grade,
+as in the thumbnails. The sound, captions and compose file are the same as in version 2; hud.mov is
+new (the city names sit on the new mountains). Version 3.1 replaces version 3: use this .blend.
 
 
 1. TURN ON YOUR GRAPHICS CARD (once)
