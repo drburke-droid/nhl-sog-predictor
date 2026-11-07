@@ -85,6 +85,6 @@ Corrections from people who work on this are very welcome. Comments are moderate
 
 THUMBNAILS (1280x720, for YouTube's Test & Compare)
 ----------
-youtube_thumbnail_a_towers.png    the golden-hour city mountains of Asia, "200,000 YEARS / OF HUMAN MIGRATION"
+youtube_thumbnail_a_mountains.png the city mountains of Mumbai spilling over the glass, "200,000 YEARS / OF HUMAN MIGRATION"
 youtube_thumbnail_b_streams.png   the whole world with migration streaming in, "WE ALL CAME FROM AFRICA"
 youtube_thumbnail_c_reveal.png    the final reveal of the world, "YOUR ANCESTORS, IN SAND"

@@ -20,6 +20,11 @@ Blender 4.4 or newer. A graphics card makes a huge difference.
 This version changes every frame: render it into a fresh folder (do not mix in frames from earlier
 versions).
 
+New in version 3: the great cities are mountains of poured sand again (the bigger the city, the higher
+the summit and the wider the base; coastal and island cities spill over the glass), and the whole film
+has a deeper, richer grade, as in the thumbnails. The sound, captions and compose file are the same as
+in version 2; hud.mov is new (the city names sit on the new mountains).
+
 
 1. TURN ON YOUR GRAPHICS CARD (once)
    Edit > Preferences > System > Cycles Render Devices
