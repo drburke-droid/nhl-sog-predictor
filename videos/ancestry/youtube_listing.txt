@@ -44,7 +44,7 @@ WHAT'S SIMPLIFIED
 • Regions show today's average ancestry, so colonised countries such as the US, Canada and Australia look mostly European. Indigenous peoples and their ancestry continue there.
 • Ancestry is really continuous; the colours are broad, standard components. Population sizes before farming are rough estimates (within about 3×), and to keep the early map readable a grain stands for fewer people then than today.
 • City mountains are drawn bigger than their share of the sand so they can be seen: a summit's height ranks cities by size (it grows a little slower than population, so Tokyo isn't a needle), and the mountains borrow sand from the surrounding countryside.
-• City sizes are 2025 urban-agglomeration projections (UN World Urbanization Prospects 2018).
+• City sizes follow each city's own history: Tertius Chandler's historical census (1987; geocoded by Reba, Reitsma & Seto 2016) before 1950, and UN World Urbanization Prospects 2018 urban agglomerations from 1950 to 2025.
 • Polynesia is drawn as Hawai'i but stands for Polynesians as a people, whose ancestors reached Tonga and Samoa about 2,900 years ago.
 
 SOURCES
@@ -61,7 +61,7 @@ Africa: van de Loosdrecht et al. 2018 (Science); Llorente et al. 2015; Patin et 
 The Arctic and the Caribbean: Rasmussen et al. 2010; Moltke et al. 2015; Nägele et al. 2020; Fernandes et al. 2021
 The transatlantic slave trade: Eltis & Richardson 2010 (Atlas of the Transatlantic Slave Trade); Micheletti et al. 2020 (AJHG)
 Ancestry today: Bryc et al. 2015; Moreno-Estrada et al. 2014; Kehdy et al. 2015; Montinaro et al. 2015; Olalde et al. 2019 (Science); Almarri et al. 2021 (Cell)
-Population: McEvedy & Jones 1978; HYDE 3.2; UN World Population Prospects 2024; Denevan 1992; Koch et al. 2019; cities: UN World Urbanization Prospects 2018; foragers by habitat: Binford 2001; Kelly 2013
+Population: McEvedy & Jones 1978; HYDE 3.2; UN World Population Prospects 2024; Denevan 1992; Koch et al. 2019; cities: UN World Urbanization Prospects 2018, Chandler 1987 and Reba, Reitsma & Seto 2016 (Scientific Data); foragers by habitat: Binford 2001; Kelly 2013
 Modern migration: 2020 US Census; 2021 Canadian Census
 
 MADE WITH

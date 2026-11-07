@@ -106,7 +106,9 @@ city's mountain spills over the glass onto the sea beside it (`sand.SPILL`: thos
 vessel for the mountain alone), so Tokyo is a whole cone rather than a slab squeezed onto Honshu. City
 mountains may hold at most 70% of a region's sand (`CITY_SHARE`); where they would need more (sparse
 regions such as the Southern Cone or Mexico), that region's mountains stand steeper instead. They grow
-with urbanization (`story.urban_frac`: a quarter of today's size in 1950, half by 1975). Where the
+with their own populations through history (`cityhist.py`: Chandler's historical city census before 1950,
+as geocoded by Reba, Reitsma & Seto 2016; the UN's agglomerations every 5 years from 1950), so London leads
+in 1900, New York and Tokyo by 1950, and Lagos, Dhaka and Kinshasa rise only after 1950. Where the
 countryside is already high (Java, Japan), a city still rises at least 45% of its height above it
 (`CITY_RELIEF`). Everyone else is spread by density (towns and smaller cities: Natural Earth populated places,
 without those the city mountains stand for) and levelled off at 60 grains, so only cities rise above the

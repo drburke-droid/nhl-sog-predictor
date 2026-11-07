@@ -177,7 +177,7 @@ def build_cities():
     from proj import to_px
     out = []
     rng = np.random.default_rng(23)
-    for name, lon, lat, mil in list(S.MEGACITIES) + list(S.CITY_HILLS):
+    for hi, (name, lon, lat, mil) in enumerate(list(S.MEGACITIES) + list(S.CITY_HILLS)):
         x, y = (float(np.ravel(v)[0]) for v in to_px(lon, lat))
         dv, j = _VALID_TREE.query((x, y))
         if dv > 15.0:                                           # nowhere near any land on the map
@@ -185,7 +185,7 @@ def build_cities():
         vi = VID[VALID[j]]
         cells = VCELLS[vi]
         centre = cells[np.argmin(np.hypot(CELL_XY[cells, 0] - x, CELL_XY[cells, 1] - y))]   # nearest land
-        reach = float(S.city_height(mil)) / S.CITY_SLOPE * 1.3 + 1.0
+        reach = float(S.city_height(max(mil, CITY_M[hi].max()))) / S.CITY_SLOPE * 1.3 + 1.0   # its largest ever
         cx, cy = centre % WC, centre // WC
         r = int(np.ceil(reach)) + 1
         gx, gy = np.meshgrid(np.arange(max(cx - r, 0), min(cx + r + 1, WC)), np.arange(max(cy - r, 0), min(cy + r + 1, HC)))
@@ -204,7 +204,7 @@ def build_cities():
         wav = np.stack([np.cos(ka), np.sin(ka)], 1) * rng.uniform(5.0, 9.0, (3, 1))  # ridges ~1/2 to 1/4 of R apart
         ph = rng.uniform(0, 2 * np.pi, 3)
         jit = rng.uniform(0.88, 1.12, len(cl))
-        out.append(dict(name=name, vi=vi, cells=cl, off=off, dd=np.hypot(*off.T), sat=sat, wav=wav, ph=ph,
+        out.append(dict(name=name, hi=hi, vi=vi, cells=cl, off=off, dd=np.hypot(*off.T), sat=sat, wav=wav, ph=ph,
                         jit=jit, centre=centre, mil=mil))
     return out
 
@@ -216,7 +216,8 @@ def _flatten(cities):
              cell=np.concatenate([c["cells"] for c in cities]), off=np.concatenate([c["off"] for c in cities]),
              dd=np.concatenate([c["dd"] for c in cities]), jit=np.concatenate([c["jit"] for c in cities]),
              wav=np.stack([c["wav"] for c in cities]), ph=np.stack([c["ph"] for c in cities]),
-             mil=np.array([c["mil"] for c in cities]), vi=np.array([c["vi"] for c in cities]),
+             mil=np.array([c["mil"] for c in cities]), hi=np.array([c["hi"] for c in cities]),
+             vi=np.array([c["vi"] for c in cities]),
              centre=np.array([c["centre"] for c in cities]))
     sat = np.zeros((n, 4, 5)); sat[:, :, 4] = 1.0                 # unused shoulders: zero height
     for i, c in enumerate(cities):
@@ -257,6 +258,8 @@ GMAX = HFULL * NCELLS_V.sum()
 CELL_XY = np.stack([(np.arange(NCELL) % WC + 0.5) * CELL, (np.arange(NCELL) // WC + 0.5) * CELL], 1)
 from scipy.spatial import cKDTree
 _VALID_TREE = cKDTree(CELL_XY[VALID])
+import cityhist
+CITY_YEARS, CITY_M, CITY_INFO = cityhist.histories(list(S.MEGACITIES) + list(S.CITY_HILLS))   # millions by year
 CITIES = build_cities()
 CF = _flatten(CITIES)
 # Sand spilling over the glass: the cells beyond a vessel's wall that a coastal city's mountain spreads onto.
@@ -568,7 +571,8 @@ class Sand:
         ybp = ybp_at(self.s)
         w = self.farm_w(ybp)
         N = self.counts.sum(1).astype(float)
-        uf = S.urban_frac(2025.0 - ybp)
+        mil_t = cityhist.at(CITY_YEARS, CITY_M, 2025.0 - ybp)[CF["hi"]]     # each city's own population then
+        uf = float((S.city_height(mil_t) >= 4.0).any())                      # any city big enough to show
         we = (1 - w) + w * DENS[VALID]
         vid = VID[VALID]
         bgf = np.zeros(NCELL, np.float32)
@@ -591,7 +595,7 @@ class Sand:
             if uf <= 0:
                 break
             for k in range(3):                # steepen (or relax) until the mountains fit their share
-                h = S.city_height(CF["mil"] * uf)
+                h = S.city_height(mil_t)
                 h = np.where(h < 4.0, 0.0, np.maximum(h, bgf[CF["centre"]] + S.CITY_RELIEF * h))  # on a crowded plain, still a hill
                 R = np.maximum(h / (S.CITY_SLOPE * steep[CF["vi"]]), S.CITY_MIN_R)
                 rise = self.city_rise(h, R, bgf)
