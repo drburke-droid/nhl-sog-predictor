@@ -6,6 +6,7 @@ Writes OUT_DIR/every_grain_of_us_score.wav (the score, -16 LUFS, exactly the fil
 narration_lily.wav (the voice alone, -16 LUFS), every_grain_of_us_score_with_narration.wav (the voice
 over the score, which dips about 10 dB under each line), MP3s of the two mixes, and narration_lily.srt.
 Each line starts at its time in narration_script.json, or 0.4 s after the previous line ends if later.
+Each voice clip is trimmed to its speech and faded in and out (clean_line), so none clicks.
 """
 import json, os, subprocess, sys
 import numpy as np
@@ -39,6 +40,28 @@ def decode(path, ch):
     return np.frombuffer(raw, np.float32).reshape(-1, ch)
 
 
+def clean_line(a):
+    """Trim a generated voice clip to its speech. The voice generator sometimes leaves a stray click or a
+    short high chirp at the very end of a clip, after the line has fallen silent: anything less than 0.3 s
+    long that follows the last silence of 150 ms or more is silenced. Then a 5 ms fade-in and a 30 ms
+    fade-out, so no clip starts or stops on a non-zero sample (which clicks)."""
+    x = a[:, 0].copy()
+    w = int(0.01 * SR)
+    n = len(x) // w
+    quiet = 20 * np.log10(np.sqrt((x[:n * w].reshape(n, w) ** 2).mean(1)) + 1e-9) < -55
+    run, last = 0, None
+    for i in range(n):                                     # the last silent stretch of 15+ frames
+        run = run + 1 if quiet[i] else 0
+        if run >= 15:
+            last = (i - run + 1, i)
+    end = (last[0] + 3) * w if last is not None and (n - 1 - last[1]) * w < 0.3 * SR else len(x)
+    fi, fo = int(0.005 * SR), int(0.03 * SR)
+    x[:fi] *= np.linspace(0, 1, fi)
+    x[end - fo:end] *= np.linspace(1, 0, fo)
+    x[end:] = 0.0                                          # silenced, not cut: the line keeps its length and timing
+    return x[:, None]
+
+
 def main(score, lines_dir, out):
     os.makedirs(out, exist_ok=True)
     N = int(round(S.DURATION * SR))
@@ -52,7 +75,7 @@ def main(score, lines_dir, out):
     spans, end, srt = [], 0.0, []
     ts = lambda x: f"{int(x // 3600):02d}:{int(x // 60 % 60):02d}:{int(x % 60):02d},{int(round(x * 1000)) % 1000:03d}"
     for i, (t, text) in enumerate(L):
-        a = decode(os.path.join(lines_dir, f"line_{i:02d}.mp3"), 1)
+        a = clean_line(decode(os.path.join(lines_dir, f"line_{i:02d}.mp3"), 1))
         start = max(t, end + 0.4)
         s = int(start * SR)
         vo[s:s + len(a)] += a[:N - s]
