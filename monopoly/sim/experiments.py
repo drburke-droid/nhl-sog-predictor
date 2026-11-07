@@ -560,6 +560,40 @@ def exp_railroads(n_games=100000):
 
 EXPERIMENTS['railroads'] = exp_railroads
 
+UTIL_MULTS = [(4, 10), (6, 15), (8, 20), (10, 25), (12, 30), (16, 40), (20, 50), (24, 60), (28, 70), (32, 80)]
+UTIL_PRICES = [150, 100, 75, 50, 25]
+
+
+def exp_utilities(n_games=100000):
+    """Utilities spin-off: what are they worth in wins, and what price or rent multiplier would make them pull their weight?"""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    base = dict(END_WORLDS['with_auctions'])
+    U = lambda key, me, **extra: run('utilities', key, [me.replace('everything', 'everything;name=%s' % key, 1)] + [typ] * 3, n_games, tv=tv,
+                                     **dict(base, **extra))
+    # what each group is worth: handed to one player, free, before the first roll (everyone plays the typical way)
+    for g in GROUPS + ['railroads', 'utilities']:
+        U('gift_%s' % g, 'everything', give='0:%s' % g)
+    U('baseline', 'everything')
+    # current rules: skip utilities, or chase them
+    U('never_buy_utilities', 'everything;buy=all-util')
+    U('utility_fan', 'everything;fav=util')
+    # bigger rent multipliers (one utility x dice, both x dice; the Chance card pays the "both" rate)
+    for m1, m2 in UTIL_MULTS[1:]:
+        w = dict(util1=m1, util2=m2)
+        U('x%d_%d__gift_utilities' % (m1, m2), 'everything', give='0:utilities', **w)
+        U('x%d_%d__never_buy_utilities' % (m1, m2), 'everything;buy=all-util', **w)
+        U('x%d_%d__utility_fan' % (m1, m2), 'everything;fav=util', **w)
+    # cheaper utilities at today's multipliers
+    for pr in UTIL_PRICES[1:]:
+        U('price_%d__never_buy_utilities' % pr, 'everything;buy=all-util', utilprice=pr)
+        U('price_%d__utility_fan' % pr, 'everything;fav=util', utilprice=pr)
+        U('price_%d__gift_utilities' % pr, 'everything', give='0:utilities', utilprice=pr)
+
+
+EXPERIMENTS['utilities'] = exp_utilities
+
 if __name__ == '__main__':
     names = sys.argv[1:] or list(EXPERIMENTS)
     for n in names:

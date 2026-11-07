@@ -38,7 +38,7 @@
 // ---------------------------------------------------------------- board
 enum { T_PROP, T_RR, T_UTIL, T_GO, T_CC, T_CH, T_TAX, T_JAIL, T_FP, T_G2J };
 struct Sq { const char* name; int type; int price; int group; int rent[6]; int hc; int tax; };
-static const Sq B[40] = {
+static Sq B[40] = {  // not const: --utilprice changes the utilities' price
     {"Go", T_GO, 0, -1, {0}, 0, 0},
     {"Mediterranean Avenue", T_PROP, 60, 0, {2, 10, 30, 90, 160, 250}, 50, 0},
     {"Community Chest", T_CC, 0, -1, {0}, 0, 0},
@@ -256,6 +256,7 @@ static Strat parseStrat(const std::string& spec) {
 struct Config {
     bool auctions = true, trading = false, freeParking = false, go400 = false, buyouts = false, deal = false;
     int maxRounds = 1000, startCash = 1500;
+    int util1 = 4, util2 = 10, utilPrice = 150;  // utility rent: util1 x dice with one, util2 x dice with both (and from the Chance card)
     int endgame = 0;  // >0: once nearly everything is owned and this many rounds pass with no new set, trade or bankruptcy,
                       // players start selling set cards for cash and buying up cards split between players
 
@@ -520,9 +521,9 @@ struct Game {
             return cardMode == 1 ? 2 * r : r;
         }
         if (B[s].type == T_UTIL) {
-            if (cardMode == 2) return 10 * dice;
+            if (cardMode == 2) return cfg.util2 * dice;
             int k = (owner[12] == o) + (owner[28] == o);
-            return (k == 2 ? 10 : 4) * dice;
+            return (k == 2 ? cfg.util2 : cfg.util1) * dice;
         }
         int h = houses[s];
         if (h) return B[s].rent[h];
@@ -994,6 +995,9 @@ int main(int argc, char** argv) {
         else if (a == "--endgame") cfg.endgame = atoi(nx().c_str());
         else if (a == "--maxrounds") cfg.maxRounds = atoi(nx().c_str());
         else if (a == "--cash") cfg.startCash = atoi(nx().c_str());
+        else if (a == "--util1") cfg.util1 = atoi(nx().c_str());
+        else if (a == "--util2") cfg.util2 = atoi(nx().c_str());
+        else if (a == "--utilprice") cfg.utilPrice = atoi(nx().c_str());
         else if (a == "--horizon") horizon = atof(nx().c_str());
         else if (a == "--log") logPath = nx();
         else if (a == "--tv") tvSpec = nx();
@@ -1003,6 +1007,7 @@ int main(int argc, char** argv) {
             while (std::getline(ss, t, ',')) { auto c = t.find(':'); cfg.give.push_back({atoi(t.substr(0, c).c_str()), groupByName(t.substr(c + 1))}); }
         } else { fprintf(stderr, "unknown arg %s\n", a.c_str()); return 1; }
     }
+    B[12].price = B[28].price = cfg.utilPrice;
     estimateFreq(2000000, 12345);
     initValues(horizon);
     if (!tvSpec.empty()) {  // "brown:100,orange:900,..." overrides the shark's set values
