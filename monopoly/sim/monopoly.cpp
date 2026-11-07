@@ -144,6 +144,9 @@ struct Strat {
     int rrOffer = 0;          // pays this much cash for any railroad an opponent holds (the owner is assumed to accept)
     bool sellNeedSet = false; // endgame: sells a set-finishing card only while holding a colour set of its own
     bool rrLastOnly = false;  // with rrOffer: only offers cash for the last railroad it is missing
+    // as a seller of railroads: -1 takes whatever a railroad buyer offers; otherwise asks a price drawn each game,
+    // uniformly from rrAskLo..rrAskHi in $25 steps, raised by rrAskStep x that price for each railroad the buyer already holds
+    int rrAskLo = -1, rrAskHi = -1; double rrAskStep = 0;
 };
 
 static uint64_t maskFromName(const std::string& w) {
@@ -242,6 +245,8 @@ static Strat parseStrat(const std::string& spec) {
         else if (k == "rroffer") s.rrOffer = atoi(v.c_str());
         else if (k == "sellset") s.sellNeedSet = atoi(v.c_str()) != 0;
         else if (k == "rrlast") s.rrLastOnly = atoi(v.c_str()) != 0;
+        else if (k == "rrask") { auto c = v.find(':'); s.rrAskLo = atoi(v.substr(0, c).c_str()); s.rrAskHi = c == std::string::npos ? s.rrAskLo : atoi(v.substr(c + 1).c_str()); }
+        else if (k == "rrstep") s.rrAskStep = atof(v.c_str());
         else { fprintf(stderr, "unknown key '%s'\n", k.c_str()); exit(1); }
     }
     return s;
@@ -260,7 +265,8 @@ struct Config {
 struct Stats {
     int n = 0;                          // players
     long games = 0, timeouts = 0;
-    std::vector<long> wins, nwWins, seatWins, seatGames, gotMono, winWithMono, firstOut, busted, allRR, allRRWin;
+    std::vector<long> wins, nwWins, seatWins, seatGames, gotMono, winWithMono, firstOut, busted, allRR, allRRWin, rrBought, rrSpent;
+    std::vector<double> allRRRound;
     std::vector<std::array<long, 10>> monoBy, winMonoBy;   // [slot][group]
     std::vector<double> netAtEnd, rent;
     std::array<double, 40> rentSq{}, landSq{};
@@ -272,6 +278,7 @@ struct Stats {
         n = np; wins.assign(n, 0); nwWins.assign(n, 0); seatWins.assign(n, 0); seatGames.assign(n, 0);
         gotMono.assign(n, 0); winWithMono.assign(n, 0); monoBy.assign(n, {}); winMonoBy.assign(n, {});
         firstOut.assign(n, 0); busted.assign(n, 0); allRR.assign(n, 0); allRRWin.assign(n, 0);
+        rrBought.assign(n, 0); rrSpent.assign(n, 0); allRRRound.assign(n, 0);
         netAtEnd.assign(n, 0); rent.assign(n, 0); roundsHist.assign(101, 0);
     }
     void add(const Stats& o) {
@@ -280,6 +287,7 @@ struct Stats {
             wins[i] += o.wins[i]; nwWins[i] += o.nwWins[i]; seatWins[i] += o.seatWins[i]; seatGames[i] += o.seatGames[i];
             gotMono[i] += o.gotMono[i]; winWithMono[i] += o.winWithMono[i]; netAtEnd[i] += o.netAtEnd[i]; rent[i] += o.rent[i];
             firstOut[i] += o.firstOut[i]; busted[i] += o.busted[i]; allRR[i] += o.allRR[i]; allRRWin[i] += o.allRRWin[i];
+            rrBought[i] += o.rrBought[i]; rrSpent[i] += o.rrSpent[i]; allRRRound[i] += o.allRRRound[i];
             for (int g = 0; g < 10; g++) { monoBy[i][g] += o.monoBy[i][g]; winMonoBy[i][g] += o.winMonoBy[i][g]; }
         }
         for (int s = 0; s < 40; s++) { rentSq[s] += o.rentSq[s]; landSq[s] += o.landSq[s]; }
@@ -306,6 +314,7 @@ struct Player {
     bool inJail = false, alive = true;
     int goojfCh = 0, goojfCc = 0;
     int monoMask = 0, firstMono = -1; long rent = 0; bool rrAll = false;
+    int rrAsk = -1, rrAllRound = -1, rrBought = 0; long rrSpent = 0;
 };
 
 static const int BANK = -1, POT = -2;
@@ -342,7 +351,7 @@ struct Game {
         return w;
     }
     void updateMono(int p) {
-        if (!P[p].rrAll && !transferring && hasSet(p, 8)) P[p].rrAll = true;  // collected, not inherited from a bankrupt
+        if (!P[p].rrAll && !transferring && hasSet(p, 8)) { P[p].rrAll = true; P[p].rrAllRound = round; }  // collected, not inherited
         for (int g = 0; g < 8; g++) if (!(P[p].monoMask >> g & 1) && hasSet(p, g)) {
             P[p].monoMask |= 1 << g;
             lastProgress = turns;
@@ -710,8 +719,14 @@ struct Game {
         for (int i = 0; i < GSZ[8]; i++) {
             int s = GSQ[8][i], b = owner[s], price = S[a]->rrOffer;
             if (b < 0 || b == a || !P[b].alive || S[b]->trade == 0) continue;
-            if (P[a].cash - price < S[a]->reserve) return;
+            if (P[b].rrAsk >= 0) {  // the owner names a price; the buyer pays it if it is within the buyer's limit
+                int ask = (int)std::ceil(P[b].rrAsk * (1 + S[b]->rrAskStep * countOwned(a, 8)));
+                if (ask > S[a]->rrOffer) continue;
+                price = ask;
+            }
+            if (P[a].cash - price < S[a]->reserve) continue;
             owner[s] = a; P[a].cash -= price; P[b].cash += price; st->trades++; lastProgress = turns;
+            P[a].rrBought++; P[a].rrSpent += price;
             if (log) fprintf(log, "{\"r\":%d,\"p\":%d,\"e\":\"rr_buy\",\"from\":%d,\"s\":%d,\"cash\":%d}\n", round, a, b, s, price);
             updateMono(a);
         }
@@ -874,6 +889,10 @@ struct Game {
     int play() {
         for (int s = 0; s < 40; s++) { owner[s] = -1; houses[s] = 0; mort[s] = false; }
         for (int p = 0; p < n; p++) { P[p] = Player(); P[p].cash = cfg.startCash + S[p]->bonus; P[p].slot = p; }
+        for (int p = 0; p < n; p++) if (S[p]->rrAskLo >= 0) {
+            int lo = S[p]->rrAskLo, hi = std::max(lo, S[p]->rrAskHi);
+            P[p].rrAsk = lo + (hi > lo ? 25 * rng.below((hi - lo) / 25 + 1) : 0);
+        }
         aliveCount = n;
         chance.shuffle(rng); chest.shuffle(rng);
         for (auto& gv : cfg.give) for (int i = 0; i < GSZ[gv.second]; i++) owner[GSQ[gv.second][i]] = gv.first;
@@ -904,7 +923,8 @@ struct Game {
         for (int p = 0; p < n; p++) {
             st->rent[p] += P[p].rent; st->netAtEnd[p] += P[p].alive ? netWorth(p) : 0;
             if (P[p].monoMask) st->gotMono[p]++;
-            if (P[p].rrAll) { st->allRR[p]++; if (p == w) st->allRRWin[p]++; }
+            if (P[p].rrAll) { st->allRR[p]++; st->allRRRound[p] += P[p].rrAllRound; if (p == w) st->allRRWin[p]++; }
+            st->rrBought[p] += P[p].rrBought; st->rrSpent[p] += P[p].rrSpent;
             for (int g = 0; g < 8; g++) if (P[p].monoMask >> g & 1) { st->monoBy[p][g]++; if (p == w) st->winMonoBy[p][g]++; }
             if (P[p].firstMono >= 0) st->firstMonoAny[P[p].firstMono]++;
         }
@@ -1028,8 +1048,9 @@ int main(int argc, char** argv) {
            s.endgameDeals, cfg.auctions, cfg.trading, cfg.freeParking, cfg.go400, cfg.buyouts, cfg.endgame, cfg.maxRounds, cfg.startCash);
     printf("\"players\":[");
     for (int i = 0; i < np; i++) {
-        printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"first_out\":%ld,\"busted\":%ld,\"all_rr\":%ld,\"all_rr_win\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",
-               i ? "," : "", SS[i].name.c_str(), s.wins[i], s.nwWins[i], s.gotMono[i], s.winWithMono[i], s.firstOut[i], s.busted[i], s.allRR[i], s.allRRWin[i], s.rent[i] / s.games, s.netAtEnd[i] / s.games);
+        printf("%s{\"name\":\"%s\",\"wins\":%ld,\"nw_wins\":%ld,\"got_set\":%ld,\"wins_with_set\":%ld,\"first_out\":%ld,\"busted\":%ld,\"all_rr\":%ld,\"all_rr_win\":%ld,\"all_rr_round_avg\":%.1f,\"rr_bought\":%ld,\"rr_spent\":%ld,\"avg_rent\":%.1f,\"avg_net_end\":%.1f,\"sets\":{",
+               i ? "," : "", SS[i].name.c_str(), s.wins[i], s.nwWins[i], s.gotMono[i], s.winWithMono[i], s.firstOut[i], s.busted[i], s.allRR[i], s.allRRWin[i],
+               s.allRR[i] ? s.allRRRound[i] / s.allRR[i] : 0.0, s.rrBought[i], s.rrSpent[i], s.rent[i] / s.games, s.netAtEnd[i] / s.games);
         for (int g = 0; g < 8; g++) printf("%s\"%s\":[%ld,%ld]", g ? "," : "", GROUP_NAME[g], s.monoBy[i][g], s.winMonoBy[i][g]);
         printf("}}");
     }

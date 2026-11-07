@@ -513,6 +513,53 @@ def exp_deepdive(n_games=100000):
 
 EXPERIMENTS['deepdive'] = exp_deepdive
 
+def exp_railroads(n_games=100000):
+    """Railroad spin-off: can a player win by targeting the railroads, and what if the owners only sell at a price?"""
+    import evolve_real as er
+    tv = ','.join('%s:%d' % kv for kv in er.TV.items())
+    typ = er.TYPICAL
+    cfg = END_WORLDS['with_auctions']
+    R = lambda key, me, opp=typ, n=4, games=n_games: run('railroads', key, [me.replace('everything', 'everything;name=%s' % key, 1)] + [opp] * (n - 1),
+                                                       games, tv=tv, **cfg)
+    # A. targeting the railroads without paying cash for them
+    R('rr_only', 'everything;buy=rr')
+    R('rr_and_utilities_only', 'everything;buy=rr+util')
+    R('never_buy_rr', 'everything;buy=all-rr')
+    R('rr_fan', 'everything;fav=rr')
+    R('rr_trader', 'everything;rrtrade=1')
+    R('rr_collector', COLLECTOR)
+    R('playbook', PLAYBOOK)
+    R('playbook_rr_fan', PLAYBOOK + ';fav=rr')
+    # B. buying railroads for cash, when every owner asks a fixed price (the buyer pays whatever is asked, or only up to a cap)
+    for ask in (250, 300, 400, 500, 600, 800, 1000):
+        opp = typ + ';rrask=%d' % ask
+        R('collector_pays_any__ask_%d' % ask, COLLECTOR + ';rroffer=5000', opp)
+        R('collector_cap_450__ask_%d' % ask, COLLECTOR + ';rroffer=450', opp)
+    # owners' prices vary: each owner draws a price per game
+    for lo, hi in ((300, 900), (400, 1200), (200, 600)):
+        opp = typ + ';rrask=%d:%d' % (lo, hi)
+        for cap in (300, 400, 450, 500, 600, 5000):
+            R('collector_cap_%d__asks_%d_%d' % (cap, lo, hi), COLLECTOR + ';rroffer=%d' % cap, opp)
+    # owners raise their price as the buyer closes in: base price, plus 50% of it per railroad the buyer already holds
+    for base in (300, 400, 500):
+        opp = typ + ';rrask=%d;rrstep=0.5' % base
+        for cap in (450, 600, 800, 5000):
+            R('collector_cap_%d__rising_from_%d' % (cap, base), COLLECTOR + ';rroffer=%d' % cap, opp)
+    # D. the seller's side: one opponent is a railroad buyer who pays whatever is asked; what price should you ask?
+    buyer = COLLECTOR + ';name=railroad_buyer;rroffer=5000'
+    for ask in (200, 300, 400, 500, 600, 800, 1000):
+        run('railroads', 'seller_asks_%d' % ask, [typ.replace('everything', 'everything;name=seller_asks_%d' % ask, 1) + ';rrask=%d' % ask,
+                                                  buyer, typ + ';rrask=500', typ + ';rrask=500'], n_games, tv=tv, **cfg)
+    run('railroads', 'seller_never_sells', [typ.replace('everything', 'everything;name=seller_never_sells', 1) + ';rrask=100000',
+                                            buyer, typ + ';rrask=500', typ + ';rrask=500'], n_games, tv=tv, **cfg)
+    # C. table size
+    for n in (2, 3, 5, 6):
+        R('rr_collector_n%d' % n, COLLECTOR, n=n, games=n_games // 2)
+        R('typical_n%d' % n, 'everything', n=n, games=n_games // 2)
+
+
+EXPERIMENTS['railroads'] = exp_railroads
+
 if __name__ == '__main__':
     names = sys.argv[1:] or list(EXPERIMENTS)
     for n in names:
