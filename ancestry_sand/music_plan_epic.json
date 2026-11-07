@@ -1,0 +1,142 @@
+{
+ "positive_global_styles": [
+  "epic fantasy television main-title theme",
+  "instrumental",
+  "original melody",
+  "driving cello ostinato in 6/8",
+  "minor key",
+  "dark, regal and adventurous",
+  "relentless rhythmic pulse like turning clockwork",
+  "orchestral strings, low brass, timpani and taiko",
+  "builds layer by layer",
+  "continuous music with no silences or pauses",
+  "polished modern film-score mix"
+ ],
+ "negative_global_styles": [
+  "vocals",
+  "lyrics",
+  "pop",
+  "EDM",
+  "rock",
+  "comedic",
+  "lo-fi",
+  "piano-led",
+  "ambient",
+  "silence"
+ ],
+ "sections": [
+  {
+   "section_name": "Origins in Africa",
+   "duration_ms": 37400,
+   "lines": [],
+   "positive_local_styles": [
+    "opens immediately on a lone cello ostinato in 6/8 over a low string drone",
+    "plucked strings and a soft frame drum",
+    "restrained, mysterious, ancient",
+    "slowly gathering"
+   ],
+   "negative_local_styles": [
+    "long ambient intro",
+    "silence",
+    "full orchestra",
+    "big drums"
+   ]
+  },
+  {
+   "section_name": "Spreading across the world",
+   "duration_ms": 46300,
+   "lines": [],
+   "positive_local_styles": [
+    "a solo cello sings the main theme over the ostinato",
+    "violas and second cellos join",
+    "steady timpani pulse",
+    "widening, journeying",
+    "later colder, with high string harmonics"
+   ],
+   "negative_local_styles": [
+    "aggressive",
+    "electronic"
+   ]
+  },
+  {
+   "section_name": "Farmers, herders and ocean voyages",
+   "duration_ms": 47900,
+   "lines": [],
+   "positive_local_styles": [
+    "the full string section takes the theme",
+    "French horns answer",
+    "driving low toms",
+    "sweeping and wide like an ocean crossing",
+    "wonder"
+   ],
+   "negative_local_styles": [
+    "sparse",
+    "minimal"
+   ]
+  },
+  {
+   "section_name": "1500 to the modern world",
+   "duration_ms": 28400,
+   "lines": [],
+   "positive_local_styles": [
+    "grave and dark restatement of the theme in low brass and strings",
+    "then the ostinato accelerates",
+    "a long crescendo",
+    "urgency"
+   ],
+   "negative_local_styles": [
+    "triumphant opening",
+    "upbeat"
+   ]
+  },
+  {
+   "section_name": "Today: the descent",
+   "duration_ms": 11000,
+   "lines": [],
+   "positive_local_styles": [
+    "anticipation",
+    "the cello ostinato intensifies",
+    "a building timpani roll",
+    "crescendo into the main title"
+   ],
+   "negative_local_styles": [
+    "sparse",
+    "breakdown",
+    "silence"
+   ]
+  },
+  {
+   "section_name": "Flight through the world's cities",
+   "duration_ms": 45000,
+   "lines": [],
+   "positive_local_styles": [
+    "full epic main-title statement of the theme",
+    "cellos and horns in unison on the melody",
+    "pounding taiko and timpani in 6/8",
+    "soaring violins and wordless choir pads",
+    "relentless momentum",
+    "builds to the final peak"
+   ],
+   "negative_local_styles": [
+    "sparse",
+    "breakdown",
+    "slow",
+    "silence"
+   ]
+  },
+  {
+   "section_name": "The same sand",
+   "duration_ms": 6000,
+   "lines": [],
+   "positive_local_styles": [
+    "the final chord rings out",
+    "a solo cello echoes the opening ostinato",
+    "gentle close"
+   ],
+   "negative_local_styles": [
+    "drums",
+    "abrupt"
+   ]
+  }
+ ]
+}
