@@ -21,7 +21,7 @@ What is in this folder
                                    sound into the finished MP4 (every path is relative to this folder)
   hud_part1.mov, hud_part2.mov, hud_part3.mov
                                    the on-screen text in 4K (year, "1 grain = N people", legend, place and
-                                   city names), transparent; in three parts (frames 0-2219, 2220-5039,
+                                   city names), transparent; in three parts (frames 0-2099, 2100-5039,
                                    5040-6659) so each file stays under GitHub's 100 MB limit. The compose
                                    file plays them one after another.
   every_grain_of_us_score_with_narration.wav   the epic score + Lily's voice-over (used by default)
@@ -45,12 +45,13 @@ New in version 3.2 (the complete package): the cities are mountains of poured sa
 deeper, richer grade, as in the thumbnails; the music is the epic score (a driving cello figure in
 6/8 that builds to the full orchestra for the flight through the cities); and the clicks at the ends
 of a few voice-over lines are gone.
+Updated: every city follows its own population history (Chandler's census before 1950, the UN's figures
+after), so the cities rise in their real order instead of all together.
 Updated: the migration streams are now in proportion. A flying streak is a fifth of a grain, so each
 stream flies five streaks for every grain that lands, the same for every migration (a flow twice as large is
 twice as dense; before, every stream was drawn at about the same density whatever its size). The screen
 says so under the grain scale: "1 streak = N people" (2,200 in the 1650s, 11,000 today), from the new
-streak_scale.mov overlay. Changed: every_grain_of_us.blend, every_grain_of_us_compose.blend and the new
-streak_scale.mov; the HUD parts and the sound are the same.
+streak_scale.mov overlay.
 
 
 1. TURN ON YOUR GRAPHICS CARD (once)
@@ -103,7 +104,8 @@ WHAT IS IN THE LOOK
      multiply (1 grain ~ 56,000 today). Every city of 1 million people or more rises as a mountain
      of poured sand with sand-pile slopes: the bigger the city, the higher the summit and the wider the
      base (Tokyo is the tallest; a 1-million city is a low hill); coastal and island cities spill over
-     the glass onto the sea. They rise with urbanization in the last century.
+     the glass onto the sea. Each city rises with its own history: London is the tallest in 1900, New York
+     and Tokyo by 1950, and Lagos, Dhaka and Kinshasa climb only after 1950.
    The finale: down among the city mountains, then a low flight through the world's great cities
      (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,
      Hong Kong, Shanghai, Beijing, Seoul, Tokyo, a whip across the Pacific to Los Angeles, Mexico City,

@@ -21,7 +21,7 @@ What is in this folder
                                    sound into the finished MP4 (every path is relative to this folder)
   hud_part1.mov, hud_part2.mov, hud_part3.mov
                                    the on-screen text in 4K (year, "1 grain = N people", legend, place and
-                                   city names), transparent; in three parts (frames 0-2219, 2220-5039,
+                                   city names), transparent; in three parts (frames 0-2099, 2100-5039,
                                    5040-6659) so each file stays under GitHub's 100 MB limit. The compose
                                    file plays them one after another.
   every_grain_of_us_score_with_narration.wav   the epic score + Lily's voice-over (used by default)
