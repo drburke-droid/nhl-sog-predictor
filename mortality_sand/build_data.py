@@ -147,13 +147,15 @@ def read_crises():
             print("  skipped (vessel):", r.get("event_id"), r.get("vessel"))
             continue
         y0, y1 = int(float(r["start_year"])), int(float(r["end_year"]))
+        y1 = max(y1, y0)
         if y0 >= 1950:
             continue
+        keep = (min(y1, 1949) - y0 + 1) / (y1 - y0 + 1)      # from 1950 the UN series takes over
         rows.append(dict(id=r["event_id"], name=r["event_name"], cause=r["cause"].strip().lower(),
-                         vessel=r["vessel"], y0=max(y0, S.YEAR0), y1=min(max(y1, y0), 1949),
+                         vessel=r["vessel"], y0=max(y0, S.YEAR0), y1=min(y1, 1949),
                          lon=float(r["lon"]), lat=float(r["lat"]), sigma=float(r["sigma_deg"] or 4),
-                         deaths=float(r["deaths_central"]), low=float(r["deaths_low"] or 0),
-                         high=float(r["deaths_high"] or 0)))
+                         deaths=float(r["deaths_central"]) * keep, low=float(r["deaths_low"] or 0) * keep,
+                         high=float(r["deaths_high"] or 0) * keep))
     return rows
 
 
