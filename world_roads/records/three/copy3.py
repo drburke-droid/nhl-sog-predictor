@@ -57,24 +57,60 @@ def credit_lines(keys, credits):
     return out
 
 
-def write(key, film, title, alt_titles, hook, method, countdown, labels, keys, sources, extra=()):
+def short_url(u):
+    from urllib.parse import unquote
+    return unquote(u.replace("https://", "").replace("http://", "").replace("//", "", 1) if u.startswith("//") else
+                   u.replace("https://", "").replace("http://", "")).replace(" ", "_")
+
+
+def credit_lines_compact(keys, credits):
+    """YouTube's description holds 5,000 characters: a full credit (file, author, licence, link) for each photo whose
+    licence asks for attribution, and one line naming the public-domain and CC0 photos"""
+    full, free = [], []
+    for k in keys:
+        cr = credits.get(k)
+        if not cr:
+            continue
+        lic = cr["license"]
+        if lic.lower() in ("public domain", "cc0") or lic.lower().startswith("cc0"):
+            who = cr["author"] if cr["author"].lower() not in ("unknown author", "unknown", "uncredited") else None
+            free.append(f"{cr['athlete']}" + (f" ({who})" if who else ""))
+        else:
+            lu = f" ({short_url(cr['license_url'])})" if cr.get("license_url") else ""
+            full.append(f"{cr['athlete']}: \"{cr['file']}\" by {cr['author']}, {lic}{lu}, {short_url(cr['page'])}")
+    out = ["Photos from Wikimedia Commons, cropped, backgrounds removed and toned in team colours:"] + full
+    if free:
+        out.append("Public domain or CC0: " + ", ".join(free) + ".")
+    return out
+
+
+def write(key, film, title, alt_titles, hook, method, countdown, labels, keys, sources, extra=(), rebuild=None,
+          thumbs=(), hashtags=(), tags=(), compact=False):
     ch, total = chapters(film, labels)
     name = f"{NAMES[key]}_{length_tag(total)}"
     L = [f"# YouTube copy: \"{title}\"", "",
          f"**Upload `sports/{name}_voiced.mp4`** ({mmss(total)}, 1920×1080, 30 fps, H.264; narrated over the original orchestral "
          "score, kept at a steady low level under the voice with no ducking, −16 LUFS).", "",
-         f"To rebuild it: `python facts_{key}.py`, `./render.sh {key}`, `python {key}film.py assemble` in "
-         "`world_roads/records/three` (narration: `narrate.py` on `VO_" + key.upper() + ".md`, cached by line).", "",
-         "**Titles to test**", "", "| | Title |", "|---|---|"]
+         "To rebuild it: " + (rebuild or f"`python facts_{key}.py`, `./render.sh {key}`, `python {key}film.py assemble` in "
+                              "`world_roads/records/three` (narration: `narrate.py` on `VO_" + key.upper() +
+                              ".md`, cached by line)."), ""]
+    if thumbs:
+        L += ["**Thumbnails to test** (1280×720, in `sports/thumbnails/`)", "", "| | File | Idea |", "|---|---|---|"]
+        L += [f"| {'ABC'[i]} | `{f}` | {idea} |" for i, (f, idea) in enumerate(thumbs)] + [""]
+    L += ["**Titles to test**", "", "| | Title |", "|---|---|"]
     for i, t in enumerate([title] + list(alt_titles)):
         L.append(f"| {'ABC'[i]} | {t} |")
+    if tags:
+        L += ["", "**Tags** (YouTube's tags field)", "", ", ".join(tags)]
     L += ["", "**Description**", "", "```", hook, "", method, "", "The countdown:"] + countdown + [""] + list(extra) + \
          ["Chapters:"] + ch + ["", "Sources: " + sources, "",
                                "The information used here was obtained free of charge from and is copyrighted by "
                                "Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org." if "Retrosheet" in sources else "",
-                               "Photos (Wikimedia Commons):"] + credit_lines(keys, film.CREDITS) + \
+                               ] + (credit_lines_compact(keys, film.CREDITS) if compact else
+                                    ["Photos (Wikimedia Commons):"] + credit_lines(keys, film.CREDITS)) + \
          ["Chart icons: BlenderKit models. Music: original score, FluidR3 GM soundfont (MIT).",
-          "Scores are statistical distances from each era's curve, not probabilities or measures of ability.", "```", ""]
+          "Scores are statistical distances from each era's curve, not probabilities or measures of ability."] + \
+         ([""] + [" ".join(hashtags)] if hashtags else []) + ["```", ""]
     p = os.path.join(COPY, f"{NAMES[key]}_YOUTUBE.md")
     open(p, "w", encoding="utf-8").write("\n".join(x for x in L if x is not None) + "\n")
     print(p, name)
@@ -126,7 +162,7 @@ def main():
                      extra=["Gretchen Walsh has no freely licensed photo, so her card runs without one.", ""])
     # ---- C
     F = cfilm.FC
-    cd = [f"{c['rank']}. {c['athlete']}, {c['season']}: {c['achievement']} ({c['z_e3']:.2f}; top ten in "
+    cd = [f"{c['rank']}. {c['athlete']}, {c['season']}: {c['achievement']} ({c['z_e3']:.2f} standard deviations; top ten in "
           f"{c['specs_in_top10']} of 16 versions)" for c in sorted(F["cards"], key=lambda c: -c["rank"])]
     near = [f"#{k['rank_by_score']} by score: {k['athlete']}, {k['season']}, {k['achievement']} ({k['z']:.2f}; "
             f"{k['specs_in_top10']} of 16). {k['why']}" for k in F["considered"]]
@@ -134,20 +170,37 @@ def main():
            "sure": "How sure is this list?", "considered": "Five that came close", "close": "What this ranking is",
            "end": "Sources and photo credits"}
     lab.update({f"c{c['rank']}": f"#{c['rank']} {c['athlete']}" for c in F["cards"]})
-    out["c"] = write("c", cfilm, "The 5 Biggest Season-Long Outliers in Team Sports",
+    out["c"] = write("c", cfilm, "The 5 Most Dominant Seasons in Team Sports History",
                      ["Wilt, DiMaggio, Gretzky: The Seasons That Broke the Curve",
-                      "Five Seasons Nobody Came Close To"],
-                     "Wilt Chamberlain's 50.4 points a game. Joe DiMaggio's 56-game streak. Wayne Gretzky's 163 assists. "
-                     "Which seasons stood furthest above everyone else of their era?",
-                     f"We took every season's leader in {F['scale']['n_categories']} team-sport categories "
-                     f"({F['scale']['n']:,} seasons) and compared each with the best of everyone else in the 15 seasons "
-                     "before and after, around a curved trend, with an adjustment for league scoring. The score is how many "
-                     "standard deviations a season sits above that curve. A season makes the "
-                     "list only if it stands at least one step clear of every other season on its graph, and the five here "
-                     "are the seasons in the top ten of at least 12 of 16 versions of the method.",
+                      "5 Seasons Nobody Came Close To"],
+                     "Wilt Chamberlain averaged 50.4 points a game; the next best scorer averaged 31.6. Joe DiMaggio hit "
+                     "in 56 straight games; nobody else that year got past 24. Wayne Gretzky's 163 assists were more than "
+                     "anyone else's points. Which seasons stood furthest above the best of their own era?",
+                     "Athletes keep getting better and the games keep changing, so raw numbers can't be compared across "
+                     f"eras. I took {F['scale']['n']:,} season-leading performances in {F['scale']['n_categories']} "
+                     "categories (basketball, hockey, baseball and football) and judged each in two steps. First, every "
+                     "other season is converted to the scoring level of the season being judged. Then it is compared "
+                     "with only the best of everyone else, each season's leader, in the 15 seasons before and after: the "
+                     "elite curve. The score is how many standard deviations a season sits above the elite curve. A "
+                     "season makes the list only if it stands at least one standard deviation clear of every other "
+                     "season on its graph, and the five here are in the top ten of at least 12 of 16 versions of the "
+                     "method.",
                      cd, lab, [c["photo"] for c in F["cards"]] + [k["photo"] for k in F["considered"]],
                      "Baseball-Reference, Basketball-Reference, Hockey-Reference, Pro Football Archives, nflverse, "
-                     "Retrosheet.", extra=["Five that came close (the rest of the top ten by score):"] + near + [""])
+                     "Retrosheet.", extra=["Five that came close (the rest of the top ten by score):"] + near + [""],
+                     rebuild="`python opening.py c`, `python script_c.py voice <chunk>` (opening, hook, cards, curve, "
+                             "rules; each line cached), `python script_c.py`, `./render.sh c`, `python cfilm.py assemble` "
+                             "in `world_roads/records/three`.",
+                     thumbs=[("season_outliers_thumb_A.png", "The five rising above the elite curve, "
+                                                             "\"5 seasons nobody came close to\""),
+                             ("season_outliers_thumb_B.png", "DiMaggio's 56 against the longest streak by anyone else "
+                                                             "that year (24)"),
+                             ("season_outliers_thumb_C.png", "Gretzky's 163 assists, more than anyone else's points")],
+                     hashtags=["#sports", "#statistics", "#WiltChamberlain"], compact=True,
+                     tags=["most dominant seasons", "greatest seasons in sports history", "sports statistics",
+                           "standard deviation", "Wilt Chamberlain 50 points a game", "Joe DiMaggio 56 game hitting streak",
+                           "Wayne Gretzky 163 assists", "Dennis Rodman rebounds", "Ichiro 262 hits", "NBA", "MLB", "NHL",
+                           "NFL", "sports analytics", "era adjusted stats", "statistical outliers"])
     json.dump(out, open(os.path.join(HERE, "names.json"), "w"), indent=1)
 
 

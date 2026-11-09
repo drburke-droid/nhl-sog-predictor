@@ -1,30 +1,42 @@
-# YouTube copy: "The 5 Biggest Season-Long Outliers in Team Sports"
+# YouTube copy: "The 5 Most Dominant Seasons in Team Sports History"
 
 **Upload `sports/biggest_season_outliers_team_sports_9m49s_voiced.mp4`** (9:49, 1920×1080, 30 fps, H.264; narrated over the original orchestral score, kept at a steady low level under the voice with no ducking, −16 LUFS).
 
-To rebuild it: `python facts_c.py`, `./render.sh c`, `python cfilm.py assemble` in `world_roads/records/three` (narration: `narrate.py` on `VO_C.md`, cached by line).
+To rebuild it: `python opening.py c`, `python script_c.py voice <chunk>` (opening, hook, cards, curve, rules; each line cached), `python script_c.py`, `./render.sh c`, `python cfilm.py assemble` in `world_roads/records/three`.
+
+**Thumbnails to test** (1280×720, in `sports/thumbnails/`)
+
+| | File | Idea |
+|---|---|---|
+| A | `season_outliers_thumb_A.png` | The five rising above the elite curve, "5 seasons nobody came close to" |
+| B | `season_outliers_thumb_B.png` | DiMaggio's 56 against the longest streak by anyone else that year (24) |
+| C | `season_outliers_thumb_C.png` | Gretzky's 163 assists, more than anyone else's points |
 
 **Titles to test**
 
 | | Title |
 |---|---|
-| A | The 5 Biggest Season-Long Outliers in Team Sports |
+| A | The 5 Most Dominant Seasons in Team Sports History |
 | B | Wilt, DiMaggio, Gretzky: The Seasons That Broke the Curve |
-| C | Five Seasons Nobody Came Close To |
+| C | 5 Seasons Nobody Came Close To |
+
+**Tags** (YouTube's tags field)
+
+most dominant seasons, greatest seasons in sports history, sports statistics, standard deviation, Wilt Chamberlain 50 points a game, Joe DiMaggio 56 game hitting streak, Wayne Gretzky 163 assists, Dennis Rodman rebounds, Ichiro 262 hits, NBA, MLB, NHL, NFL, sports analytics, era adjusted stats, statistical outliers
 
 **Description**
 
 ```
-Wilt Chamberlain's 50.4 points a game. Joe DiMaggio's 56-game streak. Wayne Gretzky's 163 assists. Which seasons stood furthest above everyone else of their era?
+Wilt Chamberlain averaged 50.4 points a game; the next best scorer averaged 31.6. Joe DiMaggio hit in 56 straight games; nobody else that year got past 24. Wayne Gretzky's 163 assists were more than anyone else's points. Which seasons stood furthest above the best of their own era?
 
-We took every season's leader in 22 team-sport categories (2,607 seasons) and compared each with the best of everyone else in the 15 seasons before and after, around a curved trend, with an adjustment for league scoring. The score is how many standard deviations a season sits above that curve. A season makes the list only if it stands at least one step clear of every other season on its graph, and the five here are the seasons in the top ten of at least 12 of 16 versions of the method.
+Athletes keep getting better and the games keep changing, so raw numbers can't be compared across eras. I took 2,607 season-leading performances in 22 categories (basketball, hockey, baseball and football) and judged each in two steps. First, every other season is converted to the scoring level of the season being judged. Then it is compared with only the best of everyone else, each season's leader, in the 15 seasons before and after: the elite curve. The score is how many standard deviations a season sits above the elite curve. A season makes the list only if it stands at least one standard deviation clear of every other season on its graph, and the five here are in the top ten of at least 12 of 16 versions of the method.
 
 The countdown:
-5. Ichiro Suzuki, 2004: 262 hits (5.27; top ten in 15 of 16 versions)
-4. Dennis Rodman, 1992–93: 18.3 rebounds a game (5.68; top ten in 13 of 16 versions)
-3. Wayne Gretzky, 1985–86: 163 assists (6.47; top ten in 16 of 16 versions)
-2. Joe DiMaggio, 1941: 56-game hitting streak (7.01; top ten in 16 of 16 versions)
-1. Wilt Chamberlain, 1961–62: 50.4 points a game (7.05; top ten in 16 of 16 versions)
+5. Ichiro Suzuki, 2004: 262 hits (5.27 standard deviations; top ten in 15 of 16 versions)
+4. Dennis Rodman, 1992–93: 18.3 rebounds a game (5.68 standard deviations; top ten in 13 of 16 versions)
+3. Wayne Gretzky, 1985–86: 163 assists (6.47 standard deviations; top ten in 16 of 16 versions)
+2. Joe DiMaggio, 1941: 56-game hitting streak (7.01 standard deviations; top ten in 16 of 16 versions)
+1. Wilt Chamberlain, 1961–62: 50.4 points a game (7.05 standard deviations; top ten in 16 of 16 versions)
 
 Five that came close (the rest of the top ten by score):
 #4 by score: Dazzy Vance, 1924, 262 strikeouts (5.83; 8 of 16). It rests on the league adjustment. Without it, the bigger totals of 1904–1915 win: Rube Waddell's 349, Walter Johnson's 313.
@@ -51,18 +63,12 @@ Chapters:
 Sources: Baseball-Reference, Basketball-Reference, Hockey-Reference, Pro Football Archives, nflverse, Retrosheet.
 
 The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.
-Photos (Wikimedia Commons):
-Wilt Chamberlain: "Wilt Chamberlain 1960 (cropped) (cropped).jpg" by Bill Allen, public domain, https://commons.wikimedia.org/wiki/File:Wilt_Chamberlain_1960_%28cropped%29_%28cropped%29.jpg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Joe DiMaggio: "Joe DiMaggio.jpg" by Tom Sande, public domain, https://commons.wikimedia.org/wiki/File:Joe_DiMaggio.jpg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Wayne Gretzky: "Andrew Scheer with Wayne Gretzky (48055697168) (cropped).jpg" by Andre Forget - Andrew Scheer, CC0 (http://creativecommons.org/publicdomain/zero/1.0/deed.en), https://commons.wikimedia.org/wiki/File:Andrew_Scheer_with_Wayne_Gretzky_%2848055697168%29_%28cropped%29.jpg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Dennis Rodman: "Dennis Rodman-Jackson Citizen Patriot-3 February 1989.jpg" by Uncredited, public domain, https://commons.wikimedia.org/wiki/File:Dennis_Rodman-Jackson_Citizen_Patriot-3_February_1989.jpg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Ichiro Suzuki: "Ichiro Suzuki (51007034081) (cropped).jpg" by Jeffrey Hayes, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0), https://commons.wikimedia.org/wiki/File:Ichiro_Suzuki_%2851007034081%29_%28cropped%29.jpg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Dazzy Vance: "Dazzy Vance 1922.jpeg" by Unknown author, public domain, https://commons.wikimedia.org/wiki/File:Dazzy_Vance_1922.jpeg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Babe Ruth: "Babe Ruth2.jpg" by Irwin, La Broad, & Pudlin., public domain (//commons.wikimedia.org/wiki/File:Babe_Ruth2.jpg), https://commons.wikimedia.org/wiki/File:Babe_Ruth2.jpg. Changes: cropped, background removed (rembg, u2net_human_seg), toned in the team's colours; the small credits-page copy is greyscale.
-Bob Feller: "Bob Feller 1953.jpg" by Bowman Gum, public domain, https://commons.wikimedia.org/wiki/File:Bob_Feller_1953.jpg. Changes: cropped, background removed (rembg), toned in team colours.
-Maury Wills: "Maury Wills - Los Angeles Dodgers - 1961.jpg" by Unknown author, public domain, https://commons.wikimedia.org/wiki/File:Maury_Wills_-_Los_Angeles_Dodgers_-_1961.jpg. Changes: cropped, background removed (rembg), toned in team colours.
-Ted Williams: "Ted Williams (cropped).jpg" by Unknown author, public domain, https://commons.wikimedia.org/wiki/File:Ted_Williams_%28cropped%29.jpg. Changes: cropped, background removed (rembg), toned in team colours.
+Photos from Wikimedia Commons, cropped, backgrounds removed and toned in team colours:
+Ichiro Suzuki: "Ichiro Suzuki (51007034081) (cropped).jpg" by Jeffrey Hayes, CC BY 2.0 (creativecommons.org/licenses/by/2.0), commons.wikimedia.org/wiki/File:Ichiro_Suzuki_(51007034081)_(cropped).jpg
+Public domain or CC0: Wilt Chamberlain (Bill Allen), Joe DiMaggio (Tom Sande), Wayne Gretzky (Andre Forget - Andrew Scheer), Dennis Rodman, Dazzy Vance, Babe Ruth (Irwin, La Broad, & Pudlin.), Bob Feller (Bowman Gum), Maury Wills, Ted Williams.
 Chart icons: BlenderKit models. Music: original score, FluidR3 GM soundfont (MIT).
 Scores are statistical distances from each era's curve, not probabilities or measures of ability.
+
+#sports #statistics #WiltChamberlain
 ```
 
