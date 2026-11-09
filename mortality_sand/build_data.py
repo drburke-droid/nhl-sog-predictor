@@ -46,6 +46,7 @@ OWID = os.path.join(DATA, "owid_population.csv")
 ALS_LAMBDA = 1e4      # stiffness of the normal-death-rate trend (annual data: bends over decades)
 ALS_P = 0.3           # asymmetry: points above the trend count 0.3, below 0.7 (crises do not pull it up)
 LAST_DATA_YEAR = 2023  # WPP 2024 estimates end here; 2024-25 are projections (population only)
+SLOW = 0.25           # video seconds added per million excess deaths in a year
 RECOVERY = 30.0       # years: e-folding time for a population to regrow after a catastrophe
 ANCHORS = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700,
            1750, 1800, 1850, 1900]
@@ -139,6 +140,15 @@ def owid_anchor_pop():
 
 
 # ------------------------------------------------------------------ the crisis catalogue (before 1950)
+def label_of(name):
+    """The on-screen name of an event: its catalogue name without the region after a colon or the notes
+    in brackets ("Second World War: Japan" -> "Second World War")."""
+    import re
+    n = name.split(":")[0]
+    n = re.sub(r"\s*\([^)]*\)", "", n).strip()
+    return n or name
+
+
 def read_crises():
     path = os.path.join(INP, "crises_pre1950.csv")
     rows = []
@@ -222,18 +232,20 @@ def post1950_lifts(ex, events):
         for vv, f in parts:
             lifts.append(dict(kind="country", iso=r.iso, vessel=vv, y0=int(r.year), y1=int(r.year),
                               deaths=float(r.excess * f), cause=e["cause"] if e else "other",
-                              name=e["name"] if e else "", id=e["id"] if e else ""))
+                              name=e["name"] if e else "", label=label_of(e["name"]) if e else "",
+                              id=e["id"] if e else ""))
     return lifts
 
 
 # ------------------------------------------------------------------ the clock
 def build_clock(total):
-    """Video seconds per year: a steady base pace (faster in the long quiet first millennium) plus a slowdown
-    that grows with the world's excess deaths that year, so catastrophes play out on screen."""
+    """Video seconds per year: a steady base pace (faster in the long quiet first millennium) plus SLOW seconds
+    for every million excess deaths in the world that year, so a catastrophe's time on screen grows with its
+    toll and, while it lasts, sand lifts at a steady ~4 million deaths a second."""
     E = total / 1e6                                              # world excess deaths per year, millions
     Es = np.convolve(E, np.ones(3) / 3, mode="same")             # a little smoothing (no jerky jumps)
-    base = np.interp(YEARS, [1, 1000, 1500, 1800, 1900, 2025], [0.0055, 0.008, 0.03, 0.06, 0.12, 0.30])
-    slow = 0.55 * Es ** 0.7
+    base = np.interp(YEARS, [1, 1000, 1500, 1800, 1900, 2025], [0.004, 0.006, 0.02, 0.04, 0.10, 0.30])
+    slow = SLOW * Es                     # in proportion: during catastrophes ~1/SLOW million deaths per second
     rate = base + slow
     s = np.concatenate([[0.0], np.cumsum(rate)])[:-1]
     return rate, s
@@ -253,7 +265,8 @@ def main():
     D = deaths_by_vessel_year(crises)
     P = population_series(anchor, wpop, D)
     lifts = [dict(kind="spot", vessel=c["vessel"], y0=c["y0"], y1=c["y1"], deaths=c["deaths"], cause=c["cause"],
-                  name=c["name"], id=c["id"], lon=c["lon"], lat=c["lat"], sigma=c["sigma"]) for c in crises]
+                  name=c["name"], label=label_of(c["name"]), id=c["id"], lon=c["lon"], lat=c["lat"],
+                  sigma=c["sigma"]) for c in crises]
     lifts += post1950_lifts(ex, events)
     total = np.zeros(len(YEARS))
     for L in lifts:

@@ -594,12 +594,16 @@ def event_groups(L):
     for i, l in enumerate(L):
         if not l.get("id") or not l.get("name"):
             continue
-        g = groups.setdefault(l["id"], dict(name=l["name"], cause=l["cause"], spans=[], xy=[], vessels=set()))
+        g = groups.setdefault(l["id"], dict(name=l.get("label") or l["name"], cause=l["cause"], spans=[], xy=[],
+                                            vessels=set()))
         if l["kind"] == "spot":
             x, y = to_px(l["lon"], l["lat"])
             xy = (float(np.ravel(x)[0]), float(np.ravel(y)[0]))
         else:
             xy = Sd.CC_CENTRE.get(l["iso"]) or tuple(Sd.META[l["vessel"]]["anchor"])
+        if l["deaths"] > g.get("biggest", 0):                  # named after its largest part
+            g["biggest"] = l["deaths"]
+            g["name"] = l.get("label") or l["name"]
         g["spans"].append((l["y0"], l["y1"] + 1, l["deaths"]))
         g["xy"].append(xy)
         g["vessels"].add(l["vessel"])

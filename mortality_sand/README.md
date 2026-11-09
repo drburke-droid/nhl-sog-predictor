@@ -56,8 +56,9 @@ al. 2019) and re-joins HYDE in 1700. Asian Russia (the Siberia vessel) is a shar
 (5% before 1800, a quarter today).
 
 **The clock.** Time runs at a steady pace through quiet centuries and slows whenever the world's excess
-deaths rise (seconds per year = a base pace + 0.55 x (millions of excess deaths that year)^0.7), so every
-catastrophe gets time on screen. The year on screen always says where we are.
+deaths rise: seconds per year = a base pace + 0.25 x millions of excess deaths that year (3-year running
+mean). So a catastrophe's time on screen grows with its toll, and while it lasts sand lifts at a steady
+rate of about 4 million deaths (800 grains) a second. The year on screen always says where we are.
 
 ## Simplifications, said plainly
 
