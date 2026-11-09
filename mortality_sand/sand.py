@@ -355,42 +355,68 @@ class Sand:
         self.L = L
         self.L_v = np.array([VI[l["vessel"]] for l in L])
         self.L_c = np.array([CI.get(l["cause"], CI["other"]) for l in L])
-        self.L_y0 = np.array([l["y0"] for l in L], float)
-        self.L_y1 = np.array([l["y1"] + 1 for l in L], float)          # exclusive end
+        self.L_y0 = np.array([l.get("t0", l["y0"]) for l in L], float)
+        self.L_y1 = np.array([l.get("t1", l["y1"] + 1) for l in L], float)      # exclusive end
         self.L_gpy = np.array([l["deaths"] for l in L]) / S.GRAIN / (self.L_y1 - self.L_y0)   # grains per year
         self.L_acc = self.rng.random(len(L)) * 0.999                     # dithered start: no lockstep rounding
         self.L_accp = self.L_acc.copy()                                   # grains leaving the (packed) piles
-        self.L_w = {}
+        self.L_w = {}                  # weights, shared by lifts with the same source (months of a country)
+
+    @staticmethod
+    def _spot_w(cells, lon, lat, sigma):
+        x, y = to_px(lon, lat)
+        x, y = float(np.ravel(x)[0]), float(np.ravel(y)[0])
+        sg = max(sigma, 0.6) * PX_PER_DEG
+        d2 = ((CELL_XY[cells] - (x, y)) ** 2).sum(1)
+        w = np.exp(-d2 / (2 * sg * sg))
+        if w.max() < 1e-3:                                           # the spot misses the glass: nearest land
+            w = np.exp(-(np.sqrt(d2) - np.sqrt(d2.min())) ** 2 / (2 * 8.0 ** 2))
+        return w, (x, y)
+
+    @staticmethod
+    def _country_w(cells, iso):
+        ci = CC_INDEX.get(iso, -1) if iso else -1
+        w = (CC[cells] == ci).astype(float) if ci >= 0 else np.zeros(len(cells))
+        ctr = CC_CENTRE.get(iso) if iso else None
+        if w.sum() == 0:                                             # a small island: nearest glass to it
+            if ctr is None:
+                ctr = tuple(CELL_XY[cells].mean(0))
+            d2 = ((CELL_XY[cells] - ctr) ** 2).sum(1)
+            w = np.exp(-(np.sqrt(d2) - np.sqrt(d2.min())) ** 2 / (2 * 6.0 ** 2))
+        else:
+            ctr = tuple(CELL_XY[cells][w > 0].mean(0))
+        return w, ctr
 
     def lift_weights(self, i):
-        """Candidate cells for lift i and their weights (before multiplying by the people there)."""
-        if i in self.L_w:
-            return self.L_w[i]
+        """Candidate cells for lift i and their weights (before multiplying by the people there), and the
+        place its grains rise over. A converge lift takes its grains from home (a country, else its row's
+        region) and they rise where the dead died."""
         l, v = self.L[i], self.L_v[i]
-        cells = SCELLS[v]
-        if l["kind"] == "spot":
-            x, y = to_px(l["lon"], l["lat"])
-            x, y = float(np.ravel(x)[0]), float(np.ravel(y)[0])
-            sg = max(l["sigma"], 0.6) * PX_PER_DEG
-            d2 = ((CELL_XY[cells] - (x, y)) ** 2).sum(1)
-            w = np.exp(-d2 / (2 * sg * sg))
-            if w.max() < 1e-3:                                       # the spot misses the glass: nearest land
-                w = np.exp(-(np.sqrt(d2) - np.sqrt(d2.min())) ** 2 / (2 * 8.0 ** 2))
-            ctr = (x, y)
+        kind = l["kind"]
+        if kind == "spot":
+            key = ("s", v, l["lon"], l["lat"], l["sigma"])
+        elif kind == "converge":
+            key = ("c", v, l.get("iso"), l.get("lon"), l.get("lat"), l.get("sigma"), l["to_lon"], l["to_lat"])
         else:
-            ci = CC_INDEX.get(l["iso"], -1)
-            w = (CC[cells] == ci).astype(float) if ci >= 0 else np.zeros(len(cells))
-            ctr = CC_CENTRE.get(l["iso"])
-            if w.sum() == 0:                                         # a small island: nearest glass to it
-                if ctr is None:
-                    ctr = tuple(CELL_XY[cells].mean(0))
-                d2 = ((CELL_XY[cells] - ctr) ** 2).sum(1)
-                w = np.exp(-(np.sqrt(d2) - np.sqrt(d2.min())) ** 2 / (2 * 6.0 ** 2))
-            else:
-                ctr = tuple(CELL_XY[cells][w > 0].mean(0))
+            key = ("k", v, l["iso"])
+        if key in self.L_w:
+            return self.L_w[key]
+        cells = SCELLS[v]
+        if kind == "spot":
+            w, ctr = self._spot_w(cells, l["lon"], l["lat"], l["sigma"])
+        elif kind == "converge":
+            w, _ = self._country_w(cells, l.get("iso")) if l.get("iso") else (np.zeros(len(cells)), None)
+            if (l.get("iso") is None or CC_INDEX.get(l.get("iso"), -1) < 0) and l.get("lon") is not None:
+                w, _ = self._spot_w(cells, l["lon"], l["lat"], l["sigma"])
+            if w.sum() <= 0:
+                w = np.ones(len(cells))
+            x, y = to_px(l["to_lon"], l["to_lat"])
+            ctr = (float(np.ravel(x)[0]), float(np.ravel(y)[0]))
+        else:
+            w, ctr = self._country_w(cells, l["iso"])
         keep = w > 1e-3
         out = (cells[keep], w[keep], np.array(ctr, float))
-        self.L_w[i] = out
+        self.L_w[key] = out
         return out
 
     def lift(self, i, k, m, dt):
@@ -423,9 +449,13 @@ class Sand:
         n = len(c)
         self.counts[self.L_v[i]] -= gone
         x, y, z, r = grain_xyz(c, lv)
+        if self.L[i]["kind"] == "converge":          # the journey from home to where they died
+            mv = np.clip(0.35 + np.hypot(x - ctr[0], y - ctr[1]) / 260.0, 0.5, 1.7)
+        else:
+            mv = np.zeros(n)
         self._new.append(dict(x=x, y=y, z=z, r=r, cx=np.full(n, ctr[0]), cy=np.full(n, ctr[1]),
                               t0=self.s - self.rng.random(n) * dt, cause=np.full(n, self.L_c[i]),
-                              ph=self.rng.random((n, 3))))
+                              ph=self.rng.random((n, 3)), mv=mv))
         self.lifted[self.L_c[i]] += n
         self.recent[self.L_v[i]] += n
         return n
@@ -640,4 +670,4 @@ class Sand:
 
 
 TARGET_EVERY = 5  # frames between recomputing the pile shapes (cell_targets: the costly part)
-LIFE = 5.0       # seconds a lifted grain is tracked (it is long out of the frame by then)
+LIFE = 6.8       # seconds a lifted grain is tracked (journey + rise: long out of the frame by then)

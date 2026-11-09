@@ -18,6 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 import story as S
 import sand as Sd
+import places as PL
 import camera as C
 from sand import smooth, year_at, s_at, hash01, CELL, WC, HC, GRAIN_DZ
 from proj import W, H, to_px
@@ -45,6 +46,9 @@ LABEL_MIN = 2.0e6      # catastrophes of at least this many deaths get a name on
 LABEL_HOLD = 2.6       # seconds a name stays up at least
 LABEL_MAX = 9.0        # ...and at most
 LABEL_RATE = 5.0e4     # deaths a year at its worst: below this an event is a drizzle, not named
+PLACE_MIN = 1.5e5      # a place (battle, camp, hotspot) with at least this many deaths is tagged on the map
+PLACE_HOLD = 1.6       # seconds a place tag stays up at least
+PLACE_MAX = 6.0        # ...and at most
 
 
 def font(name, size):
@@ -118,7 +122,10 @@ class Painter:
         self.f_end = font("InterDisplay-SemiBold.otf", 44 * k)
         self.f_end_sub = font("Inter-Medium.otf", 24 * k)
         self.cache = {}
-        self.events = event_groups(sim.L if sim is not None else json.load(open(os.path.join(DATA, "lifts.json"))))
+        L = sim.L if sim is not None else json.load(open(os.path.join(DATA, "lifts.json")))
+        self.events = event_groups(L)
+        self.places = place_groups(L)
+        self.f_place = font("Inter-SemiBold.otf", 13 * k)
 
     # ---- the camera for this frame
     def set_camera(self, s):
@@ -373,20 +380,46 @@ class Painter:
     def rise_pos(p, idx, u):
         """Where lifted grain idx of batch p is, u seconds after it was taken (map px; z up). It glows on
         its pile for TG seconds and lifts a little; then it is drawn in toward a column over the place
-        the catastrophe struck, turning as it goes, and pulled up faster and faster."""
+        the catastrophe struck, turning as it goes, and pulled up faster and faster. A grain whose person
+        died far from home (a soldier, a deportee: mv > 0) first travels there in a low arc, for mv
+        seconds, and rises from beside the place."""
         x0, y0, z0 = p["x"][idx], p["y"][idx], p["z"][idx]
         cx, cy = p["cx"][idx], p["cy"][idx]
         ph = p["ph"][idx]
-        tau = np.maximum(u - TG, 0.0)
+        mv = p["mv"][idx] if "mv" in p else np.zeros(len(idx))
         g = np.clip(u / TG, 0, 1)
-        z = z0 + 2.5 * g * g * (3 - 2 * g) + 14.0 * tau + 165.0 * (0.8 + 0.4 * ph[:, 0]) * tau ** 2
-        ox, oy = x0 - cx, y0 - cy
+        lift0 = 2.5 * g * g * (3 - 2 * g)
+        trav = mv > 0
+        if trav.any():
+            # where it lands: a little ring around the place, then it rises from there
+            ra = 3.0 + 7.0 * ph[:, 1]
+            ax = np.where(trav, cx + ra * np.cos(6.283 * ph[:, 2]), x0)
+            ay = np.where(trav, cy + ra * np.sin(6.283 * ph[:, 2]), y0)
+            az = np.where(trav, 3.0, z0)
+            tm = np.where(trav, np.clip((u - TG) / np.maximum(mv, 1e-6), 0, 1), 1.0)
+            e = tm * tm * (3 - 2 * tm)
+            dist = np.hypot(ax - x0, ay - y0)
+            hop = (6.0 + 0.10 * dist) * 4 * tm * (1 - tm)
+            xs = x0 + (ax - x0) * e
+            ys = y0 + (ay - y0) * e
+            zs = z0 + (az - z0) * e + hop + lift0 * (1 - e) + 2.5 * e
+            bx, by, bz = ax, ay, az + 2.5                      # where the rise starts
+        else:
+            xs, ys, zs = x0, y0, z0 + lift0
+            bx, by, bz = x0, y0, z0 + 2.5
+        tau = np.maximum(u - TG - mv, 0.0)
+        z = bz + 14.0 * tau + 165.0 * (0.8 + 0.4 * ph[:, 0]) * tau ** 2
+        ox, oy = bx - cx, by - cy
         r0 = np.hypot(ox, oy)
         th0 = np.arctan2(oy, ox)
         kk = 1 - np.exp(-tau / 0.85)
         r = r0 * (1 - 0.62 * kk) + 2.0 * np.sin(5.0 * tau + 6.283 * ph[:, 2]) * np.minimum(tau, 1.0)
         th = th0 + (1.1 + 0.9 * ph[:, 1]) * kk + 0.35 * tau
-        return cx + r * np.cos(th), cy + r * np.sin(th), z
+        rising = tau > 0
+        x = np.where(rising, cx + r * np.cos(th), xs)
+        y = np.where(rising, cy + r * np.sin(th), ys)
+        z = np.where(rising, z, zs)
+        return x, y, z
 
     def particles(self, sim, s, top, glow):
         """Draw every lifted grain still in view: a ball glowing in its cause's colour on the pile, then a
@@ -485,6 +518,7 @@ class Painter:
         end_a = smooth((s - end0) / 1.5)
         live_a = 1.0 - 0.75 * end_a
         # ---- event names on the map
+        self.place_tags(img, s, (1 - title_a) * (1 - end_a))
         self.event_labels(img, sim, s, (1 - title_a) * (1 - end_a))
         # ---- the year, the scale and the running count
         yr = int(math.floor(year_at(s)))
@@ -543,13 +577,36 @@ class Painter:
                                   MUTED * 255)
             self.blit(img, t3, IW / 2 - t3.shape[1] / 2, 510 * k, end_a * smooth((s - end0 - 1.5) / 1.2))
 
+    def place_tags(self, img, s, a_all):
+        """A small name under each big place while its sand rises: "Stalingrad", "Auschwitz", "Lombardy"."""
+        self._tags = []
+        if a_all <= 0.003:
+            return
+        k = self.k
+        placed = self._tags = []
+        for pg in self.places:
+            if not (pg["s0"] - 0.2 <= s <= pg["s1"] + 0.5):
+                continue
+            a = smooth((s - pg["s0"] + 0.2) / 0.4) * smooth((pg["s1"] + 0.5 - s) / 0.5) * a_all
+            if a < 0.01:
+                continue
+            sx, sy = self.project(np.array([pg["xy"][0]]), np.array([pg["xy"][1]]), np.array([0.0]))
+            x, y = float(sx[0]) * k, float(sy[0]) * k + 9 * k
+            txt = f"{pg['name']}  {fmt_people(pg['d'], short=True)}"
+            t = self.text_sprite(txt, self.f_place, CCOL[pg["cause"]] * 255 * 0.45 + INK * 255 * 0.55, halo=True)
+            bx, by, bw, bh = x - t.shape[1] / 2, y, t.shape[1], t.shape[0]
+            if any(bx < b[2] and b[0] < bx + bw and by < b[3] and b[1] < by + bh for b in placed):
+                continue
+            placed.append((bx, by, bx + bw, by + bh))
+            self.blit(img, t, bx, by, 0.92 * a)
+
     def event_labels(self, img, sim, s, a_all):
         """Name each big catastrophe while it lifts sand (and a little after), above where it struck."""
         if a_all <= 0.003:
             return
         k = self.k
         yr = year_at(s)
-        placed = []
+        placed = list(getattr(self, "_tags", []))            # step aside from place tags too
         for ev in self.events:
             s0, s1 = ev["s0"], max(ev["s1"], ev["s0"] + LABEL_HOLD)
             if not (s0 - 0.3 <= s <= s1 + 0.6):
@@ -558,7 +615,7 @@ class Painter:
             if a < 0.01:
                 continue
             # where: the deaths-weighted centre of its sources striking now (else all of them)
-            w = np.array([max(min(yr, y1) - max(yr - 1, y0), 0) * d for (y0, y1, d) in ev["spans"]])
+            w = np.array([max(min(yr, y1) - max(yr - 1, y0), 0) * d / (y1 - y0) for (y0, y1, d) in ev["spans"]])
             if w.sum() <= 0:
                 w = np.array([d for (_, _, d) in ev["spans"]])
             if ev["world"]:
@@ -605,6 +662,41 @@ def fmt_people(n, short=False):
     return f"{n / 1e3:,.0f} thousand" if not short else f"{n / 1e3:,.0f} k"
 
 
+def lift_xy(l):
+    """Where a lift's sand rises (map px): its place, its spot, or its country's centre."""
+    if l["kind"] == "converge":
+        x, y = to_px(l["to_lon"], l["to_lat"])
+    elif l["kind"] == "spot":
+        x, y = to_px(l["lon"], l["lat"])
+    else:
+        return Sd.CC_CENTRE.get(l["iso"]) or tuple(Sd.META[l["vessel"]]["anchor"])
+    return (float(np.ravel(x)[0]), float(np.ravel(y)[0]))
+
+
+def place_groups(L):
+    """Named places (a battle, a camp, a hotspot) big enough to be tagged while their sand rises."""
+    groups = {}
+    for l in L:
+        if not l.get("place"):
+            continue
+        g = groups.setdefault((l["id"], l["place"]), dict(name=l["place"], cause=l["cause"], d=0.0, a=1e9, b=-1e9))
+        g["d"] += l["deaths"]
+        a, b = PL.span(l)
+        g["a"], g["b"] = min(g["a"], a), max(g["b"], b)
+        x, y = to_px(l["plon"], l["plat"])
+        g["xy"] = (float(np.ravel(x)[0]), float(np.ravel(y)[0]))
+    out = []
+    for (gid, _), g in groups.items():
+        if g["d"] < PLACE_MIN:
+            continue
+        s0, s1 = s_at(g["a"]), s_at(g["b"])
+        s1 = min(max(s1, s0 + PLACE_HOLD), s0 + PLACE_MAX)
+        out.append(dict(id=gid, name=g["name"], d=g["d"], s0=s0, s1=s1, xy=g["xy"],
+                        cause=S.CAUSE_KEYS.index(g["cause"]) if g["cause"] in S.CAUSE_KEYS else 4))
+    out.sort(key=lambda e: -e["d"])
+    return out
+
+
 def event_groups(L):
     """The named catastrophes big enough to be labelled: each event's sources (all its regions, or all its
     country-years), its total, its years and where it struck."""
@@ -614,24 +706,20 @@ def event_groups(L):
             continue
         g = groups.setdefault(l["id"], dict(name=l.get("label") or l["name"], cause=l["cause"], spans=[], xy=[],
                                             vessels=set()))
-        if l["kind"] == "spot":
-            x, y = to_px(l["lon"], l["lat"])
-            xy = (float(np.ravel(x)[0]), float(np.ravel(y)[0]))
-        else:
-            xy = Sd.CC_CENTRE.get(l["iso"]) or tuple(Sd.META[l["vessel"]]["anchor"])
-        if l["deaths"] > g.get("biggest", 0):                  # named after its largest part
+        xy = lift_xy(l)
+        if l["deaths"] > g.get("biggest", 0) and not l.get("place"):     # named after its largest part
             g["biggest"] = l["deaths"]
             g["name"] = l.get("label") or l["name"]
-        g["spans"].append((l["y0"], l["y1"] + 1, l["deaths"]))
+        g["spans"].append((*PL.span(l), l["deaths"]))
         g["xy"].append(xy)
         g["vessels"].add(l["vessel"])
     out = []
     for gid, g in groups.items():
         tot = sum(d for _, _, d in g["spans"])
-        y0 = min(a for a, _, _ in g["spans"]); y1 = max(b for _, b, _ in g["spans"])
-        rate = np.zeros(y1 - y0)                                # deaths per year
+        y0 = int(math.floor(min(a for a, _, _ in g["spans"]))); y1 = int(math.ceil(max(b for _, b, _ in g["spans"])))
+        rate = np.zeros(y1 - y0)                                # deaths per calendar year
         for a, b, d in g["spans"]:
-            rate[a - y0:b - y0] += d / (b - a)
+            rate += PL.per_year(dict(t0=a, t1=b, y0=0, y1=0, deaths=d), y0, y1 - y0)
         if tot < LABEL_MIN or rate.max() < LABEL_RATE:
             continue                                            # small, or a slow drizzle over centuries
         hot = np.where(rate >= 0.35 * rate.max())[0]            # named while it is near its worst

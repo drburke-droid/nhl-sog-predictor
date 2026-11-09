@@ -28,6 +28,7 @@ import numpy as np
 import pandas as pd
 
 import story as S
+import places as PL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
@@ -194,11 +195,12 @@ def read_events_post1950():
     return ev
 
 
-def deaths_by_vessel_year(crises):
+def deaths_by_vessel_year(lifts):
+    """Deaths per vessel per calendar year, from the lifts before 1950 (places re-time and re-place them)."""
     D = np.zeros((len(VESSELS), len(YEARS)))
-    for c in crises:
-        n = c["y1"] - c["y0"] + 1
-        D[VI[c["vessel"]], c["y0"] - S.YEAR0:c["y1"] - S.YEAR0 + 1] += c["deaths"] / n
+    for l in lifts:
+        if l["y0"] < 1950:
+            D[VI[l["vessel"]]] += PL.per_year(l, S.YEAR0, len(YEARS))
     return D
 
 
@@ -283,8 +285,36 @@ def build_clock(total):
     base = np.interp(YEARS, [1, 1000, 1500, 1800, 1900, 2025], [0.004, 0.006, 0.02, 0.04, 0.10, 0.30])
     slow = SLOW * Es                     # in proportion: during catastrophes ~1/SLOW million deaths per second
     rate = base + slow
+    rate = dwell(rate)
     s = np.concatenate([[0.0], np.cumsum(rate)])[:-1]
     return rate, s
+
+
+def dwell(rate):
+    """Make room for the voiceover (voice.py): where a line would not finish before the next one starts,
+    the years between them run slower (in proportion to how much of each year lies between the two)."""
+    import voice
+    lines = sorted((L["at"], L["dur"]) for L in voice.load_lines() if not isinstance(L["at"], str))
+    if not lines:
+        return rate
+    rate = rate.copy()
+    ends = lines[1:] + [(float(YEARS[-1] + 1), 0.0)]
+    for _ in range(12):
+        sk = np.concatenate([[0.0], np.cumsum(rate)])           # s at the start of each year
+        ys = np.concatenate([YEARS, [YEARS[-1] + 1]]).astype(float)
+        short = 0.0
+        for (a, d), (b, _) in zip(lines, ends):
+            need = d + voice.GAP + voice.LEAD
+            have = np.interp(b, ys, sk) - np.interp(a, ys, sk)
+            if have >= need - 1e-3:
+                continue
+            w = np.clip(np.minimum(YEARS + 1, b) - np.maximum(YEARS, a), 0, None)
+            c = (need - have) / (w * w).sum()
+            rate += c * w
+            short += need - have
+        if short < 1e-3:
+            break
+    return rate
 
 
 def main():
@@ -298,16 +328,19 @@ def main():
     anchor = owid_anchor_pop()
     crises = read_crises()
     events = read_events_post1950()
-    D = deaths_by_vessel_year(crises)
-    P = population_series(anchor, wpop, D)
-    lifts = [dict(kind="spot", vessel=c["vessel"], y0=c["y0"], y1=c["y1"], deaths=c["deaths"], cause=c["cause"],
+    places = PL.read_places()
+    spots = [dict(kind="spot", vessel=c["vessel"], y0=c["y0"], y1=c["y1"], deaths=c["deaths"], cause=c["cause"],
                   name=c["name"], label=label_of(c["name"]), id=c["id"], lon=c["lon"], lat=c["lat"],
                   sigma=c["sigma"]) for c in crises]
-    lifts += post1950_lifts(ex, events)
+    pre, rep1 = PL.apply_pre1950(spots, places)
+    post, rep2 = PL.apply_post1950(post1950_lifts(ex, events), places)
+    lifts = pre + post
+    D = deaths_by_vessel_year(lifts)
+    P = population_series(anchor, wpop, D)
     total = np.zeros(len(YEARS))
     for L in lifts:
-        n = L["y1"] - L["y0"] + 1
-        total[L["y0"] - S.YEAR0:L["y1"] - S.YEAR0 + 1] += L["deaths"] / n
+        total += PL.per_year(L, S.YEAR0, len(YEARS))
+    places_report(places, lifts, rep1, rep2)
     rate, s = build_clock(total)
     intro, outro = 7.0, 14.0
     clock = dict(s=[float(intro + v) for v in s] + [float(intro + s[-1] + rate[-1])],
@@ -331,6 +364,25 @@ def main():
         m = (YEARS >= y0) & (YEARS < y1)
         print(f"  {y0}-{y1 - 1}: {rate[m].sum():6.1f} s on screen")
     check_plot(P, total, rate)
+
+
+def places_report(places, lifts, rep1, rep2):
+    n_pl = sum(1 for l in lifts if l.get("place"))
+    d_pl = sum(l["deaths"] for l in lifts if l.get("place"))
+    d_cv = sum(l["deaths"] for l in lifts if l.get("kind") == "converge")
+    print(f"places: {len(places)} rows -> {n_pl} place lifts, {d_pl / 1e6:.1f} M deaths placed "
+          f"({d_cv / 1e6:.1f} M travel from home to where they died)")
+    for what, rep in (("before 1950", rep1), ("after 1950", rep2)):
+        if rep["scaled"]:
+            print(f"  {what}: places scaled down to fit their rows: {len(rep['scaled'])}")
+            for r in rep["scaled"][:12]:
+                print("    ", r)
+        seen = set()
+        for r in rep["skipped"]:
+            if (r[0], r[2]) in seen and len(seen) > 30:
+                continue
+            seen.add((r[0], r[2]))
+            print(f"  {what}: skipped {r}")
 
 
 def check_plot(P, total, rate):
