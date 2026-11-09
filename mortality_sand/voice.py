@@ -25,7 +25,7 @@ MODEL = "eleven_multilingual_v2"
 SETTINGS = dict(stability=0.55, similarity_boost=0.8, style=0.15, use_speaker_boost=True, speed=0.95)
 GAP = 0.7                                 # seconds of quiet the clock keeps after each line
 LEAD = 0.15                               # a line starts this long after its moment
-TITLE_AT = 0.4                            # video second a "title" line starts
+TITLE_AT = 0.3                            # video second a "title" line starts
 END_AT = 1.2                              # seconds into the end card an "end" line starts
 
 

@@ -128,9 +128,10 @@ the Congo wars, scales the places down a lot). About 245 million of the 641 mill
 
 ## The voiceover
 
-`inputs/narration.csv`: 30 short lines, read by ElevenLabs' "Lily" (British, female).
-- **Opening:** what a grain is, and the film's thought: every one of your ancestors survived long enough to have a
-  child.
+`inputs/narration.csv`: 29 short lines, read by ElevenLabs' "Lily" (British, female).
+- **Opening:** what a grain is, and the film's thought: as you watch these catastrophes, remember that every
+  generation of your direct ancestors survived all of them, at least long enough to have a child. (It takes the
+  first 16 seconds; the Antonine plague is named on screen only.)
 - **During the film:** a few words on each great catastrophe as it begins. They are written plainly and without
   blame: no nation, people or leader is singled out, and nothing is graphic.
 - **Closing:** the total, then the reflection. Every direct ancestor of everyone watching lived long enough to grow
