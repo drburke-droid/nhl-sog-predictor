@@ -17,6 +17,8 @@ import cv2
 from proj import W, H, to_px
 import story as S
 import vessels as V
+import grains as G
+from grains import hash01
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
@@ -296,21 +298,9 @@ CC, CC_NAMES, CC_CENTRE = build_countries()
 CC_INDEX = {n: i for i, n in enumerate(CC_NAMES)}
 
 
-def hash01(a, b, salt):
-    """Stable pseudo-random numbers in [0, 1) from integer arrays (per grain jitter)."""
-    h = (a.astype(np.uint64) * np.uint64(73856093)) ^ (b.astype(np.uint64) * np.uint64(19349663)) ^ np.uint64(salt * 83492791)
-    h = (h ^ (h >> np.uint64(13))) * np.uint64(0x5bd1e995)
-    h = h ^ (h >> np.uint64(15))
-    return (h % np.uint64(1 << 20)).astype(np.float64) / float(1 << 20)
-
-
 def grain_xyz(cell, lev):
     """Where a grain is drawn (map px; z = the height of its centre), as the painter draws resting sand."""
-    jx, jy, jr = hash01(cell, lev, 1), hash01(cell, lev, 2), hash01(cell, lev, 3)
-    x = CELL_XY[cell, 0] + (jx - 0.5) * 1.3 * GS
-    y = CELL_XY[cell, 1] + (jy - 0.5) * 1.3 * GS
-    r = (1.35 + 0.35 * jr) * GS
-    return x, y, lev * GRAIN_DZ + r, r
+    return G.grain_place(cell, lev, CELL_XY, GS, GRAIN_DZ)
 
 
 # ============================================================== the simulation
