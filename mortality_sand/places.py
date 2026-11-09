@@ -134,17 +134,20 @@ def country_lonlat(iso):
 
 
 # ------------------------------------------------------------------ before 1950: the catalogue's rows
-def _pick_row(rows, vessel, t0, t1, lon, lat):
+def _pick_row(rows, vessel, t0, t1, lon, lat, d=0.0, left=None):
     """The parent row a piece comes out of: among the event's rows in the same region and overlapping in
     time (else in the same region, else any), the one whose spot best covers (lon, lat): the nearest in
     units of the row's own spread, so a country's row wins over its neighbour's and a small row (the 1938
-    Yellow River flood) over the big one around it."""
+    Yellow River flood) over the big one around it. Rows already drawn down count as worse fits (`left`:
+    deaths still free in each row), so neighbouring rows of one event share their places sensibly."""
     def ov(r):
         return min(r["y1"] + 1, t1) - max(r["y0"], t0)
 
     def fit(r):
-        d = math.hypot((r["lon"] - lon) * math.cos(math.radians(lat)), r["lat"] - lat)
-        return d / max(r["sigma"], 0.5)
+        g = math.hypot((r["lon"] - lon) * math.cos(math.radians(lat)), r["lat"] - lat) / max(r["sigma"], 0.5)
+        if left is not None and d > 0:
+            g += 3.0 * max(0.0, d - left.get(id(r), r["deaths"])) / d
+        return g
     same = [r for r in rows if r["vessel"] == vessel]
     for cand in ([r for r in same if ov(r) > 0], same, [r for r in rows if ov(r) > 0], rows):
         if cand:
@@ -188,8 +191,15 @@ def apply_pre1950(spots, places):
                 if kind == "converge" and iso:
                     at = ((40.0, 55.0) if v == "STP" else (85.0, 56.0)) if iso == "RUS" else \
                         (country_lonlat(iso) or at)              # Russia: its European heartland / Siberia
-                r = _pick_row(rows, v, p["t0"], p["t1"], *at)
-                pieces.append([r, p, v, iso, p["deaths"] * sh * f, kind])
+                pieces.append([rows, p, v, iso, p["deaths"] * sh * f, kind, at])
+    # the biggest pieces choose their rows first
+    left = {}
+    for pc in sorted(pieces, key=lambda pc: -pc[4]):
+        rows, p, v, iso, d, kind, at = pc
+        r = _pick_row(rows, v, p["t0"], p["t1"], *at, d=d, left=left)
+        left[id(r)] = left.get(id(r), r["deaths"]) - d
+        pc[0] = r
+    pieces = [pc[:6] for pc in pieces]
     # scale down where a row would be overdrawn
     want = {}
     for pc in pieces:

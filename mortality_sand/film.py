@@ -49,6 +49,7 @@ LABEL_RATE = 5.0e4     # deaths a year at its worst: below this an event is a dr
 PLACE_MIN = 1.5e5      # a place (battle, camp, hotspot) with at least this many deaths is tagged on the map
 PLACE_HOLD = 1.6       # seconds a place tag stays up at least
 PLACE_MAX = 6.0        # ...and at most
+PLACE_LIVE = 6         # tags on screen at once, at most (the biggest places first)
 
 
 def font(name, size):
@@ -585,6 +586,8 @@ class Painter:
         k = self.k
         placed = self._tags = []
         for pg in self.places:
+            if len(placed) >= PLACE_LIVE:
+                break
             if not (pg["s0"] - 0.2 <= s <= pg["s1"] + 0.5):
                 continue
             a = smooth((s - pg["s0"] + 0.2) / 0.4) * smooth((pg["s1"] + 0.5 - s) / 0.5) * a_all
@@ -673,13 +676,29 @@ def lift_xy(l):
     return (float(np.ravel(x)[0]), float(np.ravel(y)[0]))
 
 
+def tag_name(place):
+    """A place's on-screen tag: short ("Leningrad: hunger winter" -> "Leningrad", "Rhineland, northern
+    Germany and the Low Countries" -> "Rhineland", "Central Mexico, 1522-44" -> "Central Mexico")."""
+    import re
+    n = place.split(":")[0]
+    n = re.sub(r"\s*\([^)]*\)", "", n)
+    n = re.sub(r",?\s*\d{3,4}(\s*[-\u2013]\s*\d{2,4})?$", "", n).strip()
+    n = re.sub(r"\s+(of|in|on)$", "", n)
+    if len(n) > 30 and "," in n:
+        n = n.split(",")[0]
+    if len(n) > 30 and " and " in n:
+        n = n.split(" and ")[0]
+    return n.strip() or place
+
+
 def place_groups(L):
     """Named places (a battle, a camp, a hotspot) big enough to be tagged while their sand rises."""
     groups = {}
     for l in L:
         if not l.get("place"):
             continue
-        g = groups.setdefault((l["id"], l["place"]), dict(name=l["place"], cause=l["cause"], d=0.0, a=1e9, b=-1e9))
+        g = groups.setdefault((l["id"], l["place"]), dict(name=tag_name(l["place"]), cause=l["cause"], d=0.0, a=1e9,
+                                                          b=-1e9))
         g["d"] += l["deaths"]
         a, b = PL.span(l)
         g["a"], g["b"] = min(g["a"], a), max(g["b"], b)
