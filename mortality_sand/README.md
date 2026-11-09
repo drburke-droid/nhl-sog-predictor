@@ -34,7 +34,7 @@ Needs numpy, scipy, pandas, shapely, opencv-python-headless, pillow, matplotlib,
 
 4:36, 1920x1080, 30 fps, one still wide shot, with the voiceover (`out/two_thousand_years_of_catastrophe_narrated.mp4`,
 subtitles in `out/narration.srt`; a smaller copy for viewing is committed as
-`media/two_thousand_years_of_catastrophe_narrated.mp4`).
+`media/two_thousand_years_of_catastrophe_narrated.mp4`, with its subtitles and `media/contact_sheet.png`, frames at 18 moments).
 642 million deaths above normal are lifted, about 128,000 grains: before 1950, 546 million from 123
 catalogued catastrophes; from 1950, 95 million from the UN's country-by-country death counts. By cause:
 war, conquest and mass killing 285 million; epidemics 219 million; famine 103 million; earthquakes, floods
