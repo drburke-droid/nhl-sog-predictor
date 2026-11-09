@@ -121,6 +121,24 @@ def _home_split(code, year):
 _CENTRE = None
 
 
+_NAMES = None
+
+
+def country_names(iso):
+    """Names a catalogue row might use for a country ("Austria", "Germany", "Soviet Union" is not here)."""
+    global _NAMES
+    if _NAMES is None:
+        import json
+        _NAMES = {}
+        g = json.load(open(os.path.join(DATA, "ne_10m_admin_0_countries.geojson")))
+        for f in g["features"]:
+            pr = f["properties"]
+            code = S.NE_TO_ISO.get(pr.get("ADM0_A3"), pr.get("ADM0_A3"))
+            _NAMES.setdefault(code, set()).update(n for n in (pr.get("NAME"), pr.get("NAME_LONG"), pr.get("ADMIN"))
+                                                 if n)
+    return _NAMES.get(iso, set())
+
+
 def country_lonlat(iso):
     """A country's representative point (lon, lat), for matching it to the nearest catalogue row."""
     global _CENTRE
@@ -134,7 +152,7 @@ def country_lonlat(iso):
 
 
 # ------------------------------------------------------------------ before 1950: the catalogue's rows
-def _pick_row(rows, vessel, t0, t1, lon, lat, d=0.0, left=None):
+def _pick_row(rows, vessel, t0, t1, lon, lat, d=0.0, left=None, iso=None):
     """The parent row a piece comes out of: among the event's rows in the same region and overlapping in
     time (else in the same region, else any), the one whose spot best covers (lon, lat): the nearest in
     units of the row's own spread, so a country's row wins over its neighbour's and a small row (the 1938
@@ -147,6 +165,8 @@ def _pick_row(rows, vessel, t0, t1, lon, lat, d=0.0, left=None):
         g = math.hypot((r["lon"] - lon) * math.cos(math.radians(lat)), r["lat"] - lat) / max(r["sigma"], 0.5)
         if left is not None and d > 0:
             g += 3.0 * max(0.0, d - left.get(id(r), r["deaths"])) / d
+        if iso and any(n in r["name"] for n in country_names(iso)):
+            g -= 5.0                                   # the row named for the country ("Germany and Austria")
         return g
     same = [r for r in rows if r["vessel"] == vessel]
     for cand in ([r for r in same if ov(r) > 0], same, [r for r in rows if ov(r) > 0], rows):
@@ -196,7 +216,7 @@ def apply_pre1950(spots, places):
     left = {}
     for pc in sorted(pieces, key=lambda pc: -pc[4]):
         rows, p, v, iso, d, kind, at = pc
-        r = _pick_row(rows, v, p["t0"], p["t1"], *at, d=d, left=left)
+        r = _pick_row(rows, v, p["t0"], p["t1"], *at, d=d, left=left, iso=iso)
         left[id(r)] = left.get(id(r), r["deaths"]) - d
         pc[0] = r
     pieces = [pc[:6] for pc in pieces]
