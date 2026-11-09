@@ -411,6 +411,7 @@ class Painter:
             g = np.clip(uu / TG, 0, 1)
             col = SANDCOL[None, :] * (1 - g[:, None]) + CCOL[p["cause"][idx]] * g[:, None]
             bright = (1.0 + 0.2 * g) * np.clip(1.1 - (uu - TG) / 8.0, 0.7, 1.1)
+            bright = np.minimum(bright, 1.0 / np.maximum(col.max(1), 1e-3))     # no channel past 1: hue holds
             # the head (half a frame of blur), then a tail that fades: (time back, alpha, width)
             pts = [(sx, sy)]
             for back in (0.5 / FPS, 2.0 / FPS, 4.0 / FPS):
@@ -458,7 +459,8 @@ class Painter:
         gl = cv2.GaussianBlur(glow, (0, 0), 2.5) * 0.7 + cv2.GaussianBlur(glow, (0, 0), 9.0) * 0.6
         img += cv2.resize(gl, (W, H), interpolation=cv2.INTER_LINEAR)
         small = cv2.resize(img, (W // 4, H // 4), interpolation=cv2.INTER_AREA)
-        bloom = cv2.GaussianBlur(np.maximum(small - 0.55, 0), (0, 0), 4.0)
+        lum = small.max(2, keepdims=True)                     # bloom keeps each colour's hue
+        bloom = cv2.GaussianBlur(small * (np.maximum(lum - 0.55, 0) / np.maximum(lum, 1e-4)), (0, 0), 4.0)
         img += cv2.resize(bloom, (W, H), interpolation=cv2.INTER_LINEAR) * 0.5
         img *= self.vign
         img = self.dof(img, depth)
