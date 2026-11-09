@@ -597,8 +597,12 @@ class Painter:
             x, y = float(sx[0]) * k, float(sy[0]) * k + 9 * k
             txt = f"{pg['name']}  {fmt_people(pg['d'], short=True)}"
             t = self.text_sprite(txt, self.f_place, CCOL[pg["cause"]] * 255 * 0.45 + INK * 255 * 0.55, halo=True)
-            bx, by, bw, bh = x - t.shape[1] / 2, y, t.shape[1], t.shape[0]
-            if any(bx < b[2] and b[0] < bx + bw and by < b[3] and b[1] < by + bh for b in placed):
+            bw, bh = t.shape[1], t.shape[0] - 6 * k
+            for dx, dy in ((0, 0), (0, bh), (0, 2 * bh), (bw / 2 + 4 * k, 0), (-bw / 2 - 4 * k, 0), (0, 3 * bh)):
+                bx, by = x - bw / 2 + dx, y + dy             # under the place, else a little aside
+                if not any(bx < b[2] and b[0] < bx + bw and by < b[3] and b[1] < by + bh for b in placed):
+                    break
+            else:
                 continue
             placed.append((bx, by, bx + bw, by + bh))
             self.blit(img, t, bx, by, 0.92 * a)
