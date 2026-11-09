@@ -665,7 +665,9 @@ def fmt_people(n, short=False):
     if n >= 1e9:
         return f"{n / 1e9:.2f} billion" if not short else f"{n / 1e9:.2f} bn"
     if n >= 1e6:
-        return f"{n / 1e6:,.0f} million" if not short else f"{n / 1e6:,.0f} M"
+        if short:
+            return f"{n / 1e6:.1f} M" if n < 1e7 else f"{n / 1e6:,.0f} M"
+        return f"{n / 1e6:,.0f} million"
     return f"{n / 1e3:,.0f} thousand" if not short else f"{n / 1e3:,.0f} k"
 
 
