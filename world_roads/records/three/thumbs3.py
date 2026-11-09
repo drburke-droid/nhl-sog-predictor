@@ -6,6 +6,8 @@ athletes' team colours.
 
 A: the five, rising above the elite curve. B: DiMaggio's 56 against the longest streak by anyone else that year (24).
 C: Gretzky's 163 assists, more than anyone else's points (141).
+D: every season-leading performance as a dot, Wilt alone at 7. E: a running track; the pack is the best of everyone else
+on the five's graphs, the five lead around the turn. F: the five off the end of a bell curve.
 """
 import json, math, os, sys
 
@@ -174,11 +176,7 @@ def thumb_d():
     dr = ImageDraw.Draw(im)
     rng = np.random.default_rng(7)
     edges, counts = sc["hist_edges"], list(sc["hist_counts"])
-    film_z = sorted(c["z_e3"] for c in CARDS.values())
-    for z in film_z:                                        # the five are drawn on their own
-        for i in range(len(counts)):
-            if edges[i] <= z < edges[i + 1] or (i == len(counts) - 1 and z >= edges[i]):
-                counts[i] = max(0, counts[i] - 1)
+    film_z = sorted(c["z_e3"] for c in CARDS.values())    # the histogram stops at 4; the 25 beyond are in the tail
     pitch, rad, base_y = 8, 3.4, 958
     for i, n in enumerate(counts):
         cols = int((X(edges[i + 1]) - X(edges[i])) // pitch)
@@ -188,6 +186,19 @@ def thumb_d():
             y = base_y - row * pitch
             shade = 0.55 + 0.45 * rng.random()
             dr.ellipse((x - rad, y - rad, x + rad, y + rad), fill=(int(70 * shade + 30), int(110 * shade + 30), int(170 * shade + 40), 255))
+    rows = []                                               # x positions already used, per row
+    for t in sorted(sc["tail"], key=lambda t: t["z"]):      # the other 20 past 4 (Vance 5.83, Curry, Ruth...), one dot each
+        if t["top10"]:
+            continue
+        x = X(t["z"])
+        row = 0
+        while row < len(rows) and any(abs(x - u) < pitch for u in rows[row]):
+            row += 1
+        if row == len(rows):
+            rows.append([])
+        rows[row].append(x)
+        y = base_y - row * pitch
+        dr.ellipse((x - rad, y - rad, x + rad, y + rad), fill=(100, 140, 210, 255))
     for z in film_z[:-1]:                                   # the other four of the five, small and gold
         x = X(z)
         dr.ellipse((x - 9, base_y - 9, x + 9, base_y + 9), fill=GOLD_RGB + (255,))
@@ -213,24 +224,107 @@ def thumb_d():
 
 
 def thumb_e():
-    """HIS ASSISTS ALONE: Gretzky's 163 assists in 1985-86 against the next best player's points (Lemieux, 141), on a
-    scale from zero"""
-    gx, lx, bot, per, bw = 1300, 1640, 1000, 4.1, 230
-    im = base(glow_at=(gx, bot - 163 * per), glow_color=(243, 110, 33), strength=100, radius=360)
+    """NO ONE ELSE IN SIGHT: a running track from above. The pack is every other dot on the five's own graphs (each
+    season's best by everyone else, 15 seasons either side); the five lead around the turn. Distance along the track is
+    standard deviations above the elite curve, the same for everyone (the ticks), so the gaps are the real ones."""
+    cx, cy, ri, lanes, lw = 1240, 300, 320, 8, 40            # turn centre, inner radius, 8 lanes of 40 px
+    ro, rm, k = ri + lanes * lw, ri + lanes * lw / 2, 240    # outer radius, mid radius, px per standard deviation
+    lead = 213                                              # Ichiro's distance into the turn, px along the mid lane
+    s_of = lambda z: lead + k * (z - 5.27)                  # noqa: E731  (px from the turn's start)
+
+    def at(z, rho):
+        s = s_of(z)
+        if s <= 0:
+            return cx + s, cy + rho
+        t = s / rm
+        return cx + rho * math.sin(t), cy + rho * math.cos(t)
+
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    d = np.where(xx <= cx, yy - cy, np.hypot(xx - cx, yy - cy))     # distance from the track's axis
+    d = np.where((xx <= cx) & (yy < cy), 0, d)
+    on = np.clip(np.minimum(d - ri, ro - d) + 0.5, 0, 1)[..., None]
+    infield = np.clip(ri - d + 0.5, 0, 1)[..., None]
+    rng = np.random.default_rng(11)
+    grain = rng.normal(0, 1, (H, W)).astype(np.float32)[..., None]
+    track = np.array([158, 62, 44], np.float32) + 7 * grain
+    stripes = (((xx + 0.35 * yy) // 70) % 2)[..., None]
+    grass = np.array([17, 46, 31], np.float32) + 5 * stripes + 2 * grain
+    apron = np.array([24, 26, 30], np.float32) + 2 * grain
+    img = apron * (1 - on - infield) + track * on + grass * infield
+    for i in range(lanes + 1):                              # lane lines; the inner kerb a little heavier
+        r = ri + i * lw
+        a = np.clip((2.4 if i == 0 else 1.6) - np.abs(d - r), 0, 1)[..., None] * (0.95 if i == 0 else 0.7)
+        img = img * (1 - a) + 236 * a
+    v = 1.0 - 0.38 * np.clip(np.hypot((xx - 1250) / W, (yy - 520) / H) * 1.5, 0, 1)
+    im = Image.fromarray((img * v[..., None]).clip(0, 255).astype(np.uint8)).convert("RGBA")
+
+    # the pack: 153 dots, each at its own distance above its own season's curve
+    zs = []
+    for c in CARDS.values():
+        ru = c["ruler"]
+        tr = np.array(ru["trend"])
+        zs += [(v_ - np.interp(s_, tr[:, 0], tr[:, 1])) / ru["step"] for s_, v_ in ru["window"]]
+    zs = sorted(zs, reverse=True)
+    placed = []
+    sh = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    dots = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ds, dd = ImageDraw.Draw(sh), ImageDraw.Draw(dots)
+    rad = 10
+    for z in zs:
+        best = None
+        for ln in rng.permutation(lanes):
+            rho = ri + lw / 2 + ln * lw + rng.uniform(-5, 5)
+            x, y = at(z, rho)
+            gap = min([math.hypot(x - px_, y - py_) for px_, py_ in placed] or [99])
+            if best is None or gap > best[0]:
+                best = (gap, x, y)
+            if gap > 2 * rad + 6:
+                break
+        _, x, y = best
+        placed.append((x, y))
+        ds.ellipse((x - rad + 4, y - rad + 5, x + rad + 4, y + rad + 5), fill=(0, 0, 0, 120))
+        shade = 0.8 + 0.2 * rng.random()
+        dd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=(int(205 * shade), int(218 * shade), int(238 * shade), 255))
+    im.alpha_composite(sh.filter(ImageFilter.GaussianBlur(3)))
+    im.alpha_composite(dots)
+
+    # distance markers on the inner kerb: one per standard deviation, 0 = the elite curve
     dr = ImageDraw.Draw(im)
-    dr.line((1110, bot, 1830, bot), fill=(128, 134, 144, 255), width=5)
-    dr.rounded_rectangle((lx - bw / 2, bot - 141 * per, lx + bw / 2, bot), radius=10, fill=(66, 74, 86, 255))
-    dr.rounded_rectangle((gx - bw / 2, bot - 163 * per, gx + bw / 2, bot), radius=10, fill=(243, 110, 33, 255))
-    dr.text((lx, bot - 141 * per - 18), "141", font=font("black", 110), fill=(190, 194, 200), anchor="ms")
-    dr.text((lx, bot - 40), "points", font=font("bold", 50), fill=INK_RGB, anchor="ms")
-    dr.text((lx, bot + 50), "the next best", font=font("semi", 38), fill=MUTED_RGB, anchor="ms")
-    dr.text((gx, bot - 163 * per - 18), "163", font=font("black", 130), fill=(243, 110, 33), anchor="ms")
-    dr.text((gx, bot - 40), "assists", font=font("bold", 50), fill=(20, 16, 12), anchor="ms")
-    dr.text((gx, bot + 50), "Gretzky, 1986", font=font("semi", 38), fill=(243, 110, 33), anchor="ms")
-    disc(im, "gretzky", 4, 520, 690, 380, ring=(243, 110, 33))
+    for z in range(0, 8):
+        x0, y0 = at(z, ri - 6)
+        x1, y1 = at(z, ri - 26)
+        col = GOLD_RGB if z >= 5 else (200, 204, 210)
+        dr.line((x0, y0, x1, y1), fill=col + (255,), width=5)
+        lx, ly = at(z, ri - 58)
+        dr.text((lx, ly), str(z), font=font("bold", 40), fill=col, anchor="mm")
+    x0, _ = at(0, ri)
+    dr.line((x0, cy + ri + 2, x0, cy + ro - 2), fill=(240, 238, 232, 230), width=5)    # the curve, across the lanes
+    dr.text((max(x0, 150), cy + ri - 104), "the elite curve", font=font("semi", 36), fill=(200, 204, 210), anchor="ms")
+
+    # the five, in lanes so they don't overlap; a short gold wake behind each
+    who = {"ichiro": 0.22, "rodman": 0.78, "gretzky": 0.80, "dimaggio": 0.82, "chamberlain": 0.22}
+    wake = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    wd = ImageDraw.Draw(wake)
+    spots = []
+    for c in sorted(CARDS.values(), key=lambda c: c["z_e3"]):
+        rho = ri + who[c["photo"]] * (ro - ri)
+        spots.append((c, rho))
+        n = 24
+        for j in range(n):
+            za, zb = c["z_e3"] - 0.62 * (j + 1) / n, c["z_e3"] - 0.62 * j / n
+            (xa, ya), (xb, yb) = at(za, rho), at(zb, rho)
+            wd.line((xa, ya, xb, yb), fill=GOLD_RGB + (int(170 * (1 - j / n) ** 1.5),), width=34)
+    im.alpha_composite(wake.filter(ImageFilter.GaussianBlur(6)))
+    D = 168
+    for c, rho in spots:
+        x, y = at(c["z_e3"], rho)
+        disc(im, c["photo"], c.get("palette", c["rank"]), x, y, D)
+
     dr = ImageDraw.Draw(im)
-    dr.text((70, 50), "HIS ASSISTS", font=font("black", 150), fill=INK_RGB, anchor="lt")
-    dr.text((70, 200), "ALONE", font=font("black", 150), fill=(243, 110, 33), anchor="lt")
+    dr.text((70, 46), "NO ONE ELSE", font=font("black", 160), fill=INK_RGB, anchor="lt")
+    dr.text((70, 210), "IN SIGHT", font=font("black", 160), fill=GOLD_RGB, anchor="lt")
+    dr.text((70, 1032), "Each dot: a season's best by everyone else, 15 seasons either side.  Distance: standard "
+            "deviations above the elite curve.", font=font("semi", 31), fill=MUTED_RGB, anchor="ls")
     finish(im, "E")
 
 
