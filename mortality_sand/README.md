@@ -1,7 +1,7 @@
 # 2,000 years of catastrophe (working title)
 
 A Sandglass film (the style of `ancestry_sand/`, "Every Grain of Us"): the world's people as sand in
-glass vessels on a dark table, one grain = 5,000 people (about 1.3 million grains by 2025), from 1 CE to 2025. Wherever and whenever deaths
+glass vessels on a dark table, one grain = 5,000 people (about 1.4 million grains by 2025), from 1 CE to 2025. Wherever and whenever deaths
 ran above the normal level for that place and time, that many grains are lifted off the piles and drawn up
 out of the frame: first glowing in the colour of their cause where they lay, then pulled into a turning
 column over the place, faster and faster, toward the camera.
