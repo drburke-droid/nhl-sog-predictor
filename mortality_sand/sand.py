@@ -395,9 +395,9 @@ class Sand:
         n = len(c)
         self.counts[self.L_v[i]] -= n
         x, y, z, r = grain_xyz(c, lv)
-        self.particles.append(dict(x=x, y=y, z=z, r=r, cx=np.full(n, ctr[0]), cy=np.full(n, ctr[1]),
-                                   t0=self.s - self.rng.random(n) * dt, cause=np.full(n, self.L_c[i]),
-                                   ph=self.rng.random((n, 3)), lift=i))
+        self._new.append(dict(x=x, y=y, z=z, r=r, cx=np.full(n, ctr[0]), cy=np.full(n, ctr[1]),
+                              t0=self.s - self.rng.random(n) * dt, cause=np.full(n, self.L_c[i]),
+                              ph=self.rng.random((n, 3))))
         self.lifted[self.L_c[i]] += n
         self.recent[self.L_v[i]] += n
         return n
@@ -592,7 +592,11 @@ class Sand:
         self.s, self.year = s_new, y1
         self.recent *= math.exp(-dt / 1.5)
         if y1 > y0:
+            self._new = []
             self.run_lifts(y0, y1, dt)
+            if self._new:                       # one batch per frame (the painter works batch by batch)
+                self.particles.append({k: np.concatenate([b[k] for b in self._new]) for k in self._new[0]})
+            self._new = []
         T = grains_at(y1)
         self.nstep = getattr(self, "nstep", 0) + 1
         if self.nstep % TARGET_EVERY == 1 or TARGET_EVERY == 1:    # targets drift slowly: not every frame

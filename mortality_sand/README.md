@@ -1,7 +1,7 @@
 # 2,000 years of catastrophe (working title)
 
 A Sandglass film (the style of `ancestry_sand/`, "Every Grain of Us"): the world's people as sand in
-glass vessels on a dark table, one grain = 25,000 people, from 1 CE to 2025. Wherever and whenever deaths
+glass vessels on a dark table, one grain = 5,000 people (1.65 million grains by 2025), from 1 CE to 2025. Wherever and whenever deaths
 ran above the normal level for that place and time, that many grains are lifted off the piles and drawn up
 out of the frame: first glowing in the colour of their cause where they lay, then pulled into a turning
 column over the place, faster and faster, toward the camera.
@@ -61,8 +61,9 @@ catastrophe gets time on screen. The year on screen always says where we are.
 
 ## Simplifications, said plainly
 
-- One grain is 25,000 people, the same in every year, so lifted sand is directly comparable across 2,000
-  years. Small catastrophes (under 12,500 deaths in a region) may lift no grain at all.
+- One grain is 5,000 people, the same in every year, so lifted sand is directly comparable across 2,000
+  years. The balls are two thirds the size of the migration film's (2-px cells instead of 3), so five
+  times as many fit a landscape of the same shape; pile heights are scaled to match.
 - Before 1950, deaths are central estimates of debated numbers (the ranges are in the catalogue); the
   Plague of Justinian, the An Lushan rebellion's census collapse and the Congo Free State are among the
   most uncertain. Events are spread evenly over their years.
