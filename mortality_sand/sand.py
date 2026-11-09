@@ -60,12 +60,32 @@ _POP = _SER["pop"]
 assert list(_SER["vessels"]) == ORDER
 
 
-def grains_at(year):
-    """Each vessel's sand (grains) at a fractional calendar year: its population / GRAIN."""
+def people_grains(year):
+    """Each vessel's people at a fractional calendar year, in grains of story.GRAIN people."""
     y = min(max(year, _YRS[0]), _YRS[-1])
     k = int(min(max(math.floor(y) - _YRS[0], 0), len(_YRS) - 2))
     w = y - _YRS[k]
     return (_POP[:, k] * (1 - w) + _POP[:, k + 1] * w) / S.GRAIN
+
+
+def _load_pack():
+    """Packing per vessel (fit_glass.py): where a region's people cannot lie as natural sand inside its glass
+    at GRAIN people a grain (South Asia, Island SE Asia, the Caribbean), its piles hold fewer, larger-
+    valued grains, the same factor in every year. Lifted grains are GRAIN people everywhere."""
+    p = os.path.join(DATA, "pack.json")
+    out = np.ones(len(ORDER))
+    if os.path.exists(p):
+        for v, k in json.load(open(p)).items():
+            out[ORDER.index(v)] = k
+    return out
+
+
+PACK = _load_pack()
+
+
+def grains_at(year):
+    """Each vessel's resting sand (grains) at a fractional calendar year: its people / GRAIN, packed."""
+    return people_grains(year) * PACK
 
 
 # ============================================================== grid geometry
@@ -185,7 +205,7 @@ def build_cities():
         land = box[VID[box] == vi]
         sea = box[VID[box] < 0]
         sea = sea[VID[VALID[_VALID_TREE.query(CELL_XY[sea])[1]]] == vi] if len(sea) else sea   # beside its own vessel
-        cl = np.concatenate([land, sea])
+        cl = np.concatenate([land, sea]) if S.SPILL else land
         off = (CELL_XY[cl] - CELL_XY[centre]) / CELL
         ns = int(rng.integers(2, 5))
         ang = rng.uniform(0, 2 * np.pi, ns)
@@ -339,6 +359,7 @@ class Sand:
         self.L_y1 = np.array([l["y1"] + 1 for l in L], float)          # exclusive end
         self.L_gpy = np.array([l["deaths"] for l in L]) / S.GRAIN / (self.L_y1 - self.L_y0)   # grains per year
         self.L_acc = self.rng.random(len(L)) * 0.999                     # dithered start: no lockstep rounding
+        self.L_accp = self.L_acc.copy()                                   # grains leaving the (packed) piles
         self.L_w = {}
 
     def lift_weights(self, i):
@@ -372,28 +393,35 @@ class Sand:
         self.L_w[i] = out
         return out
 
-    def lift(self, i, k, dt):
-        """Take k grains off the piles for lift i (from where it struck, in proportion to the people there)."""
+    def lift(self, i, k, m, dt):
+        """k grains rise for lift i (GRAIN people each), taken from where it struck in proportion to the
+        people there; m of them leave the piles (m = k, or fewer where the piles are packed, PACK)."""
         cells, w, ctr = self.lift_weights(i)
         hv = self.h[cells].astype(float)
         p = w * hv
-        if p.sum() <= 0:
+        if p.sum() <= 0 or k <= 0:
             return 0
-        took_c, took_l = [], []
         k = int(min(k, hv.sum()))
+        m = int(min(m, k))
         pick = self.rng.choice(len(cells), size=k, p=p / p.sum())
-        cnt = np.bincount(pick, minlength=len(cells))
-        cnt = np.minimum(cnt, self.h[cells])
-        for r in range(int(cnt.max()) if len(cnt) else 0):
+        took_c, took_l = [], []
+        cnt = np.minimum(np.bincount(pick[:m], minlength=len(cells)), self.h[cells])
+        for r in range(int(cnt.max()) if m else 0):
             sel = cells[cnt > r]
             self.h[sel] -= 1
             took_c.append(sel)
             took_l.append(self.h[sel].astype(np.int64))
+        gone = sum(len(c) for c in took_c)
+        stay = cells[pick[m:]]                                  # rise from the tops, leaving the piles as they are
+        stay = stay[self.h[stay] > 0]
+        if len(stay):
+            took_c.append(stay)
+            took_l.append(self.h[stay].astype(np.int64) - 1)
         if not took_c:
             return 0
         c = np.concatenate(took_c); lv = np.concatenate(took_l)
         n = len(c)
-        self.counts[self.L_v[i]] -= n
+        self.counts[self.L_v[i]] -= gone
         x, y, z, r = grain_xyz(c, lv)
         self._new.append(dict(x=x, y=y, z=z, r=r, cx=np.full(n, ctr[0]), cy=np.full(n, ctr[1]),
                               t0=self.s - self.rng.random(n) * dt, cause=np.full(n, self.L_c[i]),
@@ -408,11 +436,14 @@ class Sand:
         if not len(act):
             return
         self.L_acc[act] += self.L_gpy[act] * ov[act]
+        self.L_accp[act] += self.L_gpy[act] * ov[act] * PACK[self.L_v[act]]
         for i in act:
             k = int(self.L_acc[i])
             if k >= 1:
+                m = int(self.L_accp[i])
                 self.L_acc[i] -= k
-                self.lift(i, k, dt)
+                self.L_accp[i] -= m
+                self.lift(i, k, m, dt)
 
     # ---------------------------------------------------------- grain moves
     def add(self, cells, col=0):

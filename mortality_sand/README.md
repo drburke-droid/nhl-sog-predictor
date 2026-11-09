@@ -1,7 +1,7 @@
 # 2,000 years of catastrophe (working title)
 
 A Sandglass film (the style of `ancestry_sand/`, "Every Grain of Us"): the world's people as sand in
-glass vessels on a dark table, one grain = 5,000 people (1.65 million grains by 2025), from 1 CE to 2025. Wherever and whenever deaths
+glass vessels on a dark table, one grain = 5,000 people (about 1.3 million grains by 2025), from 1 CE to 2025. Wherever and whenever deaths
 ran above the normal level for that place and time, that many grains are lifted off the piles and drawn up
 out of the frame: first glowing in the colour of their cause where they lay, then pulled into a turning
 column over the place, faster and faster, toward the camera.
@@ -16,6 +16,7 @@ column over the place, faster and faster, toward the camera.
 
 ```
 python build_data.py             # data: populations, excess deaths, the clock -> data/, out/data_check.png
+python fit_glass.py              # packing for regions whose people cannot lie inside their glass -> data/pack.json
 python make_walls.py && python make_table.py                     # glass outlines, the printed map
 blender -b -P blender_scene.py -- --samples 128                  # glass plates for the wide shot (~10 min)
 python film.py still 20 50 67 135                                # PNG stills at those video seconds -> out/
@@ -102,6 +103,18 @@ rate of about 4 million deaths (800 grains) a second. The year on screen always 
 - Population decline stands in for excess deaths in the Americas after 1492 (Koch et al. 2019; the
   regional split is ours), and several Chinese dynastic collapses rest on census drops that are partly
   people leaving the tax registers: those central values are a third to a half of the drop.
+- All sand stays inside its region's glass: city mountains are not allowed to spill onto the sea
+  (Tokyo, Osaka, Shanghai and Mumbai stand within their coasts). Three regions hold more people than
+  their land can carry as sand at 5,000 a grain: their countryside would stand at its height limit
+  everywhere, filling the Thar desert and Borneo, with walls at the coast. Their piles are packed
+  (`fit_glass.py`: the largest share of grains at which, in 2025, no more than 15% of the countryside
+  stands at the limit), the same factor in every year: South Asia 1 grain = 10,400 people, Island SE Asia
+  11,600, the Caribbean 6,200 (said on screen). Every other region, East Asia and Japan included, is at
+  5,000. Lifted grains are 5,000 people everywhere: in a packed region more grains rise than leave its
+  piles, so the death streams compare across the world and each region's losses keep their share of its
+  people. Whether to pack at all followed from the catastrophes being visible in the piles themselves
+  (the Andes lose 80% of their people after 1525, Mexico 70%, Europe 47% in the Black Death), so the
+  common scale had to hold everywhere it could.
 - The resting sand is one colour: it is people, all alike.
 
 ## Main sources

@@ -496,6 +496,9 @@ class Painter:
         y = 26 * k + spr.shape[0] + 30 * k
         self.blit(img, self.text_sprite(f"1 grain = {S.GRAIN:,} people", self.f_year_sub, INK * 255), 48 * k, y,
                   0.85 * live_a)
+        if PACK_NOTE:                                          # the packed regions, said plainly
+            self.blit(img, self.text_sprite(PACK_NOTE, self.f_note, MUTED * 255, halo=True), 42 * k, y + 50 * k,
+                      0.75 * live_a * (1 - title_a))
         lifted = sim.lifted.sum() * S.GRAIN
         if lifted > 0:
             txt = f"Lifted so far: {fmt_people(lifted)}"
@@ -581,6 +584,17 @@ class Painter:
             placed.append((bx, by, bx + bw, by + bh))
             self.blit(img, t1, x - t1.shape[1] / 2, by, a)
             self.blit(img, t2, x - t2.shape[1] / 2, by + t1.shape[0] - 8 * k, 0.9 * a)
+
+
+def _pack_note():
+    parts = [(S.VESSELS[v]["label"], S.GRAIN / k) for v, k in zip(Sd.ORDER, Sd.PACK) if k < 0.999]
+    if not parts:
+        return ""
+    txt = ", ".join(f"{lab} {round(n, -2):,.0f}" for lab, n in parts)
+    return f"Piles packed to fit their glass (people per grain): {txt}"
+
+
+PACK_NOTE = _pack_note()
 
 
 def fmt_people(n, short=False):

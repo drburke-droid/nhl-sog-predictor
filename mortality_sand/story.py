@@ -17,7 +17,7 @@ GRAIN = 5_000                   # people per grain, the whole film (constant: li
 # landscape, and pile heights in grain levels are HL times the migration film's.
 CELL = 2
 GS = CELL / 3.0
-HL = 2.0
+HL = 1.5                        # = 1/GS: piles and mountains as tall, in map px, as the migration film's
 YEAR0, YEAR1 = 1, 2025          # the story's span (calendar years)
 
 # ---------------------------------------------------------------- causes (the colours of lifted sand)
@@ -157,6 +157,7 @@ CITY_EXP = 0.8          # summit height grows as population^0.8: in order of siz
 CITY_SLOPE = 6.0        # mean flank slope, grain levels per cell (about 48 degrees): a pile, not a tower
 CITY_MIN_R = 2.2 / GS        # cells: the narrowest base, so a small city is a low mound, not a spike
 CITY_RELIEF = 0.45      # where the countryside is already high, a city still rises this share of its height above it
+SPILL = False           # city mountains stay inside their vessel's glass (no spilling onto the sea)
 CITY_SHARE = 0.7        # city mountains hold at most this share of a region's sand (beyond it they steepen)
 BACKGROUND_CAP = 60 * HL     # grains: the most the countryside piles up; only cities rise above it
 
