@@ -11,7 +11,13 @@ HERE = _os.path.dirname(_os.path.abspath(__file__))
 TITLE = "2,000 years of catastrophe"
 SUBTITLE = "wars, plagues and famines, told in sand"
 
-GRAIN = 25_000                  # people per grain, the whole film (constant: lifted grains are deaths)
+GRAIN = 5_000                   # people per grain, the whole film (constant: lifted grains are deaths)
+# The sand grid: CELL map px per cell, one grain per level per cell. The migration film used 3-px cells at
+# ~56,000 people per grain; here the balls are 2/3 that size (GS) so five times as many fit the same
+# landscape, and pile heights in grain levels are HL times the migration film's.
+CELL = 2
+GS = CELL / 3.0
+HL = 2.0
 YEAR0, YEAR1 = 1, 2025          # the story's span (calendar years)
 
 # ---------------------------------------------------------------- causes (the colours of lifted sand)
@@ -146,13 +152,13 @@ MEGACITIES = [
     ("Nairobi", 36.8, -1.3, 5.3), ("Melbourne", 145.0, -37.8, 5.2), ("Sydney", 151.2, -33.9, 5.1),
     ("Antananarivo", 47.5, -18.9, 4.0), ("Santo Domingo", -69.9, 18.5, 3.6), ("Port-au-Prince", -72.3, 18.5, 2.9),
 ]
-CITY_H5 = 22.0          # summit height of a 5-million city, in grain levels
+CITY_H5 = 22.0 * HL          # summit height of a 5-million city, in grain levels
 CITY_EXP = 0.8          # summit height grows as population^0.8: in order of size, without needles
 CITY_SLOPE = 6.0        # mean flank slope, grain levels per cell (about 48 degrees): a pile, not a tower
-CITY_MIN_R = 2.2        # cells: the narrowest base, so a small city is a low mound, not a spike
+CITY_MIN_R = 2.2 / GS        # cells: the narrowest base, so a small city is a low mound, not a spike
 CITY_RELIEF = 0.45      # where the countryside is already high, a city still rises this share of its height above it
 CITY_SHARE = 0.7        # city mountains hold at most this share of a region's sand (beyond it they steepen)
-BACKGROUND_CAP = 60     # grains: the most the countryside piles up; only cities rise above it
+BACKGROUND_CAP = 60 * HL     # grains: the most the countryside piles up; only cities rise above it
 
 
 def city_height(millions):

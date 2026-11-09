@@ -252,8 +252,8 @@ class Painter:
         Z = (h * GRAIN_DZ).astype(np.float32).reshape(HC, WC)
         sh = np.ones((HC, WC), np.float32)
         if Z.max() > 4:
-            for j in range(1, int(Z.max() / 3.0) + 2):
-                occ = Z[:-j, :-j] - 3.0 * j > 1.0
+            for j in range(1, int(Z.max() / CELL) + 2):
+                occ = Z[:-j, :-j] - CELL * j > 1.0
                 sh[j:, j:][occ] = np.minimum(sh[j:, j:][occ], 0.58 + 0.25 * min(1.0, j / 40.0))
             sh = cv2.GaussianBlur(sh, (0, 0), 0.9)
         self.tower_shadow = sh
@@ -273,9 +273,9 @@ class Painter:
             return None
         cell, lev, hcol, col = V["cell"], V["lev"], V["hcol"], V["col"]
         jx, jy, jr = hash01(cell, lev, 1), hash01(cell, lev, 2), hash01(cell, lev, 3)
-        x = Sd.CELL_XY[cell, 0] + (jx - 0.5) * 1.3
-        y = Sd.CELL_XY[cell, 1] + (jy - 0.5) * 1.3
-        r = (1.35 + 0.35 * jr) * V["scale"]
+        x = Sd.CELL_XY[cell, 0] + (jx - 0.5) * 1.3 * Sd.GS
+        y = Sd.CELL_XY[cell, 1] + (jy - 0.5) * 1.3 * Sd.GS
+        r = (1.35 + 0.35 * jr) * Sd.GS * V["scale"]
         z = lev * GRAIN_DZ + r
         Xw = np.stack([x / 100.0 - 9.6, 5.4 - y / 100.0, z / 100.0], 1) - self.loc
         d = Xw @ self.cf

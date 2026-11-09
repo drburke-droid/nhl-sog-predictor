@@ -1,6 +1,6 @@
 """Sandpile simulation for "2,000 years of catastrophe".
 
-The map is a grid of 3-px cells. A cell inside a vessel holds a stack of grains (bottom to top); one grain
+The map is a grid of story.CELL-px cells. A cell inside a vessel holds a stack of grains (bottom to top); one grain
 is story.GRAIN people. Sand obeys a simple sandpile rule: where a pile stands two or more grains above its
 neighbour, the top grain avalanches onto it. Each vessel's sand follows its population year by year
 (build_data.py): new grains swell in where people live, the great cities rise as mountains of poured sand.
@@ -20,7 +20,8 @@ import vessels as V
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-CELL = 3
+CELL = S.CELL
+GS = S.GS                        # grain size relative to the migration film's
 WC, HC = W // CELL, H // CELL
 NCELL = WC * HC
 HMAX = 600
@@ -29,7 +30,7 @@ VI = {v: i for i, v in enumerate(ORDER)}
 NV = len(ORDER)
 CI = {k: i for i, k in enumerate(S.CAUSE_KEYS)}
 TOWERS = True                    # uncapped density: crowded places pile up
-GRAIN_DZ = 0.55                  # height of one grain level in a pile (map px)
+GRAIN_DZ = 0.55 * GS             # height of one grain level in a pile (map px)
 PX_PER_DEG = 5.6                 # roughly, on this map: spreads given in degrees -> map px
 
 
@@ -85,7 +86,7 @@ def build_grid():
             cv2.fillPoly(m, holes, 0, cv2.LINE_AA, shift=4)
         dist = cv2.distanceTransform((m > 127).astype(np.uint8), cv2.DIST_L2, 5) / 2.0
         d = dist[np.clip((cy * 2).astype(int), 0, H * 2 - 1)][:, np.clip((cx * 2).astype(int), 0, W * 2 - 1)]
-        ok = (d >= 2.9).ravel() & (vid < 0)
+        ok = (d >= max(2.2, 2.9 * GS)).ravel() & (vid < 0)
         vid[ok] = VI[v]
         meta[v] = dict(anchor=np.array(g["anchor"], float), bbox=g["bbox"], geo=g["geo"],
                        inset=bool(S.VESSELS[v].get("inset")), frame=g.get("frame"),
@@ -140,7 +141,7 @@ def build_density():
     ix = np.clip((x / CELL).astype(int), 0, WC - 1); iy = np.clip((y / CELL).astype(int), 0, HC - 1)
     g = np.zeros((HC, WC), np.float32)
     np.add.at(g, (iy, ix), pop)
-    parts = [(2.5, 0.35), (5.0, 0.40), (16.0, 0.25)]            # (sigma in cells, weight)
+    parts = [(7.5 / CELL, 0.35), (15.0 / CELL, 0.40), (48.0 / CELL, 0.25)]   # (sigma in cells, weight)
     d = sum(w * cv2.GaussianBlur(g, (0, 0), sg) / max(cv2.GaussianBlur(g, (0, 0), sg).sum(), 1) for sg, w in parts)
     d = d.ravel() ** (1.0 if TOWERS else 0.7)
     out = np.ones(NCELL, np.float32)
@@ -236,6 +237,8 @@ for _c in CITIES:
 NB = _neighbours(VID)
 SCELLS = [np.concatenate([VCELLS[i], np.where(SPILL & (VID == i))[0]]) for i in range(NV)]   # land + spill
 STREE = [cKDTree(CELL_XY[c]) for c in SCELLS]
+RELOC_K = 40
+SNBK = [t.query(CELL_XY[c], k=min(RELOC_K, len(c)))[1].reshape(len(c), -1) for t, c in zip(STREE, SCELLS)]
 
 
 def build_countries():
@@ -284,9 +287,9 @@ def hash01(a, b, salt):
 def grain_xyz(cell, lev):
     """Where a grain is drawn (map px; z = the height of its centre), as the painter draws resting sand."""
     jx, jy, jr = hash01(cell, lev, 1), hash01(cell, lev, 2), hash01(cell, lev, 3)
-    x = CELL_XY[cell, 0] + (jx - 0.5) * 1.3
-    y = CELL_XY[cell, 1] + (jy - 0.5) * 1.3
-    r = 1.35 + 0.35 * jr
+    x = CELL_XY[cell, 0] + (jx - 0.5) * 1.3 * GS
+    y = CELL_XY[cell, 1] + (jy - 0.5) * 1.3 * GS
+    r = (1.35 + 0.35 * jr) * GS
     return x, y, lev * GRAIN_DZ + r, r
 
 
@@ -298,7 +301,6 @@ class Sand:
         self.year = float(S.YEAR0)
         self.U = np.random.default_rng(77).random(NCELL).astype(np.float32)
         self.Hq = np.zeros(NCELL, np.int32)
-        self.stack = np.full((NCELL, HMAX), -1, np.int8)
         self.h = np.zeros(NCELL, np.int16)
         self.counts = np.zeros(NV, np.int64)
         self.particles = []            # batches of lifted grains (dicts of arrays)
@@ -325,8 +327,6 @@ class Sand:
                 q[idx] += -1 if tot > want else 1
                 q = np.maximum(q, 0)
             self.h[c] = q
-        lv = np.arange(HMAX)[None, :]
-        self.stack[:] = np.where(lv < self.h[:, None], 0, -1).astype(np.int8)
         self.counts = np.bincount(np.maximum(VID, 0), weights=self.h * (VID >= 0), minlength=NV).astype(np.int64)
 
     # ---------------------------------------------------------- lift sources
@@ -389,7 +389,6 @@ class Sand:
             self.h[sel] -= 1
             took_c.append(sel)
             took_l.append(self.h[sel].astype(np.int64))
-            self.stack[sel, self.h[sel]] = -1
         if not took_c:
             return 0
         c = np.concatenate(took_c); lv = np.concatenate(took_l)
@@ -422,7 +421,6 @@ class Sand:
             uc, first = np.unique(cells, return_index=True)
             rest = np.delete(cells, first)
             uc = uc[self.h[uc] < HMAX]
-            self.stack[uc, self.h[uc]] = col
             self.h[uc] += 1
             np.add.at(self.counts, VID[uc], 1)
             cells = rest
@@ -431,7 +429,6 @@ class Sand:
         cells = np.unique(np.asarray(cells, np.int64))
         cells = cells[self.h[cells] > 0]
         self.h[cells] -= 1
-        self.stack[cells, self.h[cells]] = -1
         np.add.at(self.counts, VID[cells], -1)
         return cells
 
@@ -451,37 +448,35 @@ class Sand:
                     continue
                 b = nb[a]
                 self.h[a] -= 1
-                g = self.stack[a, self.h[a]].copy()
-                self.stack[a, self.h[a]] = -1
                 b2 = b
-                self.stack[b2, self.h[b2]] = g
                 self.h[b2] += 1
 
     def relocate(self, v):
-        """Spread sand toward where people live: a few grains above their cell's target move to a cell
-        below target nearby (or, failing that, the nearest of a few anywhere in the vessel). Stops
-        once every cell holds its target."""
+        """Spread sand toward where people live: some grains above their cell's target move to a cell
+        below target nearby (one of its RELOC_K nearest cells, else the nearest of a few anywhere in the
+        vessel). Stops once every cell holds its target."""
         cells = SCELLS[v]
         hv, q = self.h[cells], self.Hq[cells]
-        exc, dfc = cells[hv > q], cells[hv < q]
-        if not len(exc) or not len(dfc):
+        exc_i, dfc_i = np.where(hv > q)[0], np.where(hv < q)[0]
+        if not len(exc_i) or not len(dfc_i):
             return
-        m = min(len(exc), len(dfc), max(2, int(self.counts[v].sum() * 0.004)))
-        src = self.rng.choice(exc, size=m, replace=False)
-        dmask = np.zeros(NCELL, bool)
-        dmask[dfc] = True
-        dst = np.empty(m, np.int64)
-        for i, (c, lst) in enumerate(zip(src, STREE[v].query_ball_point(CELL_XY[src], 30.0))):
-            cand = cells[lst]
-            cand = cand[dmask[cand]]
-            if len(cand):
-                dst[i] = cand[self.rng.integers(len(cand))]
-            else:
-                c8 = dfc[self.rng.integers(len(dfc), size=8)]
-                dst[i] = c8[np.argmin(np.hypot(*(CELL_XY[c8] - CELL_XY[c]).T))]
+        m = min(len(exc_i), len(dfc_i), max(2, int(self.counts[v] * 0.004)), 4000)
+        src = self.rng.choice(exc_i, size=m, replace=False)
+        nbk = SNBK[v][src]                                      # (m, K) indices into cells
+        deficit = hv < q
+        pick = self.rng.integers(0, nbk.shape[1], (m, 6))
+        cand = np.take_along_axis(nbk, pick, 1)
+        good = deficit[cand]
+        first = np.argmax(good, 1)
+        dst = np.where(good.any(1), cand[np.arange(m), first], -1)
+        miss = np.where(dst < 0)[0]
+        if len(miss):
+            c8 = dfc_i[self.rng.integers(len(dfc_i), size=(len(miss), 8))]
+            dd = np.hypot(*(CELL_XY[cells[c8]] - CELL_XY[cells[src[miss]]][:, None, :]).transpose(2, 0, 1))
+            dst[miss] = c8[np.arange(len(miss)), np.argmin(dd, 1)]
         dst, k = np.unique(dst, return_index=True)
-        moved = self.pop(src[k])
-        self.add(dst[:len(moved)])
+        moved = self.pop(cells[src[k]])
+        self.add(cells[dst[:len(moved)]])
 
     def reconcile(self, v, T):
         """Births and quiet losses: grains swell in where the pile is below its share of the people, or
@@ -544,7 +539,7 @@ class Sand:
         w = 1.0
         N = self.counts.astype(float)
         mil_t = cityhist.at(CITY_YEARS, CITY_M, year)[CF["hi"]]             # each city's own population then
-        uf = float((S.city_height(mil_t) >= 4.0).any())                      # any city big enough to show
+        uf = float((S.city_height(mil_t) >= 4.0 * S.HL).any())                      # any city big enough to show
         we = (1 - w) + w * DENS[VALID]
         vid = VID[VALID]
         bgf = np.zeros(NCELL, np.float32)
@@ -553,7 +548,8 @@ class Sand:
         cap = S.CITY_SHARE * N
         steep = getattr(self, "steep", None)  # per vessel: how much steeper than CITY_SLOPE its mountains stand
         steep = np.ones(NV) if steep is None else steep.copy()   # (carried from frame to frame: it changes slowly)
-        for it in range(3):                   # countryside = what the city mountains do not take
+        warm = getattr(self, "steep", None) is not None
+        for it in range(2 if warm else 3):    # countryside = what the city mountains do not take
             bg = B[vid] * we / np.maximum(np.bincount(vid, we, minlength=NV)[vid], 1e-9)
             for _ in range(6):                # level off at the cap, refill elsewhere
                 over = bg > S.BACKGROUND_CAP
@@ -566,15 +562,17 @@ class Sand:
             bgf[VALID] = bg
             if uf <= 0:
                 break
-            for k in range(3):                # steepen (or relax) until the mountains fit their share
+            for k in range(1 if warm else 3):  # steepen (or relax) until the mountains fit their share
                 h = S.city_height(mil_t)
-                h = np.where(h < 4.0, 0.0, np.maximum(h, bgf[CF["centre"]] + S.CITY_RELIEF * h))  # on a crowded plain, still a hill
+                h = np.where(h < 4.0 * S.HL, 0.0, np.maximum(h, bgf[CF["centre"]] + S.CITY_RELIEF * h))  # on a crowded plain, still a hill
                 R = np.maximum(h / (S.CITY_SLOPE * steep[CF["vi"]]), S.CITY_MIN_R)
                 rise = self.city_rise(h, R, bgf)
                 extra = np.bincount(VID[rise > 0], rise[rise > 0], minlength=NV)
                 new = np.maximum(steep * np.sqrt(np.maximum(extra, 1e-9) / np.maximum(cap, 1e-9)), 1.0)
                 new = np.where(extra > 0, new, steep)
-                if np.all(np.abs(new - steep) < 0.03 * steep) or k == 2:
+                if np.all(np.abs(new - steep) < 0.03 * steep) or k == (0 if warm else 2):
+                    if warm:
+                        steep = steep + (new - steep) * 0.5      # settle over the next updates
                     break
                 steep = new
             B = np.maximum(N - np.minimum(extra, cap), 0.0)
@@ -606,5 +604,5 @@ class Sand:
         self.particles = [p for p in self.particles if p["t0"].max() + LIFE > self.s]
 
 
-TARGET_EVERY = 4  # frames between recomputing the pile shapes (cell_targets: the costly part)
+TARGET_EVERY = 5  # frames between recomputing the pile shapes (cell_targets: the costly part)
 LIFE = 5.0       # seconds a lifted grain is tracked (it is long out of the frame by then)
