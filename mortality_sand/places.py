@@ -105,29 +105,51 @@ def vessel_of(iso, lon=None, year=1900):
 
 
 def _home_split(code, year):
-    """A home code -> [(vessel, iso or None, share)]. Russia splits between European Russia and Siberia."""
-    if code in S.VESSELS:
-        return [(code, None, 1.0)]
+    """A home code -> [(vessel, iso or None, share)]. Country codes first (POL is Poland, NAM Namibia, not the
+    Polynesia or North America vessels); Russia splits between European Russia and Siberia."""
     if code == "RUS":
         sh = S.siberia_share(year)
         return [("STP", "RUS", 1 - sh), ("SIB", "RUS", sh)]
     v = S.ISO_VESSEL.get(code)
-    return [(v, code, 1.0)] if v else []
+    if v:
+        return [(v, code, 1.0)]
+    if code in S.VESSELS:
+        return [(code, None, 1.0)]
+    return []
+
+
+_CENTRE = None
+
+
+def country_lonlat(iso):
+    """A country's representative point (lon, lat), for matching it to the nearest catalogue row."""
+    global _CENTRE
+    if _CENTRE is None:
+        import vessels as V
+        _CENTRE = {}
+        for n, g in V.load_countries().items():
+            c = g.representative_point()
+            _CENTRE[S.NE_TO_ISO.get(n, n)] = (c.x, c.y)
+    return _CENTRE.get(iso)
 
 
 # ------------------------------------------------------------------ before 1950: the catalogue's rows
 def _pick_row(rows, vessel, t0, t1, lon, lat):
-    """The parent row a piece comes out of: same region and overlapping in time, else same region, else
-    the nearest row in time and space."""
+    """The parent row a piece comes out of: among the event's rows in the same region and overlapping in
+    time (else in the same region, else any), the one whose spot best covers (lon, lat): the nearest in
+    units of the row's own spread, so a country's row wins over its neighbour's and a small row (the 1938
+    Yellow River flood) over the big one around it."""
     def ov(r):
         return min(r["y1"] + 1, t1) - max(r["y0"], t0)
+
+    def fit(r):
+        d = math.hypot((r["lon"] - lon) * math.cos(math.radians(lat)), r["lat"] - lat)
+        return d / max(r["sigma"], 0.5)
     same = [r for r in rows if r["vessel"] == vessel]
-    for cand in ([r for r in same if ov(r) > 0], same):
+    for cand in ([r for r in same if ov(r) > 0], same, [r for r in rows if ov(r) > 0], rows):
         if cand:
-            return max(cand, key=lambda r: (ov(r) > 0, r["deaths"]))
-    def dist(r):
-        return math.hypot(r["lon"] - lon, r["lat"] - lat) + (0 if ov(r) > 0 else 1000)
-    return min(rows, key=dist) if rows else None
+            return min(cand, key=fit)
+    return None
 
 
 def apply_pre1950(spots, places):
@@ -162,7 +184,11 @@ def apply_pre1950(spots, places):
                     skipped.append((p["parent"], p["place"], f"unknown home {code}"))
                     continue
             for v, iso, f in homes:
-                r = _pick_row(rows, v, p["t0"], p["t1"], p["lon"], p["lat"])
+                at = (p["lon"], p["lat"])
+                if kind == "converge" and iso:
+                    at = ((40.0, 55.0) if v == "STP" else (85.0, 56.0)) if iso == "RUS" else \
+                        (country_lonlat(iso) or at)              # Russia: its European heartland / Siberia
+                r = _pick_row(rows, v, p["t0"], p["t1"], *at)
                 pieces.append([r, p, v, iso, p["deaths"] * sh * f, kind])
     # scale down where a row would be overdrawn
     want = {}
