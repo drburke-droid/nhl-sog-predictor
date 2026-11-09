@@ -9,6 +9,10 @@ import numpy as np
 STREAK = 4.0          # velocity scale for the rising grains' streaks: with the half-frame shutter, 2 frames of travel
 GLOW = 3.0            # emission strength of a lifted grain at full glow (with the compositor's glare)
 NEAR = 1.5            # grains nearer the camera than this (Blender units) are dropped, as the painter does
+MIN_PX = 1.4          # a rising grain is at least this many pixels across
+SHUTTER = 0.5         # the scene's motion blur shutter, in frames (Render Properties -> Motion Blur)
+STREAK_GAIN_MAX = 25.0  # most a streak is brightened for its length
+FRAME_ONE = 1         # the Blender frame that shows the film's first frame (frame N+1 = film frame N)
 
 
 def _srgb_to_linear(c):
@@ -107,12 +111,25 @@ class SandCache:
         fx = st["focal_px"] * (rel @ st["cam_r"]) / np.maximum(d, 1e-3)
         fy = st["focal_px"] * (rel @ st["cam_u"]) / np.maximum(d, 1e-3)
         ok = (d > NEAR) & (np.abs(fx) < st["width"] / 2 + 80) & (np.abs(fy) < st["height"] / 2 + 80)
-        idx, u, P, V = idx[ok], u[ok], P[ok], V[ok]
+        idx, u, P, V, d = idx[ok], u[ok], P[ok], V[ok], d[ok]
         g = np.clip(u / float(st["tg"]), 0, 1)
         bright = (1.0 + 0.2 * g) * np.clip(1.1 - (u - float(st["tg"])) / 8.0, 0.7, 1.1)
         cause = self.L["cause"][idx].astype(np.int64)
-        return dict(P=P, V=V, r=self.L["r"][idx] / 100.0, glow=g.astype(np.float32),
-                    ecol=self.cause_lin[cause], estr=(GLOW * g * bright).astype(np.float32))
+        # at least MIN_PX across on screen, as the painter draws them (a far grain is a fleck, not nothing)
+        r = np.maximum(self.L["r"][idx] / 100.0, MIN_PX * 0.5 * d / st["focal_px"])
+        # motion blur spreads a grain's light along its streak: brighten it by the streak's length in
+        # grain widths, so a fast streak reads like the painter's bright line, not a faint smear
+        shutter = SHUTTER / self.fps
+        rel2 = P + V * shutter - st["cam_loc"][None, :]
+        d2 = np.maximum(rel2 @ st["cam_f"], 1e-3)
+        rel = P - st["cam_loc"][None, :]
+        sx = st["focal_px"] * np.stack([rel @ st["cam_r"] / d - rel2 @ st["cam_r"] / d2,
+                                        rel @ st["cam_u"] / d - rel2 @ st["cam_u"] / d2], 1)
+        streak_px = np.hypot(sx[:, 0], sx[:, 1])
+        width_px = 2 * r * st["focal_px"] / d
+        k = np.clip((streak_px + width_px) / np.maximum(width_px, 0.5), 1.0, STREAK_GAIN_MAX)
+        return dict(P=P, V=V, r=r.astype(np.float32), glow=g.astype(np.float32),
+                    ecol=self.cause_lin[cause], estr=(GLOW * g * bright * k).astype(np.float32))
 
 
 def _fill(ob, P, attrs):
@@ -160,7 +177,7 @@ def update_sand(scene, *args):
     # motion blur evaluates the scene a little before and after the frame: keep the frame's own geometry
     # (the lifted grains carry a velocity for their streaks)
     c = cache()
-    f = int(round(scene.frame_current + scene.frame_subframe)) - scene.frame_start
+    f = int(round(scene.frame_current + scene.frame_subframe)) - FRAME_ONE
     f = min(max(f, 0), c.n - 1)
     if _LAST.get("f") == f and _LAST.get("file") == bpy.data.filepath:
         return

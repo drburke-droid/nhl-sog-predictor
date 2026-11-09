@@ -134,6 +134,21 @@ before the next one starts, the years between them run a little slower, so the v
 never overlaps (the film grows by about 40 seconds). `voice.py mix` lays the lines on the film and writes
 subtitles (`out/narration.srt`).
 
+## Rendering it in Cycles
+
+The film can also be rendered in Blender's Cycles. Every visible grain is a lit sphere in the glass,
+and the lifted grains are glowing spheres with motion blur. Cycles computes the shadows, glass and
+glow, so nothing is painted on.
+
+- `python export_cycles.py` runs the same simulation once. It writes `cycles/cache/`: the sand per
+  frame (as only the cells that changed, about 60 a frame) and every lifted grain. It also writes the
+  film's text as a lossless layer, and copies the narration.
+- `blender -b -P blender_cycles.py` builds `cycles/film_cycles.blend`. It has two scenes:
+  - `Sand` renders the frames. A script stored in the file refills the grains each frame.
+  - `Edit` lays the text and the voice over the frames.
+- `grains.py` is the grain geometry shared by the simulation, the painter and the .blend.
+- How to render it, and what to try first: `CYCLES.md`.
+
 ## Simplifications, said plainly
 
 - One grain is 5,000 people, the same in every year, so lifted sand is directly comparable across 2,000

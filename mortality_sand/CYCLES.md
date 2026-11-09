@@ -42,7 +42,7 @@ blender -b film_cycles.blend -y -S Edit -a                 # the finished film
 
 ## Before the long render
 
-The full film is 8,274 frames. A test frame here (4 CPU cores, 32 samples, 1920×1080) took TIMING. A recent GPU is usually 5 to 20 times faster than that. Try a few frames first. The busiest moments are:
+The full film is 8,274 frames. A frame in 1942, the busiest stretch (175,000 grains of sand, glass, motion blur), took 100 seconds here on 4 CPU cores at 32 samples, 1920×1080. A recent GPU is usually 5 to 20 times faster than that. Try a few frames first. The busiest moments are:
 
 | Frame | Year | What is happening |
 |---|---|---|

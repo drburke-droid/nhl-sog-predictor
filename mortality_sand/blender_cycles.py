@@ -37,6 +37,7 @@ def opt(name, default, cast=str, n=1):
 SAMPLES = opt("--samples", 128, int)
 TEST = opt("--test", [], int, n=0)
 PERCENT = opt("--percent", 100, int)
+EXPOSURE = opt("--exposure", 0.4, float)
 
 sys.path.insert(0, HERE)
 sys.argv = [sys.argv[0]]                      # blender_scene.py reads its own flags: none
@@ -52,6 +53,7 @@ scene.name = "Sand"
 scene.frame_start, scene.frame_end = 1, NF
 scene.render.fps = FPS
 scene.render.resolution_percentage = 100
+scene.view_settings.exposure = EXPOSURE      # the lit sand as bright as the painted film's
 scene.cycles.device = "GPU"                   # renders on the CPU where no GPU is set up in Preferences
 scene.cycles.samples = SAMPLES
 scene.cycles.use_adaptive_sampling = True
@@ -187,16 +189,28 @@ ed.render.resolution_percentage = 100
 ed.view_settings.view_transform = "Standard"   # the frames are finished pictures: no second tone mapping
 ed.view_settings.look = "None"
 seq = ed.sequence_editor_create()
-fr = seq.sequences.new_image("Cycles frames", "//frames/0001.png", 1, 1, fit_method="FIT")   # draft frames scale up
+black = seq.sequences.new_effect("Black", "COLOR", 1, frame_start=1, frame_end=NF + 1)
+black.color = (0, 0, 0)
+fr = seq.sequences.new_image("Cycles frames", "//frames/0001.png", 2, 1, fit_method="ORIGINAL")
 for i in range(2, NF + 1):
     fr.elements.append(f"{i:04d}.png")
-for ch, name, fn, blend in ((2, "Text matte", "overlay_matte.mp4", "MULTIPLY"),
-                            (3, "Text", "overlay_fill.mp4", "ADD")):
+# frames rendered as a draft (Sand scene at less than 100%) are scaled up to fill the picture
+for axis in ("scale_x", "scale_y"):
+    dv = fr.transform.driver_add(axis).driver
+    dv.type = "SCRIPTED"
+    v = dv.variables.new()
+    v.name = "pct"
+    v.targets[0].id_type = "SCENE"
+    v.targets[0].id = scene
+    v.targets[0].data_path = "render.resolution_percentage"
+    dv.expression = "100 / pct"
+for ch, name, fn, blend in ((3, "Text matte", "overlay_matte.mp4", "MULTIPLY"),
+                            (4, "Text", "overlay_fill.mp4", "ADD")):
     m = seq.sequences.new_movie(name, os.path.join(OUTD, fn), ch, 1, fit_method="FIT")
     m.blend_type = blend
 nar = os.path.join(OUTD, "narration.m4a")
 if os.path.exists(nar):
-    seq.sequences.new_sound("Narration", nar, 4, 1)
+    seq.sequences.new_sound("Narration", nar, 5, 1)
 ed.render.image_settings.file_format = "FFMPEG"
 ed.render.ffmpeg.format = "MPEG4"
 ed.render.ffmpeg.codec = "H264"
