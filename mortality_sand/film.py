@@ -400,7 +400,7 @@ class Painter:
             tm = np.where(trav, np.clip((u - TG) / np.maximum(mv, 1e-6), 0, 1), 1.0)
             e = tm * tm * (3 - 2 * tm)
             dist = np.hypot(ax - x0, ay - y0)
-            hop = (6.0 + 0.10 * dist) * 4 * tm * (1 - tm)
+            hop = (8.0 + 0.22 * dist) * 4 * tm * (1 - tm)      # a visible arc: a journey, not a slide
             xs = x0 + (ax - x0) * e
             ys = y0 + (ay - y0) * e
             zs = z0 + (az - z0) * e + hop + lift0 * (1 - e) + 2.5 * e

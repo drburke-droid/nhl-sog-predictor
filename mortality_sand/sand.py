@@ -450,7 +450,7 @@ class Sand:
         self.counts[self.L_v[i]] -= gone
         x, y, z, r = grain_xyz(c, lv)
         if self.L[i]["kind"] == "converge":          # the journey from home to where they died
-            mv = np.clip(0.35 + np.hypot(x - ctr[0], y - ctr[1]) / 260.0, 0.5, 1.7)
+            mv = np.clip(0.5 + np.hypot(x - ctr[0], y - ctr[1]) / 200.0, 0.6, 2.0)
         else:
             mv = np.zeros(n)
         self._new.append(dict(x=x, y=y, z=z, r=r, cx=np.full(n, ctr[0]), cy=np.full(n, ctr[1]),
