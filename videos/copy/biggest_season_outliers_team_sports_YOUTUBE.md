@@ -9,7 +9,7 @@ To rebuild it: `python opening.py c`, `python script_c.py voice <chunk>` (openin
 | | File | Idea |
 |---|---|---|
 | A | `season_outliers_thumb_D.png` | NOT EVEN CLOSE: 2,602 other season-leading performances piled up, and Wilt alone, 7 standard deviations away |
-| B | `season_outliers_thumb_E.png` | NO ONE ELSE IN SIGHT: a running track from above; the pack (the 153 other seasons on the five's graphs) is within 2.6 standard deviations of the elite curve, the five lead around the turn at 5.3 to 7 |
+| B | `season_outliers_thumb_E.png` | 5 SEISMIC SEASONS: a seismograph trace through every season on the five's charts by year (1926-2019); the other 153 stay under 2.6 standard deviations, the five spike to 5.3-7 |
 | C | `season_outliers_thumb_F.png` | OFF THE BELL CURVE: the bell curve runs out by 3; the five sit between 5 and 7 |
 
 **Titles to test**
