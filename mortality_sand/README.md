@@ -32,13 +32,22 @@ Needs numpy, scipy, pandas, shapely, opencv-python-headless, pillow, matplotlib,
 **1950-2023: every country, every year.** UN World Population Prospects 2024 gives each country's deaths
 and population every year. A country's *normal* death rate is the smooth trend of its crude death rate
 drawn through its ordinary years: an asymmetric least-squares smoother on the log death rate (Eilers &
-Boelens 2005; stiffness 10^4, asymmetry 0.3), which follows the slow fall of the death rate (and, as
-populations age, its slow rise) but is not pulled up by crisis years. Excess deaths are the deaths above
-that trend; a year at or below it lifts nothing. Checks: China 1959-61, 18 million; Cambodia 1975-79,
-1.7 million; Rwanda 1994, 0.95 million; Bangladesh 1971, 1.6 million; COVID-19 years 2020-23, about 31
-million worldwide (The Economist's model: about 27 million to 2023; WHO: 14.9 million for 2020-21 alone).
-Each country-year is labelled with the cause of the named crisis it falls in
-(`inputs/events_post1950.csv`); the rest are "other years above normal".
+Boelens 2005; stiffness 300, asymmetry 0.3), which follows the slow fall of the death rate (and, as
+populations age, its slow rise) over about a decade but is not pulled up by crisis years. For 2020-23 the
+normal rate is the 2012-19 trend projected forward, as in WHO's and The Economist's excess-death models
+(a flexible trend fitted through the pandemic would bend up into it). Excess deaths are the deaths above
+the trend; a year at or below it lifts nothing. Checks: China 1959-61, 15 million (published estimates
+15-45 million); Cambodia 1975-79, 1.6 million; Rwanda 1994, 0.9 million; Bangladesh 1971, 1.5 million;
+COVID-19 years 2020-23, 27 million worldwide (The Economist's model: about 27 million; WHO: 14.9 million
+for 2020-21 alone). Crises that last much longer than a decade are only partly counted, because the trend
+slowly takes them for the new normal: HIV/AIDS in southern Africa, the post-Soviet mortality crisis.
+
+Each country-year is labelled with the named crisis it falls in (`inputs/events_post1950.csv`, from the
+research behind `inputs/NOTES.md`): the country's own events first (the most specific in time: COVID-19
+over HIV/AIDS in 2020-23), taking at most 1.5 times that crisis's own published yearly toll, so a small
+war in a big country does not claim all of its excess; then worldwide rows (the 1957, 1968 and 2009 flu
+pandemics, in proportion to their published totals; COVID-19 in every country without a row of its own).
+What is left is "other years above normal": bad flu seasons, heat waves, the post-Soviet mortality crisis.
 
 **1 CE-1949: the catastrophes big enough to have been counted.** No annual death counts exist for most of
 the world before the twentieth century, so this part of the film shows every war, epidemic, famine and
@@ -72,7 +81,12 @@ rate of about 4 million deaths (800 grains) a second. The year on screen always 
   series are themselves modelled, so their "normal" years are smooth and only the crises the UN put in
   stand out.
 - A grain is lifted from the piles where the catastrophe struck, in proportion to the people living
-  there: from a country's land (after 1950), or around the place the catalogue gives (before).
+  there: from a country's land (after 1950), or around the place the catalogue gives (before). Soldiers
+  count against their home region, not where they fell (the film takes grains out of a population, as
+  the UN's death counts do), and Middle Passage deaths against the African region they were taken from.
+- Population decline stands in for excess deaths in the Americas after 1492 (Koch et al. 2019; the
+  regional split is ours), and several Chinese dynastic collapses rest on census drops that are partly
+  people leaving the tax registers: those central values are a third to a half of the drop.
 - The resting sand is one colour: it is people, all alike.
 
 ## Main sources

@@ -43,6 +43,8 @@ MUTED = hex_rgb("#93a1b8")
 TG = 0.45              # seconds a lifted grain glows on its pile before it goes
 LABEL_MIN = 2.0e6      # catastrophes of at least this many deaths get a name on the map
 LABEL_HOLD = 2.6       # seconds a name stays up at least
+LABEL_MAX = 9.0        # ...and at most
+LABEL_RATE = 5.0e4     # deaths a year at its worst: below this an event is a drizzle, not named
 
 
 def font(name, size):
@@ -555,7 +557,7 @@ class Painter:
             if w.sum() <= 0:
                 w = np.array([d for (_, _, d) in ev["spans"]])
             if ev["world"]:
-                x, y = IW / 2, 150 * k
+                x, y = img.shape[1] / 2, 150 * k
             else:
                 j = int(np.argmax(w))                      # over the region it is hitting hardest now
                 near = np.hypot(ev["cx"] - ev["cx"][j], ev["cy"] - ev["cy"][j]) < 120
@@ -610,14 +612,21 @@ def event_groups(L):
     out = []
     for gid, g in groups.items():
         tot = sum(d for _, _, d in g["spans"])
-        if tot < LABEL_MIN:
-            continue
         y0 = min(a for a, _, _ in g["spans"]); y1 = max(b for _, b, _ in g["spans"])
-        yrs = f"{y0}" if y1 - 1 == y0 else f"{y0}–{y1 - 1}"
+        rate = np.zeros(y1 - y0)                                # deaths per year
+        for a, b, d in g["spans"]:
+            rate[a - y0:b - y0] += d / (b - a)
+        if tot < LABEL_MIN or rate.max() < LABEL_RATE:
+            continue                                            # small, or a slow drizzle over centuries
+        hot = np.where(rate >= 0.35 * rate.max())[0]            # named while it is near its worst
+        ya, yb = y0 + hot[0], y0 + hot[-1] + 1
+        s0 = s_at(ya)
+        yrs = f"{y0}" if y1 - 1 == y0 else f"{y0}\u2013{y1 - 1}"
         xy = np.array(g["xy"])
         out.append(dict(id=gid, name=g["name"], cause=S.CAUSE_KEYS.index(g["cause"]) if g["cause"] in S.CAUSE_KEYS else 4,
-                        spans=g["spans"], cx=xy[:, 0], cy=xy[:, 1], total=tot, world=len(g["vessels"]) >= 6,
-                        s0=s_at(y0), s1=s_at(y1), sub=f"{yrs}  ·  {fmt_people(tot)}"))
+                        spans=g["spans"], cx=xy[:, 0], cy=xy[:, 1], total=tot,
+                        world=g["cause"] == "epidemic" and len(g["vessels"]) >= 10,   # pandemics: top centre
+                        s0=s0, s1=min(s_at(yb), s0 + LABEL_MAX), sub=f"{yrs}  \u00b7  {fmt_people(tot)}"))
     out.sort(key=lambda e: -e["total"])
     return out
 

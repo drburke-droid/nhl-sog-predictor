@@ -43,8 +43,9 @@ WPP = os.path.join(DATA, "WPP2024_Demographic_Indicators_Medium.csv.gz")
 OWID_URL = "https://ourworldindata.org/grapher/population.csv?v=1&csvType=full&useColumnShortNames=true"
 OWID = os.path.join(DATA, "owid_population.csv")
 
-ALS_LAMBDA = 1e4      # stiffness of the normal-death-rate trend (annual data: bends over decades)
+ALS_LAMBDA = 300      # stiffness of the normal-death-rate trend (annual data: bends over about a decade)
 ALS_P = 0.3           # asymmetry: points above the trend count 0.3, below 0.7 (crises do not pull it up)
+PANDEMIC = 2020       # from here the normal death rate is the 2012-19 trend, projected
 LAST_DATA_YEAR = 2023  # WPP 2024 estimates end here; 2024-25 are projections (population only)
 SLOW = 0.25           # video seconds added per million excess deaths in a year
 RECOVERY = 30.0       # years: e-folding time for a population to regrow after a catastrophe
@@ -93,7 +94,17 @@ def wpp_excess(d):
     for iso, g in d[d.Time <= LAST_DATA_YEAR].groupby("ISO3_code"):
         g = g.sort_values("Time")
         cdr = g.CDR.values.astype(float)
-        base = np.exp(als(np.log(np.maximum(cdr, 0.5))))
+        t = g.Time.values.astype(float)
+        y = np.log(np.maximum(cdr, 0.5))
+        pre = t < PANDEMIC
+        z = np.empty_like(y)
+        z[pre] = als(y[pre])
+        # the pandemic years against the pre-pandemic trend, projected (as in WHO's and The Economist's
+        # excess-death models): a flexible trend fitted through 2020-23 would bend up into the pandemic
+        k = pre & (t >= PANDEMIC - 8)
+        a1, b1 = np.polyfit(t[k], z[k], 1)
+        z[~pre] = a1 * t[~pre] + b1
+        base = np.exp(z)
         ex = np.maximum(g.Deaths.values * 1000.0 - base / 1000.0 * g.TPopulation1July.values * 1000.0, 0.0)
         for t, e, c, b, deaths in zip(g.Time.values, ex, cdr, base, g.Deaths.values * 1000.0):
             rows.append(dict(iso=iso, year=int(t), excess=float(e), cdr=float(c), base=float(b), deaths=float(deaths)))
@@ -214,26 +225,51 @@ def population_series(anchor, wpp_pop, D):
 
 # ------------------------------------------------------------------ post-1950 lifts with causes
 def post1950_lifts(ex, events):
-    """One lift per country-year with excess deaths, labelled by the named crisis it falls in."""
+    """One lift per country-year with excess deaths, split between the named crisis it falls in and "other".
+
+    A country's own events come first (the shortest, i.e. the most specific in time: COVID-19 over HIV/AIDS
+    in 2020-23). A crisis takes at most 1.5x its own published yearly toll (deaths_central spread over its
+    years) out of the country-year's excess, so a small war in a big country (Chechnya, in Russia's post-
+    Soviet mortality crisis) does not claim the whole excess; the rest is "other". Worldwide rows ("WLD":
+    the 1957, 1968 and 2009 flu pandemics, COVID-19 in countries without a row of their own) then take a
+    share of the excess still unexplained in their years: their published total over that excess, or all
+    of it when no total is given."""
     by_iso = {}
-    for e in events:
-        by_iso.setdefault(e["iso"], []).append(e)
-    lifts = []
+    for ev in events:
+        by_iso.setdefault(ev["iso"], []).append(ev)
+    rows = []                         # [iso, year, vessel, [(event or None, deaths)]]
     for r in ex[ex.excess > 0].itertuples():
         v = S.ISO_VESSEL.get(r.iso)
         if v is None:
             continue
-        cands = [e for e in by_iso.get(r.iso, []) if e["y0"] <= r.year <= e["y1"]]
-        e = max(cands, key=lambda e: e["deaths"]) if cands else None
-        parts = [(v, 1.0)]
-        if r.iso == "RUS":
-            sh = S.siberia_share(r.year)
-            parts = [("STP", 1 - sh), ("SIB", sh)]
-        for vv, f in parts:
-            lifts.append(dict(kind="country", iso=r.iso, vessel=vv, y0=int(r.year), y1=int(r.year),
-                              deaths=float(r.excess * f), cause=e["cause"] if e else "other",
-                              name=e["name"] if e else "", label=label_of(e["name"]) if e else "",
-                              id=e["id"] if e else ""))
+        parts, left = [], float(r.excess)
+        cands = [ev for ev in by_iso.get(r.iso, []) if ev["y0"] <= r.year <= ev["y1"]]
+        if cands:
+            ev = min(cands, key=lambda ev: (ev["y1"] - ev["y0"], -ev["deaths"]))
+            take = left if ev["deaths"] <= 0 else min(left, 1.5 * ev["deaths"] / (ev["y1"] - ev["y0"] + 1))
+            parts.append((ev, take))
+            left -= take
+        rows.append([r.iso, int(r.year), v, parts, left])
+    for ev in by_iso.get("WLD", []):
+        pool = [row for row in rows if ev["y0"] <= row[1] <= ev["y1"] and row[4] > 0]
+        tot = sum(row[4] for row in pool)
+        share = 1.0 if ev["deaths"] <= 0 or tot <= 0 else min(1.0, ev["deaths"] / tot)
+        for row in pool:
+            take = row[4] * share
+            row[3].append((ev, take))
+            row[4] -= take
+    lifts = []
+    for iso, year, v, parts, left in rows:
+        parts = parts + ([(None, left)] if left > 0 else [])
+        split = [(v, 1.0)]
+        if iso == "RUS":
+            sh = S.siberia_share(year)
+            split = [("STP", 1 - sh), ("SIB", sh)]
+        for ev, d in parts:
+            for vv, f in split:
+                lifts.append(dict(kind="country", iso=iso, vessel=vv, y0=year, y1=year, deaths=float(d * f),
+                                  cause=ev["cause"] if ev else "other", name=ev["name"] if ev else "",
+                                  label=label_of(ev["name"]) if ev else "", id=ev["id"] if ev else ""))
     return lifts
 
 
