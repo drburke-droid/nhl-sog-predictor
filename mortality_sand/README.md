@@ -32,10 +32,10 @@ Needs numpy, scipy, pandas, shapely, opencv-python-headless, pillow, matplotlib,
 
 ## What the film shows (this cut)
 
-4:37, 1920x1080, 30 fps, one still wide shot, with the voiceover (`out/two_thousand_years_of_catastrophe_narrated.mp4`,
+4:36, 1920x1080, 30 fps, one still wide shot, with the voiceover (`out/two_thousand_years_of_catastrophe_narrated.mp4`,
 subtitles in `out/narration.srt`; a smaller copy for viewing is committed as
 `media/two_thousand_years_of_catastrophe_narrated.mp4`).
-641 million deaths above normal are lifted, about 128,000 grains: before 1950, 546 million from 123
+642 million deaths above normal are lifted, about 128,000 grains: before 1950, 546 million from 123
 catalogued catastrophes; from 1950, 95 million from the UN's country-by-country death counts. By cause:
 war, conquest and mass killing 285 million; epidemics 219 million; famine 103 million; earthquakes, floods
 and storms 4 million; other years above normal (after 1950) 31 million. The largest single lifts are the
@@ -113,6 +113,16 @@ the Congo wars, scales the places down a lot). About 245 million of the 641 mill
   Poland, France, the Netherlands, Greece and, in May-July 1944, Hungary; Verdun and the Somme; the
   Grande Armee in Russia in 1812; the Japanese dead across the Pacific; Deir ez-Zor.
 - Places with 150,000 deaths or more are named on the map while their sand rises.
+- **Every battle, siege and sack was audited** (`inputs/places/audit_*.md`): deaths only, never casualties
+  (the wounded and surviving prisoners are left out), built from components by side (each army, and the
+  civilians), each with a central value, a low-high range and its sources. Archival revisions are preferred
+  to wartime claims (Soviet losses: Krivosheev's count is the floor; German: Overmans and the official
+  history; Japanese: the Ministry of Health's dead by theatre), and chronicle figures for ancient and
+  medieval sacks are kept only as the high value. Prisoners who died in distant camps are placed at the
+  camps, not the battle. Stalingrad, for example, is about 1.04 million dead (Soviet soldiers 600,000,
+  German 170,000, Romanian 60,000, Soviet auxiliaries 20,000, civilians 100,000, and 85,000 prisoners who
+  died in spring 1943; about 1.2 million with the Italian and Hungarian armies on the Don); the often
+  quoted 2 million counts the wounded too.
 - After 1950, every COVID-19 country-year follows the months of The Economist's excess-death model for
   that country (`inputs/covid_monthly_economist.csv`), so the waves arrive when they did.
 
