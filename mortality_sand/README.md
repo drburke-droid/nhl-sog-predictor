@@ -45,7 +45,7 @@ influenza, the Ming-Qing transition, the Taiping Rebellion, COVID-19 (27 million
 Forward famine (15 million in the UN series).
 
 Not yet done (the rest of the Sandglass workflow): diorama close-ups and a closing flight (glass plates
-at camera keyframes, as in `ancestry_sand/camera.py`), the 4K Cycles package, the score.
+at camera keyframes, as in `ancestry_sand/camera.py`) and the score. The 4K Cycles project is below.
 
 ## What counts as "above normal"
 
@@ -136,15 +136,16 @@ subtitles (`out/narration.srt`).
 
 ## Rendering it in Cycles
 
-The film can also be rendered in Blender's Cycles. Every visible grain is a lit sphere in the glass,
+The film can also be rendered in Blender's Cycles, in 4K, with the migration film's render settings.
+Every visible grain is a lit sphere in the glass,
 and the lifted grains are glowing spheres with motion blur. Cycles computes the shadows, glass and
 glow, so nothing is painted on.
 
 - `python export_cycles.py` runs the same simulation once. It writes `cycles/cache/`: the sand per
   frame (as only the cells that changed, about 60 a frame) and every lifted grain. It also writes the
-  film's text as a lossless layer, and copies the narration.
-- `blender -b -P blender_cycles.py` builds `cycles/film_cycles.blend`. It has two scenes:
-  - `Sand` renders the frames. A script stored in the file refills the grains each frame.
+  film's text as a lossless 4K layer, drawn in parallel from the saved counts. It also copies the narration.
+- `blender -b -P blender_cycles.py` builds `cycles/two_thousand_years_of_catastrophe.blend`. It has two scenes:
+  - `Film` renders 3840×2160 frames to `render4k/`. A script stored in the file refills the grains each frame.
   - `Edit` lays the text and the voice over the frames.
 - `grains.py` is the grain geometry shared by the simulation, the painter and the .blend.
 - How to render it, and what to try first: `CYCLES.md`.

@@ -78,7 +78,7 @@ When all 8,274 frames are done, switch to the `Edit` scene and choose Render →
 
 ## Before the long render
 
-A frame in 1942, the busiest stretch, has 175,000 grains of sand, the glass and motion blur. At these settings in 4K it took TIMING4K here on 4 CPU cores. A recent GPU is many times faster.
+A frame in 1942, the busiest stretch, has 175,000 grains of sand, the glass and motion blur. At these settings in 4K it took 578 seconds (about 10 minutes) here on 4 CPU cores. A recent GPU is many times faster.
 
 Try a few frames first. In the frame numbers below, Blender's frame N is the film's frame N:
 
