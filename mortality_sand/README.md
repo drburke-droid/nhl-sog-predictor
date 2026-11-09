@@ -27,6 +27,21 @@ Needs numpy, scipy, pandas, shapely, opencv-python-headless, pillow, matplotlib,
 (`/usr/share/fonts/opentype/inter`) and Blender 4.2 (only for the plates). Downloads on first run: UN WPP
 2024, Our World in Data population, Natural Earth countries, land and populated places.
 
+## What the film shows (this cut)
+
+4:01, 1920x1080, 30 fps, no sound, one still wide shot (`out/two_thousand_years_of_catastrophe.mp4`).
+641 million deaths above normal are lifted, about 128,000 grains: before 1950, 546 million from 123
+catalogued catastrophes; from 1950, 95 million from the UN's country-by-country death counts. By cause:
+war, conquest and mass killing 285 million; epidemics 219 million; famine 103 million; earthquakes, floods
+and storms 4 million; other years above normal (after 1950) 31 million. The largest single lifts are the
+Great Dying of the Americas after 1492 (53 million), the Second World War (about 68 million with the
+Holocaust, China and the war famines), the Black Death (38 million), the Mongol conquests, the 1918
+influenza, the Ming-Qing transition, the Taiping Rebellion, COVID-19 (27 million) and the Great Leap
+Forward famine (15 million in the UN series).
+
+Not yet done (the rest of the Sandglass workflow): diorama close-ups and a closing flight (glass plates
+at camera keyframes, as in `ancestry_sand/camera.py`), the 4K Cycles package, the score and narration.
+
 ## What counts as "above normal"
 
 **1950-2023: every country, every year.** UN World Population Prospects 2024 gives each country's deaths
