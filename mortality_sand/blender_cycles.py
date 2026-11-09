@@ -21,7 +21,7 @@ The .blend holds two scenes:
          overlay_fill.mp4 added) and the narration. Renders the finished MP4.
 Blender 4.2 or later. Paths are relative: keep the .blend, cache/, the overlay movies and narration.m4a together.
 """
-import os, sys
+import json, os, sys
 import bpy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -57,6 +57,9 @@ import blender_scene as BS                     # the world, the table, the glass
 st = np.load(os.path.join(OUTD, "cache", "static.npz"))
 NF = int(st["nframes"])
 FPS = int(st["fps"])
+# the finished film: the rendered frames, then the last one held under the closing words (story.HOLD)
+_ej = os.path.join(OUTD, "cache", "edit.json")
+NE = max(json.load(open(_ej))["frames"], NF) if os.path.exists(_ej) else NF
 
 scene = bpy.context.scene
 scene.name = "Film"
@@ -244,28 +247,35 @@ txt.use_module = True                         # runs when the file opens (allow 
 
 # ---------------------------------------------------------------- Edit: frames + text + narration -> MP4
 ed = bpy.data.scenes.new("Edit")
-ed.frame_start, ed.frame_end = 0, NF - 1
+ed.frame_start, ed.frame_end = 0, NE - 1
 ed.render.fps = FPS
 ed.render.resolution_x, ed.render.resolution_y = RES
 ed.render.resolution_percentage = 100
 ed.view_settings.view_transform = "Standard"   # the frames are finished pictures: no second tone mapping
 ed.view_settings.look = "None"
 seq = ed.sequence_editor_create()
-black = seq.sequences.new_effect("Black", "COLOR", 1, frame_start=0, frame_end=NF)
+black = seq.sequences.new_effect("Black", "COLOR", 1, frame_start=0, frame_end=NE)
 black.color = (0, 0, 0)
 fr = seq.sequences.new_image("Cycles frames", f"//{RENDER_DIR}/frame_0000.png", 2, 0, fit_method="ORIGINAL")
 for i in range(1, NF):
     fr.elements.append(f"frame_{i:04d}.png")
+strips = [fr]
+if NE > NF:                                   # the closing: the last rendered frame, held
+    hold = seq.sequences.new_image("Closing (last frame held)", f"//{RENDER_DIR}/frame_{NF - 1:04d}.png", 2, NF,
+                                   fit_method="ORIGINAL")
+    hold.frame_final_duration = NE - NF
+    strips.append(hold)
 # frames rendered as a draft (Film scene at less than 100%) are scaled up to fill the picture
-for axis in ("scale_x", "scale_y"):
-    dv = fr.transform.driver_add(axis).driver
-    dv.type = "SCRIPTED"
-    v = dv.variables.new()
-    v.name = "pct"
-    v.targets[0].id_type = "SCENE"
-    v.targets[0].id = scene
-    v.targets[0].data_path = "render.resolution_percentage"
-    dv.expression = "100 / pct"
+for strip in strips:
+    for axis in ("scale_x", "scale_y"):
+        dv = strip.transform.driver_add(axis).driver
+        dv.type = "SCRIPTED"
+        v = dv.variables.new()
+        v.name = "pct"
+        v.targets[0].id_type = "SCENE"
+        v.targets[0].id = scene
+        v.targets[0].data_path = "render.resolution_percentage"
+        dv.expression = "100 / pct"
 for ch, name, fn, blend in ((3, "Text matte", "overlay_matte.mp4", "MULTIPLY"),
                             (4, "Text", "overlay_fill.mp4", "ADD")):
     m = seq.sequences.new_movie(name, os.path.join(OUTD, fn), ch, 0, fit_method="FIT")

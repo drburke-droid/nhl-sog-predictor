@@ -128,11 +128,22 @@ the Congo wars, scales the places down a lot). About 245 million of the 641 mill
 
 ## The voiceover
 
-`inputs/narration.csv`: 29 short lines (about three minutes), each starting at a calendar year, read by
-ElevenLabs' "Lily" (British, female). The clock makes room for each line: where a line would not finish
-before the next one starts, the years between them run a little slower, so the voice never hurries and
-never overlaps (the film grows by about 40 seconds). `voice.py mix` lays the lines on the film and writes
-subtitles (`out/narration.srt`).
+`inputs/narration.csv`: 30 short lines, read by ElevenLabs' "Lily" (British, female).
+- **Opening:** what a grain is, and the film's thought: every one of your ancestors survived long enough to have a
+  child.
+- **During the film:** a few words on each great catastrophe as it begins. They are written plainly and without
+  blame: no nation, people or leader is singled out, and nothing is graphic.
+- **Closing:** the total, then the reflection. Every direct ancestor of everyone watching lived long enough to grow
+  up and have a child, even when famine and plague took the young first; had a single one not, you would not be
+  here. A closing card says the same.
+
+The clock first made room for each line (where a line would not finish before the next, the years between run a
+little slower). That clock is now frozen in `inputs/clock_frozen.json`, the one the 4K Cycles frames were
+rendered with, so rewriting a line never moves a frame: a new line must fit its old slot, and
+`voice.py track` reports any that do not. The closing words run past the last simulated frame: the
+film's last picture holds for `story.HOLD` (23) seconds, then fades to black. `voice.py track` writes the
+narration alone, the whole film long, with subtitles (`out/narration.srt`). `voice.py mix` lays it on the
+painted film, holding the painted film's last frame for the closing.
 
 ## Rendering it in Cycles
 

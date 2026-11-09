@@ -217,3 +217,10 @@ CLOCK = _load_clock()
 INTRO_S = CLOCK["intro"]        # the title over the empty-ish table, before year 1 starts to run
 TODAY_S = CLOCK["s"][-1]
 DURATION = TODAY_S + CLOCK["outro"]
+# The closing: after the simulated film ends, its last picture holds for HOLD seconds while the closing words
+# are spoken (the Cycles Edit scene holds the last rendered frame: no new frames to render).
+HOLD = 23.0
+FILM_END = DURATION + HOLD
+TOTALS_OUT = 7.0                # seconds after the last year: the totals card fades, the closing words begin
+CLOSING = [("Every one of your ancestors survived long enough to have a child.", 8.3),
+           ("If a single one had not, you would not be here.", 20.6)]    # (text, seconds after the last year)

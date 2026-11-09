@@ -16,10 +16,12 @@ The simulation is the one film.py paints (sand.py), run once from the start. Wri
                                  --scale x 1920x1080 (2: 3840x2160)
   cycles/overlay_matte.mp4       1 - their opacity, grey (lossless): the frame is multiplied by this,
                                  then the fill added
-  cycles/narration.m4a           the voiceover (from out/<film>_narrated.mp4, when it has been made)
+  cycles/narration.m4a           the voiceover, the whole film long (voice.py track)
+  cycles/cache/edit.json         frames in the finished film: the sand's, then the held last picture
+                                 under the closing words (story.HOLD)
 The text layer only needs the counts, so it is drawn in parallel, without the simulation.
 """
-import argparse, os, subprocess, time
+import argparse, json, os, subprocess, time
 from multiprocessing import Pool
 import numpy as np
 
@@ -116,6 +118,11 @@ def simulate(n):
     print(f"  sand: {n} frames, {len(L['t0'])} lifted grains in {time.time() - t0:.0f}s", flush=True)
 
 
+def n_edit():
+    """Frames in the finished film: the simulated film, then its last picture held for the closing words."""
+    return int(round(S.FILM_END * FPS))
+
+
 class Counts:
     """What the text layer reads from the simulation: the grains lifted so far, by cause."""
     def __init__(self, row):
@@ -131,7 +138,7 @@ def overlay_chunk(job):
     wm = ffmpeg_writer(matte_path, w, h, gray=True)
     t0 = time.time()
     for f in range(f0, f1):
-        fill, matte = overlay(painter, Counts(counts[f]), f / FPS, w, h)
+        fill, matte = overlay(painter, Counts(counts[min(f, len(counts) - 1)]), f / FPS, w, h)
         wf.stdin.write(fill.tobytes())
         wm.stdin.write(matte.tobytes())
         if (f - f0) % 600 == 0:
@@ -176,12 +183,11 @@ def main():
         n = int(round((args.to if args.to else S.DURATION) * FPS))
         simulate(n)
     if not args.no_overlay:
-        overlays(n, args.scale, args.workers)
-    narrated = os.path.join(HERE, "out", F.FILM_NAME + "_narrated.mp4")
-    if os.path.exists(narrated):
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", narrated, "-vn", "-c:a", "copy",
-                        os.path.join(OUTD, "narration.m4a")], check=True)
-    print(f"exported {n} frames -> {OUTD}")
+        overlays(n_edit() if not args.to else n, args.scale, args.workers)
+    json.dump(dict(frames=n_edit() if not args.to else n, sand_frames=n), open(os.path.join(CACHE, "edit.json"), "w"))
+    import voice
+    voice.cmd_track(os.path.join(OUTD, "narration.m4a"))
+    print(f"exported {n} frames of sand, {n_edit()} of text and sound -> {OUTD}")
 
 
 if __name__ == "__main__":

@@ -73,6 +73,8 @@ blender -b "\\192.168.1.50\cycles\two_thousand_years_of_catastrophe.blend" -y -S
 
 When all 8,274 frames are done, switch to the `Edit` scene and choose Render → Render Animation.
 - It lays the 4K text over the frames, adds the narration, and writes `two_thousand_years_of_catastrophe_4k.mp4`.
+- The film runs 4:59. After the last rendered frame (`frame_8273.png`), the `Edit` scene holds it for 23 seconds
+  under the closing words and the closing card, then fades to black. There is nothing more to render.
 - This takes a few minutes.
 - From the command line: `blender -b two_thousand_years_of_catastrophe.blend -y -S Edit -a`
 

@@ -341,10 +341,17 @@ def main():
     for L in lifts:
         total += PL.per_year(L, S.YEAR0, len(YEARS))
     places_report(places, lifts, rep1, rep2)
-    rate, s = build_clock(total)
-    intro, outro = 7.0, 14.0
-    clock = dict(s=[float(intro + v) for v in s] + [float(intro + s[-1] + rate[-1])],
-                 year=[int(y) for y in YEARS] + [int(YEARS[-1]) + 1], intro=intro, outro=outro)
+    frozen = os.path.join(HERE, "inputs", "clock_frozen.json")
+    if os.path.exists(frozen):
+        # the clock the 4K Cycles frames were rendered with: kept as it is, so a rebuild never shifts a frame
+        # (new narration lines must fit the slots it already has; voice.py track reports any overlap)
+        clock = json.load(open(frozen))
+        intro, outro = clock["intro"], clock["outro"]
+    else:
+        rate, s = build_clock(total)
+        intro, outro = 7.0, 14.0
+        clock = dict(s=[float(intro + v) for v in s] + [float(intro + s[-1] + rate[-1])],
+                     year=[int(y) for y in YEARS] + [int(YEARS[-1]) + 1], intro=intro, outro=outro)
     json.dump(clock, open(os.path.join(DATA, "clock.json"), "w"))
     json.dump(lifts, open(os.path.join(DATA, "lifts.json"), "w"))
     np.savez_compressed(os.path.join(DATA, "series.npz"), years=YEARS, pop=P, deaths=total,

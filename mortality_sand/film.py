@@ -467,7 +467,8 @@ class Painter:
         title_a = 1.0 - smooth((s - 4.6) / 1.6)
         end0 = S.TODAY_S + 2.0
         end_a = smooth((s - end0) / 1.5)
-        live_a = 1.0 - 0.75 * end_a
+        close_a = smooth((s - S.TODAY_S - S.TOTALS_OUT) / 1.0)     # the totals give way to the closing words
+        live_a = (1.0 - 0.75 * end_a) * (1.0 - close_a)
         # ---- event names on the map
         self.place_tags(img, s, (1 - title_a) * (1 - end_a))
         self.event_labels(img, sim, s, (1 - title_a) * (1 - end_a))
@@ -516,17 +517,29 @@ class Painter:
                 self.blit(img, st, IW / 2 - st.shape[1] / 2, 530 * k, title_a)
         # ---- the end: what was lifted, in all
         if end_a > 0.003:
-            self.shade(img, 0, 0, IW, IH, 0.5 * end_a)
+            self.shade(img, 0, 0, IW, IH, 0.5 * end_a + 0.2 * close_a)
+            tot_a = end_a * (1.0 - close_a)
             tot = sim.lifted.sum() * S.GRAIN
             t = self.text_sprite(f"{fmt_people(tot)} deaths above normal since year 1", self.f_end, INK * 255)
-            self.blit(img, t, IW / 2 - t.shape[1] / 2, 380 * k, end_a)
+            self.blit(img, t, IW / 2 - t.shape[1] / 2, 380 * k, tot_a)
             parts = "   ".join(f"{lab.split(',')[0].split(' &')[0]} {fmt_people(sim.lifted[c] * S.GRAIN, short=True)}"
                                for c, (key, lab, _) in enumerate(S.CAUSES) if sim.lifted[c] > 0)
             t2 = self.text_sprite(parts, self.f_end_sub, MUTED * 255)
-            self.blit(img, t2, IW / 2 - t2.shape[1] / 2, 460 * k, end_a)
+            self.blit(img, t2, IW / 2 - t2.shape[1] / 2, 460 * k, tot_a)
             t3 = self.text_sprite("Before 1950, only catastrophes big enough to have been counted.", self.f_end_sub,
                                   MUTED * 255)
-            self.blit(img, t3, IW / 2 - t3.shape[1] / 2, 510 * k, end_a * smooth((s - end0 - 1.5) / 1.2))
+            self.blit(img, t3, IW / 2 - t3.shape[1] / 2, 510 * k, tot_a * smooth((s - end0 - 1.5) / 1.2))
+        # ---- the closing words: every one of your ancestors
+        for i, (text, at) in enumerate(S.CLOSING):
+            a = smooth((s - S.TODAY_S - at) / 1.2)
+            if a > 0.003:
+                fnt, col, y = (self.f_end, INK, 410) if i == 0 else (self.f_end_sub, MUTED, 490)
+                t = self.text_sprite(text, fnt, col * 255)
+                self.blit(img, t, IW / 2 - t.shape[1] / 2, y * k, a)
+        # ---- and a fade to black at the very end
+        out_a = smooth((s - (S.FILM_END - 2.6)) / 2.0)
+        if out_a > 0.003:
+            self.shade(img, 0, 0, IW, IH, out_a)
 
     def place_tags(self, img, s, a_all):
         """A small name under each big place while its sand rises: "Stalingrad", "Auschwitz", "Lombardy"."""
@@ -796,7 +809,7 @@ def cmd_video(args):
     os.makedirs(OUT, exist_ok=True)
     out = args.out or os.path.join(OUT, FILM_NAME + ".mp4")
     a = int(round(args.from_s * FPS))
-    n = int(round((args.to_s if args.to_s else S.DURATION) * FPS))
+    n = int(round((args.to_s if args.to_s else S.FILM_END) * FPS))
     nw = args.workers
     # every worker re-simulates from the start, so later chunks paint fewer frames
     w = np.array([1.0 / (1 + 0.15 * k) for k in range(nw)])
