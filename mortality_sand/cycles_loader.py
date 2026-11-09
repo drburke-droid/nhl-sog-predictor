@@ -9,10 +9,10 @@ import numpy as np
 STREAK = 4.0          # velocity scale for the rising grains' streaks: with the half-frame shutter, 2 frames of travel
 GLOW = 3.0            # emission strength of a lifted grain at full glow (with the compositor's glare)
 NEAR = 1.5            # grains nearer the camera than this (Blender units) are dropped, as the painter does
-MIN_PX = 1.4          # a rising grain is at least this many pixels across
+MIN_PX = 1.4          # a rising grain is at least this many pixels across (at 1920x1080: twice that in 4K)
 SHUTTER = 0.5         # the scene's motion blur shutter, in frames (Render Properties -> Motion Blur)
 STREAK_GAIN_MAX = 25.0  # most a streak is brightened for its length
-FRAME_ONE = 1         # the Blender frame that shows the film's first frame (frame N+1 = film frame N)
+FRAME_ONE = 0         # the Blender frame that shows the film's first frame (Blender frame N = film frame N)
 
 
 def _srgb_to_linear(c):
