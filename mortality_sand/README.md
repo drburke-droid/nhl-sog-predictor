@@ -15,12 +15,14 @@ column over the place, faster and faster, toward the camera.
 | lilac | other years above normal (after 1950: bad flu seasons, heat waves, the post-Soviet mortality crisis and anything not tied to a named crisis) |
 
 ```
-python build_data.py             # data: populations, excess deaths, the clock -> data/, out/data_check.png
+python voice.py tts              # speak the narration (ElevenLabs, cached) -> data/vo/
+python build_data.py             # data: populations, excess deaths, places, the clock -> data/, out/data_check.png
 python fit_glass.py              # packing for regions whose people cannot lie inside their glass -> data/pack.json
 python make_walls.py && python make_table.py                     # glass outlines, the printed map
 blender -b -P blender_scene.py -- --samples 128                  # glass plates for the wide shot (~10 min)
 python film.py still 20 50 67 135                                # PNG stills at those video seconds -> out/
-python film.py video --workers 4                                 # the film (no sound yet)
+python film.py video --workers 4                                 # the film (picture)
+python voice.py mix                                              # + the voiceover -> out/*_narrated.mp4, out/narration.srt
 python film.py video --from 15 --to 40 --out out/clip.mp4        # a stretch of it
 ```
 
@@ -42,7 +44,7 @@ influenza, the Ming-Qing transition, the Taiping Rebellion, COVID-19 (27 million
 Forward famine (15 million in the UN series).
 
 Not yet done (the rest of the Sandglass workflow): diorama close-ups and a closing flight (glass plates
-at camera keyframes, as in `ancestry_sand/camera.py`), the 4K Cycles package, the score and narration.
+at camera keyframes, as in `ancestry_sand/camera.py`), the 4K Cycles package, the score.
 
 ## What counts as "above normal"
 
@@ -85,6 +87,41 @@ al. 2019) and re-joins HYDE in 1700. Asian Russia (the Siberia vessel) is a shar
 deaths rise: seconds per year = a base pace + 0.25 x millions of excess deaths that year (3-year running
 mean). So a catastrophe's time on screen grows with its toll, and while it lasts sand lifts at a steady
 rate of about 4 million deaths (800 grains) a second. The year on screen always says where we are.
+
+## Where and when, inside each catastrophe
+
+The catalogue spreads each catastrophe over a broad region and evenly over its years. Where history gives
+more, `inputs/places/*.csv` (500 rows, each with low/central/high deaths, sources and a confidence; notes
+beside each file) takes deaths out of the catastrophe's own rows and puts them at the right place and month.
+Totals do not change: a place only re-times and re-places deaths already counted, and where a region's
+places would take more than its row holds they are scaled down to fit (after 1950, to 90% of the UN's
+excess for that country-year, which for crises the UN series smooths, such as the Great Leap famine or
+the Congo wars, scales the places down a lot). About 245 million of the 641 million deaths are placed.
+
+- **Local places**: the dead lived there. The Black Death crossing Europe season by season (Sicily in
+  October 1347, Italy and Provence in 1348, England, Germany and Scandinavia in 1349-50, Russia in 1352);
+  the epidemic waves of central Mexico (smallpox 1520, the cocoliztli of 1545 and 1576) and the Andes;
+  the 1918 influenza by Indian province; the 1876-78 famines by presidency and province; the 1933 famine
+  by Ukrainian oblast; besieged Leningrad; the ghettos and killing fields of the Holocaust; COVID-19
+  hotspots (Wuhan, Bergamo, New York, Manaus, Guayaquil, Lima, the Indian states in the Delta wave,
+  China's exit wave by province).
+- **Converging places**: the dead lived elsewhere and died there: soldiers at a battle, deportees at a
+  death camp, prisoners of war. Each death still counts against the dead person's home population (the
+  `from` shares, by country), so their grains leave home, travel across the map in a low arc and rise
+  where they died: Stalingrad from Germany, Romania, Italy and across the Soviet Union; Auschwitz from
+  Poland, France, the Netherlands, Greece and, in May-July 1944, Hungary; Verdun and the Somme; the
+  Grande Armee in Russia in 1812; the Japanese dead across the Pacific; Deir ez-Zor.
+- Places with 150,000 deaths or more are named on the map while their sand rises.
+- After 1950, every COVID-19 country-year follows the months of The Economist's excess-death model for
+  that country (`inputs/covid_monthly_economist.csv`), so the waves arrive when they did.
+
+## The voiceover
+
+`inputs/narration.csv`: 29 short lines (about three minutes), each starting at a calendar year, read by
+ElevenLabs' "Lily" (British, female). The clock makes room for each line: where a line would not finish
+before the next one starts, the years between them run a little slower, so the voice never hurries and
+never overlaps (the film grows by about 40 seconds). `voice.py mix` lays the lines on the film and writes
+subtitles (`out/narration.srt`).
 
 ## Simplifications, said plainly
 
