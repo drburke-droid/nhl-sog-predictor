@@ -191,11 +191,13 @@ def main():
                      rebuild="`python opening.py c`, `python script_c.py voice <chunk>` (opening, hook, cards, curve, "
                              "rules; each line cached), `python script_c.py`, `./render.sh c`, `python cfilm.py assemble` "
                              "in `world_roads/records/three`.",
-                     thumbs=[("season_outliers_thumb_A.png", "The five rising above the elite curve, "
-                                                             "\"5 seasons nobody came close to\""),
-                             ("season_outliers_thumb_B.png", "DiMaggio's 56 against the longest streak by anyone else "
-                                                             "that year (24)"),
-                             ("season_outliers_thumb_C.png", "Gretzky's 163 assists, more than anyone else's points")],
+                     thumbs=[("season_outliers_thumb_D.png", "NOT EVEN CLOSE: 2,602 other season-leading "
+                                                             "performances piled up, and Wilt alone, 7 standard "
+                                                             "deviations away"),
+                             ("season_outliers_thumb_E.png", "HIS ASSISTS ALONE: Gretzky's 163 assists against the next "
+                                                             "best player's 141 points"),
+                             ("season_outliers_thumb_F.png", "OFF THE BELL CURVE: the bell curve runs out by 3; the five "
+                                                             "sit between 5 and 7")],
                      hashtags=["#sports", "#statistics", "#WiltChamberlain"], compact=True,
                      tags=["most dominant seasons", "greatest seasons in sports history", "sports statistics",
                            "standard deviation", "Wilt Chamberlain 50 points a game", "Joe DiMaggio 56 game hitting streak",
