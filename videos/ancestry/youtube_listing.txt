@@ -5,11 +5,15 @@ YOUTUBE LISTING: 200,000 years of human migration
 
 TITLE
 -----
-200,000 Years of Human Migration, Told in Sand
+I simulated 200,000 years of human migration with sand
 
 Alternatives (for a title test, or other platforms):
-  200,000 Years of Human Migration in 3½ Minutes
-  Every Human Alive Came From Here: 200,000 Years of Migration
+  Where everyone came from
+  Every person alive, as 145,000 grains of sand
+  200,000 years of people, one grain at a time
+
+(Sentence case, no colon, no "told in": plain and specific reads as a person, not a template.
+"145,000 grains" is the sand on the table today, at about 56,000 people a grain.)
 
 
 DESCRIPTION
@@ -87,6 +91,12 @@ Corrections from people who work on this are very welcome. Comments are moderate
 
 THUMBNAILS (1280x720, for YouTube's Test & Compare)
 ----------
-youtube_thumbnail_a_mountains.png the city mountains of Mumbai spilling over the glass, "200,000 YEARS / OF HUMAN MIGRATION"
-youtube_thumbnail_b_streams.png   the whole world with migration streaming in, "WE ALL CAME FROM AFRICA"
-youtube_thumbnail_c_reveal.png    the final reveal of the world, "YOUR ANCESTORS, IN SAND"
+Photographs of the model, one small caption at most (no headline type).
+youtube_thumbnail_a_leaving.png  c. 55,000 years ago: the band that leaves Africa, one spark of sand at the
+                                 edge of a dark, almost empty world. Pairs with "Where everyone came from".
+youtube_thumbnail_b_1903.png     1903: emigrants streaming across the Atlantic to the Americas.
+youtube_thumbnail_c_today.png    today: the whole world in sand, "1 grain = about 56,000 people".
+youtube_thumbnail_d_first.png    spare, no text: the first grains in a glass southern Africa, like a macro photo.
+Test the first three together (dark and mysterious, motion, full colour).
+Rebuild: thumbnails/make_thumbnails.py (shot list in thumbnails/shots.json); thumbnails/feed_preview.jpg
+shows them at phone-feed size with their titles. The old gold-headline set is in thumbnails/old_v1/.
