@@ -51,6 +51,23 @@ PLACE_MIN = 1.5e5      # a place (battle, camp, hotspot) with at least this many
 PLACE_HOLD = 1.6       # seconds a place tag stays up at least
 PLACE_MAX = 6.0        # ...and at most
 PLACE_LIVE = 6         # tags on screen at once, at most (the biggest places first)
+RACE = True            # the bar race: the deadliest catastrophes so far, bottom left above the legend
+RACE_N = 5             # rows shown
+RACE_SLIDE = 0.7       # seconds two rows take to swap places
+# parts of one catastrophe the catalogue keeps apart: the race counts them together (the narration's
+# "nearly seventy million" for the Second World War includes China, the Holocaust and the war famines)
+RACE_GROUPS = {"sino_japanese_war": "wwii", "holocaust": "wwii", "bengal_famine_1943": "wwii",
+               "henan_famine": "wwii", "vietnam_famine_1945": "wwii"}
+RACE_SHORT = {"Late Han collapse and Three Kingdoms wars": "Late Han and Three Kingdoms",
+              "Fall of Wang Mang's Xin dynasty": "Fall of the Xin dynasty",
+              "1918-20 influenza pandemic": "1918 influenza", "COVID-19 pandemic": "COVID-19",
+              "French Revolutionary and Napoleonic Wars": "Napoleonic Wars",
+              "Cholera pandemics in India": "Cholera in India", "Great Famine of 1876-1878": "Great Famine of 1876",
+              "Dungan revolt in Shaanxi and Gansu": "Dungan revolt",
+              "Khmelnytsky uprising, Russo-Polish war and the Deluge": "Khmelnytsky and the Deluge",
+              "Mughal-Maratha wars of Aurangzeb": "Mughal-Maratha wars",
+              "Cholera pandemics in the Russian Empire": "Cholera in Russia",
+              "Chinese Civil War, second phase": "Chinese Civil War", "Great Dying of the Americas": "Great Dying, Americas"}
 
 
 def font(name, size):
@@ -127,6 +144,7 @@ class Painter:
         L = sim.L if sim is not None else json.load(open(os.path.join(DATA, "lifts.json")))
         self.events = event_groups(L)
         self.places = place_groups(L)
+        self.race_data = race_groups(L)
         self.f_place = font("Inter-SemiBold.otf", 13 * k)
 
     # ---- the camera for this frame
@@ -490,6 +508,9 @@ class Painter:
             txt = f"Lifted so far: {fmt_people(lifted)}"
             self.blit(img, self.text_sprite(txt, self.f_count, INK * 255), 48 * k, y + 30 * k,
                       0.85 * live_a * smooth((s - S.INTRO_S) / 1.0))
+        # ---- the race: the deadliest catastrophes so far
+        if RACE:
+            self.race(img, s, live_a * (1 - title_a) * smooth((s - S.INTRO_S) / 1.0))
         # ---- legend: the causes, with what each has taken so far
         lx, ly = 40 * k, 870 * k
         self.blit(img, self.text_sprite("LIFTED SAND: DEATHS ABOVE NORMAL, BY CAUSE", self.f_leg_h, MUTED * 255),
@@ -540,6 +561,50 @@ class Painter:
         out_a = smooth((s - (S.FILM_END - 2.6)) / 2.0)
         if out_a > 0.003:
             self.shade(img, 0, 0, IW, IH, out_a)
+
+    def race(self, img, s, a_all):
+        """The deadliest catastrophes so far: a ranked list with thin bars in each cause's colour. When one
+        total passes another the two rows slide past each other over RACE_SLIDE seconds (each row's place is
+        its rank averaged over that last stretch of time); equal totals keep a fixed order."""
+        if a_all <= 0.003:
+            return
+        k = self.k
+        R = self.race_data
+        ng = len(R["names"])
+
+        def totals(yr):
+            part = R["D"] * np.clip((yr - R["A"]) / np.maximum(R["B"] - R["A"], 1e-9), 0, 1)
+            return np.bincount(R["G"], part, minlength=ng)
+
+        def ranks(v):
+            order = np.lexsort((np.arange(ng), -np.round(v, -3)))        # ties: a fixed order
+            r = np.empty(ng)
+            r[order] = np.arange(ng)
+            return r
+
+        v = totals(year_at(s))
+        taus = np.linspace(0.0, RACE_SLIDE, 9)
+        pos = np.mean([ranks(totals(year_at(max(s - t, 0.0)))) for t in taus], axis=0)
+        pos = np.where(v > 2e5, pos, 1e9)
+        x0, top, row, maxw = 40 * k, 662 * k, 32 * k, 300 * k
+        self.blit(img, self.text_sprite("DEADLIEST SO FAR", self.f_leg_h, MUTED * 255), x0, top - 22 * k, 0.8 * a_all)
+        shown = np.where(pos < RACE_N)[0]
+        if not len(shown):
+            return
+        vmax = v[shown].max()
+        for g in shown[np.argsort(pos[shown])]:
+            p = pos[g]
+            a = a_all * float(np.clip(RACE_N - p, 0, 1))            # the row leaving (or entering) fades
+            y = top + p * row
+            name = self.text_sprite(R["names"][g], self.f_leg, INK * 255)
+            val = self.text_sprite(fmt_people(v[g], short=True), self.f_leg, MUTED * 255)
+            self.blit(img, name, x0, y, 0.92 * a)
+            self.blit(img, val, x0 + maxw - val.shape[1] + 4 * k, y, 0.92 * a)
+            bw = max(2 * k, maxw * v[g] / vmax)
+            bar = np.zeros((int(6 * k), int(bw), 4), np.float32)
+            bar[..., :3] = CCOL[R["cause"][g]] * 255
+            bar[..., 3] = 1.0
+            self.blit(img, bar, x0 + 2 * k, int(round(y + 20 * k)), 0.9 * a)
 
     def place_tags(self, img, s, a_all):
         """A small name under each big place while its sand rises: "Stalingrad", "Auschwitz", "Lombardy"."""
@@ -683,6 +748,39 @@ def place_groups(L):
                         cause=S.CAUSE_KEYS.index(g["cause"]) if g["cause"] in S.CAUSE_KEYS else 4))
     out.sort(key=lambda e: -e["d"])
     return out
+
+
+def race_groups(L):
+    """Every named catastrophe (parts of one counted together, RACE_GROUPS), as arrays for the race: each part's
+    start and end (fractional years), deaths and group; each group's short name and cause."""
+    names, causes, idx, big = [], [], {}, {}
+    A, B, D, G = [], [], [], []
+    for l in L:
+        if not l.get("id") or not l.get("name"):
+            continue
+        gid = RACE_GROUPS.get(l["id"], l["id"])
+        if gid not in idx:
+            idx[gid] = len(names)
+            names.append(None); causes.append(4)
+        g = idx[gid]
+        if not l.get("place") and l["deaths"] > big.get(gid, 0) and (gid == l["id"]):
+            big[gid] = l["deaths"]
+            nm = l.get("label") or l["name"]
+            names[g] = RACE_SHORT.get(nm, nm if len(nm) <= 28 else nm.split(",")[0].split(" and ")[0])
+            causes[g] = S.CAUSE_KEYS.index(l["cause"]) if l["cause"] in S.CAUSE_KEYS else 4
+        a, b = PL.span(l)
+        A.append(a); B.append(b); D.append(l["deaths"]); G.append(g)
+    # the same name twice (e.g. two cholera rows): one group
+    first = {}
+    remap = np.arange(len(names))
+    for g, n in enumerate(names):
+        if n in first:
+            remap[g] = first[n]
+        else:
+            first[n] = g
+    names = [n or "?" for n in names]
+    return dict(A=np.array(A), B=np.array(B), D=np.array(D), G=remap[np.array(G)], names=names,
+                cause=np.array(causes))
 
 
 def event_groups(L):
