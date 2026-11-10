@@ -5,6 +5,7 @@
 Writes OUT_DIR/every_grain_of_us_score.wav (the score, -16 LUFS, exactly the film's length),
 narration_lily.wav (the voice alone, -16 LUFS), every_grain_of_us_score_with_narration.wav (the voice
 over the score, which dips about 10 dB under each line), MP3s of the two mixes, and narration_lily.srt.
+A quiet opening in the score is lifted first (ride_intro) so it is heard under the voice.
 Each line starts at its time in narration_script.json, or 0.4 s after the previous line ends if later.
 Each voice clip is trimmed to its speech and faded in and out (clean_line), so none clicks.
 """
@@ -62,6 +63,28 @@ def clean_line(a):
     return x[:, None]
 
 
+def ride_intro(mus, until=37.4, start_db=-14.0, floor_db=-6.0, rise=8.0, max_gain_db=18.0):
+    """Lift a quiet opening so it is heard under the narration. A generated score can open 15-20 dB below
+    its body (the epic take 3 did, for its first 30 s), and ducked under the voice it then vanishes.
+    Where the music's short-term level (3 s RMS) falls further below the body's median level than a floor
+    rising from start_db (at 0 s) to floor_db (by `rise` s), raise it to that floor, with a smooth gain;
+    the gain hands back to 0 dB by `until` (the end of the first section), so the build is kept, just less steep."""
+    mono = mus.mean(1)
+    hop, win = int(0.25 * SR), int(3.0 * SR)
+    c = np.arange(0, len(mono), hop)
+    pw = np.convolve(mono.astype(np.float64) ** 2, np.ones(win) / win, mode="same")[c]
+    env = 10 * np.log10(pw + 1e-12)
+    t = c / SR
+    body = np.median(env[(t > until) & (t < 150)])
+    target = body + np.interp(t, [0, rise], [start_db, floor_db])
+    gdb = np.clip(target - env, 0, max_gain_db) * np.interp(t, [until - 6, until], [1, 0])
+    k = 8                                                  # smooth over ~2 s: no pumping
+    kern = np.hanning(2 * k + 1); gdb = np.convolve(np.pad(gdb, k, mode="edge"), kern / kern.sum(), mode="valid")
+    g = 10 ** (np.interp(np.arange(len(mono)) / SR, t, gdb) / 20)
+    print(f"intro ride: body {body:.1f} dB, lift up to {gdb.max():.1f} dB, back to 0 dB by {until:.1f} s")
+    return (mus * g[:, None]).astype(np.float32)
+
+
 def main(score, lines_dir, out):
     os.makedirs(out, exist_ok=True)
     N = int(round(S.DURATION * SR))
@@ -70,6 +93,11 @@ def main(score, lines_dir, out):
     tmp = j("_tmp.wav")
     run("ffmpeg", "-v", "error", "-y", "-i", score, "-af", f"afade=t=out:st={S.DURATION - 1.5}:d=1.5", "-ar", str(SR), tmp)
     loudnorm(tmp, music_wav)
+    # a quiet opening lifted so it is heard; after the normalisation, so the rest of the score is untouched
+    ride_intro(decode(music_wav, 2)).tofile(j("_ride.f32"))
+    run("ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", j("_ride.f32"),
+        "-c:a", "pcm_s16le", music_wav)
+    os.remove(j("_ride.f32"))
     L = json.load(open(os.path.join(HERE, "narration_script.json")))["lines"]
     vo = np.zeros((N, 1), np.float32)
     spans, end, srt = [], 0.0, []

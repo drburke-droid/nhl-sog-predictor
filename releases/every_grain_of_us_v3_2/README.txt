@@ -89,6 +89,11 @@ streak_scale.mov overlay.
    Render > Render Animation. Out comes every_grain_of_us_4k.mp4 (4K, with sound) in this folder.
    (Check first: render4k holds frame_0000.png to frame_6659.png, and no file is 0 KB.)
 
+   ALREADY RENDERED WITH THE FIRST SOUND? The first copy of the score was very quiet for its first
+   30 seconds (the opening is lifted now). Swap the new sound into your MP4 in seconds, no re-render
+   (needs ffmpeg), or render the compose file again:
+     ffmpeg -i every_grain_of_us_4k.mp4 -i every_grain_of_us_score_with_narration.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest every_grain_of_us_4k_v2.mp4
+
    Voice-over or captions: the narrated mix is on by default. For music with short captions instead,
    select "Music + narration" and press H (mute), select "Music only" and "Short captions" and press
    Alt+H (unmute), change the file name in Output Properties, and render again.

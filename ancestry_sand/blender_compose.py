@@ -144,6 +144,8 @@ r.ffmpeg.audio_channels = "STEREO"
 r.ffmpeg.audio_mixrate = 48000
 r.filepath = "//every_grain_of_us_4k.mp4" if REL else ntpath.join(ntpath.dirname(DIR), "every_grain_of_us_4k.mp4")
 ed.sync_mode = "AUDIO_SYNC"                   # preview plays in time with the sound, dropping frames if needed
+ed.use_audio = False      # Playback > Mute off: Blender run headless (-b) saves new scenes with Mute on, so the
+                          # timeline would play silently (the rendered MP4 has its sound either way)
 
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True, relative_remap=False)   # keep the Windows paths absolute
 print("saved", OUT, "frames", NFRAMES, "dir", DIR)

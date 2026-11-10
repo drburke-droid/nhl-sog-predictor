@@ -131,3 +131,12 @@ folder (Blender's placeholder files let them split frames). 4K frames take ~15â€
 - **Container restarts** kill long jobs: run them with `nohup`, log to files, and make steps resumable.
 - **Downloaded data** (e.g. the UN city table came from a public GitHub LFS mirror): verify its
   checksum and spot-check values against known figures before use.
+- **Headless Blender saves scenes muted** (`scene.use_audio = True` means Playback > Mute): the render
+  still has its sound, but the timeline plays silently. Set `scene.use_audio = False` before saving
+  (`blender_compose.py` does).
+- **A quiet opening disappears under the narration.** The epic take 3 opened 15-20 dB below its body
+  (even with "opens immediately" in the prompt), and ducked under the voice the music seemed to start at
+  0:30. Measure 2-second levels of the first 45 s of every take; `mix_audio.py` now lifts a quiet
+  opening (`ride_intro`) after normalising, leaving the rest bit-identical. To fix an MP4 already
+  rendered, swap the sound in without re-rendering:
+  `ffmpeg -i film.mp4 -i mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest out.mp4`.
