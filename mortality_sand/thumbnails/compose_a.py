@@ -54,12 +54,12 @@ def layout(photo, lines, caption=None, x=62, y=84, step=86, cap_y=44, left=0.62,
         tokens, bsz, bw = block
         bl = wrap_tokens(tokens, C.serif(bsz), bw)
         lines = [(t, bsz, False) for t in bl] + list(lines)
-    fonts = [(t, C.serif(sz, italic=it), sz) for t, sz, it in lines]
+    fonts = [(ln[0], C.serif(ln[1], italic=ln[2]), ln[1], ln[3] if len(ln) > 3 else INK) for ln in lines]
 
     def draw(d, fill=None):
         yy = y
-        for t, f, sz in fonts:
-            d.text((x, yy), t, font=f, fill=fill if fill is not None else INK)
+        for t, f, sz, col in fonts:
+            d.text((x, yy), t, font=f, fill=fill if fill is not None else col)
             yy += int(step * sz / 90)
     C.soft_shadow(im, draw, radius=18, opacity=170)
     draw(ImageDraw.Draw(im))
@@ -111,6 +111,22 @@ def main(rd, out):
                      dict(caption=None, y=60, step=88, left=0.46, strength=0.66)),
         "BD4_not_one_link": (bd_map, [("Not one link", 92, False), ("was broken.", 92, True)],
                              dict(caption=gens, y=84, left=0.46, strength=0.66)),
+    })
+    big = dict(caption=bd_cap, y=80, step=84, left=0.56, strength=0.72)
+    designs.update({
+        # larger: the family line, two lines
+        "BD1L_family_line": (bd_map, [("Your family line", 105, False), ("survived this.", 105, True)],
+                             dict(caption=bd_cap, y=84, step=86, left=0.56, strength=0.72)),
+        # your family survived this, and worse / and more (off-white, or the last words in ember coral)
+        "BD5_and_worse": (bd_map, [("Your family", 118, False), ("survived this,", 118, False), ("and worse.", 118, True)], big),
+        "BD5c_and_worse_coral": (bd_map, [("Your family", 118, False), ("survived this,", 118, False),
+                                          ("and worse.", 118, True, CORAL)], big),
+        "BD6_and_more": (bd_map, [("Your family", 118, False), ("survived this,", 118, False), ("and more.", 118, True)], big),
+        "BD6c_and_more_coral": (bd_map, [("Your family", 118, False), ("survived this,", 118, False),
+                                         ("and more.", 118, True, CORAL)], big),
+        # the closer, lower view
+        "BD7_and_more_low": (bd_low, [("Your family", 118, False), ("survived this,", 118, False), ("and more.", 118, True)],
+                             dict(big, left=0.58)),
     })
     for name, (photo, lines, kw) in designs.items():
         if not os.path.exists(photo):
