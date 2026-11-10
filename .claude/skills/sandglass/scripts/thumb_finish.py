@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 FD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "fonts") + "/"
 SERIF = FD + "newsreader-latin-{w}-{s}.woff"          # Newsreader (OFL): 400 normal/italic, 500 normal
 MONO = FD + "ibm-plex-mono-latin-{w}-normal.woff"       # IBM Plex Mono (OFL): 400, 500
+HEAD = FD + "barlow-condensed-latin-{w}-normal.woff"    # Barlow Condensed (OFL): 800, 900, for the one big-type thumbnail
 W, H = 1280, 720
 PAPER = (241, 236, 225)
 
@@ -25,6 +26,11 @@ def serif(size, w=400, italic=False):
 
 def mono(size, w=400):
     return ImageFont.truetype(MONO.format(w=w), size)
+
+
+def headline(size, w=800):
+    """Big condensed caps, documentary-poster style (never yellow Inter Black with a glow)."""
+    return ImageFont.truetype(HEAD.format(w=w), size)
 
 
 def load(path, crop=None):

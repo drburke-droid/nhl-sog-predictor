@@ -127,10 +127,17 @@ for an AI video): never use it. The first film's v1 thumbnails did; the v2 set r
 - **Text: none, or one small factual caption** set like a museum label or photo caption: IBM Plex Mono
   (or Newsreader), sentence case, off-white (241, 236, 225), ~40 px, a tight soft shadow, no outline,
   no glow, in a corner. A date or a scale, not a slogan, and never the title again.
+- **One big-type contender for the click test** (when the user wants it): a single promise in four
+  words or fewer, set huge (~196 px) in Barlow Condensed ExtraBold caps (`F.headline`), off-white, a
+  smaller second line in a colour sampled from the image (the teal of flying sand, never stock yellow),
+  over a darkened band of empty table (`F.shade(top=330)`), top-left clear of YouTube's duration badge.
+  Frame the still with the map low so the type covers nothing that matters. The migration film's:
+  "200,000 YEARS / IN 4 MINUTES" on the 1903 streams; the time-compression promise plus the most
+  eye-catching image is the likeliest test winner. Don't repeat its words in the title.
 - **Titles:** sentence case, plain and specific, under 60 characters. Avoid colons, "told in",
   "the untold story", "journey", "epic", "like never before". A specific number ("145,000 grains")
   or the maker's voice ("I simulated...") reads as a person.
 - The migration film's v2 set: the spark of the first band leaving Africa ("c. 55,000 years ago",
   frame 1105), emigrants streaming across the Atlantic ("1903", frame 4480), the whole world today
   ("1 grain = about 56,000 people", frame 6640), and a text-free macro of the first grains in southern
-  Africa (frame 20). Poses are in `videos/ancestry/thumbnails/shots.json`.
+  Africa (frame 20); plus the big-type contender. Poses are in `videos/ancestry/thumbnails/shots.json`.

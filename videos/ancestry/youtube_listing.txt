@@ -8,6 +8,7 @@ TITLE
 I simulated 200,000 years of human migration with sand
 
 Alternatives (for a title test, or other platforms):
+  I simulated human migration with 145,000 grains of sand   (use this one with thumbnail e)
   Where everyone came from
   Every person alive, as 145,000 grains of sand
   200,000 years of people, one grain at a time
@@ -97,6 +98,9 @@ youtube_thumbnail_a_leaving.png  c. 55,000 years ago: the band that leaves Afric
 youtube_thumbnail_b_1903.png     1903: emigrants streaming across the Atlantic to the Americas.
 youtube_thumbnail_c_today.png    today: the whole world in sand, "1 grain = about 56,000 people".
 youtube_thumbnail_d_first.png    spare, no text: the first grains in a glass southern Africa, like a macro photo.
-Test the first three together (dark and mysterious, motion, full colour).
+youtube_thumbnail_e_bigtext.png  big type, built to win the click test: "200,000 YEARS / IN 4 MINUTES" over the
+                                 1903 streams. With it, use the title "I simulated human migration with
+                                 145,000 grains of sand" (so the title doesn't repeat "200,000 years").
+Test e against a and c (big promise, dark mystery, full colour); b shares e's picture, so test it separately.
 Rebuild: thumbnails/make_thumbnails.py (shot list in thumbnails/shots.json); thumbnails/feed_preview.jpg
 shows them at phone-feed size with their titles. The old gold-headline set is in thumbnails/old_v1/.
