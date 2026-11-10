@@ -21,14 +21,16 @@ INK = C.INK_LIGHT
 CORAL = (240, 138, 100)
 
 
-def darken(im, left=0.62, strength=0.58, top=0.0):
-    """The photograph's own falloff, stronger where the type sits (the left, and optionally the top)."""
+def darken(im, left=0.62, strength=0.58, top=0.0, bottom=0.0):
+    """The photograph's own falloff, stronger where the type sits (the left, and optionally the top or bottom)."""
     a = np.asarray(im).astype(np.float32)
     xx = np.linspace(0, 1, W)[None, :, None]
     a *= (1 - strength) + strength * np.clip(xx / left, 0, 1) ** 1.4
+    yy = np.linspace(0, 1, H)[:, None, None]
     if top:
-        yy = np.linspace(0, 1, H)[:, None, None]
         a *= (1 - top) + top * np.clip(yy / 0.35, 0, 1) ** 1.2
+    if bottom:
+        a *= (1 - bottom) + bottom * np.clip((1 - yy) / 0.32, 0, 1) ** 1.2
     return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
@@ -45,11 +47,12 @@ def wrap_tokens(tokens, font, width):
     return out
 
 
-def layout(photo, lines, caption=None, x=62, y=84, step=86, cap_y=44, left=0.62, strength=0.58, top=0.0, block=None):
+def layout(photo, lines, caption=None, x=62, y=84, step=86, cap_y=44, left=0.62, strength=0.58, top=0.0, block=None,
+           bottom=0.0, cap_x=None):
     """lines: (text, size, italic) top to bottom; the caption sits above them. block: (tokens, size, width) of
     small type set before the lines (each wrapped line becomes one more line)."""
     im = Image.open(photo).convert("RGB").resize((W, H), Image.LANCZOS)
-    im = C.grain(darken(im, left, strength, top), 3.5)
+    im = C.grain(darken(im, left, strength, top, bottom), 3.5)
     if block:
         tokens, bsz, bw = block
         bl = wrap_tokens(tokens, C.serif(bsz), bw)
@@ -64,7 +67,8 @@ def layout(photo, lines, caption=None, x=62, y=84, step=86, cap_y=44, left=0.62,
     C.soft_shadow(im, draw, radius=18, opacity=170)
     draw(ImageDraw.Draw(im))
     if caption:
-        ImageDraw.Draw(im).text((x + 3, cap_y), caption, font=C.inter(21, "Inter-SemiBold.otf"), fill=CORAL)
+        ImageDraw.Draw(im).text((x + 3 if cap_x is None else cap_x, cap_y), caption, font=C.inter(21, "Inter-SemiBold.otf"),
+                                fill=CORAL)
     return im
 
 
@@ -127,6 +131,16 @@ def main(rd, out):
         # the closer, lower view
         "BD7_and_more_low": (bd_low, [("Your family", 118, False), ("survived this,", 118, False), ("and more.", 118, True)],
                              dict(big, left=0.58)),
+    })
+    # the whole Earth in 1945: the type in the dark band along the bottom, under Africa and Australia
+    wide = os.path.join(rd, "render_wide_1945.png")
+    wkw = dict(caption="2,000 YEARS  \u00b7  640 MILLION LIVES", cap_x=40, cap_y=34, x=440, y=522, step=80,
+               left=1.0, strength=0.0, bottom=0.35)
+    designs.update({
+        "W1_wide_and_more_coral": (wide, [("Your family survived this,", 88, False), ("and more.", 88, True, CORAL)], wkw),
+        "W2_wide_and_more": (wide, [("Your family survived this,", 88, False), ("and more.", 88, True)], wkw),
+        "W3_wide_family_line": (wide, [("Your family line", 88, False), ("survived this.", 88, True)], wkw),
+        "W4_wide_still_here": (wide, [("640 million lifted away.", 88, False), ("You're still here.", 88, True, CORAL)], wkw),
     })
     for name, (photo, lines, kw) in designs.items():
         if not os.path.exists(photo):
