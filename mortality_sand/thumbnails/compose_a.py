@@ -97,20 +97,20 @@ def main(rd, out):
     bd_map = os.path.join(rd, "render_blackdeath_map_1350.png")
     bd_low = os.path.join(rd, "render_blackdeath_low_1350.png")
     bd_cap = "THE BLACK DEATH, 1348"
-    gens = "THE BLACK DEATH  \u00b7  ABOUT 24 GENERATIONS AGO"
+    gens = "1348  \u00b7  24 GENERATIONS AGO"
     greats = ["Your "] + ["great-"] * 22 + ["grandparents"]
     designs.update({
         # the line, not each person: those taken after their children were born kept it alive too
         "A6_europe_family_line": (low, [("Your family line", 88, False), ("survived this.", 88, True)],
                                   dict(caption="EUROPE, 1944", y=82, left=0.58, strength=0.62)),
         "BD1_family_line": (bd_map, [("Your family line", 90, False), ("survived this.", 90, True)],
-                            dict(caption=bd_cap, y=84, left=0.5, strength=0.6)),
+                            dict(caption=bd_cap, y=84, left=0.46, strength=0.66)),
         "BD2_greats": (bd_map, [("kept your line alive.", 64, True)],
-                       dict(caption=gens, y=78, step=82, left=0.52, strength=0.62, block=(greats, 30, 470))),
+                       dict(caption=gens, y=78, step=82, left=0.46, strength=0.68, block=(greats, 30, 450))),
         "BD3_1348": (bd_low, [("1348.", 150, False), ("Your family line", 60, False), ("survived this.", 60, True)],
-                     dict(caption=None, y=60, step=88, left=0.5, strength=0.6)),
+                     dict(caption=None, y=60, step=88, left=0.46, strength=0.66)),
         "BD4_not_one_link": (bd_map, [("Not one link", 92, False), ("was broken.", 92, True)],
-                             dict(caption=gens, y=84, left=0.5, strength=0.6)),
+                             dict(caption=gens, y=84, left=0.46, strength=0.66)),
     })
     for name, (photo, lines, kw) in designs.items():
         if not os.path.exists(photo):
