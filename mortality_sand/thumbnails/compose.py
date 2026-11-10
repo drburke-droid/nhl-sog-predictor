@@ -24,8 +24,8 @@ for _name, _path in FONTS.items():
         urllib.request.urlretrieve("https://raw.githubusercontent.com/google/fonts/main/" + _path, os.path.join(FD, _name))
 INTER = "/usr/share/fonts/opentype/inter"
 W, H = 1280, 720
-r1, r3, gx, gy, out = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), sys.argv[5]
-os.makedirs(out, exist_ok=True)
+r1 = r3 = out = None
+gx = gy = 0.0
 rng = np.random.default_rng(7)
 
 
@@ -189,8 +189,11 @@ def design_c():
     return im
 
 
-for name, fn in (("A_embers", design_a), ("B_page", design_b), ("C_annotated", design_c)):
-    im = fn()
-    im.save(os.path.join(out, f"thumb_{name}.png"))
-    im.convert("RGB").save(os.path.join(out, f"thumb_{name}.jpg"), quality=92)
-    print("wrote", name)
+if __name__ == "__main__":
+    r1, r3, gx, gy, out = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), sys.argv[5]
+    os.makedirs(out, exist_ok=True)
+    for name, fn in (("A_embers", design_a), ("B_page", design_b), ("C_annotated", design_c)):
+        im = fn()
+        im.save(os.path.join(out, f"thumb_{name}.png"))
+        im.convert("RGB").save(os.path.join(out, f"thumb_{name}.jpg"), quality=92)
+        print("wrote", name)

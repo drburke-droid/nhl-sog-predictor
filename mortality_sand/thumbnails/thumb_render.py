@@ -8,7 +8,8 @@ The thumbnails' two renders (frame 6302, mid-1944, the densest war column: Ukrai
     blender -b two_thousand_years_of_catastrophe.blend -y -P ../thumbnails/thumb_render.py -- \
     6302 1010 258 14.9 55 0.8 30 100 8 1920 1080 128 render_macro_1944.png
 T_* environment variables: the loader's glow constants for a close camera (the film's are set for the wide
-shot), and the lens shift that puts the focused grain off centre.
+shot), the lens shift that puts the focused grain off centre, and T_EMBER=1: rising war grains in ember
+colours (deep red to orange) instead of the film's red.
 
 blender -b two_thousand_years_of_catastrophe.blend -y -P thumb_render.py -- \
     FRAME TX TY TZ TILT DIST HEADING LENS FSTOP WIDTH HEIGHT SAMPLES OUT
@@ -54,6 +55,19 @@ for k in ("GLOW", "STREAK", "STREAK_GAIN_MAX", "MIN_PX"):
     if os.environ.get("T_" + k):
         import re
         src = re.sub(rf"^{k} = [0-9.]+", f"{k} = {os.environ['T_' + k]}", src, flags=re.M)
+if os.environ.get("T_EMBER"):
+    # embers: each rising war grain a hot colour between deep red and orange (linear), not the film's red
+    src = src.replace("ecol=self.cause_lin[cause]",
+                      "ecol=_ember(self.cause_lin[cause], cause, idx)")
+    src += """
+
+def _ember(base, cause, idx):
+    pal = np.array([[0.85, 0.035, 0.008], [1.0, 0.11, 0.012], [1.0, 0.25, 0.025], [1.0, 0.42, 0.06]], np.float32)
+    u = ((idx.astype(np.uint64) * np.uint64(2654435761)) % np.uint64(1000)).astype(np.float32) / 1000.0
+    k = np.minimum((u * 3).astype(int), 2); f = (u * 3 - k)[:, None]
+    hot = pal[k] * (1 - f) + pal[k + 1] * f
+    return np.where((cause == 0)[:, None], hot, base).astype(np.float32)
+"""
 exec(compile(src, "sand_loader_thumb", "exec"), {"__name__": "sand_loader_thumb"})
 sc.frame_set(frame)
 print("grains", len(bpy.data.objects["Sand"].data.vertices), "rising", len(bpy.data.objects["Lifted"].data.vertices), flush=True)
