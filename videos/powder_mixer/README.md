@@ -114,5 +114,5 @@ Things worth pointing at in a voice-over:
 ## Rendering notes
 
 Measured on a 4-core CPU with no GPU: 854x480 at 8 samples takes about 4.5 s a
-frame, and one 3840x2160 frame at 32 samples takes about 8 minutes. The full
+frame, and one 3840x2160 frame at 32 samples takes several minutes. The full
 1,244-frame film at 4K needs a GPU (`--gpu`).

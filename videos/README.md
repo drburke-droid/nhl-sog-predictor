@@ -37,3 +37,14 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 
 Left out as superseded or drafts: the first hyperacuity video, the first cut of the world short, the world-roads
 preview, the daytime-only half of the flights film, and the signal-fires film (not speed of light).
+
+## powder_mixer/
+
+A Blender project rather than a finished film: six coloured powders in lanes ride a conveyor under a twin-paddle
+mixer and come round again, mixing a little more each pass, with a pass counter and a measured "% mixed" on screen.
+`simulate.py` runs the grain physics, `build_scene.py` builds and renders the Blender scene; see `powder_mixer/README.md`.
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| stills/pass2_mid_mix_4K.jpg | 16:9, 4K | still | Test frame at final quality, paddles in the powder on pass 2 |
+| stills/pass2_mid_mix_4K_detail_crop.jpg | 1920x1080 crop | still | 1:1 crop of the same frame, showing the individual grains |
