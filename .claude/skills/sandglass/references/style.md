@@ -108,12 +108,29 @@ every 5–10 s, plain words, numbers spelled out ("two percent"), no homophone t
 0.6 s after each line, smoothed over 0.35 s; voice clips cleaned (stray end clicks silenced, 5 ms
 fade-in, 30 ms fade-out). Also deliver music-only + short burned-in captions as an alternative cut.
 
-## 7. Thumbnails (1280 x 720, three for Test & Compare)
+## 7. Thumbnails and titles (1280 x 720, three for Test & Compare)
 
-- Rendered from the film at 50% with full samples, then a mild grade (saturation x1.10, contrast
-  x1.04), a dark gradient where the text goes.
-- Text: Inter Display Black (headline) and ExtraBold (second line), gold (255, 196, 92) and off-white
-  (246, 244, 238), a soft dark glow behind the letters.
-- The three: a close-up of the most colourful mountains ("200,000 YEARS / OF HUMAN MIGRATION"), the
-  wide map with sand streaming and a gold ring on the origin ("WE ALL CAME FROM AFRICA"), the final
-  reveal ("YOUR ANCESTORS, / IN SAND").
+The film looks like a real object someone built; the thumbnail should look like a photograph of it.
+Big all-caps headline type in yellow or gold with a dark glow reads as a template (viewers now take it
+for an AI video): never use it. The first film's v1 thumbnails did; the v2 set replaced them.
+
+- **Shoot new stills, don't grab film frames.** `scripts/thumb_shot.py` renders any frame of the film
+  .blend from any camera pose (tx, ty, tilt, dist, heading) with depth of field: drafts at 25% / 24
+  samples (~20 s each on CPU) to find the angle, finals at 50% / 96 samples (~4 min each).
+  Low cameras (tilt 58-76) with f/0.9-2 read as macro photographs of a model; keep north roughly up
+  so the map is recognised at a glance.
+- **One idea, one point of interest**, readable at 360 px wide (the phone feed): a continent people
+  recognise, one bright thing to look at (a spark of sand leaving Africa, a fan of streams).
+- **Finish like a photo, not a poster** (`scripts/thumb_finish.py`): saturation x0.95, soft halation
+  round the brightest highlights, natural vignette, slightly lifted blacks, fine film grain. Never
+  push saturation or contrast.
+- **Text: none, or one small factual caption** set like a museum label or photo caption: IBM Plex Mono
+  (or Newsreader), sentence case, off-white (241, 236, 225), ~40 px, a tight soft shadow, no outline,
+  no glow, in a corner. A date or a scale, not a slogan, and never the title again.
+- **Titles:** sentence case, plain and specific, under 60 characters. Avoid colons, "told in",
+  "the untold story", "journey", "epic", "like never before". A specific number ("145,000 grains")
+  or the maker's voice ("I simulated...") reads as a person.
+- The migration film's v2 set: the spark of the first band leaving Africa ("c. 55,000 years ago",
+  frame 1105), emigrants streaming across the Atlantic ("1903", frame 4480), the whole world today
+  ("1 grain = about 56,000 people", frame 6640), and a text-free macro of the first grains in southern
+  Africa (frame 20). Poses are in `videos/ancestry/thumbnails/shots.json`.

@@ -83,7 +83,9 @@ each step rather than describing it.
    compose .blend with relative paths, music + narration WAVs, captions .mov, SRTs, a README with a
    3-step quick start), dry-run the compose file inside a copy of the package, then zip it.
 8. **Publish kit:** YouTube title, description (how to read it, chapters, what's simplified, sources),
-   pinned comment, and three 1280x720 thumbnails for Test & Compare.
+   pinned comment, and three 1280x720 thumbnails for Test & Compare: new low, shallow-focus stills
+   finished like photographs, with at most one small caption (`references/style.md` section 7; never
+   big yellow headline type, which reads as an AI template).
 
 ## Lessons already paid for
 
@@ -104,4 +106,5 @@ These cost real time on the first film; `references/pipeline.md` has the details
 - `references/style.md`: the visual, camera, light, typography and sound specification, with numbers.
 - `references/pipeline.md`: module map of `ancestry_sand/`, how to adapt it, the delivery package,
   and the gotchas list.
-- `scripts/`: preview renders, contact sheets, music screening and score extension.
+- `scripts/`: preview renders, contact sheets, music screening, score extension, and thumbnails
+  (`thumb_shot.py` renders stills from any angle, `thumb_finish.py` finishes them; fonts in `assets/fonts`).
