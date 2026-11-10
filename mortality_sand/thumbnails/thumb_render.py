@@ -7,9 +7,15 @@ The thumbnails' two renders (frame 6302, mid-1944, the densest war column: Ukrai
   T_GLOW=1.4 T_STREAK=1.5 T_STREAK_GAIN_MAX=4 T_MIN_PX=0.5 T_SHIFT_X=0.15 T_SHIFT_Y=-0.04 \
     blender -b two_thousand_years_of_catastrophe.blend -y -P ../thumbnails/thumb_render.py -- \
     6302 1010 258 14.9 55 0.8 30 100 8 1920 1080 128 render_macro_1944.png
+Ember sparks over Europe in 1944, and the Black Death in 1350 (pale plague grains), Europe recognisable:
+  T_EMBER=1 T_GLOW=1.3 T_STREAK=1.5 T_STREAK_GAIN_MAX=2.5 T_MIN_PX=0.8 ... -- 6302 975 255 0 50 4.4 6 40 0 ...
+  T_EMBER=1 T_GLOW=1.3 T_STREAK=1.5 T_STREAK_GAIN_MAX=2.5 T_MIN_PX=0.8 ... -- 6302 985 245 0 40 5.0 4 40 0 ...
+  T_GHOST=1 T_GLOW=1.3 T_STREAK=1.5 T_STREAK_GAIN_MAX=2.5 T_MIN_PX=0.8 ... -- 1500 930 255 0 44 5.0 6 40 0 ...
+  T_GHOST=1 T_GLOW=1.3 T_STREAK=1.5 T_STREAK_GAIN_MAX=2.5 T_MIN_PX=0.8 ... -- 1500 935 262 0 50 4.6 8 40 0 ...
+(each 1920 1080 128 OUT.png)
 T_* environment variables: the loader's glow constants for a close camera (the film's are set for the wide
 shot), the lens shift that puts the focused grain off centre, and T_EMBER=1: rising war grains in ember
-colours (deep red to orange) instead of the film's red.
+colours (deep red to orange) instead of the film's red; T_GHOST=1: epidemic grains pale bone-white.
 
 blender -b two_thousand_years_of_catastrophe.blend -y -P thumb_render.py -- \
     FRAME TX TY TZ TILT DIST HEADING LENS FSTOP WIDTH HEIGHT SAMPLES OUT
@@ -55,6 +61,18 @@ for k in ("GLOW", "STREAK", "STREAK_GAIN_MAX", "MIN_PX"):
     if os.environ.get("T_" + k):
         import re
         src = re.sub(rf"^{k} = [0-9.]+", f"{k} = {os.environ['T_' + k]}", src, flags=re.M)
+if os.environ.get("T_GHOST"):
+    # epidemic grains as a pale, bone-white glow with a faint green (for a quieter, more respectful picture)
+    src = src.replace("ecol=self.cause_lin[cause]", "ecol=_ghost(self.cause_lin[cause], cause, idx)")
+    src += """
+
+def _ghost(base, cause, idx):
+    pal = np.array([[0.62, 0.78, 0.42], [0.82, 0.90, 0.66], [0.95, 0.96, 0.86]], np.float32)
+    u = ((idx.astype(np.uint64) * np.uint64(2246822519)) % np.uint64(1000)).astype(np.float32) / 1000.0
+    k = np.minimum((u * 2).astype(int), 1); f = (u * 2 - k)[:, None]
+    pale = pal[k] * (1 - f) + pal[k + 1] * f
+    return np.where((cause == 1)[:, None], pale, base).astype(np.float32)
+"""
 if os.environ.get("T_EMBER"):
     # embers: each rising war grain a hot colour between deep red and orange (linear), not the film's red
     src = src.replace("ecol=self.cause_lin[cause]",
