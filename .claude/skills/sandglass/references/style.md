@@ -50,14 +50,19 @@ still camera renders faster and never shimmers). Region names fade in when it se
 whenever the camera moves.
 
 **Act 3, the flight.** When the story reaches today: descend among the mountains and fly low through
-the 20–25 most important places, title-sequence style:
-- hop times 1.0 + 0.5 x distance, clamped to 1.7–3.2 s; ~1.9 s for long ocean crossings;
-- height 0.8 x peak height + 0.45 units, clamped 0.65–1.25; tilt ~64 degrees; heading from the path's
+about 10 of the most important places, title-sequence style but slow enough to follow. (The first cut
+flew 25 places in 45 s and rose to the whole map in 4.6 s: viewers called it too fast and never got
+their bearings.)
+- about 0.4 Blender units a second over the ground (hop time in proportion to distance, plus ~0.35 s at
+  each place, about 3 s a city); ~2.4 s for a whip over open ocean;
+- height 0.8 x peak height + 0.45 units, clamped 0.65-1.25; tilt ~64 degrees; heading from the path's
   central difference (look ahead); lift over any peak in the way (clearance from the settled heights);
+  flying this low looks great, so slow down rather than climb;
 - a whip pan across the map's edge (e.g. the Pacific) with the cut at a half frame and quarter-frame
   camera keys, so motion blur hides the wrap;
-- names appear as each place comes up, a third of the way up its mountain;
-- end where the story began, then rise to reveal the whole map for the last ~5 s.
+- names appear as each place comes up (from 2.2 s before to 1 s after), a third of the way up its mountain;
+- then a long rise to the whole map: ~13 s, through a mid key (tilt ~48, distance ~6), arriving on the
+  score's final chord and held for the last ~6 s so the viewer can take in the whole world.
 
 ## 4. Light and grade
 

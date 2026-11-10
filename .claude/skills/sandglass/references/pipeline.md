@@ -136,7 +136,8 @@ folder (Blender's placeholder files let them split frames). 4K frames take ~15â€
   (`blender_compose.py` does).
 - **A quiet opening disappears under the narration.** The epic take 3 opened 15-20 dB below its body
   (even with "opens immediately" in the prompt), and ducked under the voice the music seemed to start at
-  0:30. Measure 2-second levels of the first 45 s of every take; `mix_audio.py` now lifts a quiet
-  opening (`ride_intro`) after normalising, leaving the rest bit-identical. To fix an MP4 already
+  0:30 (it also began with 0.7 s of digital silence). Measure 2-second levels of the first 45 s of every
+  take and trim any leading silence; `mix_audio.py` lifts a quiet opening (`ride_intro`, to about 4 dB
+  under the body) after normalising, leaving the rest bit-identical. To fix an MP4 already
   rendered, swap the sound in without re-rendering:
   `ffmpeg -i film.mp4 -i mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest out.mp4`.

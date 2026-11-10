@@ -99,28 +99,40 @@ def _tower_top(x, y, r=4):
     return float(win.max()) * 0.0055 if win.size else 0.0
 
 
+# The flight (v3.3). The first cut toured 25 cities in 45 s and rose to the whole world in 4.6 s: it felt
+# rushed, and the viewer never got their bearings. Now: the same descent over the Arabian Sea and the same
+# low flight past Mumbai (every frame before 2:48 is unchanged), then Asia's great cities at about half the
+# speed, a whip across the Pacific, three cities of the Americas, and a long, slow rise from New York to the
+# whole world, arriving on the score's final chord and held to the end.
+TOUR_ROUTE = ["Mumbai", "Delhi", "Dhaka", "Bangkok", "Hong Kong", "Shanghai", "Tokyo",
+              "Los Angeles", "Mexico City", "New York"]          # Delhi second keeps Mumbai's heading
+FIRST_CITY = 171.0              # Mumbai, as before
+LAST_CITY = 202.5               # New York
+REVEAL = 215.5                  # the whole map (the wide shot), on the final chord; held to the end
+WHIP = 2.4                      # the Pacific crossing: a fast whip over empty sea
+
+
 def _build_tour():
     from proj import to_px
     keys = [(TOUR_START, WIDE), (168.2, (1225.0, 470.0, 60.0, 4.2, 15.0))]   # down over the Arabian Sea
+    where = {name: (lo, la) for name, lo, la in CITIES}
     pts, wrapped = [], False
-    for name, lo, la in CITIES:
-        x, y = (float(v) for v in to_px(lo, la))
+    for name in TOUR_ROUTE:
+        x, y = (float(v) for v in to_px(*where[name]))
         if pts and not wrapped and x < pts[-1][1] - 600:
             wrapped = True                                     # across the Pacific
         pts.append((name, x + (WRAP if wrapped else 0.0), y))
-    t, times = 171.0, []
-    for i, (name, x, y) in enumerate(pts):
-        if i:
-            d = math.hypot(x - pts[i - 1][1], y - pts[i - 1][2]) / 100.0
-            if (x > WRAP) != (pts[i - 1][1] > WRAP):
-                t += 1.9                                       # the Pacific: a fast whip, little empty sea
-            elif d > 3.0:
-                t += 2.4                                       # the Atlantic: the same
-            else:
-                t += min(max(1.0 + 0.5 * d, 1.7), 3.2)
-        times.append(t)
-    last = 216.4                                               # Kinshasa: the music's flight section ends at 3:36
-    times = [171.0 + (v - 171.0) * (last - 171.0) / (times[-1] - 171.0) for v in times]
+    legs = []                                                  # (is the whip, length in units)
+    for a, b in zip(pts, pts[1:]):
+        legs.append(((b[1] > WRAP) != (a[1] > WRAP), math.hypot(b[1] - a[1], b[2] - a[2]) / 100.0))
+    w = [d + 0.35 for whip, d in legs if not whip]             # time ~ distance, plus a moment at each city
+    span = LAST_CITY - FIRST_CITY - WHIP * sum(whip for whip, _ in legs)
+    times, k = [FIRST_CITY], 0
+    for whip, d in legs:
+        if whip:
+            times.append(times[-1] + WHIP)
+        else:
+            times.append(times[-1] + span * w[k] / sum(w)); k += 1
     heads = []
     for i in range(len(pts)):
         a, b = pts[max(i - 1, 0)], pts[min(i + 1, len(pts) - 1)]
@@ -135,10 +147,15 @@ def _build_tour():
         top = _tower_top(x % WRAP if x > 1900 else x, y)
         h = min(max(0.8 * top + 0.45, 0.65), 1.25)             # fly low: just below the tallest towers
         keys.append((t, (x, y, FLY_TILT, h / math.cos(math.radians(FLY_TILT)), hd)))
-    reveal = times[-1] + 4.6
-    keys.append((reveal, (985.0 + WRAP, 560.0, 52.0, 22.0, 360.0 * round(heads[-1] / 360.0))))
+    # the rise: up and back from New York, over the Atlantic, to the whole map
+    end_head = 360.0 * round(heads[-1] / 360.0)
+    nx, ny = pts[-1][1], pts[-1][2]
+    wx, wy = WIDE[0] + WRAP, WIDE[1]
+    keys.append((LAST_CITY + 0.45 * (REVEAL - LAST_CITY),
+                 (nx + 0.4 * (wx - nx), ny + 0.4 * (wy - ny), 48.0, 6.0, 0.5 * (heads[-1] + end_head))))
+    keys.append((REVEAL, (wx, wy, WIDE[2], WIDE[3], end_head)))
     cities = [(name, x, y, t) for (name, x, y), t in zip(pts, times)]
-    return keys, cities, reveal
+    return keys, cities, REVEAL
 
 
 KEYS = KEYS_STORY if os.environ.get("SAND_CAMERA", "finale") == "story" else KEYS_FINALE

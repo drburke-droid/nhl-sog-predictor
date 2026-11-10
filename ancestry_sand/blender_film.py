@@ -387,7 +387,7 @@ for name, keep in (("key", 0.22), ("fill", 0.25), ("rim", 0.35), ("top", 0.15)):
         ld.keyframe_insert("energy", frame=FLY0)
         ld.energy = 0.0
         ld.keyframe_insert("energy", frame=FLY0 + 45)
-        ld.keyframe_insert("energy", frame=int(round((CM.TOUR_END - 4.0) * FPS)))
+        ld.keyframe_insert("energy", frame=int(round(min(CM.LAST_CITY + 4.0, CM.TOUR_END - 4.0) * FPS)))   # up with the rise
         ld.energy = e0 * keep
         ld.keyframe_insert("energy", frame=int(round(CM.TOUR_END * FPS)))
     ld.energy = e0

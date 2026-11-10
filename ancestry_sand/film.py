@@ -569,7 +569,7 @@ class Painter:
                       (0.8 if has else 0.4) * (1 - title_a * 0.7) * region_a)
         if flying:
             for name, cx, cy, t in C.TOUR_CITIES:
-                a = smooth((s - t + 1.6) / 0.5) * smooth((t + 0.6 - s) / 0.5)
+                a = smooth((s - t + 2.2) / 0.6) * smooth((t + 1.0 - s) / 0.6)    # longer now the flight is slower
                 if a < 0.01:
                     continue
                 cx = cx - C.WRAP if cx > 1900 else cx

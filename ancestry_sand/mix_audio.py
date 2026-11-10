@@ -63,12 +63,13 @@ def clean_line(a):
     return x[:, None]
 
 
-def ride_intro(mus, until=37.4, start_db=-14.0, floor_db=-6.0, rise=8.0, max_gain_db=18.0):
+def ride_intro(mus, until=36.5, start_db=-6.0, floor_db=-4.0, rise=3.0, max_gain_db=18.0):
     """Lift a quiet opening so it is heard under the narration. A generated score can open 15-20 dB below
     its body (the epic take 3 did, for its first 30 s), and ducked under the voice it then vanishes.
     Where the music's short-term level (3 s RMS) falls further below the body's median level than a floor
     rising from start_db (at 0 s) to floor_db (by `rise` s), raise it to that floor, with a smooth gain;
-    the gain hands back to 0 dB by `until` (the end of the first section), so the build is kept, just less steep."""
+    the gain hands back to 0 dB by `until` (the end of the first section). The music then starts at
+    full presence on the first frame (the score's leading silence is trimmed before: audio_sources/README.md)."""
     mono = mus.mean(1)
     hop, win = int(0.25 * SR), int(3.0 * SR)
     c = np.arange(0, len(mono), hop)

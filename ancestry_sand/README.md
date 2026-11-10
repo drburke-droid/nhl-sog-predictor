@@ -36,10 +36,12 @@ python film.py script                                       # the narration as a
 (`FINALE`) it opens on diorama close-ups (splines through `OPENING`: low over the first sparse grains in
 Africa, a look north to Neanderthal Europe, back to East Africa for the exit), settles on the whole map by
 0:45 and holds it until today, then comes down among the city mountains and flies low through the
-world's great cities (`CITIES`, timed from their distances, looking ahead; `_clearance()` lifts the camera
-over any mountain in its way, using the settled heights export_blender.py saves in `data/tour_heights.npy`),
-whips across the Pacific (the map wraps between two frames), and ends in Africa before rising to reveal
-the world (3:42 in all). `SAND_CAMERA=story` selects the earlier path that follows the story around the
+world's great cities (`TOUR_ROUTE`, ten of `CITIES`, timed from their distances at about 0.4 Blender units
+a second, looking ahead; `_clearance()` lifts the camera over any mountain in its way, using the settled
+heights export_blender.py saves in `data/tour_heights.npy`), whips across the Pacific (the map wraps between
+two frames), and from New York rises for 13 s to the whole map, arriving on the final chord (`REVEAL`,
+3:35.5) and holding to the end (3:42 in all). The first cut toured 25 cities in 45 s and rose in 4.6 s:
+too fast to follow. `SAND_CAMERA=story` selects the earlier path that follows the story around the
 world. For the composited film, Blender renders the glass at keyframes placed wherever reprojecting from the last one
 would be more than 1 px off; in between, the two nearest keyframes are reprojected through the plane
 halfway up the walls and cross-faded.

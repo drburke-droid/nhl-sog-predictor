@@ -1,8 +1,8 @@
-EVERY GRAIN OF US: the full-Cycles Blender project (4K)
-======================================================
+EVERY GRAIN OF US: the full-Cycles Blender project (4K), version 3.3
+====================================================================
 
 GETTING IT FROM GITHUB
-  This folder is releases/every_grain_of_us_v3_2/ in the repository, on branch claude/sweet-faraday-uk5z62.
+  This folder is releases/every_grain_of_us_v3_3/ in the repository, on branch claude/sweet-faraday-uk5z62.
   Easiest: on the repository's GitHub page pick that branch, then Code > Download ZIP, and take this
   folder out of the zip. (Or download each file from the folder's page with the download button.)
   Keep every file together in one folder, as here.
@@ -36,8 +36,25 @@ What is in this folder
 You need Blender 4.2 or newer (free from blender.org); for an NVIDIA RTX 50-series card (5080, 5090),
 Blender 4.4 or newer. A graphics card makes a huge difference.
 
-This version changes every frame: render it into a fresh, empty render4k folder (do not mix in frames
-from earlier versions).
+From scratch: render into an empty render4k folder. Already rendered version 3.2? Keep frames 0-5039
+and re-render only the ending: see "UPDATING FROM 3.2" below.
+
+New in version 3.3: the music starts on the first frame (the score opened with 0.7 s of silence and a
+very quiet first 30 seconds, so under the voice-over it seemed to start at 0:30), and the flight
+through the cities is slower and easier to follow: 10 cities instead of 25 at about 40% of the speed
+(Mumbai, Delhi, Dhaka, Bangkok, Hong Kong, Shanghai, Tokyo, a whip across the Pacific, Los Angeles,
+Mexico City, New York), then a slow 13-second rise from New York to the whole world, arriving on the
+final chord at 3:35 and held to the end (the old rise took 4.6 seconds). Frames 0-5039 are unchanged.
+
+UPDATING FROM 3.2 (you have already rendered the frames)
+  1. Copy these new files over the old ones in your folder: every_grain_of_us.blend, hud_part3.mov,
+     every_grain_of_us_score_with_narration.wav, every_grain_of_us_score.wav,
+     every_grain_of_us_compose.blend and README.txt.
+  2. In render4k, delete frame_5040.png to frame_6659.png (sort by name, click frame_5040.png,
+     Shift+click the last one, Delete). Keep frames 0000-5039: they have not changed.
+  3. Open every_grain_of_us.blend, Render > Render Animation. Blender skips the frames you kept and
+     renders only the 1,620 missing ones (the ending, 2:48-3:42).
+  4. Open every_grain_of_us_compose.blend, Render > Render Animation, as before.
 
 New in version 3.2 (the complete package): the cities are mountains of poured sand, every city of
 1 million people or more (the bigger the city, the higher the summit and the wider the base; a
@@ -89,6 +106,9 @@ streak_scale.mov overlay.
    Render > Render Animation. Out comes every_grain_of_us_4k.mp4 (4K, with sound) in this folder.
    (Check first: render4k holds frame_0000.png to frame_6659.png, and no file is 0 KB.)
 
+   ONLY WANT THE NEW SOUND on an MP4 you already made? Swap it in, no re-render (needs ffmpeg):
+     ffmpeg -i every_grain_of_us_4k.mp4 -i every_grain_of_us_score_with_narration.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest every_grain_of_us_4k_v2.mp4
+
    Voice-over or captions: the narrated mix is on by default. For music with short captions instead,
    select "Music + narration" and press H (mute), select "Music only" and "Short captions" and press
    Alt+H (unmute), change the file name in Output Properties, and render again.
@@ -106,11 +126,10 @@ WHAT IS IN THE LOOK
      base (Tokyo is the tallest; a 1-million city is a low hill); coastal and island cities spill over
      the glass onto the sea. Each city rises with its own history: London is the tallest in 1900, New York
      and Tokyo by 1950, and Lagos, Dhaka and Kinshasa climb only after 1950.
-   The finale: down among the city mountains, then a low flight through the world's great cities
-     (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Singapore, Jakarta, Manila,
-     Hong Kong, Shanghai, Beijing, Seoul, Tokyo, a whip across the Pacific to Los Angeles, Mexico City,
-     New York, Lima, Sao Paulo, Buenos Aires, across the Atlantic to London, Paris, Istanbul, Moscow,
-     Cairo, Lagos and Kinshasa, then up to reveal the whole world. A golden low sun lights the mountains.
+   The finale: down among the city mountains, then a slow, low flight through the world's great cities
+     (names appear as each comes up): Mumbai, Delhi, Dhaka, Bangkok, Hong Kong, Shanghai, Tokyo, a whip
+     across the Pacific to Los Angeles, Mexico City and New York, then a slow rise over the Atlantic to
+     the whole world, arriving on the final chord and held to the end. A golden low sun lights the mountains.
    Richer sand: every grain a little different in shade, hue and shine, and slightly translucent.
    The grade: AgX with the High Contrast look, a touch darker (exposure -0.15), as in the thumbnails.
 
@@ -137,5 +156,6 @@ SPEED AND QUALITY
 THE STORY ON SCREEN
    Diorama close-ups of the first people open the film; at 0:45 the camera settles on the whole map and
    holds it for 200,000 years, through the arrival of today's migrants. At 2:43 it comes down among the
-   city mountains and flies through the world's great cities, ending in Africa, where the story began,
-   and rises to reveal the whole world. The timed script for the voice-over is narration.srt.
+   city mountains and flies slowly through the great cities of Asia and the Americas, then rises from
+   New York to the whole world, where Africa, where the story began, sits at the centre. The timed
+   script for the voice-over is narration.srt.
