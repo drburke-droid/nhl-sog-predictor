@@ -44,6 +44,17 @@ Holocaust, China and the war famines), the Black Death (38 million), the Mongol 
 influenza, the Ming-Qing transition, the Taiping Rebellion, COVID-19 (27 million) and the Great Leap
 Forward famine (15 million in the UN series).
 
+On screen, bottom left above the cause legend, a small bar race ranks the deadliest catastrophes so far.
+- **Rows:** the top five, each with its name and running total over a thin bar in its cause's colour.
+- **Grouping:** parts the catalogue keeps apart count together. For example, the Second World War includes China,
+  the Holocaust and the war famines, as the narration does.
+- **Motion:** when one total passes another, the two rows slide past each other over 0.7 seconds.
+- **Turning points:**
+  - In 1349 the Black Death passes the Mongol conquests.
+  - In the 1570s the Great Dying of the Americas passes the Black Death.
+  - In 1944 the Second World War takes the top.
+  - In 2024 COVID-19 enters at fifth.
+
 Not yet done (the rest of the Sandglass workflow): diorama close-ups and a closing flight (glass plates
 at camera keyframes, as in `ancestry_sand/camera.py`) and the score. The 4K Cycles project is below.
 
