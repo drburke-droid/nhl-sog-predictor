@@ -34,12 +34,12 @@ def load(path, crop=None):
     return im.resize((W, H), Image.LANCZOS)
 
 
-def photo(im, sat=0.96, warm=0.0, vignette=0.28, grain=0.018, halation=0.10, seed=1, lift=0.012):
+def photo(im, sat=0.96, warm=0.0, vignette=0.28, grain=0.018, halation=0.10, seed=1, lift=0.012, exposure=1.0):
     """Make a render read as a photograph: slightly lower saturation, a soft glow round the brightest
     highlights (lens halation), a natural vignette, lifted blacks and fine film grain."""
     a = np.asarray(im).astype(np.float32) / 255
     g = a.mean(2, keepdims=True)
-    a = (a - g) * sat + g
+    a = ((a - g) * sat + g) * exposure
     if warm:
         a = a * np.array([1 + warm, 1 + warm * 0.35, 1 - warm * 0.6], np.float32)
     if halation:

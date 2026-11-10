@@ -1,0 +1,6 @@
+[
+ {"name": "exit", "frame": 1105, "pose": [1080, 510, 58, 8.0, 20], "fstop": 1.1},
+ {"name": "streams", "frame": 4480, "pose": [690, 350, 57, 9.5, -10], "fstop": 2.0},
+ {"name": "today", "frame": 6640, "pose": [975, 490, 52, 14.5, 0], "fstop": 0.9},
+ {"name": "first", "frame": 20, "pose": [1000, 640, 74, 3.0, -6], "fstop": 0.9}
+]
