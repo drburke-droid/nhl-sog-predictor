@@ -25,7 +25,7 @@ pip install bpy numba numpy          # or use Blender's own Python for build_sce
 ```
 
 ```bash
-python simulate.py                   # ~64k grains, 10 passes, about 15 min on 4 cores
+python simulate.py                   # ~62k grains, 10 passes, about 13 min on one core
 ```
 
 ```bash
@@ -55,7 +55,7 @@ with a Mesh Cache modifier (the `.pc2` file, path stored relative to the
 `simulate.py`
 
 - `--grain 1.5` grain size in mm. Smaller is more powder-like and slower:
-  1.5 is about 64k grains, 1.2 about 125k, 1.0 about 215k.
+  1.5 is about 62k grains, 1.2 about 120k, 1.0 about 210k.
 - `--passes 10` number of trips through the mixer.
 - `--rev 1.0` paddle speed (rev/s) and `--t-mix 1.6` seconds under the mixer.
   Lower either one for a gentler mix that needs more passes.
@@ -87,3 +87,32 @@ standard deviation of its share across the samples:
 `mixed = (s0 - s) / (s0 - sr)`, averaged over the six ingredients. 0% is the
 untouched lanes; 100% means samples are indistinguishable from a random
 shuffle. This is the standard-deviation form of the Lacey mixing index.
+
+## What the default run shows
+
+62,355 grains, 10 passes, about 2 seconds under the paddles per pass:
+
+| Pass | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| % mixed | 0 | 51 | 66 | 72 | 77 | 80 | 84 | 88 | 92 | 95 | 96 |
+
+Things worth pointing at in a voice-over:
+
+- **The first pass does half the work, the last few percent take most of the
+  passes.** Each pass removes only a fraction of the unevenness that is left,
+  so the curve flattens and never quite reaches 100%.
+- **It looks mixed long before it is.** By pass 4 or 5 the surface is confetti,
+  but the count still finds a pocket of one colour at one end of the dish; it is
+  only worn away around pass 9.
+- **Reversing the paddles every pass mixes worse** (`--alternate`): the
+  reverse stroke partly undoes the previous one. An earlier run with reversal
+  and less paddle overlap stalled at 86%.
+- **Dead zones decide the end point.** With square dish corners the paddles
+  could not reach, one corner never mixed at all. The dish corners now follow
+  the paddle sweep.
+
+## Rendering notes
+
+Measured on a 4-core CPU with no GPU: 854x480 at 8 samples takes about 4.5 s a
+frame, and one 3840x2160 frame at 32 samples takes about 8 minutes. The full
+1,244-frame film at 4K needs a GPU (`--gpu`).
