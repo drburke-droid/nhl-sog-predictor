@@ -185,7 +185,7 @@ deep instead of 15 mm.
 Eight ways of mixing dry ingredients, each given the same bowl of six powders.
 
 ```bash
-python tournament.py --set base load speed grain      # about 2.5 h on 4 cores
+python tournament.py --set base load speed half grain      # about 3.5 h on 4 cores
 ```
 
 ```bash
@@ -251,14 +251,17 @@ powder in or out, so it was not tested as a contestant.
 - **Loading.** The hand whisk is 98 to 99% whatever the loading; the spoon dips
   to 92% on rings. Rings (which need powder moved in and out) are where the
   stand mixer shines: the large paddle goes from 83% to 94%.
-- **Speed.** Hand tools give the same result per stroke at double speed (spoon
-  99%, whisk 97%), as the literature says. The machines do not: the large
-  paddle improves to 97%, because at that speed it starts throwing powder, and
-  the hand mixer drops to 54%, because its beaters fling powder away from
-  themselves.
-- **Grain size.** The top two are unchanged from 1.4 to 2.4 mm. The fork gets
-  worse with finer grains (95, 90, 78%): more of the powder slips between the
-  tines. The stand-mixer tools do better with coarse grains.
+- **Speed.** Hand tools give the same result per stroke at half and double
+  speed (spoon 100% and 99%, whisk 100% and 97%; 90% after 11 to 14 strokes at
+  every speed for the spoon), as the literature says. The machines do not. The
+  hand mixer gets steadily worse as it speeds up (75, 68, 54%), because its
+  beaters fling powder away from themselves. The large paddle reads 87, 83, 97%:
+  best at double speed, where it starts throwing powder across the bowl. Half
+  speed was run for five of the eight tools.
+- **Grain size.** The top two are unchanged from 1.4 to 2.4 mm. The fork and the
+  wire whip get worse with finer grains (fork 95, 90, 78%; wire whip 94, 81,
+  73%): more of the powder slips between tines and wires. All the stand-mixer
+  tools do better with coarse grains.
 
 ### Limits
 

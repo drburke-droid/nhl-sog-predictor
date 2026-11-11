@@ -10,9 +10,12 @@ base_whisk,whisk,"Whisk, by hand",strokes,1.8,1.0,wedges,23273,20.0,29.2,99.0,2.
 base_wire_whip,wire_whip,"Stand mixer, wire whip",orbits,1.8,1.0,wedges,23273,20.0,15.6,80.6,7.5,5.8,18.5,14.6,,,,
 grain1.4_fork,fork,Fork,strokes,1.4,1.0,wedges,50160,20.0,29.2,78.4,4.8,6.8,15.6,23.0,,,,
 grain1.4_paddle_large,paddle_large,"Stand mixer, large paddle",orbits,1.4,1.0,wedges,50160,20.0,15.6,82.8,4.4,3.3,17.0,13.4,,,,
+grain1.4_paddle_small,paddle_small,"Stand mixer, small paddle",orbits,1.4,1.0,wedges,50160,20.0,15.6,68.4,7.0,5.4,,,,,,
 grain1.4_spoon,spoon,Spoon,strokes,1.4,1.0,wedges,50160,20.0,29.2,98.9,2.7,3.6,5.2,7.4,7.4,10.8,10.8,15.9
+grain1.4_spoon_centre,spoon_centre,Spoon twirled in the middle,turns,1.4,1.0,wedges,50160,20.0,29.2,30.3,,,,,,,,
 grain1.4_twin_beaters,twin_beaters,Hand mixer (twin beaters),laps,1.4,1.0,wedges,50160,20.0,7.8,67.7,10.8,4.2,,,,,,
 grain1.4_whisk,whisk,"Whisk, by hand",strokes,1.4,1.0,wedges,50160,20.0,29.2,96.3,2.8,3.8,7.2,10.5,9.6,14.0,15.3,22.6
+grain1.4_wire_whip,wire_whip,"Stand mixer, wire whip",orbits,1.4,1.0,wedges,50160,20.0,15.6,72.8,8.9,6.9,,,,,,
 grain2.4_fork,fork,Fork,strokes,2.4,1.0,wedges,10062,20.0,29.2,94.7,4.3,6.1,9.5,13.9,13.4,19.8,17.7,26.1
 grain2.4_paddle_large,paddle_large,"Stand mixer, large paddle",orbits,2.4,1.0,wedges,10062,20.0,15.6,93.7,5.0,3.8,12.5,9.8,17.1,13.5,,
 grain2.4_paddle_small,paddle_small,"Stand mixer, small paddle",orbits,2.4,1.0,wedges,10062,20.0,15.6,81.3,7.7,5.9,18.6,14.7,,,,
@@ -37,6 +40,11 @@ load_stripes_spoon_centre,spoon_centre,Spoon twirled in the middle,turns,1.8,1.0
 load_stripes_twin_beaters,twin_beaters,Hand mixer (twin beaters),laps,1.8,1.0,stripes,23273,20.0,7.8,72.2,6.7,2.6,,,,,,
 load_stripes_whisk,whisk,"Whisk, by hand",strokes,1.8,1.0,stripes,23273,20.0,29.2,98.7,2.8,3.9,5.3,7.6,9.4,13.8,11.8,17.3
 load_stripes_wire_whip,wire_whip,"Stand mixer, wire whip",orbits,1.8,1.0,stripes,23273,20.0,15.6,84.5,6.2,4.8,16.0,12.6,,,,
+speed0.5_fork,fork,Fork,strokes,1.8,0.5,wedges,23273,40.0,29.6,83.2,9.2,6.8,30.8,22.9,,,,
+speed0.5_paddle_large,paddle_large,"Stand mixer, large paddle",orbits,1.8,0.5,wedges,23273,40.0,15.8,87.4,7.5,2.9,25.9,10.3,,,,
+speed0.5_spoon,spoon,Spoon,strokes,1.8,0.5,wedges,23273,40.0,29.6,99.9,5.1,3.6,12.9,9.5,18.3,13.6,22.5,16.7
+speed0.5_twin_beaters,twin_beaters,Hand mixer (twin beaters),laps,1.8,0.5,wedges,23273,40.0,7.9,75.1,16.3,3.2,,,,,,
+speed0.5_whisk,whisk,"Whisk, by hand",strokes,1.8,0.5,wedges,23273,40.0,29.6,100.0,5.2,3.8,12.7,9.3,17.4,12.8,22.8,16.9
 speed2_fork,fork,Fork,strokes,1.8,2.0,wedges,23273,10.0,28.5,94.4,1.7,4.4,3.6,10.1,6.0,17.1,,
 speed2_paddle_large,paddle_large,"Stand mixer, large paddle",orbits,1.8,2.0,wedges,23273,10.0,15.2,97.3,2.1,3.0,4.3,6.5,5.8,8.9,7.7,11.9
 speed2_paddle_small,paddle_small,"Stand mixer, small paddle",orbits,1.8,2.0,wedges,23273,10.0,15.2,84.2,3.4,5.0,7.8,12.1,,,,
