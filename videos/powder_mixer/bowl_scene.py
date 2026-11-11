@@ -19,14 +19,52 @@ import sys
 import bpy
 import bmesh
 import numpy as np
+from mathutils import Matrix
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import build_scene as B           # noqa: E402
-from tools import TOOL_COLOR, build_tool, fork_visual, mix_curve, spoon_dish      # noqa: E402
+from tools import KITCHENAID_COLOR, TOOL_COLOR, build_tool, fork_visual, mix_curve, spoon_dish      # noqa: E402
 
 HC = 80.0          # chuck height above the tool's bottom edge
 HEAD_R = 30.0      # radius of the cylindrical motor housing
+KA_BLEND = os.path.join(HERE, "models", "kitchenaid", "kitchenaid.blend")   # CC0 model by swmo (Blend Swap 65088)
+KA_SCALE = 507.0   # mm per model unit.  True to the bowl would be 374; the mixer is drawn 1.36x
+                   # too big so that its head clears the bowl and the powder stays in view.
+KA_BASE, KA_SEAT, KA_HUB = -0.422, -0.388, -0.145     # model z of: underside, bowl seat, planetary hub
+
+
+def make_kitchenaid(tag, root, M, enamel, yaw):
+    """Append the KitchenAid mixer body, standing on the belt with its bowl seat under the bowl."""
+    with bpy.data.libraries.load(KA_BLEND, link=False) as (src, dst):
+        dst.objects = [n for n in ("Mixer", "Armature") if n in src.objects]
+    mixer = next(o for o in dst.objects if o.type == "MESH")
+    for o in dst.objects:
+        B.link(o)
+    bpy.context.view_layer.update()
+    mixer.data.transform(mixer.matrix_world)            # bake the rig's rest pose into the mesh
+    mixer.parent = None
+    mixer.matrix_world = Matrix.Identity(4)
+    for md in list(mixer.modifiers):
+        if md.type == "ARMATURE":
+            mixer.modifiers.remove(md)
+        elif md.type == "SUBSURF":
+            md.levels = md.render_levels = 2
+    for o in dst.objects:
+        if o is not mixer:
+            bpy.data.objects.remove(o)
+    for slot in mixer.material_slots:                    # the file's materials predate Cycles nodes
+        n = slot.material.name if slot.material else ""
+        slot.material = (enamel if "Yellow" in n else M["alu"] if "Brushed" in n else M["steel"] if "Chrome" in n
+                         else M["rubber"] if "Black" in n else M["white"])
+    for p in mixer.data.polygons:
+        p.use_smooth = True
+    mixer.name = tag + "KitchenAid"
+    mixer.parent = root
+    mixer.scale = (KA_SCALE,) * 3
+    mixer.location = (0, 0, -KA_BASE * KA_SCALE)
+    mixer.rotation_euler = (0, 0, yaw)
+    return mixer
 
 
 def make_bowl(name, bowl, mat):
@@ -66,12 +104,12 @@ def make_bowl(name, bowl, mat):
     return B.link(bpy.data.objects.new(name, me))
 
 
-def make_part_mesh(name, part, M, wood, parent, bare=False):
+def make_part_mesh(name, part, M, wood, parent, bare=False, hc=HC):
     """Model of one tool part, in the frame the physics uses (x across, z up)."""
     g = part["geom"]
     H = g["H"]
     handle_mat = M["steel"]
-    shaft_top = 400.0 if bare else HC - 5.0
+    shaft_top = 400.0 if bare else hc - 5.0
     is_fork = part["shape"] == "fork"
     if g["kind"] == "outline":
         cu = bpy.data.curves.new(name, "CURVE")
@@ -143,7 +181,7 @@ def make_part_mesh(name, part, M, wood, parent, bare=False):
     if g["kind"] == "wires":
         B.cylinder(name + "Ferrule", 3.6, H - 3.0, H + 6.0, M["steel"], parent=parent, bevel=0.8)
     if not bare:
-        B.cylinder(name + "Chuck", 6.2, HC - 7.0, HC, M["steel"], parent=parent, bevel=1.0)
+        B.cylinder(name + "Chuck", 6.2, hc - 7.0, hc, M["steel"], parent=parent, bevel=1.0)
     return ob
 
 
@@ -161,29 +199,37 @@ def make_station(tag, x0, cache_dir, M, wood, args, belt_w):
     root = B.link(bpy.data.objects.new(tag + "Station", None))
     root.location = (x0, 0, 0)
     root.empty_display_size = 30
+    ka = args.mixer == "kitchenaid" and not getattr(args, "bare", False)
+    seat = (KA_SEAT - KA_BASE) * KA_SCALE if ka else 0.0      # the bowl stands on the mixer's base
+    hc = 62.0 if ka else HC
     glass = make_bowl(tag + "Bowl", bowl, M["glass"])
     glass.parent = root
+    glass.location = (0, 0, seat)
     grains, mc = B.build_grains(cache_dir, meta, z, root, meta["ingredients"], args.grain_scale)
     grains.name = tag + "Grains"
-    grains.location = (0, 0, tg)
+    grains.location = (0, 0, seat + tg)
     mc.play_mode = "SCENE"               # sample k is frame k + 1
     mc.frame_start = 1.0
 
     bare = getattr(args, "bare", False)          # tool and shaft only: nothing between camera and bowl
     M = dict(M)                                  # this station's mixer wears its contestant's colour
-    M["body"] = B.principled(tag + "Enamel", tuple(B.hex_lin(TOOL_COLOR[meta["tool"]])), rough=0.2,
+    paint = KITCHENAID_COLOR[meta["tool"]][1] if ka else TOOL_COLOR[meta["tool"]]
+    M["body"] = B.principled(tag + "Enamel", tuple(B.hex_lin(paint)), rough=0.2,
                              **{"Coat Weight": 0.6, "Coat Roughness": 0.05})
+    M["white"] = B.principled(tag + "White", (0.85, 0.85, 0.83), rough=0.35)
+    if ka:
+        make_kitchenaid(tag, root, M, M["body"], math.radians(args.yaw) * (1 if x0 <= 0 else -1))
     # --- mixer: column behind the belt, cylindrical motor housing on a carriage -------
     y_col = belt_w / 2 + 40
     top = tg + bowl["clear"] + bowl["lift"] + HC + 22 + 2 * HEAD_R + 16
-    if not bare:
+    if not bare and not ka:
         B.cylinder(tag + "Base", 44, B.FLOOR_Z, B.FLOOR_Z + 14, M["body"], parent=root, loc=(0, y_col + 6, 0), bevel=5, segs=64)
         B.cylinder(tag + "Column", 15, B.FLOOR_Z + 8, top, M["steel"], parent=root, loc=(0, y_col, 0), segs=48)
         B.cylinder(tag + "ColumnCap", 17, top, top + 6, M["body"], parent=root, loc=(0, y_col, 0), bevel=2.5)
 
     head = B.link(bpy.data.objects.new(tag + "Head", None))      # origin: tool bottom, on the bowl axis
     head.parent = root
-    if not bare:
+    if not bare and not ka:
         zc = HC + 22 + HEAD_R                                        # housing axis height above the tool bottom
         y0, y1 = -HEAD_R + 4, y_col + 24
         housing = B.cylinder(tag + "Housing", HEAD_R, -(y1 - y0) / 2, (y1 - y0) / 2, M["body"], parent=head, segs=96)
@@ -211,19 +257,21 @@ def make_station(tag, x0, cache_dir, M, wood, args, belt_w):
     mount = B.link(bpy.data.objects.new(tag + "Mount", None))
     mount.parent = rotor
     if not bare:
-        B.cylinder(tag + "Hub", 22, HC + 9, HC + 20, M["steel"], parent=rotor, bevel=1.5, segs=64)
-        B.box(tag + "Arm", (-10, -6.5, HC + 4.5), (reach, 6.5, HC + 9.5), M["steel"], bevel=1.2, parent=rotor)
-        B.box(tag + "Carriage", (min(dus) - 9, -8.5, HC - 1), (max(dus) + 9, 8.5, HC + 4.5), M["dark"], bevel=1.2, parent=mount)
+        B.cylinder(tag + "Hub", 22, hc + 9, hc + 20, M["steel"], parent=rotor, bevel=1.5, segs=64)
+        B.box(tag + "Arm", (-10, -6.5, hc + 4.5), (reach, 6.5, hc + 9.5), M["steel"], bevel=1.2, parent=rotor)
+        B.box(tag + "Carriage", (min(dus) - 9, -8.5, hc - 1), (max(dus) + 9, 8.5, hc + 4.5), M["dark"], bevel=1.2, parent=mount)
+        if ka:        # drive shaft up into the mixer's planetary hub; it telescopes as the tool lifts
+            B.cylinder(tag + "Drive", 7.5, hc + 18, hc + 18 + (KA_HUB - KA_SEAT) * KA_SCALE, M["steel"], parent=rotor, segs=48)
     pivots = []
     for k, part in enumerate(tool["parts"]):
         piv = B.link(bpy.data.objects.new(f"{tag}Part{k}", None))
         piv.parent = mount
         piv.location = (part["du"], 0, 0)
-        make_part_mesh(f"{tag}Tool{k}", part, M, wood, piv, bare)
+        make_part_mesh(f"{tag}Tool{k}", part, M, wood, piv, bare, hc)
         pivots.append(piv)
 
     # --- animation -------------------------------------------------------------------
-    hz = tg + bowl["clear"] + bowl["lift"] * (1 - z["plunge"])
+    hz = seat + tg + bowl["clear"] + bowl["lift"] * (1 - z["plunge"])
     B.keys(head, "location", [float(v) for v in hz], frames, index=2)
     B.keys(rotor, "rotation_euler", [float(v) for v in z["phi"]], frames, index=2)
     B.keys(mount, "location", [float(v) for v in z["e"]], frames, index=0)
@@ -310,8 +358,9 @@ def build(args):
     scene = B.new_scene(args, metas[0]["fps"], n_frames)
     M = B.make_materials(args)
     wood = B.principled("Wood", tuple(B.hex_lin("#C89A5E")), rough=0.55)
-    belt_w = B.build_conveyor(M, belt_w=140.0)
-    spacing = 82.0 if len(sides) == 2 else 0.0
+    ka = args.mixer == "kitchenaid" and not args.bare
+    belt_w = B.build_conveyor(M, belt_w=560.0 if ka else 140.0)       # room for the mixers' bases
+    spacing = (args.spacing / 2 if ka else 82.0) if len(sides) == 2 else 0.0
     stations = [(s, make_station("L" if s < 0 else "R", s * spacing, p, M, wood, args, belt_w)) for s, p in sides]
     cam = B.make_camera(scene, args, target=tuple(float(v) for v in args.target.split(",")))
     B.setup_lights(scene)
@@ -349,6 +398,10 @@ def main():
     ap.add_argument("--dist", type=float)
     ap.add_argument("--aperture", type=float, default=2.0)
     ap.add_argument("--target", default="0,6,46", help="point the camera looks at, x,y,z in mm")
+    ap.add_argument("--mixer", choices=("kitchenaid", "capsule"), default="kitchenaid",
+                    help="the machine at each bowl: the KitchenAid model in models/, or the plain capsule rig")
+    ap.add_argument("--yaw", type=float, default=25.0, help="how far each KitchenAid is turned towards the middle (deg)")
+    ap.add_argument("--spacing", type=float, default=200.0, help="distance between the two bowls with KitchenAids (mm)")
     ap.add_argument("--bare", action="store_true",
                     help="leave out the mixer head and column: tool and shaft only, for steep camera angles")
     ap.add_argument("--grain-scale", type=float, default=0.84)

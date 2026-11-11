@@ -32,10 +32,8 @@ QUARTERS = [("spoon", "spoon_centre"), ("paddle_large", "wire_whip"), ("whisk", 
 # The bowls are independent simulations, so the side changes nothing but the picture.
 WINNER_SIDE = "LRRLRLR"
 # the closing "satisfying blending" minute: two bowls a shot, each (pixel art, tool)
-SATISFYING = [("X1", ("checkerboard", "spoon"), ("squares", "paddle_small")),
-              ("X2", ("face", "whisk"), ("heart", "paddle_large")),
-              ("X3", ("rocket", "fork"), ("alien", "twin_beaters")),
-              ("X4", ("floppy", "spoon_circle"), ("potion", "wire_whip"))]
+SATISFYING = [("X6", ("squares", "paddle_small"), ("face", "whisk")),
+              ("X5", ("logo", "spoon"), ("youtube", "whisk"))]
 ART_SECONDS, ART_GRAIN = 12.0, 1.5
 STEEP = ["--bare", "--elev", "66", "--dist", "455", "--target", "0,0,8"]     # camera for those shots
 

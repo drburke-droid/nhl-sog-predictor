@@ -37,26 +37,28 @@ def main(still):
     out = os.path.join(HERE, "thumbnails")
     os.makedirs(out, exist_ok=True)
     ms = {m["key"]: m for m in MF.bracket()}
-    run = lambda key, side: F.Run(MF.run_dir(ms[key]["load"], ms[key][side]))
+    run = lambda load, tool: F.Run(MF.run_dir(load, tool))
+    score = lambda key: {ms[key]["a"]: ms[key]["ra"], ms[key]["b"]: ms[key]["rb"]}     # by tool, whichever side it stood on
 
-    # A: the 3-D still, spoon against the machine
-    m = ms["S1"]
+    # A: the 3-D still, spoon (left) against the stand mixer (right); render it with
+    #    bowl_scene.py --left cache/film/stripes_spoon --right cache/film/stripes_paddle_large
+    sc = score("S1")
     im = Image.open(still).convert("RGB")
     w, h = im.size
     im = im.crop((int(w * 0.08), int(h * 0.13), int(w * 0.92), int(h * 0.13) + int(w * 0.84 * H / W))).resize((W, H), Image.LANCZOS)
     d = ImageDraw.Draw(im)
     headline(d, (W // 2, 26), "SPOON vs STAND MIXER", 82, anchor="ma")
-    pill(d, (150, 606), f"{100 * m['ra']:.0f}% MIXED", 44, BLUE)
-    pill(d, (W - 150, 606), f"{100 * m['rb']:.0f}% MIXED", 44, ORANGE, anchor="r")
+    pill(d, (150, 606), f"{100 * sc['spoon']:.0f}% MIXED", 44, F.tool_rgb("spoon"))
+    pill(d, (W - 150, 606), f"{100 * sc['paddle_large']:.0f}% MIXED", 44, F.tool_rgb("paddle_large"), anchor="r")
     im.save(os.path.join(out, "mix_off_thumb_A.png"))
 
     # B: eight top-down bowls five seconds in
     im = Image.new("RGB", (W, H), INK)
     d = ImageDraw.Draw(im)
-    order = [("Q1", "a"), ("Q3", "a"), ("Q4", "a"), ("Q2", "a"), ("Q2", "b"), ("Q4", "b"), ("Q3", "b"), ("Q1", "b")]
+    order = ["spoon", "whisk", "fork", "paddle_large", "wire_whip", "paddle_small", "twin_beaters", "spoon_centre"]
     s = 250
-    for k, (key, side) in enumerate(order):
-        r = run(key, side)
+    for k, tool in enumerate(order):
+        r = run("wedges", tool)
         x = 46 + (k % 4) * (s + 62)
         y = 150 + (k // 4) * (s + 34)
         im.paste(Image.new("RGB", (s + 12, s + 12), INK), (x - 6, y - 6))
@@ -67,18 +69,18 @@ def main(still):
     im.save(os.path.join(out, "mix_off_thumb_B.png"))
 
     # C: same spoon, two techniques
-    m = ms["Q1"]
+    sc = score("Q1")
     im = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(im)
     s = 470
-    for side, x in (("a", 70), ("b", W - 70 - s)):
-        r = run("Q1", side)
+    for tool, x in (("spoon", 70), ("spoon_centre", W - 70 - s)):
+        r = run("wedges", tool)
         d.ellipse((x - 8, 196, x + s + 7, 196 + s + 15), fill=(214, 211, 204))
         disc = r.disc(r.n - 1, s)
         im.paste(disc, (x, 204), disc)
     headline(d, (W // 2, 12), "SAME SPOON.", 120, fill=INK, stroke=PAPER, anchor="ma", width=0)
-    pill(d, (70 + s // 2, 150), f"{100 * m['ra']:.0f}% MIXED", 38, BLUE, anchor="m")
-    pill(d, (W - 70 - s // 2, 150), f"{100 * m['rb']:.0f}% MIXED", 38, ORANGE, anchor="m")
+    pill(d, (70 + s // 2, 150), f"{100 * sc['spoon']:.0f}% MIXED", 38, F.tool_rgb("spoon"), anchor="m")
+    pill(d, (W - 70 - s // 2, 150), f"{100 * sc['spoon_centre']:.0f}% MIXED", 38, F.tool_rgb("spoon_centre"), anchor="m")
     headline(d, (W // 2, H // 2 + 30), "vs", 90, fill=INK, stroke=PAPER, anchor="mm", width=8)
     im.save(os.path.join(out, "mix_off_thumb_C.png"))
     print("wrote 3 thumbnails to", out)

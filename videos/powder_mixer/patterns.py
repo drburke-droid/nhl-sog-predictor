@@ -187,6 +187,49 @@ BBBBBBBBBBBBBBBB
 """
 
 
+# The channel's own logo, read off its 11 x 7 grid: a question mark and a solid block.
+LOGO = """
+.###..#####
+#...#.#####
+....#.#####
+...#..#####
+..#...#####
+......#####
+..#...#####
+"""
+
+# The YouTube icon (a trademark of Google LLC), shown to point at the platform.
+YOUTUBE = """
+WWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWW
+WWRRRRRRRRRRRRWW
+WRRRRRRRRRRRRRRW
+WRRRRRWRRRRRRRRW
+WRRRRRWWRRRRRRRW
+WRRRRRWWWRRRRRRW
+WRRRRRWWWRRRRRRW
+WRRRRRWWRRRRRRRW
+WRRRRRWRRRRRRRRW
+WRRRRRRRRRRRRRRW
+WWRRRRRRRRRRRRWW
+WWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWW
+"""
+
+
+def _logo():
+    rows = LOGO.strip().split("\n")
+    g = np.full((16, 16), LETTERS.index("K"))
+    r0, c0 = (16 - len(rows)) // 2, (16 - len(rows[0])) // 2
+    for i, row in enumerate(rows):
+        for j, ch in enumerate(row):
+            if ch == "#":
+                g[r0 + i, c0 + j] = LETTERS.index("G")
+    return g
+
+
 def _grid(art):
     rows = [r for r in art.strip().split("\n")]
     assert len(rows) == 16 and all(len(r) == 16 for r in rows), [len(r) for r in rows]
@@ -239,6 +282,8 @@ ART = {
     "alien": ("Alien", _grid(ALIEN)),
     "floppy": ("Floppy disk", _grid(FLOPPY)),
     "potion": ("Potion", _grid(POTION)),
+    "logo": ("Our logo", _logo()),
+    "youtube": ("YouTube", _grid(YOUTUBE)),
 }
 
 

@@ -49,7 +49,7 @@ def frame(spec, runs, dirs, i, winner=None, badge=0.0):
     n = min(r.n for r in runs)
     k = min(i, n - 1)
     for side, (run, fdir, y) in enumerate(zip(runs, dirs, PANEL_Y)):
-        col = F.SIDE[side]
+        col = F.tool_rgb(run.meta["tool"])
         pic = Image.open(os.path.join(fdir, "frames", f"f_{k + 1:04d}.png")).convert("RGB").resize((W, PANEL_H), Image.LANCZOS)
         im.paste(pic, (0, y))
         lose = winner is not None and winner != side

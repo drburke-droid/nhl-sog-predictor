@@ -237,6 +237,16 @@ TOOL_COLOR = {
     "fork": "#008300", "twin_beaters": "#e34948", "paddle_large": "#6250d6", "paddle_small": "#eda100",
     "wire_whip": "#e87ba4",
 }
+# The mixers themselves are painted in colours KitchenAid actually sells (names from
+# KitchenAid and retailer listings; the RGB values are matched by eye, there is no
+# published code), one per contestant, in the same hue family as its identity colour.
+KITCHENAID_COLOR = {
+    "spoon": ("Scorched Orange", "#D2562B"), "spoon_circle": ("Scorched Orange", "#D2562B"),
+    "spoon_centre": ("Aqua Sky", "#74C7CB"), "whisk": ("Blue Velvet", "#27508F"),
+    "fork": ("Pistachio", "#B4CC9A"), "twin_beaters": ("Empire Red", "#B3121C"),
+    "paddle_large": ("Lavender Cream", "#B5A6D8"), "paddle_small": ("Butter", "#F0DC8C"),
+    "wire_whip": ("Dried Rose", "#C88C8C"),
+}
 CONTESTANTS = ["twin_beaters", "paddle_large", "paddle_small", "wire_whip", "whisk", "fork", "spoon", "spoon_centre"]
 
 
