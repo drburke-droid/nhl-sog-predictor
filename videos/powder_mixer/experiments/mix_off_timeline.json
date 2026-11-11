@@ -1,6 +1,6 @@
 {
  "fps": 24,
- "seconds": 200.04,
+ "seconds": 213.88,
  "segments": [
   [
    "cold_open",
@@ -108,8 +108,18 @@
    4.5
   ],
   [
-   "caveats",
+   "takeaway4",
    195.04,
+   6.0
+  ],
+  [
+   "research",
+   201.46,
+   7.0
+  ],
+  [
+   "caveats",
+   208.88,
    5.0
   ]
  ],

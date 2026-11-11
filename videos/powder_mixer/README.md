@@ -27,7 +27,7 @@ the percentage is measured from the simulated grains.
 | `match_spoon_vs_stand_mixer_480p.mp4` | First head-to-head test clip (854x480, 8 samples, 12.5 s). |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
-| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:20, 1280x720). |
+| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:34, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |

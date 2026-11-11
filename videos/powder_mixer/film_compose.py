@@ -241,7 +241,9 @@ def bracket_card(matches, runs, highlight=None, title="THE DRAW"):
         n_expected = [4, 2, 1][r]
         for k in range(n_expected):
             y = ys[r][k]
-            m = slots[k] if k < len(slots) else None
+            # a later round's names appear only once the round feeding it has been shown
+            known = r == 0 or (highlight is not None and highlight >= (r - 1, [3, 1][r - 1]))
+            m = slots[k] if k < len(slots) and known else None
             played = m is not None and highlight is not None and (m["round"], m["k"]) <= highlight
             for j, key in enumerate(("a", "b")):
                 yy = y + j * (bh + 6)
@@ -402,8 +404,14 @@ def compose(args, matches):
     # ---- closing ------------------------------------------------------------
     champ = matches[-1]["winner"]
     still("champion", bracket_card(matches, runs, (2, 0), f"CHAMPION: {short(champ).upper()}"), 4.5)
-    for k in range(3):
-        still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5)
+    for k in range(len(TAKEAWAYS)):
+        still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5 if k < 3 else 6.0)
+    still("research", card([("What published experiments say", 34, "Bold", INK, 18),
+                            ("In industrial powder blenders, mixing depends on the number of turns, not the speed.", 21, "Medium", MUTED, 4),
+                            ("Brone, Alexander & Muzzio, AIChE Journal, 1998", 15, "Medium", MUTED, 16),
+                            ("With blades, two or three mix better than one or four.", 21, "Medium", MUTED, 4),
+                            ("Boonkanokwong et al., Powder Technology, 2016", 15, "Medium", MUTED, 16),
+                            ("We found no published measurements of spoons or whisks in dry powder.", 21, "Medium", INK, 0)]), 7.0)
     still("caveats", card([("What this is, and is not", 34, "Bold", INK, 18),
                            ("A physics simulation of dry, free-flowing grains of equal size.", 21, "Medium", MUTED, 8),
                            ("No clumping, no dust cloud, no butter. Machine speeds are typical low settings.", 21, "Medium", MUTED, 8),
@@ -421,11 +429,15 @@ TAKEAWAYS = [
      ("A tool only mixes where it sweeps.", 24, "Medium", MUTED, 10),
      ("The spoon twirled in the middle never touched most of the bowl.", 24, "Medium", MUTED, 0)],
     [("2. Count strokes, not seconds", 44, "Bold", INK, 20),
-     ("A spoon or whisk needed 11 to 20 strokes, depending on how the bowl was loaded.", 24, "Medium", MUTED, 10),
+     ("A spoon or whisk needed 11 to 20 strokes to reach 90%, depending on the load.", 24, "Medium", MUTED, 10),
      ("A spoon stirred twice as fast needed the same number of strokes.", 24, "Medium", MUTED, 0)],
     [("3. How you load the bowl matters", 44, "Bold", INK, 20),
      ("Wedges and stripes are easy. Rings are hard: powder has to move in and out.", 24, "Medium", MUTED, 10),
      ("Rings are also where the stand mixer did its best work: 94% in 20 seconds.", 24, "Medium", MUTED, 0)],
+    [("4. Does grain size or speed change the winner?", 40, "Bold", INK, 20),
+     ("Grain size: no. From 1.4 to 2.4 mm grains, the spoon and whisk stayed on top.", 23, "Medium", MUTED, 10),
+     ("Speed: not for hand tools. At double speed the stand mixer's paddle", 23, "Medium", MUTED, 4),
+     ("improved to 97% and the hand mixer dropped to 54%.", 23, "Medium", MUTED, 0)],
 ]
 
 
