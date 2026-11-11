@@ -280,7 +280,7 @@ def contestants_card():
                               ("Whisk", "the same spiral"),
                               ("Spoon twirled in the middle", "spins on the spot")]),
             ("BY MACHINE", 690, [("Stand mixer, large paddle", "orbits the bowl while it spins"),
-                                 ("Stand mixer, small paddle", "same motion, half the size"),
+                                 ("Stand mixer, small paddle", "same motion, a much smaller paddle"),
                                  ("Stand mixer, wire whip", "same motion, wires instead of a blade"),
                                  ("Hand mixer", "twin beaters carried round the bowl")])]
     for head, x, rows in cols:
@@ -407,10 +407,10 @@ def compose(args, matches):
     for k in range(len(TAKEAWAYS)):
         still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5 if k < 3 else 6.0)
     still("research", card([("What published experiments say", 34, "Bold", INK, 18),
-                            ("In industrial powder blenders, mixing depends on the number of turns, not the speed.", 21, "Medium", MUTED, 4),
-                            ("Brone, Alexander & Muzzio, AIChE Journal, 1998", 15, "Medium", MUTED, 16),
-                            ("With blades, two or three mix better than one or four.", 21, "Medium", MUTED, 4),
-                            ("Boonkanokwong et al., Powder Technology, 2016", 15, "Medium", MUTED, 16),
+                            ("In industrial powder blenders, mixing depends on the number of turns, not the speed.", 21, "Medium", MUTED, 8),
+                            ("Brone, Alexander & Muzzio, AIChE Journal, 1998", 15, "Medium", MUTED, 26),
+                            ("In bladed mixers, two or three blades mix better than one or four.", 21, "Medium", MUTED, 8),
+                            ("Boonkanokwong et al., Powder Technology, 2016", 15, "Medium", MUTED, 26),
                             ("We found no published measurements of spoons or whisks in dry powder.", 21, "Medium", INK, 0)]), 7.0)
     still("caveats", card([("What this is, and is not", 34, "Bold", INK, 18),
                            ("A physics simulation of dry, free-flowing grains of equal size.", 21, "Medium", MUTED, 8),

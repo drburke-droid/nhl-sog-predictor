@@ -24,7 +24,6 @@ the percentage is measured from the simulated grains.
 | `bowl_sim.py` | One tool stirring six powders in a round bowl. |
 | `tournament.py`, `plot_tournament.py`, `topviews.py` | Run the tools head to head (plus loading, speed and grain-size sets), chart the results, draw top-down snapshots. |
 | `bowl_scene.py` | Blender scene for one or two bowls under mixer heads, from `bowl_sim.py` caches. |
-| `match_spoon_vs_stand_mixer_480p.mp4` | First head-to-head test clip (854x480, 8 samples, 12.5 s). |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
 | `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:34, 1280x720). |

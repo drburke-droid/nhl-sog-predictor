@@ -64,9 +64,9 @@ def fig_base(rows, curves):
 
 def fig_sensitivity(rows, curves, order):
     cols = [("Pie wedges\n(the film)", "base_{}"), ("Stripes", "load_stripes_{}"), ("Rings", "load_rings_{}"),
-            ("Double speed", "speed2_{}"),
+            ("Half speed", "speed0.5_{}"), ("Double speed", "speed2_{}"),
             ("Fine grains\n1.4 mm", "grain1.4_{}"), ("Coarse grains\n2.4 mm", "grain2.4_{}")]
-    groups = [(0, 3, "How the bowl was loaded"), (3, 4, "Speed"), (4, 6, "Grain size")]
+    groups = [(0, 3, "How the bowl was loaded"), (3, 5, "Speed (same number of strokes)"), (5, 7, "Grain size")]
     val = np.full((len(order), len(cols)), np.nan)
     for i, t in enumerate(order):
         for j, (_, pat) in enumerate(cols):
@@ -74,7 +74,7 @@ def fig_sensitivity(rows, curves, order):
             if r:
                 val[i, j] = float(r["final_percent"])
     cmap = LinearSegmentedColormap.from_list("seq", ["#eef4fc", "#9cc3ef", "#2a78d6", "#134a91"])
-    fig, ax = plt.subplots(figsize=(12, 0.62 * len(order) + 2.6), facecolor=SURFACE)
+    fig, ax = plt.subplots(figsize=(13, 0.62 * len(order) + 2.6), facecolor=SURFACE)
     ax.set_facecolor(SURFACE)
     for i in range(len(order)):
         for j in range(len(cols)):
@@ -99,7 +99,7 @@ def fig_sensitivity(rows, curves, order):
     ax.axis("off")
     fig.suptitle("Does the winner change?  % mixed at the end of each run", x=0.012, ha="left",
                  color=INK, fontsize=15, fontweight="bold")
-    fig.text(0.012, 0.9, "Every run is 20 s, except double speed: 10 s, so the number of strokes is the same. "
+    fig.text(0.012, 0.9, "Every run is 20 s, except half speed (40 s) and double speed (10 s), so the number of strokes is the same. "
              "Pie wedges and 1.8 mm grains unless stated.", color=INK2, fontsize=10)
     fig.subplots_adjust(left=0.01, right=0.99, top=0.86, bottom=0.02)
     out = os.path.join(HERE, "experiments", "tournament_sensitivity.png")

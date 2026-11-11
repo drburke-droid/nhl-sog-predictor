@@ -30,9 +30,9 @@ def runs_for(sets):
     out = []
     if "base" in sets:
         out += [(f"base_{t}", "base", t, [], 20.0) for t in CONTESTANTS]
-    if "grain" in sets:                       # the fine runs are slow, so only the main five
+    if "grain" in sets:
         out += [(f"grain2.4_{t}", "grain 2.4 mm", t, ["--grain", "2.4"], 20.0) for t in CONTESTANTS]
-        out += [(f"grain1.4_{t}", "grain 1.4 mm", t, ["--grain", "1.4"], 20.0) for t in KEY]
+        out += [(f"grain1.4_{t}", "grain 1.4 mm", t, ["--grain", "1.4"], 20.0) for t in CONTESTANTS]
     if "speed" in sets:                       # same number of strokes at half and double speed
         out += [(f"speed2_{t}", "double speed", t, ["--speed", "2"], 10.0) for t in CONTESTANTS]
         if "half" in sets:                    # slow (40 s runs); not part of the default set

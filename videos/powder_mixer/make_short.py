@@ -85,7 +85,7 @@ def stage_compose(args):
     out = os.path.join(HERE, spec["out"])
     silent = out.replace(".mp4", "_silent.mp4")
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", "24",
-           "-i", "-", "-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", silent]
+           "-i", "-", "-c:v", "libx264", "-crf", "21", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", silent]
     enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     count = 0
 
