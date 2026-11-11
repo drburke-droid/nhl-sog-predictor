@@ -304,8 +304,21 @@ def paddle_outline(geo):
         return [(cx + r * math.cos(math.radians(a0 + (a1 - a0) * k / n)),
                  cz + r * math.sin(math.radians(a0 + (a1 - a0) * k / n))) for k in range(n + 1)]
 
+    style = geo.get("paddle_style", "gate")
+    if style == "fork":                     # tines hanging from a top bar (as simulate.py)
+        w, n = 2.2, 3
+        c0, c1 = 0.15 * R, R - w / 2
+        cs = sorted(sg * (c0 + (c1 - c0) * k / (n - 1)) for k in range(n) for sg in (-1, 1))
+        outer = [(-R, H)]
+        for c in cs:
+            outer += [(c - w / 2, H - bar), (c - w / 2, 0), (c + w / 2, 0), (c + w / 2, H - bar)]
+        outer[1] = (-R, H - bar)            # outermost tines are flush with the bar ends
+        outer[-1] = (R, H - bar)
+        return outer + [(R, H)], []
     outer = ([(-R, H)] + arc(-R + rc, rc, rc, 180, 270) + arc(R - rc, rc, rc, 270, 360) + [(R, H)])
     holes = []
+    if style == "plate":                    # solid blade
+        return outer, holes
     rib_c = 0.5 * (spine + (R - bar))
     for sgn in (1, -1):
         a0, a1 = spine, rib_c - rib / 2
@@ -596,19 +609,19 @@ def build(args):
     knob.location = (0, nose - 3, hb + 24)
     cylinder("NoseRing", 11, 0, 2.2, m_steel, parent=head, bevel=0.6).rotation_euler = (math.radians(90), 0, 0)
     bpy.data.objects["NoseRing"].location = (0, nose - 0.6, hb + 24)
-    ya, yb = -geo["paddle_sep"] / 2, geo["paddle_sep"] / 2
-    for y in (ya, yb):
-        cylinder(f"Chuck{y:+.0f}", 9.5, hb - 6, hb + 2, m_steel, parent=head, loc=(0, y, 0), bevel=1.2)
-    pad_a = build_paddle("PaddleA", geo, m_steel, head, ya)
-    pad_b = build_paddle("PaddleB", geo, m_steel, head, yb)
+    pad_y = meta.get("paddle_y", [-geo["paddle_sep"] / 2, geo["paddle_sep"] / 2])
+    pads = []
+    for k, y in enumerate(pad_y):
+        cylinder(f"Chuck{k}", 9.5, hb - 6, hb + 2, m_steel, parent=head, loc=(0, y, 0), bevel=1.2)
+        pads.append(build_paddle("Paddle" + "AB"[k], geo, m_steel, head, y))
 
     # ---- animation channels --------------------------------------------------
     keys(tray, "location", [float(v) for v in z["tray_x"]], frames, index=0)
     keys(scroll, "location", [float(v) for v in z["belt_s"]], frames, index=0)
     head_z = TRAY_BASE + geo["paddle_clear"] + geo["lift"] * (1 - z["plunge"])
     keys(head, "location", [float(v) for v in head_z], frames, index=2)
-    keys(pad_a, "rotation_euler", [float(v) for v in z["ang_a"]], frames, index=2)
-    keys(pad_b, "rotation_euler", [float(v) for v in z["ang_b"]], frames, index=2)
+    for pad, ch in zip(pads, ("ang_a", "ang_b")):
+        keys(pad, "rotation_euler", [float(v) for v in z[ch]], frames, index=2)
     keys(mc, "eval_frame", [float(v) for v in z["cache_idx"]], frames)
 
     # wrap-around copy: the dish jumps from +x_wrap back to -x_wrap once per

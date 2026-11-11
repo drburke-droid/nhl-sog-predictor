@@ -78,6 +78,12 @@ def paddle_solid(r, z, geo):
     bar, rib, spine = geo["paddle_bar"], geo["paddle_rib"], geo["paddle_spine"]
     a = np.abs(r)
     inside = (a <= R) & (z >= 0) & (z <= H)
+    style = geo.get("paddle_style", "gate")
+    if style == "fork":                    # tines hanging from a top bar
+        tines = np.zeros_like(inside)
+        for c in fork_tines(geo):
+            tines |= np.abs(a - c) <= FORK_TINE_W / 2
+        return inside & (tines | (z >= H - bar))
     # rounded bottom corners (radius rc)
     rc = 7.0
     corner = (a > R - rc) & (z < rc)
@@ -90,7 +96,19 @@ def paddle_solid(r, z, geo):
     rci = rc - bar
     icorner = win2 & (a > R - bar - rci) & (z < bar + rci)
     win2 &= ~(icorner & ((a - (R - bar - rci)) ** 2 + (z - bar - rci) ** 2 > rci ** 2))
+    if style == "plate":                   # solid blade, no windows
+        return inside
     return inside & ~(win1 | win2)
+
+
+FORK_TINE_W = 2.2
+
+
+def fork_tines(geo, n=3):
+    """Radial positions of the fork tines on one wing."""
+    R = geo["paddle_r"]
+    c0, c1 = 0.15 * R, R - FORK_TINE_W / 2
+    return [c0 + (c1 - c0) * k / (n - 1) for k in range(n)]
 
 
 def paddle_colliders(geo, d):
@@ -349,6 +367,14 @@ def main():
     ap.add_argument("--t-mix", type=float, default=TIMING["t_mix"])
     ap.add_argument("--alternate", action="store_true",
                     help="reverse the paddles every pass (mixes worse: it partly undoes the last pass)")
+    ap.add_argument("--paddles", type=int, choices=(1, 2), default=2,
+                    help="2 = twin intermeshing paddles, 1 = one paddle on the centre line")
+    ap.add_argument("--style", choices=("gate", "plate", "fork"), default="gate",
+                    help="paddle shape: windowed frame, solid plate, or tines")
+    ap.add_argument("--corotate", action="store_true",
+                    help="twin paddles turn the same way instead of counter-rotating")
+    ap.add_argument("--no-cache", action="store_true",
+                    help="skip the point cache (experiments that only need the mixing curve)")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
                     help="override any GEO / TIMING entry, e.g. --set paddle_r=26")
     args = ap.parse_args()
@@ -357,6 +383,7 @@ def main():
     for kv in args.set:
         k, v = kv.split("=")
         (geo if k in geo else tm)[k] = float(v)
+    geo["paddle_style"] = args.style
     tm["rev_per_s"] = args.rev
     tm["t_mix"] = args.t_mix
     d = args.grain
@@ -369,27 +396,30 @@ def main():
     # ---- colliders -------------------------------------------------------
     kloc = paddle_colliders(geo, d)            # (K0, 2): signed r, z
     K0 = len(kloc)
-    K = 2 * K0
-    yc = np.array([-geo["paddle_sep"] / 2, geo["paddle_sep"] / 2])
+    npad = args.paddles
+    K = npad * K0
+    yc = np.array([-geo["paddle_sep"] / 2, geo["paddle_sep"] / 2]) if npad == 2 else np.array([0.0])
+    b_sign = 1.0 if args.corotate else -1.0
     omega = 2 * np.pi * tm["rev_per_s"]
 
     def paddle_angles(t, npass=0):
-        """Paddle A / B angle (rad).  Counter-rotating, 90 deg out of phase."""
+        """Paddle A / B angle (rad).  B is 90 deg out of phase so the blades mesh."""
         a = np.interp(t, ang_t, ang_tab)
-        return a, -a + np.pi / 2
+        return a, b_sign * a + np.pi / 2
 
     # intermesh sanity check
-    th = np.linspace(0, 2 * np.pi, 720)
-    mind = 1e9
-    edge = kloc[(np.abs(kloc[:, 0]) > geo["paddle_r"] - d)]
-    for a in th:
-        aa, bb = a, -a + np.pi / 2
-        A = np.stack([edge[:, 0] * np.cos(aa), yc[0] + edge[:, 0] * np.sin(aa)], 1)
-        B = np.stack([kloc[:, 0] * np.cos(bb), yc[1] + kloc[:, 0] * np.sin(bb)], 1)
-        dd = np.sqrt(((A[:, None, :] - B[None, ::3, :]) ** 2).sum(-1)).min()
-        mind = min(mind, dd)
-    print(f"paddle intermesh clearance: {mind:.2f} mm")
-    assert mind > 2.0, "paddles would collide"
+    if npad == 2:
+        th = np.linspace(0, 2 * np.pi, 720)
+        mind = 1e9
+        edge = kloc[(np.abs(kloc[:, 0]) > geo["paddle_r"] - d)]
+        for a in th:
+            aa, bb = a, b_sign * a + np.pi / 2
+            A = np.stack([edge[:, 0] * np.cos(aa), yc[0] + edge[:, 0] * np.sin(aa)], 1)
+            B = np.stack([kloc[:, 0] * np.cos(bb), yc[1] + kloc[:, 0] * np.sin(bb)], 1)
+            dd = np.sqrt(((A[:, None, :] - B[None, ::3, :]) ** 2).sum(-1)).min()
+            mind = min(mind, dd)
+        print(f"paddle intermesh clearance: {mind:.2f} mm")
+        assert mind > 2.0, "paddles would collide"
 
     # ---- initial fill ----------------------------------------------------
     target = geo["bed_depth"]
@@ -472,6 +502,10 @@ def main():
     env[(tt_ < 0) | (cyc_ >= args.passes)] = 0.0
     sgn = np.where((cyc_ % 2 == 1) & args.alternate, -1.0, 1.0)
     ang_tab = np.concatenate([[0.0], np.cumsum(omega * env * sgn)[:-1] * (dt / 2)])
+    # revolutions each paddle has made while it is down in the powder
+    _, pl_ = cycle_state(tc_, geo, tm)
+    pl_ = np.where((tt_ < 0) | (cyc_ >= args.passes), 0.0, pl_)
+    rev_tab = np.cumsum(omega * env * (pl_ > 0.5)) * (dt / 2) / (2 * np.pi)
 
     tray_x = np.zeros(n_frames)
     plunge = np.zeros(n_frames)
@@ -481,8 +515,9 @@ def main():
     mix = np.zeros(n_frames)
     pass_no = np.zeros(n_frames, np.int32)
     belt_s = np.zeros(n_frames)       # cumulative belt travel (for texture scroll)
+    revs = np.zeros(n_frames)         # paddle revolutions in the powder so far
 
-    pc2_path = os.path.join(args.out, "particles.pc2")
+    pc2_path = os.devnull if args.no_cache else os.path.join(args.out, "particles.pc2")
     fpc = open(pc2_path, "wb")
     fpc.write(b"POINTCACHE2\0")
     fpc.write(struct.pack("<iiffi", 1, N, 0.0, 1.0, 0))  # sample count patched later
@@ -496,6 +531,7 @@ def main():
     write_sample()                      # sample 0: untouched lanes
     m_now = mix_index(P[:N], ingr, geo, n_ing)
     mix_after_pass = [m_now]
+    revs_after_pass = [0.0]
     kprev_world = None
     t_start = time.time()
     s_acc = 0.0
@@ -526,7 +562,7 @@ def main():
                 if pls > 1e-4:
                     zb = zb_low + geo["lift"] * (1 - pls)
                     aa, bb = paddle_angles(ts, cyc)
-                    for b, ang in enumerate((aa, bb)):
+                    for b, ang in enumerate((aa, bb)[:npad]):
                         sl = slice(N + b * K0, N + (b + 1) * K0)
                         Pprev[sl] = P[sl]
                         P[sl, 0] = -xs + kloc[:, 0] * np.cos(ang)
@@ -543,6 +579,7 @@ def main():
             m_now = mix_index(P[:N], ingr, geo, n_ing)
             if tc + 1.0 / fps >= w1:
                 mix_after_pass.append(m_now)
+                revs_after_pass.append(float(np.interp(t + 1.0 / fps, ang_t, rev_tab)))
                 el = time.time() - t_start
                 print(f"pass {cyc+1:2d}: mixed {100*m_now:5.1f}%   "
                       f"bed top {np.percentile(P[:N,2],99.5)+d/2:5.1f} mm  "
@@ -553,6 +590,7 @@ def main():
         ang_a[f], ang_b[f] = aa, bb
         cache_idx[f] = n_samples - 1
         mix[f] = m_now
+        revs[f] = np.interp(t, ang_t, rev_tab)
         pass_no[f] = min(cyc + (1 if (tt >= 0 and tc >= w0) else 0), args.passes)
         if x_prev is not None:
             dx = x - x_prev
@@ -574,16 +612,20 @@ def main():
         rand=rng.random((N, 4)).astype(np.float32),
         pos0=pos.astype(np.float32),
         tray_x=tray_x, plunge=plunge, ang_a=ang_a, ang_b=ang_b,
-        cache_idx=cache_idx, mix=mix, pass_no=pass_no, belt_s=belt_s,
+        cache_idx=cache_idx, mix=mix, pass_no=pass_no, belt_s=belt_s, revs=revs,
     )
     meta = dict(geo=geo, timing=tm, grain=d, fps=fps, passes=args.passes,
                 n_grains=int(N), n_frames=int(n_frames), n_samples=int(n_samples),
                 ingredients=n_ing, mix_after_pass=mix_after_pass,
-                cycle_s=Tc)
+                revs_after_pass=revs_after_pass, cycle_s=Tc,
+                paddle_y=[float(v) for v in yc], paddle_style=args.style,
+                corotate=bool(args.corotate), alternate=bool(args.alternate))
     with open(os.path.join(args.out, "meta.json"), "w") as fh:
         json.dump(meta, fh, indent=1)
     print("mix after each pass (%):", " ".join(f"{100*m:.0f}" for m in mix_after_pass))
-    print(f"wrote {pc2_path}  ({os.path.getsize(pc2_path)/1e6:.0f} MB, {n_samples} samples, {n_frames} frames)")
+    print("paddle revolutions in the powder per pass: %.2f" % (revs_after_pass[-1] / max(args.passes, 1)))
+    if not args.no_cache:
+        print(f"wrote {pc2_path}  ({os.path.getsize(pc2_path)/1e6:.0f} MB, {n_samples} samples, {n_frames} frames)")
 
 
 if __name__ == "__main__":
