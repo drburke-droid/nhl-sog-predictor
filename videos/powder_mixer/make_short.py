@@ -34,7 +34,8 @@ def stage_render(args):
         if MF.frames_done(out, n) >= n:
             continue
         cmd = [sys.executable, "-W", "ignore", os.path.join(HERE, "bowl_scene.py"), "--left", MF.run_dir(m["load"], m[side]),
-               "--no-hud", "--anim", "--res", "720x520", "--samples", str(args.samples), "--dist", "300", "--elev", "42",
+               "--no-hud", "--anim", "--res", "720x520", "--samples", str(args.samples), "--dist", "410", "--elev", "35",
+               "--target", "0,12,60",
                "--out", out]
         with open(out.rstrip("/") + ".log", "w") if os.path.isdir(os.path.dirname(out)) else open(os.devnull, "w") as log:
             subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT, check=True)
