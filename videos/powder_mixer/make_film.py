@@ -36,6 +36,8 @@ SATISFYING = [("X6", ("squares", "paddle_small"), ("face", "whisk")),
               ("X5", ("logo", "spoon"), ("youtube", "whisk"))]
 ART_SECONDS, ART_GRAIN = 12.0, 1.5
 STEEP = ["--bare", "--elev", "66", "--dist", "455", "--target", "0,0,8"]     # camera for those shots
+# the matches: a KitchenAid at each bowl, framed close enough that the powder stays readable
+MATCH_CAM = ["--mixer", "kitchenaid", "--elev", "31", "--dist", "760", "--target", "0,20,72"]
 
 
 def run_dir(load, tool):
@@ -128,7 +130,7 @@ def blender_cmd(args):
 
 def render_jobs():
     """(key, left cache, right cache, extra scene arguments, which --res to use) for every shot of the film."""
-    jobs = [(m["key"], run_dir(m["load"], m["a"]), run_dir(m["load"], m["b"]), [], "res") for m in bracket()]
+    jobs = [(m["key"], run_dir(m["load"], m["a"]), run_dir(m["load"], m["b"]), MATCH_CAM, "res") for m in bracket()]
     if len(jobs) == 7:
         jobs += [(key, art_dir(*a), art_dir(*b), STEEP, "sat_res") for key, a, b in SATISFYING]
     return jobs
