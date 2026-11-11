@@ -373,6 +373,8 @@ def main():
                     help="paddle shape: windowed frame, solid plate, or tines")
     ap.add_argument("--corotate", action="store_true",
                     help="twin paddles turn the same way instead of counter-rotating")
+    ap.add_argument("--substep-factor", type=float, default=1.0,
+                    help="multiply the solver substeps per frame (numerical convergence checks)")
     ap.add_argument("--no-cache", action="store_true",
                     help="skip the point cache (experiments that only need the mixing curve)")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
@@ -462,6 +464,7 @@ def main():
     tip = omega * geo["paddle_r"]
     nsub = int(np.ceil(tip / fps / (0.4 * d)))
     nsub = max(nsub, 8)
+    nsub = int(round(nsub * args.substep_factor))
     dt = 1.0 / fps / nsub
     print(f"substeps/frame: {nsub}  dt={dt*1e3:.3f} ms")
 
@@ -577,7 +580,7 @@ def main():
                     step(N)
             write_sample()
             m_now = mix_index(P[:N], ingr, geo, n_ing)
-            if tc + 1.0 / fps >= w1:
+            if tc + 1.0 / fps >= w1 and len(mix_after_pass) == cyc + 1:
                 mix_after_pass.append(m_now)
                 revs_after_pass.append(float(np.interp(t + 1.0 / fps, ang_t, rev_tab)))
                 el = time.time() - t_start
