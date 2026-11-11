@@ -362,6 +362,8 @@ def contestants_card():
             text(d, (x + 72, y), name, font(25, "SemiBold"), INK, "la")
             text(d, (x + 72, y + 34), how, font(18, "Medium"), MUTED, "la")
             y += 104
+    text(d, (W // 2, H - 72), "Every tool hangs from the same stand, so only the tool and the way it moves differ.",
+         font(17, "Medium"), INK, "mm")
     text(d, (W // 2, H - 44), "Hand tools: 1.5 strokes a second.  Stand mixer: 0.8 orbits a second.  Hand mixer: 5 turns a second.",
          font(15, "Medium"), MUTED, "mm")
     return im
@@ -524,7 +526,8 @@ def compose(args, matches):
             end()
             print("composed", key, f"{state['n'] / FPS:.1f} s", flush=True)
         still("end", card([("THE MIX-OFF", 76, "Black", INK, 20),
-                           ("Method, code and data are linked in the description.", 22, "Medium", MUTED, 0)]), 3.0)
+                           ("Method, code and data are linked in the description.", 22, "Medium", MUTED, 0)],
+                          footer="Not sponsored by or affiliated with KitchenAid or YouTube."), 3.0)
     enc.stdin.close()
     enc.wait()
     json.dump(dict(fps=FPS, seconds=round(state["n"] / FPS, 2), segments=timeline,

@@ -23,10 +23,11 @@ the percentage is measured from the simulated grains.
 | `tools.py` | The kitchen tools: shapes, collider points, and how each is moved round the bowl. |
 | `bowl_sim.py` | One tool stirring six powders in a round bowl. |
 | `tournament.py`, `plot_tournament.py`, `topviews.py` | Run the tools head to head (plus loading, speed and grain-size sets), chart the results, draw top-down snapshots. |
-| `bowl_scene.py` | Blender scene for one or two bowls under mixer heads, from `bowl_sim.py` caches. |
+| `bowl_scene.py` | Blender scene for one or two bowls, each under a stand mixer, from `bowl_sim.py` caches. |
+| `models/kitchenaid/` | The stand mixer model (CC0, see "The stand mixer model" below). |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
-| `patterns.py` | Squares and 16x16 pixel art used to load the bowls in the film's closing section. |
+| `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
 | `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (4:33, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
@@ -296,11 +297,54 @@ through. The bracket is decided by the simulations, not written into the code.
 | Semi-final 2 | stripes | Whisk 97% beat fork 79% |
 | Final | rings | Whisk 94% beat spoon 88% |
 
+The winner is on the left in three matches and on the right in four
+(`WINNER_SIDE` in `make_film.py`), so the side gives nothing away. There is no
+bracket card: the film cuts straight from a round title ("Quarter-finals",
+"Semi-finals", "The final") to the bowls.
+
+Every method has its own colour, used for its mixer, its icon, its score bar
+and its line on the chart (`TOOL_COLOR` and `KITCHENAID_COLOR` in `tools.py`).
+The seven match pairings were checked with a colour-vision simulator so the two
+sides of a match stay distinguishable.
+
+| Method | Overlay colour | Mixer enamel |
+|---|---|---|
+| Spoon, stirred in a spiral | orange | Scorched Orange |
+| Spoon twirled in the middle | teal | Aqua Sky |
+| Whisk | blue | Blue Velvet |
+| Fork | green | Pistachio |
+| Hand mixer (twin beaters) | red | Empire Red |
+| Stand mixer, large paddle | violet | Lavender Cream |
+| Stand mixer, small paddle | amber | Butter |
+| Stand mixer, wire whip | pink | Dried Rose |
+
 After the takeaways the film closes with "And now, some satisfying blending":
-four shots of two bowls each, seen from a steep angle with only the tool in
-frame, loaded as a checkerboard, coloured squares and 16x16 pixel art (smiley,
-heart, apple tree, house, flower, rainbow; `patterns.py`). Those bowls use 1.5 mm
-grains (39,680 each) and run 12 seconds; they are not scored.
+two shots of two bowls each, seen from a steep angle with only the tool in
+frame. The four bowls are loaded as coloured squares, a smiley, the channel's
+logo and the YouTube icon (`SATISFYING` in `make_film.py`, art in
+`patterns.py`). They use 1.5 mm grains (39,680 each) and run 12 seconds; they
+are not scored. YouTube's brand guidelines ask that its logo is not altered, and
+a logo drawn in powder and then stirred away is arguably that; to drop it, swap
+`"youtube"` in `SATISFYING` for another pattern from `patterns.py`.
+
+### The stand mixer model
+
+Every bowl sits under the same tilt-head stand mixer, whatever tool is in it,
+so the only thing that differs between two bowls is the tool and how it moves.
+The model is "Kitchenaid food mixer" by swmo from Blend Swap (blend 65088),
+released CC0; the licence text is in `models/kitchenaid/`.
+
+- **Colours.** The enamel colours are real KitchenAid colour names. KitchenAid
+  does not publish colour values, so the RGB values were matched by eye from
+  product photos and are approximate.
+- **Size.** The mixer is drawn 1.36 times too large for the bowl, with a longer
+  drive shaft. At true size the head sits just above the rim and hides the
+  powder from the camera.
+- **Branding.** The model carries the KitchenAid name on its band. The film is
+  not sponsored by or affiliated with KitchenAid; say so in the description if
+  the name is legible in the upload (it is in the copy file).
+- `bowl_scene.py --mixer capsule` swaps in the plain cylindrical motor housing
+  used in earlier cuts.
 
 These are 15-second runs, so the figures are a little lower than the 20-second
 table above. The final was close: the spoon reached 90% at 13.4 s and then
@@ -311,7 +355,7 @@ python make_film.py sims          # 22 simulations, about an hour on 4 cores
 ```
 
 ```bash
-python make_film.py render        # 7 matches and 4 closing shots; about 5.5 h on a 4-core CPU at preview size
+python make_film.py render        # 7 matches and 2 closing shots; about 5.5 h on a 4-core CPU at preview size
 ```
 
 ```bash
