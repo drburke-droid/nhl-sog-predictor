@@ -7,7 +7,8 @@ Who goes through is decided by the simulations, not written in here.
 
     python make_film.py sims        # simulate every match (about 30 min on 4 cores)
     python make_film.py render      # Blender frames for every match, no overlay
-    python make_film.py compose     # overlays, cards, bracket -> mixing_knockout.mp4
+    python make_film.py compose     # overlays, cards, bracket -> mixing_knockout.mp4 (silent)
+    python make_film.py finish      # synthesize the score, mix to -16 LUFS -> the_mix_off_PREVIEW_720p.mp4
 
 All three stages skip work that is already done, so they can be re-run.
 """
@@ -130,12 +131,14 @@ def stage_render(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("stage", choices=("sims", "render", "compose", "bracket"))
+    ap.add_argument("stage", choices=("sims", "render", "compose", "finish", "bracket"))
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--frames", default=os.path.join(HERE, "renders", "film"))
     ap.add_argument("--res", default="960x420")
     ap.add_argument("--samples", type=int, default=8)
     ap.add_argument("--out", default=os.path.join(HERE, "mixing_knockout.mp4"))
+    ap.add_argument("--final", default=os.path.join(HERE, "the_mix_off_PREVIEW_720p.mp4"))
+    ap.add_argument("--crf", type=int, default=22, help="quality of the finished file (lower is larger)")
     ap.add_argument("--partial", type=int, default=0, metavar="N",
                     help="compose a preview: at most N frames per match, from whatever is rendered")
     args = ap.parse_args()
@@ -144,6 +147,14 @@ def main():
     elif args.stage == "render":
         os.makedirs(args.frames, exist_ok=True)
         stage_render(args)
+    elif args.stage == "finish":
+        base = os.path.splitext(args.out)[0]
+        wav = base + "_score.wav"
+        subprocess.run([sys.executable, os.path.join(HERE, "film_score.py"), base + "_timeline.json", wav], check=True)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", args.out, "-i", wav, "-c:v", "libx264", "-crf", str(args.crf),
+                        "-preset", "slow", "-pix_fmt", "yuv420p", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000",
+                        "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", args.final], check=True)
+        print("wrote", args.final, f"{os.path.getsize(args.final) / 1e6:.0f} MB")
     elif args.stage == "bracket":
         for m in bracket():
             print(m)

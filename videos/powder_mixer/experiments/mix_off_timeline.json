@@ -1,0 +1,188 @@
+{
+ "fps": 24,
+ "seconds": 200.04,
+ "segments": [
+  [
+   "cold_open",
+   0.0,
+   4.75
+  ],
+  [
+   "title",
+   5.17,
+   3.5
+  ],
+  [
+   "scoring",
+   9.08,
+   5.0
+  ],
+  [
+   "contestants",
+   14.5,
+   5.5
+  ],
+  [
+   "draw",
+   20.42,
+   4.0
+  ],
+  [
+   "round_wedges",
+   24.83,
+   3.5
+  ],
+  [
+   "Q1",
+   28.75,
+   18.29
+  ],
+  [
+   "Q2",
+   47.46,
+   18.29
+  ],
+  [
+   "Q3",
+   66.17,
+   18.29
+  ],
+  [
+   "Q4",
+   84.88,
+   18.29
+  ],
+  [
+   "draw_after_0",
+   103.58,
+   3.5
+  ],
+  [
+   "round_stripes",
+   107.5,
+   3.5
+  ],
+  [
+   "S1",
+   111.42,
+   18.29
+  ],
+  [
+   "S2",
+   130.12,
+   18.3
+  ],
+  [
+   "draw_after_1",
+   148.83,
+   3.5
+  ],
+  [
+   "round_rings",
+   152.75,
+   3.5
+  ],
+  [
+   "F1",
+   156.67,
+   18.29
+  ],
+  [
+   "champion",
+   175.38,
+   4.5
+  ],
+  [
+   "takeaway1",
+   180.29,
+   4.5
+  ],
+  [
+   "takeaway2",
+   185.21,
+   4.5
+  ],
+  [
+   "takeaway3",
+   190.12,
+   4.5
+  ],
+  [
+   "caveats",
+   195.04,
+   5.0
+  ]
+ ],
+ "matches": [
+  {
+   "key": "Q1",
+   "name": "Quarter-final 1",
+   "load": "wedges",
+   "a": "spoon",
+   "b": "spoon_centre",
+   "ra": 0.9786574006241842,
+   "rb": 0.16593966113508102,
+   "winner": "spoon"
+  },
+  {
+   "key": "Q2",
+   "name": "Quarter-final 2",
+   "load": "wedges",
+   "a": "paddle_large",
+   "b": "wire_whip",
+   "ra": 0.7707821046792206,
+   "rb": 0.7200936709272893,
+   "winner": "paddle_large"
+  },
+  {
+   "key": "Q3",
+   "name": "Quarter-final 3",
+   "load": "wedges",
+   "a": "whisk",
+   "b": "twin_beaters",
+   "ra": 0.976828666799318,
+   "rb": 0.6015142174870952,
+   "winner": "whisk"
+  },
+  {
+   "key": "Q4",
+   "name": "Quarter-final 4",
+   "load": "wedges",
+   "a": "fork",
+   "b": "paddle_small",
+   "ra": 0.8427197769405618,
+   "rb": 0.6574098003422619,
+   "winner": "fork"
+  },
+  {
+   "key": "S1",
+   "name": "Semi-final 1",
+   "load": "stripes",
+   "a": "spoon",
+   "b": "paddle_large",
+   "ra": 0.9567478903511222,
+   "rb": 0.7830451302760304,
+   "winner": "spoon"
+  },
+  {
+   "key": "S2",
+   "name": "Semi-final 2",
+   "load": "stripes",
+   "a": "whisk",
+   "b": "fork",
+   "ra": 0.9673233244876023,
+   "rb": 0.7941083349926611,
+   "winner": "whisk"
+  },
+  {
+   "key": "F1",
+   "name": "Final",
+   "load": "rings",
+   "a": "spoon",
+   "b": "whisk",
+   "ra": 0.8847516503782997,
+   "rb": 0.9446960366944018,
+   "winner": "whisk"
+  }
+ ]
+}

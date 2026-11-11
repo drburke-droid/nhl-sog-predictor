@@ -25,6 +25,11 @@ the percentage is measured from the simulated grains.
 | `tournament.py`, `plot_tournament.py`, `topviews.py` | Run the tools head to head (plus loading, speed and grain-size sets), chart the results, draw top-down snapshots. |
 | `bowl_scene.py` | Blender scene for one or two bowls under mixer heads, from `bowl_sim.py` caches. |
 | `match_spoon_vs_stand_mixer_480p.mp4` | First head-to-head test clip (854x480, 8 samples, 12.5 s). |
+| `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
+| `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
+| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:20, 1280x720). |
+| `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
+| `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |
 
 `cache/`, `renders/` and `.blend` files are generated, so they are git-ignored.
@@ -270,6 +275,58 @@ powder in or out, so it was not tested as a contestant.
   segregation. Wires are one grain thick. Grains cannot leave the bowl.
 - "% mixed" is rescaled so the bowl as loaded reads 0% for every loading
   pattern (thin rings otherwise start at 26%).
+
+## The knockout film
+
+`the_mix_off_PREVIEW_720p.mp4`: the eight methods in a knockout. Each round
+loads the bowl differently (pie wedges, stripes, rings), so every match is new
+footage; each contestant gets 15 seconds; whoever is more mixed at the end goes
+through. The bracket is decided by the simulations, not written into the code.
+
+| Match | Load | Result |
+|---|---|---|
+| Quarter-final 1 | wedges | Spoon 98% beat spoon twirled in the middle 17% |
+| Quarter-final 2 | wedges | Stand mixer, large paddle 77% beat wire whip 72% |
+| Quarter-final 3 | wedges | Whisk 98% beat hand mixer 60% |
+| Quarter-final 4 | wedges | Fork 84% beat stand mixer, small paddle 66% |
+| Semi-final 1 | stripes | Spoon 96% beat stand mixer, large paddle 78% |
+| Semi-final 2 | stripes | Whisk 97% beat fork 79% |
+| Final | rings | Whisk 94% beat spoon 88% |
+
+These are 15-second runs, so the figures are a little lower than the 20-second
+table above. The final was close: the spoon reached 90% at 13.4 s and then
+slipped back as it lifted out.
+
+```bash
+python make_film.py sims          # 14 simulations, about 40 min on 4 cores
+```
+
+```bash
+python make_film.py render        # 7 x 376 frames; about 3.5 h on a 4-core CPU at 960x420, 8 samples
+```
+
+```bash
+python make_film.py compose && python make_film.py finish
+```
+
+For an upload-quality version, render larger on a GPU and compose again; the
+overlay scales with nothing to change:
+
+```bash
+python make_film.py render --res 2560x1120 --samples 64 --frames renders/film_hq
+```
+
+`bowl_scene.py` does not pass `--gpu` through `make_film.py` yet; add it to the
+command in `stage_render` on a GPU machine.
+
+What is and is not final about the preview:
+
+- The 3-D picture is 960x420 at 8 samples, scaled up 1.33x. Text, charts and
+  top-down views are drawn at full resolution.
+- The score is synthesized in `film_score.py` (marimba-like pattern, pad, a bell
+  per result) and levelled to about -16 LUFS. It has been checked for level and
+  clipping only; nobody has listened to it.
+- The cold open borrows four seconds of semi-final 1.
 
 ## What the literature says
 
