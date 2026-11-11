@@ -5,10 +5,10 @@ match is two simulated bowls of 23,273 grains each, and the bowl is loaded diffe
 wedges, then stripes, then rings), so a winner has to cope with a new problem to go through.
 
 **What is in the repository (`videos/powder_mixer/`):**
-* `the_mix_off_PREVIEW_720p.mp4`: 3:34, 1280×720, 24 fps, H.264. On-screen captions, no narration,
+* `the_mix_off_PREVIEW_720p.mp4`: 4:33, 1280×720, 24 fps, H.264. On-screen captions, no narration,
   original synthesized score at −16 LUFS.
-* This is a **preview**, not the upload. The 3-D picture was rendered on a CPU at 960×420 with 8 samples
-  and scaled up; the text, charts and top-down views are drawn at full resolution. For the upload,
+* This is a **preview**, not the upload. The 3-D picture was rendered on a CPU at 960×420 (854×480 for the
+  closing shots) with 8 samples and scaled up; the text, charts and top-down views are drawn at full resolution. For the upload,
   re-render on a GPU machine and re-compose (commands in `videos/powder_mixer/README.md`).
 * `same_spoon_two_ways_SHORT.mp4`: vertical 1080×1920, the first quarter-final on its own.
 
@@ -40,6 +40,8 @@ What it shows
 3. How you load the bowl matters. Rings are the hard case, because powder has to move in and out, not just round. That is also where the stand mixer did its best work: 94% in a separate 20-second test.
 4. Grain size did not change the winner: from 1.4 to 2.4 mm grains the spoon and whisk stayed on top (the fork got worse as the grains got finer). Speed did not matter for the hand tools, but it did for the machines: at double speed the stand mixer's paddle improved to 97% and the hand mixer dropped to 54%.
 
+And then a minute of satisfying blending: eight bowls loaded as a checkerboard, coloured squares and pixel art (a smiley, a heart, an apple tree, a house, a flower, a rainbow), each stirred by a different tool. No scores.
+
 What this is, and is not
 This is a physics simulation of dry, free-flowing grains of equal size: no clumping, no dust cloud, no butter. The bowl is a half-scale model of a 22 cm kitchen bowl. The hand tools move at 1.5 strokes a second, the stand mixer at 0.8 orbits a second, the hand mixer's beaters at 5 turns a second, which is on the slow side for a real one. Change those speeds and the machines' scores change; the hand tools' strokes-to-mix does not. There is no published experiment on spoon or whisk strokes for dry powders to check the hand-tool results against.
 
@@ -53,6 +55,7 @@ This is a physics simulation of dry, free-flowing grains of equal size: no clump
 2:10 Semi-final 2: whisk vs fork
 2:32 The final: spoon vs whisk, on rings
 2:55 The champion, and what it shows
+3:29 And now, some satisfying blending
 
 How it's made: the grains are simulated with position-based dynamics with friction, at a 1 ms time step. The pictures are rendered in Blender from the simulated grain positions, and every number on screen is measured from the same grains. Code, data and method: https://github.com/drburke-droid/nhl-sog-predictor/tree/master/videos/powder_mixer
 
@@ -74,6 +77,7 @@ Music: an original score, synthesized for this video (no samples).
 2:10 Semi-final 2: whisk vs fork
 2:32 The final: spoon vs whisk, on rings
 2:55 The champion, and what it shows
+3:29 And now, some satisfying blending
 ```
 
 **Tags:** mixing, baking, dry ingredients, whisk, stand mixer, hand mixer, spoon, physics simulation,

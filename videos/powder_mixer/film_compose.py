@@ -478,7 +478,8 @@ def compose(args, matches):
         still("satisfying_title", card([("And now, some satisfying blending.", 54, "Bold", INK, 16),
                                         ("Same grains, same physics. No scores.", 24, "Medium", MUTED, 0)]), 2.6)
         for key, fdir, n, left, right in shots:
-            labels = [f"{ART[art][0]}  \u00b7  {short(tool).replace(', by hand', '')}" for art, tool in (left, right)]
+            tool_name = lambda t: "Spoon" if t == "spoon_circle" else short(t).replace(", by hand", "")
+            labels = [f"{ART[art][0]}  \u00b7  {tool_name(tool)}" for art, tool in (left, right)]
 
             def shot(i):
                 im = Image.open(os.path.join(fdir, f"f_{i + 1:04d}.png")).convert("RGB").resize((spx(W), spx(H)), Image.LANCZOS)

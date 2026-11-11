@@ -311,6 +311,9 @@ def build(args):
     if not args.no_hud:
         build_hud(stations, cam, B.load_font(), scene)
     B.setup_render(scene, args)
+    # Reusing scene data between frames once left a tool rendered solid black for
+    # 116 consecutive frames of an animation (fine when rendered alone), so it is off here.
+    scene.render.use_persistent_data = False
     return scene
 
 

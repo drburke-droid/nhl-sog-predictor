@@ -27,7 +27,7 @@ the percentage is measured from the simulated grains.
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
 | `patterns.py` | Squares and 16x16 pixel art used to load the bowls in the film's closing section. |
-| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:34, 1280x720). |
+| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (4:33, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |
@@ -296,16 +296,22 @@ through. The bracket is decided by the simulations, not written into the code.
 | Semi-final 2 | stripes | Whisk 97% beat fork 79% |
 | Final | rings | Whisk 94% beat spoon 88% |
 
+After the takeaways the film closes with "And now, some satisfying blending":
+four shots of two bowls each, seen from a steep angle with only the tool in
+frame, loaded as a checkerboard, coloured squares and 16x16 pixel art (smiley,
+heart, apple tree, house, flower, rainbow; `patterns.py`). Those bowls use 1.5 mm
+grains (39,680 each) and run 12 seconds; they are not scored.
+
 These are 15-second runs, so the figures are a little lower than the 20-second
 table above. The final was close: the spoon reached 90% at 13.4 s and then
 slipped back as it lifted out.
 
 ```bash
-python make_film.py sims          # 14 simulations, about 40 min on 4 cores
+python make_film.py sims          # 22 simulations, about an hour on 4 cores
 ```
 
 ```bash
-python make_film.py render        # 7 x 376 frames; about 3.5 h on a 4-core CPU at 960x420, 8 samples
+python make_film.py render        # 7 matches and 4 closing shots; about 5.5 h on a 4-core CPU at preview size
 ```
 
 ```bash
@@ -360,6 +366,8 @@ What is and is not final about the preview:
   per result) and levelled to about -16 LUFS. It has been checked for level and
   clipping only; nobody has listened to it.
 - The cold open borrows four seconds of semi-final 1.
+- The preview is encoded at a lower quality setting (`--crf 25`) to stay under
+  GitHub's 100 MB file limit.
 
 ## What the literature says
 
