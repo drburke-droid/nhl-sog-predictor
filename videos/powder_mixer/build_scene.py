@@ -464,19 +464,38 @@ def build(args):
     m_glass.use_nodes = True
     nt = m_glass.node_tree
     b = nt.nodes["Principled BSDF"]
-    b.inputs["Base Color"].default_value = (0.93, 0.98, 0.97, 1)
-    b.inputs["Roughness"].default_value = 0.0
-    b.inputs["IOR"].default_value = 1.47
-    b.inputs["Transmission Weight"].default_value = 1.0
-    # let light through to the powder: shadow rays see clear glass
     out = nt.nodes["Material Output"]
-    mix = nt.nodes.new("ShaderNodeMixShader")
     tr = nt.nodes.new("ShaderNodeBsdfTransparent")
-    tr.inputs["Color"].default_value = (0.9, 0.96, 0.95, 1)
-    lp = nt.nodes.new("ShaderNodeLightPath")
-    nt.links.new(lp.outputs["Is Shadow Ray"], mix.inputs["Fac"])
-    nt.links.new(b.outputs["BSDF"], mix.inputs[1])
-    nt.links.new(tr.outputs["BSDF"], mix.inputs[2])
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    if args.real_glass:
+        # physically refracting glass.  Correct, but the rounded corners and the
+        # base act as lenses: at grazing angles they show streaky, internally
+        # reflected images of the grains and the dark belt.
+        b.inputs["Base Color"].default_value = (0.93, 0.98, 0.97, 1)
+        b.inputs["Roughness"].default_value = 0.0
+        b.inputs["IOR"].default_value = 1.47
+        b.inputs["Transmission Weight"].default_value = 1.0
+        tr.inputs["Color"].default_value = (0.9, 0.96, 0.95, 1)
+        lp = nt.nodes.new("ShaderNodeLightPath")      # shadow rays see clear glass
+        nt.links.new(lp.outputs["Is Shadow Ray"], mix.inputs["Fac"])
+        nt.links.new(b.outputs["BSDF"], mix.inputs[1])
+        nt.links.new(tr.outputs["BSDF"], mix.inputs[2])
+    else:
+        # "clean" glass (default): light passes straight through, so the grains
+        # are never bent or smeared, plus a view-dependent reflection that keeps
+        # the rim highlights and the glassy sheen.
+        tr.inputs["Color"].default_value = (0.955, 0.985, 0.975, 1)
+        gl = nt.nodes.new("ShaderNodeBsdfGlossy")
+        gl.inputs["Roughness"].default_value = 0.03
+        lw = nt.nodes.new("ShaderNodeLayerWeight")
+        lw.inputs["Blend"].default_value = 0.22
+        mr = nt.nodes.new("ShaderNodeMapRange")
+        mr.inputs["To Min"].default_value = 0.035
+        mr.inputs["To Max"].default_value = 0.42
+        nt.links.new(lw.outputs["Facing"], mr.inputs["Value"])
+        nt.links.new(mr.outputs["Result"], mix.inputs["Fac"])
+        nt.links.new(tr.outputs["BSDF"], mix.inputs[1])
+        nt.links.new(gl.outputs["BSDF"], mix.inputs[2])
     nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
     m_steel = principled("Steel", (0.82, 0.83, 0.85), rough=0.16, metallic=1.0)
@@ -727,6 +746,8 @@ def main():
     ap.add_argument("--gpu", action="store_true")
     ap.add_argument("--fast", action="store_true", help="preview quality (fewer bounces)")
     ap.add_argument("--no-hud", action="store_true")
+    ap.add_argument("--real-glass", action="store_true",
+                    help="physically refracting dish (lens streaks at the corners) instead of clean glass")
     ap.add_argument("--no-dof", action="store_true")
     ap.add_argument("--motion-blur", action="store_true")
     ap.add_argument("--elev", type=float, default=37.0, help="camera elevation (deg)")
