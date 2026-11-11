@@ -28,11 +28,14 @@ CACHE = os.path.join(HERE, "cache", "film")
 SECONDS = 15.0
 ROUNDS = [("Quarter-final", "wedges", "pie wedges"), ("Semi-final", "stripes", "stripes"), ("Final", "rings", "rings")]
 QUARTERS = [("spoon", "spoon_centre"), ("paddle_large", "wire_whip"), ("whisk", "twin_beaters"), ("fork", "paddle_small")]
+# Which bowl the eventual winner of each match stands at, so that one side does not win every time.
+# The bowls are independent simulations, so the side changes nothing but the picture.
+WINNER_SIDE = "LRRLRLR"
 # the closing "satisfying blending" minute: two bowls a shot, each (pixel art, tool)
 SATISFYING = [("X1", ("checkerboard", "spoon"), ("squares", "paddle_small")),
               ("X2", ("face", "whisk"), ("heart", "paddle_large")),
-              ("X3", ("tree", "fork"), ("house", "twin_beaters")),
-              ("X4", ("flower", "spoon_circle"), ("rainbow", "wire_whip"))]
+              ("X3", ("rocket", "fork"), ("alien", "twin_beaters")),
+              ("X4", ("floppy", "spoon_circle"), ("potion", "wire_whip"))]
 ART_SECONDS, ART_GRAIN = 12.0, 1.5
 STEEP = ["--bare", "--elev", "66", "--dist", "455", "--target", "0,0,8"]     # camera for those shots
 
@@ -61,6 +64,8 @@ def bracket():
         for k, (a, b) in enumerate(pairs):
             ra, rb = result(load, a), result(load, b)
             w = None if ra is None or rb is None else (a if ra >= rb else b)
+            if w is not None and (w == a) != (WINNER_SIDE[len(matches)] == "L"):
+                a, b, ra, rb = b, a, rb, ra
             name = rname if len(pairs) == 1 else f"{rname} {k + 1}"
             matches.append(dict(round=r, k=k, name=name, load=load, a=a, b=b, ra=ra, rb=rb, winner=w,
                                 key=f"{'QSF'[r]}{k + 1}"))

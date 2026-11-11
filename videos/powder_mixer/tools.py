@@ -66,6 +66,23 @@ def fork_outline(n=4, pitch=6.0, tine_w=2.0, tine_len=26.0, bridge=7.0):
     return outer + [(half, H)], []
 
 
+def fork_visual(top, n=4, pitch=6.0, tine_w=2.0, tine_len=26.0, bridge=7.0):
+    """What the fork looks like (render only): the same tines and bridge the
+    physics uses, with rounded tips, shoulders, a neck and a flat handle up to `top`."""
+    half = (n - 1) * pitch / 2 + tine_w / 2
+    H = tine_len + bridge
+    neck, hw_top, sh = 2.4, 4.6, 14.0
+    right = [(neck + (half - neck) * (1 + math.cos(math.pi * t / 8)) / 2, H + sh * t / 8) for t in range(9)]
+    right += [(neck, H + sh + 8.0), (hw_top, top)]
+    pts = [(-x, z) for x, z in reversed(right)] + [(-half, tine_len)]
+    c = 0.7
+    for k in range(n):
+        x0 = -half + k * pitch
+        x1 = x0 + tine_w
+        pts += [(x0, tine_len), (x0, c), (x0 + c, 0.0), (x1 - c, 0.0), (x1, c), (x1, tine_len)]
+    return pts + right
+
+
 def spoon_outline(a=11.0, b=15.0, n=48):
     return [(a * math.cos(2 * math.pi * k / n), b + b * math.sin(2 * math.pi * k / n)) for k in range(n)], []
 
@@ -211,6 +228,14 @@ TOOLS = {
         label="Spoon, same circle every time", unit="strokes",
         parts=[dict(shape="spoon", p=dict(a=11.0, b=15.0), du=0.0, spin=0.0, phase=0.0)],
         orbit=1.5, e="fit", spiral=None),
+}
+# One identity colour per contestant, used for its mixer housing, name, bar and
+# chart line.  Every pair that meets in the knockout passes the colour-vision
+# checks (dataviz validator, all-pairs mode).
+TOOL_COLOR = {
+    "spoon": "#eb6834", "spoon_circle": "#eb6834", "spoon_centre": "#1baf7a", "whisk": "#2a78d6",
+    "fork": "#008300", "twin_beaters": "#e34948", "paddle_large": "#6250d6", "paddle_small": "#eda100",
+    "wire_whip": "#e87ba4",
 }
 CONTESTANTS = ["twin_beaters", "paddle_large", "paddle_small", "wire_whip", "whisk", "fork", "spoon", "spoon_centre"]
 

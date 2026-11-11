@@ -23,7 +23,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import build_scene as B           # noqa: E402
-from tools import build_tool, mix_curve, spoon_dish      # noqa: E402
+from tools import TOOL_COLOR, build_tool, fork_visual, mix_curve, spoon_dish      # noqa: E402
 
 HC = 80.0          # chuck height above the tool's bottom edge
 HEAD_R = 30.0      # radius of the cylindrical motor housing
@@ -71,6 +71,8 @@ def make_part_mesh(name, part, M, wood, parent, bare=False):
     g = part["geom"]
     H = g["H"]
     handle_mat = M["steel"]
+    shaft_top = 400.0 if bare else HC - 5.0
+    is_fork = part["shape"] == "fork"
     if g["kind"] == "outline":
         cu = bpy.data.curves.new(name, "CURVE")
         cu.dimensions = "2D"
@@ -78,7 +80,8 @@ def make_part_mesh(name, part, M, wood, parent, bare=False):
         cu.extrude = 0.55
         cu.bevel_depth = 0.25
         cu.bevel_resolution = 2
-        for pts in [g["outer"]] + g["holes"]:
+        outlines = [fork_visual(shaft_top)] if is_fork else [g["outer"]] + g["holes"]     # a fork gets its handle
+        for pts in outlines:
             sp = cu.splines.new("POLY")
             sp.points.add(len(pts) - 1)
             for q, (x, zz) in zip(sp.points, pts):
@@ -135,7 +138,8 @@ def make_part_mesh(name, part, M, wood, parent, bare=False):
     ob.parent = parent
     # handle / shaft up to the chuck
     r_h = 2.8 if g["kind"] in ("spoon",) else 2.4
-    B.cylinder(name + "Shaft", r_h, H - 2.0, 400.0 if bare else HC - 5.0, handle_mat, parent=parent)
+    if not is_fork:
+        B.cylinder(name + "Shaft", r_h, H - 2.0, shaft_top, handle_mat, parent=parent)
     if g["kind"] == "wires":
         B.cylinder(name + "Ferrule", 3.6, H - 3.0, H + 6.0, M["steel"], parent=parent, bevel=0.8)
     if not bare:
@@ -166,6 +170,9 @@ def make_station(tag, x0, cache_dir, M, wood, args, belt_w):
     mc.frame_start = 1.0
 
     bare = getattr(args, "bare", False)          # tool and shaft only: nothing between camera and bowl
+    M = dict(M)                                  # this station's mixer wears its contestant's colour
+    M["body"] = B.principled(tag + "Enamel", tuple(B.hex_lin(TOOL_COLOR[meta["tool"]])), rough=0.2,
+                             **{"Coat Weight": 0.6, "Coat Roughness": 0.05})
     # --- mixer: column behind the belt, cylindrical motor housing on a carriage -------
     y_col = belt_w / 2 + 40
     top = tg + bowl["clear"] + bowl["lift"] + HC + 22 + 2 * HEAD_R + 16

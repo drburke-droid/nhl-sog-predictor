@@ -12,7 +12,7 @@ import subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from tools import TOOLS, mix_curve
+from tools import TOOL_COLOR, TOOLS, fork_visual, mix_curve, shape_geometry
 
 W, H = 1280, 720
 PIC_H = 560                       # 3-D picture on top, data strip below
@@ -81,6 +81,61 @@ def text(d, xy, s, f, fill=INK, anchor="la"):
 
 def short(tool):
     return TOOLS[tool]["label"]
+
+
+def tool_rgb(tool):
+    h = TOOL_COLOR[tool].lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+_icons = {}
+
+
+def tool_icon(tool, size):
+    """Silhouette of a tool in its identity colour, as an RGBA image `size` layout units square."""
+    key = (tool, spx(size))
+    if key in _icons:
+        return _icons[key]
+    ss = 4
+    S = spx(size) * ss
+    col = tool_rgb(tool) + (255,)
+    polys, holes, lines = [], [], []
+    parts = TOOLS[tool]["parts"]
+    gap = 0.0
+    for k, p in enumerate(parts):
+        g = shape_geometry(p["shape"], p["p"])
+        H = g["H"]
+        dx = (k - (len(parts) - 1) / 2) * 24.0
+        if p["shape"] == "fork":
+            polys.append([(x + dx, z) for x, z in fork_visual(H + 30)])
+        elif g["kind"] in ("outline", "spoon"):
+            polys.append([(x + dx, z) for x, z in g["outer"]])
+            holes += [[(x + dx, z) for x, z in h] for h in g["holes"]]
+            lines.append(([(dx, H - 1), (dx, H + 22)], 3.4))
+        else:
+            for w in g["wires"]:
+                lines.append(([(x + dx, z) for x, _, z in w], 1.5))
+            lines.append(([(dx, H - 1), (dx, H + 16)], 3.4))
+    pts = [q for poly in polys for q in poly] + [q for ln, _ in lines for q in ln]
+    xs, zs = [q[0] for q in pts], [q[1] for q in pts]
+    sc = 0.9 * S / max(max(xs) - min(xs), max(zs) - min(zs))
+    cx, cz = (max(xs) + min(xs)) / 2, (max(zs) + min(zs)) / 2
+    T = lambda q: (S / 2 + (q[0] - cx) * sc, S / 2 - (q[1] - cz) * sc)
+    im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    for poly in polys:
+        d.polygon([T(q) for q in poly], fill=col)
+    for h in holes:
+        d.polygon([T(q) for q in h], fill=(0, 0, 0, 0))
+    for ln, w in lines:
+        d.line([T(q) for q in ln], fill=col, width=max(2, int(round(w * sc))), joint="curve")
+    _icons[key] = im.resize((spx(size), spx(size)), Image.LANCZOS)
+    return _icons[key]
+
+
+def paste_icon(canvas, tool, size, x, y):
+    ic = tool_icon(tool, size)
+    canvas.paste(ic, (spx(x), spx(y)), ic)
 
 
 # ---------------------------------------------------------------------------
@@ -153,7 +208,8 @@ def chart(a, b, i, n, w=300, h=118, seconds=15.0):
             text(d, (x0 - 6 * q, Y(v)), lab, font(10 * ss, "Medium"), MUTED, "rm")
     for s in (0, 5, 10, 15):
         text(d, (X(s), y1 + 5 * q), f"{s} s", font(10 * ss, "Medium"), MUTED, "ma")
-    for run, col in ((a, SIDE[0]), (b, SIDE[1])):
+    for run in (a, b):
+        col = tool_rgb(run.meta["tool"])
         k = min(i, run.n - 1)
         pts = [(X(run.t[j]), Y(run.mix[j])) for j in range(0, k + 1)]
         if len(pts) > 1:
@@ -210,14 +266,15 @@ def match_frame(m, a, b, i, frames_dir, winner=None, badge=0.0):
     # data strip
     ds = 128
     for side, run in ((0, a), (1, b)):
-        col = SIDE[side]
+        col = tool_rgb(run.meta["tool"])
         lose = winner is not None and winner != side
         dx = 22 if side == 0 else W - 22 - ds
         paste_disc(canvas, run.disc(k, ds), dx, PIC_H + 16)
         tx = dx + ds + 22 if side == 0 else dx - 22
         anc = "l" if side == 0 else "r"
         ink = MUTED if lose and badge > 0.5 else INK
-        text(d, (tx, PIC_H + 20), run.label.upper(), font(15, "Bold"), ink, anc + "a")
+        paste_icon(canvas, run.meta["tool"], 30, tx if side == 0 else tx - 30, PIC_H + 12)
+        text(d, (tx + 38 if side == 0 else tx - 38, PIC_H + 20), run.label.upper(), font(15, "Bold"), ink, anc + "a")
         pct = f"{100 * run.mix[k]:.0f}%"
         text(d, (tx, PIC_H + 40), pct, font(58, "Bold", True), ink, anc + "a")
         bw = 250
@@ -269,48 +326,18 @@ def card(lines, discs=None, footer=None):
     return im
 
 
-def bracket_card(matches, runs, highlight=None, title="THE DRAW"):
-    """The knockout tree, filled in as far as it has been played."""
+def champion_card(m, runs):
+    """The winner of the final, in its colour."""
+    win = m["winner"]
+    lose = m["b"] if win == m["a"] else m["a"]
+    rw, rl = (m["ra"], m["rb"]) if win == m["a"] else (m["rb"], m["ra"])
     im = new_canvas()
     d = Draw(im)
-    text(d, (W // 2, 44), title, font(30, "Bold", True), INK, "mm")
-    cols = [110, 500, 860]
-    bw, bh = 310, 34
-    pos = {}
-    by_round = {r: [m for m in matches if m["round"] == r] for r in range(3)}
-    ys = {0: [150 + k * 132 for k in range(4)], 1: [216, 480], 2: [348]}
-    for r in range(3):
-        slots = by_round[r] or []
-        n_expected = [4, 2, 1][r]
-        for k in range(n_expected):
-            y = ys[r][k]
-            # a later round's names appear only once the round feeding it has been shown
-            known = r == 0 or (highlight is not None and highlight >= (r - 1, [3, 1][r - 1]))
-            m = slots[k] if k < len(slots) and known else None
-            played = m is not None and highlight is not None and (m["round"], m["k"]) <= highlight
-            for j, key in enumerate(("a", "b")):
-                yy = y + j * (bh + 6)
-                box = (cols[r], yy, cols[r] + bw, yy + bh)
-                name = short(m[key]) if m else ""
-                won = played and m["winner"] == m[key]
-                lost = played and not won
-                d.rounded_rectangle(box, 8, fill=(255, 255, 255), outline=INK if won else HAIR, width=2 if won else 1)
-                if name:
-                    text(d, (box[0] + 12, yy + bh // 2), name, font(15, "Bold" if won else "Medium"), MUTED if lost else INK, "lm")
-                    if played:
-                        v = m["ra"] if key == "a" else m["rb"]
-                        text(d, (box[2] - 12, yy + bh // 2), f"{100 * v:.0f}%", font(15, "Bold" if won else "Medium"),
-                             MUTED if lost else INK, "rm")
-            pos[(r, k)] = (cols[r] + bw, y + bh + 3)
-            if r > 0:                      # connectors from the two feeder matches
-                for src in (2 * k, 2 * k + 1):
-                    sx, sy = pos[(r - 1, src)]
-                    tx, ty = cols[r], y + bh + 3
-                    mx = (sx + tx) // 2
-                    d.line((sx, sy, mx, sy, mx, ty, tx, ty), fill=TRACK, width=2)
-    for r, (lab, load) in enumerate((("QUARTER-FINALS", "pie wedges"), ("SEMI-FINALS", "stripes"), ("FINAL", "rings"))):
-        text(d, (cols[r], 96), lab, font(14, "Bold"), INK, "la")
-        text(d, (cols[r], 116), load, font(13, "Medium"), MUTED, "la")
+    text(d, (W // 2, 150), "CHAMPION", font(26, "Bold"), MUTED, "mm")
+    paste_icon(im, win, 150, W // 2 - 75, 190)
+    text(d, (W // 2, 410), short(win).replace(", by hand", "").upper(), font(96, "Black", True), tool_rgb(win), "mm")
+    text(d, (W // 2, 500), f"{100 * rw:.0f}% mixed in the final, against the {short(lose).lower()}'s {100 * rl:.0f}%",
+         font(24, "Medium"), MUTED, "mm")
     return im
 
 
@@ -318,21 +345,22 @@ def contestants_card():
     im = new_canvas()
     d = Draw(im)
     text(d, (W // 2, 70), "The contestants", font(40, "Bold", True), INK, "mm")
-    cols = [("BY HAND", 130, [("Spoon", "stirred in a spiral through the whole bowl"),
-                              ("Fork", "the same spiral"),
-                              ("Whisk", "the same spiral"),
-                              ("Spoon twirled in the middle", "spins on the spot")]),
-            ("BY MACHINE", 690, [("Stand mixer, large paddle", "orbits the bowl while it spins"),
-                                 ("Stand mixer, small paddle", "same motion, a much smaller paddle"),
-                                 ("Stand mixer, wire whip", "same motion, wires instead of a blade"),
-                                 ("Hand mixer", "twin beaters carried round the bowl")])]
+    cols = [("BY HAND", 110, [("spoon", "Spoon", "stirred in a spiral through the whole bowl"),
+                              ("fork", "Fork", "the same spiral"),
+                              ("whisk", "Whisk", "the same spiral"),
+                              ("spoon_centre", "Spoon twirled in the middle", "spins on the spot")]),
+            ("BY MACHINE", 680, [("paddle_large", "Stand mixer, large paddle", "orbits the bowl while it spins"),
+                                 ("paddle_small", "Stand mixer, small paddle", "same motion, a much smaller paddle"),
+                                 ("wire_whip", "Stand mixer, wire whip", "same motion, wires instead of a blade"),
+                                 ("twin_beaters", "Hand mixer", "twin beaters carried round the bowl")])]
     for head, x, rows in cols:
         text(d, (x, 150), head, font(15, "Bold"), MUTED, "la")
         d.line((x, 176, x + 460, 176), fill=HAIR, width=2)
         y = 200
-        for name, how in rows:
-            text(d, (x, y), name, font(25, "SemiBold"), INK, "la")
-            text(d, (x, y + 34), how, font(18, "Medium"), MUTED, "la")
+        for tool, name, how in rows:
+            paste_icon(im, tool, 54, x, y - 2)
+            text(d, (x + 72, y), name, font(25, "SemiBold"), INK, "la")
+            text(d, (x + 72, y + 34), how, font(18, "Medium"), MUTED, "la")
             y += 104
     text(d, (W // 2, H - 44), "Hand tools: 1.5 strokes a second.  Stand mixer: 0.8 orbits a second.  Hand mixer: 5 turns a second.",
          font(15, "Medium"), MUTED, "mm")
@@ -409,7 +437,6 @@ def compose(args, matches):
                           discs=[(ref.disc(0, 170), "0% mixed"), (ref.disc(i50, 170), "50%"),
                                  (ref.disc(ref.n - 1, 170), f"{100 * ref.mix[-1]:.0f}%")]), 5.0)
     still("contestants", contestants_card(), 5.5)
-    still("draw", bracket_card(matches, runs, None), 4.0)
 
     # ---- matches ------------------------------------------------------------
     last_round = None
@@ -441,13 +468,10 @@ def compose(args, matches):
         emit(match_frame(m, a, b, n - 1, fdir, win, 1.0), int(2.2 * FPS))
         end()
         print("composed", m["key"], f"{state['n'] / FPS:.1f} s", flush=True)
-        round_over = idx + 1 == len(matches) or matches[idx + 1]["round"] != m["round"]
-        if round_over and m["round"] < 2:
-            still(f"draw_after_{m['round']}", bracket_card(matches, runs, (m["round"], m["k"]), "THE DRAW"), 3.5)
 
     # ---- closing ------------------------------------------------------------
     champ = matches[-1]["winner"]
-    still("champion", bracket_card(matches, runs, (2, 0), f"CHAMPION: {short(champ).upper()}"), 4.5)
+    still("champion", champion_card(matches[-1], runs), 4.5)
     for k in range(len(TAKEAWAYS)):
         still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5 if k < 3 else 5.0)
     still("research", card([("What published experiments say", 34, "Bold", INK, 18),
