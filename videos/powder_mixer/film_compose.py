@@ -334,6 +334,25 @@ def compose(args, matches):
         end()
 
     # ---- opening ------------------------------------------------------------
+    # cold open: a few seconds of the semi-final under the question the film answers
+    tm = next((m for m in matches if m["key"] == "S1"), matches[0])
+    tdir = os.path.join(args.frames, tm["key"], "frames")
+    t0, t1 = 36, 150
+    have = [i for i in range(t0, t1) if os.path.exists(os.path.join(tdir, f"f_{i + 1:04d}.png"))
+            and os.path.getsize(os.path.join(tdir, f"f_{i + 1:04d}.png")) > 0]
+    if have:
+        def teaser(i):
+            im = Image.new("RGB", (W, H), PAPER)
+            im.paste(picture(os.path.join(tdir, f"f_{i + 1:04d}.png")), (0, 0))
+            d = ImageDraw.Draw(im)
+            d.line((0, PIC_H, W, PIC_H), fill=HAIR, width=1)
+            text(d, (W // 2, PIC_H + 58), "What is the best way to mix dry ingredients?", font(44, "Bold", True), INK, "mm")
+            text(d, (W // 2, PIC_H + 116), "We simulated eight of them, grain by grain.", font(22, "Medium"), MUTED, "mm")
+            return im
+        begin("cold_open", teaser(have[0]))
+        for i in have:
+            emit(teaser(i))
+        end()
     still("title", card([("THE MIX-OFF", 92, "Black", INK, 22),
                          ("Eight ways to mix dry ingredients. One bowl. Fifteen seconds each.", 26, "Medium", MUTED, 0)],
                         footer=f"A grain-by-grain physics simulation: {ref.N:,} grains per bowl"), 3.5)
