@@ -17,8 +17,9 @@ PANELS = [
                       ("twin_fork", "Fork", C2)]),
     ("One paddle or two", [("twin_gate", "Two (film)", BASE), ("single_wide", "One wide", C1),
                            ("single_small", "One small", C2)]),
-    ("How it is driven", [("twin_gate", "Film speed", BASE), ("twin_half_speed", "Half speed", C1),
-                          ("twin_double_speed", "Double speed", C3), ("twin_alternate", "Reversing", C2)]),
+    ("How it is driven", [("twin_gate", "1 turn/s", BASE), ("twin_half_speed", "0.5 turn/s", C1),
+                          ("twin_double_speed", "2 turns/s", C3),
+                          ("twin_alternate", "Reversing", C2)]),
 ]
 
 
@@ -51,9 +52,10 @@ def main():
                         textcoords="offset points", color=INK2, fontsize=9.5,
                         arrowprops=dict(arrowstyle="-", color=INK2, lw=0.8))
         # direct labels at the line ends, nudged apart so they never collide
-        ends.sort()
+        ends.sort(reverse=True)
+        ends[0][0] = min(ends[0][0], 98.5)
         for i in range(1, len(ends)):
-            ends[i][0] = max(ends[i][0], ends[i - 1][0] + 5.5)
+            ends[i][0] = min(ends[i][0], ends[i - 1][0] - 5.5)
         for y, x, text, col in ends:
             ax.plot([x + 0.4, x + 1.2], [y, y], color=col, lw=2, solid_capstyle="round", clip_on=False)
             ax.text(x + 1.6, y, text, color=INK, va="center", fontsize=10.5, clip_on=False)
@@ -71,9 +73,9 @@ def main():
     axes[0].set_ylabel("% mixed", color=INK2)
     fig.suptitle("How many paddle turns until the powders are mixed?", x=0.012, ha="left",
                  color=INK, fontsize=16, fontweight="bold")
-    fig.text(0.012, 0.905, f"Simulated dish of six powders, about {grains:,} grains. Each dot is one pass under the mixer. "
+    fig.text(0.012, 0.905, f"Simulated dish of six powders, about {round(grains, -3):,} grains. Each dot is one pass under the mixer. "
              "100% = indistinguishable from a random shuffle.", color=INK2, fontsize=10.5)
-    fig.subplots_adjust(left=0.05, right=0.9, top=0.8, bottom=0.12, wspace=0.62)
+    fig.subplots_adjust(left=0.045, right=0.87, top=0.8, bottom=0.12, wspace=0.72)
     out = os.path.join(HERE, "experiments", "mixing_vs_revolutions.png")
     fig.savefig(out, dpi=160, facecolor=SURFACE)
     print("wrote", out)

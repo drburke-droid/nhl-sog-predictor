@@ -1,14 +1,120 @@
 design,label,grains,pass,paddle_revolutions,percent_mixed
+twin_gate,Twin gate paddles (the film),36243,0,0.00,0.0
+twin_gate,Twin gate paddles (the film),36243,1,1.95,28.0
+twin_gate,Twin gate paddles (the film),36243,2,3.90,43.6
+twin_gate,Twin gate paddles (the film),36243,3,5.85,53.4
+twin_gate,Twin gate paddles (the film),36243,4,7.80,59.7
+twin_gate,Twin gate paddles (the film),36243,5,9.75,66.4
+twin_gate,Twin gate paddles (the film),36243,6,11.70,72.6
+twin_gate,Twin gate paddles (the film),36243,7,13.65,78.3
+twin_gate,Twin gate paddles (the film),36243,8,15.60,83.6
+twin_gate,Twin gate paddles (the film),36243,9,17.55,87.6
+twin_gate,Twin gate paddles (the film),36243,10,19.50,90.5
+twin_gate,Twin gate paddles (the film),36243,11,21.45,92.9
+twin_gate,Twin gate paddles (the film),36243,12,23.40,95.0
+twin_gate,Twin gate paddles (the film),36243,13,25.35,96.3
+twin_gate,Twin gate paddles (the film),36243,14,27.30,97.0
+twin_gate,Twin gate paddles (the film),36243,15,29.25,97.7
+twin_gate,Twin gate paddles (the film),36243,16,31.20,97.9
+twin_plate,Twin solid plates,36243,0,0.00,0.0
+twin_plate,Twin solid plates,36243,1,1.95,30.4
+twin_plate,Twin solid plates,36243,2,3.90,46.6
+twin_plate,Twin solid plates,36243,3,5.85,56.5
+twin_plate,Twin solid plates,36243,4,7.80,62.9
+twin_plate,Twin solid plates,36243,5,9.75,69.5
+twin_plate,Twin solid plates,36243,6,11.70,75.7
+twin_plate,Twin solid plates,36243,7,13.65,81.9
+twin_plate,Twin solid plates,36243,8,15.60,86.6
+twin_plate,Twin solid plates,36243,9,17.55,90.1
+twin_plate,Twin solid plates,36243,10,19.50,93.5
+twin_plate,Twin solid plates,36243,11,21.45,95.2
+twin_plate,Twin solid plates,36243,12,23.40,96.7
+twin_plate,Twin solid plates,36243,13,25.35,97.7
+twin_plate,Twin solid plates,36243,14,27.30,98.0
+twin_plate,Twin solid plates,36243,15,29.25,98.1
+twin_plate,Twin solid plates,36243,16,31.20,98.6
+twin_fork,Twin forks (3 tines a side),36243,0,0.00,0.0
+twin_fork,Twin forks (3 tines a side),36243,1,1.95,21.6
+twin_fork,Twin forks (3 tines a side),36243,2,3.90,35.2
+twin_fork,Twin forks (3 tines a side),36243,3,5.85,43.7
+twin_fork,Twin forks (3 tines a side),36243,4,7.80,48.8
+twin_fork,Twin forks (3 tines a side),36243,5,9.75,53.6
+twin_fork,Twin forks (3 tines a side),36243,6,11.70,58.5
+twin_fork,Twin forks (3 tines a side),36243,7,13.65,63.8
+twin_fork,Twin forks (3 tines a side),36243,8,15.60,68.4
+twin_fork,Twin forks (3 tines a side),36243,9,17.55,72.6
+twin_fork,Twin forks (3 tines a side),36243,10,19.50,77.1
+twin_fork,Twin forks (3 tines a side),36243,11,21.45,80.4
+twin_fork,Twin forks (3 tines a side),36243,12,23.40,83.1
+twin_fork,Twin forks (3 tines a side),36243,13,25.35,85.9
+twin_fork,Twin forks (3 tines a side),36243,14,27.30,88.1
+twin_fork,Twin forks (3 tines a side),36243,15,29.25,90.1
+twin_fork,Twin forks (3 tines a side),36243,16,31.20,92.0
+single_small,"One gate paddle, same size",36243,0,0.00,0.0
+single_small,"One gate paddle, same size",36243,1,1.95,19.3
+single_small,"One gate paddle, same size",36243,2,3.90,29.5
+single_small,"One gate paddle, same size",36243,3,5.85,38.2
+single_small,"One gate paddle, same size",36243,4,7.80,44.7
+single_small,"One gate paddle, same size",36243,5,9.75,50.0
+single_small,"One gate paddle, same size",36243,6,11.70,54.7
+single_small,"One gate paddle, same size",36243,7,13.65,58.7
+single_small,"One gate paddle, same size",36243,8,15.60,62.6
+single_small,"One gate paddle, same size",36243,9,17.55,65.3
+single_small,"One gate paddle, same size",36243,10,19.50,67.1
+single_small,"One gate paddle, same size",36243,11,21.45,69.3
+single_small,"One gate paddle, same size",36243,12,23.40,70.8
+single_small,"One gate paddle, same size",36243,13,25.35,72.5
+single_small,"One gate paddle, same size",36243,14,27.30,74.0
+single_small,"One gate paddle, same size",36243,15,29.25,75.3
+single_small,"One gate paddle, same size",36243,16,31.20,76.7
+single_wide,"One wide gate paddle, dish to match",32689,0,0.00,0.0
+single_wide,"One wide gate paddle, dish to match",32689,1,1.95,43.3
+single_wide,"One wide gate paddle, dish to match",32689,2,3.90,65.3
+single_wide,"One wide gate paddle, dish to match",32689,3,5.85,76.7
+single_wide,"One wide gate paddle, dish to match",32689,4,7.80,86.3
+single_wide,"One wide gate paddle, dish to match",32689,5,9.75,90.6
+single_wide,"One wide gate paddle, dish to match",32689,6,11.70,94.0
+single_wide,"One wide gate paddle, dish to match",32689,7,13.65,96.4
+single_wide,"One wide gate paddle, dish to match",32689,8,15.60,97.9
+single_wide,"One wide gate paddle, dish to match",32689,9,17.55,98.6
+single_wide,"One wide gate paddle, dish to match",32689,10,19.50,99.4
+single_wide,"One wide gate paddle, dish to match",32689,11,21.45,99.6
+single_wide,"One wide gate paddle, dish to match",32689,12,23.40,99.2
+single_wide,"One wide gate paddle, dish to match",32689,13,25.35,99.4
+single_wide,"One wide gate paddle, dish to match",32689,14,27.30,99.0
+single_wide,"One wide gate paddle, dish to match",32689,15,29.25,99.7
+single_wide,"One wide gate paddle, dish to match",32689,16,31.20,99.3
+twin_alternate,"Twin gate, reversing every pass",36243,0,0.00,0.0
+twin_alternate,"Twin gate, reversing every pass",36243,1,1.95,28.0
+twin_alternate,"Twin gate, reversing every pass",36243,2,3.90,44.5
+twin_alternate,"Twin gate, reversing every pass",36243,3,5.85,52.6
+twin_alternate,"Twin gate, reversing every pass",36243,4,7.80,61.7
+twin_alternate,"Twin gate, reversing every pass",36243,5,9.75,66.2
+twin_alternate,"Twin gate, reversing every pass",36243,6,11.70,72.0
+twin_alternate,"Twin gate, reversing every pass",36243,7,13.65,74.4
+twin_alternate,"Twin gate, reversing every pass",36243,8,15.60,78.2
+twin_alternate,"Twin gate, reversing every pass",36243,9,17.55,80.4
+twin_alternate,"Twin gate, reversing every pass",36243,10,19.50,82.9
+twin_alternate,"Twin gate, reversing every pass",36243,11,21.45,84.7
+twin_alternate,"Twin gate, reversing every pass",36243,12,23.40,86.1
+twin_alternate,"Twin gate, reversing every pass",36243,13,25.35,87.2
+twin_alternate,"Twin gate, reversing every pass",36243,14,27.30,88.3
+twin_alternate,"Twin gate, reversing every pass",36243,15,29.25,89.0
+twin_alternate,"Twin gate, reversing every pass",36243,16,31.20,90.2
 twin_double_speed,"Twin gate, double speed, same revolutions",36243,0,0.00,0.0
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,1,1.95,31.6
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,2,3.90,47.2
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,3,5.85,57.4
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,4,7.80,65.2
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,5,9.75,71.7
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,6,11.70,76.6
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,7,13.65,81.5
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,8,15.60,86.1
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,9,17.55,89.9
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,10,19.50,93.1
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,11,21.45,95.3
-twin_double_speed,"Twin gate, double speed, same revolutions",36243,12,23.39,96.7
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,1,1.95,27.0
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,2,3.90,40.9
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,3,5.85,51.2
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,4,7.80,59.0
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,5,9.75,65.4
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,6,11.70,71.7
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,7,13.65,77.1
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,8,15.60,81.4
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,9,17.55,84.3
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,10,19.50,88.0
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,11,21.45,90.1
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,12,23.40,92.3
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,13,25.35,93.8
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,14,27.30,94.6
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,15,29.25,95.7
+twin_double_speed,"Twin gate, double speed, same revolutions",36243,16,31.20,96.6
