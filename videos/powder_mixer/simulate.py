@@ -59,7 +59,7 @@ TIMING = dict(
     t_lift=0.35,          # head goes up
     t_out=1.25,           # accelerate away
     t_settle=0.5,         # grains keep settling this long after the lift
-    rev_per_s=1.0,        # paddle speed
+    rev_per_s=1.5,        # paddle speed (about 3 turns in the powder per pass)
     t_spin=0.45,          # paddle spin-up / spin-down time
     t_intro=0.6,          # extra hold on the untouched lanes at the start
     t_outro=2.0,          # hold on the final mix at the end
@@ -373,6 +373,8 @@ def main():
                     help="paddle shape: windowed frame, solid plate, or tines")
     ap.add_argument("--corotate", action="store_true",
                     help="twin paddles turn the same way instead of counter-rotating")
+    ap.add_argument("--max-dt", type=float, default=1.0,
+                    help="longest solver time step in ms (smaller = more accurate, slower)")
     ap.add_argument("--substep-factor", type=float, default=1.0,
                     help="multiply the solver substeps per frame (numerical convergence checks)")
     ap.add_argument("--no-cache", action="store_true",
@@ -463,7 +465,10 @@ def main():
     # time stepping: keep paddle tip travel per substep below 0.4 grain
     tip = omega * geo["paddle_r"]
     nsub = int(np.ceil(tip / fps / (0.4 * d)))
-    nsub = max(nsub, 8)
+    # ... and keep the time step short.  PBD lets stirred grains jitter by about
+    # g*dt^2 per step, which mixes them on its own: at dt = 4 ms the first pass
+    # read 55 % mixed, at 2 ms 34 %, at 1 ms 28 %, at 0.5 ms 25 %.
+    nsub = max(nsub, int(np.ceil(1000.0 / (fps * args.max_dt))))
     nsub = int(round(nsub * args.substep_factor))
     dt = 1.0 / fps / nsub
     print(f"substeps/frame: {nsub}  dt={dt*1e3:.3f} ms")

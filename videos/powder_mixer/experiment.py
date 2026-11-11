@@ -10,9 +10,9 @@ Runs simulate.py once per design (in parallel), then writes
     python experiment.py                  # all designs, ~36k grains each
     python experiment.py --grain 1.5 --passes 20 --jobs 4
 
-The solver time step matters: with simulate.py's default step the grains
-jitter enough to mix themselves, roughly doubling the first-pass figure.
---substep-factor 4 (the default here) is where the answer stops changing much.
+The solver time step matters: with a 4 ms step the grains jitter enough to mix
+themselves, roughly doubling the first-pass figure.  The default 1 ms limit
+(--max-dt) is where the answer stops changing much.
 """
 import argparse
 import csv
@@ -51,8 +51,8 @@ def run_one(name, args):
     if os.path.exists(os.path.join(out, "meta.json")) and not args.force:
         return name
     cmd = [sys.executable, os.path.join(HERE, "simulate.py"), "--no-cache", "--out", out,
-           "--grain", str(args.grain), "--passes", str(args.passes),
-           "--substep-factor", str(args.substep_factor)] + DESIGNS[name][1]
+           "--grain", str(args.grain), "--passes", str(args.passes), "--rev", "1.0",
+           "--max-dt", str(args.max_dt)] + DESIGNS[name][1]
     with open(os.path.join(args.work, name + ".log"), "w") as log:
         r = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
     if r.returncode:
@@ -64,7 +64,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--grain", type=float, default=1.8)
     ap.add_argument("--passes", type=int, default=16)
-    ap.add_argument("--substep-factor", type=float, default=4.0)
+    ap.add_argument("--max-dt", type=float, default=1.0, help="solver time step limit in ms")
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--work", default=os.path.join(HERE, "cache", "experiment_converged"))
     ap.add_argument("--only", nargs="*", help="subset of design names")
