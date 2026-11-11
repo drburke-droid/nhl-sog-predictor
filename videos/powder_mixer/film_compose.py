@@ -19,7 +19,8 @@ PIC_H = 560                       # 3-D picture on top, data strip below
 FPS = 24
 PAPER, INK, MUTED, TRACK, HAIR = (252, 252, 251), (20, 23, 28), (92, 90, 86), (222, 219, 212), (228, 226, 220)
 SIDE = [(42, 120, 214), (235, 104, 52)]          # left / right contestant
-GRAIN = np.array([[210, 54, 43], [242, 179, 29], [98, 163, 59], [44, 107, 209], [244, 239, 230], [91, 52, 32]], np.uint8)
+GRAIN = np.array([[210, 54, 43], [242, 179, 29], [98, 163, 59], [44, 107, 209], [244, 239, 230], [91, 52, 32],
+                  [181, 38, 110], [43, 43, 48]], np.uint8)
 ROUND_TEXT = {
     "wedges": ("QUARTER-FINALS", "Six powders, loaded as pie wedges", "Everyone gets the same bowl and 15 seconds."),
     "stripes": ("SEMI-FINALS", "New problem: stripes", "Now the powders have to cross the bowl, not just go round it."),
@@ -27,13 +28,50 @@ ROUND_TEXT = {
 }
 _fonts = {}
 
+# Everything below is laid out for a 1280 x 720 frame.  K scales it: 1.5 gives
+# 1920 x 1080, 3 gives 3840 x 2160.  Layout code keeps using 1280 x 720 units.
+K = 1.0
+
+
+def set_scale(k):
+    global K
+    K = float(k)
+
+
+def spx(v):
+    """Layout units to output pixels."""
+    return int(round(v * K))
+
+
+def new_canvas():
+    return Image.new("RGB", (spx(W), spx(H)), PAPER)
+
+
+class Draw:
+    """ImageDraw that takes layout units: positions, widths and radii are scaled by K."""
+
+    def __init__(self, im):
+        self.d = ImageDraw.Draw(im)
+
+    def line(self, xy, fill=None, width=1, joint=None):
+        self.d.line([v * K for v in xy], fill=fill, width=max(1, spx(width)), joint=joint)
+
+    def rounded_rectangle(self, box, radius, fill=None, outline=None, width=1):
+        self.d.rounded_rectangle([v * K for v in box], radius * K, fill=fill, outline=outline, width=max(1, spx(width)))
+
+    def textlength(self, s, font):
+        return self.d.textlength(s, font=font) / K
+
+    def text(self, xy, s, font=None, fill=None, anchor=None):
+        self.d.text((xy[0] * K, xy[1] * K), s, font=font, fill=fill, anchor=anchor)
+
 
 def font(size, weight="Regular", display=False):
-    key = (size, weight, display)
+    key = (spx(size), weight, display)
     if key not in _fonts:
         base = "/usr/share/fonts/opentype/inter/Inter%s-%s.otf" % ("Display" if display else "", weight)
         fb = "/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf" % ("-Bold" if weight in ("Bold", "ExtraBold", "Black", "SemiBold") else "")
-        _fonts[key] = ImageFont.truetype(base if os.path.exists(base) else fb, size)
+        _fonts[key] = ImageFont.truetype(base if os.path.exists(base) else fb, spx(size))
     return _fonts[key]
 
 
@@ -62,6 +100,7 @@ class Run:
     def disc(self, i, size):
         """Top-down picture of the bowl at frame i, as an RGBA disc."""
         ss = 2
+        size = spx(size)
         S = size * ss
         p = np.asarray(self.pos[i])
         px = S / (2 * self.R)
@@ -88,9 +127,11 @@ class Run:
 
 
 def paste_disc(canvas, disc, x, y, ring=TRACK):
+    """Paste a disc (already in output pixels) with its ring at layout position x, y."""
     s = disc.size[0]
+    x, y, e = spx(x), spx(y), spx(3)
     d = ImageDraw.Draw(canvas)
-    d.ellipse((x - 3, y - 3, x + s + 2, y + s + 2), fill=ring)
+    d.ellipse((x - e, y - e, x + s + e - 1, y + s + e - 1), fill=ring)
     canvas.paste(disc, (x, y), disc)
 
 
@@ -98,26 +139,28 @@ def paste_disc(canvas, disc, x, y, ring=TRACK):
 # match frames
 # ---------------------------------------------------------------------------
 def chart(a, b, i, n, w=300, h=118, seconds=15.0):
-    ss = 2
-    im = Image.new("RGB", (w * ss, h * ss), PAPER)
+    ss = 2                                  # drawn at twice the output size, then reduced
+    q = ss * K
+    im = Image.new("RGB", (int(round(w * q)), int(round(h * q))), PAPER)
     d = ImageDraw.Draw(im)
-    x0, x1, y0, y1 = 34 * ss, (w - 18) * ss, 8 * ss, (h - 20) * ss
+    lw = max(1, int(round(q)))
+    x0, x1, y0, y1 = 34 * q, (w - 18) * q, 8 * q, (h - 20) * q
     X = lambda t: x0 + (x1 - x0) * min(t / seconds, 1.0)
     Y = lambda v: y1 - (y1 - y0) * v
     for v, lab in ((0, "0"), (0.5, "50"), (0.9, "90"), (1.0, "")):
-        d.line((x0, Y(v), x1, Y(v)), fill=HAIR if v != 0.9 else (190, 187, 180), width=ss)
+        d.line((x0, Y(v), x1, Y(v)), fill=HAIR if v != 0.9 else (190, 187, 180), width=lw)
         if lab:
-            text(d, (x0 - 6 * ss, Y(v)), lab, font(10 * ss, "Medium"), MUTED, "rm")
+            text(d, (x0 - 6 * q, Y(v)), lab, font(10 * ss, "Medium"), MUTED, "rm")
     for s in (0, 5, 10, 15):
-        text(d, (X(s), y1 + 5 * ss), f"{s} s", font(10 * ss, "Medium"), MUTED, "ma")
+        text(d, (X(s), y1 + 5 * q), f"{s} s", font(10 * ss, "Medium"), MUTED, "ma")
     for run, col in ((a, SIDE[0]), (b, SIDE[1])):
         k = min(i, run.n - 1)
         pts = [(X(run.t[j]), Y(run.mix[j])) for j in range(0, k + 1)]
         if len(pts) > 1:
-            d.line(pts, fill=col, width=3 * ss, joint="curve")
+            d.line(pts, fill=col, width=int(round(3 * q)), joint="curve")
         px, py = pts[-1]
-        d.ellipse((px - 4 * ss, py - 4 * ss, px + 4 * ss, py + 4 * ss), fill=col, outline=PAPER, width=ss)
-    return im.resize((w, h), Image.LANCZOS)
+        d.ellipse((px - 4 * q, py - 4 * q, px + 4 * q, py + 4 * q), fill=col, outline=PAPER, width=lw)
+    return im.resize((spx(w), spx(h)), Image.LANCZOS)
 
 
 def count_word(run, i):
@@ -134,16 +177,16 @@ def picture(path):
     if h > th:
         top = (h - th) // 2
         im = im.crop((0, top, w, top + th))
-    return im.resize((W, PIC_H), Image.LANCZOS)
+    return im.resize((spx(W), spx(PIC_H)), Image.LANCZOS)
 
 
 def match_frame(m, a, b, i, frames_dir, winner=None, badge=0.0):
     """One composed frame.  winner/badge: after the bell, 0..1 fade-in of the result."""
     n = min(a.n, b.n)
     k = min(i, n - 1)
-    canvas = Image.new("RGB", (W, H), PAPER)
+    canvas = new_canvas()
     canvas.paste(picture(os.path.join(frames_dir, f"f_{k + 1:04d}.png")), (0, 0))
-    d = ImageDraw.Draw(canvas)
+    d = Draw(canvas)
     d.line((0, PIC_H, W, PIC_H), fill=HAIR, width=1)
     # header pill on the picture
     title = m["name"].upper()
@@ -192,7 +235,7 @@ def match_frame(m, a, b, i, frames_dir, winner=None, badge=0.0):
             d.rounded_rectangle(box, 15, fill=c)
             text(d, ((box[0] + box[2]) // 2, PIC_H + 73), lab, font(15, "Bold"), (255, 255, 255), "mm")
     ch = chart(a, b, k, n)
-    canvas.paste(ch, ((W - ch.size[0]) // 2, PIC_H + 18))
+    canvas.paste(ch, (spx((W - 300) // 2), spx(PIC_H + 18)))
     text(d, (W // 2 - 150 + 34, PIC_H + 10), "% MIXED", font(10, "Bold"), MUTED, "la")
     return canvas
 
@@ -205,13 +248,13 @@ ROUND_NAMES = {"wedges": "pie wedges", "stripes": "stripes", "rings": "rings"}
 # ---------------------------------------------------------------------------
 def card(lines, discs=None, footer=None):
     """Simple centred text card.  lines: list of (text, size, weight, colour, gap-after)."""
-    im = Image.new("RGB", (W, H), PAPER)
-    d = ImageDraw.Draw(im)
+    im = new_canvas()
+    d = Draw(im)
     total = sum(sz + gap for _, sz, _, _, gap in lines) + (240 if discs else 0)
     y = (H - total) // 2
     if discs:
         n = len(discs)
-        s = discs[0][0].size[0]
+        s = int(round(discs[0][0].size[0] / K))
         x = (W - (n * s + (n - 1) * 70)) // 2
         for dimg, cap in discs:
             paste_disc(im, dimg, x, y)
@@ -228,8 +271,8 @@ def card(lines, discs=None, footer=None):
 
 def bracket_card(matches, runs, highlight=None, title="THE DRAW"):
     """The knockout tree, filled in as far as it has been played."""
-    im = Image.new("RGB", (W, H), PAPER)
-    d = ImageDraw.Draw(im)
+    im = new_canvas()
+    d = Draw(im)
     text(d, (W // 2, 44), title, font(30, "Bold", True), INK, "mm")
     cols = [110, 500, 860]
     bw, bh = 310, 34
@@ -272,8 +315,8 @@ def bracket_card(matches, runs, highlight=None, title="THE DRAW"):
 
 
 def contestants_card():
-    im = Image.new("RGB", (W, H), PAPER)
-    d = ImageDraw.Draw(im)
+    im = new_canvas()
+    d = Draw(im)
     text(d, (W // 2, 70), "The contestants", font(40, "Bold", True), INK, "mm")
     cols = [("BY HAND", 130, [("Spoon", "stirred in a spiral through the whole bowl"),
                               ("Fork", "the same spiral"),
@@ -299,6 +342,7 @@ def contestants_card():
 # ---------------------------------------------------------------------------
 def compose(args, matches):
     from make_film import run_dir
+    set_scale(getattr(args, "scale", 1.0))
     if getattr(args, "partial", False):
         matches = [m for m in matches if m["winner"] is not None]
     runs = {}
@@ -308,7 +352,7 @@ def compose(args, matches):
     ref = runs[("wedges", "spoon")]
 
     # frames are streamed straight into ffmpeg; only the last one is kept (for cross-fades)
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{spx(W)}x{spx(H)}", "-r", str(FPS),
            "-i", "-", "-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", args.out]
     enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     state = dict(n=0, last=None)
@@ -344,9 +388,9 @@ def compose(args, matches):
             and os.path.getsize(os.path.join(tdir, f"f_{i + 1:04d}.png")) > 0]
     if have:
         def teaser(i):
-            im = Image.new("RGB", (W, H), PAPER)
+            im = new_canvas()
             im.paste(picture(os.path.join(tdir, f"f_{i + 1:04d}.png")), (0, 0))
-            d = ImageDraw.Draw(im)
+            d = Draw(im)
             d.line((0, PIC_H, W, PIC_H), fill=HAIR, width=1)
             text(d, (W // 2, PIC_H + 58), "What is the best way to mix dry ingredients?", font(44, "Bold", True), INK, "mm")
             text(d, (W // 2, PIC_H + 116), "We simulated eight of them, grain by grain.", font(22, "Medium"), MUTED, "mm")
@@ -405,17 +449,57 @@ def compose(args, matches):
     champ = matches[-1]["winner"]
     still("champion", bracket_card(matches, runs, (2, 0), f"CHAMPION: {short(champ).upper()}"), 4.5)
     for k in range(len(TAKEAWAYS)):
-        still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5 if k < 3 else 6.0)
+        still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5 if k < 3 else 5.0)
     still("research", card([("What published experiments say", 34, "Bold", INK, 18),
                             ("In industrial powder blenders, mixing depends on the number of turns, not the speed.", 21, "Medium", MUTED, 8),
                             ("Brone, Alexander & Muzzio, AIChE Journal, 1998", 15, "Medium", MUTED, 26),
                             ("In bladed mixers, two or three blades mix better than one or four.", 21, "Medium", MUTED, 8),
                             ("Boonkanokwong et al., Powder Technology, 2016", 15, "Medium", MUTED, 26),
-                            ("We found no published measurements of spoons or whisks in dry powder.", 21, "Medium", INK, 0)]), 7.0)
+                            ("We found no published measurements of spoons or whisks in dry powder.", 21, "Medium", INK, 0)]), 5.0)
     still("caveats", card([("What this is, and is not", 34, "Bold", INK, 18),
                            ("A physics simulation of dry, free-flowing grains of equal size.", 21, "Medium", MUTED, 8),
                            ("No clumping, no dust cloud, no butter. Machine speeds are typical low settings.", 21, "Medium", MUTED, 8),
-                           ("Every number on screen was measured from the simulated grains.", 21, "Medium", MUTED, 0)]), 5.0)
+                           ("Every number on screen was measured from the simulated grains.", 21, "Medium", MUTED, 0)]), 3.5)
+
+    # ---- and now, some satisfying blending -------------------------------------
+    from make_film import SATISFYING, art_dir
+    from patterns import ART
+    shots = []
+    for key, left, right in SATISFYING:
+        fdir = os.path.join(args.frames, key, "frames")
+        n = 0
+        while os.path.exists(os.path.join(fdir, f"f_{n + 1:04d}.png")) and os.path.getsize(os.path.join(fdir, f"f_{n + 1:04d}.png")) > 0:
+            n += 1
+        if getattr(args, "partial", False):
+            n = min(n, args.partial)
+        if n >= 2:
+            shots.append((key, fdir, n, left, right))
+    if shots:
+        still("satisfying_title", card([("And now, some satisfying blending.", 54, "Bold", INK, 16),
+                                        ("Same grains, same physics. No scores.", 24, "Medium", MUTED, 0)]), 2.6)
+        for key, fdir, n, left, right in shots:
+            labels = [f"{ART[art][0]}  \u00b7  {short(tool).replace(', by hand', '')}" for art, tool in (left, right)]
+
+            def shot(i):
+                im = Image.open(os.path.join(fdir, f"f_{i + 1:04d}.png")).convert("RGB").resize((spx(W), spx(H)), Image.LANCZOS)
+                d = Draw(im)
+                for side, lab in enumerate(labels):
+                    lw = d.textlength(lab, font=font(17, "SemiBold"))
+                    x0 = 24 if side == 0 else W - 24 - lw - 36
+                    d.rounded_rectangle((x0, H - 58, x0 + lw + 36, H - 22), 18, fill=(255, 255, 255), outline=HAIR)
+                    text(d, (x0 + 18, H - 40), lab, font(17, "SemiBold"), INK, "lm")
+                return im
+
+            first = shot(0)
+            begin(key, first)
+            emit(first, 20)                              # a beat on the untouched picture
+            for i in range(1, n):
+                emit(shot(i))
+            emit(state["last"], 10)
+            end()
+            print("composed", key, f"{state['n'] / FPS:.1f} s", flush=True)
+        still("end", card([("THE MIX-OFF", 76, "Black", INK, 20),
+                           ("Method, code and data are linked in the description.", 22, "Medium", MUTED, 0)]), 3.0)
     enc.stdin.close()
     enc.wait()
     json.dump(dict(fps=FPS, seconds=round(state["n"] / FPS, 2), segments=timeline,

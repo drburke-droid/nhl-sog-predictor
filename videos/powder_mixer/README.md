@@ -26,6 +26,7 @@ the percentage is measured from the simulated grains.
 | `bowl_scene.py` | Blender scene for one or two bowls under mixer heads, from `bowl_sim.py` caches. |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
+| `patterns.py` | Squares and 16x16 pixel art used to load the bowls in the film's closing section. |
 | `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:34, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
@@ -311,15 +312,45 @@ python make_film.py render        # 7 x 376 frames; about 3.5 h on a 4-core CPU 
 python make_film.py compose && python make_film.py finish
 ```
 
-For an upload-quality version, render larger on a GPU and compose again; the
-overlay scales with nothing to change:
+### Upload-quality version on a GPU machine
+
+The preview holds up on a phone. On a desktop or TV it is soft, because the 3-D
+picture is 960x420 scaled up. For the upload, re-render the picture large on a
+GPU and compose at 1080p or 4K; the overlay scales with it.
 
 ```bash
-python make_film.py render --res 2560x1120 --samples 64 --frames renders/film_hq
+pip install numpy numba pillow
 ```
 
-`bowl_scene.py` does not pass `--gpu` through `make_film.py` yet; add it to the
-command in `stage_render` on a GPU machine.
+```bash
+python make_film.py sims
+```
+
+```bash
+python make_film.py render --blender "/path/to/blender" --gpu --res 2560x1120 --sat-res 2560x1440 --samples 64 --frames renders/film_hq
+```
+
+```bash
+python make_film.py compose --frames renders/film_hq --scale 2 --out mix_off_1440p_silent.mp4
+```
+
+```bash
+python make_film.py finish --out mix_off_1440p_silent.mp4 --final the_mix_off_1440p.mp4 --crf 18
+```
+
+- `--blender` is the path to the Blender program (on Windows something like
+  `"C:\Program Files\Blender Foundation\Blender 4.5\blender.exe"`). Leave it
+  out to use the `bpy` Python module instead. The scripts were written and run
+  against Blender 5.3; 4.2 or newer should work but has not been tried.
+- `--scale` 1.5 is 1080p, 2 is 1440p, 3 is 4K. Match the render to it: the
+  match picture is `1280*scale` x `560*scale`, the closing shots `1280*scale` x
+  `720*scale`. For 4K that is `--res 3840x1680 --sat-res 3840x2160`.
+- The simulations take about an hour on one desktop and write about 3 GB of
+  caches, which is why they are not in the repository. They give the same
+  numbers every time.
+- Rendering skips frames that already exist, so it can be stopped and resumed.
+- The card fonts are Inter; without it installed the compositor falls back to
+  DejaVu Sans and the cards will look different.
 
 What is and is not final about the preview:
 

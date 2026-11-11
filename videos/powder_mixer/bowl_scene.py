@@ -66,7 +66,7 @@ def make_bowl(name, bowl, mat):
     return B.link(bpy.data.objects.new(name, me))
 
 
-def make_part_mesh(name, part, M, wood, parent):
+def make_part_mesh(name, part, M, wood, parent, bare=False):
     """Model of one tool part, in the frame the physics uses (x across, z up)."""
     g = part["geom"]
     H = g["H"]
@@ -135,10 +135,11 @@ def make_part_mesh(name, part, M, wood, parent):
     ob.parent = parent
     # handle / shaft up to the chuck
     r_h = 2.8 if g["kind"] in ("spoon",) else 2.4
-    B.cylinder(name + "Shaft", r_h, H - 2.0, HC - 5.0, handle_mat, parent=parent)
+    B.cylinder(name + "Shaft", r_h, H - 2.0, 400.0 if bare else HC - 5.0, handle_mat, parent=parent)
     if g["kind"] == "wires":
         B.cylinder(name + "Ferrule", 3.6, H - 3.0, H + 6.0, M["steel"], parent=parent, bevel=0.8)
-    B.cylinder(name + "Chuck", 6.2, HC - 7.0, HC, M["steel"], parent=parent, bevel=1.0)
+    if not bare:
+        B.cylinder(name + "Chuck", 6.2, HC - 7.0, HC, M["steel"], parent=parent, bevel=1.0)
     return ob
 
 
@@ -164,50 +165,54 @@ def make_station(tag, x0, cache_dir, M, wood, args, belt_w):
     mc.play_mode = "SCENE"               # sample k is frame k + 1
     mc.frame_start = 1.0
 
+    bare = getattr(args, "bare", False)          # tool and shaft only: nothing between camera and bowl
     # --- mixer: column behind the belt, cylindrical motor housing on a carriage -------
     y_col = belt_w / 2 + 40
     top = tg + bowl["clear"] + bowl["lift"] + HC + 22 + 2 * HEAD_R + 16
-    B.cylinder(tag + "Base", 44, B.FLOOR_Z, B.FLOOR_Z + 14, M["body"], parent=root, loc=(0, y_col + 6, 0), bevel=5, segs=64)
-    B.cylinder(tag + "Column", 15, B.FLOOR_Z + 8, top, M["steel"], parent=root, loc=(0, y_col, 0), segs=48)
-    B.cylinder(tag + "ColumnCap", 17, top, top + 6, M["body"], parent=root, loc=(0, y_col, 0), bevel=2.5)
+    if not bare:
+        B.cylinder(tag + "Base", 44, B.FLOOR_Z, B.FLOOR_Z + 14, M["body"], parent=root, loc=(0, y_col + 6, 0), bevel=5, segs=64)
+        B.cylinder(tag + "Column", 15, B.FLOOR_Z + 8, top, M["steel"], parent=root, loc=(0, y_col, 0), segs=48)
+        B.cylinder(tag + "ColumnCap", 17, top, top + 6, M["body"], parent=root, loc=(0, y_col, 0), bevel=2.5)
 
     head = B.link(bpy.data.objects.new(tag + "Head", None))      # origin: tool bottom, on the bowl axis
     head.parent = root
-    zc = HC + 22 + HEAD_R                                        # housing axis height above the tool bottom
-    y0, y1 = -HEAD_R + 4, y_col + 24
-    housing = B.cylinder(tag + "Housing", HEAD_R, -(y1 - y0) / 2, (y1 - y0) / 2, M["body"], parent=head, segs=96)
-    housing.rotation_euler = (math.radians(90), 0, 0)
-    housing.location = (0, (y0 + y1) / 2, zc)
-    md = housing.modifiers.new("Dome", "BEVEL")                  # rounded ends: a capsule
-    md.width = HEAD_R * 0.82
-    md.segments = 12
-    md.limit_method = "ANGLE"
-    for pnt in housing.data.polygons:
-        pnt.use_smooth = True
-    for yy, w in ((y0 + HEAD_R * 0.95, 4.0), (y_col - 22, 3.0)):  # chrome trim bands
-        ring = B.cylinder(tag + f"Band{yy:.0f}", HEAD_R + 0.5, -w / 2, w / 2, M["steel"], parent=head, segs=96, bevel=0.5)
-        ring.rotation_euler = (math.radians(90), 0, 0)
-        ring.location = (0, yy, zc)
-    knob = B.cylinder(tag + "Knob", 6.5, 0, 8, M["rubber"], parent=head, bevel=1.4)
-    knob.rotation_euler = (0, math.radians(90), 0)
-    knob.location = (HEAD_R - 2, y0 + HEAD_R + 22, zc + 4)
-    B.cylinder(tag + "Neck", 19, HC + 19, HC + 30, M["body"], parent=head, bevel=1.5, segs=64)
+    if not bare:
+        zc = HC + 22 + HEAD_R                                        # housing axis height above the tool bottom
+        y0, y1 = -HEAD_R + 4, y_col + 24
+        housing = B.cylinder(tag + "Housing", HEAD_R, -(y1 - y0) / 2, (y1 - y0) / 2, M["body"], parent=head, segs=96)
+        housing.rotation_euler = (math.radians(90), 0, 0)
+        housing.location = (0, (y0 + y1) / 2, zc)
+        md = housing.modifiers.new("Dome", "BEVEL")                  # rounded ends: a capsule
+        md.width = HEAD_R * 0.82
+        md.segments = 12
+        md.limit_method = "ANGLE"
+        for pnt in housing.data.polygons:
+            pnt.use_smooth = True
+        for yy, w in ((y0 + HEAD_R * 0.95, 4.0), (y_col - 22, 3.0)):  # chrome trim bands
+            ring = B.cylinder(tag + f"Band{yy:.0f}", HEAD_R + 0.5, -w / 2, w / 2, M["steel"], parent=head, segs=96, bevel=0.5)
+            ring.rotation_euler = (math.radians(90), 0, 0)
+            ring.location = (0, yy, zc)
+        knob = B.cylinder(tag + "Knob", 6.5, 0, 8, M["rubber"], parent=head, bevel=1.4)
+        knob.rotation_euler = (0, math.radians(90), 0)
+        knob.location = (HEAD_R - 2, y0 + HEAD_R + 22, zc + 4)
+        B.cylinder(tag + "Neck", 19, HC + 19, HC + 30, M["body"], parent=head, bevel=1.5, segs=64)
 
     rotor = B.link(bpy.data.objects.new(tag + "Rotor", None))
     rotor.parent = head
-    B.cylinder(tag + "Hub", 22, HC + 9, HC + 20, M["steel"], parent=rotor, bevel=1.5, segs=64)
     dus = [p["du"] for p in tool["parts"]]
     reach = max(float(z["e"].max()) + max(dus) + 9, 16)
-    B.box(tag + "Arm", (-10, -6.5, HC + 4.5), (reach, 6.5, HC + 9.5), M["steel"], bevel=1.2, parent=rotor)
     mount = B.link(bpy.data.objects.new(tag + "Mount", None))
     mount.parent = rotor
-    B.box(tag + "Carriage", (min(dus) - 9, -8.5, HC - 1), (max(dus) + 9, 8.5, HC + 4.5), M["dark"], bevel=1.2, parent=mount)
+    if not bare:
+        B.cylinder(tag + "Hub", 22, HC + 9, HC + 20, M["steel"], parent=rotor, bevel=1.5, segs=64)
+        B.box(tag + "Arm", (-10, -6.5, HC + 4.5), (reach, 6.5, HC + 9.5), M["steel"], bevel=1.2, parent=rotor)
+        B.box(tag + "Carriage", (min(dus) - 9, -8.5, HC - 1), (max(dus) + 9, 8.5, HC + 4.5), M["dark"], bevel=1.2, parent=mount)
     pivots = []
     for k, part in enumerate(tool["parts"]):
         piv = B.link(bpy.data.objects.new(f"{tag}Part{k}", None))
         piv.parent = mount
         piv.location = (part["du"], 0, 0)
-        make_part_mesh(f"{tag}Tool{k}", part, M, wood, piv)
+        make_part_mesh(f"{tag}Tool{k}", part, M, wood, piv, bare)
         pivots.append(piv)
 
     # --- animation -------------------------------------------------------------------
@@ -301,7 +306,7 @@ def build(args):
     belt_w = B.build_conveyor(M, belt_w=140.0)
     spacing = 82.0 if len(sides) == 2 else 0.0
     stations = [(s, make_station("L" if s < 0 else "R", s * spacing, p, M, wood, args, belt_w)) for s, p in sides]
-    cam = B.make_camera(scene, args, target=(0, 6, 46))
+    cam = B.make_camera(scene, args, target=tuple(float(v) for v in args.target.split(",")))
     B.setup_lights(scene)
     if not args.no_hud:
         build_hud(stations, cam, B.load_font(), scene)
@@ -333,6 +338,9 @@ def main():
     ap.add_argument("--azim", type=float, default=0.0)
     ap.add_argument("--dist", type=float)
     ap.add_argument("--aperture", type=float, default=2.0)
+    ap.add_argument("--target", default="0,6,46", help="point the camera looks at, x,y,z in mm")
+    ap.add_argument("--bare", action="store_true",
+                    help="leave out the mixer head and column: tool and shaft only, for steep camera angles")
     ap.add_argument("--grain-scale", type=float, default=0.84)
     args = ap.parse_args(argv)
     if not args.left:

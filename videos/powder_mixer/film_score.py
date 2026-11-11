@@ -85,7 +85,7 @@ def main(timeline_path, out_path):
         lv = 0
         for name, start, length in tl["segments"]:
             if start <= t < start + length:
-                lv = {"Q": 1, "S": 2, "F": 3}.get(name[0], 0) if name[:2] in ("Q1", "Q2", "Q3", "Q4", "S1", "S2", "F1") else 0
+                lv = {"Q": 1, "S": 2, "F": 3, "X": 3}.get(name[0], 0) if len(name) == 2 and name[1].isdigit() else 0
         return lv
 
     n_eighths = int(total / (BEAT / 2))

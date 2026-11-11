@@ -36,9 +36,11 @@ def mix_index(pos, ingr, R, n_ingr, cell=7.5):
     ok = tot > 0.35 * tot.max()                    # whole cells only, not rim slivers
     M = []
     for k in range(n_ingr):
+        p = (ingr == k).mean()
+        if p == 0:                                  # a powder this bowl does not use
+            continue
         cnt = np.bincount(c[ingr == k], minlength=nc * nc)
         frac = cnt[ok] / tot[ok]
-        p = (ingr == k).mean()
         s = np.sqrt(np.average((frac - p) ** 2, weights=tot[ok]))
         s0 = np.sqrt(p * (1 - p))
         sr = np.sqrt(p * (1 - p) / tot[ok].mean())
@@ -52,8 +54,8 @@ def main():
     ap.add_argument("--grain", type=float, default=1.8, help="grain size in mm")
     ap.add_argument("--seconds", type=float, default=20.0, help="how long the tool works")
     ap.add_argument("--speed", type=float, default=1.0, help="multiplies the tool's orbit and spin rates")
-    ap.add_argument("--load", choices=("wedges", "stripes", "rings"), default="wedges",
-                    help="how the six powders start out")
+    ap.add_argument("--load", default="wedges",
+                    help="how the powders start out: wedges, stripes, rings, or art:<name> (see patterns.py)")
     ap.add_argument("--fps", type=int, default=24)
     ap.add_argument("--ingredients", type=int, default=6)
     ap.add_argument("--max-dt", type=float, default=1.0, help="longest solver time step in ms")
@@ -136,7 +138,11 @@ def main():
         for s in range(nsub):
             step(N)
     n_ing = args.ingredients
-    if args.load == "wedges":
+    if args.load.startswith("art:"):                # pixel art laid over the bowl; up to eight powders
+        from patterns import LETTERS, paint
+        ingr = paint(args.load[4:], P[:N, 0], P[:N, 1], R)
+        n_ing = len(LETTERS)
+    elif args.load == "wedges":
         ingr = (np.floor((np.arctan2(P[:N, 1], P[:N, 0]) + math.pi) / (2 * math.pi) * n_ing).astype(np.int32)) % n_ing
     elif args.load == "stripes":
         ingr = np.clip(((P[:N, 1] + R) / (2 * R) * n_ing).astype(np.int32), 0, n_ing - 1)
