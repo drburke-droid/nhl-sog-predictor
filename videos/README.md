@@ -20,7 +20,7 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 
 | File | Format | Length | What it is |
 |---|---|---|---|
-| all_world_roads_at_light_speed_4m40s.mp4 | 16:9 | 4:40 | The full film: light racing along the world's roads |
+| all_world_roads_at_light_speed_4m40s.mp4 | 16:9 | 4:40 | The full film: light racing along the world's roads. Thumbnails: all_world_roads_thumb_A_youtube (for YouTube: its red circle sits around YouTube's own 4:40 duration badge) and all_world_roads_thumb_B_no_badge (4:40 written in, for anywhere without a duration badge); built by `world_roads/thumb_globe.py` |
 | world_roads_light_speed_SHORT_world.mp4 | vertical | 0:47 | Short cut: the world |
 | world_roads_light_speed_SHORT_americas.mp4 | vertical | 0:53 | Short cut: the Americas |
 | world_roads_light_speed_SHORT_finale.mp4 | vertical | 0:33 | Short cut: the finale |
