@@ -450,17 +450,10 @@ SHAFT_LEN = 64.0
 FLOOR_Z = -150.0
 
 
-def build(args):
-    cache_dir = os.path.abspath(args.cache)
-    meta = json.load(open(os.path.join(cache_dir, "meta.json")))
-    z = np.load(os.path.join(cache_dir, "meta.npz"))
-    geo = meta["geo"]
-    n_frames = meta["n_frames"]
-    frames = list(range(1, n_frames + 1))
-
+def new_scene(args, fps, n_frames):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
-    scene.render.fps = meta["fps"]
+    scene.render.fps = fps
     scene.frame_start, scene.frame_end = 1, n_frames
     scene.unit_settings.scale_length = 0.001
     scene.unit_settings.length_unit = "MILLIMETERS"
@@ -472,6 +465,11 @@ def build(args):
     scene.render.resolution_x, scene.render.resolution_y = W, Hres
     scene.render.resolution_percentage = 100
 
+    return scene
+
+
+def make_materials(args):
+    """All shared materials, plus the empty that scrolls the belt texture."""
     # ---- materials -------------------------------------------------------
     m_glass = bpy.data.materials.new("Glass")
     m_glass.use_nodes = True
@@ -566,8 +564,12 @@ def build(args):
     nt.links.new(groove.outputs[0], bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
 
-    # ---- conveyor --------------------------------------------------------
-    belt_w = 112.0
+    return dict(glass=m_glass, steel=m_steel, alu=m_alu, body=m_body, dark=m_dark, rubber=m_rubber,
+                floor=m_floor, belt=m_belt, scroll=scroll)
+
+
+def build_conveyor(M, belt_w=112.0):
+    m_belt, m_alu, m_dark, m_floor = M["belt"], M["alu"], M["dark"], M["floor"]
     Lb = 1600.0
     box("Belt", (-Lb, -belt_w / 2, -4), (Lb, belt_w / 2, 0), m_belt)
     for sgn in (-1, 1):
@@ -583,6 +585,135 @@ def build(args):
             box(f"Leg{x}{sgn:+d}", (x - 9, y - 9, FLOOR_Z), (x + 9, y + 9, -70), m_alu, bevel=1.5)
             box(f"Foot{x}{sgn:+d}", (x - 14, y - 14, FLOOR_Z), (x + 14, y + 14, FLOOR_Z + 5), m_dark, bevel=1.5)
     box("Floor", (-6000, -6000, FLOOR_Z - 10), (6000, 6000, FLOOR_Z), m_floor)
+
+    return belt_w
+
+
+def make_camera(scene, args, target=(0, 6, 56)):
+    # ---- camera ------------------------------------------------------------
+    cam_d = bpy.data.cameras.new("Camera")
+    cam_d.lens = 50
+    cam_d.sensor_width = 36
+    cam_d.clip_start, cam_d.clip_end = 10, 50000
+    cam = link(bpy.data.objects.new("Camera", cam_d))
+    target = Vector(target)
+    elev, azim, dist = math.radians(args.elev), math.radians(args.azim), args.dist
+    cam.location = target + Vector((dist * math.cos(elev) * math.sin(azim),
+                                    -dist * math.cos(elev) * math.cos(azim),
+                                    dist * math.sin(elev)))
+    cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
+    scene.camera = cam
+    cam_d.dof.use_dof = not args.no_dof
+    cam_d.dof.focus_distance = dist - 8
+    # scene units are mm but Cycles reads the lens in metres: f/0.011 here gives
+    # the blur of a ~4 mm aperture radius at this scale (gentle macro look)
+    cam_d.dof.aperture_fstop = 0.05 / (2 * args.aperture)
+
+    return cam
+
+
+def setup_lights(scene):
+    # ---- light ---------------------------------------------------------------
+    world = bpy.data.worlds.new("World")
+    world.use_nodes = True
+    scene.world = world
+    wn = world.node_tree
+    bg = wn.nodes["Background"]
+    bg.inputs["Color"].default_value = (0.75, 0.8, 0.9, 1)
+    bg.inputs["Strength"].default_value = 0.35
+
+    def softbox(name, loc, size, strength, color=(1, 1, 1)):
+        me = bpy.data.meshes.new(name)
+        sx, sy = size[0] / 2, size[1] / 2
+        me.from_pydata([(-sx, -sy, 0), (sx, -sy, 0), (sx, sy, 0), (-sx, sy, 0)], [], [(0, 1, 2, 3)])
+        me.materials.append(emission(name, color, strength))
+        ob = link(bpy.data.objects.new(name, me))
+        ob.location = loc
+        ob.rotation_euler = (Vector((0, 0, 30)) - Vector(loc)).to_track_quat("Z", "Y").to_euler()
+        ob.visible_camera = False
+        return ob
+
+    softbox("KeyLight", (-380, -420, 620), (520, 380), 14.0, (1.0, 0.96, 0.9))
+    softbox("FillLight", (520, -260, 380), (420, 420), 4.0, (0.86, 0.92, 1.0))
+    softbox("RimLight", (140, 620, 420), (600, 240), 9.0, (1.0, 1.0, 1.0))
+
+
+def load_font():
+    font = None
+    for fp in ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+               "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+               "C:/Windows/Fonts/arialbd.ttf"):
+        if os.path.exists(fp):
+            font = bpy.data.fonts.load(fp)
+            break
+    return font
+
+
+def setup_render(scene, args):
+    # ---- render settings ---------------------------------------------------------
+    scene.render.engine = "CYCLES"
+    cy = scene.cycles
+    cy.samples = args.samples
+    cy.use_adaptive_sampling = True
+    cy.adaptive_threshold = 0.02
+    cy.use_denoising = True
+    try:
+        cy.denoiser = "OPENIMAGEDENOISE"
+    except Exception:
+        pass
+    cy.max_bounces = 8
+    cy.diffuse_bounces = 3
+    cy.glossy_bounces = 4
+    cy.transmission_bounces = 8
+    cy.transparent_max_bounces = 8
+    if args.fast:                       # preview quality: fewer light bounces
+        cy.max_bounces = 4
+        cy.diffuse_bounces = 1
+        cy.glossy_bounces = 2
+        cy.transmission_bounces = 4
+        cy.adaptive_threshold = 0.05
+    cy.caustics_reflective = False
+    cy.caustics_refractive = False
+    cy.sample_clamp_indirect = 6.0
+    scene.render.use_persistent_data = True
+    scene.render.use_motion_blur = args.motion_blur
+    scene.render.motion_blur_shutter = 0.35
+    if args.gpu:
+        prefs = bpy.context.preferences.addons["cycles"].preferences
+        for kind in ("OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"):
+            try:
+                prefs.compute_device_type = kind
+                prefs.get_devices()
+                if any(dv.type == kind for dv in prefs.devices):
+                    for dv in prefs.devices:
+                        dv.use = True
+                    cy.device = "GPU"
+                    print("GPU rendering with", kind)
+                    break
+            except Exception:
+                continue
+    try:
+        scene.view_settings.view_transform = "AgX"
+        scene.view_settings.look = "AgX - Medium High Contrast"
+    except Exception as e:
+        print("colour management:", e)
+    scene.render.image_settings.file_format = "PNG"
+    scene.render.film_transparent = False
+
+
+def build(args):
+    cache_dir = os.path.abspath(args.cache)
+    meta = json.load(open(os.path.join(cache_dir, "meta.json")))
+    z = np.load(os.path.join(cache_dir, "meta.npz"))
+    geo = meta["geo"]
+    n_frames = meta["n_frames"]
+    frames = list(range(1, n_frames + 1))
+
+    scene = new_scene(args, meta["fps"], n_frames)
+    M = make_materials(args)
+    m_glass, m_steel, m_alu, m_body, m_dark, m_rubber, scroll = (
+        M[k] for k in ("glass", "steel", "alu", "body", "dark", "rubber", "scroll"))
+    belt_w = build_conveyor(M)
 
     # ---- tray rig ----------------------------------------------------------
     tray = link(bpy.data.objects.new("Tray", None))
@@ -636,109 +767,11 @@ def build(args):
         link(g)
         g.parent = wrap
 
-    # ---- camera ------------------------------------------------------------
-    cam_d = bpy.data.cameras.new("Camera")
-    cam_d.lens = 50
-    cam_d.sensor_width = 36
-    cam_d.clip_start, cam_d.clip_end = 10, 50000
-    cam = link(bpy.data.objects.new("Camera", cam_d))
-    target = Vector((0, 6, 56))
-    elev, azim, dist = math.radians(args.elev), math.radians(args.azim), args.dist
-    cam.location = target + Vector((dist * math.cos(elev) * math.sin(azim),
-                                    -dist * math.cos(elev) * math.cos(azim),
-                                    dist * math.sin(elev)))
-    cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
-    scene.camera = cam
-    cam_d.dof.use_dof = not args.no_dof
-    cam_d.dof.focus_distance = dist - 8
-    # scene units are mm but Cycles reads the lens in metres: f/0.011 here gives
-    # the blur of a ~4 mm aperture radius at this scale (gentle macro look)
-    cam_d.dof.aperture_fstop = 0.05 / (2 * args.aperture)
-
-    # ---- light ---------------------------------------------------------------
-    world = bpy.data.worlds.new("World")
-    world.use_nodes = True
-    scene.world = world
-    wn = world.node_tree
-    bg = wn.nodes["Background"]
-    bg.inputs["Color"].default_value = (0.75, 0.8, 0.9, 1)
-    bg.inputs["Strength"].default_value = 0.35
-
-    def softbox(name, loc, size, strength, color=(1, 1, 1)):
-        me = bpy.data.meshes.new(name)
-        sx, sy = size[0] / 2, size[1] / 2
-        me.from_pydata([(-sx, -sy, 0), (sx, -sy, 0), (sx, sy, 0), (-sx, sy, 0)], [], [(0, 1, 2, 3)])
-        me.materials.append(emission(name, color, strength))
-        ob = link(bpy.data.objects.new(name, me))
-        ob.location = loc
-        ob.rotation_euler = (Vector((0, 0, 30)) - Vector(loc)).to_track_quat("Z", "Y").to_euler()
-        ob.visible_camera = False
-        return ob
-
-    softbox("KeyLight", (-380, -420, 620), (520, 380), 14.0, (1.0, 0.96, 0.9))
-    softbox("FillLight", (520, -260, 380), (420, 420), 4.0, (0.86, 0.92, 1.0))
-    softbox("RimLight", (140, 620, 420), (600, 240), 9.0, (1.0, 1.0, 1.0))
-
-    # ---- overlay ---------------------------------------------------------------
+    cam = make_camera(scene, args)
+    setup_lights(scene)
     if not args.no_hud:
-        font = None
-        for fp in ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                   "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-                   "C:/Windows/Fonts/arialbd.ttf"):
-            if os.path.exists(fp):
-                font = bpy.data.fonts.load(fp)
-                break
-        build_hud(meta, z, frames, cam, font)
-
-    # ---- render settings ---------------------------------------------------------
-    scene.render.engine = "CYCLES"
-    cy = scene.cycles
-    cy.samples = args.samples
-    cy.use_adaptive_sampling = True
-    cy.adaptive_threshold = 0.02
-    cy.use_denoising = True
-    try:
-        cy.denoiser = "OPENIMAGEDENOISE"
-    except Exception:
-        pass
-    cy.max_bounces = 8
-    cy.diffuse_bounces = 3
-    cy.glossy_bounces = 4
-    cy.transmission_bounces = 8
-    cy.transparent_max_bounces = 8
-    if args.fast:                       # preview quality: fewer light bounces
-        cy.max_bounces = 4
-        cy.diffuse_bounces = 1
-        cy.glossy_bounces = 2
-        cy.transmission_bounces = 4
-        cy.adaptive_threshold = 0.05
-    cy.caustics_reflective = False
-    cy.caustics_refractive = False
-    cy.sample_clamp_indirect = 6.0
-    scene.render.use_persistent_data = True
-    scene.render.use_motion_blur = args.motion_blur
-    scene.render.motion_blur_shutter = 0.35
-    if args.gpu:
-        prefs = bpy.context.preferences.addons["cycles"].preferences
-        for kind in ("OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"):
-            try:
-                prefs.compute_device_type = kind
-                prefs.get_devices()
-                if any(dv.type == kind for dv in prefs.devices):
-                    for dv in prefs.devices:
-                        dv.use = True
-                    cy.device = "GPU"
-                    print("GPU rendering with", kind)
-                    break
-            except Exception:
-                continue
-    try:
-        scene.view_settings.view_transform = "AgX"
-        scene.view_settings.look = "AgX - Medium High Contrast"
-    except Exception as e:
-        print("colour management:", e)
-    scene.render.image_settings.file_format = "PNG"
-    scene.render.film_transparent = False
+        build_hud(meta, z, frames, cam, load_font())
+    setup_render(scene, args)
     return scene, meta
 
 
