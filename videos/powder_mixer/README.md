@@ -18,6 +18,9 @@ the percentage is measured from the simulated grains.
 
 `cache/`, `renders/` and `.blend` files are generated, so they are git-ignored.
 
+`powder_mixer_preview_480p.mp4` is a low-sample preview of the whole film rendered on a
+CPU (854x480, 8 samples); `stills/` has one frame at 4K to show the final quality.
+
 ## Quick start
 
 ```bash

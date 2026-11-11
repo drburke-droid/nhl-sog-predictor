@@ -46,5 +46,6 @@ mixer and come round again, mixing a little more each pass, with a pass counter 
 
 | File | Format | Length | What it is |
 |---|---|---|---|
+| powder_mixer_preview_480p.mp4 | 16:9, 854x480 | 0:52 | Low-sample CPU preview of the whole animation (10 passes, 0% to 96% mixed). The 4K version is one command on a GPU machine |
 | stills/pass2_mid_mix_4K.jpg | 16:9, 4K | still | Test frame at final quality, paddles in the powder on pass 2 |
 | stills/pass2_mid_mix_4K_detail_crop.jpg | 1920x1080 crop | still | 1:1 crop of the same frame, showing the individual grains |

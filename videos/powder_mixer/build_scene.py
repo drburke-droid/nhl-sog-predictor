@@ -592,6 +592,18 @@ def build(args):
     keys(pad_b, "rotation_euler", [float(v) for v in z["ang_b"]], frames, index=2)
     keys(mc, "eval_frame", [float(v) for v in z["cache_idx"]], frames)
 
+    # wrap-around copy: the dish jumps from +x_wrap back to -x_wrap once per
+    # cycle.  A second copy one belt-loop ahead carries on out of frame while
+    # the original comes in on the other side, so nothing pops at the edge.
+    wrap = link(bpy.data.objects.new("TrayWrap", None))
+    wrap.parent = tray
+    wrap.location = (2 * geo["x_wrap"], 0, 0)
+    for src in (glass, grains):
+        g = src.copy()                      # shares mesh, modifiers and animation
+        g.name = src.name + "Wrap"
+        link(g)
+        g.parent = wrap
+
     # ---- camera ------------------------------------------------------------
     cam_d = bpy.data.cameras.new("Camera")
     cam_d.lens = 50
