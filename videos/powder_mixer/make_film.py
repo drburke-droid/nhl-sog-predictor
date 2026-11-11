@@ -136,6 +136,8 @@ def main():
     ap.add_argument("--res", default="960x420")
     ap.add_argument("--samples", type=int, default=8)
     ap.add_argument("--out", default=os.path.join(HERE, "mixing_knockout.mp4"))
+    ap.add_argument("--partial", type=int, default=0, metavar="N",
+                    help="compose a preview: at most N frames per match, from whatever is rendered")
     args = ap.parse_args()
     if args.stage == "sims":
         stage_sims(args)

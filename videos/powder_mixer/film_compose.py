@@ -157,6 +157,13 @@ def match_frame(m, a, b, i, frames_dir, winner=None, badge=0.0):
     text(d, (px + 20, 37), title, font(17, "Bold"), INK, "lm")
     text(d, (px + 20 + tw + 14, 37), sub, font(14, "Medium"), MUTED, "lm")
     text(d, (px + pw - 20, 37), clock, font(17, "SemiBold"), INK, "rm")
+    cap = CAPTIONS.get(m["key"])
+    tsec = a.t[k]
+    if cap and 2.5 <= tsec <= 13.0 and winner is None:
+        cw = int(d.textlength(cap, font=font(17, "Medium")))
+        cx = (W - cw) // 2
+        d.rounded_rectangle((cx - 18, PIC_H - 52, cx + cw + 18, PIC_H - 16), 18, fill=(255, 255, 255), outline=HAIR)
+        text(d, (W // 2, PIC_H - 34), cap, font(17, "Medium"), INK, "mm")
     # data strip
     ds = 128
     for side, run in ((0, a), (1, b)):
@@ -262,85 +269,132 @@ def bracket_card(matches, runs, highlight=None, title="THE DRAW"):
     return im
 
 
-def hold(im, seconds):
-    return [im] * int(round(seconds * FPS))
-
-
-def fade(a, b, n=10):
-    return [Image.blend(a, b, (k + 1) / (n + 1)) for k in range(n)]
+def contestants_card():
+    im = Image.new("RGB", (W, H), PAPER)
+    d = ImageDraw.Draw(im)
+    text(d, (W // 2, 70), "The contestants", font(40, "Bold", True), INK, "mm")
+    cols = [("BY HAND", 130, [("Spoon", "stirred in a spiral through the whole bowl"),
+                              ("Fork", "the same spiral"),
+                              ("Whisk", "the same spiral"),
+                              ("Spoon twirled in the middle", "spins on the spot")]),
+            ("BY MACHINE", 690, [("Stand mixer, large paddle", "orbits the bowl while it spins"),
+                                 ("Stand mixer, small paddle", "same motion, half the size"),
+                                 ("Stand mixer, wire whip", "same motion, wires instead of a blade"),
+                                 ("Hand mixer", "twin beaters carried round the bowl")])]
+    for head, x, rows in cols:
+        text(d, (x, 150), head, font(15, "Bold"), MUTED, "la")
+        d.line((x, 176, x + 460, 176), fill=HAIR, width=2)
+        y = 200
+        for name, how in rows:
+            text(d, (x, y), name, font(25, "SemiBold"), INK, "la")
+            text(d, (x, y + 34), how, font(18, "Medium"), MUTED, "la")
+            y += 104
+    text(d, (W // 2, H - 44), "Hand tools: 1.5 strokes a second.  Stand mixer: 0.8 orbits a second.  Hand mixer: 5 turns a second.",
+         font(15, "Medium"), MUTED, "mm")
+    return im
 
 
 # ---------------------------------------------------------------------------
 def compose(args, matches):
     from make_film import run_dir
+    if getattr(args, "partial", False):
+        matches = [m for m in matches if m["winner"] is not None]
     runs = {}
     for m in matches:
         for t in (m["a"], m["b"]):
             runs[(m["load"], t)] = Run(run_dir(m["load"], t))
     ref = runs[("wedges", "spoon")]
-    n_grains = ref.N
 
-    seq = []            # list of frames (PIL images); consecutive segments are cross-faded
+    # frames are streamed straight into ffmpeg; only the last one is kept (for cross-fades)
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
+           "-i", "-", "-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", args.out]
+    enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    state = dict(n=0, last=None)
+    timeline = []       # [segment name, start second, length in seconds]
 
-    def add(frames, cut=False):
-        if seq and not cut:
-            seq.extend(fade(seq[-1], frames[0]))
-        seq.extend(frames)
+    def emit(im, repeat=1):
+        raw = im.tobytes()
+        for _ in range(repeat):
+            enc.stdin.write(raw)
+        state["n"] += repeat
+        state["last"] = im
+
+    def begin(name, first):
+        if state["last"] is not None:
+            for k in range(10):
+                emit(Image.blend(state["last"], first, (k + 1) / 11))
+        timeline.append([name, round(state["n"] / FPS, 2), 0.0])
+
+    def end():
+        timeline[-1][2] = round(state["n"] / FPS - timeline[-1][1], 2)
+
+    def still(name, im, seconds):
+        begin(name, im)
+        emit(im, int(round(seconds * FPS)))
+        end()
 
     # ---- opening ------------------------------------------------------------
-    add(hold(card([("THE MIX-OFF", 92, "Black", INK, 22),
-                   ("Eight ways to mix dry ingredients. One bowl. Fifteen seconds each.", 26, "Medium", MUTED, 0)],
-                  footer=f"A grain-by-grain physics simulation: {n_grains:,} grains per bowl"), 3.5))
+    still("title", card([("THE MIX-OFF", 92, "Black", INK, 22),
+                         ("Eight ways to mix dry ingredients. One bowl. Fifteen seconds each.", 26, "Medium", MUTED, 0)],
+                        footer=f"A grain-by-grain physics simulation: {ref.N:,} grains per bowl"), 3.5)
     i50 = int(np.argmax(ref.mix >= 0.5))
-    add(hold(card([("How it is scored", 40, "Bold", INK, 16),
-                   ("Cut the bowl into small scoops and count the colours in each.", 22, "Medium", MUTED, 8),
-                   ("100% means every scoop looks like a perfect shuffle.", 22, "Medium", MUTED, 0)],
-                  discs=[(ref.disc(0, 170), "0% mixed"), (ref.disc(i50, 170), "50%"), (ref.disc(ref.n - 1, 170), f"{100*ref.mix[-1]:.0f}%")]), 5.0))
-    add(hold(bracket_card(matches, runs, None), 4.0))
+    still("scoring", card([("How it is scored", 40, "Bold", INK, 16),
+                           ("Cut the bowl into small scoops and count the colours in each.", 22, "Medium", MUTED, 8),
+                           ("100% means every scoop looks like a perfect shuffle.", 22, "Medium", MUTED, 0)],
+                          discs=[(ref.disc(0, 170), "0% mixed"), (ref.disc(i50, 170), "50%"),
+                                 (ref.disc(ref.n - 1, 170), f"{100 * ref.mix[-1]:.0f}%")]), 5.0)
+    still("contestants", contestants_card(), 5.5)
+    still("draw", bracket_card(matches, runs, None), 4.0)
 
     # ---- matches ------------------------------------------------------------
     last_round = None
-    for m in matches:
+    for idx, m in enumerate(matches):
         a, b = runs[(m["load"], m["a"])], runs[(m["load"], m["b"])]
         if m["round"] != last_round:
             h1, h2, h3 = ROUND_TEXT[m["load"]]
-            add(hold(card([(h1, 64, "Black", INK, 18), (h2, 30, "SemiBold", INK, 12), (h3, 22, "Medium", MUTED, 0)],
-                          discs=[(a.disc(0, 170), "")]), 3.5))
+            still("round_" + m["load"], card([(h1, 64, "Black", INK, 18), (h2, 30, "SemiBold", INK, 12),
+                                              (h3, 22, "Medium", MUTED, 0)], discs=[(a.disc(0, 170), "")]), 3.5)
             last_round = m["round"]
         fdir = os.path.join(args.frames, m["key"], "frames")
         n = min(a.n, b.n)
+        if getattr(args, "partial", False):             # preview cut from whatever has been rendered
+            have = 0
+            while have < n and os.path.exists(os.path.join(fdir, f"f_{have + 1:04d}.png")) and \
+                    os.path.getsize(os.path.join(fdir, f"f_{have + 1:04d}.png")) > 0:
+                have += 1
+            n = min(n, have, args.partial)
+            if n < 2:
+                continue
         win = 0 if m["winner"] == m["a"] else 1
-        frames = [match_frame(m, a, b, i, fdir) for i in range(n)]
-        add(frames)
+        first = match_frame(m, a, b, 0, fdir)
+        begin(m["key"], first)
+        emit(first)
+        for i in range(1, n):
+            emit(match_frame(m, a, b, i, fdir))
         for k in range(12):
-            seq.append(match_frame(m, a, b, n - 1, fdir, win, (k + 1) / 12))
-        seq.extend(hold(match_frame(m, a, b, n - 1, fdir, win, 1.0), 2.2))
-        print("composed", m["key"], len(seq), flush=True)
-        is_round_end = m is matches[-1] or matches[matches.index(m) + 1]["round"] != m["round"]
-        if is_round_end and m["round"] < 2:
-            add(hold(bracket_card(matches, runs, (m["round"], m["k"]), "THE DRAW"), 3.5))
+            emit(match_frame(m, a, b, n - 1, fdir, win, (k + 1) / 12))
+        emit(match_frame(m, a, b, n - 1, fdir, win, 1.0), int(2.2 * FPS))
+        end()
+        print("composed", m["key"], f"{state['n'] / FPS:.1f} s", flush=True)
+        round_over = idx + 1 == len(matches) or matches[idx + 1]["round"] != m["round"]
+        if round_over and m["round"] < 2:
+            still(f"draw_after_{m['round']}", bracket_card(matches, runs, (m["round"], m["k"]), "THE DRAW"), 3.5)
 
     # ---- closing ------------------------------------------------------------
-    f = matches[-1]
-    champ = f["winner"]
-    add(hold(bracket_card(matches, runs, (2, 0), f"CHAMPION: {short(champ).upper()}"), 4.5))
-    add(hold(card(TAKEAWAYS[0]), 4.5))
-    add(hold(card(TAKEAWAYS[1]), 4.5))
-    add(hold(card(TAKEAWAYS[2]), 4.5))
-    add(hold(card([("What this is, and is not", 34, "Bold", INK, 18),
-                   ("A physics simulation of dry, free-flowing grains of equal size.", 21, "Medium", MUTED, 8),
-                   ("No clumping, no dust cloud, no butter. Machine speeds are typical low settings.", 21, "Medium", MUTED, 8),
-                   ("Every number on screen was measured from the simulated grains.", 21, "Medium", MUTED, 0)]), 5.0))
-
-    # ---- encode ---------------------------------------------------------------
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
-           "-i", "-", "-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", args.out]
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-    for im in seq:
-        p.stdin.write(im.tobytes())
-    p.stdin.close()
-    p.wait()
-    print(f"wrote {args.out}: {len(seq)} frames, {len(seq)/FPS:.1f} s")
+    champ = matches[-1]["winner"]
+    still("champion", bracket_card(matches, runs, (2, 0), f"CHAMPION: {short(champ).upper()}"), 4.5)
+    for k in range(3):
+        still(f"takeaway{k + 1}", card(TAKEAWAYS[k]), 4.5)
+    still("caveats", card([("What this is, and is not", 34, "Bold", INK, 18),
+                           ("A physics simulation of dry, free-flowing grains of equal size.", 21, "Medium", MUTED, 8),
+                           ("No clumping, no dust cloud, no butter. Machine speeds are typical low settings.", 21, "Medium", MUTED, 8),
+                           ("Every number on screen was measured from the simulated grains.", 21, "Medium", MUTED, 0)]), 5.0)
+    enc.stdin.close()
+    enc.wait()
+    json.dump(dict(fps=FPS, seconds=round(state["n"] / FPS, 2), segments=timeline,
+                   matches=[{k: m[k] for k in ("key", "name", "load", "a", "b", "ra", "rb", "winner")} for m in matches]),
+              open(os.path.splitext(args.out)[0] + "_timeline.json", "w"), indent=1)
+    print(f"wrote {args.out}: {state['n']} frames, {state['n'] / FPS:.1f} s")
 
 
 TAKEAWAYS = [
@@ -348,9 +402,21 @@ TAKEAWAYS = [
      ("A tool only mixes where it sweeps.", 24, "Medium", MUTED, 10),
      ("The spoon twirled in the middle never touched most of the bowl.", 24, "Medium", MUTED, 0)],
     [("2. Count strokes, not seconds", 44, "Bold", INK, 20),
-     ("A spoon or whisk needs about a dozen strokes around the whole bowl.", 24, "Medium", MUTED, 10),
+     ("A spoon or whisk needed 11 to 20 strokes, depending on how the bowl was loaded.", 24, "Medium", MUTED, 10),
      ("A spoon stirred twice as fast needed the same number of strokes.", 24, "Medium", MUTED, 0)],
     [("3. How you load the bowl matters", 44, "Bold", INK, 20),
-     ("Side by side is easy. Rings are hard: powder has to move in and out.", 24, "Medium", MUTED, 10),
-     ("That is the one job where the stand mixer shines.", 24, "Medium", MUTED, 0)],
+     ("Wedges and stripes are easy. Rings are hard: powder has to move in and out.", 24, "Medium", MUTED, 10),
+     ("Rings are also where the stand mixer did its best work: 94% in 20 seconds.", 24, "Medium", MUTED, 0)],
 ]
+
+
+# one line per match, written from what the simulation shows (see the top-down views)
+CAPTIONS = {
+    "Q1": "Same spoon. The only difference is where it goes.",
+    "Q2": "Both stir the middle. The outer ring just rides round.",
+    "Q3": "The beaters churn the centre. Whole wedges circle the rim.",
+    "Q4": "The small paddle never reaches the core in the middle.",
+    "S1": "The spoon folds the stripes into a spiral. The paddle leaves the rim behind.",
+    "S2": "Same path, but the fork is narrower and the rim lags behind.",
+    "F1": "Rings: the outermost band is the last to go.",
+}
