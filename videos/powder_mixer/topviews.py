@@ -6,6 +6,8 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+from tools import mix_curve
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 COL = np.array([[210, 54, 43], [242, 179, 29], [98, 163, 59], [44, 107, 209], [244, 239, 230], [91, 52, 32]], np.uint8)
 
@@ -44,7 +46,7 @@ def main():
         dr = ImageDraw.Draw(row)
         dr.text((8, h // 2 - 22), m["label"], fill=(11, 11, 11), font=font)
         dr.text((8, h // 2), f"{m['load']}, {m['grain']} mm, x{m['speed']:g}", fill=(82, 81, 78), font=font)
-        dr.text((8, h // 2 + 22), f"{100 * m['final_mix']:.0f}% mixed", fill=(82, 81, 78), font=font)
+        dr.text((8, h // 2 + 22), f"{100 * mix_curve(z)[-1]:.0f}% mixed", fill=(82, 81, 78), font=font)
         for k, t in enumerate(tiles):
             row.paste(t, (230 + (w + 6) * k, 4))
         rows.append(row)

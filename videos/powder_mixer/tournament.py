@@ -35,7 +35,8 @@ def runs_for(sets):
         out += [(f"grain1.4_{t}", "grain 1.4 mm", t, ["--grain", "1.4"], 20.0) for t in KEY]
     if "speed" in sets:                       # same number of strokes at half and double speed
         out += [(f"speed2_{t}", "double speed", t, ["--speed", "2"], 10.0) for t in CONTESTANTS]
-        out += [(f"speed0.5_{t}", "half speed", t, ["--speed", "0.5"], 40.0) for t in KEY]
+        if "half" in sets:                    # slow (40 s runs); not part of the default set
+            out += [(f"speed0.5_{t}", "half speed", t, ["--speed", "0.5"], 40.0) for t in KEY]
     if "load" in sets:
         for ld in ("stripes", "rings"):
             out += [(f"load_{ld}_{t}", f"loaded as {ld}", t, ["--load", ld], 20.0) for t in CONTESTANTS]
@@ -87,7 +88,7 @@ def collect(work):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--set", nargs="*", default=["base"], choices=("base", "grain", "speed", "load"))
+    ap.add_argument("--set", nargs="*", default=["base"], choices=("base", "grain", "speed", "half", "load"))
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--work", default=os.path.join(HERE, "cache", "tournament"))
     ap.add_argument("--force", action="store_true")

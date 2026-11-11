@@ -17,8 +17,14 @@ the percentage is measured from the simulated grains.
 | `build_scene.py` | Builds the whole Blender scene from the cache (conveyor, glass dish, mixer, lights, camera, overlay), saves a `.blend`, and can render stills or the animation with Cycles. |
 | `experiment.py` | Runs a set of mixer designs through `simulate.py` and tabulates % mixed against paddle revolutions. |
 | `plot_experiment.py` | Draws `experiments/mixing_vs_revolutions.png` from that table. |
-| `experiments/` | Results of the design experiment (CSV, per-frame curves, chart). |
-| `powder_mixer_preview_480p.mp4` | Low-sample CPU preview of the whole film (854x480, 8 samples). |
+| `experiments/` | Results of both experiments (CSV, per-frame curves, charts). |
+| `powder_mixer_preview_480p.mp4` | Low-sample CPU preview of the conveyor film (854x480, 8 samples). |
+| `pbd.py` | The granular solver both simulations share. |
+| `tools.py` | The kitchen tools: shapes, collider points, and how each is moved round the bowl. |
+| `bowl_sim.py` | One tool stirring six powders in a round bowl. |
+| `tournament.py`, `plot_tournament.py`, `topviews.py` | Run the tools head to head (plus loading, speed and grain-size sets), chart the results, draw top-down snapshots. |
+| `bowl_scene.py` | Blender scene for one or two bowls under mixer heads, from `bowl_sim.py` caches. |
+| `match_spoon_vs_stand_mixer_480p.mp4` | First head-to-head test clip (854x480, 8 samples, 12.5 s). |
 | `stills/` | Test frames. |
 
 `cache/`, `renders/` and `.blend` files are generated, so they are git-ignored.
@@ -169,6 +175,101 @@ stopped moving; expect the true first-pass figure to be a few points lower
 still. The first cut of the film used about 4 ms and overstated the mixing
 (51% after one pass). The coarse step also over-compressed the bed: 11.5 mm
 deep instead of 15 mm.
+
+## Kitchen head-to-head (round bowl)
+
+Eight ways of mixing dry ingredients, each given the same bowl of six powders.
+
+```bash
+python tournament.py --set base load speed grain      # about 2.5 h on 4 cores
+```
+
+```bash
+python plot_tournament.py
+```
+
+```bash
+python bowl_sim.py --tool spoon && python bowl_sim.py --tool paddle_large
+```
+
+```bash
+python bowl_scene.py --left cache/bowl/spoon --right cache/bowl/paddle_large --anim --res 3840x2160 --samples 96 --gpu
+```
+
+### The rig
+
+The bowl is a half-scale model of a 22 cm kitchen bowl: 110 mm across, flat
+floor, rounded corner, powder 14 mm deep. It stays still. Every tool hangs from
+a rotor that turns about the bowl's axis, which covers every kitchen motion:
+
+| Contestant | How it moves | Rate |
+|---|---|---|
+| Spoon, fork, whisk by hand | Fixed to the rotor, face leading, radius breathing in and out so the stir spirals through the whole bowl | 1.5 strokes/s |
+| Stand mixer: large paddle, small paddle, wire whip | Planetary: orbits the bowl while spinning the other way on its own shaft | 0.8 orbits/s, 2.4 turns/s on the shaft |
+| Hand mixer | Two counter-rotating beaters carried round the bowl | 5 turns/s, 0.4 laps/s |
+| Spoon twirled in the middle | Spins on the spot | 1.5 turns/s |
+
+Why the bowl does not spin: turning the bowl under a fixed tool is the same
+relative motion, but it also flings the powder outward, and it is not what
+people do with a spoon. The large paddle spans 62% of the bowl, as a real flat
+beater does.
+
+### Result (pie-wedge loading, 23,273 grains of 1.8 mm, 20 s each)
+
+| Tool | % mixed after 20 s | Reaches 90% after |
+|---|---|---|
+| Spoon, stirred in a spiral | 99 | 11 strokes (7 s) |
+| Whisk, by hand | 99 | 13 strokes (9 s) |
+| Fork | 90 | 27 strokes (18 s) |
+| Stand mixer, large paddle | 83 | not in 16 orbits |
+| Stand mixer, wire whip | 81 | not in 16 orbits |
+| Stand mixer, small paddle | 75 | not in 16 orbits |
+| Hand mixer (twin beaters) | 68 | not in 8 laps |
+| Spoon twirled in the middle | 21 | never |
+
+![Mixing curves](experiments/tournament_base.png)
+
+![Top-down snapshots every 2.5 s](experiments/tournament_topviews.jpg)
+
+Each tool mixes only where it sweeps. The spoon and whisk cover the whole bowl
+and drag powder round it. The small paddle leaves a core in the middle it never
+touches; the twin beaters mix the centre while intact wedges circle the rim;
+the stand-mixer tools drag the outer ring round in bulk (the "scrape down the
+sides" problem). A spoon twirled in the middle mixes a 30 mm disc and nothing
+else. A spoon dragged round the same circle every stroke, with no spiral, was
+actually the quickest on wedges (90% in 7 strokes), but it has no way to move
+powder in or out, so it was not tested as a contestant.
+
+### Does the winner change?
+
+![Sensitivity](experiments/tournament_sensitivity.png)
+
+- **Loading.** The hand whisk is 98 to 99% whatever the loading; the spoon dips
+  to 92% on rings. Rings (which need powder moved in and out) are where the
+  stand mixer shines: the large paddle goes from 83% to 94%.
+- **Speed.** Hand tools give the same result per stroke at double speed (spoon
+  99%, whisk 97%), as the literature says. The machines do not: the large
+  paddle improves to 97%, because at that speed it starts throwing powder, and
+  the hand mixer drops to 54%, because its beaters fling powder away from
+  themselves.
+- **Grain size.** The top two are unchanged from 1.4 to 2.4 mm. The fork gets
+  worse with finer grains (95, 90, 78%): more of the powder slips between the
+  tines. The stand-mixer tools do better with coarse grains.
+
+### Limits
+
+- One run per case. The speeds are my choices for "typical", and the per-second
+  figures depend on them; the per-stroke figures do not.
+- The model is half scale under full gravity, so by Froude scaling one model
+  second is about 1.4 real seconds and 1.5 strokes/s here is about one stroke a
+  second in a real bowl.
+- A real hand mixer's slowest setting is two to three times faster than 5
+  turns/s. That speed is beyond what the solver handles well, and the
+  double-speed run suggests it would mix worse, not better.
+- Equal-size, dry, non-sticky spheres: no clumping, no dust cloud, no size
+  segregation. Wires are one grain thick. Grains cannot leave the bowl.
+- "% mixed" is rescaled so the bowl as loaded reads 0% for every loading
+  pattern (thin rings otherwise start at 26%).
 
 ## What the literature says
 

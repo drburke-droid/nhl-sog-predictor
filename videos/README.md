@@ -51,3 +51,5 @@ mixer and come round again, mixing a little more each pass, with a pass counter 
 | stills/pass2_mid_mix_4K_detail_crop.jpg | 1920x1080 crop | still | 1:1 crop of the same frame, showing the individual grains |
 | stills/dish_glass_before_after.jpg | still | still | The dish with refracting glass (streaks along the edges) and the clean glass now used |
 | experiments/mixing_vs_revolutions.png | chart | still | % mixed against paddle turns for seven mixer designs; numbers in `experiments/mixing_vs_revolutions.csv` |
+| match_spoon_vs_stand_mixer_480p.mp4 | 16:9, 854x480 | 0:12 | First head-to-head test clip: a spoon stirred in a spiral against a stand mixer's large paddle, round bowls loaded as pie wedges |
+| experiments/tournament_base.png, tournament_sensitivity.png, tournament_topviews.jpg | charts | still | Eight kitchen mixing methods compared, and how the ranking moves with loading pattern, speed and grain size |
