@@ -1,43 +1,47 @@
 """Flat top-down preview of the whole film (layout, clock, camera, husks and flows) before any Blender work.
 
-    python3 preview.py still 1602.3 1720.5 1911.5 1989.9 2026.8   # PNGs -> out/still_<year>.png
+    python3 preview.py still 1602.8 1720.5 1911.5 1989.9 2026.8   # PNGs -> out/still_<year>.png
     python3 preview.py sheet                                       # 20 moments -> out/contact_sheet.png
-    python3 preview.py video [--fps 24] [--size 960x540] [--workers 4]   # -> out/preview.mp4
+    python3 preview.py video [--fps 24] [--size 1280x720] [--workers 4]   # -> out/preview.mp4
 
 What it shows:
-- each company's sand as a cone on its own island (pedestal), coloured by industry; when the camera is
-  close, the cone is drawn as individual grains;
-- a faint ring on the table at the widest the pile has ever been (its tide mark), so a husk shows how
-  big it once was; a company that has died keeps a dark pedestal and a dimmed name;
-- canals between the islands with a stream of pale, uncoloured sand (the market); it is thin while there
-  is little money on the table and widens as the total grows;
-- grains lifting from the canal into a growing company and draining back from a shrinking one (pale, they
-  take the company's colour as they land); grains flying straight from one company to another only for a
-  real deal (a merger, a purchase, a break-up), in the giving company's colour;
-- the camera: it frames every company that has mattered so far, so it starts close on the first grains in
-  Amsterdam and only ever pulls back, keeping the husks in view.
+- the nested grid of plots (layout.py), oldest top left, newest bottom right, with canals between them;
+  plots of companies still to come and vacant plots are faint, so the grid reads from the start;
+- each company's sand as an organic pile (piles.py) in the middle of its plot, coloured by industry and lit
+  from the upper left; close up it is drawn grain by grain;
+- a faint outline on the plot at the widest the pile has been (its tide mark), so a husk shows how big it
+  once was; a company that has died keeps a dark plot, its name and its years;
+- pale, uncoloured sand drifting down the canals toward the lower right (the market): sparse while there is
+  little money on the table, denser as the total grows;
+- grains lifting from the canal into a growing company and draining back from a shrinking one (pale, taking
+  the company's colour as they land); grains flying straight from one company to another only for a real
+  deal (merger, purchase, break-up), in the giving company's colour;
+- the camera frames every company that has mattered so far: it opens close on the VOC in the top left
+  corner and only ever pulls back, ending on the whole grid.
 """
-import argparse, math, os, subprocess, sys
+import argparse, math, os, subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-import layout, story
+import layout, piles, story
 from clock import Clock, FINALE
-from story import Story, radius, INDUSTRIES
+from story import Story, INDUSTRIES
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out")
 FONT_DIR = "/usr/share/fonts/opentype/inter"
-TABLE = np.array([12, 13, 16], np.float32)
-CHANNEL = np.array([6, 7, 9], np.float32)
+WATER = np.array([7, 9, 12], np.float32)
 STREAM = np.array([205, 190, 150], np.float32)       # pale uncoloured sand: money not in any company
+LAND = (25, 27, 32)
+LAND_DEAD = (17, 18, 21)
+LAND_FUTURE = (13, 15, 18)
 INK, MUTED = (232, 238, 248), (147, 161, 184)
-PED_R = 1.6           # pedestal radius, cells
 FLY_S = 0.9           # seconds a grain is in flight
-MIN_VIEW = 24.0       # narrowest view, cells across
+MIN_VIEW = 26.0       # narrowest view, cells across
 SAFE = (0.20, 0.17, 0.97, 0.95)   # where the content may sit (fractions of the frame: x0, y0, x1, y1)
 LIGHT = np.array([-0.45, -0.55, 0.70]); LIGHT /= np.linalg.norm(LIGHT)
 TITLE = "424 years of the world's biggest companies"
+OPEN_ON = "voc"
 
 
 def hexrgb(h):
@@ -67,14 +71,17 @@ class Film:
         self.S = S = Story()
         self.C = C = Clock(S.now)
         self.ids = sorted(S.T, key=lambda k: S.start[k])
-        comps = [dict(id=k, district=S.companies[k]["district"], first=S.start[k]) for k in self.ids]
-        self.L = layout.build(comps, {k: float(radius(S.peak_grains[k])) for k in self.ids})
+        self.shape = [piles.Shape(k) for k in self.ids]
+        ext = {k: self.shape[i].extent(S.peak_grains[k]) for i, k in enumerate(self.ids)}
+        self.L = layout.build([dict(id=k, first=S.start[k]) for k in self.ids], ext)
         self.nf = int(math.ceil(C.duration * fps))
         self.years = np.array([min(C.year(f / fps), S.now) for f in range(self.nf)])
         self.G = np.array([[S.grains_one(k, y) for k in self.ids] for y in self.years], np.float32)
+        self.PK = np.maximum.accumulate(self.G, axis=0)                     # the most each has held so far
+        self.EXT = np.stack([self.shape[i].extent_v(self.G[:, i]) for i in range(len(self.ids))], 1)
         self.col = np.array([hexrgb(INDUSTRIES[S.companies[k]["industry"]][1]) for k in self.ids])
         self.pos = np.array([self.L.lots[k][:2] for k in self.ids])
-        self.lot_r = np.array([self.L.lots[k][2] for k in self.ids])
+        self.half = np.array([self.L.lots[k][2] for k in self.ids])
         self._camera()
         self._flows()
 
@@ -82,64 +89,46 @@ class Film:
     def _camera(self):
         G = self.G
         gmax = G.max(axis=1, keepdims=True)
-        relevant = (G >= np.maximum(0.5, 0.03 * gmax))
-        relevant[:, self.ids.index(layout.CENTRE)] = True     # open on the VOC's island
+        relevant = G >= np.maximum(0.5, 0.04 * gmax)
+        relevant[:, self.ids.index(OPEN_ON)] = True
         seen = np.maximum.accumulate(relevant, axis=0)
-        rmax = np.maximum.accumulate(radius(G), axis=0)
-        reach = np.maximum(rmax, PED_R * 2) * 1.35 + 2.0
+        reach = np.maximum(np.maximum.accumulate(self.EXT, axis=0), 2.0) * 1.15 + 1.5
         x0 = np.where(seen, self.pos[:, 0] - reach, np.inf).min(axis=1)
         x1 = np.where(seen, self.pos[:, 0] + reach, -np.inf).max(axis=1)
         y0 = np.where(seen, self.pos[:, 1] - reach, np.inf).min(axis=1)
-        y1 = np.where(seen, self.pos[:, 1] + reach * 1.15, -np.inf).max(axis=1)   # room for names below
-        ok = np.isfinite(x0)
-        first = np.argmax(ok)
-        for a in (x0, x1, y0, y1):
-            a[~ok] = a[first]
-        # the content box must fit the safe area: x from SAFE[0] to SAFE[2], y from SAFE[1] to SAFE[3]
-        # (fractions of the frame), clear of the year at top left and the legend at bottom left
+        y1 = np.where(seen, self.pos[:, 1] + reach * 1.3, -np.inf).max(axis=1)     # room for names below
         sw, sh = SAFE[2] - SAFE[0], SAFE[3] - SAFE[1]
         w = np.maximum.accumulate(np.maximum(np.maximum((x1 - x0) / sw, (y1 - y0) / sh * 16 / 9), MIN_VIEW))
-        h = w * 9 / 16
         cx = (x0 + x1) / 2 - w * ((SAFE[0] + SAFE[2]) / 2 - 0.5)
-        cy = (y0 + y1) / 2 - h * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
-        # finale: ease out to the whole table
-        n_fin = int(FINALE * self.fps)
-        whole_w = max(self.L.width * 1.05 / (SAFE[2] - SAFE[0]), self.L.height * 1.05 / (SAFE[3] - SAFE[1]) * 16 / 9)
+        cy = (y0 + y1) / 2 - w * 9 / 16 * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
+        n_fin = int(FINALE * self.fps)                                       # finale: ease out to the whole grid
+        whole_w = max(self.L.width * 1.03 / sw, self.L.height * 1.03 / sh * 16 / 9)
         e = np.clip((np.arange(self.nf) - (self.nf - n_fin)) / (n_fin * 0.4), 0, 1)
         e = e * e * (3 - 2 * e)
+        wcx = self.L.width / 2 - whole_w * ((SAFE[0] + SAFE[2]) / 2 - 0.5)
+        wcy = self.L.height / 2 - whole_w * 9 / 16 * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
         lw = np.log(w) * (1 - e) + np.log(whole_w) * e
-        wcx = (self.L.x0 + self.L.x1) / 2 - whole_w * ((SAFE[0] + SAFE[2]) / 2 - 0.5)
-        wcy = (self.L.y0 + self.L.y1) / 2 - whole_w * 9 / 16 * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
-        cx = cx * (1 - e) + wcx * e
-        cy = cy * (1 - e) + wcy * e
+        cx, cy = cx * (1 - e) + wcx * e, cy * (1 - e) + wcy * e
         n = int(3.0 * self.fps)
         self.cam = np.stack([smooth(cx, n), smooth(cy, n), np.exp(smooth(lw, n))], axis=1)
 
     # ---- flows: grains lifting from the canal, draining to it, and flying between companies in deals ----
     def _flows(self):
-        S, L, fps = self.S, self.L, self.fps
+        S, fps = self.S, self.fps
         idx = {k: i for i, k in enumerate(self.ids)}
-        def shore(x, y, r):
-            n = math.hypot(x, y)
-            ux, uy = (x / n, y / n) if n > 1e-6 else (0.0, 1.0)
-            return x + ux * (r + layout.GAP * 0.5), y + uy * (r + layout.GAP * 0.5)
-        quay = np.array([shore(*L.lots[k]) for k in self.ids])
+        quay = np.c_[self.pos[:, 0] + self.half + layout.GAP / 2, self.pos[:, 1]]     # the canal on the plot's right
         rec = []      # (frame, src_x, src_y, dst_x, dst_y, kind, company index)
         acc = np.zeros(len(self.ids))
         handed = {idx[k] for k in S.hands_over}
         for f in range(1, self.nf):
             d = self.G[f] - self.G[f - 1]
-            want = np.minimum(5.0, 0.35 * np.abs(d) ** 0.5) * (np.abs(d) > 0.02)
-            acc += want
+            acc += np.minimum(5.0, 0.35 * np.abs(d) ** 0.5) * (np.abs(d) > 0.02)
             for i in np.nonzero(acc >= 1)[0]:
                 n = int(acc[i]); acc[i] -= n
                 if d[i] < 0 and i in handed and self.years[f] >= S.end[self.ids[i]]:
                     continue                      # its sand is going to the buyer (drawn below)
                 for _ in range(n):
-                    if d[i] > 0:
-                        rec.append((f, *quay[i], *self.pos[i], 0, i))
-                    else:
-                        rec.append((f, *self.pos[i], *quay[i], 1, i))
+                    rec.append((f, *quay[i], *self.pos[i], 0, i) if d[i] > 0 else (f, *self.pos[i], *quay[i], 1, i))
         for ev in S.events:
             if ev["type"] not in ("merger", "acquisition", "split", "spinoff"):
                 continue
@@ -151,143 +140,142 @@ class Film:
             for j in range(int(2.0 * fps)):
                 for s in src:
                     for t in dst:
-                        if (f0 + j) % max(1, len(dst) // 4) == 0:
-                            for _ in range(3):
-                                rec.append((f0 + j, *self.pos[s], *self.pos[t], 2, s))
+                        for _ in range(3):
+                            rec.append((f0 + j, *self.pos[s], *self.pos[t], 2, s))
         rec.sort(key=lambda r: r[0])
         self.fl = np.array(rec, np.float64).reshape(-1, 7)
 
     # ---- one frame ----
-    def frame(self, f, size=(960, 540)):
+    def frame(self, f, size=(1280, 720)):
         Wp, Hp = size
         cx, cy, w = self.cam[f]
         sc = Wp / w
-        h = Hp / sc
-        X0, Y0 = cx - w / 2, cy - h / 2
-        img = np.empty((Hp, Wp, 3), np.float32); img[:] = TABLE
+        X0, Y0 = cx - w / 2, cy - Hp / sc / 2
         t_film = f / self.fps
         year = self.years[f]
         G = self.G[f]
-        total = G.sum()
-        peak_total = self.G.sum(axis=1).max()
-        stream_frac = float(np.clip((total / peak_total) ** (1 / 3), 0.06, 0.8))
+        stream = float(np.clip((G.sum() / self.G.sum(axis=1).max()) ** (1 / 3), 0.05, 0.8))
 
         def to_px(x, y):
             return (x - X0) * sc, (y - Y0) * sc
 
-        # the water between the islands, with pale uncoloured sand drifting outward (the market): sparse while
-        # there is little money on the table, denser as the total grows
-        wx = X0 + (np.arange(Wp) + 0.5) / sc
-        wy = Y0 + (np.arange(Hp) + 0.5) / sc
-        WX, WY = np.meshgrid(wx, wy)
-        rho = np.hypot(WX, WY) + 1e-6
-        th = np.arctan2(WX, -WY)
-        along = rho - t_film * 1.8
-        gi = np.floor(along * 1.1)
-        across = th * ((gi + 0.5) / 1.1 + t_film * 1.8)       # arc length at the ring's middle (no shear)
-        gj = np.floor(across * 1.1)
-        dens = 0.03 + 0.30 * stream_frac
+        # water, with pale sand drifting down the canals toward the lower right
+        img = np.empty((Hp, Wp, 3), np.float32); img[:] = WATER
+        WX, WY = np.meshgrid(X0 + (np.arange(Wp) + 0.5) / sc, Y0 + (np.arange(Hp) + 0.5) / sc)
+        along = (WX + WY) * 0.7071 - t_film * 2.0
+        across = (WX - WY) * 0.7071
+        gi, gj = np.floor(along * 1.1), np.floor(across * 1.1)
         fu, fv = np.modf(along * 1.1 + 1e5)[0] - 0.5, np.modf(across * 1.1 + 1e5)[0] - 0.5
         rr = (fu ** 2 + fv ** 2) / 0.16
+        dots = hash2(gi, gj, 7.0) < 0.03 + 0.32 * stream
         if sc > 2.5:
-            dots = (hash2(gi, gj, 7.0) < dens) & (rr < 1) & (rho > 4)
+            dots &= rr < 1
             k = (0.35 + 0.5 * np.sqrt(np.clip(1 - rr, 0, 1)))[dots, None]
         else:
-            dots = (hash2(gi, gj, 7.0) < dens) & (rho > 4)
             k = 0.4
-        vis_k = float(np.clip(sc / 3.0, 0.2, 1.0))
+        vis_k = float(np.clip(sc / 3.0, 0.25, 1.0))
         img[dots] = img[dots] * (1 - 0.6 * vis_k) + STREAM[None, :] * 0.55 * vis_k * k
 
-        # pedestals and tide marks (drawn with PIL on an overlay later), piles in numpy now
-        vis = []
-        for i, k in enumerate(self.ids):
-            px, py = to_px(*self.pos[i])
-            reach = max(radius(self.S.peak_until(k, year)), PED_R) * sc + 4
-            if px + reach < 0 or px - reach > Wp or py + reach < 0 or py - reach > Hp:
-                continue
-            if year < self.S.start[k] - story.RAMP:
-                continue
-            vis.append(i)
+        # plots: faint for vacant ones and companies still to come; land for the living; dark for husks
         pil = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8))
         dr = ImageDraw.Draw(pil, "RGBA")
-        for i in vis:
-            k = self.ids[i]
-            px, py = to_px(*self.pos[i])
+
+        def plot(x, y, hh, fill, outline=None):
+            a, b = to_px(x - hh, y - hh)
+            c, d = to_px(x + hh, y + hh)
+            if c < 0 or a > Wp or d < 0 or b > Hp or c - a < 1:
+                return
+            dr.rounded_rectangle([a, b, c, d], radius=max(0, (c - a) * 0.06), fill=fill, outline=outline,
+                                 width=max(1, int(sc * 0.15)) if outline else 0)
+
+        for x, y, hh in self.L.vacant:
+            plot(x, y, hh, LAND_FUTURE)
+        vis = []
+        for i, k in enumerate(self.ids):
+            x, y = self.pos[i]; hh = self.half[i]
+            if year < self.S.start[k] - story.RAMP:
+                plot(x, y, hh, LAND_FUTURE)
+                continue
             dead = year > self.S.end[k]
-            ir = max(PED_R + 0.8, radius(self.S.peak_until(k, year)) * 1.12) * sc
-            dr.ellipse([px - ir, py - ir, px + ir, py + ir], fill=(15, 16, 19, 255) if dead else (24, 26, 31, 255),
-                       outline=(40, 44, 52, 255), width=max(1, int(sc * 0.15)))
-            pr = PED_R * sc
-            dr.ellipse([px - pr, py - pr, px + pr, py + pr], fill=(16, 18, 22, 255) if dead else (30, 34, 42, 255),
-                       outline=(120, 130, 150, 90 if dead else 170), width=max(1, int(sc * 0.12)))
-            tide = radius(self.S.peak_until(k, year))
-            if tide > radius(G[i]) + 0.4 and tide * sc > 2:
-                c = tuple(int(v) for v in self.col[i])
-                rr = tide * sc
-                dr.ellipse([px - rr, py - rr, px + rr, py + rr], outline=c + (70,), width=max(1, int(sc * 0.18)))
+            plot(x, y, hh, LAND_DEAD if dead else LAND, (34, 37, 44) if not dead else None)
+            px, py = to_px(x, y)
+            e = max(self.EXT[f, i], 1.0) * sc * 1.2 + 4
+            if px + e > 0 and px - e < Wp and py + e > 0 and py - e < Hp:
+                vis.append(i)
         img = np.asarray(pil, np.float32).copy()
 
-        for i in vis:                      # shadows: a soft dark patch thrown down-right, longer for taller piles
-            r = float(radius(G[i]))
-            if G[i] < 0.5 or r * sc < 2:
+        # tide marks: the outline of the widest the pile has been, on the plot
+        for i in vis:
+            pk, n = float(self.PK[f, i]), float(G[i])
+            if pk < 1 or pk < n * 1.12:
+                continue
+            sh = self.shape[i]
+            Rp = sh.radius(pk); E = sh.extent(pk) * sc
+            if E < 3:
                 continue
             px, py = to_px(*self.pos[i])
-            off = 0.55 * r * sc
-            R = r * sc * 1.15
-            i0, i1 = max(0, int(px + off - R)), min(Wp, int(px + off + R) + 1)
-            j0, j1 = max(0, int(py + off * 0.8 - R)), min(Hp, int(py + off * 0.8 + R) + 1)
+            i0, i1 = max(0, int(px - E - 2)), min(Wp, int(px + E + 3))
+            j0, j1 = max(0, int(py - E - 2)), min(Hp, int(py + E + 3))
             if i0 >= i1 or j0 >= j1:
                 continue
-            DX, DY = np.meshgrid(np.arange(i0, i1) + 0.5 - px - off, np.arange(j0, j1) + 0.5 - py - off * 0.8)
-            dd = np.hypot(DX, DY) / R
-            img[j0:j1, i0:i1] *= (1 - 0.55 * np.clip(1.25 - dd, 0, 1))[..., None]
+            U, V = np.meshgrid((X0 + (np.arange(i0, i1) + 0.5) / sc - self.pos[i][0]) / Rp,
+                               (Y0 + (np.arange(j0, j1) + 0.5) / sc - self.pos[i][1]) / Rp)
+            Hk = sh.field(U, V, pk)
+            eps = min(0.2, (1.6 / max(Rp * sc, 1e-6)) ** 1.35)
+            ring = (Hk > 0) & (Hk < eps)
+            sub = img[j0:j1, i0:i1]
+            sub[ring] = sub[ring] * 0.55 + self.col[i] * 0.45 * 0.6
 
+        # shadows, then the piles: an organic height field, lit from the upper left, grain by grain close up
         for i in vis:
-            n = G[i]
+            n = float(G[i])
             if n < 0.5:
                 continue
-            r = float(radius(n))
+            sh = self.shape[i]
+            R = sh.radius(n)
+            E = sh.extent(n) * sc
             px, py = to_px(*self.pos[i])
             col = self.col[i]
-            if r * sc < 1.2:
+            if E < 1.2:
                 ii, jj = int(px), int(py)
                 if 0 <= ii < Wp and 0 <= jj < Hp:
-                    img[jj, ii] = col
+                    img[jj, ii] = img[jj, ii] * 0.3 + col * 0.7
                 continue
-            R = r * sc + 1
-            i0, i1 = max(0, int(px - R)), min(Wp, int(px + R) + 1)
-            j0, j1 = max(0, int(py - R)), min(Hp, int(py + R) + 1)
+            off = 0.5 * E
+            i0, i1 = max(0, int(px - E - 1)), min(Wp, int(px + E + off + 2))
+            j0, j1 = max(0, int(py - E - 1)), min(Hp, int(py + E + off + 2))
             if i0 >= i1 or j0 >= j1:
                 continue
-            wx = X0 + (np.arange(i0, i1) + 0.5) / sc - self.pos[i][0]
-            wy = Y0 + (np.arange(j0, j1) + 0.5) / sc - self.pos[i][1]
-            DX, DY = np.meshgrid(wx, wy)
-            d = np.hypot(DX, DY) + 1e-6
-            a = np.clip((r - d) * sc, 0, 1)
-            if not a.any():
-                continue
-            g = 0.8 * story.SLOPE
-            nrm = np.stack([g * DX / d, g * DY / d, np.ones_like(d)], -1)
-            nrm /= np.linalg.norm(nrm, axis=-1, keepdims=True)
-            cone = np.clip(nrm @ LIGHT, 0, 1)
-            hgt = np.clip((r - d) / max(r, 1e-6), 0, 1)
-            # grains on a hex grid anchored to the island (so they don't swim as the camera moves)
-            v = DY / 0.866
-            row = np.floor(v)
-            u = DX + 0.5 * (row % 2)
-            gi = np.floor(u)
-            fu, fv = u - gi - 0.5, v - row - 0.5
-            rr = 4 * (fu ** 2 + fv ** 2)
-            sz = np.sqrt(np.clip(1 - rr, 0, 1))
-            sph = np.stack([2 * fu, 2 * fv, sz], -1)
-            lam = np.clip(sph @ LIGHT, 0, 1) * (rr < 1)
-            var = 0.88 + 0.24 * hash2(gi, row, i)
-            wgr = float(np.clip((sc - 2.5) / 6.0, 0, 1))
-            shade = (1 - wgr) * (0.35 + 0.75 * cone) + wgr * (0.12 + 0.95 * lam * (0.55 + 0.6 * cone))
-            shade = shade * var * (0.9 + 0.2 * hgt)
-            c = col[None, None, :] * shade[..., None]
+            DX, DY = np.meshgrid(X0 + (np.arange(i0, i1) + 0.5) / sc - self.pos[i][0],
+                                 Y0 + (np.arange(j0, j1) + 0.5) / sc - self.pos[i][1])
+            H = sh.field(DX / R, DY / R, n)
+            Hs = sh.field((DX - off / sc) / R, (DY - off * 0.8 / sc) / R, n)          # shadow: the pile shifted
             sub = img[j0:j1, i0:i1]
-            sub[:] = sub * (1 - a[..., None]) + c * a[..., None]
+            sub *= (1 - 0.5 * np.clip(Hs * 6, 0, 1))[..., None]
+            inside = H > 0
+            if not inside.any():
+                continue
+            z = piles.A * R * H * piles.LEVEL
+            # grains on a hex grid anchored to the plot (they don't swim as the camera moves)
+            vv = DY / 0.866
+            row = np.floor(vv)
+            uu = DX + 0.5 * (row % 2)
+            gi = np.floor(uu)
+            rough = (hash2(gi, row, i + 0.5) - 0.5) * 0.24 * piles.LEVEL * np.clip(H * 4, 0, 1)   # grain roughness
+            gy, gx = np.gradient(z + rough * float(np.clip(1.5 - sc / 4, 0, 1)), 1 / sc)
+            nrm = np.stack([-gx, -gy, np.ones_like(z)], -1)
+            nrm /= np.linalg.norm(nrm, axis=-1, keepdims=True)
+            lit = np.clip(nrm @ LIGHT, 0, 1)
+            fu, fv = uu - gi - 0.5, vv - row - 0.5
+            r2 = 4 * (fu ** 2 + fv ** 2)
+            sph = np.stack([2 * fu, 2 * fv, np.sqrt(np.clip(1 - r2, 0, 1))], -1)
+            lam = np.clip(sph @ LIGHT, 0, 1) * (r2 < 1)
+            var = 0.86 + 0.28 * hash2(gi, row, i)
+            wgr = float(np.clip((sc - 2.5) / 6.0, 0, 1))
+            shade = (1 - wgr) * (0.25 + 0.85 * lit) + wgr * (0.10 + 0.95 * lam * (0.45 + 0.7 * lit))
+            shade = shade * var * (0.92 + 0.16 * np.clip(H, 0, 1))
+            a = np.clip(H * R * sc * 0.6, 0, 1)
+            sub[:] = sub * (1 - a[..., None]) + (col[None, None, :] * shade[..., None]) * a[..., None]
 
         # flying grains
         pil = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8))
@@ -296,8 +284,7 @@ class Film:
         if len(self.fl):
             lo = np.searchsorted(self.fl[:, 0], f - fly_f, side="right")
             hi = np.searchsorted(self.fl[:, 0], f, side="right")
-            for row_ in self.fl[lo:hi]:
-                f0, sx, sy, tx, ty, kind, ci = row_
+            for f0, sx, sy, tx, ty, kind, ci in self.fl[lo:hi]:
                 p = (f - f0) / fly_f
                 e = p * p * (3 - 2 * p)
                 L_ = math.hypot(tx - sx, ty - sy) + 1e-6
@@ -308,73 +295,50 @@ class Film:
                 y = sy + (ty - sy) * e + ny * bulge - math.sin(math.pi * p) * 1.2
                 ppx, ppy = to_px(x, y)
                 rad = max(0.8, 0.45 * sc * (1 + 0.35 * math.sin(math.pi * p)))
-                col = self.col[int(ci)]
-                if kind == 0:      # from the canal: pale, taking the colour as it lands
-                    c = STREAM * (1 - e) + col * e
-                elif kind == 1:    # back to the canal: losing its colour
-                    c = col * (1 - e) + STREAM * e
-                else:
-                    c = col
+                c = self.col[int(ci)]
+                c = STREAM * (1 - e) + c * e if kind == 0 else (c * (1 - e) + STREAM * e if kind == 1 else c)
                 dr.ellipse([ppx - rad, ppy - rad, ppx + rad, ppy + rad], fill=tuple(int(v) for v in c) + (235,))
 
-        # names: districts when wide, companies under their piles
+        # names under the piles: the 12 biggest living companies, any that are big on screen, and big husks
         fs = max(10, Hp / 54)
         f_name, f_small = font("Inter-Medium.otf", fs), font("Inter-Regular.otf", fs * 0.82)
         order = np.argsort(-G)
         rank = {int(i): r + 1 for r, i in enumerate(order[:10]) if G[i] >= 1}
-        rank12 = {int(i) for i in order[:12] if G[i] >= 1}
-        cands = []        # (priority, i): living companies by size first, then husks by their peak
+        top12 = {int(i) for i in order[:12] if G[i] >= 1}
+        cands = []
         for i in vis:
             k = self.ids[i]
-            r_now = max(float(radius(G[i])), PED_R)
             dead = year > self.S.end[k]
-            big = G[i] >= 1 and (r_now * sc > 22 or i in rank12)
-            husk_seen = dead and radius(self.S.peak_grains[k]) * sc > 16
-            if big or husk_seen or sc > 20:
-                cands.append((-(G[i] if not dead else 1e-3 * self.S.peak_grains[k]), i))
+            e_now = max(float(self.EXT[f, i]), 2.0) * sc
+            husk_big = dead and float(self.PK[f, i]) > 0 and self.shape[i].extent(float(self.PK[f, i])) * sc > 18
+            if (not dead and G[i] >= 1 and (e_now > 26 or i in top12)) or husk_big or (sc > 20 and G[i] >= 0.5):
+                cands.append((-(G[i] if not dead else 1e-3 * self.PK[f, i]), i))
         boxes = []
 
         def free(bb):
             return all(bb[2] < o[0] or bb[0] > o[2] or bb[3] < o[1] or bb[1] > o[3] for o in boxes)
 
-        fd = font("Inter-SemiBold.otf", fs * 0.9)
-        for name, (cen, half) in self.L.sectors.items():
-            out = [math.hypot(self.pos[i][0] / layout.ASPECT, self.pos[i][1]) + max(radius(self.S.peak_until(self.ids[i], year)), PED_R) * 1.3
-                   for i in range(len(self.ids)) if self.L.district_of[self.ids[i]] == name and self.S.start[self.ids[i]] - story.RAMP <= year]
-            if not out or name == "Amsterdam" and len(out) < 2:
-                continue
-            rr = max(out) + 3
-            ppx, ppy = to_px(rr * layout.ASPECT * math.sin(cen), -rr * math.cos(cen))
-            if not (0 < ppx < Wp and 0 < ppy < Hp):
-                continue
-            txt = layout.DISTRICTS[name]["label"].upper()
-            bb = dr.textbbox((ppx, ppy), txt, font=fd, anchor="mm")
-            if free(bb):
-                boxes.append(bb)
-                dr.text((ppx, ppy), txt, font=fd, fill=MUTED + (200,), anchor="mm")
         for _, i in sorted(cands):
             k = self.ids[i]
             px, py = to_px(*self.pos[i])
-            r_now = max(float(radius(G[i])), PED_R)
             dead = year > self.S.end[k]
             label = self.S.companies[k]["label"]
             if i in rank and rank[i] <= 5:
                 label = f"{rank[i]}  {label}"
-            y = py + r_now * sc + 3
+            reach = self.EXT[f, i] if not dead else self.shape[i].extent(float(self.PK[f, i]))
+            y = min(py + max(float(reach), 2.0) * sc + 3, py + self.half[i] * sc - fs * (2.2 if dead else 1.2))
             fnt = f_name if not dead else f_small
-            bb = dr.textbbox((px, y), label, font=fnt, anchor="ma")
-            lines = [(label, fnt, (MUTED[0], MUTED[1], MUTED[2], 150) if dead else INK + (235,))]
+            lines = [(label, fnt, (MUTED[0], MUTED[1], MUTED[2], 160) if dead else INK + (235,))]
             if dead:
-                yrs = f"{int(self.S.start[k])}–{int(float(self.S.end[k]))}"
-                bb2 = dr.textbbox((px, y + fs * 1.05), yrs, font=f_small, anchor="ma")
-                bb = (min(bb[0], bb2[0]), bb[1], max(bb[2], bb2[2]), bb2[3])
-                lines.append((yrs, f_small, MUTED + (120,)))
-            bb = (bb[0] - 3, bb[1] - 1, bb[2] + 3, bb[3] + 1)
+                lines.append((f"{int(self.S.start[k])}–{int(float(self.S.end[k]))}", f_small, MUTED + (130,)))
+            bbs = [dr.textbbox((px, y + j * fs * 1.05), t, font=fn, anchor="ma") for j, (t, fn, _) in enumerate(lines)]
+            bb = (min(b[0] for b in bbs) - 3, bbs[0][1] - 1, max(b[2] for b in bbs) + 3, bbs[-1][3] + 1)
             if not free(bb):
                 continue
             boxes.append(bb)
-            for j, (txt, fn, c) in enumerate(lines):
-                dr.text((px, y + j * fs * 1.05), txt, font=fn, fill=c, anchor="ma")
+            for j, (t, fn, c) in enumerate(lines):
+                dr.text((px, y + j * fs * 1.05), t, font=fn, fill=c, anchor="ma")
+
         # HUD
         m = Hp * 0.045
         dr.text((m, m * 0.8), f"{int(math.floor(year))}", font=font("InterDisplay-SemiBold.otf", Hp / 11), fill=INK)
@@ -382,18 +346,17 @@ class Film:
                 font=font("Inter-Medium.otf", Hp / 40), fill=MUTED)
         dr.text((Wp - m, m * 0.9), "Flat preview: layout, clock and camera only", font=font("Inter-Regular.otf", Hp / 48),
                 fill=MUTED + (160,), anchor="ra")
-        present = sorted({self.S.companies[self.ids[i]]["industry"] for i in vis if G[i] >= 0.5 or year > self.S.end[self.ids[i]]},
-                         key=list(INDUSTRIES).index)
+        present = sorted({self.S.companies[self.ids[i]]["industry"] for i in vis
+                          if G[i] >= 0.5 or year > self.S.end[self.ids[i]]}, key=list(INDUSTRIES).index)
         ly = Hp - m - len(present) * Hp / 34
         for ind in present:
             lab, hx = INDUSTRIES[ind]
             dr.ellipse([m, ly + 3, m + Hp / 60, ly + 3 + Hp / 60], fill=tuple(int(v) for v in hexrgb(hx)))
             dr.text((m + Hp / 40, ly), lab, font=font("Inter-Regular.otf", Hp / 46), fill=MUTED)
             ly += Hp / 34
-        if t_film < 6.0:
-            a = int(255 * min(1, (t_film - 0.4) / 0.8, (5.8 - t_film) / 0.8)) if t_film > 0.4 else 0
-            if a > 0:
-                dr.text((Wp / 2, Hp * 0.86), TITLE, font=font("InterDisplay-SemiBold.otf", Hp / 18), fill=INK + (a,), anchor="mm")
+        if 0.4 < t_film < 6.0:
+            a = int(255 * min(1, (t_film - 0.4) / 0.8, (5.8 - t_film) / 0.8))
+            dr.text((Wp / 2, Hp * 0.86), TITLE, font=font("InterDisplay-SemiBold.otf", Hp / 18), fill=INK + (a,), anchor="mm")
         return pil
 
 
@@ -414,43 +377,42 @@ def main():
     ap.add_argument("mode", choices=["still", "sheet", "video", "info"])
     ap.add_argument("years", nargs="*", type=float)
     ap.add_argument("--fps", type=int, default=24)
-    ap.add_argument("--size", default="960x540")
+    ap.add_argument("--size", default="1280x720")
     ap.add_argument("--workers", type=int, default=4)
     a = ap.parse_args()
     size = tuple(int(v) for v in a.size.split("x"))
     os.makedirs(OUT, exist_ok=True)
     film = Film(a.fps)
     if a.mode == "info":
-        print(f"{len(film.ids)} companies, {film.nf} frames, {film.C.duration:.1f} s; table {film.L.width:.0f} x {film.L.height:.0f} cells")
+        L = film.L
+        print(f"{len(film.ids)} companies, {film.nf} frames, {film.C.duration:.1f} s; grid {L.M} x {L.rows} large plots "
+              f"of {L.c_top:.0f} cells ({L.width:.0f} x {L.height:.0f}), {len(L.vacant)} vacant plots")
         for f in range(0, film.nf, int(10 * a.fps)):
-            print(f"  {f / a.fps:6.1f} s  {film.years[f]:7.1f}  view {film.cam[f][2]:6.1f} cells")
+            print(f"  {f / a.fps:6.1f} s  {film.years[f]:7.1f}  view {film.cam[f][2]:7.1f} cells")
         return
     if a.mode == "still":
         for y in a.years:
-            f = int(round(film.C.seconds(y) * a.fps))
-            film.frame(min(f, film.nf - 1), size).save(os.path.join(OUT, f"still_{y:.1f}.png"))
+            f = min(int(round(film.C.seconds(y) * a.fps)), film.nf - 1)
+            film.frame(f, size).save(os.path.join(OUT, f"still_{y:.1f}.png"))
             print("wrote", os.path.join(OUT, f"still_{y:.1f}.png"))
         return
     if a.mode == "sheet":
         n, tw = 20, 480
         th = tw * 9 // 16
         sheet = Image.new("RGB", (tw * 4, th * 5), (0, 0, 0))
-        fr = np.linspace(int(3 * a.fps), film.nf - 1, n).astype(int)
-        for j, f in enumerate(fr):
-            im = film.frame(f, (tw * 2, th * 2)).resize((tw, th), Image.LANCZOS)
-            sheet.paste(im, ((j % 4) * tw, (j // 4) * th))
+        for j, f in enumerate(np.linspace(int(3 * a.fps), film.nf - 1, n).astype(int)):
+            sheet.paste(film.frame(f, (tw * 2, th * 2)).resize((tw, th), Image.LANCZOS), ((j % 4) * tw, (j // 4) * th))
         sheet.save(os.path.join(OUT, "contact_sheet.png"))
         print("wrote", os.path.join(OUT, "contact_sheet.png"))
         return
     import multiprocessing as mp
     path = os.path.join(OUT, "preview.mp4")
     ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{size[0]}x{size[1]}",
-                           "-r", str(a.fps), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "medium", path],
+                           "-r", str(a.fps), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "24", "-preset", "medium", path],
                           stdin=subprocess.PIPE)
     global FILM
     FILM = film                                   # forked workers inherit it
-    ctx = mp.get_context("fork")
-    with ctx.Pool(a.workers, initializer=_worker_init, initargs=(size,)) as pool:
+    with mp.get_context("fork").Pool(a.workers, initializer=_worker_init, initargs=(size,)) as pool:
         for j, buf in enumerate(pool.imap(_render, range(film.nf), chunksize=8)):
             ff.stdin.write(buf)
             if j % (a.fps * 20) == 0:

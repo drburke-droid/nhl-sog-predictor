@@ -28,20 +28,29 @@ so a company 1,000 times bigger is only 10 times wider and taller, which keeps e
 anyone has reconstructed, but in today's dollars it would be worth less than one grain, so it is a line of
 narration, not a vessel.
 
-**The table: a city of islands growing outward from the VOC.** The VOC stands at the centre. Every other
-company gets an island in its home market's district, a wedge pointing the way that market lies from Amsterdam
-(New York to the west, London west-south-west, Paris south-west, Johannesburg south, Riyadh and the rest of
-Europe south-east, Moscow, Shanghai and Tokyo to the north-east). Islands are placed in the order companies
-first appear, each as close to the centre as its wedge allows, so the city grows in rings like Amsterdam's
-canals: the husks of the old companies form the old core, today's giants the outer rings. The camera stays
-centred and pulls straight back, so everything earlier stays in view. (A first version laid the districts
-out as rectangles in a grid; the early companies ended up in a long thin strip along the back and the camera
-had to frame a sliver. The rings fixed that.) Colour is industry (`story.INDUSTRIES`, 13 colours).
+**The table: a grid, oldest top left, newest bottom right** (`layout.py`). Every company gets a square plot, with
+straight canals between all the plots. The table is a grid of large squares; one that holds small companies is
+split into four, and those into four again, so each company gets the smallest square its pile will ever need,
+in the order companies first appear. The VOC and the East India Company sit side by side in the top left
+corner, with the WIC, Hudson's Bay and the Bank of England in the same small block; the 1720 bubble companies
+a few plots on; today's giants each fill a whole large square. The large squares fill along diagonals from the
+top left corner, like a wave, so the filled part is always a compact triangle the camera can frame, and at the
+end the newest giants (Aramco, Meta, Tesla, SpaceX) hold the bottom right corner with the companies of the
+middle years in the centre. Plots of companies still to come are faint, so the grid reads from the start.
+(Earlier versions: districts by home market as rectangles, then rings growing outward from the VOC. The first
+left the early companies in a thin strip, the second looked chaotic. A strictly row-by-row grid put 1601-1955
+in the top row, so the camera framed a sliver for most of the film; the diagonal fill fixes that.)
+Colour is industry (`story.INDUSTRIES`, 13 colours).
+
+**Organic piles** (`piles.py`). Each company's pile is its own irregular mountain: a wobbly footprint, the
+summit a little off-centre, 2-4 shoulders (lesser summits that push the outline out), gullies deepening down
+the flanks, and grain-scale roughness, following the Sandglass spec. Small piles are nearly round heaps; the
+lobes and shoulders grow in as a pile grows. The base radius is set so the pile holds exactly its grains.
 
 **The water is the market, not a closed system.** Market value is not conserved: when a stock falls, the money
 does not go to another company, it is gone. So:
-- the islands stand in water carrying pale, uncoloured sand that drifts outward from the centre to the edge of
-  the table; it is sparse while there is little money on the table and denser as the total grows;
+- the canals carry pale, uncoloured sand drifting toward the lower right; it is sparse while there is little
+  money on the table and denser as the total grows;
 - sand lifts from the water into a growing company (taking its colour as it lands) and drains back when it
   shrinks (losing its colour);
 - coloured sand flies directly from one company to another only for a real deal (merger, purchase, break-up,
@@ -56,8 +65,8 @@ does not go to another company, it is gone. So:
   into the canal.
 - A company appears only once its shares trade (Saudi Aramco in 2019, not before).
 
-**Husks.** A dead company keeps a dark island, its name and years, and a tide mark at the widest its pile ever
-was. Islands grow with the widest their pile has been so far (they never show a company's future size).
+**Husks.** A dead company keeps a dark plot, its name and years, and a tide mark (the outline of its pile at
+its widest) on the plot.
 
 **Gaps in the data.** Between two known values a company moves at a steady rate, except across a gap of three
 years or more where its home market has an index: there it follows the index, tilted to meet both known values
@@ -85,7 +94,8 @@ the parents and children needed for its mergers and splits.
 | `build_data.py` | merges the eras into `data/companies.csv`, `values_today.csv`, `events.csv` |
 | `story.py` | grains per company at any date; the grain size; the industry colours |
 | `clock.py` | seconds of film per year (fast through quiet centuries, slow for bubbles and the last 40 years) |
-| `layout.py` | districts, islands and canals |
+| `layout.py` | the nested grid of plots, filled along diagonals |
+| `piles.py` | organic pile shapes |
 | `preview.py` | the flat top-down preview: stills, contact sheet, low-res video |
 
 ```
