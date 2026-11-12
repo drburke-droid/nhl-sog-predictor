@@ -15,7 +15,7 @@ Series (data/):
   uk_cpi.csv                Bank of England, "A millennium of macroeconomic data" v3.1, sheet A47: CPI 1209-2016
   usd_per_gbp_annual.csv    same dataset, sheet A33: $/£ 1791-2016 (Officer); used to 1970
   fx_usd_per_unit_monthly_1971.csv   FRED (Federal Reserve H.10/G.5) monthly rates from 1971: GBP, JPY, EUR,
-                            CHF, CNY, KRW, TWD, HKD, BRL, AUD, CAD
+                            CHF, CNY, KRW, TWD, HKD, BRL, AUD, CAD; FRF and NLG to 2001
 """
 import csv, os
 import numpy as np

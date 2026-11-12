@@ -2,7 +2,7 @@ id,name,label,district,industry,fate,successors,first,end
 eic,East India Company (Governor and Company of Merchants of London trading into the East Indies),East India Co.,London,trade,dissolved,,1601.125,1874.331
 voc,Vereenigde Oostindische Compagnie (Dutch East India Company),VOC,Amsterdam,trade,nationalised,,1602.500,1795.500
 wic,Geoctrooieerde West-Indische Compagnie (first Dutch West India Company),WIC,Amsterdam,trade,dissolved,wic_1674,1623.500,1649.500
-hudsons_bay,Governor and Company of Adventurers of England trading into Hudson's Bay,Hudson's Bay,London,trade,alive,,1670.500,1880.958
+hudsons_bay,Governor and Company of Adventurers of England trading into Hudson's Bay,Hudson's Bay,London,trade,taken_private,,1670.500,1880.958
 royal_african,Royal African Company of England,Royal African Company of England,London,trade,dissolved,,1672.500,1720.958
 wic_1674,"Second Dutch West India Company (Geoctrooieerde West-Indische Compagnie, 1674)",Second Dutch West India,Amsterdam,trade,nationalised,,1674.500,1791.999
 bank_of_england,Governor and Company of the Bank of England,Bank of England,London,finance,nationalised,,1694.542,1946.168
@@ -15,53 +15,53 @@ london_assurance,London Assurance Corporation,London Assurance,London,finance,ac
 bank_us_first,Bank of the United States (First),Bank of the United States,New York,finance,dissolved,,1791.542,1791.542
 banque_de_france,Banque de France,Banque de France,Paris,finance,nationalised,,1800.125,1893.208
 bank_us_second,Second Bank of the United States,Second Bank of the United States,New York,finance,bankrupt,,1817.042,1849.958
+lnwr,London and North Western Railway,London and North Western Railway,London,rail,merged,lms,1847.708,1920.958
+midland_rly,Midland Railway,Midland Railway,London,rail,merged,lms,1847.708,1919.958
+nord_fr,Compagnie des chemins de fer du Nord,Compagnie des chemins de fer du Nord,Paris,rail,nationalised,,1853.958,1913.958
 new_york_central,New York Central Railroad,New York Central Railroad,New York,rail,merged,pennsylvania_rr,1860.500,1929.667
-lnwr,London and North Western Railway,London and North Western Railway,London,rail,merged,lms,1869.958,1920.958
-midland_rly,Midland Railway,Midland Railway,London,rail,merged,lms,1869.958,1913.958
 plm,Compagnie des chemins de fer de Paris a Lyon et a la Mediterranee,Compagnie des chemins de fer de Paris a Lyon et a la Mediterranee,Paris,rail,nationalised,,1869.958,1913.958
-nord_fr,Compagnie des chemins de fer du Nord,Compagnie des chemins de fer du Nord,Paris,rail,nationalised,,1869.958,1913.958
-est_fr,Compagnie des chemins de fer de l'Est,Compagnie des chemins de fer de l'Est,Paris,rail,nationalised,,1869.958,1900.958
-sudbahn,Sudbahn-Gesellschaft (Southern Austrian and Lombardo-Venetian Railway),Sudbahn-Gesellschaft,Europe,rail,broken_up,,1869.958,1890.958
+est_fr,Compagnie des chemins de fer de l'Est,Compagnie des chemins de fer de l'Est,Paris,rail,nationalised,,1869.958,1912.958
+sudbahn,Sudbahn-Gesellschaft (Southern Austrian and Lombardo-Venetian Railway),Sudbahn-Gesellschaft,Europe,rail,broken_up,,1869.958,1899.958
 east_indian_rly,East Indian Railway Company,East Indian Railway,London,rail,nationalised,,1869.958,1873.958
-gwr,Great Western Railway,Great Western Railway,London,rail,alive,,1871.500,1920.958
+gwr,Great Western Railway,Great Western Railway,London,rail,nationalised,,1871.500,1924.958
 orleans,Compagnie du chemin de fer de Paris a Orleans,Compagnie du chemin de fer de Paris a Orleans,Paris,rail,nationalised,,1871.500,1890.958
-ner,North Eastern Railway,North Eastern Railway,London,rail,merged,lner,1873.958,1913.958
-lyr,Lancashire and Yorkshire Railway,Lancashire and Yorkshire Railway,London,rail,merged,lnwr,1873.958,1900.958
+ner,North Eastern Railway,North Eastern Railway,London,rail,merged,lner,1873.958,1919.958
+lyr,Lancashire and Yorkshire Railway,Lancashire and Yorkshire Railway,London,rail,merged,lnwr,1873.958,1919.958
 gipr,Great Indian Peninsula Railway,Great Indian Peninsula Railway,London,rail,nationalised,,1873.958,1880.958
-suez,Compagnie universelle du canal maritime de Suez,Compagnie universelle du canal maritime de Suez,Paris,rail,alive,,1875.900,1913.958
-illinois_central,Illinois Central Railroad,Illinois Central Railroad,New York,rail,alive,,1880.958,1900.958
-erie,Erie Railroad,Erie Railroad,New York,rail,alive,,1880.958,1880.958
+suez,Compagnie universelle du canal maritime de Suez,Compagnie universelle du canal maritime de Suez,Paris,rail,merged,,1875.900,1999.000
+illinois_central,Illinois Central Railroad,Illinois Central Railroad,New York,rail,acquired,,1880.958,1998.109
+erie,Erie Railroad,Erie Railroad,New York,rail,merged,,1880.958,1882.042
+cpr,Canadian Pacific Railway,Canadian Pacific Railway,New York,rail,alive,,1885.958,2026.865
 standard_oil_nj,Standard Oil (Trust 1882; Standard Oil Co. of New Jersey holding company 1899),Standard Oil · Exxon,New York,oil,alive,,1890.500,2026.865
+union_pacific,Union Pacific Railroad,Union Pacific Railroad,New York,rail,alive,,1899.958,2026.865
 pennsylvania_rr,Pennsylvania Railroad,Pennsylvania Railroad,New York,rail,bankrupt,,1900.958,1929.667
-union_pacific,Union Pacific Railroad,Union Pacific Railroad,New York,rail,alive,,1900.958,1912.958
-northern_pacific,Northern Pacific Railway,Northern Pacific Railway,New York,rail,alive,,1900.958,1912.958
-cpr,Canadian Pacific Railway,Canadian Pacific Railway,New York,rail,alive,,1900.958,1925.958
+northern_pacific,Northern Pacific Railway,Northern Pacific Railway,New York,rail,merged,,1900.958,1929.667
 carnegie_steel,Carnegie Steel Company,Carnegie Steel,New York,mining_metals,acquired,us_steel,1901.208,1901.208
-us_steel,United States Steel Corporation,US Steel,New York,mining_metals,alive,,1901.292,1954.747
+us_steel,United States Steel Corporation,US Steel,New York,mining_metals,acquired,,1901.292,2025.465
+rio_tinto,Rio Tinto Company,Rio Tinto,London,mining_metals,alive,,1909.500,2026.865
 socony,Standard Oil Company of New York,Socony · Mobil,New York,oil,merged,standard_oil_nj,1912.500,1999.208
-standard_oil_in,Standard Oil Company (Indiana),Standard Oil,New York,oil,alive,,1912.500,1991.000
+standard_oil_in,Standard Oil Company (Indiana),Standard Oil,New York,oil,acquired,anglo_persian,1912.500,1999.000
 standard_oil_ca,Standard Oil Company of California,Standard Oil Company of California,New York,oil,alive,,1912.500,2026.865
 ohio_oil,Ohio Oil Company,Ohio Oil,New York,oil,alive,,1912.500,1912.500
 prairie_oil,Prairie Oil & Gas,Prairie Oil & Gas,New York,oil,acquired,,1912.500,1912.500
 vacuum_oil,Vacuum Oil Company,Vacuum Oil,New York,oil,merged,socony,1912.500,1912.500
-atlantic_refining,Atlantic Refining Company,Atlantic Refining,New York,oil,alive,,1912.500,1991.000
+atlantic_refining,Atlantic Refining Company,Atlantic Refining,New York,oil,acquired,anglo_persian,1912.500,2000.298
 ge,General Electric Company,GE,New York,industrial,alive,,1912.500,2026.865
-pullman,Pullman Company,Pullman,New York,industrial,alive,,1912.500,1912.500
-coats,J. & P. Coats,J. & P. Coats,London,consumer,alive,,1912.500,1925.958
+pullman,Pullman Company,Pullman,New York,industrial,alive,,1912.500,1929.667
+coats,J. & P. Coats,J. & P. Coats,London,consumer,alive,,1912.500,2026.865
 royal_dutch_shell,Royal Dutch Petroleum Company (Koninklijke Nederlandsche Petroleum Mij.),Shell,Amsterdam,oil,alive,,1912.500,2026.865
 anaconda,Anaconda Copper Mining,Anaconda Copper Mining,New York,mining_metals,acquired,,1912.500,1929.667
 singer,Singer Manufacturing,Singer Manufacturing,New York,industrial,alive,,1912.500,1912.500
-american_tobacco,American Tobacco Company,American Tobacco,New York,consumer,alive,,1912.500,1912.500
-intl_harvester,International Harvester,International Harvester,New York,industrial,alive,,1912.500,1912.500
-bat,British-American Tobacco,British-American Tobacco,London,consumer,alive,,1912.500,1925.958
-imperial_tobacco,Imperial Tobacco Company (of Great Britain and Ireland),Imperial Tobacco,London,consumer,alive,,1912.500,1925.958
-de_beers,De Beers Consolidated Mines,De Beers Consolidated Mines,Johannesburg,mining_metals,alive,,1912.500,1912.500
-rio_tinto,Rio Tinto Company,Rio Tinto,London,mining_metals,alive,,1912.500,1912.500
-krupp,Fried. Krupp AG,Fried. Krupp,Europe,mining_metals,alive,,1912.500,1912.500
-guinness,"Arthur Guinness, Son & Co.","Arthur Guinness, Son",London,consumer,alive,,1912.500,1912.500
-southern_pacific,Southern Pacific Company,Southern Pacific,New York,rail,alive,,1912.958,1912.958
-great_northern_us,Great Northern Railway (US),Great Northern Railway,New York,rail,alive,,1912.958,1912.958
-atchison,"Atchison, Topeka and Santa Fe Railway","Atchison, Topeka and Santa Fe Railway",New York,rail,alive,,1912.958,1912.958
+american_tobacco,American Tobacco Company,American Tobacco,New York,consumer,alive,,1912.500,1929.667
+intl_harvester,International Harvester,International Harvester,New York,industrial,acquired,,1912.500,2021.501
+bat,British-American Tobacco,British-American Tobacco,London,consumer,alive,,1912.500,2026.865
+imperial_tobacco,Imperial Tobacco Company (of Great Britain and Ireland),Imperial Tobacco,London,consumer,acquired,,1912.500,1986.292
+de_beers,De Beers Consolidated Mines,De Beers Consolidated Mines,Johannesburg,mining_metals,taken_private,,1912.500,2011.843
+krupp,Fried. Krupp AG,Fried. Krupp,Europe,mining_metals,merged,,1912.500,1912.500
+guinness,"Arthur Guinness, Son & Co.","Arthur Guinness, Son",London,consumer,merged,,1912.500,1997.362
+southern_pacific,Southern Pacific Company,Southern Pacific,New York,rail,acquired,union_pacific,1912.958,1996.695
+great_northern_us,Great Northern Railway (US),Great Northern Railway,New York,rail,merged,,1912.958,1929.667
+atchison,"Atchison, Topeka and Santa Fe Railway","Atchison, Topeka and Santa Fe Railway",New York,rail,merged,,1912.958,1995.726
 att,American Telephone and Telegraph Company,AT&T,New York,telecom_media,acquired,sbc,1922.958,2005.083
 anglo_persian,Anglo-Persian Oil Company,Anglo-Persian Oil,London,oil,alive,,1925.958,2026.865
 burmah_oil,Burmah Oil,Burmah Oil,London,oil,alive,,1925.958,1925.958
@@ -171,6 +171,7 @@ broadcom,Broadcom,Broadcom,New York,semis,alive,,2009.914,2026.865
 tesla,Tesla,Tesla,New York,autos,alive,,2010.497,2026.865
 gm_2010,General Motors Company,General Motors,New York,autos,alive,,2010.881,2026.865
 facebook,Facebook,Meta (Facebook),New York,internet,alive,,2012.381,2026.865
+imperial_brands,Imperial Tobacco Group plc,Imperial Tobacco Group,London,consumer,alive,,2013.000,2026.865
 alibaba,Alibaba Group,Alibaba Group,Shanghai · Hong Kong,internet,alive,,2014.747,2026.865
 dowdupont,DowDuPont Inc.,DowDuPont,New York,chem_pharma,alive,dow_inc;corteva,2017.745,2026.865
 aramco,Saudi Aramco,Aramco,Riyadh,oil,alive,,2019.945,2026.865

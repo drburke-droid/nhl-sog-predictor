@@ -48,7 +48,8 @@ ALIAS = {
     # its value / 0.6 stands for the whole group (as the 1990-2026 research does); before, it is Royal Dutch alone.
     "royal_dutch": ("royal_dutch_shell", lambda t: 1 / 0.6 if t >= 1907.1 else 1.0),
 }
-SHELL_TT_MERGED = 1907.1     # Shell Transport's own values stop at the union (from then on it is part of the group)
+SHELL_TT_MERGED = 1907.1
+ID_SPLIT = {"imperial_tobacco": (1990.0, "imperial_brands")}   # rows from that year on belong to a new company     # Shell Transport's own values stop at the union (from then on it is part of the group)
 OVERRIDE = {
     "royal_dutch_shell": {"district": "Amsterdam"},   # Dutch-majority for most of its life (London-only since 2022)
 }
@@ -125,6 +126,8 @@ def main(report=False):
         if any(r["_era"] == e and r["id"] == i and a <= t < b for e, i, a, b, _ in DROP):
             continue
         cid, fac = ALIAS.get(r["id"], (r["id"], None))
+        if cid in ID_SPLIT and t >= ID_SPLIT[cid][0]:
+            cid = ID_SPLIT[cid][1]
         if fac:
             today *= fac(t)
         if cid == "shell_tt" and t >= SHELL_TT_MERGED:

@@ -43,6 +43,7 @@ t,type,from_ids,to_ids,detail
 1841.0929,bankruptcy,bank_us_second,,Final suspension and failure; shares fell to a few dollars (NYSE $1.75 in Dec 1849 during liquidation). Value at end-1835 $39.5m; GFD 1840 $22.9m
 1844.3593,merger,,midland_rly,North Midland + Midland Counties + Birmingham & Derby Junction railways form the Midland Railway (no values found)
 1846.5424,merger,,lnwr,London & Birmingham + Grand Junction + Manchester & Birmingham form the LNWR (no values found for 1846)
+1846.5424,merger,,lnwr,LNWR formed (London & Birmingham + Grand Junction + Manchester & Birmingham). Paid-up on stock and shares GBP10.71m at 30 Jun 1846; consolidated stock GBP8.88m plus partly paid new shares; total nominal under the Consolidation Act GBP17.24m (+GBP4.69m Extension shares).
 1854.5000,dissolution,south_sea,,South Sea Stock converted under the 1853 debt operations; company wound up (last value seen 1847: c.GBP3.4m)
 1854.5835,merger,,ner,York Newcastle & Berwick + York & North Midland + Leeds Northern form the North Eastern Railway
 1857.4399,listing,banque_de_france,banque_de_france,"Banque de France capital doubled from 91,250 to 182,500 shares (new shares sold at 1,100 fr)"
@@ -61,11 +62,22 @@ t,type,from_ids,to_ids,detail
 1922.0014,merger,lyr,lnwr,Lancashire & Yorkshire absorbed by LNWR (L&Y last value read Dec 1900 GBP21.6m)
 1923.0014,merger,lnwr;midland_rly,lms,Railways Act 1921 grouping: LNWR (Dec 1920 GBP31.8m) and Midland form the London Midland & Scottish
 1923.0014,merger,ner,lner,North Eastern + Great Northern + Great Eastern + others form the LNER (NER Dec 1913 GBP38.8m)
+1923.0014,merger,lnwr;midland_rly,lms,Railways Act 1921 grouping: LNWR (which had absorbed the Lancashire & Yorkshire on 1 Jan 1922) and Midland become the London Midland & Scottish Railway (LMS). LMS ordinary stock traded 108 5/8-101 1/4 in 1923 and 106 1/8-94 3/4 in 1924 (close Dec 1924 102). LMS ordinary capital not read here.
+1923.0014,merger,ner,lner,North Eastern Railway into the London & North Eastern Railway (LNER).
+1923.0014,merger,,gwr,"GWR survives the grouping, absorbing the Welsh companies (Taff Vale, Barry, Cambrian, Rhymney...). Its consolidated ordinary stock rose from GBP37.08m (1920) to GBP42.86m (1925)."
 1931.5835,merger,socony,socony,Standard Oil Co. of New York merged with Vacuum Oil to form Socony-Vacuum Oil; socony id continues. No value for Vacuum found.
+1938.0014,nationalisation,plm;nord_fr;orleans;est_fr,,"The big French railway companies' networks pass to the new SNCF (convention of 31 Aug 1937). The companies kept a minority stake in SNCF and survived as holding companies (Paris-Orleans later became the Rothschild holding Paris Orleans SA, today Rothschild & Co). Compensation terms and values not collected here."
 1946.1680,nationalisation,bank_of_england,,Bank of England Act 1946: £14.553m Bank Stock exchanged for £58.2m (≈£58m) of 3% Treasury Stock (£400 per £100).
+1948.0014,nationalisation,gwr,,"Transport Act 1947: GWR, LMS, LNER and Southern vested in the British Transport Commission; shareholders received 3% British Transport Stock 1978-88 on the basis of Stock Exchange prices of 1945-46. Total BTS issued for the railway undertakings (excl. London Transport): GBP927,313,593 nominal. GWR's own compensation figure not found in this session."
 1955.0014,rename,socony,socony,Socony-Vacuum -> Socony Mobil Oil (1955); Mobil Oil (1966); Mobil Corp (1976).
 1956.0479,listing,,ford,Ford Motor Co. IPO: the Ford Foundation sold 10.2m shares at $64.50; 53.46m shares x first-day close $70.50 = $3.8bn.
+1956.5698,nationalisation,suez,,"Egypt (Law 285/1956) nationalises the Suez Canal Company's Egyptian assets. Heads of Agreement (29 Apr 1958, signed 13 Jul 1958): Egypt pays GBP(E)28.3m (incl. GBP(E)5.3m of tolls already held), 1959-64; the company keeps its assets outside Egypt and becomes the Compagnie Financiere de Suez (1958)."
 1959.3347,rename,texaco,texaco,The Texas Company -> Texaco Inc. (1959).
+1960.7952,merger,erie,,"Erie Railroad merges with the Delaware, Lackawanna & Western to form the Erie Lackawanna (into Conrail 1976). No values collected after 1882."
+1962.5014,merger,rio_tinto,rio_tinto,"Rio Tinto Company merges with Consolidated Zinc to form the Rio Tinto-Zinc Corporation (RTZ); dual-listed with CRA from 1995, renamed Rio Tinto 1997."
+1968.0847,merger,new_york_central,pennsylvania_rr,New York Central merges into the Pennsylvania Railroad to form the Penn Central Transportation Co. (values at the merger not collected here).
+1970.1708,merger,great_northern_us;northern_pacific,,"Great Northern, Northern Pacific (with the CB&Q and SP&S) merge into Burlington Northern Inc. (later BNSF, owned by Berkshire Hathaway since 2010)."
+1970.4728,bankruptcy,pennsylvania_rr,,"Penn Central files for bankruptcy, then the largest in US history."
 1970.7514,listing,,walmart,"Wal-Mart Stores IPO, 300,000 shares at $16.50 (OTC; NYSE from 1972-08-25)."
 1972.8347,rename,standard_oil_nj,standard_oil_nj,Standard Oil Co. (New Jersey) -> Exxon Corp.
 1980.9482,listing,,apple,"Apple Computer IPO on Nasdaq: 4.6m shares at $22, first-day close $29 (reported valuation $1.78bn)."
@@ -76,7 +88,10 @@ t,type,from_ids,to_ids,detail
 1984.7952,listing,,unitedhealth,United HealthCare IPO on Nasdaq (date approximate; Yahoo history starts Oct 1984).
 1985.3116,rename,standard_oil_in,standard_oil_in,Standard Oil (Indiana) -> Amoco Corp.
 1985.4974,acquisition,shell_oil_us,royal_dutch_shell,Royal Dutch/Shell buys the ~30% public minority of Shell Oil (widely reported ~$5.7bn; not re-verified). Shell Oil end-1984 NYSE value $17.2bn (100%).
+1986.1367,rename,intl_harvester,intl_harvester,"International Harvester (after selling its farm-equipment business to Tenneco, 1985) renamed Navistar International; values 2001-2020 from companiesmarketcap."
 1986.2009,listing,,microsoft,Microsoft IPO on Nasdaq at $21; first-day market value about $777m.
+1986.2514,acquisition,imperial_tobacco,,"Imperial Group (Imperial Tobacco Co., renamed 1981) acquired by Hanson Trust (value not verified here). Oct 1996: Hanson demerges Imperial Tobacco Group plc (Imperial Brands since 2016), the company whose values from 2012 are in values.csv under the same id."
+1986.2917,acquisition,imperial_tobacco,,Hanson Trust takes over Imperial Group for about GBP 2.5bn (Hanson not on the table).
 1986.4399,acquisition,rca,ge,GE acquires RCA (widely reported $6.28bn; not re-verified here).
 1986.4399,acquisition,rca,ge,GE completes its purchase of RCA (era c records the event; value row added here: $6.28bn).
 1986.5233,rename,us_steel,us_steel,United States Steel -> USX Corp.
@@ -90,23 +105,33 @@ t,type,from_ids,to_ids,detail
 1994.2514,spinoff,pacific_telesis,,Pacific Telesis spins off its wireless arm AirTouch Communications (not tracked); PacTel cover value fell from $23.1bn (Feb 1994) to $12.7bn (Feb 1995).
 1994.7173,acquisition,att,att,"AT&T completes McCaw Cellular purchase (stock); share count rises from 1,352m (end-1993) to 1,569m (end-1994)."
 1995.4974,spinoff,sears,,Sears distributes its 80% of Allstate (not tracked).
+1995.7255,merger,atchison,,Santa Fe Pacific Corp (the Atchison's parent since 1968/1983) merges with Burlington Northern to form Burlington Northern Santa Fe; ~$4.1bn deal value.
 1996.2514,merger,mitsubishi_bank,mitsubishi_bank,Mitsubishi Bank merges with Bank of Tokyo to form Bank of Tokyo-Mitsubishi (Bank of Tokyo not tracked; deal listed at $33.8bn). Combined value end-1996 (CMC): 88.1bn.
 1996.4345,split,gm,,"GM splits off Electronic Data Systems (Class E stock, $27.6bn non-affiliate value in Feb 1996; not tracked)."
+1996.6954,acquisition,southern_pacific,union_pacific,Union Pacific takes control of Southern Pacific Rail Corp: ~$4.0bn for the equity (cash and stock) plus ~$1.4bn debt = $5.4bn.
 1996.7474,spinoff,att,lucent,AT&T distributes its remaining 82% of Lucent (IPO of 18% in April 1996). Lucent first CMC value 1997: about 51bn (end-1997). NCR spun off 1996-12-31 (not tracked).
+1996.7917,listing,,imperial_brands,Hanson demerges its tobacco business as Imperial Tobacco Group plc (a new company).
 1996.9583,merger,,novartis,Ciba-Geigy and Sandoz merge to form Novartis (parents not tracked).
 1996.9701,merger,,novartis,Ciba-Geigy and Sandoz complete their merger into Novartis; Novartis end-1996 about $79bn (derived).
 1997.2514,acquisition,pacific_telesis,sbc,SBC Communications completes its purchase of Pacific Telesis (widely reported at about $16.5bn in stock; PacTel cover value Feb 1997 $17.6bn).
+1997.4180,merger,suez,suez,"Compagnie de Suez absorbs Lyonnaise des Eaux and becomes Suez Lyonnaise des Eaux (renamed Suez 2001); suez id continues. End-1997 market value FRF 84bn (EUR 13bn), end-1998 FRF 170bn (EUR 26bn)."
 1997.6203,merger,nynex,bell_atlantic,Bell Atlantic completes its merger with NYNEX (NYNEX cover value Feb 1997 $22.6bn).
+1997.9618,merger,guinness,,"Guinness plc merges with Grand Metropolitan to form Diageo (agreement 11 May 1997; combined market value ~$36bn). Successor Diageo (companiesmarketcap slug 'diageo', $55.8bn in Nov 2026)."
 1998.0014,rename,woolworth,woolworth,"Woolworth Corp. renamed Venator Group (1998), then Foot Locker Inc. (2001)."
 1998.4482,spinoff,us_west,,U S WEST separates its media business as MediaOne Group (Media Group tracking stock $18.0bn in Jan 1998; MediaOne was bought by AT&T Corp. in 2000; not tracked). Legally the old U S WEST Inc. became MediaOne and the telephone business continued as a new U S WEST Inc.; the vessel follows the telephone business.
+1998.6845,split,bat,bat,"BAT Industries (British-American Tobacco Co., renamed 1976) splits: tobacco listed as British American Tobacco plc (values from 1998 under the same id); financial services merged with Zurich (Allied Zurich)."
 1998.7705,merger,citicorp;travelers,citigroup,Citicorp and Travelers Group merge into Citigroup (Travelers the legal survivor). Citicorp valued at about $70bn in the deal (announced April 1998). Citigroup end-1998: 119.3bn (CMC).
 1998.8089,listing,ntt,ntt_docomo,NTT DoCoMo IPO in Tokyo; NTT keeps about 67%. DoCoMo end-1998: 66.5bn; end-1999: 367bn (world #3).
 1999.0002,merger,anglo_persian,anglo_persian,BP merges with Amoco to form BP Amoco (Amoco valued at $48-49bn; not tracked).
+1999.0002,acquisition,standard_oil_in,anglo_persian,"BP acquires Amoco (Standard Oil of Indiana): 3.97 BP shares per Amoco share; ~$48.2bn at announcement (11 Aug 1998), ~$56.9bn fair value at completion. BP Amoco plc."
+1999.2118,merger,krupp,,Fried. Krupp AG Hoesch-Krupp merges with Thyssen AG into ThyssenKrupp AG. Krupp was family/foundation-owned and never quoted on its own before the 1992 Hoesch takeover; no market values collected.
 1999.4947,merger,vodafone,vodafone,Vodafone completes its purchase of AirTouch Communications (value not researched; AirTouch not tracked) and becomes Vodafone AirTouch.
+1999.5014,acquisition,illinois_central,,"Canadian National takes control of Illinois Central Corp ($39/share, ~$2.4bn; agreed 10 Feb 1998)."
 1999.7705,acquisition,sbc,sbc,SBC acquires Ameritech (deal $62bn; Ameritech not tracked).
 1999.7705,acquisition,ameritech,sbc,SBC Communications completes its purchase of Ameritech ($62bn at the May 1998 announcement; Ameritech cover value Mar 1999 $72.8bn).
 1999.9141,merger,socony,standard_oil_nj,Exxon absorbs Mobil; company renamed Exxon Mobil. Mobil valued at $77.2bn at the December 1998 announcement; Exxon Mobil end-1999 279.9bn (CMC).
 2000.0929,acquisition,mannesmann,vodafone,"Mannesmann board accepts Vodafone AirTouch takeover at EUR 190bn (about $183bn), then the largest takeover ever. Vodafone 31 Mar 2000: 340.3bn (#6 in the world); Mannesmann shares 157.5bn."
+2000.2979,acquisition,atlantic_refining,anglo_persian,"BP Amoco acquires Atlantic Richfield (ARCO): 9.84 BP shares per ARCO share, total consideration $27,506m (announced Apr 1999 at $26.8bn); ARCO Alaska sold to Phillips."
 2000.4673,acquisition,pfizer,pfizer,Pfizer completes Warner-Lambert takeover (about $90bn; Warner-Lambert not tracked).
 2000.4974,acquisition,us_west,,Qwest Communications completes its purchase of U S WEST ($44bn at announcement; Qwest not tracked). US West value about $54.8bn on 2000-06-30 (CMC).
 2000.4974,rename,bell_atlantic,bell_atlantic,Bell Atlantic completes its merger with GTE (not tracked) and renames itself Verizon Communications.
@@ -118,9 +143,13 @@ t,type,from_ids,to_ids,detail
 2001.2514,merger,mitsui_bank,sumitomo_bank,Sakura Bank (the former Mitsui Bank) merges with Sumitomo Bank into Sumitomo Mitsui Banking Corp. (listed at $45.5bn in the M&A list).
 2001.2541,merger,sanwa_bank,sanwa_bank,Sanwa Bank and Tokai Bank form UFJ Holdings (Tokai not tracked).
 2001.2541,merger,tokai_bank,sanwa_bank,Tokai Bank and Sanwa Bank form UFJ Holdings (with Toyo Trust; not tracked).
+2001.4180,taken_private,de_beers,,"De Beers Consolidated Mines delisted: bought by DB Investments (Anglo American 45%, Oppenheimer family 40%, Botswana 15%); deal value not verified here. Aug 2012: Anglo American buys the Oppenheimers' 40% for $5.1bn (85% stake)."
 2001.5233,split,att,att,AT&T Corp splits off AT&T Wireless (its tracking stock was 362.75m x $17.31 = 6.3bn at end-2000; the company was sold to Cingular for $41bn in 2004) and Liberty Media (Aug 2001). Children not tracked.
+2001.7514,split,cpr,cpr,"Canadian Pacific Ltd (the 1881 Canadian Pacific Railway Co., renamed 1971) splits into Canadian Pacific Railway Ltd, CP Ships, PanCanadian Energy, Fording and Fairmont Hotels. CP Ltd was worth ~$12.6bn (Aug 2001); the railway alone ~$2.7-3.1bn after the split (companiesmarketcap). The legal parent continued as Fairmont Hotels & Resorts; these files follow the railway."
 2001.7514,rename,nomura,nomura,Nomura Securities becomes Nomura Holdings (holding company).
 2001.7733,merger,texaco,standard_oil_ca,"Chevron completes its merger with Texaco (ChevronTexaco); Texaco about $38.4bn on the last day (CMC), $35bn deal value."
+2002.0002,split,us_steel,us_steel,"USX Corp (the 1901 U.S. Steel, renamed 1986) separates: the legal entity becomes Marathon Oil Corp ($9.28bn end-2001) and the steel business is spun off as a new United States Steel Corp ($1.62bn). These files follow the steel company from 2002. Marathon Oil was acquired by ConocoPhillips on 22 Nov 2024."
+2002.0002,spinoff,us_steel,,"USX splits: the steel business becomes a new United States Steel Corp (about 15% of USX's value, about $1.6bn) and the legal USX, with about 85%, becomes Marathon Oil (not on the table). The island follows the steel company, the name viewers know; the drop is Marathon leaving, not a collapse."
 2002.6641,merger,phillips_petroleum,conocophillips,Phillips Petroleum and Conoco (not tracked) combine under the new holding company ConocoPhillips (Phillips holders about 57%).
 2002.8812,spinoff,att,,AT&T Broadband spun off and merged into Comcast (deal listed at $72bn); AT&T 1-for-5 reverse split.
 2003.5000,rename,philip_morris,philip_morris,Philip Morris Companies renamed Altria Group.
@@ -136,6 +165,7 @@ t,type,from_ids,to_ids,detail
 2007.2474,spinoff,philip_morris,kraft_foods,Altria spins off Kraft Foods (Kraft had been partly floated in 2001); Kraft value from CMC Mondelez lineage in values.csv.
 2007.8457,listing,petrochina,petrochina,"PetroChina lists A shares in Shanghai; at the A-share close the whole company was briefly valued at about $1tn (peak 1.2tn nominal per Wikipedia), the first ""trillion-dollar company"" - a paper value since H shares traded far lower."
 2008.2420,spinoff,philip_morris,pmi,Altria spins off Philip Morris International. PMI end-2008: 88.0bn (CMC); Altria end-2008: 31.0bn vs 159.3bn end-2007.
+2008.5589,merger,suez,,Gaz de France absorbs Suez (21 GdF shares for 22 Suez shares) to form GDF Suez (renamed Engie 2015). Combined value ~EUR90bn at the Sept 2007 agreement (French parliamentary record). Successor Engie (not on the worklist; companiesmarketcap slug 'engie').
 2008.7514,rename,matsushita,matsushita,Matsushita Electric Industrial renames itself Panasonic Corporation.
 2009.0370,bankruptcy,nortel,,Nortel Networks files for bankruptcy protection; peak value 252bn (2000-07-26).
 2009.1982,spinoff,aol_time_warner,,Time Warner spins off Time Warner Cable (not tracked).
@@ -159,12 +189,15 @@ t,type,from_ids,to_ids,detail
 2019.4180,spinoff,dowdupont,corteva,"DowDuPont spins off Corteva (agriculture) and renames itself DuPont de Nemours, Inc.; Corteva first month-end about $20bn (CMC)."
 2019.9454,listing,,aramco,"Saudi Aramco IPO on Tadawul (1.5% float, $25.6bn raised); first-day close about $1.88tn, instantly the world #1."
 2020.9837,taken_private,ntt_docomo,ntt,NTT completes its tender for the 34% of DoCoMo it did not own (about $40bn) and delists DoCoMo; DoCoMo was worth about 123bn at end-2020.
+2021.5014,acquisition,intl_harvester,,"Navistar acquired by Traton (Volkswagen) at $44.50 per share (~$3.7bn equity, widely reported)."
 2021.8253,rename,facebook,facebook,"Facebook, Inc. renamed Meta Platforms."
 2022.2705,spinoff,sbc,wbd,"AT&T Inc. spins off WarnerMedia, which merges with Discovery to form Warner Bros. Discovery. WBD end-2022: 22.8bn (CMC)."
 2023.0096,spinoff,ge,ge_healthcare,GE spins off 80.1% of GE HealthCare (first CMC values about 26-30bn).
+2023.2870,merger,cpr,cpr,Canadian Pacific takes control of Kansas City Southern; renamed Canadian Pacific Kansas City (CPKC).
 2023.8922,acquisition,broadcom,broadcom,Broadcom completes the VMware acquisition (cash and stock; value not researched; VMware not tracked).
 2024.2514,spinoff,mmm,,3M spins off its health-care business as Solventum (not tracked; first CMC value about $12bn).
 2024.2541,spinoff,ge,ge_vernova,GE spins off GE Vernova; the remaining GE renamed GE Aerospace.
 2024.3402,acquisition,standard_oil_nj,standard_oil_nj,ExxonMobil completes the Pioneer Natural Resources acquisition ($59.5-64.5bn; not tracked).
+2025.4646,acquisition,us_steel,,Nippon Steel completes the purchase of United States Steel at $55 per share (~$14bn equity; companiesmarketcap last value $12.4bn); delisted.
 2025.6872,acquisition,woolworth,,Dick's Sporting Goods (not tracked) completes its purchase of Foot Locker (the former F. W. Woolworth Co.) for about $2.4bn.
 2026.4482,listing,,spacex,"SpaceX IPO (raised $86bn, the largest IPO ever); peak $2.44tn on 2026-06-19; xAI had been absorbed (about $250bn) in Feb 2026 while private."
