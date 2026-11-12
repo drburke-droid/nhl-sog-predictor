@@ -61,7 +61,7 @@ How it's made: the grains are simulated with position-based dynamics with fricti
 
 Sources: P.M.C. Lacey, J Appl Chem 4:257 (1954). D. Brone, A. Alexander & F.J. Muzzio, AIChE J 44:271 (1998). G.R. Chandratilleke et al., Ind Eng Chem Res 49:5467 (2010). V. Boonkanokwong et al., Powder Technol 302:333 (2016). B. Jadidi et al., Processes 11:733 (2023). D.J. Pine et al., Nature 438:997 (2005).
 
-Stand mixer model: "Kitchenaid food mixer" by swmo, Blend Swap, CC0. The mixer is drawn larger than life so the bowl stays in view. This video is not sponsored by or affiliated with KitchenAid.
+Stand mixer model by swmo (Blend Swap, CC0), relabelled with a made-up brand, Kitchen Inc, and drawn larger than life so the bowl stays in view. This video is not sponsored by or affiliated with any appliance maker.
 
 Music: an original score, synthesized for this video (no samples).
 ```
@@ -91,11 +91,11 @@ granular flow, powder mixing, Blender, kitchen science, food science, simulation
 **Before uploading.**
 * **The 4K version is rendered from `videos/powder_mixer/blender/`** (open the files in Blender, render; see
   the README there). It differs from the 720p preview in two ways: the metal is more realistic, and the
-  mixers' trim bands now show the KitchenAid name, which the preview did not.
+  mixers' trim bands read "Kitchen Inc", a made-up brand (the preview's bands are blank).
 * The mixers are painted in real KitchenAid colours (Scorched
   Orange, Aqua Sky, Blue Velvet, Pistachio, Empire Red, Lavender Cream, Butter, Dried Rose; shades matched
-  by eye). Showing a real product is normal on YouTube, but keep the "not sponsored by or affiliated with
-  KitchenAid" line in the description; the end card says the same.
+  by eye), and the mixer's shape is that of a real tilt-head design, but no maker's name appears anywhere
+  in the film: the band says "Kitchen Inc" and the end card says it is a made-up brand.
 * The last bowl is the YouTube icon drawn in powder and stirred away. YouTube's brand guidelines ask that the
   logo is not altered, so this is your call; swapping it for another pattern is one line in `make_film.py`
   (`SATISFYING`) and a 20-minute re-render of that shot.

@@ -565,7 +565,7 @@ def compose(args, matches):
             print("composed", key, f"{state['n'] / FPS:.1f} s", flush=True)
         still("end", card([("THE MIX-OFF", 76, "Black", INK, 20),
                            ("Method, code and data are linked in the description.", 22, "Medium", MUTED, 0)],
-                          footer="Not sponsored by or affiliated with KitchenAid or YouTube."), 3.0)
+                          footer="Kitchen Inc is a made-up brand. Not sponsored by or affiliated with YouTube or any appliance maker."), 3.0)
     enc.stdin.close()
     enc.wait()
     json.dump(pics, open(os.path.splitext(args.out)[0] + "_pics.json", "w"))

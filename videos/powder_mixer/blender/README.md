@@ -53,10 +53,11 @@ are skipped. To redo a frame, delete its file.
 
 ## Things you may want to change
 
-- **The maker's name.** The trim band and the hub cap carry the lettering that
-  came with the mixer model. To remove it, open the materials `BandLettering`
-  and `CapLettering` in a shot file and set the value node named "Lettering"
-  to 0. It has to be done in each of the seven match files.
+- **The brand.** The trim band and the hub cap read "Kitchen Inc", a made-up
+  name (the mixer model's own lettering, which names a real maker, is not in
+  these files). For a blank band, open the materials `BandLettering` and
+  `CapLettering` in a shot file and set the value node named "Lettering" to 0.
+  It has to be done in each of the seven match files.
 - **1080p.** The master file expects 4K frames. If you want 1080p, ask for a
   1080p set rather than changing the resolution here.
 - **Colours.** Each mixer's paint is the material `LEnamel` or `REnamel`.

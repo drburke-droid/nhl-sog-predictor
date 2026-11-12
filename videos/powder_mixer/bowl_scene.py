@@ -29,6 +29,7 @@ from tools import KITCHENAID_COLOR, TOOL_COLOR, build_tool, fork_visual, mix_cur
 HC = 80.0          # chuck height above the tool's bottom edge
 HEAD_R = 30.0      # radius of the cylindrical motor housing
 KA_BLEND = os.path.join(HERE, "models", "kitchenaid", "kitchenaid.blend")   # CC0 model by swmo (Blend Swap 65088)
+LETTERING_PNG = os.path.join(HERE, "models", "kitchenaid", "kitchen_inc_lettering.png")   # generic brand; make_lettering.py
 KA_SCALE = 507.0   # mm per model unit.  True to the bowl would be 374; the mixer is drawn 1.36x
                    # too big so that its head clears the bowl and the powder stays in view.
 KA_BASE, KA_SEAT, KA_HUB = -0.422, -0.388, -0.145     # model z of: underside, bowl seat, planetary hub
@@ -62,12 +63,13 @@ def make_kitchenaid(tag, root, M, enamel, yaw):
         if o is not mixer:
             bpy.data.objects.remove(o)
     def lettered(key, base):
-        """The trim band's lettering (the model's own texture), painted on our metal."""
+        """The trim band's lettering painted on our metal: a generic brand, "Kitchen Inc", laid
+        out like the model's own texture (which names a real maker) so its UV mapping still fits."""
         m = bpy.data.materials.get(key)
         if m is None:
-            img = bpy.data.images.get("kitchenaid_writing1.png")
-            if img is None or not args_lettering():
+            if not args_lettering() or not os.path.exists(LETTERING_PNG):
                 return M[base]
+            img = bpy.data.images.get(os.path.basename(LETTERING_PNG)) or bpy.data.images.load(LETTERING_PNG)
             src = M[base].node_tree.nodes["Principled BSDF"]
             m = B.metal(key, tuple(src.inputs["Base Color"].default_value)[:3], LETTER_ROUGH[base],
                         aniso=src.inputs["Anisotropic"].default_value, tangent="uv" if base == "brushed" else None,
@@ -81,9 +83,13 @@ def make_kitchenaid(tag, root, M, enamel, yaw):
                          else lettered("CapLettering", "chrome") if "Chrome_Writing" in n
                          else M["brushed"] if "Brushed" in n else M["chrome"] if "Chrome" in n
                          else M["rubber"] if "Black" in n else M["white"])
+    for mat in [mm for mm in bpy.data.materials if mm.name.startswith("Kitchenaid_") and not mm.users]:
+        bpy.data.materials.remove(mat)                   # the model's own shaders, and with them its
+    for img in [im for im in bpy.data.images if im.name.startswith("kitchenaid_writing") and not im.users]:
+        bpy.data.images.remove(img)                      # branded lettering texture, stay out of the file
     for p in mixer.data.polygons:
         p.use_smooth = True
-    mixer.name = tag + "KitchenAid"
+    mixer.name = tag + "Mixer"
     mixer.parent = root
     mixer.scale = (KA_SCALE,) * 3
     mixer.location = (0, 0, -KA_BASE * KA_SCALE)
@@ -468,7 +474,7 @@ def main():
     ap.add_argument("--bare", action="store_true",
                     help="leave out the mixer head and column: tool and shaft only, for steep camera angles")
     ap.add_argument("--grain-scale", type=float, default=0.84)
-    ap.add_argument("--no-lettering", action="store_true", help="leave the maker's name off the mixer's trim band")
+    ap.add_argument("--no-lettering", action="store_true", help="leave the brand lettering off the mixer's trim band")
     ap.add_argument("--final", metavar="PATH",
                     help="set the scene up for the final GPU render and store PATH (e.g. //frames/Q1/f_) as its output")
     ap.add_argument("--embed", metavar="DIR",

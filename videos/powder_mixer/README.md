@@ -28,6 +28,7 @@ the percentage is measured from the simulated grains.
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
 | `make_master.py` | Builds the Blender sequencer file that assembles the final film. |
+| `make_lettering.py` | Writes the generic "Kitchen Inc" lettering for the mixer's trim band. |
 | `blender/` | Render-ready 4K project: nine shot files, the master file, overlay videos and music. Start with `blender/README.md`. |
 | `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
 | `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:54, 1280x720). |
@@ -342,11 +343,15 @@ released CC0; the licence text is in `models/kitchenaid/`.
 - **Size.** The mixer is drawn 1.36 times too large for the bowl, with a longer
   drive shaft. At true size the head sits just above the rim and hides the
   powder from the camera.
-- **Branding.** The model's trim band and hub cap carry the KitchenAid name.
-  The 720p preview does not show it (that cut replaced the band's material
-  with plain metal); the 4K files in `blender/` do, and
-  `bowl_scene.py --no-lettering` leaves it off. The film is not sponsored by
-  or affiliated with KitchenAid; the end card and the description say so.
+- **Branding.** The mixers carry a made-up brand, "Kitchen Inc", on the trim
+  band and hub cap. The model's own lettering texture names a real maker, a
+  model line and conformity marks; `make_lettering.py` writes a replacement
+  with the same layout (`models/kitchenaid/kitchen_inc_lettering.png`), and the
+  original texture is not used or packed into any file. The 720p preview has
+  a plain band with no lettering; the 4K files in `blender/` show
+  "Kitchen Inc". `bowl_scene.py --no-lettering` leaves the band blank. The
+  shape is still that of the model, and the paint colours are still matched
+  to real ones.
 - **Metal.** Chrome, brushed steel (trim band), turned steel (shaft, hub) and
   polished steel (tools) are separate materials whose roughness varies across
   the surface; three reflection cards and a studio environment, seen only in
