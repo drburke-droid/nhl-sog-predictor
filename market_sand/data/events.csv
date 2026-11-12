@@ -39,6 +39,44 @@ t,type,from_ids,to_ids,detail
 1811.1735,dissolution,bank_us_first,,First Bank of the United States charter expires; liquidated.
 1816.5000,split,bank_of_england,bank_of_england,"25% stock bonus: capital GBP11,642,400 -> GBP14,553,000."
 1817.0417,listing,,bank_us_second,"Second Bank of the United States opens, capital $35m."
+1836.1680,rename,bank_us_second,bank_us_second,"Federal charter expired; continued as the Bank of the United States under a Pennsylvania charter, same $35m capital (Dec 1835 value $39.5m)"
+1841.0929,bankruptcy,bank_us_second,,Final suspension and failure; shares fell to a few dollars (NYSE $1.75 in Dec 1849 during liquidation). Value at end-1835 $39.5m; GFD 1840 $22.9m
+1844.3593,merger,,midland_rly,North Midland + Midland Counties + Birmingham & Derby Junction railways form the Midland Railway (no values found)
+1846.5424,merger,,lnwr,London & Birmingham + Grand Junction + Manchester & Birmingham form the LNWR (no values found for 1846)
+1854.5000,dissolution,south_sea,,South Sea Stock converted under the 1853 debt operations; company wound up (last value seen 1847: c.GBP3.4m)
+1854.5835,merger,,ner,York Newcastle & Berwick + York & North Midland + Leeds Northern form the North Eastern Railway
+1857.4399,listing,banque_de_france,banque_de_france,"Banque de France capital doubled from 91,250 to 182,500 shares (new shares sold at 1,100 fr)"
+1857.5000,merger,,plm,"Paris-Lyon and Lyon-Mediterranee merge into the PLM (800,000 shares)"
+1858.9141,listing,,suez,"Suez Canal Company subscription closes: 400,000 shares of 500 fr (200m fr)"
+1874.4180,dissolution,eic,,India Stock (GBP6.0m) redeemed at 200 on 30 Apr 1874 = GBP12.0m; company dissolved 1 Jun 1874
+1875.9004,acquisition,suez,,"Partial: British government buys the Khedive's 176,602 of 400,000 shares (44%) for GBP3,976,582 = GBP22.52/share, implying GBP9.0m for the whole company"
+1880.0014,nationalisation,east_indian_rly,,Purchased by the Government of India; shareholders paid in annuities (last company value Dec 1873 GBP29.1m)
+1882.0041,listing,,standard_oil_nj,"Standard Oil Trust agreement: certificates of the trust (c.700,000 initially) replace shares of the constituent companies"
+1899.4583,rename,standard_oil_nj,standard_oil_nj,Standard Oil Co. (New Jersey) becomes the holding company after the Ohio court dissolved the trust (1892)
+1900.4974,nationalisation,gipr,,Great Indian Peninsula Railway purchased by the Government of India (last value read Dec 1880 GBP26.6m)
+1901.2514,merger,carnegie_steel;federal_steel;national_steel;national_tube;american_steel_wire;american_tin_plate;american_steel_hoop;american_sheet_steel,us_steel,J.P. Morgan forms U.S. Steel: $508m common + $510m preferred + $304m bonds; Carnegie Steel bought for ~$480m (mostly in bonds). Market value of the new equity ~$765m (GFD); component market values not found
+1907.1477,merger,royal_dutch_shell;shell_tt,royal_dutch_shell;shell_tt,"Royal Dutch/Shell alliance: operating companies owned 60% Royal Dutch, 40% Shell T&T; both parents stay listed"
+1911.8758,split,american_tobacco,american_tobacco,"American Tobacco dissolved into American Tobacco, Liggett & Myers, P. Lorillard, R.J. Reynolds (Hannah 1912: AT 169, L&M 58, Lorillard 42 $m)"
+1911.9180,split,standard_oil_nj,socony;standard_oil_in;standard_oil_ca;ohio_oil;prairie_oil;vacuum_oil;atlantic_refining,"Supreme Court decree (15 May 1911): 33 subsidiaries distributed pro rata. Sep 1911: NJ ex-subsidiaries 325 + subsidiaries 275 per share (= $590m); Aug 1912 whole worth 1,100/share = $1.08bn. Hannah 1912 values ($m): NJ 390, Indiana 88, NY 73, California 71, Ohio Oil 66*, Prairie 50, Vacuum 26, Atlantic 26"
+1922.0014,merger,lyr,lnwr,Lancashire & Yorkshire absorbed by LNWR (L&Y last value read Dec 1900 GBP21.6m)
+1923.0014,merger,lnwr;midland_rly,lms,Railways Act 1921 grouping: LNWR (Dec 1920 GBP31.8m) and Midland form the London Midland & Scottish
+1923.0014,merger,ner,lner,North Eastern + Great Northern + Great Eastern + others form the LNER (NER Dec 1913 GBP38.8m)
+1931.5835,merger,socony,socony,Standard Oil Co. of New York merged with Vacuum Oil to form Socony-Vacuum Oil; socony id continues. No value for Vacuum found.
+1946.1680,nationalisation,bank_of_england,,Bank of England Act 1946: £14.553m Bank Stock exchanged for £58.2m (≈£58m) of 3% Treasury Stock (£400 per £100).
+1955.0014,rename,socony,socony,Socony-Vacuum -> Socony Mobil Oil (1955); Mobil Oil (1966); Mobil Corp (1976).
+1959.3347,rename,texaco,texaco,The Texas Company -> Texaco Inc. (1959).
+1972.8347,rename,standard_oil_nj,standard_oil_nj,Standard Oil Co. (New Jersey) -> Exxon Corp.
+1983.8895,listing,att,ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,"When-issued NYSE trading of ""new"" AT&T and the 7 regional holding companies begins. Opening prices: old AT&T 62 3/4 (x936.7m sh = $58.8bn); new AT&T 19 ($17.8bn); BellSouth 89 ($8.3bn); Bell Atlantic 65 3/4 ($6.2bn); Ameritech 63 ($5.9bn); Southwestern Bell 62 ($5.8bn); NYNEX 60 1/2 ($5.7bn); US West 56 ($5.2bn); Pacific Telesis 51 1/2 ($4.8bn). Sum of pieces $59.8bn."
+1984.0014,split,att,att;ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,"AT&T divestiture (Modified Final Judgment). Holders of record 30 Dec 1983 got 1 share of each RHC per 10 AT&T shares. Old AT&T 31 Dec 1983: $57.4bn (936.7m x $61.25, NYSE). Shares of parent value at when-issued close 2 Dec 1983: new AT&T $19.1bn (32%), BellSouth $8.2bn, Bell Atlantic $6.2bn, Ameritech $5.9bn, NYNEX $5.7bn, Southwestern Bell $5.6bn, US West $5.4bn, Pacific Telesis $5.1bn. By 31 Dec 1984 the 8 pieces were worth $73.6bn (AT&T 20.1 + RHCs 53.5)."
+1984.1285,acquisition,getty_oil,texaco,Texaco acquires Getty Oil (widely reported ~$10.1bn; deal value not re-verified here). Getty end-1983 NYSE value $8.7bn.
+1984.2064,acquisition,gulf_oil,standard_oil_ca,"Socal acquires Gulf Oil (widely reported ~$13.2bn, then the largest merger ever; not re-verified here). Gulf end-1983 NYSE value $9.1bn. Socal renamed Chevron 1984."
+1985.3116,rename,standard_oil_in,standard_oil_in,Standard Oil (Indiana) -> Amoco Corp.
+1985.4974,acquisition,shell_oil_us,royal_dutch_shell,Royal Dutch/Shell buys the ~30% public minority of Shell Oil (widely reported ~$5.7bn; not re-verified). Shell Oil end-1984 NYSE value $17.2bn (100%).
+1986.4399,acquisition,rca,ge,GE acquires RCA (widely reported $6.28bn; not re-verified here).
+1986.5233,rename,us_steel,us_steel,United States Steel -> USX Corp.
+1987.1066,listing,,ntt,"NTT listed on Tokyo and 7 other Japanese exchanges; no trade on day 1 (1.28m buy orders), first price ¥1.6m on 10 Feb (15.6m shares -> ¥25.0tn). Government had sold 1.95m shares at ¥1.197m."
+1989.1066,taken_private,rjr_nabisco,,KKR leveraged buyout of RJR Nabisco (widely reported ~$25bn incl. debt; not re-verified). RJR end-1988 NYSE equity value $20.9bn.
+1989.7596,merger,bristol_myers,bristol_myers,Bristol-Myers merges with Squibb -> Bristol-Myers Squibb (Squibb value not collected).
 1991.7173,acquisition,att,att,"AT&T acquires NCR Corporation (stock deal; value not researched; NCR not tracked, spun off again end-1996)."
 1994.7173,acquisition,att,att,"AT&T completes McCaw Cellular purchase (stock); share count rises from 1,352m (end-1993) to 1,569m (end-1994)."
 1996.2514,merger,mitsubishi_bank,mitsubishi_bank,Mitsubishi Bank merges with Bank of Tokyo to form Bank of Tokyo-Mitsubishi (Bank of Tokyo not tracked; deal listed at $33.8bn). Combined value end-1996 (CMC): 88.1bn.
@@ -46,7 +84,7 @@ t,type,from_ids,to_ids,detail
 1996.9583,merger,,novartis,Ciba-Geigy and Sandoz merge to form Novartis (parents not tracked).
 1998.7705,merger,citicorp;travelers,citigroup,Citicorp and Travelers Group merge into Citigroup (Travelers the legal survivor). Citicorp valued at about $70bn in the deal (announced April 1998). Citigroup end-1998: 119.3bn (CMC).
 1998.8089,listing,ntt,ntt_docomo,NTT DoCoMo IPO in Tokyo; NTT keeps about 67%. DoCoMo end-1998: 66.5bn; end-1999: 367bn (world #3).
-1999.0002,merger,bp,bp,BP merges with Amoco to form BP Amoco (Amoco valued at $48-49bn; not tracked).
+1999.0002,merger,anglo_persian,anglo_persian,BP merges with Amoco to form BP Amoco (Amoco valued at $48-49bn; not tracked).
 1999.4947,merger,vodafone,vodafone,Vodafone completes its purchase of AirTouch Communications (value not researched; AirTouch not tracked) and becomes Vodafone AirTouch.
 1999.7705,acquisition,sbc,sbc,SBC acquires Ameritech (deal $62bn; Ameritech not tracked).
 1999.9141,merger,socony,standard_oil_nj,Exxon absorbs Mobil; company renamed Exxon Mobil. Mobil valued at $77.2bn at the December 1998 announcement; Exxon Mobil end-1999 279.9bn (CMC).

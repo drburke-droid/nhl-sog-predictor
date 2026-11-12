@@ -1,54 +1,132 @@
 id,name,label,district,industry,fate,successors,first,end
-eic,East India Company (Governor and Company of Merchants of London trading into the East Indies),East India Co.,London,trade,dissolved,,1601.125,1826.208
+eic,East India Company (Governor and Company of Merchants of London trading into the East Indies),East India Co.,London,trade,dissolved,,1601.125,1874.331
 voc,Vereenigde Oostindische Compagnie (Dutch East India Company),VOC,Amsterdam,trade,nationalised,,1602.500,1795.500
 wic,Geoctrooieerde West-Indische Compagnie (first Dutch West India Company),WIC,Amsterdam,trade,dissolved,wic_1674,1623.500,1649.500
-hudsons_bay,Governor and Company of Adventurers of England trading into Hudson's Bay,Hudson's Bay,London,trade,bankrupt,,1670.500,1720.958
+hudsons_bay,Governor and Company of Adventurers of England trading into Hudson's Bay,Hudson's Bay,London,trade,alive,,1670.500,1880.958
 royal_african,Royal African Company of England,Royal African Company of England,London,trade,dissolved,,1672.500,1720.958
 wic_1674,"Second Dutch West India Company (Geoctrooieerde West-Indische Compagnie, 1674)",Second Dutch West India,Amsterdam,trade,nationalised,,1674.500,1791.999
-bank_of_england,Governor and Company of the Bank of England,Bank of England,London,finance,nationalised,,1694.542,1825.958
+bank_of_england,Governor and Company of the Bank of England,Bank of England,London,finance,nationalised,,1694.542,1946.168
 eic_english,"English Company Trading to the East Indies (""New Company"")",English Company Trading to the East Indies,London,trade,merged,eic,1698.542,1703.500
 million_bank,Million Bank (Bank on Tickets of the Million Adventure),Million Bank,London,finance,dissolved,,1700.500,1720.958
-south_sea,Governor and Company of the Merchants of Great Britain trading to the South Seas (South Sea Company),South Sea Co.,London,trade,dissolved,,1711.875,1720.958
+south_sea,Governor and Company of the Merchants of Great Britain trading to the South Seas (South Sea Company),South Sea Co.,London,trade,dissolved,,1711.875,1847.895
 mississippi_co,Compagnie d'Occident (1717) / Compagnie des Indes (1719),Mississippi Co.,Paris,trade,dissolved,,1718.375,1723.208
 royal_exchange_assurance,Royal Exchange Assurance Corporation,Royal Exchange Assurance,London,finance,merged,,1720.042,1720.958
 london_assurance,London Assurance Corporation,London Assurance,London,finance,acquired,,1720.042,1720.958
 bank_us_first,Bank of the United States (First),Bank of the United States,New York,finance,dissolved,,1791.542,1791.542
-banque_de_france,Banque de France,Banque de France,Paris,finance,nationalised,,1800.125,1800.125
-bank_us_second,Second Bank of the United States,Second Bank of the United States,New York,finance,bankrupt,,1817.042,1825.500
-ibj,Industrial Bank of Japan,Industrial Bank of Japan,Tokyo,finance,merged,mizuho,1989.500,1999.637
-sumitomo_bank,Sumitomo Bank,Sumitomo Bank,Tokyo,finance,alive,,1989.500,2026.865
-fuji_bank,Fuji Bank,Fuji Bank,Tokyo,finance,merged,mizuho,1989.500,1996.000
-dai_ichi_kangyo,Dai-Ichi Kangyo Bank,Dai-Ichi Kangyo Bank,Tokyo,finance,merged,mizuho,1989.500,1996.000
-tepco,Tokyo Electric Power,Tokyo Electric Power,Tokyo,industrial,alive,,1989.500,2026.865
+banque_de_france,Banque de France,Banque de France,Paris,finance,nationalised,,1800.125,1893.208
+bank_us_second,Second Bank of the United States,Second Bank of the United States,New York,finance,bankrupt,,1817.042,1849.958
+new_york_central,New York Central Railroad,New York Central Railroad,New York,rail,merged,pennsylvania_rr,1860.500,1929.667
+lnwr,London and North Western Railway,London and North Western Railway,London,rail,merged,lms,1869.958,1920.958
+midland_rly,Midland Railway,Midland Railway,London,rail,merged,lms,1869.958,1913.958
+plm,Compagnie des chemins de fer de Paris a Lyon et a la Mediterranee,Compagnie des chemins de fer de Paris a Lyon et a la Mediterranee,Paris,rail,nationalised,,1869.958,1913.958
+nord_fr,Compagnie des chemins de fer du Nord,Compagnie des chemins de fer du Nord,Paris,rail,nationalised,,1869.958,1913.958
+est_fr,Compagnie des chemins de fer de l'Est,Compagnie des chemins de fer de l'Est,Paris,rail,nationalised,,1869.958,1900.958
+sudbahn,Sudbahn-Gesellschaft (Southern Austrian and Lombardo-Venetian Railway),Sudbahn-Gesellschaft,Europe,rail,broken_up,,1869.958,1890.958
+east_indian_rly,East Indian Railway Company,East Indian Railway,London,rail,nationalised,,1869.958,1873.958
+gwr,Great Western Railway,Great Western Railway,London,rail,alive,,1871.500,1920.958
+orleans,Compagnie du chemin de fer de Paris a Orleans,Compagnie du chemin de fer de Paris a Orleans,Paris,rail,nationalised,,1871.500,1890.958
+ner,North Eastern Railway,North Eastern Railway,London,rail,merged,lner,1873.958,1913.958
+lyr,Lancashire and Yorkshire Railway,Lancashire and Yorkshire Railway,London,rail,merged,lnwr,1873.958,1900.958
+gipr,Great Indian Peninsula Railway,Great Indian Peninsula Railway,London,rail,nationalised,,1873.958,1880.958
+suez,Compagnie universelle du canal maritime de Suez,Compagnie universelle du canal maritime de Suez,Paris,rail,alive,,1875.900,1913.958
+illinois_central,Illinois Central Railroad,Illinois Central Railroad,New York,rail,alive,,1880.958,1900.958
+erie,Erie Railroad,Erie Railroad,New York,rail,alive,,1880.958,1880.958
+standard_oil_nj,Standard Oil (Trust 1882; Standard Oil Co. of New Jersey holding company 1899),Standard Oil · Exxon,New York,oil,alive,,1890.500,2026.865
+pennsylvania_rr,Pennsylvania Railroad,Pennsylvania Railroad,New York,rail,bankrupt,,1900.958,1929.667
+union_pacific,Union Pacific Railroad,Union Pacific Railroad,New York,rail,alive,,1900.958,1912.958
+northern_pacific,Northern Pacific Railway,Northern Pacific Railway,New York,rail,alive,,1900.958,1912.958
+cpr,Canadian Pacific Railway,Canadian Pacific Railway,New York,rail,alive,,1900.958,1925.958
+carnegie_steel,Carnegie Steel Company,Carnegie Steel,New York,mining_metals,acquired,us_steel,1901.208,1901.208
+us_steel,United States Steel Corporation,US Steel,New York,mining_metals,alive,,1901.292,1954.747
+socony,Standard Oil Company of New York,Socony · Mobil,New York,oil,merged,standard_oil_nj,1912.500,1999.208
+standard_oil_in,Standard Oil Company (Indiana),Standard Oil,New York,oil,alive,,1912.500,1991.000
+standard_oil_ca,Standard Oil Company of California,Standard Oil Company of California,New York,oil,alive,,1912.500,2026.865
+ohio_oil,Ohio Oil Company,Ohio Oil,New York,oil,alive,,1912.500,1912.500
+prairie_oil,Prairie Oil & Gas,Prairie Oil & Gas,New York,oil,acquired,,1912.500,1912.500
+vacuum_oil,Vacuum Oil Company,Vacuum Oil,New York,oil,merged,socony,1912.500,1912.500
+atlantic_refining,Atlantic Refining Company,Atlantic Refining,New York,oil,alive,,1912.500,1991.000
+ge,General Electric Company,GE,New York,industrial,alive,,1912.500,2026.865
+pullman,Pullman Company,Pullman,New York,industrial,alive,,1912.500,1912.500
+coats,J. & P. Coats,J. & P. Coats,London,consumer,alive,,1912.500,1925.958
+royal_dutch_shell,Royal Dutch Petroleum Company (Koninklijke Nederlandsche Petroleum Mij.),Shell,Amsterdam,oil,alive,,1912.500,2026.865
+anaconda,Anaconda Copper Mining,Anaconda Copper Mining,New York,mining_metals,acquired,,1912.500,1929.667
+singer,Singer Manufacturing,Singer Manufacturing,New York,industrial,alive,,1912.500,1912.500
+american_tobacco,American Tobacco Company,American Tobacco,New York,consumer,alive,,1912.500,1912.500
+intl_harvester,International Harvester,International Harvester,New York,industrial,alive,,1912.500,1912.500
+bat,British-American Tobacco,British-American Tobacco,London,consumer,alive,,1912.500,1925.958
+imperial_tobacco,Imperial Tobacco Company (of Great Britain and Ireland),Imperial Tobacco,London,consumer,alive,,1912.500,1925.958
+de_beers,De Beers Consolidated Mines,De Beers Consolidated Mines,Johannesburg,mining_metals,alive,,1912.500,1912.500
+rio_tinto,Rio Tinto Company,Rio Tinto,London,mining_metals,alive,,1912.500,1912.500
+krupp,Fried. Krupp AG,Fried. Krupp,Europe,mining_metals,alive,,1912.500,1912.500
+guinness,"Arthur Guinness, Son & Co.","Arthur Guinness, Son",London,consumer,alive,,1912.500,1912.500
+southern_pacific,Southern Pacific Company,Southern Pacific,New York,rail,alive,,1912.958,1912.958
+great_northern_us,Great Northern Railway (US),Great Northern Railway,New York,rail,alive,,1912.958,1912.958
+atchison,"Atchison, Topeka and Santa Fe Railway","Atchison, Topeka and Santa Fe Railway",New York,rail,alive,,1912.958,1912.958
+att,American Telephone and Telegraph Company,AT&T,New York,telecom_media,acquired,sbc,1922.958,2005.083
+anglo_persian,Anglo-Persian Oil Company,Anglo-Persian Oil,London,oil,alive,,1925.958,2026.865
+burmah_oil,Burmah Oil,Burmah Oil,London,oil,alive,,1925.958,1925.958
+courtaulds,Courtaulds Ltd,Courtaulds,London,chem_pharma,alive,,1925.958,1925.958
+gm,General Motors Corp.,GM,New York,autos,alive,,1929.223,1991.000
+union_carbide,Union Carbide & Carbon Corp.,Union Carbide & Carbon,New York,chem_pharma,acquired,,1929.667,1954.668
+texaco,The Texas Company,The Texas,New York,oil,alive,,1929.667,1991.000
+sears,"Sears, Roebuck & Co.","Sears, Roebuck",New York,consumer,alive,,1929.667,1990.000
+eastman_kodak,Eastman Kodak Co.,Eastman Kodak,New York,consumer,alive,,1929.667,1991.000
+con_ed,Consolidated Gas Co. of New York,Consolidated Gas Co. of New York,New York,industrial,alive,,1929.667,1929.667
+united_gas_improvement,United Gas Improvement Co.,United Gas Improvement,New York,industrial,alive,,1929.667,1929.667
+woolworth,F. W. Woolworth Co.,F. W. Woolworth,New York,consumer,alive,,1929.667,1929.667
+rca,Radio Corporation of America,Radio Corporation of America,New York,telecom_media,acquired,ge,1929.667,1929.667
+dupont,E. I. du Pont de Nemours & Co.,E. I. du Pont de Nemours,New York,chem_pharma,alive,,1953.668,1991.000
+gulf_oil,Gulf Oil Corp.,Gulf Oil,New York,oil,acquired,standard_oil_ca,1953.668,1984.000
+shell_oil_us,Shell Oil Co. (US),Shell Oil,New York,oil,acquired,royal_dutch_shell,1953.668,1985.000
+ibm,International Business Machines Corp.,IBM,New York,computing,alive,,1953.706,2026.865
+dow_chemical,Dow Chemical Co.,Dow Chemical,New York,chem_pharma,alive,,1953.706,1991.000
+phillips_petroleum,Phillips Petroleum Co.,Phillips Petroleum,New York,oil,alive,,1953.706,1981.000
+mmm,Minnesota Mining & Manufacturing Co.,Minnesota Mining & Manufacturing,New York,industrial,alive,,1954.747,1991.000
+coca_cola,The Coca-Cola Co.,The Coca-Cola,New York,consumer,alive,,1980.000,2026.865
+xerox,Xerox Corp.,Xerox,New York,computing,alive,,1980.000,1981.000
+schlumberger,Schlumberger N.V.,Schlumberger,New York,oil,alive,,1980.000,1991.000
+philip_morris,Philip Morris Cos.,Philip Morris · Altria,New York,consumer,alive,,1980.000,2026.865
+merck,Merck & Co.,Merck,New York,chem_pharma,alive,,1980.000,2026.865
+procter_gamble,Procter & Gamble Co.,Procter & Gamble,New York,consumer,alive,,1980.000,2026.865
+johnson_johnson,Johnson & Johnson,Johnson & Johnson,New York,chem_pharma,alive,,1980.000,2026.865
+getty_oil,Getty Oil Co.,Getty Oil,New York,oil,acquired,texaco,1980.000,1984.000
+ameritech,American Information Technologies (Ameritech),American Information Technologies,New York,telecom_media,alive,,1983.889,1991.000
+bell_atlantic,Bell Atlantic,Bell Atlantic,New York,telecom_media,alive,,1983.889,1991.000
+bellsouth,BellSouth,BellSouth,New York,telecom_media,alive,,1983.889,1991.000
+nynex,NYNEX,NYNEX,New York,telecom_media,alive,,1983.889,1991.000
+pacific_telesis,Pacific Telesis Group,Pacific Telesis Group,New York,telecom_media,alive,,1983.889,1991.000
+sbc,Southwestern Bell Corp.,SBC · AT&T Inc.,New York,telecom_media,alive,,1983.889,2026.865
+us_west,U S WEST,U S WEST,New York,telecom_media,alive,,1983.889,1991.000
+ntt,Nippon Telegraph and Telephone Corp.,NTT,Tokyo,telecom_media,alive,,1987.107,2026.865
+ford,Ford Motor Co.,Ford Motor,New York,autos,alive,,1988.000,1990.000
+walmart,Wal-Mart Stores,Walmart,New York,consumer,alive,,1989.000,2026.865
+rjr_nabisco,RJR Nabisco,RJR Nabisco,New York,consumer,taken_private,,1989.000,1989.000
+ibj,Industrial Bank of Japan,Industrial Bank of Japan,Tokyo,finance,merged,mizuho,1989.417,1999.637
+sumitomo_bank,Sumitomo Bank,Sumitomo Bank,Tokyo,finance,alive,,1989.417,2026.865
+fuji_bank,Fuji Bank,Fuji Bank,Tokyo,finance,merged,mizuho,1989.417,1996.000
+dai_ichi_kangyo,Dai-Ichi Kangyo Bank,Dai-Ichi Kangyo Bank,Tokyo,finance,merged,mizuho,1989.417,1996.000
+mitsubishi_bank,Mitsubishi Bank,Mitsubishi Bank,Tokyo,finance,alive,,1989.417,2026.865
+tepco,Tokyo Electric Power,Tokyo Electric Power,Tokyo,industrial,alive,,1989.417,2026.865
 toyota,Toyota Motor,Toyota Motor,Tokyo,autos,alive,,1989.500,2026.865
-standard_oil_nj,Exxon,Standard Oil · Exxon,New York,oil,alive,,1989.500,2026.865
-ibm,International Business Machines,IBM,New York,computing,alive,,1989.500,2026.865
-ge,General Electric,GE,New York,industrial,alive,,1989.500,2026.865
-philip_morris,Philip Morris Companies,Philip Morris · Altria,New York,consumer,alive,,1989.500,2026.865
-att,American Telephone & Telegraph,AT&T,New York,telecom_media,acquired,sbc,1989.500,2005.083
-merck,Merck & Co.,Merck,New York,chem_pharma,alive,,1989.500,2026.865
-ntt,Nippon Telegraph and Telephone,NTT,Tokyo,telecom_media,alive,,1989.995,2026.865
-mitsubishi_bank,Mitsubishi Bank,Mitsubishi Bank,Tokyo,finance,alive,,1989.995,2026.865
 sanwa_bank,Sanwa Bank,Sanwa Bank,Tokyo,finance,merged,mitsubishi_bank,1989.995,2005.131
-royal_dutch_shell,Royal Dutch/Shell Group,Shell,Amsterdam,oil,alive,,1991.000,2026.865
-walmart,Wal-Mart Stores,Walmart,New York,consumer,alive,,1991.000,2026.865
-sbc,Southwestern Bell Corporation,SBC · AT&T Inc.,New York,telecom_media,alive,,1991.000,2026.865
-coca_cola,Coca-Cola,Coca-Cola,New York,consumer,alive,,1991.000,2026.865
+bristol_myers,Bristol-Myers Co.,Bristol-Myers,New York,chem_pharma,alive,,1990.000,1991.000
+nomura,Nomura Securities,Nomura Securities,Tokyo,finance,alive,,1990.000,1990.000
+nippon_steel,Nippon Steel,Nippon Steel,Tokyo,mining_metals,alive,,1990.000,1990.000
+tokai_bank,Tokai Bank,Tokai Bank,Tokyo,finance,merged,,1990.000,1990.000
+mitsui_bank,Mitsui Bank,Mitsui Bank,Tokyo,finance,merged,,1990.000,1990.000
+matsushita,Matsushita Electric Industrial,Matsushita Electric Industrial,Tokyo,industrial,alive,,1990.000,1990.000
+kansai_electric,Kansai Electric Power,Kansai Electric Power,Tokyo,industrial,alive,,1990.000,1990.000
+hitachi,Hitachi,Hitachi,Tokyo,industrial,alive,,1990.000,1990.000
 microsoft,Microsoft,Microsoft,New York,computing,alive,,1991.000,2026.865
 intel,Intel,Intel,New York,semis,alive,,1991.000,2026.865
 cisco,Cisco Systems,Cisco Systems,New York,computing,alive,,1991.000,2026.865
 vodafone,Vodafone Group,Vodafone Group,London,telecom_media,alive,,1991.000,2026.865
 pfizer,Pfizer,Pfizer,New York,chem_pharma,alive,,1991.000,2026.865
-bp,BP,BP,London,oil,alive,,1991.000,2026.865
 aig,American International Group,AIG,New York,finance,alive,,1991.000,2026.865
-johnson_johnson,Johnson & Johnson,Johnson & Johnson,New York,chem_pharma,alive,,1991.000,2026.865
-procter_gamble,Procter & Gamble,Procter & Gamble,New York,consumer,alive,,1991.000,2026.865
-chevron,Chevron,Chevron,New York,oil,alive,,1991.000,2026.865
 berkshire,Berkshire Hathaway,Berkshire Hathaway,New York,finance,alive,,1991.000,2026.865
 apple,Apple,Apple,New York,computing,alive,,1991.000,2026.865
 unitedhealth,UnitedHealth Group,UnitedHealth Group,New York,consumer,alive,,1991.000,2026.865
 eli_lilly,Eli Lilly,Eli Lilly,New York,chem_pharma,alive,,1991.000,2026.865
-socony,Mobil,Socony · Mobil,New York,oil,merged,standard_oil_nj,1993.000,1999.208
 nestle,Nestle,Nestle,Europe,consumer,alive,,1993.000,2026.865
 roche,Roche Holding,Roche Holding,Europe,chem_pharma,alive,,1995.995,2026.865
 nokia,Nokia,Nokia,Europe,telecom_media,alive,,1996.245,2026.865

@@ -35,7 +35,23 @@ LABELS = {   # short names for the glass and the captions
     "ntt_docomo": "NTT DoCoMo", "pmi": "Philip Morris Intl.", "philip_morris": "Philip Morris · Altria",
     "aol_time_warner": "AOL Time Warner", "aol": "AOL", "ibj": "Industrial Bank of Japan",
 }
-OVERRIDE = {}
+# The same legal company under different ids in different eras -> one id (and a factor for its values).
+ALIAS = {
+    "chevron": ("standard_oil_ca", None),            # Standard Oil of California, renamed Chevron in 1984
+    "prr": ("pennsylvania_rr", None),
+    "nyc": ("new_york_central", None),
+    "second_bus": ("bank_us_second", None),
+    "atlantic_richfield": ("atlantic_refining", None),   # Atlantic Refining became ARCO in 1966
+    "bp": ("anglo_persian", None),                   # Anglo-Persian -> Anglo-Iranian (1935) -> British Petroleum (1954)
+    "national_city_bank": ("citicorp", None),         # National City Bank -> First National City (1955) -> Citicorp (1974)
+    # Royal Dutch Petroleum owned 60% of the Royal Dutch/Shell group from the 1907 union until 2005: after 1907
+    # its value / 0.6 stands for the whole group (as the 1990-2026 research does); before, it is Royal Dutch alone.
+    "royal_dutch": ("royal_dutch_shell", lambda t: 1 / 0.6 if t >= 1907.1 else 1.0),
+}
+SHELL_TT_MERGED = 1907.1     # Shell Transport's own values stop at the union (from then on it is part of the group)
+OVERRIDE = {
+    "royal_dutch_shell": {"district": "Amsterdam"},   # Dutch-majority for most of its life (London-only since 2022)
+}
 NARRATION_ONLY = {"bazacle"}    # worth less than one grain in today's dollars: a line of narration, no vessel   # id -> {field: value} where an era's record needs correcting (say why in a comment)
 SUFFIX = re.compile(r",?\s+(Company|Corporation|Corp\.?|Inc\.?|Incorporated|Ltd\.?|Limited|plc|PLC|S\.A\.|AG|N\.V\.|Co\.)$")
 
@@ -83,6 +99,8 @@ def label_of(cid, name):
 def main(report=False):
     comps = defaultdict(list)
     for r in era_rows("companies.csv"):
+        r["id"] = ALIAS.get(r["id"], (r["id"],))[0]
+        r["successors"] = ";".join(ALIAS.get(x.strip(), (x.strip(),))[0] for x in re.split(r"[;,]", r.get("successors", "")) if x.strip())
         comps[r["id"]].append(r)
     # values
     by_date = defaultdict(lambda: defaultdict(list))     # id -> t -> [(kind, today $M, currency, row)]
@@ -97,7 +115,12 @@ def main(report=False):
         except Exception as e:      # an unknown currency or a bad row: say so, don't guess
             skipped.append((r["id"], r["date"], r.get("currency"), str(e)))
             continue
-        by_date[r["id"]][round(t, 4)].append((r.get("kind", ""), today, r["currency"].upper(), r))
+        cid, fac = ALIAS.get(r["id"], (r["id"], None))
+        if fac:
+            today *= fac(t)
+        if cid == "shell_tt" and t >= SHELL_TT_MERGED:
+            continue
+        by_date[cid][round(t, 4)].append((r.get("kind", ""), today, r["currency"].upper(), r))
     series = {}
     for cid, dates in by_date.items():
         pts = []
@@ -149,6 +172,8 @@ def main(report=False):
                 w.writerow([cid, f"{t:.4f}", f"{v:.1f}", n])
     ev = []
     for r in era_rows("events.csv"):
+        for f_ in ("from_ids", "to_ids"):
+            r[f_] = ";".join(ALIAS.get(x.strip(), (x.strip(),))[0] for x in re.split(r"[;,]", r.get(f_, "")) if x.strip())
         try:
             ev.append(dict(t=f"{dec_year(r['date']):.4f}", type=r["type"].lower(), from_ids=r.get("from_ids", "").replace(",", ";"),
                            to_ids=r.get("to_ids", "").replace(",", ";"), detail=r.get("detail", "")))

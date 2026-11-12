@@ -1,0 +1,23 @@
+date,type,from_ids,to_ids,detail,source
+1836-03-01,rename,second_bus,second_bus,"Federal charter expired; continued as the Bank of the United States under a Pennsylvania charter, same $35m capital (Dec 1835 value $39.5m)",NYSCL; standard histories
+1841-02-04,bankruptcy,second_bus,,Final suspension and failure; shares fell to a few dollars (NYSE $1.75 in Dec 1849 during liquidation). Value at end-1835 $39.5m; GFD 1840 $22.9m,GFD; NYSE data
+1844-05-10,merger,,midland_rly,North Midland + Midland Counties + Birmingham & Derby Junction railways form the Midland Railway (no values found),standard railway histories
+1846-07-16,merger,,lnwr,London & Birmingham + Grand Junction + Manchester & Birmingham form the LNWR (no values found for 1846),standard railway histories
+1854-07-31,merger,,ner,York Newcastle & Berwick + York & North Midland + Leeds Northern form the North Eastern Railway,standard railway histories
+1854,dissolution,south_sea,,South Sea Stock converted under the 1853 debt operations; company wound up (last value seen 1847: c.GBP3.4m),GM; histories
+1857,merger,,plm,"Paris-Lyon and Lyon-Mediterranee merge into the PLM (800,000 shares)",histories
+1857-06-09,listing,banque_de_france,banque_de_france,"Banque de France capital doubled from 91,250 to 182,500 shares (new shares sold at 1,100 fr)","Courtois, Des operations de bourse (1859)"
+1858-11-30,listing,,suez,"Suez Canal Company subscription closes: 400,000 shares of 500 fr (200m fr)","Courtois, Manuel (1874 ed.)"
+1874-06-01,dissolution,eic,,India Stock (GBP6.0m) redeemed at 200 on 30 Apr 1874 = GBP12.0m; company dissolved 1 Jun 1874,East India Stock Dividend Redemption Act 1873
+1875-11-25,acquisition,suez,,"Partial: British government buys the Khedive's 176,602 of 400,000 shares (44%) for GBP3,976,582 = GBP22.52/share, implying GBP9.0m for the whole company",standard histories (Disraeli purchase)
+1880-01-01,nationalisation,east_indian_rly,,Purchased by the Government of India; shareholders paid in annuities (last company value Dec 1873 GBP29.1m),IMM 1880 (annuities A/B listed)
+1882-01-02,listing,,standard_oil_nj,"Standard Oil Trust agreement: certificates of the trust (c.700,000 initially) replace shares of the constituent companies",GFD; histories
+1899-06,rename,standard_oil_nj,standard_oil_nj,Standard Oil Co. (New Jersey) becomes the holding company after the Ohio court dissolved the trust (1892),GFD
+1900-06-30,nationalisation,gipr,,Great Indian Peninsula Railway purchased by the Government of India (last value read Dec 1880 GBP26.6m),IMM
+1901-04-01,merger,carnegie_steel;federal_steel;national_steel;national_tube;american_steel_wire;american_tin_plate;american_steel_hoop;american_sheet_steel,us_steel,J.P. Morgan forms U.S. Steel: $508m common + $510m preferred + $304m bonds; Carnegie Steel bought for ~$480m (mostly in bonds). Market value of the new equity ~$765m (GFD); component market values not found,GFD; Wikipedia
+1907-02-24,merger,royal_dutch;shell_tt,royal_dutch;shell_tt,"Royal Dutch/Shell alliance: operating companies owned 60% Royal Dutch, 40% Shell T&T; both parents stay listed",histories
+1911-12-01,split,standard_oil_nj,socony;standard_oil_in;standard_oil_ca;ohio_oil;prairie_oil;vacuum_oil;atlantic_refining,"Supreme Court decree (15 May 1911): 33 subsidiaries distributed pro rata. Sep 1911: NJ ex-subsidiaries 325 + subsidiaries 275 per share (= $590m); Aug 1912 whole worth 1,100/share = $1.08bn. Hannah 1912 values ($m): NJ 390, Indiana 88, NY 73, California 71, Ohio Oil 66*, Prairie 50, Vacuum 26, Atlantic 26",GFD; Hannah 1999
+1911-11-16,split,american_tobacco,american_tobacco,"American Tobacco dissolved into American Tobacco, Liggett & Myers, P. Lorillard, R.J. Reynolds (Hannah 1912: AT 169, L&M 58, Lorillard 42 $m)",Hannah 1999
+1922-01-01,merger,lyr,lnwr,Lancashire & Yorkshire absorbed by LNWR (L&Y last value read Dec 1900 GBP21.6m),histories
+1923-01-01,merger,lnwr;midland_rly,lms,Railways Act 1921 grouping: LNWR (Dec 1920 GBP31.8m) and Midland form the London Midland & Scottish,histories; IMM
+1923-01-01,merger,ner,lner,North Eastern + Great Northern + Great Eastern + others form the LNER (NER Dec 1913 GBP38.8m),histories; IMM

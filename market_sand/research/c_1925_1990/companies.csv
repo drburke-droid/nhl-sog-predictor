@@ -1,0 +1,66 @@
+id,name,aka,country,exchange,industry,first_value_date,end_date,fate,successors,top10_years,confidence,notes
+att,American Telephone & Telegraph Co.,"AT&T Corp (1994); after 1 Jan 1984 the ""new"" AT&T (long distance, Western Electric, Bell Labs)",US,NYSE,telecom_media,1925-12-31,,alive,ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,1925-1990,medium,"Largest company in the world most years 1925-1966 (GFD; Dimensional). 1984 divestiture spun off 7 regional holding companies (see events). Acquired by SBC in 2005 (outside this era). World #11-16 in 1989 (behind Japanese firms). Gaps: no year-end values 1926-29, 1931-34, 1936-39, 1941-44, 1946-49, 1951-55, 1957-59, 1961-64, 1966-74."
+gm,General Motors Corp.,,US,NYSE,autos,1929-03-21,,alive,,1925-1986,medium,Peaked in March 1929 before the crash; largest US company 1954-56 (GFD). Old GM went bankrupt 2009 (outside era).
+standard_oil_nj,Standard Oil Co. (New Jersey),Exxon Corp (1972); ExxonMobil (1999),US,NYSE,oil,1929-03-31,,alive,,1925-1990,medium,NYSE Fact Book values for 1983-1990 use listed shares incl. heavy treasury stock -> overstated; MSCI 1989 value 63.8bn is on outstanding shares.
+ge,General Electric Co.,,US,NYSE,industrial,1929-03-31,,alive,,1925-1990,medium,4-for-1 split Jan 1930; acquired RCA 1986.
+ibm,International Business Machines Corp.,,US,NYSE,computing,1953-09-15,,alive,,1957-1990,high,Entered US top 10 c.1958; largest company in the world c.1967-1988 except AT&T 1981 (NYSE) and Japan bubble.
+us_steel,United States Steel Corp.,"USX Corp (1986); USX-Marathon (1991); Marathon Oil (2001) - CRSP/Dimensional label it ""Marathon Oil""",US,NYSE,mining_metals,1929-08-31,,alive,,1925-1941; 1954-1962,medium,"Dimensional ranks it #5 (end-1929), #7 (end-1939), #7 (end-1959) under the CRSP successor name ""Marathon Oil""."
+dupont,E. I. du Pont de Nemours & Co.,,US,NYSE,chem_pharma,1953-09-01,,alive,,1929-1966,low,"Top 10 at every decade start 1930-1960 (Dimensional); no pre-1953 values found (not in S&P 90, so not in the CRSP Aug-1929 table)."
+union_carbide,Union Carbide & Carbon Corp.,Union Carbide (1957),US,NYSE,chem_pharma,1929-08-31,,acquired,,1939-1959,low,Acquired by Dow 2001 (outside era).
+texaco,The Texas Company,Texaco Inc. (1959),US,NYSE,oil,1929-08-31,,alive,,1939-1972,low,Splits 1962 and 1969 not verified; 1970s share counts assumed.
+sears,"Sears, Roebuck & Co.",,US,NYSE,consumer,1929-08-31,,alive,,1939-1975,low,1970s share count uncertain (est_low/est_high).
+coca_cola,The Coca-Cola Co.,,US,NYSE,consumer,1979-12-31,,alive,,1939,low,#10 US at end-1939 (Dimensional); US #6-7 in 1989-90 but outside world top 10.
+standard_oil_ca,Standard Oil Co. of California,Chevron Corp (1984),US,NYSE,oil,1929-08-31,,alive,,1949; 1979-1980,medium,Acquired Gulf Oil 1984. id may collide with era-b researcher's id for the 1911 Standard Oil child.
+standard_oil_in,Standard Oil Co. (Indiana),Amoco Corp (1985),US,NYSE,oil,1953-09-01,,alive,,1979-1981,medium,Merged with BP 1998 (outside era).
+socony,Standard Oil Co. of New York,Socony-Vacuum Oil (1931); Socony Mobil Oil (1955); Mobil Oil (1966); Mobil Corp (1976),US,NYSE,oil,1953-09-01,,alive,,1979-1980,medium,Merged into Exxon 1999 (outside era).
+gulf_oil,Gulf Oil Corp.,,US,NYSE,oil,1953-09-01,1984-03-15,acquired,standard_oil_ca,1949; 1956-1957; 1969,low,Acquired by Socal (Chevron) 1984.
+eastman_kodak,Eastman Kodak Co.,,US,NYSE,consumer,1929-08-31,,alive,,1959-1974,medium,Nifty Fifty peak Feb 1973 (~$24.5bn).
+xerox,Xerox Corp.,Haloid (to 1958),US,NYSE,computing,1979-12-31,,alive,,1969-1972,low,#8 US at end-1969 (Dimensional); no verified value collected.
+mmm,Minnesota Mining & Manufacturing Co.,3M,US,NYSE,industrial,1954-09-30,,alive,,,low,Near (not in) top 10 in 1972.
+atlantic_richfield,Atlantic Richfield Co.,ARCO,US,NYSE,oil,1979-12-31,,alive,,1979-1980,high,
+schlumberger,Schlumberger N.V.,Schlumberger Ltd,Netherlands Antilles / US,NYSE,oil,1979-12-31,,alive,,1979-1982,high,Excluded from CRSP/Dimensional US lists (foreign-incorporated) but #5 on the NYSE at end-1979 and end-1980 - an oil-service company briefly among the world's biggest.
+shell_oil_us,Shell Oil Co. (US),,US,NYSE,oil,1953-09-01,1985-06-30,acquired,royal_dutch,1980-1981,high,~69% owned by Royal Dutch/Shell group; minority bought out 1985.
+royal_dutch,Royal Dutch Petroleum Co.,Koninklijke Nederlandsche Petroleum Mij.; with Shell Transport the Royal Dutch/Shell group,Netherlands,Amsterdam; NYSE,oil,1986-12-31,,alive,,1957?; 1979-1990?,low,NYSE Fact Book figures cover only New York-registered shares. Full values found only for 1989 (MSCI 41.0bn; BW group figure 54.3bn). Probably world top 10 c.1979-1990 but unverified.
+philip_morris,Philip Morris Cos.,Altria (2003),US,NYSE,consumer,1979-12-31,,alive,,1989-1990,high,
+merck,Merck & Co.,,US,NYSE,chem_pharma,1979-12-31,,alive,,1990?,high,
+bristol_myers,Bristol-Myers Co.,Bristol-Myers Squibb (1989),US,NYSE,chem_pharma,1989-12-31,,alive,,,high,Near top 10 1989-90.
+walmart,Wal-Mart Stores,,US,NYSE,consumer,1988-12-31,,alive,,,high,Near top 10 1990.
+procter_gamble,Procter & Gamble Co.,,US,NYSE,consumer,1979-12-31,,alive,,,high,
+johnson_johnson,Johnson & Johnson,,US,NYSE,chem_pharma,1979-12-31,,alive,,,high,
+dow_chemical,Dow Chemical Co.,,US,NYSE,chem_pharma,1953-09-15,,alive,,,high,
+phillips_petroleum,Phillips Petroleum Co.,,US,NYSE,oil,1953-09-15,,alive,,,high,
+getty_oil,Getty Oil Co.,,US,NYSE,oil,1979-12-31,1984-02-17,acquired,texaco,,high,Acquired by Texaco 1984.
+ford,Ford Motor Co.,,US,NYSE,autos,1987-12-31,,alive,,,high,Listed 1956.
+rjr_nabisco,RJR Nabisco,R.J. Reynolds Industries (to 1985),US,NYSE,consumer,1988-12-31,1989-02-09,taken_private,,,high,KKR leveraged buyout 1989.
+con_ed,Consolidated Gas Co. of New York,Consolidated Edison (1936),US,NYSE,industrial,1929-08-31,,alive,,1929,medium,#7 US at end-1929 (Dimensional); CRSP Aug-1929 $1.89bn.
+pennsylvania_rr,Pennsylvania Railroad,Penn Central (1968),US,NYSE,rail,1929-08-31,1970-06-21,bankrupt,,1925-1929,medium,"#10 US at end-1929 (Dimensional, CRSP name ""Penn Central""). Merged with NY Central 1968; Penn Central bankrupt 1970."
+new_york_central,New York Central Railroad,,US,NYSE,rail,1929-08-31,1968-02-01,merged,pennsylvania_rr,1925-1929,medium,#9 US at end-1929 (Dimensional).
+philadelphia_co,"""Philadelphia Co."" (CRSP label; identity unverified)",,US,NYSE,industrial,,,,,1929,low,"Dimensional lists ""Philadelphia Co."" #8 at end-1929. This is CRSP's last name for that PERMNO; the 1929 company may be a different Philadelphia utility (e.g. United Gas Improvement, CRSP Aug-1929 $1.10bn). Needs checking."
+united_gas_improvement,United Gas Improvement Co.,,US,NYSE,industrial,1929-08-31,,,,1929?,medium,"Possibly the ""Philadelphia Co."" of the Dimensional chart."
+anaconda,Anaconda Copper Mining,,US,NYSE,mining_metals,1929-08-31,,acquired,,,medium,CRSP Aug-1929 $1.06bn (just outside top 10).
+woolworth,F. W. Woolworth Co.,,US,NYSE,consumer,1929-08-31,,alive,,,medium,CRSP Aug-1929 $0.97bn.
+rca,Radio Corporation of America,,US,NYSE,telecom_media,1929-08-31,1986-06-09,acquired,ge,,medium,Iconic 1929 bubble stock but only $0.65bn at end-Aug 1929 (CRSP) - never world top 10. Acquired by GE 1986.
+national_city_bank,National City Bank of New York,First National City (1955); Citicorp (1974),US,OTC (New York),finance,,,alive,,1925?-1929?,low,"GFD/Finaeon claims it was the largest company in the world in 1925, 1927 and 1928; bank stocks traded OTC then and are absent from CRSP. No value found - flagged for checking."
+bank_of_england,Bank of England,,UK,London,finance,1946-03-01,1946-03-01,nationalised,,,medium,Value at nationalisation only.
+ntt,Nippon Telegraph and Telephone Corp.,,Japan,Tokyo,telecom_media,1987-02-09,,alive,,1987-1990,medium,"15.6m shares (¥50,000 par). Listed 9 Feb 1987 (first price 10 Feb); ¥49.6tn peak 22 Apr 1987."
+ibj,Industrial Bank of Japan,,Japan,Tokyo,finance,1989-05-31,,merged,,1987-1990,low,Merged into Mizuho 2000-02 (outside era).
+sumitomo_bank,Sumitomo Bank,,Japan,Tokyo,finance,1989-05-31,,merged,,1987-1990,low,Merged with Sakura 2001 (SMBC).
+fuji_bank,Fuji Bank,,Japan,Tokyo,finance,1989-05-31,,merged,,1987-1990,low,Mizuho 2000-02.
+dai_ichi_kangyo,Dai-Ichi Kangyo Bank,,Japan,Tokyo,finance,1989-05-31,,merged,,1987-1990,low,Mizuho 2000-02.
+mitsubishi_bank,Mitsubishi Bank,,Japan,Tokyo,finance,1989-05-31,,merged,,1987-1989,low,"Absent from the MSCI end-1989 list (index coverage), so end-1989 rank unknown."
+tepco,Tokyo Electric Power,,Japan,Tokyo,industrial,1989-05-31,,alive,,1988-1990,low,
+toyota,Toyota Motor,,Japan,Tokyo,autos,1989-12-31,,alive,,1989,low,
+nomura,Nomura Securities,,Japan,Tokyo,finance,1989-12-31,,alive,,,low,#11 at end-1989 (MSCI).
+nippon_steel,Nippon Steel,,Japan,Tokyo,mining_metals,1989-12-31,,alive,,,low,
+tokai_bank,Tokai Bank,,Japan,Tokyo,finance,1989-12-31,,merged,,,low,
+mitsui_bank,Mitsui Bank,Taiyo Kobe Mitsui / Sakura (1990),Japan,Tokyo,finance,1989-12-31,,merged,,,low,
+matsushita,Matsushita Electric Industrial,Panasonic (2008),Japan,Tokyo,industrial,1989-12-31,,alive,,,low,
+kansai_electric,Kansai Electric Power,,Japan,Tokyo,industrial,1989-12-31,,alive,,,low,
+hitachi,Hitachi,,Japan,Tokyo,industrial,1989-12-31,,alive,,,low,
+ameritech,American Information Technologies (Ameritech),,US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."
+bell_atlantic,Bell Atlantic,Verizon (2000),US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."
+bellsouth,BellSouth,,US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."
+nynex,NYNEX,,US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."
+pacific_telesis,Pacific Telesis Group,,US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."
+sbc,Southwestern Bell Corp.,"SBC Communications (1995), AT&T Inc. (2005)",US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."
+us_west,U S WEST,,US,NYSE,telecom_media,1983-11-21,,alive,,,high,"Regional holding company created by the AT&T divestiture (when-issued trading from 21 Nov 1983, independent from 1 Jan 1984)."

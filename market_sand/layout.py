@@ -31,11 +31,13 @@ DISTRICTS = {
                        countries=["United Kingdom", "UK", "England", "English", "Great Britain", "Britain", "British", "Scotland"]),
     "Amsterdam":  dict(col=1, band=0, order=1, align="left", label="Amsterdam",
                        countries=["Netherlands", "Dutch Republic", "Dutch", "Holland"]),
-    "Paris":      dict(col=1, band=0, order=2, align="left", label="Paris", countries=["France", "French"]),
-    "Europe":     dict(col=1, band=1, order=0, align="left", label="Frankfurt · Zurich · Helsinki",
-                       countries=["Germany", "German", "Switzerland", "Swiss", "Denmark", "Sweden", "Finland", "Italy", "Spain", "Belgium"]),
+    "Paris":      dict(col=1, band=0, order=2, align="left", label="Paris",
+                       countries=["France", "French", "Egypt"]),    # Egypt: the Suez Canal Company, run and listed in Paris
+    "Europe":     dict(col=1, band=1, order=0, align="left", label="Europe",
+                       countries=["Germany", "German", "Austria", "Switzerland", "Swiss", "Denmark", "Sweden", "Finland", "Italy", "Spain", "Belgium"]),
     "Moscow":     dict(col=2, band=0, order=0, align="left", label="Moscow", countries=["Russia", "Russian Empire"]),
     "Riyadh":     dict(col=2, band=1, order=0, align="left", label="Riyadh", countries=["Saudi Arabia"]),
+    "Johannesburg": dict(col=2, band=2, order=0, align="left", label="Johannesburg", countries=["South Africa"]),
     "Tokyo":      dict(col=3, band=0, order=0, align="left", label="Tokyo", countries=["Japan"]),
     "Seoul":      dict(col=3, band=1, order=0, align="left", label="Seoul", countries=["South Korea", "Korea"]),
     "Shanghai · Hong Kong": dict(col=4, band=0, order=0, align="left", label="Shanghai · Hong Kong", countries=["China", "Hong Kong"]),
@@ -51,6 +53,8 @@ MARGIN = 14.0         # table edge, cells
 
 def district_of(country, exchange=""):
     """District of the first country named (e.g. "Netherlands/United Kingdom" -> Amsterdam)."""
+    if country.lower().startswith("netherlands antilles"):
+        country = country.split("/", 1)[-1]          # Schlumberger: incorporated in Curacao, run from the US
     for tok in [x.strip() for x in re.split(r"[/;,(]| and ", country) if x.strip()]:
         for name, d in DISTRICTS.items():
             if any(tok.lower() == c.lower() or tok.lower().startswith(c.lower() + " ") for c in d["countries"]):

@@ -1,0 +1,132 @@
+year,rank,id,value,currency,source
+1825,1,bank_of_england,30.85,GBP,"values.csv bank_of_england 1825-12-23 (year_end); ranked at ~US$150m; partial: Banque de France, Austrian National Bank, Bank of Ireland etc. not valued"
+1825,2,eic,14.91,GBP,"values.csv eic 1825-12-01 (year_end); ranked at ~US$73m; partial: Banque de France, Austrian National Bank, Bank of Ireland etc. not valued"
+1825,3,second_bus,40.08,USD,"values.csv second_bus 1825-12 (year_end); ranked at ~US$40m; partial: Banque de France, Austrian National Bank, Bank of Ireland etc. not valued"
+1830,1,bank_of_england,28.6,GBP,values.csv bank_of_england 1830-12-28 (point); ranked at ~US$139m; partial (see 1825)
+1830,2,eic,13.19,GBP,values.csv eic 1830-12-02 (year_end); ranked at ~US$64m; partial (see 1825)
+1830,3,second_bus,45.5,USD,values.csv second_bus 1830-12 (year_end); ranked at ~US$46m; partial (see 1825)
+1830,4,south_sea,3.46,GBP,values.csv south_sea 1830-12-01 (point); ranked at ~US$17m; partial (see 1825)
+1835,1,bank_of_england,30.63,GBP,values.csv bank_of_england 1835-11-26 (point); ranked at ~US$149m; partial (see 1825)
+1835,2,eic,15.36,GBP,values.csv eic 1835-11-26 (point); ranked at ~US$75m; partial (see 1825)
+1835,3,second_bus,39.46,USD,values.csv second_bus 1835-12 (year_end); ranked at ~US$39m; partial (see 1825)
+1835,4,south_sea,3.75,GBP,values.csv south_sea 1835-11-26 (point); ranked at ~US$18m; partial (see 1825)
+1840,1,bank_of_england,23.28,GBP,values.csv bank_of_england 1840-11-26 (point); ranked at ~US$113m; partial: early railways not valued
+1840,2,eic,14.46,GBP,values.csv eic 1840-11-26 (point); ranked at ~US$70m; partial: early railways not valued
+1840,3,second_bus,22.88,USD,values.csv second_bus 1840 (point); ranked at ~US$23m; partial: early railways not valued
+1840,4,south_sea,3.64,GBP,values.csv south_sea 1840-11-25 (point); ranked at ~US$18m; partial: early railways not valued
+1845,1,bank_of_england,29.47,GBP,values.csv bank_of_england 1845-11-26 (point); ranked at ~US$143m; PARTIAL: railways (mania year) not valued; ranks 2+ unreliable
+1845,2,eic,15.66,GBP,values.csv eic 1845-11-26 (point); ranked at ~US$76m; PARTIAL: railways (mania year) not valued; ranks 2+ unreliable
+1845,3,south_sea,3.86,GBP,values.csv south_sea 1845-11-24 (point); ranked at ~US$19m; PARTIAL: railways (mania year) not valued; ranks 2+ unreliable
+1850,1,bank_of_england,30.85,GBP,values.csv bank_of_england 1850-11-27 (point); ranked at ~US$150m; PARTIAL: British and French railways not valued; GFD has BoE as world No.1
+1850,2,eic,16.11,GBP,values.csv eic 1850-11-27 (point); ranked at ~US$78m; PARTIAL: British and French railways not valued; GFD has BoE as world No.1
+1855,1,bank_of_england,30.42,GBP,values.csv bank_of_england 1855-11-26 (point); ranked at ~US$148m; PARTIAL: railways not valued
+1855,2,eic,13.44,GBP,values.csv eic 1855-11-24 (point); ranked at ~US$65m; PARTIAL: railways not valued
+1860,1,bank_of_england,34.05,GBP,values.csv bank_of_england 1860-11-23 (point); ranked at ~US$166m; PARTIAL: railways not valued; GFD has BoE as world No.1
+1860,2,eic,13.35,GBP,values.csv eic 1860-11-22 (point); ranked at ~US$65m; PARTIAL: railways not valued; GFD has BoE as world No.1
+1860,3,nyc,18.06,USD,values.csv nyc 1860 (point); ranked at ~US$18m; PARTIAL: railways not valued; GFD has BoE as world No.1
+1865,1,bank_of_england,36.24,GBP,values.csv bank_of_england 1865-11-23 (point); ranked at ~US$176m; PARTIAL: railways not valued; GFD has LNWR overtaking BoE c.1865
+1865,2,eic,13.14,GBP,values.csv eic 1865-11-23 (point); ranked at ~US$64m; PARTIAL: railways not valued; GFD has LNWR overtaking BoE c.1865
+1869,1,lnwr,36.91,GBP,"values.csv lnwr 1869-12 (year_end); ranked at ~US$180m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,2,bank_of_england,34.35,GBP,"values.csv bank_of_england 1869-12 (year_end); ranked at ~US$167m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,3,plm,31.9,GBP,"values.csv plm 1869-12 (year_end); ranked at ~US$155m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,4,east_indian_rly,25.21,GBP,"values.csv east_indian_rly 1869-12 (year_end); ranked at ~US$123m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,5,nord_fr,23.23,GBP,"values.csv nord_fr 1869-12 (year_end); ranked at ~US$113m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,6,sudbahn,15.66,GBP,"values.csv sudbahn 1869-12 (year_end); ranked at ~US$76m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,7,midland_rly,14.05,GBP,"values.csv midland_rly 1869-12 (year_end); ranked at ~US$68m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,8,est_fr,13.72,GBP,"values.csv est_fr 1869-12 (year_end); ranked at ~US$67m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1869,9,eic,12.42,GBP,"values.csv eic 1869-12 (year_end); ranked at ~US$60m; London list only: GWR, NER, Orleans, GIPR, Banque de France not read"
+1873,1,lnwr,48.07,GBP,"values.csv lnwr 1873-12 (year_end); ranked at ~US$234m; Banque de France and US (NYC, PRR) not valued"
+1873,2,bank_of_england,36.82,GBP,"values.csv bank_of_england 1873-12 (year_end); ranked at ~US$179m; Banque de France and US (NYC, PRR) not valued"
+1873,3,ner,31.13,GBP,"values.csv ner 1873-12 (year_end); ranked at ~US$151m; Banque de France and US (NYC, PRR) not valued"
+1873,4,east_indian_rly,29.09,GBP,"values.csv east_indian_rly 1873-12 (year_end); ranked at ~US$142m; Banque de France and US (NYC, PRR) not valued"
+1873,5,plm,26.1,GBP,"values.csv plm 1873-12 (year_end); ranked at ~US$127m; Banque de France and US (NYC, PRR) not valued"
+1873,6,midland_rly,22.54,GBP,"values.csv midland_rly 1873-12 (year_end); ranked at ~US$110m; Banque de France and US (NYC, PRR) not valued"
+1873,7,gipr,21.57,GBP,"values.csv gipr 1873-12 (year_end); ranked at ~US$105m; Banque de France and US (NYC, PRR) not valued"
+1873,8,nord_fr,20.74,GBP,"values.csv nord_fr 1873-12 (year_end); ranked at ~US$101m; Banque de France and US (NYC, PRR) not valued"
+1873,9,lyr,19.8,GBP,"values.csv lyr 1873-12 (year_end); ranked at ~US$96m; Banque de France and US (NYC, PRR) not valued"
+1873,10,orleans,19.5,GBP,"values.csv orleans 1873-12 (year_end); ranked at ~US$95m; Banque de France and US (NYC, PRR) not valued"
+1879,1,bank_of_england,39.29,GBP,"values.csv bank_of_england 1879-12 (year_end); ranked at ~US$191m; LNWR, NYC, Banque de France not read"
+1879,2,plm,36.0,GBP,"values.csv plm 1879-12 (year_end); ranked at ~US$175m; LNWR, NYC, Banque de France not read"
+1879,3,ner,31.35,GBP,"values.csv ner 1879-12 (year_end); ranked at ~US$153m; LNWR, NYC, Banque de France not read"
+1879,4,midland_rly,31.08,GBP,"values.csv midland_rly 1879-12 (year_end); ranked at ~US$151m; LNWR, NYC, Banque de France not read"
+1879,5,nord_fr,30.98,GBP,"values.csv nord_fr 1879-12 (year_end); ranked at ~US$151m; LNWR, NYC, Banque de France not read"
+1879,6,orleans,27.0,GBP,"values.csv orleans 1879-12 (year_end); ranked at ~US$131m; LNWR, NYC, Banque de France not read"
+1879,7,gipr,25.9,GBP,"values.csv gipr 1879-12 (year_end); ranked at ~US$126m; LNWR, NYC, Banque de France not read"
+1879,8,lyr,18.06,GBP,"values.csv lyr 1879-12 (year_end); ranked at ~US$88m; LNWR, NYC, Banque de France not read"
+1879,9,gwr,17.67,GBP,"values.csv gwr 1879-12 (year_end); ranked at ~US$86m; LNWR, NYC, Banque de France not read"
+1880,1,lnwr,55.61,GBP,"values.csv lnwr 1880-12 (year_end); ranked at ~US$271m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,2,plm,47.2,GBP,"values.csv plm 1880-12 (year_end); ranked at ~US$230m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,3,bank_of_england,40.6,GBP,"values.csv bank_of_england 1880-12 (year_end); ranked at ~US$198m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,4,ner,37.47,GBP,"values.csv ner 1880-12 (year_end); ranked at ~US$182m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,5,nord_fr,35.44,GBP,"values.csv nord_fr 1880-12 (year_end); ranked at ~US$172m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,6,midland_rly,32.54,GBP,"values.csv midland_rly 1880-12 (year_end); ranked at ~US$158m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,7,orleans,30.9,GBP,"values.csv orleans 1880-12 (year_end); ranked at ~US$150m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,8,nyc,130.34,USD,"values.csv nyc 1880-12 (year_end); ranked at ~US$130m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,9,gipr,26.6,GBP,"values.csv gipr 1880-12 (year_end); ranked at ~US$129m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1880,10,gwr,20.46,GBP,"values.csv gwr 1880-12 (year_end); ranked at ~US$100m; Banque de France not valued (Jan 1881 low = 698m fr, would rank c.8)"
+1890,1,lnwr,67.7,GBP,values.csv lnwr 1890-12 (year_end); ranked at ~US$329m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,2,bank_of_england,48.39,GBP,values.csv bank_of_england 1890-12 (year_end); ranked at ~US$235m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,3,plm,47.3,GBP,values.csv plm 1890-12 (year_end); ranked at ~US$230m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,4,midland_rly,44.5,GBP,values.csv midland_rly 1890-12 (year_end); ranked at ~US$217m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,5,ner,40.07,GBP,values.csv ner 1890-12 (year_end); ranked at ~US$195m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,6,nord_fr,38.85,GBP,values.csv nord_fr 1890-12 (year_end); ranked at ~US$189m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,7,suez,37.89,GBP,values.csv suez 1890-12 (year_end); ranked at ~US$184m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,8,orleans,35.44,GBP,values.csv orleans 1890-12 (year_end); ranked at ~US$172m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,9,gwr,33.35,GBP,values.csv gwr 1890-12 (year_end); ranked at ~US$162m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1890,10,standard_oil_nj,149.78,USD,values.csv standard_oil_nj 1890 (point); ranked at ~US$150m; Banque de France not valued (c.700m fr in 1892-93 would rank c.9-10)
+1900,1,standard_oil_nj,803.0,USD,"values.csv standard_oil_nj 1900 (point); ranked at ~US$803m; Orleans, Banque de France, NYC not read"
+1900,2,lnwr,76.05,GBP,"values.csv lnwr 1900-12 (year_end); ranked at ~US$370m; Orleans, Banque de France, NYC not read"
+1900,3,suez,55.87,GBP,"values.csv suez 1900-12 (year_end); ranked at ~US$272m; Orleans, Banque de France, NYC not read"
+1900,4,midland_rly,55.25,GBP,"values.csv midland_rly 1900-12 (year_end); ranked at ~US$269m; Orleans, Banque de France, NYC not read"
+1900,5,plm,54.2,GBP,"values.csv plm 1900-12 (year_end); ranked at ~US$264m; Orleans, Banque de France, NYC not read"
+1900,6,nord_fr,48.1,GBP,"values.csv nord_fr 1900-12 (year_end); ranked at ~US$234m; Orleans, Banque de France, NYC not read"
+1900,7,bank_of_england,47.73,GBP,"values.csv bank_of_england 1900-12 (year_end); ranked at ~US$232m; Orleans, Banque de France, NYC not read"
+1900,8,ner,46.8,GBP,"values.csv ner 1900-12 (year_end); ranked at ~US$228m; Orleans, Banque de France, NYC not read"
+1900,9,gwr,39.21,GBP,"values.csv gwr 1900-12 (year_end); ranked at ~US$191m; Orleans, Banque de France, NYC not read"
+1900,10,prr,186.18,USD,"values.csv prr 1900-12 (year_end); ranked at ~US$186m; Orleans, Banque de France, NYC not read"
+1907,1,us_steel,461.13,USD,values.csv us_steel 1907-12 (year_end); ranked at ~US$461m; PARTIAL: only six companies read for Dec 1907 (panic); Standard Oil = 1907 low
+1907,2,standard_oil_nj,388.44,USD,values.csv standard_oil_nj 1907 (trough); ranked at ~US$388m; PARTIAL: only six companies read for Dec 1907 (panic); Standard Oil = 1907 low
+1907,3,union_pacific,315.39,USD,values.csv union_pacific 1907-12 (year_end); ranked at ~US$315m; PARTIAL: only six companies read for Dec 1907 (panic); Standard Oil = 1907 low
+1907,4,lnwr,64.12,GBP,values.csv lnwr 1907-12 (year_end); ranked at ~US$312m; PARTIAL: only six companies read for Dec 1907 (panic); Standard Oil = 1907 low
+1907,5,bank_of_england,40.38,GBP,values.csv bank_of_england 1907-12 (year_end); ranked at ~US$197m; PARTIAL: only six companies read for Dec 1907 (panic); Standard Oil = 1907 low
+1907,6,cpr,189.49,USD,values.csv cpr 1907-12 (year_end); ranked at ~US$189m; PARTIAL: only six companies read for Dec 1907 (panic); Standard Oil = 1907 low
+1912,1,us_steel,739.93,USD,"values.csv us_steel 1912-12 (year_end); ranked at ~US$740m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,2,prr,504.19,USD,"values.csv prr 1912-12 (year_end); ranked at ~US$504m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,3,cpr,476.0,USD,"values.csv cpr 1912-12 (year_end); ranked at ~US$476m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,4,suez,93.76,GBP,"values.csv suez 1912-12 (year_end); ranked at ~US$456m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,5,union_pacific,438.87,USD,"values.csv union_pacific 1912-12 (year_end); ranked at ~US$439m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,6,standard_oil_nj,390,USD,"values.csv standard_oil_nj 1912 (point); ranked at ~US$390m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,7,northern_pacific,300.63,USD,"values.csv northern_pacific 1912-12 (year_end); ranked at ~US$301m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,8,atchison,292.31,USD,"values.csv atchison 1912-12 (year_end); ranked at ~US$292m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,9,southern_pacific,289.28,USD,"values.csv southern_pacific 1912-12 (year_end); ranked at ~US$289m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1912,10,coats,287,USD,"values.csv coats 1912 (point); ranked at ~US$287m; AT&T not valued (likely top 10); values incl. preferred, see note"
+1913,1,cpr,535.22,USD,"values.csv cpr 1913-12 (year_end); ranked at ~US$535m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,2,prr,496.98,USD,"values.csv prr 1913-12 (year_end); ranked at ~US$497m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,3,suez,77.74,GBP,"values.csv suez 1913-12 (year_end); ranked at ~US$378m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,4,lnwr,56.19,GBP,"values.csv lnwr 1913-12 (year_end); ranked at ~US$273m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,5,midland_rly,50.59,GBP,"values.csv midland_rly 1913-12 (year_end); ranked at ~US$246m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,6,gwr,41.69,GBP,"values.csv gwr 1913-12 (year_end); ranked at ~US$203m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,7,plm,40.6,GBP,"values.csv plm 1913-12 (year_end); ranked at ~US$198m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,8,ner,38.82,GBP,"values.csv ner 1913-12 (year_end); ranked at ~US$189m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,9,nord_fr,35.7,GBP,"values.csv nord_fr 1913-12 (year_end); ranked at ~US$174m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1913,10,coats,35.16,GBP,"values.csv coats 1913-12 (year_end); ranked at ~US$171m; PARTIAL: US Steel, Standard Oil NJ, UP, AT&T not read"
+1920,1,us_steel,768.01,USD,"values.csv us_steel 1920-12 (year_end); ranked at ~US$768m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,2,standard_oil_nj,613.63,USD,"values.csv standard_oil_nj 1920 (point); ranked at ~US$614m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,3,royal_dutch,117.6,GBP,"values.csv royal_dutch 1920-12 (year_end); ranked at ~US$410m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,4,shell_tt,114.43,GBP,"values.csv shell_tt 1920 (point); ranked at ~US$399m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,5,prr,383.34,USD,"values.csv prr 1920-12 (year_end); ranked at ~US$383m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,6,imperial_tobacco,59.94,GBP,"values.csv imperial_tobacco 1920-12 (year_end); ranked at ~US$209m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,7,bat,58.33,GBP,"values.csv bat 1920-12 (year_end); ranked at ~US$204m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,8,coats,35.03,GBP,"values.csv coats 1920-12 (year_end); ranked at ~US$122m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,9,lnwr,31.75,GBP,"values.csv lnwr 1920-12 (year_end); ranked at ~US$111m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1920,10,gwr,27.81,GBP,"values.csv gwr 1920-12 (year_end); ranked at ~US$97m; PARTIAL: AT&T, GM, UP, SP, CPR, du Pont not read"
+1925,1,att,1319.0,USD,"values.csv att 1925-12 (year_end); ranked at ~US$1,319m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,2,us_steel,1144.59,USD,"values.csv us_steel 1925-12 (year_end); ranked at ~US$1,145m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,3,standard_oil_nj,1000,USD,"values.csv standard_oil_nj 1925 (est_low); ranked at ~US$1,000m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,4,imperial_tobacco,157.2,GBP,"values.csv imperial_tobacco 1925-12 (year_end); ranked at ~US$765m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,5,prr,542.4,USD,"values.csv prr 1925-12 (year_end); ranked at ~US$542m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,6,shell_tt,98.22,GBP,"values.csv shell_tt 1925-12 (year_end); ranked at ~US$478m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,7,bat,91.41,GBP,"values.csv bat 1925-12 (year_end); ranked at ~US$445m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,8,courtaulds,84.0,GBP,"values.csv courtaulds 1925-12 (year_end); ranked at ~US$409m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,9,cpr,384.49,USD,"values.csv cpr 1925-12 (year_end); ranked at ~US$384m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"
+1925,10,royal_dutch,74.57,GBP,"values.csv royal_dutch 1925-12 (year_end); ranked at ~US$363m; PARTIAL: GM, GE, du Pont, UP, NYC not read; Ford private"

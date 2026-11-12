@@ -1,0 +1,17 @@
+date,type,from_ids,to_ids,detail,source
+1931-07-31,merger,socony,socony,Standard Oil Co. of New York merged with Vacuum Oil to form Socony-Vacuum Oil; socony id continues. No value for Vacuum found.,standard histories (not verified here)
+1946-03-01,nationalisation,bank_of_england,,Bank of England Act 1946: £14.553m Bank Stock exchanged for £58.2m (≈£58m) of 3% Treasury Stock (£400 per £100).,Bank of England Annual Report 1947
+1955-01-01,rename,socony,socony,Socony-Vacuum -> Socony Mobil Oil (1955); Mobil Oil (1966); Mobil Corp (1976).,standard histories
+1959-05-01,rename,texaco,texaco,The Texas Company -> Texaco Inc. (1959).,"B&Q Record lists ""Texaco Inc"" from 1960"
+1972-11-01,rename,standard_oil_nj,standard_oil_nj,Standard Oil Co. (New Jersey) -> Exxon Corp.,B&Q Record Jan 1973 lists EXXON CORP
+1983-11-21,listing,att,ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,"When-issued NYSE trading of ""new"" AT&T and the 7 regional holding companies begins. Opening prices: old AT&T 62 3/4 (x936.7m sh = $58.8bn); new AT&T 19 ($17.8bn); BellSouth 89 ($8.3bn); Bell Atlantic 65 3/4 ($6.2bn); Ameritech 63 ($5.9bn); Southwestern Bell 62 ($5.8bn); NYNEX 60 1/2 ($5.7bn); US West 56 ($5.2bn); Pacific Telesis 51 1/2 ($4.8bn). Sum of pieces $59.8bn.",CRS Report 83-221E App. E; shares = 936.7m (NYSE Fact Book 1984) and 1/10 of that per RHC
+1984-01-01,split,att,att;ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,"AT&T divestiture (Modified Final Judgment). Holders of record 30 Dec 1983 got 1 share of each RHC per 10 AT&T shares. Old AT&T 31 Dec 1983: $57.4bn (936.7m x $61.25, NYSE). Shares of parent value at when-issued close 2 Dec 1983: new AT&T $19.1bn (32%), BellSouth $8.2bn, Bell Atlantic $6.2bn, Ameritech $5.9bn, NYNEX $5.7bn, Southwestern Bell $5.6bn, US West $5.4bn, Pacific Telesis $5.1bn. By 31 Dec 1984 the 8 pieces were worth $73.6bn (AT&T 20.1 + RHCs 53.5).",CRS 83-221E; NYSE Fact Books 1984-85
+1984-02-17,acquisition,getty_oil,texaco,Texaco acquires Getty Oil (widely reported ~$10.1bn; deal value not re-verified here). Getty end-1983 NYSE value $8.7bn.,NYSE Fact Book 1984 for Getty value
+1984-03-15,acquisition,gulf_oil,standard_oil_ca,"Socal acquires Gulf Oil (widely reported ~$13.2bn, then the largest merger ever; not re-verified here). Gulf end-1983 NYSE value $9.1bn. Socal renamed Chevron 1984.",NYSE Fact Book 1984 for Gulf value
+1985-04-23,rename,standard_oil_in,standard_oil_in,Standard Oil (Indiana) -> Amoco Corp.,NYSE Fact Book 1986 footnote
+1985-06-30,acquisition,shell_oil_us,royal_dutch,Royal Dutch/Shell buys the ~30% public minority of Shell Oil (widely reported ~$5.7bn; not re-verified). Shell Oil end-1984 NYSE value $17.2bn (100%).,NYSE Fact Book 1985
+1986-06-09,acquisition,rca,ge,GE acquires RCA (widely reported $6.28bn; not re-verified here).,
+1986-07-09,rename,us_steel,us_steel,United States Steel -> USX Corp.,
+1987-02-09,listing,,ntt,"NTT listed on Tokyo and 7 other Japanese exchanges; no trade on day 1 (1.28m buy orders), first price ¥1.6m on 10 Feb (15.6m shares -> ¥25.0tn). Government had sold 1.95m shares at ¥1.197m.",ja.wikipedia 日本電信電話; NTT IR; Deseret News/AP 22 Mar 1990
+1989-02-09,taken_private,rjr_nabisco,,KKR leveraged buyout of RJR Nabisco (widely reported ~$25bn incl. debt; not re-verified). RJR end-1988 NYSE equity value $20.9bn.,NYSE Fact Book 1989
+1989-10-04,merger,bristol_myers,bristol_myers,Bristol-Myers merges with Squibb -> Bristol-Myers Squibb (Squibb value not collected).,

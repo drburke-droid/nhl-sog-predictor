@@ -1,0 +1,59 @@
+id,name,aka,country,exchange,industry,first_value_date,end_date,fate,successors,top10_years,confidence,notes
+bank_of_england,Governor and Company of the Bank of England,Bank stock,UK,London,finance,1825,1946-03-01,nationalised,,1825-1905,high,"Capital fixed at GBP14,553,000 stock 1816-1946, so value = 0.14553 x price. World No.1 until overtaken by LNWR c.1865-70 (GFD). Nationalisation is outside this era."
+eic,East India Company (United Company of Merchants of England Trading to the East Indies),India Stock,UK,London,trade,1825-11,1874-06-01,dissolved,,1825-1873,high,"GBP6,000,000 India Stock. Trading monopoly ended 1813 (India) and 1833 (China); from 1834 a fixed 10.5% dividend charged on Indian revenues, so 1834-74 the stock behaved like an annuity. Lost rule of India to the Crown 1858. Stock redeemed at 200 on 30 Apr 1874; company dissolved 1 Jun 1874."
+second_bus,Second Bank of the United States,"Bank of the United States (Pennsylvania state charter, 1836)",US,Philadelphia (quoted in New York),finance,1825-12,1841-02-04,bankrupt,,1825-1836,high,"350,000 shares of $100 ($35m). Federal charter vetoed by Jackson 1832, expired 1836; continued under Pennsylvania charter; suspended 1839 and finally 4 Feb 1841, then liquidated."
+south_sea,South Sea Company,South Sea Stock,UK,London,trade,1830-12,1854,dissolved,,uncertain (possibly 1825-1840 at ranks 4-6 among known),low,"Only the trading South Sea Stock is valued (GBP3,662,784 assumed; the annuities were government debt). Stock converted under Gladstone 1853 debt operations; company wound up 1854. Capital figure not verified in this session."
+lnwr,London and North Western Railway,,UK,London,rail,1869-12,1922-12-31,merged,lms,1865-1912,high,"Formed 16 Jul 1846 (London & Birmingham + Grand Junction + Manchester & Birmingham). Values use ordinary/consolidated stock only (preference, guaranteed and debenture stocks excluded). Absorbed Lancashire & Yorkshire 1 Jan 1922; into LMS 1 Jan 1923."
+midland_rly,Midland Railway,,UK,London,rail,1869-12,1922-12-31,merged,lms,1873-1912,high,Formed 1844. Ordinary stock split 1897 into preferred converted ordinary and deferred converted ordinary; both are included.
+ner,North Eastern Railway,,UK,London,rail,1873-12,1922-12-31,merged,lner,1873-1900,high,Formed 1854. Value = North Eastern Consols (ordinary).
+gwr,Great Western Railway,,UK,London,rail,1873-12,,alive,,1880-1900,medium,Pre-1880 only the Original stock is captured. Survived the 1923 grouping; nationalised 1948 (outside era).
+lyr,Lancashire and Yorkshire Railway,,UK,London,rail,1873-12,1921-12-31,merged,lnwr,1873 (borderline),medium,Merged into LNWR 1 Jan 1922.
+plm,Compagnie des chemins de fer de Paris a Lyon et a la Mediterranee,PLM,France,Paris (also London),rail,1869-12,1937-12-31,nationalised,,1869-1900,medium,"800,000 shares of 500 fr; values use London prices (GBP per share). Merged into SNCF 1938."
+nord_fr,Compagnie des chemins de fer du Nord,Nord,France,Paris (also London),rail,1869-12,1937-12-31,nationalised,,1869-1900,medium,"Rothschild railway; 525,000 shares of 400 fr (GBP16). IMM 1890-1913 prints nominal GBP9,274,000 which would imply 579,625 shares: given as est_high. Merged into SNCF 1938."
+orleans,Compagnie du chemin de fer de Paris a Orleans,PO,France,Paris (also London),rail,1873-12,1937-12-31,nationalised,,1873-1890,medium,"600,000 shares of 500 fr (IMM nominal GBP12,000,000). Merged into SNCF 1938."
+est_fr,Compagnie des chemins de fer de l'Est,Est,France,Paris (also London),rail,1869-12,1937-12-31,nationalised,,none (ranks c.12-20),medium,"584,000 shares (IMM nominal GBP11,680,000)."
+sudbahn,Sudbahn-Gesellschaft (Southern Austrian and Lombardo-Venetian Railway),Lombards,Austria,Vienna/Paris/London,rail,1869-12,1923,broken_up,,1869 (borderline),medium,"750,000 shares of 500 fr. Divided after WWI (1923 reorganised as Danube-Save-Adriatic Railway)."
+east_indian_rly,East Indian Railway Company,,UK (India),London,rail,1869-12,1879-12-31,nationalised,,1869-1879,medium,Shares carried a 5% Indian Government guarantee. Purchased by the Government of India from 1 Jan 1880; holders received annuities.
+gipr,Great Indian Peninsula Railway,,UK (India),London,rail,1873-12,1900-06-30,nationalised,,1873-1880,medium,5% guaranteed by India. Purchased by the Government of India 1900.
+suez,Compagnie universelle du canal maritime de Suez,Suez Canal Company,Egypt (HQ Paris),Paris (also London),rail,1875-11,,alive,,1890-1913,medium,"400,000 shares of 500 fr; amortised capital shares replaced by actions de jouissance. Founders' parts and the parts civiles (Egypt's 15% of profits) are separate securities and NOT included. British government bought 176,602 shares in 1875."
+banque_de_france,Banque de France,,France,Paris,finance,1848,1945-12-02,nationalised,,probably 1825-1890 (data thin),low,"Shares: 67,900 (1820s-1848), 91,250 (1848-57), 182,500 (from 1857). Only scattered prices found (Neymarck; JSFS 1884). Nationalised 1945."
+nyc,New York Central Railroad,New York Central & Hudson River RR (1869); New York Central RR (1914),US,NYSE,rail,1860,,alive,,1880 (borderline),medium,Largest US company 1860-1880 per GFD. US prices 1862-78 are in greenback dollars.
+prr,Pennsylvania Railroad,,US,Philadelphia/NYSE,rail,1900-12,,alive,,1900-1925,medium,$50 par shares. Largest US company 1912-15 on a common-stock basis (GFD).
+union_pacific,Union Pacific Railroad,,US,NYSE,rail,1900-12,,alive,,1912,medium,Common + 4% preferred; common-only in note.
+southern_pacific,Southern Pacific Company,,US,NYSE,rail,1912-12,,alive,,1912 (borderline),medium,
+northern_pacific,Northern Pacific Railway,,US,NYSE,rail,1900-12,,alive,,1912 (borderline),medium,
+great_northern_us,Great Northern Railway (US),,US,NYSE,rail,1912-12,,alive,,1912 (borderline),medium,Its only equity was called preferred stock.
+atchison,"Atchison, Topeka and Santa Fe Railway",,US,NYSE,rail,1912-12,,alive,,1912 (borderline),medium,
+cpr,Canadian Pacific Railway,,Canada,Montreal/NYSE/London,rail,1900-12,,alive,,1912-1913,medium,
+illinois_central,Illinois Central Railroad,,US,NYSE,rail,1880-12,,alive,,none,medium,
+erie,Erie Railroad,"New York, Lake Erie & Western",US,NYSE,rail,1880-12,,alive,,none,medium,
+standard_oil_nj,Standard Oil (Trust 1882; Standard Oil Co. of New Jersey holding company 1899),Standard Oil Trust (1882-92); Exxon (1972); ExxonMobil (1999),US,New York curb/OTC (NYSE from 1920),oil,1890,,alive,socony;standard_oil_in;standard_oil_ca;ohio_oil;prairie_oil;vacuum_oil;atlantic_refining,1890-1925,medium,"About 983,383 shares at dissolution. Not listed on the NYSE before 1920; values from GFD (OTC/curb quotes). Supreme Court ordered dissolution 15 May 1911; subsidiary shares distributed Dec 1911 (GFD dates some trading to Sep 1912; see notes)."
+socony,Standard Oil Company of New York,Mobil (1966),US,New York curb,oil,1912,,alive,,none,medium,1911 spin-off.
+standard_oil_in,Standard Oil Company (Indiana),Amoco,US,Chicago/curb,oil,1912,,alive,,none,medium,1911 spin-off.
+standard_oil_ca,Standard Oil Company of California,Chevron,US,curb,oil,1912,,alive,,none,medium,1911 spin-off.
+ohio_oil,Ohio Oil Company,Marathon,US,curb,oil,1912,,alive,,none,low,1911 spin-off; Hannah value approximate.
+prairie_oil,Prairie Oil & Gas,,US,curb,oil,1912,1932,acquired,,none,medium,1911 spin-off; acquired by Sinclair 1932.
+vacuum_oil,Vacuum Oil Company,,US,curb,oil,1912,1931,merged,socony,none,medium,1911 spin-off; merged with Socony 1931.
+atlantic_refining,Atlantic Refining Company,ARCO,US,curb,oil,1912,,alive,,none,medium,1911 spin-off.
+us_steel,United States Steel Corporation,USX (1986),US,NYSE,mining_metals,1901-04,,alive,,1901-1925,medium,"5,083,025 common + 3,602,811 7% preferred shares after 1902-03 (preferred originally $510m, $200m converted into bonds). Values = common + preferred; common-only in note. ""First billion-dollar company"" refers to par capitalisation incl. bonds (~$1.4bn), not market value."
+carnegie_steel,Carnegie Steel Company,,US,private,mining_metals,1901-03,1901-04-01,acquired,us_steel,none,low,Privately held; sale value ~$480m (transaction value).
+att,American Telephone and Telegraph Company,AT&T,US,NYSE/Boston,telecom_media,1922-12,,alive,,1912?-1925,medium,Pre-1922 share counts not found in this session (gap).
+ge,General Electric Company,,US,NYSE,industrial,1912,,alive,,none in 1912 (No.7 industrial),medium,
+pullman,Pullman Company,,US,NYSE,industrial,1912,,alive,,none,medium,
+coats,J. & P. Coats,Coats Patons; Coats Viyella,UK,London (Glasgow),consumer,1912,,alive,,1912 (borderline),medium,Ordinary only in IMM rows (20% preference excluded).
+royal_dutch,Royal Dutch Petroleum Company (Koninklijke Nederlandsche Petroleum Mij.),Royal Dutch Shell (2005),Netherlands,Amsterdam (also London),oil,1912,,alive,,1920-1925,low,"Hannah 1912 figure is for the Royal Dutch/Shell group. 1920/1925 values use the London list share count (2,138,180 x fl100), not verified."
+shell_tt,"""Shell"" Transport and Trading Company",,UK,London,oil,1920,2005,merged,royal_dutch,1920-1925,medium,40% partner in the 1907 Royal Dutch/Shell alliance.
+anaconda,Anaconda Copper Mining,,US,NYSE,mining_metals,1912,,alive,,none,medium,
+singer,Singer Manufacturing,,US,curb/NYSE,industrial,1912,,alive,,none,medium,
+american_tobacco,American Tobacco Company,American Brands,US,NYSE,consumer,1912,,alive,,none,medium,Broken up Nov 1911; Hannah 1912 value is post break-up.
+intl_harvester,International Harvester,Navistar,US,NYSE,industrial,1912,,alive,,none,medium,
+bat,British-American Tobacco,,UK,London,consumer,1912,,alive,,1925 (borderline),medium,
+imperial_tobacco,Imperial Tobacco Company (of Great Britain and Ireland),,UK,London,consumer,1912,,alive,,1920-1925,medium,Largest UK company from 1922/23 (GFD).
+de_beers,De Beers Consolidated Mines,,South Africa,London/Kimberley,mining_metals,1912,,alive,,none,medium,
+rio_tinto,Rio Tinto Company,RTZ,UK,London,mining_metals,1912,,alive,,none,medium,
+krupp,Fried. Krupp AG,,Germany,(not listed),mining_metals,1912,,alive,,none,low,Not publicly traded; Hannah approximation.
+guinness,"Arthur Guinness, Son & Co.",,UK,London,consumer,1912,,alive,,none,medium,
+hudsons_bay,Hudson's Bay Company,,UK,London,trade,1873-12,,alive,,none,medium,"100,000 shares (GBP17 paid) in the 1870s; small in this era."
+anglo_persian,Anglo-Persian Oil Company,BP,UK,London,oil,1925-12,,alive,,none,low,Ordinary shares mostly held by HM Government and Burmah Oil; IMM count may not be total ordinary capital.
+burmah_oil,Burmah Oil,,UK,London (Glasgow),oil,1925-12,,alive,,none,medium,
+courtaulds,Courtaulds Ltd,,UK,London,chem_pharma,1925-12,,alive,,1925 (borderline),medium,Rayon boom of the 1920s.
