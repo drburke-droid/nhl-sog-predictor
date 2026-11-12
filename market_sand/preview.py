@@ -121,7 +121,7 @@ class Film:
         quay = np.array([(x, y + r + layout.CANAL * 0.5) for x, y, r in (L.lots[k] for k in self.ids)])
         rec = []      # (frame, src_x, src_y, dst_x, dst_y, kind, company index)
         acc = np.zeros(len(self.ids))
-        handed = {idx[k] for k in self.ids if S.companies[k]["fate"] in story.HANDOVER}
+        handed = {idx[k] for k in S.hands_over}
         for f in range(1, self.nf):
             d = self.G[f] - self.G[f - 1]
             want = np.minimum(5.0, 0.35 * np.abs(d) ** 0.5) * (np.abs(d) > 0.02)

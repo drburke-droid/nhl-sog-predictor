@@ -1,0 +1,65 @@
+id,name,district,industry,first_value,last_value,n_values,fate,successors,gaps_over_4y,needs_afterlife,in_gapfill_1926_1990,peak_today_busd
+eic,East India Company (Governor and Company of Merchants of London trading into the East Indies),London,trade,1601.1,1874.3,116,dissolved,,1721-1766; 1798-1826; 1640-1658; 1601-1610; 1658-1664; 1628-1634,,,3.2
+voc,Vereenigde Oostindische Compagnie (Dutch East India Company),Amsterdam,trade,1602.5,1795.5,208,nationalised,,1698-1720; 1624-1632,,,1.6
+wic,Geoctrooieerde West-Indische Compagnie (first Dutch West India Company),Amsterdam,trade,1623.5,1649.5,20,dissolved,wic_1674,1624-1630,,,0.3
+hudsons_bay,Governor and Company of Adventurers of England trading into Hudson's Bay,London,trade,1670.5,1881.0,11,alive,,1721-1874; 1698-1721; 1670-1692; 1874-1881,yes,,0.3
+royal_african,Royal African Company of England,London,trade,1672.5,1721.0,27,dissolved,,1672-1692; 1700-1713; 1713-1720,,,0.1
+wic_1674,"Second Dutch West India Company (Geoctrooieerde West-Indische Compagnie, 1674)",Amsterdam,trade,1674.5,1792.0,86,nationalised,,1674-1720,,,0.8
+bank_of_england,Governor and Company of the Bank of England,London,finance,1694.5,1946.2,193,nationalised,,1926-1946; 1913-1926; 1721-1732; 1891-1901; 1901-1908; 1886-1891,,,9.4
+eic_english,"English Company Trading to the East Indies (""New Company"")",London,trade,1698.5,1703.5,5,merged,eic,,,,0.7
+million_bank,Million Bank (Bank on Tickets of the Million Adventure),London,finance,1700.5,1721.0,24,dissolved,,1710-1720,,,0.5
+south_sea,Governor and Company of the Merchants of Great Britain trading to the South Seas (South Sea Company),London,trade,1711.9,1847.9,31,dissolved,,1721-1831; 1841-1846; 1836-1841; 1831-1836,,,35.5
+mississippi_co,Compagnie d'Occident (1717) / Compagnie des Indes (1719),Paris,trade,1718.4,1723.2,29,dissolved,,,,,34.1
+royal_exchange_assurance,Royal Exchange Assurance Corporation,London,finance,1720.0,1721.0,12,merged,,,,,0.6
+london_assurance,London Assurance Corporation,London,finance,1720.0,1721.0,12,acquired,,,,,0.5
+bank_us_first,Bank of the United States (First),New York,finance,1791.5,1791.5,1,dissolved,,,,,0.4
+banque_de_france,Banque de France,Paris,finance,1800.1,1893.2,7,nationalised,,1800-1848; 1848-1872; 1883-1893; 1872-1881,,,8.5
+bank_us_second,Second Bank of the United States,New York,finance,1817.0,1850.0,17,bankrupt,,1840-1850; 1817-1826; 1836-1840,,,1.5
+new_york_central,New York Central Railroad,New York,rail,1860.5,1929.7,9,merged,pennsylvania_rr,1891-1913; 1913-1930; 1860-1870; 1886-1891; 1881-1886; 1876-1880,,,23.2
+lnwr,London and North Western Railway,London,rail,1870.0,1921.0,16,merged,lms,1891-1900; 1914-1921; 1901-1908; 1874-1880; 1881-1886; 1886-1890,,,15.1
+midland_rly,Midland Railway,London,rail,1870.0,1914.0,8,merged,lms,1901-1913; 1891-1901; 1881-1891; 1874-1880,,,10.9
+plm,Compagnie des chemins de fer de Paris a Lyon et a la Mediterranee,Paris,rail,1870.0,1914.0,9,nationalised,,1901-1914; 1891-1901; 1881-1891; 1874-1880,,,10.7
+nord_fr,Compagnie des chemins de fer du Nord,Paris,rail,1870.0,1914.0,10,nationalised,,1901-1914; 1881-1891; 1891-1900; 1874-1880,,,9.6
+est_fr,Compagnie des chemins de fer de l'Est,Paris,rail,1870.0,1901.0,6,nationalised,,1891-1901; 1881-1891; 1874-1881,,,4.9
+sudbahn,Sudbahn-Gesellschaft (Southern Austrian and Lombardo-Venetian Railway),Europe,rail,1870.0,1891.0,4,broken_up,,1881-1891; 1874-1881,,,2.5
+east_indian_rly,East Indian Railway Company,London,rail,1870.0,1874.0,2,nationalised,,,,,4.6
+gwr,Great Western Railway,London,rail,1871.5,1921.0,10,alive,,1901-1913; 1891-1901; 1881-1891; 1914-1921; 1874-1880,yes,,7.7
+orleans,Compagnie du chemin de fer de Paris a Orleans,Paris,rail,1871.5,1891.0,7,nationalised,,1874-1880; 1886-1891; 1881-1886,,,6.5
+ner,North Eastern Railway,London,rail,1874.0,1914.0,7,merged,lner,1901-1913; 1891-1901; 1881-1891; 1874-1880,,,9.2
+lyr,Lancashire and Yorkshire Railway,London,rail,1874.0,1901.0,5,merged,lnwr,1891-1901; 1881-1891; 1874-1880,,,4.3
+gipr,Great Indian Peninsula Railway,London,rail,1874.0,1881.0,3,nationalised,,1874-1880,,,4.5
+suez,Compagnie universelle du canal maritime de Suez,Paris,rail,1875.9,1914.0,9,alive,,1901-1912; 1891-1901; 1876-1881; 1886-1891,yes,,17.8
+illinois_central,Illinois Central Railroad,New York,rail,1881.0,1901.0,3,alive,,1891-1901; 1881-1891,yes,,3.2
+erie,Erie Railroad,New York,rail,1881.0,1881.0,1,alive,,,yes,,1.3
+standard_oil_nj,Standard Oil (Trust 1882; Standard Oil Co. of New Jersey holding company 1899),New York,oil,1890.5,2026.9,289,alive,,1913-1920; 1920-1926; 1896-1900; 1890-1896; 1901-1906,,yes,830.2
+pennsylvania_rr,Pennsylvania Railroad,New York,rail,1901.0,1929.7,7,bankrupt,,1901-1913; 1916-1921; 1921-1926,,,24.4
+union_pacific,Union Pacific Railroad,New York,rail,1901.0,1913.0,3,alive,,1901-1908; 1908-1913,yes,,15.2
+northern_pacific,Northern Pacific Railway,New York,rail,1901.0,1913.0,2,alive,,1901-1913,yes,,10.4
+cpr,Canadian Pacific Railway,New York,rail,1901.0,1926.0,5,alive,,1914-1926; 1901-1908; 1908-1913,yes,,18.1
+carnegie_steel,Carnegie Steel Company,New York,mining_metals,1901.2,1901.2,1,acquired,us_steel,,,,19.5
+us_steel,United States Steel Corporation,New York,mining_metals,1901.3,1954.7,22,alive,,1901-1908; 1921-1926; 1908-1912; 1916-1921,yes,yes,41.5
+socony,Standard Oil Company of New York,New York,oil,1912.5,1999.2,23,merged,standard_oil_nj,1912-1954,,yes,158.9
+standard_oil_in,Standard Oil Company (Indiana),New York,oil,1912.5,1991.0,16,alive,,1912-1954,yes,yes,94.7
+standard_oil_ca,Standard Oil Company of California,New York,oil,1912.5,2026.9,245,alive,,1912-1930,,yes,462.0
+ohio_oil,Ohio Oil Company,New York,oil,1912.5,1912.5,1,alive,,,yes,,2.3
+prairie_oil,Prairie Oil & Gas,New York,oil,1912.5,1912.5,1,acquired,,,,,1.7
+vacuum_oil,Vacuum Oil Company,New York,oil,1912.5,1912.5,1,merged,socony,,,,0.9
+atlantic_refining,Atlantic Refining Company,New York,oil,1912.5,1991.0,13,alive,,1912-1980,yes,,64.7
+ge,General Electric Company,New York,industrial,1912.5,2026.9,288,alive,,1912-1929,,yes,1131.7
+pullman,Pullman Company,New York,industrial,1912.5,1912.5,1,alive,,,yes,,7.0
+coats,J. & P. Coats,London,consumer,1912.5,1926.0,4,alive,,1914-1921; 1921-1926,yes,,10.0
+royal_dutch_shell,Royal Dutch Petroleum Company (Koninklijke Nederlandsche Petroleum Mij.),Amsterdam,oil,1912.5,2026.9,120,alive,,1926-1987; 1912-1921; 2014-2022; 1921-1926,,yes,450.3
+anaconda,Anaconda Copper Mining,New York,mining_metals,1912.5,1929.7,2,acquired,,1912-1930,,,20.7
+singer,Singer Manufacturing,New York,industrial,1912.5,1912.5,1,alive,,,yes,,6.1
+american_tobacco,American Tobacco Company,New York,consumer,1912.5,1912.5,1,alive,,,yes,,5.9
+intl_harvester,International Harvester,New York,industrial,1912.5,1912.5,1,alive,,,yes,,5.6
+bat,British-American Tobacco,London,consumer,1912.5,1926.0,4,alive,,1914-1921; 1921-1926,yes,,8.3
+imperial_tobacco,Imperial Tobacco Company (of Great Britain and Ireland),London,consumer,1912.5,1926.0,3,alive,,1912-1921; 1921-1926,yes,,14.4
+de_beers,De Beers Consolidated Mines,Johannesburg,mining_metals,1912.5,1912.5,1,alive,,,yes,,5.5
+rio_tinto,Rio Tinto Company,London,mining_metals,1912.5,1912.5,1,alive,,,yes,,5.2
+krupp,Fried. Krupp AG,Europe,mining_metals,1912.5,1912.5,1,alive,,,yes,,4.5
+guinness,"Arthur Guinness, Son & Co.",London,consumer,1912.5,1912.5,1,alive,,,yes,,3.8
+southern_pacific,Southern Pacific Company,New York,rail,1913.0,1913.0,1,alive,,,yes,,10.0
+great_northern_us,Great Northern Railway (US),New York,rail,1913.0,1913.0,1,alive,,,yes,,9.4
+atchison,"Atchison, Topeka and Santa Fe Railway",New York,rail,1913.0,1913.0,1,alive,,,yes,,10.1
+att,American Telephone and Telegraph Company,New York,telecom_media,1923.0,2005.1,69,acquired,sbc,,,yes,340.4

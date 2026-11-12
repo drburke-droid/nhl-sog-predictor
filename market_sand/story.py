@@ -65,6 +65,9 @@ class Story:
             dead = c["fate"] not in ("alive", "")
             self.end[k] = self.T[k][-1] if dead else np.inf
         self.peak_grains = {k: float(self.V[k].max()) for k in self.T}
+        # a company's sand goes to a buyer only if the buyer is on the table; otherwise it drains
+        self.hands_over = {k for k, c in self.companies.items() if c["fate"] in HANDOVER
+                           and any(s in self.T for s in c.get("successors", "").split(";") if s)}
 
     def grains_one(self, k, t):
         T, V = self.T[k], self.V[k]
@@ -73,7 +76,7 @@ class Story:
         if t < T[0]:
             return V[0] * (t - (T[0] - RAMP)) / RAMP
         if t > self.end[k]:
-            if self.companies[k]["fate"] in HANDOVER:
+            if k in self.hands_over:
                 return 0.0
             return V[-1] * max(0.0, 1 - (t - self.end[k]) / RAMP)
         return float(np.exp(np.interp(t, T, np.log(np.maximum(V, 1e-9)))))
