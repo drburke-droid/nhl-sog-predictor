@@ -28,7 +28,7 @@ the percentage is measured from the simulated grains.
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
 | `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
-| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (4:33, 1280x720). |
+| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:54, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |
@@ -410,8 +410,8 @@ What is and is not final about the preview:
   per result) and levelled to about -16 LUFS. It has been checked for level and
   clipping only; nobody has listened to it.
 - The cold open borrows four seconds of semi-final 1.
-- The preview is encoded at a lower quality setting (`--crf 25`) to stay under
-  GitHub's 100 MB file limit.
+- The preview is encoded with `--crf 23` (68 MB); GitHub refuses files over
+  100 MB, so check the size before committing a longer or sharper cut.
 
 ## What the literature says
 

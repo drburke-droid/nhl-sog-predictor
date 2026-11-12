@@ -519,7 +519,7 @@ def compose(args, matches):
 
             first = shot(0)
             begin(key, first)
-            emit(first, 20)                              # a beat on the untouched picture
+            emit(first, 42)                              # hold the untouched picture long enough to read it
             for i in range(1, n):
                 emit(shot(i))
             emit(state["last"], 10)
