@@ -64,66 +64,107 @@ t,type,from_ids,to_ids,detail
 1931.5835,merger,socony,socony,Standard Oil Co. of New York merged with Vacuum Oil to form Socony-Vacuum Oil; socony id continues. No value for Vacuum found.
 1946.1680,nationalisation,bank_of_england,,Bank of England Act 1946: £14.553m Bank Stock exchanged for £58.2m (≈£58m) of 3% Treasury Stock (£400 per £100).
 1955.0014,rename,socony,socony,Socony-Vacuum -> Socony Mobil Oil (1955); Mobil Oil (1966); Mobil Corp (1976).
+1956.0479,listing,,ford,Ford Motor Co. IPO: the Ford Foundation sold 10.2m shares at $64.50; 53.46m shares x first-day close $70.50 = $3.8bn.
 1959.3347,rename,texaco,texaco,The Texas Company -> Texaco Inc. (1959).
+1970.7514,listing,,walmart,"Wal-Mart Stores IPO, 300,000 shares at $16.50 (OTC; NYSE from 1972-08-25)."
 1972.8347,rename,standard_oil_nj,standard_oil_nj,Standard Oil Co. (New Jersey) -> Exxon Corp.
+1980.9482,listing,,apple,"Apple Computer IPO on Nasdaq: 4.6m shares at $22, first-day close $29 (reported valuation $1.78bn)."
 1983.8895,listing,att,ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,"When-issued NYSE trading of ""new"" AT&T and the 7 regional holding companies begins. Opening prices: old AT&T 62 3/4 (x936.7m sh = $58.8bn); new AT&T 19 ($17.8bn); BellSouth 89 ($8.3bn); Bell Atlantic 65 3/4 ($6.2bn); Ameritech 63 ($5.9bn); Southwestern Bell 62 ($5.8bn); NYNEX 60 1/2 ($5.7bn); US West 56 ($5.2bn); Pacific Telesis 51 1/2 ($4.8bn). Sum of pieces $59.8bn."
 1984.0014,split,att,att;ameritech;bell_atlantic;bellsouth;nynex;pacific_telesis;sbc;us_west,"AT&T divestiture (Modified Final Judgment). Holders of record 30 Dec 1983 got 1 share of each RHC per 10 AT&T shares. Old AT&T 31 Dec 1983: $57.4bn (936.7m x $61.25, NYSE). Shares of parent value at when-issued close 2 Dec 1983: new AT&T $19.1bn (32%), BellSouth $8.2bn, Bell Atlantic $6.2bn, Ameritech $5.9bn, NYNEX $5.7bn, Southwestern Bell $5.6bn, US West $5.4bn, Pacific Telesis $5.1bn. By 31 Dec 1984 the 8 pieces were worth $73.6bn (AT&T 20.1 + RHCs 53.5)."
 1984.1285,acquisition,getty_oil,texaco,Texaco acquires Getty Oil (widely reported ~$10.1bn; deal value not re-verified here). Getty end-1983 NYSE value $8.7bn.
 1984.2064,acquisition,gulf_oil,standard_oil_ca,"Socal acquires Gulf Oil (widely reported ~$13.2bn, then the largest merger ever; not re-verified here). Gulf end-1983 NYSE value $9.1bn. Socal renamed Chevron 1984."
+1984.7952,listing,,unitedhealth,United HealthCare IPO on Nasdaq (date approximate; Yahoo history starts Oct 1984).
 1985.3116,rename,standard_oil_in,standard_oil_in,Standard Oil (Indiana) -> Amoco Corp.
 1985.4974,acquisition,shell_oil_us,royal_dutch_shell,Royal Dutch/Shell buys the ~30% public minority of Shell Oil (widely reported ~$5.7bn; not re-verified). Shell Oil end-1984 NYSE value $17.2bn (100%).
+1986.2009,listing,,microsoft,Microsoft IPO on Nasdaq at $21; first-day market value about $777m.
 1986.4399,acquisition,rca,ge,GE acquires RCA (widely reported $6.28bn; not re-verified here).
+1986.4399,acquisition,rca,ge,GE completes its purchase of RCA (era c records the event; value row added here: $6.28bn).
 1986.5233,rename,us_steel,us_steel,United States Steel -> USX Corp.
 1987.1066,listing,,ntt,"NTT listed on Tokyo and 7 other Japanese exchanges; no trade on day 1 (1.28m buy orders), first price ¥1.6m on 10 Feb (15.6m shares -> ¥25.0tn). Government had sold 1.95m shares at ¥1.197m."
+1988.8198,listing,,vodafone,Racal Telecom (later Vodafone) floats 20% of its shares in London (date approximate); fully demerged from Racal 1991-09-16.
 1989.1066,taken_private,rjr_nabisco,,KKR leveraged buyout of RJR Nabisco (widely reported ~$25bn incl. debt; not re-verified). RJR end-1988 NYSE equity value $20.9bn.
 1989.7596,merger,bristol_myers,bristol_myers,Bristol-Myers merges with Squibb -> Bristol-Myers Squibb (Squibb value not collected).
+1990.1258,listing,,cisco,Cisco Systems IPO on Nasdaq at $18.
+1990.2514,merger,mitsui_bank,mitsui_bank,"Mitsui Bank absorbs Taiyo Kobe Bank (valued at $22.8bn in the 1989 deal; not tracked) to form Mitsui Taiyo Kobe Bank, renamed Sakura Bank in 1992."
 1991.7173,acquisition,att,att,"AT&T acquires NCR Corporation (stock deal; value not researched; NCR not tracked, spun off again end-1996)."
+1994.2514,spinoff,pacific_telesis,,Pacific Telesis spins off its wireless arm AirTouch Communications (not tracked); PacTel cover value fell from $23.1bn (Feb 1994) to $12.7bn (Feb 1995).
 1994.7173,acquisition,att,att,"AT&T completes McCaw Cellular purchase (stock); share count rises from 1,352m (end-1993) to 1,569m (end-1994)."
+1995.4974,spinoff,sears,,Sears distributes its 80% of Allstate (not tracked).
 1996.2514,merger,mitsubishi_bank,mitsubishi_bank,Mitsubishi Bank merges with Bank of Tokyo to form Bank of Tokyo-Mitsubishi (Bank of Tokyo not tracked; deal listed at $33.8bn). Combined value end-1996 (CMC): 88.1bn.
+1996.4345,split,gm,,"GM splits off Electronic Data Systems (Class E stock, $27.6bn non-affiliate value in Feb 1996; not tracked)."
 1996.7474,spinoff,att,lucent,AT&T distributes its remaining 82% of Lucent (IPO of 18% in April 1996). Lucent first CMC value 1997: about 51bn (end-1997). NCR spun off 1996-12-31 (not tracked).
 1996.9583,merger,,novartis,Ciba-Geigy and Sandoz merge to form Novartis (parents not tracked).
+1996.9701,merger,,novartis,Ciba-Geigy and Sandoz complete their merger into Novartis; Novartis end-1996 about $79bn (derived).
+1997.2514,acquisition,pacific_telesis,sbc,SBC Communications completes its purchase of Pacific Telesis (widely reported at about $16.5bn in stock; PacTel cover value Feb 1997 $17.6bn).
+1997.6203,merger,nynex,bell_atlantic,Bell Atlantic completes its merger with NYNEX (NYNEX cover value Feb 1997 $22.6bn).
+1998.0014,rename,woolworth,woolworth,"Woolworth Corp. renamed Venator Group (1998), then Foot Locker Inc. (2001)."
+1998.4482,spinoff,us_west,,U S WEST separates its media business as MediaOne Group (Media Group tracking stock $18.0bn in Jan 1998; MediaOne was bought by AT&T Corp. in 2000; not tracked). Legally the old U S WEST Inc. became MediaOne and the telephone business continued as a new U S WEST Inc.; the vessel follows the telephone business.
 1998.7705,merger,citicorp;travelers,citigroup,Citicorp and Travelers Group merge into Citigroup (Travelers the legal survivor). Citicorp valued at about $70bn in the deal (announced April 1998). Citigroup end-1998: 119.3bn (CMC).
 1998.8089,listing,ntt,ntt_docomo,NTT DoCoMo IPO in Tokyo; NTT keeps about 67%. DoCoMo end-1998: 66.5bn; end-1999: 367bn (world #3).
 1999.0002,merger,anglo_persian,anglo_persian,BP merges with Amoco to form BP Amoco (Amoco valued at $48-49bn; not tracked).
 1999.4947,merger,vodafone,vodafone,Vodafone completes its purchase of AirTouch Communications (value not researched; AirTouch not tracked) and becomes Vodafone AirTouch.
 1999.7705,acquisition,sbc,sbc,SBC acquires Ameritech (deal $62bn; Ameritech not tracked).
+1999.7705,acquisition,ameritech,sbc,SBC Communications completes its purchase of Ameritech ($62bn at the May 1998 announcement; Ameritech cover value Mar 1999 $72.8bn).
 1999.9141,merger,socony,standard_oil_nj,Exxon absorbs Mobil; company renamed Exxon Mobil. Mobil valued at $77.2bn at the December 1998 announcement; Exxon Mobil end-1999 279.9bn (CMC).
 2000.0929,acquisition,mannesmann,vodafone,"Mannesmann board accepts Vodafone AirTouch takeover at EUR 190bn (about $183bn), then the largest takeover ever. Vodafone 31 Mar 2000: 340.3bn (#6 in the world); Mannesmann shares 157.5bn."
 2000.4673,acquisition,pfizer,pfizer,Pfizer completes Warner-Lambert takeover (about $90bn; Warner-Lambert not tracked).
+2000.4974,acquisition,us_west,,Qwest Communications completes its purchase of U S WEST ($44bn at announcement; Qwest not tracked). US West value about $54.8bn on 2000-06-30 (CMC).
+2000.4974,rename,bell_atlantic,bell_atlantic,Bell Atlantic completes its merger with GTE (not tracked) and renames itself Verizon Communications.
 2000.7447,merger,ibj;fuji_bank;dai_ichi_kangyo,mizuho,"Industrial Bank of Japan, Fuji Bank and Dai-Ichi Kangyo Bank form Mizuho Holdings by share transfer (deal listed at $40.1bn). In 1989 the three were worth JPY 34.2tn together."
+2000.7447,listing,ibj;fuji_bank;dai_ichi_kangyo,mizuho,Mizuho Holdings listed (share transfer from the three banks); Mizuho end-2000 about JPY 8.2tn (derived).
 2001.0287,merger,aol;time_warner,aol_time_warner,"AOL and Time Warner complete their merger (announced 2000-01-10: AOL about $163-164bn, Time Warner $83-97bn, deal $162-182bn as variously reported; AOL holders 55%)."
+2001.0984,acquisition,union_carbide,dow_chemical,"Dow completes its purchase of Union Carbide (1.611 Dow shares per UCC share; $9.3bn in stock at the 1999 announcement, about $7.0bn at completion)."
 2001.2514,merger,sumitomo_bank,sumitomo_bank,Sumitomo Bank and Sakura Bank form Sumitomo Mitsui Banking Corp (Sakura not tracked; deal listed at $45.5bn); SMFG holding company Dec 2002.
+2001.2514,merger,mitsui_bank,sumitomo_bank,Sakura Bank (the former Mitsui Bank) merges with Sumitomo Bank into Sumitomo Mitsui Banking Corp. (listed at $45.5bn in the M&A list).
 2001.2541,merger,sanwa_bank,sanwa_bank,Sanwa Bank and Tokai Bank form UFJ Holdings (Tokai not tracked).
+2001.2541,merger,tokai_bank,sanwa_bank,Tokai Bank and Sanwa Bank form UFJ Holdings (with Toyo Trust; not tracked).
 2001.5233,split,att,att,AT&T Corp splits off AT&T Wireless (its tracking stock was 362.75m x $17.31 = 6.3bn at end-2000; the company was sold to Cingular for $41bn in 2004) and Liberty Media (Aug 2001). Children not tracked.
+2001.7514,rename,nomura,nomura,Nomura Securities becomes Nomura Holdings (holding company).
+2001.7733,merger,texaco,standard_oil_ca,"Chevron completes its merger with Texaco (ChevronTexaco); Texaco about $38.4bn on the last day (CMC), $35bn deal value."
+2002.6641,merger,phillips_petroleum,conocophillips,Phillips Petroleum and Conoco (not tracked) combine under the new holding company ConocoPhillips (Phillips holders about 57%).
 2002.8812,spinoff,att,,AT&T Broadband spun off and merged into Comcast (deal listed at $72bn); AT&T 1-for-5 reverse split.
 2003.5000,rename,philip_morris,philip_morris,Philip Morris Companies renamed Altria Group.
 2003.5000,rename,aol_time_warner,aol_time_warner,AOL Time Warner renamed Time Warner Inc.
+2005.2310,merger,sears,sears,"Kmart Holding (not tracked) buys Sears, Roebuck and both become subsidiaries of the new Sears Holdings Corp. (Kmart holders owned the majority); the sears vessel continues as Sears Holdings. Human decision: a new vessel would also be defensible."
 2005.5534,merger,royal_dutch_shell,royal_dutch_shell,Royal Dutch Petroleum and Shell Transport & Trading unify under Royal Dutch Shell plc (one vessel throughout in this dataset). RDS end-2005: 208.3bn (CAO).
 2005.7514,merger,sanwa_bank,mitsubishi_bank,Mitsubishi Tokyo Financial Group absorbs UFJ Holdings (UFJ valued at about $38bn) to form MUFG.
 2005.8812,acquisition,att,sbc,SBC Communications completes purchase of its former parent AT&T Corp for about $16bn and renames itself AT&T Inc. AT&T Corp was worth 157bn in Feb 2000.
 2006.8226,listing,,icbc,ICBC dual IPO in Shanghai and Hong Kong (then the largest IPO). FT end-2006: 254.6bn.
 2006.9180,merger,lucent,alcatel_lucent,Lucent merges into Alcatel (Alcatel-Lucent). Lucent about 11bn at the end versus 259bn at its Dec 1999 peak.
 2006.9947,acquisition,sbc,sbc,AT&T Inc. completes the BellSouth acquisition (value not researched; BellSouth not tracked).
+2006.9947,acquisition,bellsouth,sbc,AT&T Inc. (SBC) completes its purchase of BellSouth ($67bn in the M&A list).
 2007.2474,spinoff,philip_morris,kraft_foods,Altria spins off Kraft Foods (Kraft had been partly floated in 2001); Kraft value from CMC Mondelez lineage in values.csv.
 2007.8457,listing,petrochina,petrochina,"PetroChina lists A shares in Shanghai; at the A-share close the whole company was briefly valued at about $1tn (peak 1.2tn nominal per Wikipedia), the first ""trillion-dollar company"" - a paper value since H shares traded far lower."
 2008.2420,spinoff,philip_morris,pmi,Altria spins off Philip Morris International. PMI end-2008: 88.0bn (CMC); Altria end-2008: 31.0bn vs 159.3bn end-2007.
+2008.7514,rename,matsushita,matsushita,Matsushita Electric Industrial renames itself Panasonic Corporation.
 2009.0370,bankruptcy,nortel,,Nortel Networks files for bankruptcy protection; peak value 252bn (2000-07-26).
 2009.1982,spinoff,aol_time_warner,,Time Warner spins off Time Warner Cable (not tracked).
+2009.4180,bankruptcy,gm,,"General Motors Corp. files for Chapter 11; shares worth $457m on the last close (75 cents x 610m). The old equity was cancelled; the company became Motors Liquidation Co. The assets went to a new company (General Motors Company), owned by the US Treasury, Canada and the UAW trust."
 2009.7897,acquisition,pfizer,pfizer,Pfizer completes Wyeth acquisition ($68bn; Wyeth not tracked).
 2009.8402,acquisition,merck,merck,Merck completes Schering-Plough merger ($41.1bn; not tracked).
 2009.9399,spinoff,aol_time_warner,aol_inc,Time Warner spins off AOL Inc. (first CMC value about 2.5bn) - the end of the AOL-Time Warner merger.
 2010.4837,acquisition,standard_oil_nj,standard_oil_nj,ExxonMobil completes XTO Energy acquisition ($41bn; not tracked).
+2010.8812,listing,,gm_2010,General Motors Company (new GM) re-lists on the NYSE at $33 (about $49.5bn; $20.1bn raised).
+2012.0507,bankruptcy,eastman_kodak,,"Eastman Kodak files for Chapter 11; shares 42-47 cents, about $114-128m. Kodak emerged in Sept 2013 with new shares issued to creditors (old shares cancelled); the new Kodak (KODK) is worth $0.3-1.5bn and is not tracked as a vessel."
+2012.3308,spinoff,conocophillips,,ConocoPhillips spins off its refining business as Phillips 66 (not tracked; first CMC value about $20bn).
 2012.3812,listing,,facebook,Facebook IPO on Nasdaq.
+2012.7514,merger,nippon_steel,nippon_steel,Nippon Steel absorbs Sumitomo Metal Industries ($22.5bn in the M&A list) and becomes Nippon Steel & Sumitomo Metal (renamed Nippon Steel Corp. 2019).
 2014.7173,listing,,alibaba,Alibaba IPO on NYSE (largest IPO until Aramco).
 2015.7541,rename,google,google,Google reorganises under the new holding company Alphabet Inc. (treated as a rename; Google shares became Alphabet shares one-for-one).
 2016.5000,acquisition,alcatel_lucent,nokia,Nokia completes the Alcatel-Lucent takeover (exact completion date not researched).
+2017.6668,merger,dupont;dow_chemical,dowdupont,"Dow Chemical and E. I. du Pont merge into the new holding company DowDuPont (deal announced Dec 2015, $130bn in the M&A list); DowDuPont 2017-09-29: $161.7bn (CMC). Dow about $75bn and du Pont about $87bn at the merger (derived)."
 2018.4536,acquisition,aol_time_warner,sbc,AT&T Inc. completes its purchase of Time Warner (announced Oct 2016 at $85.4bn equity).
+2018.7897,bankruptcy,sears,,"Sears Holdings files for Chapter 11; shares at 32 cents, market value about $32m (Reuters)."
+2019.2514,spinoff,dowdupont,dow_inc,DowDuPont spins off Dow Inc. (materials science); Dow Inc. first month-end about $42bn (CMC).
+2019.4180,spinoff,dowdupont,corteva,"DowDuPont spins off Corteva (agriculture) and renames itself DuPont de Nemours, Inc.; Corteva first month-end about $20bn (CMC)."
 2019.9454,listing,,aramco,"Saudi Aramco IPO on Tadawul (1.5% float, $25.6bn raised); first-day close about $1.88tn, instantly the world #1."
 2020.9837,taken_private,ntt_docomo,ntt,NTT completes its tender for the 34% of DoCoMo it did not own (about $40bn) and delists DoCoMo; DoCoMo was worth about 123bn at end-2020.
 2021.8253,rename,facebook,facebook,"Facebook, Inc. renamed Meta Platforms."
 2022.2705,spinoff,sbc,wbd,"AT&T Inc. spins off WarnerMedia, which merges with Discovery to form Warner Bros. Discovery. WBD end-2022: 22.8bn (CMC)."
 2023.0096,spinoff,ge,ge_healthcare,GE spins off 80.1% of GE HealthCare (first CMC values about 26-30bn).
 2023.8922,acquisition,broadcom,broadcom,Broadcom completes the VMware acquisition (cash and stock; value not researched; VMware not tracked).
+2024.2514,spinoff,mmm,,3M spins off its health-care business as Solventum (not tracked; first CMC value about $12bn).
 2024.2541,spinoff,ge,ge_vernova,GE spins off GE Vernova; the remaining GE renamed GE Aerospace.
 2024.3402,acquisition,standard_oil_nj,standard_oil_nj,ExxonMobil completes the Pioneer Natural Resources acquisition ($59.5-64.5bn; not tracked).
+2025.6872,acquisition,woolworth,,Dick's Sporting Goods (not tracked) completes its purchase of Foot Locker (the former F. W. Woolworth Co.) for about $2.4bn.
 2026.4482,listing,,spacex,"SpaceX IPO (raised $86bn, the largest IPO ever); peak $2.44tn on 2026-06-19; xAI had been absorbed (about $250bn) in Feb 2026 while private."

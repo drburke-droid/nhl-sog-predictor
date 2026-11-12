@@ -66,111 +66,116 @@ att,American Telephone and Telegraph Company,AT&T,New York,telecom_media,acquire
 anglo_persian,Anglo-Persian Oil Company,Anglo-Persian Oil,London,oil,alive,,1925.958,2026.865
 burmah_oil,Burmah Oil,Burmah Oil,London,oil,alive,,1925.958,1925.958
 courtaulds,Courtaulds Ltd,Courtaulds,London,chem_pharma,alive,,1925.958,1925.958
-gm,General Motors Corp.,GM,New York,autos,alive,,1929.223,1991.000
-union_carbide,Union Carbide & Carbon Corp.,Union Carbide & Carbon,New York,chem_pharma,acquired,,1929.667,1954.668
-texaco,The Texas Company,The Texas,New York,oil,alive,,1929.667,1991.000
-sears,"Sears, Roebuck & Co.","Sears, Roebuck",New York,consumer,alive,,1929.667,1990.000
-eastman_kodak,Eastman Kodak Co.,Eastman Kodak,New York,consumer,alive,,1929.667,1991.000
-con_ed,Consolidated Gas Co. of New York,Consolidated Gas Co. of New York,New York,industrial,alive,,1929.667,1929.667
-united_gas_improvement,United Gas Improvement Co.,United Gas Improvement,New York,industrial,alive,,1929.667,1929.667
-woolworth,F. W. Woolworth Co.,F. W. Woolworth,New York,consumer,alive,,1929.667,1929.667
-rca,Radio Corporation of America,Radio Corporation of America,New York,telecom_media,acquired,ge,1929.667,1929.667
-dupont,E. I. du Pont de Nemours & Co.,E. I. du Pont de Nemours,New York,chem_pharma,alive,,1953.668,1991.000
+gm,General Motors Corp.,GM,New York,autos,bankrupt,,1929.223,2009.411
+union_carbide,Union Carbide & Carbon Corp.,Union Carbide & Carbon,New York,chem_pharma,acquired,dow_chemical,1929.667,2001.098
+texaco,The Texas Company,The Texas,New York,oil,merged,standard_oil_ca,1929.667,2001.773
+sears,"Sears, Roebuck & Co.","Sears, Roebuck",New York,consumer,bankrupt,,1929.667,2018.790
+eastman_kodak,Eastman Kodak Co.,Eastman Kodak,New York,consumer,bankrupt,,1929.667,2012.051
+con_ed,Consolidated Gas Co. of New York,Consolidated Gas Co. of New York,New York,industrial,alive,,1929.667,2026.865
+united_gas_improvement,United Gas Improvement Co.,United Gas Improvement,New York,industrial,alive,,1929.667,2026.865
+woolworth,F. W. Woolworth Co.,F. W. Woolworth,New York,consumer,acquired,,1929.667,2025.682
+rca,Radio Corporation of America,Radio Corporation of America,New York,telecom_media,acquired,ge,1929.667,1985.945
+dupont,E. I. du Pont de Nemours & Co.,E. I. du Pont de Nemours,New York,chem_pharma,merged,dowdupont,1953.668,2017.667
 gulf_oil,Gulf Oil Corp.,Gulf Oil,New York,oil,acquired,standard_oil_ca,1953.668,1984.000
 shell_oil_us,Shell Oil Co. (US),Shell Oil,New York,oil,acquired,royal_dutch_shell,1953.668,1985.000
 ibm,International Business Machines Corp.,IBM,New York,computing,alive,,1953.706,2026.865
-dow_chemical,Dow Chemical Co.,Dow Chemical,New York,chem_pharma,alive,,1953.706,1991.000
-phillips_petroleum,Phillips Petroleum Co.,Phillips Petroleum,New York,oil,alive,,1953.706,1981.000
-mmm,Minnesota Mining & Manufacturing Co.,Minnesota Mining & Manufacturing,New York,industrial,alive,,1954.747,1991.000
+dow_chemical,Dow Chemical Co.,Dow Chemical,New York,chem_pharma,merged,dowdupont,1953.706,2017.667
+phillips_petroleum,Phillips Petroleum Co.,Phillips Petroleum,New York,oil,merged,conocophillips,1953.706,2002.664
+mmm,Minnesota Mining & Manufacturing Co.,Minnesota Mining & Manufacturing,New York,industrial,alive,,1954.747,2026.865
+ford,Ford Motor Co.,Ford Motor,New York,autos,alive,,1956.048,2026.865
+johnson_johnson,Johnson & Johnson,Johnson & Johnson,New York,chem_pharma,alive,,1963.000,2026.865
+walmart,Wal-Mart Stores,Walmart,New York,consumer,alive,,1970.751,2026.865
+sumitomo_bank,Sumitomo Bank,Sumitomo Bank,Tokyo,finance,alive,,1971.000,2026.865
+tepco,Tokyo Electric Power,Tokyo Electric Power,Tokyo,industrial,alive,,1971.000,2026.865
+toyota,Toyota Motor,Toyota Motor,Tokyo,autos,alive,,1971.000,2026.865
+nomura,Nomura Securities,Nomura Securities,Tokyo,finance,alive,,1971.000,2026.865
+nippon_steel,Nippon Steel,Nippon Steel,Tokyo,mining_metals,alive,,1971.000,2026.865
+matsushita,Matsushita Electric Industrial,Matsushita Electric Industrial,Tokyo,industrial,alive,,1971.000,2026.865
+kansai_electric,Kansai Electric Power,Kansai Electric Power,Tokyo,industrial,alive,,1971.000,2026.865
+hitachi,Hitachi,Hitachi,Tokyo,industrial,alive,,1971.000,2026.865
+bristol_myers,Bristol-Myers Co.,Bristol-Myers,New York,chem_pharma,alive,,1973.000,2026.865
+pfizer,Pfizer,Pfizer,New York,chem_pharma,alive,,1973.000,2026.865
+eli_lilly,Eli Lilly,Eli Lilly,New York,chem_pharma,alive,,1973.000,2026.865
+aig,American International Group,AIG,New York,finance,alive,,1974.000,2026.865
 coca_cola,The Coca-Cola Co.,The Coca-Cola,New York,consumer,alive,,1980.000,2026.865
-xerox,Xerox Corp.,Xerox,New York,computing,alive,,1980.000,1981.000
-schlumberger,Schlumberger N.V.,Schlumberger,New York,oil,alive,,1980.000,1991.000
+xerox,Xerox Corp.,Xerox,New York,computing,alive,,1980.000,2026.865
+schlumberger,Schlumberger N.V.,Schlumberger,New York,oil,alive,,1980.000,2026.865
 philip_morris,Philip Morris Cos.,Philip Morris · Altria,New York,consumer,alive,,1980.000,2026.865
 merck,Merck & Co.,Merck,New York,chem_pharma,alive,,1980.000,2026.865
 procter_gamble,Procter & Gamble Co.,Procter & Gamble,New York,consumer,alive,,1980.000,2026.865
-johnson_johnson,Johnson & Johnson,Johnson & Johnson,New York,chem_pharma,alive,,1980.000,2026.865
-getty_oil,Getty Oil Co.,Getty Oil,New York,oil,acquired,texaco,1980.000,1984.000
-ameritech,American Information Technologies (Ameritech),American Information Technologies,New York,telecom_media,alive,,1983.889,1991.000
-bell_atlantic,Bell Atlantic,Bell Atlantic,New York,telecom_media,alive,,1983.889,1991.000
-bellsouth,BellSouth,BellSouth,New York,telecom_media,alive,,1983.889,1991.000
-nynex,NYNEX,NYNEX,New York,telecom_media,alive,,1983.889,1991.000
-pacific_telesis,Pacific Telesis Group,Pacific Telesis Group,New York,telecom_media,alive,,1983.889,1991.000
+getty_oil,Getty Oil Co.,Getty Oil,New York,oil,acquired,texaco,1980.000,1984.015
+rjr_nabisco,RJR Nabisco,RJR Nabisco,New York,consumer,taken_private,,1980.000,1989.000
+citicorp,Citicorp,Citicorp,New York,finance,merged,citigroup,1980.000,1998.292
+intel,Intel,Intel,New York,semis,alive,,1980.000,2026.865
+berkshire,Berkshire Hathaway,Berkshire Hathaway,New York,finance,alive,,1980.000,2026.865
+apple,Apple,Apple,New York,computing,alive,,1980.948,2026.865
+bhp,BHP Billiton,BHP,Sydney,mining_metals,alive,,1981.000,2026.865
+ameritech,American Information Technologies (Ameritech),American Information Technologies,New York,telecom_media,acquired,sbc,1983.889,1999.174
+bell_atlantic,Bell Atlantic,Bell Atlantic,New York,telecom_media,alive,,1983.889,2026.865
+bellsouth,BellSouth,BellSouth,New York,telecom_media,acquired,sbc,1983.889,2006.995
+nynex,NYNEX,NYNEX,New York,telecom_media,merged,bell_atlantic,1983.889,1997.159
+pacific_telesis,Pacific Telesis Group,Pacific Telesis Group,New York,telecom_media,acquired,sbc,1983.889,1997.159
 sbc,Southwestern Bell Corp.,SBC · AT&T Inc.,New York,telecom_media,alive,,1983.889,2026.865
-us_west,U S WEST,U S WEST,New York,telecom_media,alive,,1983.889,1991.000
+us_west,U S WEST,U S WEST,New York,telecom_media,acquired,,1983.889,2000.497
+unitedhealth,UnitedHealth Group,UnitedHealth Group,New York,consumer,alive,,1984.833,2026.865
+wells_fargo,Wells Fargo,Wells Fargo,New York,finance,alive,,1986.000,2026.865
+microsoft,Microsoft,Microsoft,New York,computing,alive,,1986.201,2026.865
 ntt,Nippon Telegraph and Telephone Corp.,NTT,Tokyo,telecom_media,alive,,1987.107,2026.865
-ford,Ford Motor Co.,Ford Motor,New York,autos,alive,,1988.000,1990.000
-walmart,Wal-Mart Stores,Walmart,New York,consumer,alive,,1989.000,2026.865
-rjr_nabisco,RJR Nabisco,RJR Nabisco,New York,consumer,taken_private,,1989.000,1989.000
-ibj,Industrial Bank of Japan,Industrial Bank of Japan,Tokyo,finance,merged,mizuho,1989.417,1999.637
-sumitomo_bank,Sumitomo Bank,Sumitomo Bank,Tokyo,finance,alive,,1989.417,2026.865
-fuji_bank,Fuji Bank,Fuji Bank,Tokyo,finance,merged,mizuho,1989.417,1996.000
-dai_ichi_kangyo,Dai-Ichi Kangyo Bank,Dai-Ichi Kangyo Bank,Tokyo,finance,merged,mizuho,1989.417,1996.000
+vodafone,Vodafone Group,Vodafone Group,London,telecom_media,alive,,1988.914,2026.865
+ibj,Industrial Bank of Japan,Industrial Bank of Japan,Tokyo,finance,merged,mizuho,1989.417,2001.000
+fuji_bank,Fuji Bank,Fuji Bank,Tokyo,finance,merged,mizuho,1989.417,2001.000
+dai_ichi_kangyo,Dai-Ichi Kangyo Bank,Dai-Ichi Kangyo Bank,Tokyo,finance,merged,mizuho,1989.417,2001.000
 mitsubishi_bank,Mitsubishi Bank,Mitsubishi Bank,Tokyo,finance,alive,,1989.417,2026.865
-tepco,Tokyo Electric Power,Tokyo Electric Power,Tokyo,industrial,alive,,1989.417,2026.865
-toyota,Toyota Motor,Toyota Motor,Tokyo,autos,alive,,1989.500,2026.865
 sanwa_bank,Sanwa Bank,Sanwa Bank,Tokyo,finance,merged,mitsubishi_bank,1989.995,2005.131
-bristol_myers,Bristol-Myers Co.,Bristol-Myers,New York,chem_pharma,alive,,1990.000,1991.000
-nomura,Nomura Securities,Nomura Securities,Tokyo,finance,alive,,1990.000,1990.000
-nippon_steel,Nippon Steel,Nippon Steel,Tokyo,mining_metals,alive,,1990.000,1990.000
-tokai_bank,Tokai Bank,Tokai Bank,Tokyo,finance,merged,,1990.000,1990.000
-mitsui_bank,Mitsui Bank,Mitsui Bank,Tokyo,finance,merged,,1990.000,1990.000
-matsushita,Matsushita Electric Industrial,Matsushita Electric Industrial,Tokyo,industrial,alive,,1990.000,1990.000
-kansai_electric,Kansai Electric Power,Kansai Electric Power,Tokyo,industrial,alive,,1990.000,1990.000
-hitachi,Hitachi,Hitachi,Tokyo,industrial,alive,,1990.000,1990.000
-microsoft,Microsoft,Microsoft,New York,computing,alive,,1991.000,2026.865
-intel,Intel,Intel,New York,semis,alive,,1991.000,2026.865
-cisco,Cisco Systems,Cisco Systems,New York,computing,alive,,1991.000,2026.865
-vodafone,Vodafone Group,Vodafone Group,London,telecom_media,alive,,1991.000,2026.865
-pfizer,Pfizer,Pfizer,New York,chem_pharma,alive,,1991.000,2026.865
-aig,American International Group,AIG,New York,finance,alive,,1991.000,2026.865
-berkshire,Berkshire Hathaway,Berkshire Hathaway,New York,finance,alive,,1991.000,2026.865
-apple,Apple,Apple,New York,computing,alive,,1991.000,2026.865
-unitedhealth,UnitedHealth Group,UnitedHealth Group,New York,consumer,alive,,1991.000,2026.865
-eli_lilly,Eli Lilly,Eli Lilly,New York,chem_pharma,alive,,1991.000,2026.865
+tokai_bank,Tokai Bank,Tokai Bank,Tokyo,finance,merged,sanwa_bank,1990.000,2001.000
+mitsui_bank,Mitsui Bank,Mitsui Bank,Tokyo,finance,merged,sumitomo_bank,1990.000,2001.000
+cisco,Cisco Systems,Cisco Systems,New York,computing,alive,,1990.159,2026.865
+bank_of_america,Bank of America,Bank of America,New York,finance,alive,,1993.000,2026.865
 nestle,Nestle,Nestle,Europe,consumer,alive,,1993.000,2026.865
+jpmorgan,JPMorgan Chase,JPMorgan Chase,New York,finance,alive,,1993.000,2026.865
+time_warner,Time Warner (1990),Time Warner,New York,telecom_media,merged,aol_time_warner,1994.000,2001.000
+travelers,Travelers Group,Travelers Group,New York,finance,merged,citigroup,1994.000,1998.747
+nokia,Nokia,Nokia,Europe,telecom_media,alive,,1994.578,2026.865
 roche,Roche Holding,Roche Holding,Europe,chem_pharma,alive,,1995.995,2026.865
-nokia,Nokia,Nokia,Europe,telecom_media,alive,,1996.245,2026.865
-travelers,Travelers Group,Travelers Group,New York,finance,merged,citigroup,1996.245,1998.747
 hsbc,HSBC Holdings,HSBC Holdings,London,finance,alive,,1996.245,2026.865
-bank_of_america,Bank of America,Bank of America,New York,finance,alive,,1996.245,2026.865
-bhp,BHP Billiton,BHP,Sydney,mining_metals,alive,,1996.245,2026.865
-wells_fargo,Wells Fargo,Wells Fargo,New York,finance,alive,,1996.245,2026.865
-jpmorgan,JPMorgan Chase,JPMorgan Chase,New York,finance,alive,,1996.245,2026.865
-deutsche_telekom,Deutsche Telekom,Deutsche Telekom,Europe,telecom_media,alive,,1997.000,2026.865
+aol,America Online,AOL,New York,internet,merged,aol_time_warner,1996.667,2000.250
+deutsche_telekom,Deutsche Telekom,Deutsche Telekom,Europe,telecom_media,alive,,1996.914,2026.865
+novartis,Novartis,Novartis,Europe,chem_pharma,alive,,1997.000,2026.865
 lucent,Lucent Technologies,Lucent Technologies,New York,computing,merged,alcatel_lucent,1997.004,2007.000
 nortel,Nortel Networks,Nortel Networks,New York,computing,bankrupt,,1997.250,2010.000
-time_warner,Time Warner (1990),Time Warner,New York,telecom_media,merged,aol_time_warner,1997.250,2001.000
-amazon,Amazon.com,Amazon,New York,internet,alive,,1997.497,2026.865
+amazon,Amazon.com,Amazon,New York,internet,alive,,1997.414,2026.865
+alcatel_lucent,Alcatel,Alcatel,Paris,computing,acquired,nokia,1998.000,2017.000
 tsmc,Taiwan Semiconductor Manufacturing,TSMC,Taipei,semis,alive,,1998.000,2026.865
-citicorp,Citicorp,Citicorp,New York,finance,merged,citigroup,1998.292,1998.292
 ntt_docomo,NTT DoCoMo,NTT DoCoMo,Tokyo,telecom_media,taken_private,ntt,1998.812,2021.000
 citigroup,Citigroup,Citigroup,New York,finance,alive,,1999.000,2026.865
-novartis,Novartis,Novartis,Europe,chem_pharma,alive,,1999.000,2026.865
 nvidia,Nvidia,Nvidia,New York,semis,alive,,1999.078,2026.865
-aol,America Online,AOL,New York,internet,merged,aol_time_warner,2000.018,2000.250
 china_mobile,China Mobile,China Mobile,Shanghai · Hong Kong,telecom_media,alive,,2000.083,2026.865
 mannesmann,Mannesmann,Mannesmann,Europe,telecom_media,acquired,vodafone,2000.093,2000.250
+petrochina,PetroChina,PetroChina,Shanghai · Hong Kong,oil,alive,,2000.331,2026.865
 petrobras,Petrobras,Petrobras,São Paulo,oil,alive,,2000.745,2026.865
+sinopec,Sinopec,Sinopec,Shanghai · Hong Kong,oil,alive,,2000.833,2026.865
+mizuho,Mizuho Financial Group,Mizuho Financial Group,Tokyo,finance,alive,,2001.000,2026.865
+samsung,Samsung Electronics,Samsung Electronics,Seoul,semis,alive,,2001.000,2026.865
 kraft_foods,Kraft Foods Inc.,Kraft Foods,New York,consumer,alive,,2001.495,2026.865
-sinopec,Sinopec,Sinopec,Shanghai · Hong Kong,oil,alive,,2001.667,2026.865
-aol_time_warner,AOL Time Warner,AOL Time Warner,New York,telecom_media,acquired,sbc,2002.093,2016.809
-petrochina,PetroChina,PetroChina,Shanghai · Hong Kong,oil,alive,,2005.000,2026.865
-google,Google,Alphabet (Google),New York,internet,alive,,2005.000,2026.865
+aol_time_warner,AOL Time Warner,AOL Time Warner,New York,telecom_media,acquired,sbc,2002.093,2017.497
+conocophillips,ConocoPhillips,ConocoPhillips,New York,oil,alive,,2003.000,2026.865
+tencent,Tencent Holdings,Tencent Holdings,Shanghai · Hong Kong,internet,alive,,2004.497,2026.865
+google,Google,Alphabet (Google),New York,internet,alive,,2004.667,2026.865
+china_construction_bank,China Construction Bank,China Construction Bank,Shanghai · Hong Kong,finance,alive,,2005.833,2026.865
 gazprom,Gazprom,Gazprom,Moscow,oil,alive,,2006.250,2026.865
 icbc,Industrial and Commercial Bank of China,ICBC,Shanghai · Hong Kong,finance,alive,,2006.833,2026.865
-mizuho,Mizuho Financial Group,Mizuho Financial Group,Tokyo,finance,alive,,2007.000,2026.865
-alcatel_lucent,Alcatel,Alcatel,Paris,computing,acquired,nokia,2007.000,2017.000
-samsung,Samsung Electronics,Samsung Electronics,Seoul,semis,alive,,2007.247,2026.865
-china_construction_bank,China Construction Bank,China Construction Bank,Shanghai · Hong Kong,finance,alive,,2007.742,2026.865
-tencent,Tencent Holdings,Tencent Holdings,Shanghai · Hong Kong,internet,alive,,2008.000,2026.865
+visa,Visa,Visa,New York,finance,alive,,2008.250,2026.865
 pmi,Philip Morris International,Philip Morris Intl.,New York,consumer,alive,,2008.250,2026.865
-visa,Visa,Visa,New York,finance,alive,,2008.414,2026.865
 aol_inc,AOL Inc.,AOL,New York,internet,acquired,,2009.898,2016.000
 broadcom,Broadcom,Broadcom,New York,semis,alive,,2009.914,2026.865
 tesla,Tesla,Tesla,New York,autos,alive,,2010.497,2026.865
-facebook,Facebook,Meta (Facebook),New York,internet,alive,,2012.417,2026.865
+gm_2010,General Motors Company,General Motors,New York,autos,alive,,2010.881,2026.865
+facebook,Facebook,Meta (Facebook),New York,internet,alive,,2012.381,2026.865
 alibaba,Alibaba Group,Alibaba Group,Shanghai · Hong Kong,internet,alive,,2014.747,2026.865
+dowdupont,DowDuPont Inc.,DowDuPont,New York,chem_pharma,alive,dow_inc;corteva,2017.745,2026.865
 aramco,Saudi Aramco,Aramco,Riyadh,oil,alive,,2019.945,2026.865
+dow_inc,Dow Inc.,Dow,New York,chem_pharma,alive,,2020.000,2026.865
+corteva,Corteva Inc.,Corteva,New York,chem_pharma,alive,,2020.000,2026.865
 wbd,Warner Bros. Discovery,Warner Bros. Discovery,New York,telecom_media,alive,,2022.292,2026.865
 ge_healthcare,GE HealthCare,GE HealthCare,New York,industrial,alive,,2022.997,2026.865
 ge_vernova,GE Vernova,GE Vernova,New York,industrial,alive,,2024.250,2026.865

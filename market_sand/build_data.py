@@ -52,7 +52,14 @@ SHELL_TT_MERGED = 1907.1     # Shell Transport's own values stop at the union (f
 OVERRIDE = {
     "royal_dutch_shell": {"district": "Amsterdam"},   # Dutch-majority for most of its life (London-only since 2022)
 }
-NARRATION_ONLY = {"bazacle"}    # worth less than one grain in today's dollars: a line of narration, no vessel   # id -> {field: value} where an era's record needs correcting (say why in a comment)
+NARRATION_ONLY = {"bazacle"}
+# Rows a later pass found wrong: (era folder, id, from year, to year, why). See that pass's notes.md.
+DROP = [
+    ("d_1990_2026", "tencent", 2007.0, 2012.0, "companiesmarketcap tracks the ADR with the pre-2014-split share "
+     "count, about 5x too low (f_lives_post1925/notes.md)"),
+    ("d_1990_2026", "ibj", 1999.62, 1999.65, "the 1999-08-20 $40.1bn row is the deal value of all three banks "
+     "that formed Mizuho, not IBJ alone (f_lives_post1925/notes.md)"),
+]    # worth less than one grain in today's dollars: a line of narration, no vessel   # id -> {field: value} where an era's record needs correcting (say why in a comment)
 SUFFIX = re.compile(r",?\s+(Company|Corporation|Corp\.?|Inc\.?|Incorporated|Ltd\.?|Limited|plc|PLC|S\.A\.|AG|N\.V\.|Co\.)$")
 
 
@@ -114,6 +121,8 @@ def main(report=False):
             today = money.to_today(v, r["currency"].upper(), t)
         except Exception as e:      # an unknown currency or a bad row: say so, don't guess
             skipped.append((r["id"], r["date"], r.get("currency"), str(e)))
+            continue
+        if any(r["_era"] == e and r["id"] == i and a <= t < b for e, i, a, b, _ in DROP):
             continue
         cid, fac = ALIAS.get(r["id"], (r["id"], None))
         if fac:
