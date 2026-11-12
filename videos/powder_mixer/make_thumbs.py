@@ -40,16 +40,15 @@ def main(still):
     run = lambda load, tool: F.Run(MF.run_dir(load, tool))
     score = lambda key: {ms[key]["a"]: ms[key]["ra"], ms[key]["b"]: ms[key]["rb"]}     # by tool, whichever side it stood on
 
-    # A: the 3-D still, spoon (left) against the stand mixer (right); render it with
-    #    bowl_scene.py --left cache/film/stripes_spoon --right cache/film/stripes_paddle_large
+    # A: the 3-D still, spoon (left) against the stand mixer's paddle (right); render it 16:9 with
+    #    bowl_scene.py --left cache/film/stripes_spoon --right cache/film/stripes_paddle_large --no-hud
+    #                  --still 150 --res 1920x1080 --samples 40 --elev 31 --dist 820 --target 0,20,95
     sc = score("S1")
-    im = Image.open(still).convert("RGB")
-    w, h = im.size
-    im = im.crop((int(w * 0.08), int(h * 0.13), int(w * 0.92), int(h * 0.13) + int(w * 0.84 * H / W))).resize((W, H), Image.LANCZOS)
+    im = Image.open(still).convert("RGB").resize((W, H), Image.LANCZOS)
     d = ImageDraw.Draw(im)
-    headline(d, (W // 2, 26), "SPOON vs STAND MIXER", 82, anchor="ma")
-    pill(d, (150, 606), f"{100 * sc['spoon']:.0f}% MIXED", 44, F.tool_rgb("spoon"))
-    pill(d, (W - 150, 606), f"{100 * sc['paddle_large']:.0f}% MIXED", 44, F.tool_rgb("paddle_large"), anchor="r")
+    headline(d, (W // 2, 20), "SPOON vs STAND MIXER", 82, anchor="ma")
+    pill(d, (70, 612), f"{100 * sc['spoon']:.0f}% MIXED", 44, F.tool_rgb("spoon"))
+    pill(d, (W - 70, 612), f"{100 * sc['paddle_large']:.0f}% MIXED", 44, F.tool_rgb("paddle_large"), anchor="r")
     im.save(os.path.join(out, "mix_off_thumb_A.png"))
 
     # B: eight top-down bowls five seconds in

@@ -2,7 +2,7 @@
 A vertical (1080x1920) Short from one match of the knockout: the two bowls
 stacked, each rendered on its own so it stays sharp.
 
-    python make_short.py render      # two single-bowl renders (about 40 min on 4 cores)
+    python make_short.py render      # two single-bowl renders (about 75 min on 4 cores)
     python make_short.py compose     # -> same_spoon_SHORT.mp4
 """
 import argparse
