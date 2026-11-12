@@ -34,6 +34,14 @@ KA_SCALE = 507.0   # mm per model unit.  True to the bowl would be 374; the mixe
 KA_BASE, KA_SEAT, KA_HUB = -0.422, -0.388, -0.145     # model z of: underside, bowl seat, planetary hub
 
 
+LETTER_ROUGH = {"brushed": 0.22, "chrome": 0.035}
+LETTERING = True
+
+
+def args_lettering():
+    return LETTERING
+
+
 def make_kitchenaid(tag, root, M, enamel, yaw):
     """Append the KitchenAid mixer body, standing on the belt with its bowl seat under the bowl."""
     with bpy.data.libraries.load(KA_BLEND, link=False) as (src, dst):
@@ -53,9 +61,25 @@ def make_kitchenaid(tag, root, M, enamel, yaw):
     for o in dst.objects:
         if o is not mixer:
             bpy.data.objects.remove(o)
-    for slot in mixer.material_slots:                    # the file's materials predate Cycles nodes
+    def lettered(key, base):
+        """The trim band's lettering (the model's own texture), painted on our metal."""
+        m = bpy.data.materials.get(key)
+        if m is None:
+            img = bpy.data.images.get("kitchenaid_writing1.png")
+            if img is None or not args_lettering():
+                return M[base]
+            src = M[base].node_tree.nodes["Principled BSDF"]
+            m = B.metal(key, tuple(src.inputs["Base Color"].default_value)[:3], LETTER_ROUGH[base],
+                        aniso=src.inputs["Anisotropic"].default_value, tangent="uv" if base == "brushed" else None,
+                        smudge=0.25, coords="world", scale=0.02, lettering=img)
+        return m
+
+    for slot in mixer.material_slots:                    # the file's own shaders are plain; use ours
         n = slot.material.name if slot.material else ""
-        slot.material = (enamel if "Yellow" in n else M["alu"] if "Brushed" in n else M["steel"] if "Chrome" in n
+        slot.material = (enamel if "Yellow" in n
+                         else lettered("BandLettering", "brushed") if "BrushedChrome_Writing" in n
+                         else lettered("CapLettering", "chrome") if "Chrome_Writing" in n
+                         else M["brushed"] if "Brushed" in n else M["chrome"] if "Chrome" in n
                          else M["rubber"] if "Black" in n else M["white"])
     for p in mixer.data.polygons:
         p.use_smooth = True
@@ -210,12 +234,16 @@ def make_station(tag, x0, cache_dir, M, wood, args, belt_w):
     grains.location = (0, 0, seat + tg)
     mc.play_mode = "SCENE"               # sample k is frame k + 1
     mc.frame_start = 1.0
+    if getattr(args, "embed", None):     # pack the animation into the .blend instead of pointing at the cache
+        os.makedirs(args.embed, exist_ok=True)
+        B.embed_cache(grains, mc, grains.modifiers["Grains"].node_group, os.path.join(cache_dir, "particles.pc2"),
+                      meta["n_grains"], os.path.join(args.embed, f"{tag}_{os.path.basename(cache_dir)}.png"))
 
     bare = getattr(args, "bare", False)          # tool and shaft only: nothing between camera and bowl
     M = dict(M)                                  # this station's mixer wears its contestant's colour
     paint = KITCHENAID_COLOR[meta["tool"]][1] if ka else TOOL_COLOR[meta["tool"]]
-    M["body"] = B.principled(tag + "Enamel", tuple(B.hex_lin(paint)), rough=0.2,
-                             **{"Coat Weight": 0.6, "Coat Roughness": 0.05})
+    M["body"] = B.principled(tag + "Enamel", tuple(B.hex_lin(paint)), rough=0.32,
+                             **{"Coat Weight": 1.0, "Coat Roughness": 0.035})
     M["white"] = B.principled(tag + "White", (0.85, 0.85, 0.83), rough=0.35)
     if ka:
         make_kitchenaid(tag, root, M, M["body"], math.radians(args.yaw) * (1 if x0 <= 0 else -1))
@@ -257,11 +285,11 @@ def make_station(tag, x0, cache_dir, M, wood, args, belt_w):
     mount = B.link(bpy.data.objects.new(tag + "Mount", None))
     mount.parent = rotor
     if not bare:
-        B.cylinder(tag + "Hub", 22, hc + 9, hc + 20, M["steel"], parent=rotor, bevel=1.5, segs=64)
+        B.cylinder(tag + "Hub", 22, hc + 9, hc + 20, M["turned"], parent=rotor, bevel=1.5, segs=64)
         B.box(tag + "Arm", (-10, -6.5, hc + 4.5), (reach, 6.5, hc + 9.5), M["steel"], bevel=1.2, parent=rotor)
         B.box(tag + "Carriage", (min(dus) - 9, -8.5, hc - 1), (max(dus) + 9, 8.5, hc + 4.5), M["dark"], bevel=1.2, parent=mount)
         if ka:        # drive shaft up into the mixer's planetary hub; it telescopes as the tool lifts
-            B.cylinder(tag + "Drive", 7.5, hc + 18, hc + 18 + (KA_HUB - KA_SEAT) * KA_SCALE, M["steel"], parent=rotor, segs=48)
+            B.cylinder(tag + "Drive", 7.5, hc + 18, hc + 18 + (KA_HUB - KA_SEAT) * KA_SCALE, M["turned"], parent=rotor, segs=48)
     pivots = []
     for k, part in enumerate(tool["parts"]):
         piv = B.link(bpy.data.objects.new(f"{tag}Part{k}", None))
@@ -373,6 +401,41 @@ def build(args):
     return scene
 
 
+def final_settings(scene, args):
+    """Cycles settings for the final render on a GPU: open the file, press Render Animation."""
+    cy = scene.cycles
+    cy.device = "GPU"                        # used when a GPU is enabled in Preferences > System
+    cy.samples = args.samples                # upper limit; adaptive sampling stops earlier where the picture is clean
+    cy.use_adaptive_sampling = True
+    cy.adaptive_threshold = 0.025
+    cy.adaptive_min_samples = 24
+    cy.use_denoising = True
+    for attr, val in (("denoiser", "OPENIMAGEDENOISE"), ("denoising_input_passes", "RGB_ALBEDO_NORMAL"),
+                      ("denoising_prefilter", "ACCURATE"), ("denoising_use_gpu", True)):
+        try:
+            setattr(cy, attr, val)
+        except Exception as e:
+            print("cycles setting", attr, e)
+    cy.max_bounces = 10
+    cy.diffuse_bounces = 3
+    cy.glossy_bounces = 6                    # metal seen in metal
+    cy.transmission_bounces = 8
+    cy.transparent_max_bounces = 12          # two glass bowls, front and back walls
+    cy.caustics_reflective = cy.caustics_refractive = False
+    cy.sample_clamp_indirect = 6.0
+    r = scene.render
+    r.use_persistent_data = False            # see build(): reusing data once left a tool black
+    r.filepath = args.final
+    r.image_settings.file_format = "PNG"
+    r.image_settings.color_mode = "RGB"
+    r.image_settings.color_depth = "8"
+    r.image_settings.compression = 15
+    r.use_overwrite = False                  # stop and restart freely: finished frames are kept
+    r.use_placeholder = True
+    r.use_file_extension = True
+    scene.frame_set(scene.frame_start)
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     ap = argparse.ArgumentParser()
@@ -405,16 +468,27 @@ def main():
     ap.add_argument("--bare", action="store_true",
                     help="leave out the mixer head and column: tool and shaft only, for steep camera angles")
     ap.add_argument("--grain-scale", type=float, default=0.84)
+    ap.add_argument("--no-lettering", action="store_true", help="leave the maker's name off the mixer's trim band")
+    ap.add_argument("--final", metavar="PATH",
+                    help="set the scene up for the final GPU render and store PATH (e.g. //frames/Q1/f_) as its output")
+    ap.add_argument("--embed", metavar="DIR",
+                    help="pack the grain animation into the saved .blend (data textures written to DIR), "
+                         "so the file renders without the simulation caches")
     args = ap.parse_args(argv)
     if not args.left:
         ap.error("--left is required")
     if args.dist is None:
         args.dist = 570.0 if args.right else 430.0
+    global LETTERING
+    LETTERING = not args.no_lettering
     scene = build(args)
+    if args.final:
+        final_settings(scene, args)
     if args.save:
+        bpy.ops.file.pack_all()
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.save))
         for ob in bpy.data.objects:
-            if ob.name.endswith("Grains"):
+            if ob.name.endswith("Grains") and "Cache" in ob.modifiers:
                 ob.modifiers["Cache"].filepath = bpy.path.relpath(ob.modifiers["Cache"].filepath)
         bpy.ops.wm.save_mainfile()
         print("saved", args.save)

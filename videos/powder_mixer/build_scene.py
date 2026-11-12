@@ -72,6 +72,71 @@ def principled(name, color=(0.8, 0.8, 0.8), rough=0.5, metallic=0.0, **extra):
     return m
 
 
+def metal(name, color, rough, aniso=0.0, tangent=None, smudge=0.35, coords="object", scale=0.03, lettering=None):
+    """A metal that reads as metal: roughness that varies a little across the surface (handling
+    marks), optional brushing (anisotropic highlights along `tangent`: "uv", "radial_z" ...), and
+    optionally black painted lettering from an image's alpha channel."""
+    m = principled(name, color, rough=rough, metallic=1.0)
+    nt = m.node_tree
+    b = nt.nodes["Principled BSDF"]
+    L = nt.links.new
+    if coords == "world":                       # static parts: millimetres in the scene
+        vec = nt.nodes.new("ShaderNodeNewGeometry").outputs["Position"]
+    else:                                       # moving parts: the pattern must travel with them
+        vec = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = 5.0
+    noise.inputs["Roughness"].default_value = 0.6
+    L(vec, noise.inputs["Vector"])
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["From Min"].default_value = 0.3
+    mr.inputs["From Max"].default_value = 0.7
+    mr.inputs["To Min"].default_value = rough * (1 - smudge)
+    mr.inputs["To Max"].default_value = rough * (1 + smudge)
+    L(noise.outputs["Fac"], mr.inputs["Value"])
+    rough_out = mr.outputs["Result"]
+    if aniso:
+        b.inputs["Anisotropic"].default_value = aniso
+        if tangent:
+            tn = nt.nodes.new("ShaderNodeTangent")
+            if tangent == "uv":
+                tn.direction_type = "UV_MAP"
+            else:
+                tn.direction_type = "RADIAL"
+                tn.axis = tangent[-1].upper()
+            L(tn.outputs["Tangent"], b.inputs["Tangent"])
+    if lettering is not None:
+        tex = nt.nodes.new("ShaderNodeTexImage")
+        tex.image = lettering
+        on = nt.nodes.new("ShaderNodeValue")            # 1 = lettering painted on, 0 = plain metal
+        on.name = on.label = "Lettering"
+        on.outputs[0].default_value = 1.0
+        fac = nt.nodes.new("ShaderNodeMath")
+        fac.operation = "MULTIPLY"
+        L(tex.outputs["Alpha"], fac.inputs[0])
+        L(on.outputs[0], fac.inputs[1])
+        col = nt.nodes.new("ShaderNodeMix")
+        col.data_type = "RGBA"
+        col.inputs["A"].default_value = (*color, 1)
+        col.inputs["B"].default_value = (0.012, 0.012, 0.014, 1)
+        L(fac.outputs[0], col.inputs["Factor"])
+        L(col.outputs["Result"], b.inputs["Base Color"])
+        met = nt.nodes.new("ShaderNodeMath")
+        met.operation = "SUBTRACT"
+        met.inputs[0].default_value = 1.0
+        L(fac.outputs[0], met.inputs[1])
+        L(met.outputs[0], b.inputs["Metallic"])
+        rm = nt.nodes.new("ShaderNodeMix")
+        rm.data_type = "FLOAT"
+        rm.inputs["B"].default_value = 0.45
+        L(fac.outputs[0], rm.inputs["Factor"])
+        L(rough_out, rm.inputs["A"])
+        rough_out = rm.outputs["Result"]
+    L(rough_out, b.inputs["Roughness"])
+    return m
+
+
 def emission(name, color=(1, 1, 1), strength=1.0):
     m = bpy.data.materials.new(name)
     m.use_nodes = True
@@ -167,6 +232,83 @@ def keys(target, path, values, frames, index=-1):
 # ---------------------------------------------------------------------------
 # scene pieces
 # ---------------------------------------------------------------------------
+def write_png16(path, q):
+    """Write a (rows, cols, 3) uint16 array as a 16-bit RGB PNG.  Each row is stored as its
+    difference from the row above, so a row per frame compresses to what moved."""
+    import struct
+    import zlib
+    rows = np.ascontiguousarray(q.astype(">u2")).reshape(q.shape[0], -1).view(np.uint8)
+    up = rows.copy()
+    up[1:] = rows[1:] - rows[:-1]
+    body = b"".join(b"\x02" + up[i].tobytes() for i in range(len(up)))
+
+    def chunk(kind, data):
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
+
+    with open(path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", q.shape[1], q.shape[0], 16, 2, 0, 0, 0))
+                + chunk(b"IDAT", zlib.compress(body, 9)) + chunk(b"IEND", b""))
+
+
+EMBED_BITS = 13      # position steps of about 0.013 mm across a 110 mm bowl
+
+
+def embed_cache(ob, mc, gn, pc2, N, png_path):
+    """Replace the external point cache with a data texture packed into the .blend:
+    one row per frame, one pixel per grain, RGB = position.  The file then needs nothing else."""
+    raw = np.fromfile(pc2, dtype="<f4", offset=32).reshape(-1, N, 3)
+    F = raw.shape[0]
+    lo, hi = raw.min((0, 1)), raw.max((0, 1))
+    top = 2 ** EMBED_BITS - 1
+    q = np.round((raw - lo) / (hi - lo) * top).astype(np.uint16) << (16 - EMBED_BITS)
+    write_png16(png_path, q)
+    img = bpy.data.images.load(png_path)
+    img.colorspace_settings.name = "Non-Color"
+    img.pack()
+    ob.modifiers.remove(mc)
+
+    N_, L = gn.nodes, gn.links.new
+    gin = next(n for n in N_ if n.bl_idname == "NodeGroupInput")
+    iop = next(n for n in N_ if n.bl_idname == "GeometryNodeInstanceOnPoints")
+
+    def math_(op, a, b=None, c=None):
+        n = N_.new("ShaderNodeMath")
+        n.operation = op
+        for k, v in enumerate((a, b, c)):
+            if v is None:
+                continue
+            if isinstance(v, (int, float)):
+                n.inputs[k].default_value = v
+            else:
+                L(v, n.inputs[k])
+        return n.outputs[0]
+
+    time = N_.new("GeometryNodeInputSceneTime")
+    row = math_("MINIMUM", math_("MAXIMUM", math_("SUBTRACT", math_("FLOOR", time.outputs["Frame"]), 1.0), 0.0), float(F - 1))
+    v = math_("SUBTRACT", 1.0, math_("DIVIDE", math_("ADD", row, 0.5), float(F)))      # row 0 is the top of the image
+    idx = N_.new("GeometryNodeInputIndex")
+    u = math_("DIVIDE", math_("ADD", idx.outputs[0], 0.5), float(N))
+    uv = N_.new("ShaderNodeCombineXYZ")
+    L(u, uv.inputs[0]); L(v, uv.inputs[1])
+    tex = N_.new("GeometryNodeImageTexture")
+    tex.interpolation = "Closest"
+    tex.extension = "EXTEND"
+    tex.inputs["Image"].default_value = img
+    L(uv.outputs[0], tex.inputs["Vector"])
+    scale = (hi - lo) * 65535.0 / (top << (16 - EMBED_BITS))
+    mul = N_.new("ShaderNodeVectorMath"); mul.operation = "MULTIPLY"
+    mul.inputs[1].default_value = tuple(float(x) for x in scale)
+    add = N_.new("ShaderNodeVectorMath"); add.operation = "ADD"
+    add.inputs[1].default_value = tuple(float(x) for x in lo)
+    L(tex.outputs["Color"], mul.inputs[0])
+    L(mul.outputs[0], add.inputs[0])
+    setp = N_.new("GeometryNodeSetPosition")
+    L(gin.outputs[0], setp.inputs["Geometry"])
+    L(add.outputs[0], setp.inputs["Position"])
+    L(setp.outputs["Geometry"], iop.inputs["Points"])
+    return img
+
+
 def build_grains(cache_dir, meta, z, tray, n_ing, grain_scale):
     N, d = meta["n_grains"], meta["grain"]
     pc2 = os.path.join(cache_dir, "particles.pc2")
@@ -509,8 +651,12 @@ def make_materials(args):
         nt.links.new(gl.outputs["BSDF"], mix.inputs[2])
     nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
-    m_steel = principled("Steel", (0.82, 0.83, 0.85), rough=0.16, metallic=1.0)
-    m_alu = principled("Aluminium", (0.74, 0.76, 0.78), rough=0.34, metallic=1.0)
+    m_steel = metal("Steel", (0.86, 0.87, 0.89), rough=0.11)                     # polished stainless: tools, arm
+    m_alu = metal("Aluminium", (0.80, 0.81, 0.83), rough=0.30, smudge=0.2)       # satin: conveyor rails
+    m_chrome = metal("Chrome", (0.93, 0.94, 0.95), rough=0.035, smudge=0.6, coords="world", scale=0.02)
+    m_brushed = metal("BrushedSteel", (0.80, 0.81, 0.83), rough=0.22, aniso=0.75, tangent="uv",
+                      smudge=0.25, coords="world", scale=0.02)
+    m_turned = metal("TurnedSteel", (0.84, 0.85, 0.87), rough=0.17, aniso=0.7, tangent="radial_z", smudge=0.25)
     m_body = principled("MixerEnamel", tuple(hex_lin("#C8E6DC")), rough=0.18,
                         **{"Coat Weight": 0.6, "Coat Roughness": 0.05})
     m_dark = principled("DarkPaint", (0.035, 0.038, 0.045), rough=0.45)
@@ -564,8 +710,8 @@ def make_materials(args):
     nt.links.new(groove.outputs[0], bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
 
-    return dict(glass=m_glass, steel=m_steel, alu=m_alu, body=m_body, dark=m_dark, rubber=m_rubber,
-                floor=m_floor, belt=m_belt, scroll=scroll)
+    return dict(glass=m_glass, steel=m_steel, alu=m_alu, chrome=m_chrome, brushed=m_brushed, turned=m_turned,
+                body=m_body, dark=m_dark, rubber=m_rubber, floor=m_floor, belt=m_belt, scroll=scroll)
 
 
 def build_conveyor(M, belt_w=112.0):
@@ -621,6 +767,28 @@ def setup_lights(scene):
     bg = wn.nodes["Background"]
     bg.inputs["Color"].default_value = (0.75, 0.8, 0.9, 1)
     bg.inputs["Strength"].default_value = 0.35
+    # Polished metal shows its surroundings, so reflections get a studio rather than a flat
+    # sky: dark below and behind, brighter overhead.  Lighting and the camera's view keep the flat one.
+    out = wn.nodes["World Output"]
+    tc = wn.nodes.new("ShaderNodeTexCoord")
+    sep = wn.nodes.new("ShaderNodeSeparateXYZ")
+    wn.links.new(tc.outputs["Generated"], sep.inputs[0])
+    ramp = wn.nodes.new("ShaderNodeMapRange")
+    ramp.interpolation_type = "SMOOTHSTEP"
+    ramp.inputs["From Min"].default_value = -0.15
+    ramp.inputs["From Max"].default_value = 0.75
+    ramp.inputs["To Min"].default_value = 0.03
+    ramp.inputs["To Max"].default_value = 0.34
+    wn.links.new(sep.outputs["Z"], ramp.inputs["Value"])
+    studio = wn.nodes.new("ShaderNodeBackground")
+    studio.inputs["Color"].default_value = (0.85, 0.9, 1.0, 1)
+    wn.links.new(ramp.outputs["Result"], studio.inputs["Strength"])
+    lp = wn.nodes.new("ShaderNodeLightPath")
+    mix = wn.nodes.new("ShaderNodeMixShader")
+    wn.links.new(lp.outputs["Is Glossy Ray"], mix.inputs["Fac"])
+    wn.links.new(bg.outputs["Background"], mix.inputs[1])
+    wn.links.new(studio.outputs["Background"], mix.inputs[2])
+    wn.links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
     def softbox(name, loc, size, strength, color=(1, 1, 1)):
         me = bpy.data.meshes.new(name)
@@ -636,6 +804,13 @@ def setup_lights(scene):
     softbox("KeyLight", (-380, -420, 620), (520, 380), 14.0, (1.0, 0.96, 0.9))
     softbox("FillLight", (520, -260, 380), (420, 420), 4.0, (0.86, 0.92, 1.0))
     softbox("RimLight", (140, 620, 420), (600, 240), 9.0, (1.0, 1.0, 1.0))
+    # reflection cards: seen only in glossy surfaces, where they draw the long clean
+    # highlights that make chrome and enamel look like chrome and enamel
+    for name, loc, size, strength in (("CardLeft", (-760, -560, 260), (260, 900), 2.0),
+                                      ("CardRight", (760, -560, 260), (260, 900), 1.5),
+                                      ("CardTop", (0, -520, 760), (1500, 120), 3.5)):
+        card = softbox(name, loc, size, strength)
+        card.visible_diffuse = card.visible_shadow = card.visible_transmission = False
 
 
 def load_font():

@@ -175,9 +175,72 @@ def stage_render(args):
     print("render complete", flush=True)
 
 
+def stage_blends(args):
+    """One self-contained .blend per shot, ready for the final render: the grain animation is
+    packed inside, Cycles is set up for a GPU, and the frames go where the master file expects."""
+    out = args.plates_dir
+    os.makedirs(out, exist_ok=True)
+    tmp = os.path.join(out, "_embed")
+    cmd0, _ = blender_cmd(args)
+    w = int(round(1280 * args.scale))
+    size = dict(res=f"{w}x{int(round(560 * args.scale))}", sat_res=f"{w}x{int(round(720 * args.scale))}")
+    for key, left, right, extra, res in render_jobs():
+        dst = os.path.join(out, f"shot_{key}.blend")
+        if os.path.exists(dst):
+            continue
+        print("building", dst, flush=True)
+        cmd = cmd0 + ["--left", left, "--right", right, "--no-hud", "--res", size[res], "--samples", str(args.samples),
+                      "--embed", tmp, "--final", f"//frames/{key}/f_", "--save", dst] + extra
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+    import shutil
+    shutil.rmtree(tmp, ignore_errors=True)
+    for f in os.listdir(out):
+        if f.endswith(".blend1"):
+            os.remove(os.path.join(out, f))
+    print("shot files written to", out)
+
+
+def stage_plates(args):
+    """Everything in the film except the rendered pictures, as two ordinary videos that
+    Blender's sequencer lays over the frames:  final = picture x MULTIPLY + ADD.
+
+    The film is composed twice, once over black and once over white pictures.  Over black
+    gives the overlay itself (ADD); white minus black is how much picture shows through
+    (MULTIPLY).  Together they are an exact alpha overlay without needing an alpha channel."""
+    out = args.plates_dir
+    os.makedirs(out, exist_ok=True)
+    tmp = os.path.join(out, "_tmp")
+    os.makedirs(tmp, exist_ok=True)
+    procs = [subprocess.Popen([sys.executable, os.path.abspath(__file__), "compose", "--frames", args.frames, "--scale", str(args.scale),
+                               "--plate", c, "--out", os.path.join(tmp, c + ".mkv")]) for c in ("black", "white")]
+    if any(p.wait() for p in procs):
+        raise SystemExit("composing the plates failed")
+    enc = ["-c:v", "libx264", "-crf", "14", "-preset", "slow", "-colorspace", "bt709", "-color_primaries", "bt709",
+           "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart"]
+    to_yuv = "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p"
+    black, white = os.path.join(tmp, "black.mkv"), os.path.join(tmp, "white.mkv")
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", black, "-vf", to_yuv] + enc + [os.path.join(out, "overlay_add.mp4")],
+                   check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", white, "-i", black, "-filter_complex",
+                    f"[0:v]format=gbrp[w];[1:v]format=gbrp[k];[w][k]blend=all_mode=subtract,{to_yuv}"] + enc
+                   + [os.path.join(out, "overlay_multiply.mp4")], check=True)
+    for name in ("timeline", "pics"):
+        os.replace(os.path.join(tmp, f"black_{name}.json"), os.path.join(out, f"film_{name}.json"))
+    wav = os.path.join(tmp, "score.wav")
+    subprocess.run([sys.executable, os.path.join(HERE, "film_score.py"), os.path.join(out, "film_timeline.json"), wav], check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000",
+                    "-c:a", "flac", os.path.join(out, "score.flac")], check=True)
+    import shutil
+    shutil.rmtree(tmp)
+    print("wrote overlay_add.mp4, overlay_multiply.mp4, score.flac, film_pics.json, film_timeline.json to", out)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("stage", choices=("sims", "render", "compose", "finish", "bracket"))
+    ap.add_argument("stage", choices=("sims", "render", "compose", "finish", "bracket", "plates", "blends"))
+    ap.add_argument("--plate", choices=("black", "white"), help=argparse.SUPPRESS)       # used by the plates stage
+    ap.add_argument("--plates-dir", default=os.path.join(HERE, "blender"),
+                    help="where the plates stage writes the overlay videos, score and frame map")
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--frames", default=os.path.join(HERE, "renders", "film"))
     ap.add_argument("--res", default="960x420", help="render size of the matches (picture area is 16:7)")
@@ -206,11 +269,17 @@ def main():
                         "-preset", "slow", "-pix_fmt", "yuv420p", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000",
                         "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", args.final], check=True)
         print("wrote", args.final, f"{os.path.getsize(args.final) / 1e6:.0f} MB")
+    elif args.stage == "plates":
+        stage_plates(args)
+    elif args.stage == "blends":
+        stage_blends(args)
     elif args.stage == "bracket":
         for m in bracket():
             print(m)
     else:
         import film_compose
+        if args.plate:
+            args.plate = (0, 0, 0) if args.plate == "black" else (255, 255, 255)
         film_compose.compose(args, bracket())
 
 

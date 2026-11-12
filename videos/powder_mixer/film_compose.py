@@ -225,8 +225,20 @@ def count_word(run, i):
     return f"{k} {unit}"
 
 
+PLATE = None        # None: real pictures.  (r, g, b): a flat colour instead, for the overlay plates.
+
+
+def full_picture(path):
+    """A full-frame rendered shot (the closing section)."""
+    if PLATE is not None:
+        return Image.new("RGB", (spx(W), spx(H)), PLATE)
+    return Image.open(path).convert("RGB").resize((spx(W), spx(H)), Image.LANCZOS)
+
+
 def picture(path):
     """Load a rendered frame and fit it to the picture area (centre crop)."""
+    if PLATE is not None:
+        return Image.new("RGB", (spx(W), spx(PIC_H)), PLATE)
     im = Image.open(path).convert("RGB")
     w, h = im.size
     th = int(round(w * PIC_H / W))
@@ -242,6 +254,7 @@ def match_frame(m, a, b, i, frames_dir, winner=None, badge=0.0):
     k = min(i, n - 1)
     canvas = new_canvas()
     canvas.paste(picture(os.path.join(frames_dir, f"f_{k + 1:04d}.png")), (0, 0))
+    canvas.info["pic"] = (m["key"], k + 1)          # which rendered frame is under this one
     d = Draw(canvas)
     d.line((0, PIC_H, W, PIC_H), fill=HAIR, width=1)
     # header pill on the picture
@@ -382,11 +395,16 @@ def compose(args, matches):
     ref = runs[("wedges", "spoon")]
 
     # frames are streamed straight into ffmpeg; only the last one is kept (for cross-fades)
+    global PLATE
+    PLATE = getattr(args, "plate", None)
+    codec = (["-c:v", "libx264rgb", "-qp", "0", "-preset", "ultrafast"] if PLATE is not None       # lossless, for the plates
+             else ["-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart"])
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{spx(W)}x{spx(H)}", "-r", str(FPS),
-           "-i", "-", "-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", args.out]
+           "-i", "-"] + codec + [args.out]
     enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     state = dict(n=0, last=None)
     timeline = []       # [segment name, start second, length in seconds]
+    pics = []           # per output frame: (shot, frame number) of the rendered picture under it, or None
 
     def emit(im, repeat=1):
         raw = im.tobytes()
@@ -394,11 +412,29 @@ def compose(args, matches):
             enc.stdin.write(raw)
         state["n"] += repeat
         state["last"] = im
+        pics.extend([im.info.get("pic")] * repeat)
+
+    def fade(a, b, k, pic):
+        im = Image.blend(a, b, k)
+        if pic:
+            im.info["pic"] = pic
+        return im
 
     def begin(name, first):
-        if state["last"] is not None:
-            for k in range(10):
-                emit(Image.blend(state["last"], first, (k + 1) / 11))
+        last = state["last"]
+        if last is not None:
+            pa, pb = last.info.get("pic"), first.info.get("pic")
+            if pa and pb:
+                # picture to picture: dip through the paper colour, so that no frame ever
+                # holds two rendered pictures (the Blender master lays one under each frame)
+                paper = new_canvas()
+                for k in range(5):
+                    emit(fade(last, paper, (k + 1) / 5, pa))
+                for k in range(5):
+                    emit(fade(paper, first, (k + 1) / 6, pb))
+            else:
+                for k in range(10):
+                    emit(fade(last, first, (k + 1) / 11, pa or pb))
         timeline.append([name, round(state["n"] / FPS, 2), 0.0])
 
     def end():
@@ -420,6 +456,7 @@ def compose(args, matches):
         def teaser(i):
             im = new_canvas()
             im.paste(picture(os.path.join(tdir, f"f_{i + 1:04d}.png")), (0, 0))
+            im.info["pic"] = (tm["key"], i + 1)
             d = Draw(im)
             d.line((0, PIC_H, W, PIC_H), fill=HAIR, width=1)
             text(d, (W // 2, PIC_H + 58), "What is the best way to mix dry ingredients?", font(44, "Bold", True), INK, "mm")
@@ -508,7 +545,8 @@ def compose(args, matches):
             labels = [f"{ART[art][0]}  \u00b7  {tool_name(tool)}" for art, tool in (left, right)]
 
             def shot(i):
-                im = Image.open(os.path.join(fdir, f"f_{i + 1:04d}.png")).convert("RGB").resize((spx(W), spx(H)), Image.LANCZOS)
+                im = full_picture(os.path.join(fdir, f"f_{i + 1:04d}.png"))
+                im.info["pic"] = (key, i + 1)
                 d = Draw(im)
                 for side, lab in enumerate(labels):
                     lw = d.textlength(lab, font=font(17, "SemiBold"))
@@ -530,6 +568,7 @@ def compose(args, matches):
                           footer="Not sponsored by or affiliated with KitchenAid or YouTube."), 3.0)
     enc.stdin.close()
     enc.wait()
+    json.dump(pics, open(os.path.splitext(args.out)[0] + "_pics.json", "w"))
     json.dump(dict(fps=FPS, seconds=round(state["n"] / FPS, 2), segments=timeline,
                    matches=[{k: m[k] for k in ("key", "name", "load", "a", "b", "ra", "rb", "winner")} for m in matches]),
               open(os.path.splitext(args.out)[0] + "_timeline.json", "w"), indent=1)
