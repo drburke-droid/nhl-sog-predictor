@@ -10,7 +10,7 @@ import os
 import subprocess
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 from tools import TOOL_COLOR, TOOLS, fork_visual, mix_curve, shape_geometry
 
@@ -151,6 +151,8 @@ class Run:
         self.pos = np.memmap(os.path.join(d, "particles.pc2"), dtype="<f4", mode="r", offset=32).reshape(self.n, self.N, 3)
         self.R, self.d = self.meta["bowl"]["R"], self.meta["grain"]
         self.label, self.unit = self.meta["label"], self.meta["unit"]
+        if self.meta.get("tool") in TOOLS:                 # the current name, not the one stored with the run
+            self.label = TOOLS[self.meta["tool"]]["label"]
 
     def disc(self, i, size):
         """Top-down picture of the bowl at frame i, as an RGBA disc."""
@@ -354,6 +356,43 @@ def champion_card(m, runs):
     return im
 
 
+SAMPLE_CELL = 7.5        # mm: the scoop size bowl_sim.mix_index measures with
+
+
+def scoring_frame(ref, i, scoops):
+    """How "% mixed" is measured, shown on a bowl that is mixing: the top-down view under the
+    grid of scoops the score is counted in, with the score itself running alongside."""
+    im = new_canvas()
+    d = Draw(im)
+    size, x0, y0 = 430, 120, 145
+    disc = ref.disc(i, size)
+    # the sampling grid, clipped to the bowl
+    grid = Image.new("RGBA", disc.size, (0, 0, 0, 0))
+    g = ImageDraw.Draw(grid)
+    px = disc.size[0] / (2 * ref.R)
+    k = SAMPLE_CELL
+    while k < 2 * ref.R:
+        v = int(round(k * px))
+        g.line((v, 0, v, disc.size[1]), fill=(20, 23, 28, 190), width=max(1, spx(1.3)))
+        g.line((0, v, disc.size[0], v), fill=(20, 23, 28, 190), width=max(1, spx(1.3)))
+        k += SAMPLE_CELL
+    grid.putalpha(ImageChops.multiply(grid.getchannel("A"), disc.getchannel("A")))
+    disc = Image.alpha_composite(disc, grid)
+    paste_disc(im, disc, x0, y0)
+    tx = 640
+    text(d, (tx, 168), "How mixed is it?", font(46, "Bold", True), INK, "la")
+    text(d, (tx, 246), f"All {ref.N:,} grains are tracked in 3-D.", font(23, "Medium"), MUTED, "la")
+    text(d, (tx, 284), f"Cut the bowl into {scoops} scoops.", font(23, "Medium"), MUTED, "la")
+    text(d, (tx, 322), "Count the six colours in each.", font(23, "Medium"), MUTED, "la")
+    pct = f"{100 * ref.mix[i]:.0f}%"
+    text(d, (tx, 462), pct, font(112, "Bold", True), INK, "ls")
+    text(d, (tx + d.textlength(pct, font(112, "Bold", True)) + 16, 462), "mixed", font(30, "SemiBold"), MUTED, "ls")
+    d.rounded_rectangle((tx, 486, tx + 470, 498), 6, fill=TRACK)
+    d.rounded_rectangle((tx, 486, tx + max(470 * float(ref.mix[i]), 12), 498), 6, fill=tool_rgb(ref.meta["tool"]))
+    text(d, (tx, 524), "0%: as loaded.   100%: every scoop looks like a perfect shuffle.", font(19, "Medium"), INK, "la")
+    return im
+
+
 def contestants_card():
     im = new_canvas()
     d = Draw(im)
@@ -460,22 +499,28 @@ def compose(args, matches):
             d = Draw(im)
             d.line((0, PIC_H, W, PIC_H), fill=HAIR, width=1)
             text(d, (W // 2, PIC_H + 58), "What is the best way to mix dry ingredients?", font(44, "Bold", True), INK, "mm")
-            text(d, (W // 2, PIC_H + 116), "We simulated eight of them, grain by grain.", font(22, "Medium"), MUTED, "mm")
+            text(d, (W // 2, PIC_H + 116), "The Mix-Off: eight ways, simulated grain by grain. Fifteen seconds each.",
+                 font(22, "Medium"), MUTED, "mm")
             return im
         begin("cold_open", teaser(have[0]))
         for i in have:
             emit(teaser(i))
         end()
-    still("title", card([("THE MIX-OFF", 92, "Black", INK, 22),
-                         ("Eight ways to mix dry ingredients. One bowl. Fifteen seconds each.", 26, "Medium", MUTED, 0)],
-                        footer=f"A grain-by-grain physics simulation: {ref.N:,} grains per bowl"), 3.5)
-    i50 = int(np.argmax(ref.mix >= 0.5))
-    still("scoring", card([("How it is scored", 40, "Bold", INK, 16),
-                           ("Cut the bowl into small scoops and count the colours in each.", 22, "Medium", MUTED, 8),
-                           ("100% means every scoop looks like a perfect shuffle.", 22, "Medium", MUTED, 0)],
-                          discs=[(ref.disc(0, 170), "0% mixed"), (ref.disc(i50, 170), "50%"),
-                                 (ref.disc(ref.n - 1, 170), f"{100 * ref.mix[-1]:.0f}%")]), 5.0)
-    still("contestants", contestants_card(), 5.5)
+    if not have:                                  # no footage to open on: fall back to a plain title
+        still("title", card([("THE MIX-OFF", 92, "Black", INK, 22),
+                             ("Eight ways to mix dry ingredients. One bowl. Fifteen seconds each.", 26, "Medium", MUTED, 0)]), 2.5)
+    # how it is scored, on a bowl that is mixing: the whole run in four and a half seconds, then a beat
+    p0 = np.asarray(ref.pos[0])
+    nc = int(np.ceil(2 * ref.R / SAMPLE_CELL))
+    cells = np.bincount(np.clip(((p0[:, 0] + ref.R) / SAMPLE_CELL).astype(int), 0, nc - 1) * nc
+                        + np.clip(((p0[:, 1] + ref.R) / SAMPLE_CELL).astype(int), 0, nc - 1), minlength=nc * nc)
+    scoops = int((cells > 0.35 * cells.max()).sum())            # same rule as bowl_sim.mix_index
+    n_score, n_run = int(5.0 * FPS), int(4.5 * FPS)
+    begin("scoring", scoring_frame(ref, 0, scoops))
+    for j in range(n_score):
+        emit(scoring_frame(ref, min(int(round(j / (n_run - 1) * (ref.n - 1))), ref.n - 1), scoops))
+    end()
+    still("contestants", contestants_card(), 5.0)
 
     # ---- matches ------------------------------------------------------------
     last_round = None
@@ -484,7 +529,7 @@ def compose(args, matches):
         if m["round"] != last_round:
             h1, h2, h3 = ROUND_TEXT[m["load"]]
             still("round_" + m["load"], card([(h1, 64, "Black", INK, 18), (h2, 30, "SemiBold", INK, 12),
-                                              (h3, 22, "Medium", MUTED, 0)], discs=[(a.disc(0, 170), "")]), 3.5)
+                                              (h3, 22, "Medium", MUTED, 0)], discs=[(a.disc(0, 170), "")]), 3.0)
             last_round = m["round"]
         fdir = os.path.join(args.frames, m["key"], "frames")
         n = min(a.n, b.n)

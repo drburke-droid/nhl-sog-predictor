@@ -31,7 +31,7 @@ the percentage is measured from the simulated grains.
 | `make_lettering.py` | Writes the generic "Kitchen Inc" lettering for the mixer's trim band. |
 | `blender/` | Render-ready 4K project: nine shot files, the master file, overlay videos and music. Start with `blender/README.md`. |
 | `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
-| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:54, 1280x720). |
+| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:48, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |
@@ -442,7 +442,10 @@ What is and is not final about the preview:
 - The score is synthesized in `film_score.py` (marimba-like pattern, pad, a bell
   per result) and levelled to about -16 LUFS. It has been checked for level and
   clipping only; nobody has listened to it.
-- The cold open borrows four seconds of semi-final 1.
+- The cold open borrows four seconds of semi-final 1 and carries the title; there is no
+  separate title card. Next comes five seconds on how "% mixed" is measured, shown on a bowl
+  that is mixing (top-down view under the grid of 165 scoops, score running alongside), then
+  the contestants. The first match starts at 0:19.
 - The preview is encoded with `--crf 23` (68 MB); GitHub refuses files over
   100 MB, so check the size before committing a longer or sharper cut.
 

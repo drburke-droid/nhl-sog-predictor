@@ -208,7 +208,7 @@ TOOLS = {
         parts=[dict(shape="whisk", p=dict(Rw=24.0, H=52.0, loops=6), du=0.0, spin=-2.4, phase=0.0)],
         orbit=0.8, e="fit", spiral=None),
     "whisk": dict(
-        label="Whisk, by hand", unit="strokes",
+        label="Whisk", unit="strokes",
         parts=[dict(shape="whisk", p=dict(Rw=14.0, H=48.0, loops=5), du=0.0, spin=0.0, phase=0.0)],
         orbit=1.5, e="fit", spiral=(8.0, 3.3)),
     "fork": dict(
