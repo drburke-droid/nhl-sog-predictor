@@ -1,6 +1,6 @@
 # Era B, 1825-1925: notes
 
-Files: `companies.csv` (58 companies), `values.csv` (292 rows), `events.csv` (22), `top10.csv` (131 rows, 21 year-ends).
+Files: `companies.csv` (58 companies), `values.csv` (297 rows), `events.csv` (22), `top10.csv` (131 rows, 21 year-ends).
 All values are NOMINAL millions in the currency the source quotes. No inflation or FX conversion has been applied, except where noted for London quotations of dollar shares (see Conventions). `top10.csv` ranks companies with rough FX: GBP 1 = USD 4.8665 (USD 3.49 for 1920), and 25.22 fr per GBP. The value and currency columns stay native.
 
 ## Method
@@ -10,7 +10,7 @@ All values are NOMINAL millions in the currency the source quotes. No inflation 
 2. **Main primary source, 1869-1925: the Investor's Monthly Manual (IMM).** These are scans of the December issues held by the Yale ICF (https://depot.som.yale.edu/imm/).
    - The Yale data-download database is broken: its search returns HTTP 500. I downloaded the scanned PDFs instead, OCR'd them with tesseract to find the rows, and read every number used from the page image.
    - Each December issue lists, for each security: nominal capital, the month's open, high, low and latest prices, and the year's high and low. A second table gives high and low for the previous 3-4 years plus the previous December's closing price. "Latest" is used as the year-end price.
-   - Years read: 1869, 1873, 1880 (with 1879 closes), 1890, 1900, 1907, 1912, 1913, 1920 and 1925.
+   - Years read: 1869, 1873, 1880 (with 1879 closes), 1885 (partial), 1890, 1900, 1907, 1912, 1913, 1920 and 1925.
 3. **London quotations of foreign shares.**
    - French railways and Suez: the IMM gives capital as GBP nominal at 25 fr = GBP 1. Shares of 500 fr = GBP 20; Nord shares of 400 fr = GBP 16. Prices are in GBP per share, so those values are GBP.
    - American and Canadian shares were quoted in London in "dollars" at the conventional rate of USD 5 = GBP 1, which is about 2.7% above New York parity. I convert them to New York equivalents with these factors:
@@ -105,8 +105,8 @@ All values are NOMINAL millions in the currency the source quotes. No inflation 
    - GFD dates some steps of the break-up to Sep 1912. In fact the Supreme Court decision was 15 May 1911 and the subsidiaries' shares were distributed from 1 Dec 1911. "Ex-subsidiary" trading began in Sep 1911.
    - GFD's statement that Standard Oil became the first $1bn company in 1913 "before the U.S. government split it up" is inconsistent with its own dates. I use its Aug 1912 figure of 1,100 x 983,383 = $1.08bn for the whole group.
 6. **Annual coverage.** Values are dense for the Bank of England (annual 1825-46 and 1878-80, decade points otherwise) and for the Second BUS (1825-35).
-   - For most other companies the coverage is the IMM benchmark years only (1869, 1873, 1879/80, 1890, 1900, 1907, 1912, 1913, 1920, 1925).
-   - The IMM second tables could fill every year cheaply: each December issue gives 3-4 earlier years' highs and lows plus the previous year's close. The issues for 1885, 1895, 1905, 1910, 1916 and 1921 are already downloaded and OCR'd in the scratchpad (b_1825_1925_downloads/imm).
+   - For most other companies the coverage is the IMM benchmark years only (1869, 1873, 1879/80, 1885, 1890, 1900, 1907, 1912, 1913, 1920, 1925).
+   - The IMM second tables could fill every year cheaply: each December issue gives 3-4 earlier years' highs and lows plus the previous year's close. The issues for 1885, 1907 and 1925 (second tables), plus 1895, 1905, 1910, 1916 and 1921 once their download and OCR finish, are in the scratchpad (b_1825_1925_downloads/imm).
    - Thin spots: 1893 (no reading), 1901 (only Standard Oil and the US Steel formation), 1921 (none).
 7. **Uncertain readings:**
    - Royal Dutch share count in the London list (2,138,180 shares of fl 100, unchanged 1920-25): suspicious.
