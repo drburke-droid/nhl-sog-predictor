@@ -1,0 +1,220 @@
+year,rank,id,value,currency,source
+1372,1,bazacle,0.00053152,XAG_KG,values.csv bazacle 1372 (point); ~GBP0.005m for ranking (FX in notes.md)
+1400,1,bazacle,0.000215616,XAG_KG,values.csv bazacle 1400 (year_end); ~GBP0.002m for ranking (FX in notes.md)
+1450,1,bazacle,0.000119808,XAG_KG,values.csv bazacle 1450 (year_end); ~GBP0.001m for ranking (FX in notes.md)
+1550,1,bazacle,0.0019525,XAG_KG,values.csv bazacle 1549 (year_end); ~GBP0.018m for ranking (FX in notes.md); nearest year used: 1549
+1600,1,bazacle,0.001048,XAG_KG,values.csv bazacle 1601 (year_end); ~GBP0.009m for ranking (FX in notes.md); nearest year used: 1601
+1602,1,voc,6.61733,NLG,values.csv voc 1602-12 (year_end); ~GBP0.630m for ranking (FX in notes.md)
+1602,2,eic,0.068373,GBP,values.csv eic 1601-02 (point); ~GBP0.068m for ranking (FX in notes.md); nearest year used: 1601
+1602,3,bazacle,0.0003213,XAG_KG,values.csv bazacle 1602 (year_end); ~GBP0.003m for ranking (FX in notes.md)
+1610,1,voc,8.03073,NLG,values.csv voc 1610 (annual_avg); ~GBP0.765m for ranking (FX in notes.md)
+1610,2,eic,0.147363,GBP,values.csv eic 1610 (point); ~GBP0.147m for ranking (FX in notes.md)
+1610,3,bazacle,0.0019338,XAG_KG,values.csv bazacle 1609 (year_end); ~GBP0.017m for ranking (FX in notes.md); nearest year used: 1609
+1615,1,voc,12.8492,NLG,values.csv voc 1614 (annual_avg); ~GBP1.224m for ranking (FX in notes.md); nearest year used: 1614
+1615,2,eic,0.598728,GBP,values.csv eic 1615 (point); ~GBP0.599m for ranking (FX in notes.md)
+1615,3,bazacle,0.001179,XAG_KG,values.csv bazacle 1615 (year_end); ~GBP0.011m for ranking (FX in notes.md)
+1618,1,eic,1.33174,GBP,values.csv eic 1618 (mid of est_low/est_high); ~GBP1.332m for ranking (FX in notes.md)
+1618,2,voc,9.76537,NLG,values.csv voc 1618-12 (year_end); ~GBP0.930m for ranking (FX in notes.md)
+1618,3,bazacle,0.0018714,XAG_KG,values.csv bazacle 1618 (year_end); ~GBP0.017m for ranking (FX in notes.md)
+1620,1,eic,1.33174,GBP,values.csv eic 1618 (mid of est_low/est_high); ~GBP1.332m for ranking (FX in notes.md); nearest year used: 1618
+1620,2,voc,11.4358,NLG,values.csv voc 1619-12 (year_end); ~GBP1.089m for ranking (FX in notes.md); nearest year used: 1619
+1620,3,bazacle,0.001965,XAG_KG,values.csv bazacle 1620 (year_end); ~GBP0.018m for ranking (FX in notes.md)
+1623,1,voc,11.4358,NLG,values.csv voc 1623 (annual_avg); ~GBP1.089m for ranking (FX in notes.md)
+1623,2,eic,0.977423,GBP,values.csv eic 1624 (mid of est_low/est_high); ~GBP0.977m for ranking (FX in notes.md); nearest year used: 1624
+1623,3,wic,7.10816,NLG,values.csv wic 1623 (point); ~GBP0.677m for ranking (FX in notes.md)
+1623,4,bazacle,0.0024952,XAG_KG,values.csv bazacle 1624 (year_end); ~GBP0.022m for ranking (FX in notes.md); nearest year used: 1624
+1629,1,wic,21.8358,NLG,values.csv wic 1629 (est_high); ~GBP2.080m for ranking (FX in notes.md)
+1629,2,voc,11.5643,NLG,values.csv voc 1632 (annual_avg); ~GBP1.101m for ranking (FX in notes.md); nearest year used: 1632
+1629,3,eic,0.936697,GBP,values.csv eic 1628 (mid of est_low/est_high); ~GBP0.937m for ranking (FX in notes.md); nearest year used: 1628
+1629,4,bazacle,0.00262,XAG_KG,values.csv bazacle 1629 (year_end); ~GBP0.024m for ranking (FX in notes.md)
+1630,1,wic,21.8358,NLG,values.csv wic 1629 (est_high); ~GBP2.080m for ranking (FX in notes.md); nearest year used: 1629
+1630,2,voc,11.5643,NLG,values.csv voc 1632 (annual_avg); ~GBP1.101m for ranking (FX in notes.md); nearest year used: 1632
+1630,3,eic,0.936697,GBP,values.csv eic 1628 (mid of est_low/est_high); ~GBP0.937m for ranking (FX in notes.md); nearest year used: 1628
+1630,4,bazacle,0.00262,XAG_KG,values.csv bazacle 1629 (year_end); ~GBP0.024m for ranking (FX in notes.md); nearest year used: 1629
+1635,1,voc,15.0978,NLG,values.csv voc 1635-11 (year_end); ~GBP1.438m for ranking (FX in notes.md)
+1635,2,wic,9.20492,NLG,values.csv wic 1635 (mid of est_low/est_high); ~GBP0.877m for ranking (FX in notes.md)
+1635,3,eic,0.33656,GBP,values.csv eic 1635 (point); ~GBP0.337m for ranking (FX in notes.md)
+1635,4,bazacle,0.0009357,XAG_KG,values.csv bazacle 1634 (year_end); ~GBP0.008m for ranking (FX in notes.md); nearest year used: 1634
+1640,1,voc,26.0196,NLG,values.csv voc 1640-12 (year_end); ~GBP2.478m for ranking (FX in notes.md)
+1640,2,wic,13.1992,NLG,values.csv wic 1640 (mid of est_low/est_high); ~GBP1.257m for ranking (FX in notes.md)
+1640,3,eic,0.391251,GBP,values.csv eic 1640 (point); ~GBP0.391m for ranking (FX in notes.md)
+1640,4,bazacle,0.0016531,XAG_KG,values.csv bazacle 1640 (year_end); ~GBP0.015m for ranking (FX in notes.md)
+1645,1,voc,29.2961,NLG,values.csv voc 1644-10 (year_end); ~GBP2.790m for ranking (FX in notes.md); nearest year used: 1644
+1645,2,wic,4.37563,NLG,values.csv wic 1645 (mid of est_low/est_high); ~GBP0.417m for ranking (FX in notes.md)
+1645,3,bazacle,0.0017186,XAG_KG,values.csv bazacle 1645 (year_end); ~GBP0.015m for ranking (FX in notes.md)
+1645,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1650,1,voc,33.7291,NLG,values.csv voc 1650-12 (year_end); ~GBP3.212m for ranking (FX in notes.md)
+1650,2,wic,2.01303,NLG,values.csv wic 1649 (mid of est_low/est_high); ~GBP0.192m for ranking (FX in notes.md); nearest year used: 1649
+1650,3,bazacle,0.0024547,XAG_KG,values.csv bazacle 1650 (year_end); ~GBP0.022m for ranking (FX in notes.md)
+1650,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1660,1,voc,28.5316,NLG,values.csv voc 1660 (annual_avg); ~GBP2.717m for ranking (FX in notes.md)
+1660,2,eic,0.369891,GBP,values.csv eic 1657 (point); ~GBP0.370m for ranking (FX in notes.md); nearest year used: 1657
+1660,3,bazacle,0.0024204,XAG_KG,values.csv bazacle 1660 (year_end); ~GBP0.022m for ranking (FX in notes.md)
+1660,nr,wic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1670,1,voc,31.3398,NLG,values.csv voc 1670-12 (year_end); ~GBP2.985m for ranking (FX in notes.md)
+1670,2,eic,0.410579,GBP,values.csv eic 1670 (point); ~GBP0.411m for ranking (FX in notes.md)
+1670,3,bazacle,0.0021989,XAG_KG,values.csv bazacle 1669 (year_end); ~GBP0.020m for ranking (FX in notes.md); nearest year used: 1669
+1670,4,hudsons_bay,0.0105,GBP,values.csv hudsons_bay 1670 (point); ~GBP0.011m for ranking (FX in notes.md)
+1670,nr,wic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1680,1,voc,28.6537,NLG,values.csv voc 1680-11 (year_end); ~GBP2.729m for ranking (FX in notes.md)
+1680,2,eic,1.00795,GBP,values.csv eic 1680 (annual_avg); ~GBP1.008m for ranking (FX in notes.md)
+1680,3,bazacle,0.0017311,XAG_KG,values.csv bazacle 1680 (year_end); ~GBP0.016m for ranking (FX in notes.md)
+1680,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1685,1,voc,29.8422,NLG,values.csv voc 1685-12 (year_end); ~GBP2.842m for ranking (FX in notes.md)
+1685,2,eic,2.66322,GBP,values.csv eic 1685 (est_low); ~GBP2.663m for ranking (FX in notes.md)
+1685,3,bazacle,0.0011977,XAG_KG,values.csv bazacle 1685 (year_end); ~GBP0.011m for ranking (FX in notes.md)
+1685,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1690,1,voc,30.6132,NLG,values.csv voc 1689-10 (year_end); ~GBP2.916m for ranking (FX in notes.md); nearest year used: 1689
+1690,2,eic,2.21935,GBP,values.csv eic 1690 (point); ~GBP2.219m for ranking (FX in notes.md)
+1690,3,royal_african,0.213312,GBP,values.csv royal_african 1692 (annual_avg); ~GBP0.213m for ranking (FX in notes.md); nearest year used: 1692
+1690,4,hudsons_bay,0.0748125,GBP,values.csv hudsons_bay 1692 (annual_avg); ~GBP0.075m for ranking (FX in notes.md); nearest year used: 1692
+1690,5,bazacle,0.0010636,XAG_KG,values.csv bazacle 1690 (year_end); ~GBP0.010m for ranking (FX in notes.md)
+1690,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1695,1,voc,31.2556,NLG,values.csv voc 1694 (annual_avg); ~GBP2.977m for ranking (FX in notes.md); nearest year used: 1694
+1695,2,bank_of_england,1.524,GBP,values.csv bank_of_england 1695 (annual_avg); ~GBP1.524m for ranking (FX in notes.md)
+1695,3,eic,1.06392,GBP,values.csv eic 1695 (annual_avg); ~GBP1.064m for ranking (FX in notes.md)
+1695,4,royal_african,0.128176,GBP,values.csv royal_african 1695 (annual_avg); ~GBP0.128m for ranking (FX in notes.md)
+1695,5,hudsons_bay,0.0567,GBP,values.csv hudsons_bay 1695 (annual_avg); ~GBP0.057m for ranking (FX in notes.md)
+1695,6,bazacle,0.0010636,XAG_KG,values.csv bazacle 1695 (year_end); ~GBP0.010m for ranking (FX in notes.md)
+1695,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1700,1,voc,32.8296,NLG,values.csv voc 1698 (annual_avg); ~GBP3.127m for ranking (FX in notes.md); nearest year used: 1698
+1700,2,bank_of_england,3.0046,GBP,values.csv bank_of_england 1700 (annual_avg); ~GBP3.005m for ranking (FX in notes.md)
+1700,3,eic_english,2.3268,GBP,values.csv eic_english 1700 (annual_avg); ~GBP2.327m for ranking (FX in notes.md)
+1700,4,eic,1.57854,GBP,values.csv eic 1700 (annual_avg); ~GBP1.579m for ranking (FX in notes.md)
+1700,5,million_bank,0.44,GBP,values.csv million_bank 1700 (annual_avg); ~GBP0.440m for ranking (FX in notes.md)
+1700,6,royal_african,0.22021,GBP,values.csv royal_african 1700 (annual_avg); ~GBP0.220m for ranking (FX in notes.md)
+1700,7,hudsons_bay,0.033075,GBP,values.csv hudsons_bay 1698 (annual_avg); ~GBP0.033m for ranking (FX in notes.md); nearest year used: 1698
+1700,8,bazacle,0.0013849,XAG_KG,values.csv bazacle 1699 (year_end); ~GBP0.012m for ranking (FX in notes.md); nearest year used: 1699
+1700,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1705,1,eic_english,3.07885,GBP,values.csv eic_english 1703 (annual_avg); ~GBP3.079m for ranking (FX in notes.md); nearest year used: 1703
+1705,2,bank_of_england,2.28371,GBP,values.csv bank_of_england 1705 (annual_avg); ~GBP2.284m for ranking (FX in notes.md)
+1705,3,eic,1.74388,GBP,values.csv eic 1705 (annual_avg); ~GBP1.744m for ranking (FX in notes.md)
+1705,4,million_bank,0.41,GBP,values.csv million_bank 1705 (annual_avg); ~GBP0.410m for ranking (FX in notes.md)
+1705,5,bazacle,0.0010948,XAG_KG,values.csv bazacle 1705 (year_end); ~GBP0.010m for ranking (FX in notes.md)
+1705,nr,voc,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1705,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1710,1,bank_of_england,6.26194,GBP,values.csv bank_of_england 1710 (annual_avg); ~GBP6.262m for ranking (FX in notes.md)
+1710,2,eic,3.98538,GBP,values.csv eic 1710 (annual_avg); ~GBP3.985m for ranking (FX in notes.md)
+1710,3,million_bank,0.399375,GBP,values.csv million_bank 1709 (annual_avg); ~GBP0.399m for ranking (FX in notes.md); nearest year used: 1709
+1710,4,bazacle,0.0000874,XAG_KG,values.csv bazacle 1709 (year_end); ~GBP0.001m for ranking (FX in notes.md); nearest year used: 1709
+1710,nr,voc,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1710,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1715,1,south_sea,9.475,GBP,values.csv south_sea 1715 (annual_avg); ~GBP9.475m for ranking (FX in notes.md)
+1715,2,bank_of_england,6.93609,GBP,values.csv bank_of_england 1715 (annual_avg); ~GBP6.936m for ranking (FX in notes.md)
+1715,3,eic,4.27796,GBP,values.csv eic 1715 (annual_avg); ~GBP4.278m for ranking (FX in notes.md)
+1715,nr,voc,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1715,nr,wic_1674,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1719,1,mississippi_co,4162.5,FRF,values.csv mississippi_co 1719-12 (mid of est_low/est_high); ~GBP149.918m for ranking (FX in notes.md)
+1719,2,south_sea,14.8744,GBP,values.csv south_sea 1719-12 (point); ~GBP14.874m for ranking (FX in notes.md)
+1719,3,bank_of_england,8.28439,GBP,values.csv bank_of_england 1719-12 (year_end); ~GBP8.284m for ranking (FX in notes.md)
+1719,4,eic,6.3642,GBP,values.csv eic 1719-12 (year_end); ~GBP6.364m for ranking (FX in notes.md)
+1719,5,voc,59.7487,NLG,values.csv voc 1719-12 (year_end); ~GBP5.690m for ranking (FX in notes.md)
+1719,6,million_bank,0.635,GBP,values.csv million_bank 1719-12 (year_end); ~GBP0.635m for ranking (FX in notes.md)
+1719,7,wic_1674,5.06589,NLG,values.csv wic_1674 1719-12 (year_end); ~GBP0.482m for ranking (FX in notes.md)
+1719,8,royal_african,0.115094,GBP,values.csv royal_african 1719-12 (year_end); ~GBP0.115m for ranking (FX in notes.md)
+1720,1,south_sea,31.6754,GBP,values.csv south_sea 1720-12 (mid of est_low/est_high); ~GBP31.675m for ranking (FX in notes.md)
+1720,2,mississippi_co,728,FRF,values.csv mississippi_co 1720-11 (point); ~GBP12.133m for ranking (FX in notes.md)
+1720,3,bank_of_england,7.89519,GBP,values.csv bank_of_england 1720-12 (year_end); ~GBP7.895m for ranking (FX in notes.md)
+1720,4,voc,53.9665,NLG,values.csv voc 1720-12 (year_end); ~GBP5.140m for ranking (FX in notes.md)
+1720,5,eic,5.11053,GBP,values.csv eic 1720-12 (year_end); ~GBP5.111m for ranking (FX in notes.md)
+1720,6,million_bank,0.875,GBP,values.csv million_bank 1720-12 (year_end); ~GBP0.875m for ranking (FX in notes.md)
+1720,7,wic_1674,7.02892,NLG,values.csv wic_1674 1720-12 (year_end); ~GBP0.669m for ranking (FX in notes.md)
+1720,8,london_assurance,0.1974,GBP,values.csv london_assurance 1720-12 (year_end); ~GBP0.197m for ranking (FX in notes.md)
+1720,9,royal_african,0.189567,GBP,values.csv royal_african 1720-12 (year_end); ~GBP0.190m for ranking (FX in notes.md)
+1720,10,royal_exchange_assurance,0.10302,GBP,values.csv royal_exchange_assurance 1720-12 (year_end); ~GBP0.103m for ranking (FX in notes.md)
+1721,1,south_sea,31.6754,GBP,values.csv south_sea 1720-12 (mid of est_low/est_high); ~GBP31.675m for ranking (FX in notes.md); nearest year used: 1720
+1721,2,mississippi_co,728,FRF,values.csv mississippi_co 1720-11 (point); ~GBP12.133m for ranking (FX in notes.md); nearest year used: 1720
+1721,3,bank_of_england,7.89519,GBP,values.csv bank_of_england 1720-12 (year_end); ~GBP7.895m for ranking (FX in notes.md); nearest year used: 1720
+1721,4,eic,5.11053,GBP,values.csv eic 1720-12 (year_end); ~GBP5.111m for ranking (FX in notes.md); nearest year used: 1720
+1721,5,voc,47.8182,NLG,values.csv voc 1721 (year_end); ~GBP4.554m for ranking (FX in notes.md)
+1721,6,million_bank,0.875,GBP,values.csv million_bank 1720-12 (year_end); ~GBP0.875m for ranking (FX in notes.md); nearest year used: 1720
+1721,7,wic_1674,6.52233,NLG,values.csv wic_1674 1721 (year_end); ~GBP0.621m for ranking (FX in notes.md)
+1721,8,london_assurance,0.1974,GBP,values.csv london_assurance 1720-12 (year_end); ~GBP0.197m for ranking (FX in notes.md); nearest year used: 1720
+1721,9,royal_african,0.189567,GBP,values.csv royal_african 1720-12 (year_end); ~GBP0.190m for ranking (FX in notes.md); nearest year used: 1720
+1721,10,royal_exchange_assurance,0.10302,GBP,values.csv royal_exchange_assurance 1720-12 (year_end); ~GBP0.103m for ranking (FX in notes.md); nearest year used: 1720
+1723,1,south_sea,31.6754,GBP,values.csv south_sea 1720-12 (mid of est_low/est_high); ~GBP31.675m for ranking (FX in notes.md); nearest year used: 1720
+1723,2,bank_of_england,7.89519,GBP,values.csv bank_of_england 1720-12 (year_end); ~GBP7.895m for ranking (FX in notes.md); nearest year used: 1720
+1723,3,eic,5.11053,GBP,values.csv eic 1720-12 (year_end); ~GBP5.111m for ranking (FX in notes.md); nearest year used: 1720
+1723,4,voc,41.1045,NLG,values.csv voc 1723 (year_end); ~GBP3.915m for ranking (FX in notes.md)
+1723,5,mississippi_co,67.2,FRF,values.csv mississippi_co 1723-03 (point); ~GBP2.036m for ranking (FX in notes.md)
+1723,6,million_bank,0.875,GBP,values.csv million_bank 1720-12 (year_end); ~GBP0.875m for ranking (FX in notes.md); nearest year used: 1720
+1723,7,wic_1674,5.46483,NLG,values.csv wic_1674 1723 (year_end); ~GBP0.520m for ranking (FX in notes.md)
+1723,8,london_assurance,0.1974,GBP,values.csv london_assurance 1720-12 (year_end); ~GBP0.197m for ranking (FX in notes.md); nearest year used: 1720
+1723,9,royal_african,0.189567,GBP,values.csv royal_african 1720-12 (year_end); ~GBP0.190m for ranking (FX in notes.md); nearest year used: 1720
+1723,10,royal_exchange_assurance,0.10302,GBP,values.csv royal_exchange_assurance 1720-12 (year_end); ~GBP0.103m for ranking (FX in notes.md); nearest year used: 1720
+1730,1,bank_of_england,11.6928,GBP,values.csv bank_of_england 1732 (annual_avg); ~GBP11.693m for ranking (FX in notes.md); nearest year used: 1732
+1730,2,voc,46.2056,NLG,values.csv voc 1730 (year_end); ~GBP4.401m for ranking (FX in notes.md)
+1730,3,wic_1674,5.23686,NLG,values.csv wic_1674 1730 (year_end); ~GBP0.499m for ranking (FX in notes.md)
+1730,4,bazacle,0.00164083,XAG_KG,values.csv bazacle 1730 (year_end); ~GBP0.015m for ranking (FX in notes.md)
+1730,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1730,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1730,nr,mississippi_co,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1740,1,bank_of_england,12.6336,GBP,values.csv bank_of_england 1740 (annual_avg); ~GBP12.634m for ranking (FX in notes.md)
+1740,2,voc,26.5978,NLG,values.csv voc 1740 (year_end); ~GBP2.533m for ranking (FX in notes.md)
+1740,3,wic_1674,1.84905,NLG,values.csv wic_1674 1740 (year_end); ~GBP0.176m for ranking (FX in notes.md)
+1740,4,bazacle,0.00114586,XAG_KG,values.csv bazacle 1740 (year_end); ~GBP0.010m for ranking (FX in notes.md)
+1740,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1740,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1740,nr,mississippi_co,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1750,1,bank_of_england,14.3913,GBP,values.csv bank_of_england 1750 (annual_avg); ~GBP14.391m for ranking (FX in notes.md)
+1750,2,voc,26.9961,NLG,values.csv voc 1750 (year_end); ~GBP2.571m for ranking (FX in notes.md)
+1750,3,wic_1674,2.90022,NLG,values.csv wic_1674 1750 (year_end); ~GBP0.276m for ranking (FX in notes.md)
+1750,4,bazacle,0.00142131,XAG_KG,values.csv bazacle 1750 (year_end); ~GBP0.013m for ranking (FX in notes.md)
+1750,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1750,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1750,nr,mississippi_co,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1760,1,bank_of_england,11.5885,GBP,values.csv bank_of_england 1760 (annual_avg); ~GBP11.588m for ranking (FX in notes.md)
+1760,2,voc,24.3106,NLG,values.csv voc 1760 (year_end); ~GBP2.315m for ranking (FX in notes.md)
+1760,3,wic_1674,1.81106,NLG,values.csv wic_1674 1760 (year_end); ~GBP0.172m for ranking (FX in notes.md)
+1760,4,bazacle,0.00155302,XAG_KG,values.csv bazacle 1760 (year_end); ~GBP0.014m for ranking (FX in notes.md)
+1760,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1760,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1760,nr,mississippi_co,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1770,1,bank_of_england,13.9062,GBP,values.csv bank_of_england 1770 (annual_avg); ~GBP13.906m for ranking (FX in notes.md)
+1770,2,eic,7.09086,GBP,values.csv eic 1771 (annual_avg); ~GBP7.091m for ranking (FX in notes.md); nearest year used: 1771
+1770,3,voc,21.6252,NLG,values.csv voc 1770 (year_end); ~GBP2.060m for ranking (FX in notes.md)
+1770,4,wic_1674,2.18466,NLG,values.csv wic_1674 1770 (year_end); ~GBP0.208m for ranking (FX in notes.md)
+1770,5,bazacle,0.0029024,XAG_KG,values.csv bazacle 1770 (year_end); ~GBP0.026m for ranking (FX in notes.md)
+1770,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1780,1,bank_of_england,12.1275,GBP,values.csv bank_of_england 1780 (annual_avg); ~GBP12.127m for ranking (FX in notes.md)
+1780,2,eic,4.75918,GBP,values.csv eic 1780 (annual_avg); ~GBP4.759m for ranking (FX in notes.md)
+1780,3,voc,18.8048,NLG,values.csv voc 1780 (year_end); ~GBP1.791m for ranking (FX in notes.md)
+1780,4,wic_1674,1.84905,NLG,values.csv wic_1674 1780 (year_end); ~GBP0.176m for ranking (FX in notes.md)
+1780,5,bazacle,0.00262298,XAG_KG,values.csv bazacle 1780 (year_end); ~GBP0.024m for ranking (FX in notes.md)
+1780,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1790,1,bank_of_england,20.4906,GBP,values.csv bank_of_england 1790 (annual_avg); ~GBP20.491m for ranking (FX in notes.md)
+1790,2,eic,8.15,GBP,values.csv eic 1790 (annual_avg); ~GBP8.150m for ranking (FX in notes.md)
+1790,3,voc,11.0117,NLG,values.csv voc 1790 (year_end); ~GBP1.049m for ranking (FX in notes.md)
+1790,4,wic_1674,1.27914,NLG,values.csv wic_1674 1790 (year_end); ~GBP0.122m for ranking (FX in notes.md)
+1790,5,bazacle,0.00123366,XAG_KG,values.csv bazacle 1790 (year_end); ~GBP0.011m for ranking (FX in notes.md)
+1790,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1795,1,bank_of_england,19.3264,GBP,values.csv bank_of_england 1795 (annual_avg); ~GBP19.326m for ranking (FX in notes.md)
+1795,2,eic,12,GBP,values.csv eic 1795 (annual_avg); ~GBP12.000m for ranking (FX in notes.md)
+1795,3,voc,8.05643,NLG,values.csv voc 1795 (point); ~GBP0.767m for ranking (FX in notes.md)
+1795,4,bazacle,0.000155776,XAG_KG,values.csv bazacle 1795 (year_end); ~GBP0.001m for ranking (FX in notes.md)
+1795,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1795,nr,bank_us_first,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1800,1,bank_of_england,19.1517,GBP,values.csv bank_of_england 1800 (annual_avg); ~GBP19.152m for ranking (FX in notes.md)
+1800,2,eic,9.48,GBP,values.csv eic 1797 (annual_avg); ~GBP9.480m for ranking (FX in notes.md); nearest year used: 1797
+1800,3,banque_de_france,30,FRF,values.csv banque_de_france 1800-02 (point); ~GBP1.190m for ranking (FX in notes.md)
+1800,4,bazacle,0.00264294,XAG_KG,values.csv bazacle 1800 (year_end); ~GBP0.024m for ranking (FX in notes.md)
+1800,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1800,nr,bank_us_first,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1810,1,bank_of_england,31.9584,GBP,values.csv bank_of_england 1810 (annual_avg); ~GBP31.958m for ranking (FX in notes.md)
+1810,2,bazacle,0.00183246,XAG_KG,values.csv bazacle 1810 (year_end); ~GBP0.016m for ranking (FX in notes.md)
+1810,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1810,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1810,nr,bank_us_first,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1810,nr,banque_de_france,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1820,1,bank_of_england,32.0894,GBP,values.csv bank_of_england 1820 (annual_avg); ~GBP32.089m for ranking (FX in notes.md)
+1820,2,bank_us_second,35,USD,values.csv bank_us_second 1817-01 (point); ~GBP7.883m for ranking (FX in notes.md); nearest year used: 1817
+1820,3,bazacle,0.00366914,XAG_KG,values.csv bazacle 1822 (year_end); ~GBP0.033m for ranking (FX in notes.md); nearest year used: 1822
+1820,nr,eic,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1820,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1820,nr,banque_de_france,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1825,1,bank_of_england,36.0187,GBP,values.csv bank_of_england 1825-12 (mid of est_low/est_high); ~GBP36.019m for ranking (FX in notes.md)
+1825,2,eic,13.8,GBP,values.csv eic 1826-03 (point); ~GBP13.800m for ranking (FX in notes.md); nearest year used: 1826
+1825,3,bank_us_second,42,USD,values.csv bank_us_second 1825 (point); ~GBP9.459m for ranking (FX in notes.md)
+1825,4,bazacle,0.00366914,XAG_KG,values.csv bazacle 1825 (point); ~GBP0.033m for ranking (FX in notes.md)
+1825,nr,south_sea,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps
+1825,nr,banque_de_france,,,alive but no price found for this year (+-3 yrs); not ranked - see notes.md gaps

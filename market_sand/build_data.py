@@ -28,8 +28,15 @@ LABELS = {   # short names for the glass and the captions
     "bazacle": "Bazacle", "standard_oil_nj": "Standard Oil · Exxon", "socony": "Socony · Mobil",
     "att": "AT&T", "us_steel": "US Steel", "ge": "GE", "ibm": "IBM", "gm": "GM", "ntt": "NTT",
     "microsoft": "Microsoft", "apple": "Apple", "nvidia": "Nvidia", "aramco": "Aramco",
+    "tsmc": "TSMC", "google": "Alphabet (Google)", "facebook": "Meta (Facebook)", "amazon": "Amazon",
+    "walmart": "Walmart", "royal_dutch_shell": "Shell", "sbc": "SBC · AT&T Inc.", "aig": "AIG",
+    "icbc": "ICBC", "china_construction_bank": "China Construction Bank", "merck": "Merck",
+    "johnson_johnson": "Johnson & Johnson", "procter_gamble": "Procter & Gamble", "bhp": "BHP",
+    "ntt_docomo": "NTT DoCoMo", "pmi": "Philip Morris Intl.", "philip_morris": "Philip Morris · Altria",
+    "aol_time_warner": "AOL Time Warner", "aol": "AOL", "ibj": "Industrial Bank of Japan",
 }
-OVERRIDE = {}   # id -> {field: value} where an era's record needs correcting (say why in a comment)
+OVERRIDE = {}
+NARRATION_ONLY = {"bazacle"}    # worth less than one grain in today's dollars: a line of narration, no vessel   # id -> {field: value} where an era's record needs correcting (say why in a comment)
 SUFFIX = re.compile(r",?\s+(Company|Corporation|Corp\.?|Inc\.?|Incorporated|Ltd\.?|Limited|plc|PLC|S\.A\.|AG|N\.V\.|Co\.)$")
 
 
@@ -69,7 +76,7 @@ def label_of(cid, name):
         return LABELS[cid]
     s = name.split("(")[0].strip()
     for _ in range(2):
-        s = SUFFIX.sub("", s).strip()
+        s = SUFFIX.sub("", s).strip().rstrip("&,").strip()
     return s
 
 
@@ -108,6 +115,8 @@ def main(report=False):
     out_c = []
     missing = []
     for cid, recs in comps.items():
+        if cid in NARRATION_ONLY:
+            continue
         if cid not in series:
             missing.append(cid)
             continue

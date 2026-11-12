@@ -1,0 +1,41 @@
+date,type,from_ids,to_ids,detail,source
+1372,listing,,bazacle,"12 independent Toulouse mill companies merge into the Honor del Bazacle with 80 uchaux; the merger charter values the shares (first price, ~531 kg silver for the whole firm).","Le Bris, Goetzmann & Pouget (2014) NBER w20199 App.7.1"
+1384,acquisition,,bazacle,"Two remaining independent mills bought for 16 new uchaux (88 by 1374, 96 by 1384).","Le Bris, Goetzmann & Pouget (2014) NBER w20199 App.7.1"
+1601-02,listing,,eic,"First Voyage (GBP68,373) of the EIC, chartered 31 Dec 1600; separate voyage stocks until 1612.",Scott (1910) vol.2
+1602-08,listing,,voc,"VOC subscription closes (f6,424,588); secondary trading in Amsterdam from Sept 1602 (114%).",Petram (2011)
+1613,listing,,eic,"EIC First Joint Stock GBP418,691 (terminable, 1613-1616).",Scott (1910) vol.2
+1617-01,listing,,eic,"EIC Second Joint Stock subscribed GBP1,629,040 (954 subscribers), called in 8 instalments.",Scott (1910) vol.2
+1623,listing,,wic,"WIC (chartered 3 Jun 1621) completes its capital, f7,108,161.",Odegard (2019) Itinerario
+1632,listing,,eic,"EIC Third Joint Stock GBP420,700.",Scott (1910) vol.2
+1657,listing,,eic,"EIC New General Stock: permanent joint stock, GBP739,782 subscribed, 50% called.",Scott (1910) vol.2
+1670-05,listing,,hudsons_bay,"Hudson's Bay Company chartered, capital GBP10,500.",Scott (1910) vol.2
+1672,listing,,royal_african,"Royal African Company formed, capital GBP111,100.",Scott (1910) vol.2
+1674-09-20,bankruptcy,wic,wic_1674,"Insolvent first WIC replaced by a new chartered WIC. Old shareholders got new stock worth 15% of old nominal (after paying 4%), pre-1656 creditors 30%, later creditors 100%; new nominal capital f6,332,362 (no market value at the deal; old shares had fallen to ~15% by 1649-50).",Odegard (2019) Itinerario
+1682,split,eic,eic,"100% stock bonus doubles EIC stock from GBP369,891 to GBP739,782 (price ~460 old basis -> ~150-260 new).",Scott (1910) vol.2
+1690-09,split,hudsons_bay,hudsons_bay,"HBC stock trebled by bonus, GBP10,500 -> GBP31,500.",Scott (1910) vol.2
+1694-07,listing,,bank_of_england,"Bank of England incorporated (charter 27 Jul 1694), capital GBP1,200,000.",Scott (1911) vol.3
+1698-09,listing,,eic_english,"English (New) East India Company chartered on the GBP2m loan; its stock GBP1,662,000.",Scott (1910) vol.2
+1709,merger,eic;eic_english,eic,"Union of the Old and English companies as the United Company, capital GBP3,163,000 (each side GBP1,581,500). Old Company stock at 104.5-105% (GBP1.65m on GBP1.57m) in Feb 1709.",Scott (1910) vol.2
+1711-09,listing,,south_sea,South Sea Company created by converting GBP9.18m of government debt into stock.,Scott (1911) vol.3
+1712-09,bankruptcy,royal_african,royal_african,"RAC reconstruction: old stock written down 90%; total stock GBP451,350.",Scott (1910) vol.2
+1717-08,listing,,mississippi_co,"Compagnie d'Occident founded by John Law; 200,000 shares of 500 L payable in billets d'Etat (issued 1717-18).",Velde (2003) Chicago Fed WP 2003-31
+1719-05,merger,,mississippi_co,"Compagnie d'Occident absorbs the East India and China companies and becomes the Compagnie des Indes; new share issues Jun, Jul and Sep-Oct 1719.",Velde (2003) Chicago Fed WP 2003-31
+1720-02-22,merger,,mississippi_co,"Banque Royale merged into the Compagnie des Indes; Company buys the King's 100,000 shares at 9,000 L.",Velde (2003) Chicago Fed WP 2003-31
+1720-03,split,mississippi_co,mississippi_co,"Outstanding 1719 subscriptions converted into shares: 600,000 shares at 12 Mar 1720.",Velde (2003) Chicago Fed WP 2003-31
+1720-06,split,mississippi_co,mississippi_co,"Buy-backs and the King's gift cut shares to 200,000 by 3 Jun 1720; converted 3-for-2 into ~133,000 new shares over the summer.",Velde (2003) Chicago Fed WP 2003-31
+1720-06,listing,,royal_exchange_assurance,"Royal Exchange Assurance chartered (Bubble Act, 11 Jun 1720 O.S.); traded since 1719 as Onslow's insurance on the Mines Royal shell.",Scott (1911) vol.3
+1720-06,listing,,london_assurance,London Assurance chartered (Chetwynd's insurance).,Scott (1911) vol.3
+1721,split,mississippi_co,mississippi_co,"Visa: 125,000 shares presented, reduced to 55,735; ~1,000-1,200 L each in 1722-23 (value ~56-67m L).",Velde (2003) Chicago Fed WP 2003-31
+1722,acquisition,south_sea,bank_of_england,"Bank of England buys GBP4,000,000 South Sea stock, issuing GBP3,400,000 Bank stock at 118; Bank capital rises to GBP8,959,995. SSC capital ~GBP32m after the 1721 readjustment.",Francis (1847/1855)
+1723,split,south_sea,south_sea,Half of South Sea stock turned into South Sea Annuities (company remains a debt holder).,Scott vol.1/3; Fortune (1817)
+1733,split,south_sea,south_sea,"Further conversion leaves South Sea trading stock at GBP3,662,784, unchanged to 1817+.",Fortune's Epitome (1817)
+1752,dissolution,royal_african,,Royal African Company dissolved; forts to the Company of Merchants Trading to Africa.,Standard histories (not re-verified)
+1769,dissolution,mississippi_co,,Compagnie des Indes trade monopoly suspended; company winds down (joint-stock companies banned 24 Aug 1793).,GFD/Finaeon index note; Haudrere (2005)
+1791-07,listing,,bank_us_first,"First Bank of the United States subscription, $10m.",GFD/Finaeon notes
+1791-12-31,nationalisation,wic_1674,,"Second WIC charter not renewed; company and possessions taken over by the States General (shares ~25% of par at the end, GFD chart).",GFD/Finaeon notes
+1796,dissolution,million_bank,,Million Bank wound up with a surplus paid to stockholders.,Scott (1911) vol.3
+1796-03-01,nationalisation,voc,,VOC nationalised by the Batavian Republic (last quotes c.120-125% of par = ~f8m); charter lapses 31 Dec 1799.,GFD/Finaeon VOC note
+1800-02,listing,,banque_de_france,"Banque de France founded, 30,000 shares x 1,000 F.",GFD/Finaeon notes
+1811-03-03,dissolution,bank_us_first,,First Bank of the United States charter expires; liquidated.,Standard histories (not re-verified)
+1816,split,bank_of_england,bank_of_england,"25% stock bonus: capital GBP11,642,400 -> GBP14,553,000.",Francis (1847/1855)
+1817-01,listing,,bank_us_second,"Second Bank of the United States opens, capital $35m.",MoAF / standard histories

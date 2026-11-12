@@ -1,0 +1,99 @@
+id,name,label,district,industry,fate,successors,first,end
+eic,East India Company (Governor and Company of Merchants of London trading into the East Indies),East India Co.,London,trade,dissolved,,1601.125,1826.208
+voc,Vereenigde Oostindische Compagnie (Dutch East India Company),VOC,Amsterdam,trade,nationalised,,1602.500,1795.500
+wic,Geoctrooieerde West-Indische Compagnie (first Dutch West India Company),WIC,Amsterdam,trade,dissolved,wic_1674,1623.500,1649.500
+hudsons_bay,Governor and Company of Adventurers of England trading into Hudson's Bay,Hudson's Bay,London,trade,bankrupt,,1670.500,1720.958
+royal_african,Royal African Company of England,Royal African Company of England,London,trade,dissolved,,1672.500,1720.958
+wic_1674,"Second Dutch West India Company (Geoctrooieerde West-Indische Compagnie, 1674)",Second Dutch West India,Amsterdam,trade,nationalised,,1674.500,1791.999
+bank_of_england,Governor and Company of the Bank of England,Bank of England,London,finance,nationalised,,1694.542,1825.958
+eic_english,"English Company Trading to the East Indies (""New Company"")",English Company Trading to the East Indies,London,trade,merged,eic,1698.542,1703.500
+million_bank,Million Bank (Bank on Tickets of the Million Adventure),Million Bank,London,finance,dissolved,,1700.500,1720.958
+south_sea,Governor and Company of the Merchants of Great Britain trading to the South Seas (South Sea Company),South Sea Co.,London,trade,dissolved,,1711.875,1720.958
+mississippi_co,Compagnie d'Occident (1717) / Compagnie des Indes (1719),Mississippi Co.,Paris,trade,dissolved,,1718.375,1723.208
+royal_exchange_assurance,Royal Exchange Assurance Corporation,Royal Exchange Assurance,London,finance,merged,,1720.042,1720.958
+london_assurance,London Assurance Corporation,London Assurance,London,finance,acquired,,1720.042,1720.958
+bank_us_first,Bank of the United States (First),Bank of the United States,New York,finance,dissolved,,1791.542,1791.542
+banque_de_france,Banque de France,Banque de France,Paris,finance,nationalised,,1800.125,1800.125
+bank_us_second,Second Bank of the United States,Second Bank of the United States,New York,finance,bankrupt,,1817.042,1825.500
+ibj,Industrial Bank of Japan,Industrial Bank of Japan,Tokyo,finance,merged,mizuho,1989.500,1999.637
+sumitomo_bank,Sumitomo Bank,Sumitomo Bank,Tokyo,finance,alive,,1989.500,2026.865
+fuji_bank,Fuji Bank,Fuji Bank,Tokyo,finance,merged,mizuho,1989.500,1996.000
+dai_ichi_kangyo,Dai-Ichi Kangyo Bank,Dai-Ichi Kangyo Bank,Tokyo,finance,merged,mizuho,1989.500,1996.000
+tepco,Tokyo Electric Power,Tokyo Electric Power,Tokyo,industrial,alive,,1989.500,2026.865
+toyota,Toyota Motor,Toyota Motor,Tokyo,autos,alive,,1989.500,2026.865
+standard_oil_nj,Exxon,Standard Oil · Exxon,New York,oil,alive,,1989.500,2026.865
+ibm,International Business Machines,IBM,New York,computing,alive,,1989.500,2026.865
+ge,General Electric,GE,New York,industrial,alive,,1989.500,2026.865
+philip_morris,Philip Morris Companies,Philip Morris · Altria,New York,consumer,alive,,1989.500,2026.865
+att,American Telephone & Telegraph,AT&T,New York,telecom_media,acquired,sbc,1989.500,2005.083
+merck,Merck & Co.,Merck,New York,chem_pharma,alive,,1989.500,2026.865
+ntt,Nippon Telegraph and Telephone,NTT,Tokyo,telecom_media,alive,,1989.995,2026.865
+mitsubishi_bank,Mitsubishi Bank,Mitsubishi Bank,Tokyo,finance,alive,,1989.995,2026.865
+sanwa_bank,Sanwa Bank,Sanwa Bank,Tokyo,finance,merged,mitsubishi_bank,1989.995,2005.131
+royal_dutch_shell,Royal Dutch/Shell Group,Shell,Amsterdam,oil,alive,,1991.000,2026.865
+walmart,Wal-Mart Stores,Walmart,New York,consumer,alive,,1991.000,2026.865
+sbc,Southwestern Bell Corporation,SBC · AT&T Inc.,New York,telecom_media,alive,,1991.000,2026.865
+coca_cola,Coca-Cola,Coca-Cola,New York,consumer,alive,,1991.000,2026.865
+microsoft,Microsoft,Microsoft,New York,computing,alive,,1991.000,2026.865
+intel,Intel,Intel,New York,semis,alive,,1991.000,2026.865
+cisco,Cisco Systems,Cisco Systems,New York,computing,alive,,1991.000,2026.865
+vodafone,Vodafone Group,Vodafone Group,London,telecom_media,alive,,1991.000,2026.865
+pfizer,Pfizer,Pfizer,New York,chem_pharma,alive,,1991.000,2026.865
+bp,BP,BP,London,oil,alive,,1991.000,2026.865
+aig,American International Group,AIG,New York,finance,alive,,1991.000,2026.865
+johnson_johnson,Johnson & Johnson,Johnson & Johnson,New York,chem_pharma,alive,,1991.000,2026.865
+procter_gamble,Procter & Gamble,Procter & Gamble,New York,consumer,alive,,1991.000,2026.865
+chevron,Chevron,Chevron,New York,oil,alive,,1991.000,2026.865
+berkshire,Berkshire Hathaway,Berkshire Hathaway,New York,finance,alive,,1991.000,2026.865
+apple,Apple,Apple,New York,computing,alive,,1991.000,2026.865
+unitedhealth,UnitedHealth Group,UnitedHealth Group,New York,consumer,alive,,1991.000,2026.865
+eli_lilly,Eli Lilly,Eli Lilly,New York,chem_pharma,alive,,1991.000,2026.865
+socony,Mobil,Socony · Mobil,New York,oil,merged,standard_oil_nj,1993.000,1999.208
+nestle,Nestle,Nestle,Europe,consumer,alive,,1993.000,2026.865
+roche,Roche Holding,Roche Holding,Europe,chem_pharma,alive,,1995.995,2026.865
+nokia,Nokia,Nokia,Europe,telecom_media,alive,,1996.245,2026.865
+travelers,Travelers Group,Travelers Group,New York,finance,merged,citigroup,1996.245,1998.747
+hsbc,HSBC Holdings,HSBC Holdings,London,finance,alive,,1996.245,2026.865
+bank_of_america,Bank of America,Bank of America,New York,finance,alive,,1996.245,2026.865
+bhp,BHP Billiton,BHP,Sydney,mining_metals,alive,,1996.245,2026.865
+wells_fargo,Wells Fargo,Wells Fargo,New York,finance,alive,,1996.245,2026.865
+jpmorgan,JPMorgan Chase,JPMorgan Chase,New York,finance,alive,,1996.245,2026.865
+deutsche_telekom,Deutsche Telekom,Deutsche Telekom,Europe,telecom_media,alive,,1997.000,2026.865
+lucent,Lucent Technologies,Lucent Technologies,New York,computing,merged,alcatel_lucent,1997.004,2007.000
+nortel,Nortel Networks,Nortel Networks,New York,computing,bankrupt,,1997.250,2010.000
+time_warner,Time Warner (1990),Time Warner,New York,telecom_media,merged,aol_time_warner,1997.250,2001.000
+amazon,Amazon.com,Amazon,New York,internet,alive,,1997.497,2026.865
+tsmc,Taiwan Semiconductor Manufacturing,TSMC,Taipei,semis,alive,,1998.000,2026.865
+citicorp,Citicorp,Citicorp,New York,finance,merged,citigroup,1998.292,1998.292
+ntt_docomo,NTT DoCoMo,NTT DoCoMo,Tokyo,telecom_media,taken_private,ntt,1998.812,2021.000
+citigroup,Citigroup,Citigroup,New York,finance,alive,,1999.000,2026.865
+novartis,Novartis,Novartis,Europe,chem_pharma,alive,,1999.000,2026.865
+nvidia,Nvidia,Nvidia,New York,semis,alive,,1999.078,2026.865
+aol,America Online,AOL,New York,internet,merged,aol_time_warner,2000.018,2000.250
+china_mobile,China Mobile,China Mobile,Shanghai · Hong Kong,telecom_media,alive,,2000.083,2026.865
+mannesmann,Mannesmann,Mannesmann,Europe,telecom_media,acquired,vodafone,2000.093,2000.250
+petrobras,Petrobras,Petrobras,São Paulo,oil,alive,,2000.745,2026.865
+kraft_foods,Kraft Foods Inc.,Kraft Foods,New York,consumer,alive,,2001.495,2026.865
+sinopec,Sinopec,Sinopec,Shanghai · Hong Kong,oil,alive,,2001.667,2026.865
+aol_time_warner,AOL Time Warner,AOL Time Warner,New York,telecom_media,acquired,sbc,2002.093,2016.809
+petrochina,PetroChina,PetroChina,Shanghai · Hong Kong,oil,alive,,2005.000,2026.865
+google,Google,Alphabet (Google),New York,internet,alive,,2005.000,2026.865
+gazprom,Gazprom,Gazprom,Moscow,oil,alive,,2006.250,2026.865
+icbc,Industrial and Commercial Bank of China,ICBC,Shanghai · Hong Kong,finance,alive,,2006.833,2026.865
+mizuho,Mizuho Financial Group,Mizuho Financial Group,Tokyo,finance,alive,,2007.000,2026.865
+alcatel_lucent,Alcatel,Alcatel,Paris,computing,acquired,nokia,2007.000,2017.000
+samsung,Samsung Electronics,Samsung Electronics,Seoul,semis,alive,,2007.247,2026.865
+china_construction_bank,China Construction Bank,China Construction Bank,Shanghai · Hong Kong,finance,alive,,2007.742,2026.865
+tencent,Tencent Holdings,Tencent Holdings,Shanghai · Hong Kong,internet,alive,,2008.000,2026.865
+pmi,Philip Morris International,Philip Morris Intl.,New York,consumer,alive,,2008.250,2026.865
+visa,Visa,Visa,New York,finance,alive,,2008.414,2026.865
+aol_inc,AOL Inc.,AOL,New York,internet,acquired,,2009.898,2016.000
+broadcom,Broadcom,Broadcom,New York,semis,alive,,2009.914,2026.865
+tesla,Tesla,Tesla,New York,autos,alive,,2010.497,2026.865
+facebook,Facebook,Meta (Facebook),New York,internet,alive,,2012.417,2026.865
+alibaba,Alibaba Group,Alibaba Group,Shanghai · Hong Kong,internet,alive,,2014.747,2026.865
+aramco,Saudi Aramco,Aramco,Riyadh,oil,alive,,2019.945,2026.865
+wbd,Warner Bros. Discovery,Warner Bros. Discovery,New York,telecom_media,alive,,2022.292,2026.865
+ge_healthcare,GE HealthCare,GE HealthCare,New York,industrial,alive,,2022.997,2026.865
+ge_vernova,GE Vernova,GE Vernova,New York,industrial,alive,,2024.250,2026.865
+spacex,SpaceX,SpaceX,New York,industrial,alive,,2026.448,2026.865

@@ -319,31 +319,55 @@ class Film:
         f_name, f_small = font("Inter-Medium.otf", fs), font("Inter-Regular.otf", fs * 0.82)
         order = np.argsort(-G)
         rank = {int(i): r + 1 for r, i in enumerate(order[:10]) if G[i] >= 1}
+        cands = []        # (priority, i): living companies by size first, then husks by their peak
         for i in vis:
             k = self.ids[i]
-            px, py = to_px(*self.pos[i])
             r_now = max(float(radius(G[i])), PED_R)
             dead = year > self.S.end[k]
             big = G[i] >= 1 and (r_now * sc > 10 or i in rank)
             husk_seen = dead and radius(self.S.peak_grains[k]) * sc > 8
-            if not (big or husk_seen or sc > 14):
-                continue
+            if big or husk_seen or sc > 14:
+                cands.append((-(G[i] if not dead else 1e-3 * self.S.peak_grains[k]), i))
+        boxes = []
+
+        def free(bb):
+            return all(bb[2] < o[0] or bb[0] > o[2] or bb[3] < o[1] or bb[1] > o[3] for o in boxes)
+
+        if sc < 3.5:
+            fd = font("Inter-SemiBold.otf", fs * 0.9)
+            al = int(200 * np.clip((3.5 - sc) / 2, 0, 1))
+            for name, (dx0, dy0, dx1, dy1) in sorted(self.L.districts.items(), key=lambda d: -(d[1][2] - d[1][0])):
+                ppx, ppy = to_px((dx0 + dx1) / 2, dy0)
+                if not (0 < ppx < Wp and -20 < ppy < Hp):
+                    continue
+                txt = layout.DISTRICTS[name]["label"].upper()
+                bb = dr.textbbox((ppx, ppy - 4), txt, font=fd, anchor="md")
+                if free(bb):
+                    boxes.append(bb)
+                    dr.text((ppx, ppy - 4), txt, font=fd, fill=MUTED + (al,), anchor="md")
+        for _, i in sorted(cands):
+            k = self.ids[i]
+            px, py = to_px(*self.pos[i])
+            r_now = max(float(radius(G[i])), PED_R)
+            dead = year > self.S.end[k]
             label = self.S.companies[k]["label"]
             if i in rank and rank[i] <= 5:
                 label = f"{rank[i]}  {label}"
             y = py + r_now * sc + 3
-            c = (MUTED[0], MUTED[1], MUTED[2], 150) if dead else INK + (235,)
-            dr.text((px, y), label, font=f_name if not dead else f_small, fill=c, anchor="ma")
+            fnt = f_name if not dead else f_small
+            bb = dr.textbbox((px, y), label, font=fnt, anchor="ma")
+            lines = [(label, fnt, (MUTED[0], MUTED[1], MUTED[2], 150) if dead else INK + (235,))]
             if dead:
-                c2 = self.S.companies[k]
-                end = int(float(self.S.end[k]))
-                dr.text((px, y + fs * 1.05), f"{int(self.S.start[k])}–{end}", font=f_small, fill=MUTED + (120,), anchor="ma")
-        for name, (dx0, dy0, dx1, dy1) in self.L.districts.items():
-            ppx, ppy = to_px((dx0 + dx1) / 2, dy0)
-            if sc < 3.5 and 0 < ppx < Wp and -20 < ppy < Hp:
-                dr.text((ppx, ppy - 4), layout.DISTRICTS[name]["label"].upper(), font=font("Inter-SemiBold.otf", fs * 0.9),
-                        fill=MUTED + (int(200 * np.clip((3.5 - sc) / 2, 0, 1)),), anchor="md")
-
+                yrs = f"{int(self.S.start[k])}–{int(float(self.S.end[k]))}"
+                bb2 = dr.textbbox((px, y + fs * 1.05), yrs, font=f_small, anchor="ma")
+                bb = (min(bb[0], bb2[0]), bb[1], max(bb[2], bb2[2]), bb2[3])
+                lines.append((yrs, f_small, MUTED + (120,)))
+            bb = (bb[0] - 3, bb[1] - 1, bb[2] + 3, bb[3] + 1)
+            if not free(bb):
+                continue
+            boxes.append(bb)
+            for j, (txt, fn, c) in enumerate(lines):
+                dr.text((px, y + j * fs * 1.05), txt, font=fn, fill=c, anchor="ma")
         # HUD
         m = Hp * 0.045
         dr.text((m, m * 0.8), f"{int(math.floor(year))}", font=font("InterDisplay-SemiBold.otf", Hp / 11), fill=INK)

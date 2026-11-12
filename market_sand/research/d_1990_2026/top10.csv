@@ -1,0 +1,371 @@
+year,rank,id,value,currency,source
+1990,1,ntt,112565.5,USD,DERIVED kabutan x anchors
+1990,2,royal_dutch_shell,70549.5,USD,DERIVED RD/0.6
+1990,3,ibm,64379.2,USD,DERIVED (see values.csv note)
+1990,4,standard_oil_nj,64258.9,USD,DERIVED (see values.csv note)
+1990,5,ibj,55311.7,USD,"ESTIMATE, low confidence (see values.csv est rows) (midpoint)"
+1990,6,ge,48986.8,USD,DERIVED (see values.csv note)
+1990,7,philip_morris,46499.5,USD,DERIVED (see values.csv note)
+1990,8,mitsubishi_bank,46424.6,USD,"ESTIMATE, low confidence (see values.csv est rows) (midpoint)"
+1990,9,sumitomo_bank,45150.5,USD,DERIVED kabutan x anchors
+1990,10,toyota,43227.7,USD,DERIVED kabutan x anchors
+1991,1,ntt,91650.9,USD,DERIVED kabutan x anchors
+1991,2,royal_dutch_shell,77367.6,USD,DERIVED RD/0.6
+1991,3,standard_oil_nj,75589.6,USD,DERIVED (see values.csv note)
+1991,4,philip_morris,72107.9,USD,DERIVED (see values.csv note)
+1991,5,walmart,67706.3,USD,DERIVED (see values.csv note)
+1991,6,ge,65315.8,USD,DERIVED (see values.csv note)
+1991,7,ibj,64042.7,USD,"ESTIMATE, low confidence (see values.csv est rows) (midpoint)"
+1991,8,merck,63849.0,USD,DERIVED (see values.csv note)
+1991,9,mitsubishi_bank,53752.8,USD,"ESTIMATE, low confidence (see values.csv est rows) (midpoint)"
+1991,10,sumitomo_bank,52771.7,USD,DERIVED kabutan x anchors
+1992,1,standard_oil_nj,75900,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,2,walmart,73600,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,3,ge,73000,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,4,royal_dutch_shell,71800,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named) (RD 43.6 + STT 28.2)
+1992,5,ntt,71300,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,6,philip_morris,69300,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,7,att,68000,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,8,coca_cola,54900,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,9,mitsubishi_bank,53400,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1992,10,merck,49900,USD,finance-gfp.com/?p=10552 world top-50 table dated 1992-12-31 (USD 100m; underlying database not named)
+1993,1,ntt,103929.9,USD,DERIVED kabutan x anchors
+1993,2,royal_dutch_shell,93623.4,USD,DERIVED RD/0.6
+1993,3,ge,88895.0,USD,DERIVED (see values.csv note)
+1993,4,standard_oil_nj,78192.5,USD,DERIVED (see values.csv note)
+1993,5,att,71000.9,USD,DERIVED from AT&T 10-K
+1993,6,mitsubishi_bank,64302.7,USD,"ESTIMATE, low confidence (see values.csv est rows)"
+1993,7,toyota,59283.3,USD,DERIVED kabutan x anchors
+1993,8,coca_cola,57806.9,USD,DERIVED (see values.csv note)
+1993,9,walmart,57460.1,USD,DERIVED (see values.csv note)
+1993,10,ibj,55993.9,USD,"ESTIMATE, low confidence (see values.csv est rows)"
+1994,1,ntt,137980.5,USD,DERIVED kabutan x anchors
+1994,2,royal_dutch_shell,96673.6,USD,DERIVED RD/0.6
+1994,3,ge,85833.0,USD,DERIVED (see values.csv note)
+1994,4,att,78842.6,USD,DERIVED from AT&T 10-K
+1994,5,toyota,78437.8,USD,DERIVED kabutan x anchors
+1994,6,standard_oil_nj,75067.3,USD,DERIVED (see values.csv note)
+1994,7,mitsubishi_bank,70266.1,USD,"ESTIMATE, low confidence (see values.csv est rows)"
+1994,8,coca_cola,65916.3,USD,DERIVED (see values.csv note)
+1994,9,ibj,61186.8,USD,"ESTIMATE, low confidence (see values.csv est rows)"
+1994,10,sumitomo_bank,59870.9,USD,DERIVED kabutan x anchors
+1995,1,ntt,128400,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,2,royal_dutch_shell,126601.5,USD,DERIVED RD/0.6 (absent from CAO list; see notes)
+1995,3,ge,120300,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,4,att,103100,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,5,standard_oil_nj,100000,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,6,coca_cola,93900,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,7,merck,80800,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,8,toyota,79400,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1995,9,mitsubishi_bank,78104.6,USD,"ESTIMATE, low confidence (see values.csv est rows) - may not belong"
+1995,10,roche,77800,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+1996,1,ge,162760.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+1996,2,royal_dutch_shell,153192.1,USD,DERIVED RD/0.6
+1996,3,coca_cola,130560.0,USD,companiesmarketcap.com/coca-cola/marketcap/ (retrieved 2026-11-12)
+1996,4,standard_oil_nj,121710.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+1996,5,ntt,120771.6,USD,DERIVED kabutan x anchors
+1996,6,toyota,107860.0,USD,companiesmarketcap.com/toyota/marketcap/ (retrieved 2026-11-12)
+1996,7,intel,107500.0,USD,companiesmarketcap.com/intel/marketcap/ (retrieved 2026-11-12)
+1996,8,microsoft,99410.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+1996,9,merck,96070.0,USD,companiesmarketcap.com/merck/marketcap/ (retrieved 2026-11-12)
+1996,10,philip_morris,91640.0,USD,companiesmarketcap.com/altria-group/marketcap/ (retrieved 2026-11-12)
+1997,1,ge,239770.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+1997,2,royal_dutch_shell,194459.6,USD,DERIVED RD/0.6
+1997,3,coca_cola,164760.0,USD,companiesmarketcap.com/coca-cola/marketcap/ (retrieved 2026-11-12)
+1997,4,microsoft,157360.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+1997,5,standard_oil_nj,150330.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+1997,6,ntt,136722.6,USD,DERIVED kabutan x anchors
+1997,7,merck,126520.0,USD,companiesmarketcap.com/merck/marketcap/ (retrieved 2026-11-12)
+1997,8,intel,114370.0,USD,companiesmarketcap.com/intel/marketcap/ (retrieved 2026-11-12)
+1997,9,philip_morris,109710.0,USD,companiesmarketcap.com/altria-group/marketcap/ (retrieved 2026-11-12)
+1997,10,toyota,108760.0,USD,companiesmarketcap.com/toyota/marketcap/ (retrieved 2026-11-12)
+1998,1,microsoft,348100.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+1998,2,ge,334000.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+1998,3,intel,196510.0,USD,companiesmarketcap.com/intel/marketcap/ (retrieved 2026-11-12)
+1998,4,walmart,181070.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+1998,5,standard_oil_nj,177540.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+1998,6,merck,174080.0,USD,companiesmarketcap.com/merck/marketcap/ (retrieved 2026-11-12)
+1998,7,royal_dutch_shell,171816.3,USD,DERIVED RD/0.6
+1998,8,ibm,168870.0,USD,companiesmarketcap.com/ibm/marketcap/ (retrieved 2026-11-12)
+1998,9,coca_cola,165180.0,USD,companiesmarketcap.com/coca-cola/marketcap/ (retrieved 2026-11-12)
+1998,10,pfizer,161750.0,USD,companiesmarketcap.com/pfizer/marketcap/ (retrieved 2026-11-12)
+1999,1,microsoft,604410.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+1999,2,ge,509940.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+1999,3,ntt_docomo,367150.0,USD,companiesmarketcap.com/ntt-docomo/marketcap/ (retrieved 2026-11-12)
+1999,4,cisco,355120.0,USD,companiesmarketcap.com/cisco/marketcap/ (retrieved 2026-11-12)
+1999,5,walmart,307880.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+1999,6,standard_oil_nj,280120.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+1999,7,intel,274430.0,USD,companiesmarketcap.com/intel/marketcap/ (retrieved 2026-11-12)
+1999,8,ntt,272786.9,USD,DERIVED kabutan x anchors
+1999,9,lucent,235640.0,USD,companiesmarketcap.com/lucent-technologies/marketcap/ (retrieved 2026-11-12)
+1999,10,nokia,222300.0,USD,companiesmarketcap.com/nokia/marketcap/ (retrieved 2026-11-12)
+2000,1,ge,476160.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+2000,2,standard_oil_nj,301240.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+2000,3,pfizer,290440.0,USD,companiesmarketcap.com/pfizer/marketcap/ (retrieved 2026-11-12)
+2000,4,cisco,275290.0,USD,companiesmarketcap.com/cisco/marketcap/ (retrieved 2026-11-12)
+2000,5,citigroup,256450.0,USD,companiesmarketcap.com/citigroup/marketcap/ (retrieved 2026-11-12)
+2000,6,walmart,237290.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+2000,7,microsoft,230800.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+2000,8,aig,229910.0,USD,companiesmarketcap.com/aig/marketcap/ (retrieved 2026-11-12)
+2000,9,vodafone,219650.0,USD,companiesmarketcap.com/vodafone/marketcap/ (retrieved 2026-11-12)
+2000,10,royal_dutch_shell,217318.2,USD,DERIVED RD/0.6
+2001,1,ge,398220.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+2001,2,microsoft,358050.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+2001,3,standard_oil_nj,267590.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+2001,4,citigroup,259900.0,USD,companiesmarketcap.com/citigroup/marketcap/ (retrieved 2026-11-12)
+2001,5,walmart,256500.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+2001,6,pfizer,250130.0,USD,companiesmarketcap.com/pfizer/marketcap/ (retrieved 2026-11-12)
+2001,7,intel,210400.0,USD,companiesmarketcap.com/intel/marketcap/ (retrieved 2026-11-12)
+2001,8,ibm,208430.0,USD,companiesmarketcap.com/ibm/marketcap/ (retrieved 2026-11-12)
+2001,9,aig,207660.0,USD,companiesmarketcap.com/aig/marketcap/ (retrieved 2026-11-12)
+2001,10,johnson_johnson,180090.0,USD,companiesmarketcap.com/johnson-and-johnson/marketcap/ (retrieved 2026-11-12)
+2002,1,microsoft,276630.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+2002,2,ge,243330.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+2002,3,standard_oil_nj,234500.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+2002,4,walmart,223430.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+2002,5,pfizer,188370.0,USD,companiesmarketcap.com/pfizer/marketcap/ (retrieved 2026-11-12)
+2002,6,citigroup,180900.0,USD,companiesmarketcap.com/citigroup/marketcap/ (retrieved 2026-11-12)
+2002,7,johnson_johnson,159420.0,USD,companiesmarketcap.com/johnson-and-johnson/marketcap/ (retrieved 2026-11-12)
+2002,8,bp,151610.0,USD,companiesmarketcap.com/bp/marketcap/ (retrieved 2026-11-12)
+2002,9,aig,150960.0,USD,companiesmarketcap.com/aig/marketcap/ (retrieved 2026-11-12)
+2002,10,royal_dutch_shell,147870.0,USD,companiesmarketcap.com/shell/marketcap/ (retrieved 2026-11-12)
+2003,1,ge,312230.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+2003,2,microsoft,295290.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+2003,3,pfizer,269530.0,USD,companiesmarketcap.com/pfizer/marketcap/ (retrieved 2026-11-12)
+2003,4,standard_oil_nj,269280.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+2003,5,citigroup,250310.0,USD,companiesmarketcap.com/citigroup/marketcap/ (retrieved 2026-11-12)
+2003,6,walmart,230100.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+2003,7,intel,207900.0,USD,companiesmarketcap.com/intel/marketcap/ (retrieved 2026-11-12)
+2003,8,bp,181950.0,USD,companiesmarketcap.com/bp/marketcap/ (retrieved 2026-11-12)
+2003,9,royal_dutch_shell,175980.0,USD,companiesmarketcap.com/shell/marketcap/ (retrieved 2026-11-12)
+2003,10,aig,172880.0,USD,companiesmarketcap.com/aig/marketcap/ (retrieved 2026-11-12)
+2004,1,ge,386890.0,USD,companiesmarketcap.com/general-electric/marketcap/ (retrieved 2026-11-12)
+2004,2,standard_oil_nj,328110.0,USD,companiesmarketcap.com/exxon-mobil/marketcap/ (retrieved 2026-11-12)
+2004,3,microsoft,290710.0,USD,companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12)
+2004,4,citigroup,250270.0,USD,companiesmarketcap.com/citigroup/marketcap/ (retrieved 2026-11-12)
+2004,5,walmart,223680.0,USD,companiesmarketcap.com/walmart/marketcap/ (retrieved 2026-11-12)
+2004,6,bp,209510.0,USD,companiesmarketcap.com/bp/marketcap/ (retrieved 2026-11-12)
+2004,7,pfizer,200940.0,USD,companiesmarketcap.com/pfizer/marketcap/ (retrieved 2026-11-12)
+2004,8,royal_dutch_shell,192750.0,USD,companiesmarketcap.com/shell/marketcap/ (retrieved 2026-11-12)
+2004,9,bank_of_america,190480.0,USD,companiesmarketcap.com/bank-of-america/marketcap/ (retrieved 2026-11-12)
+2004,10,johnson_johnson,188420.0,USD,companiesmarketcap.com/johnson-and-johnson/marketcap/ (retrieved 2026-11-12)
+2005,1,ge,370300.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,2,standard_oil_nj,349500.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,3,microsoft,278400.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,4,citigroup,245500.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,5,bp,219800.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,6,royal_dutch_shell,208300.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,7,procter_gamble,198800.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,8,walmart,194900.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,9,toyota,187300.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2005,10,bank_of_america,185300.0,USD,"Cabinet Office of Japan (CSTI) sanko3-6.pdf p.70 https://www8.cao.go.jp/cstp/tyousakai/kihon6/6kai/sanko3-6.pdf citing MUFG Morgan Stanley Securities 'Market history' (top 10 for 1995, 2005, 2015)"
+2006,1,standard_oil_nj,446943.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,2,ge,383564.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,3,microsoft,293537.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,4,citigroup,273691.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,5,gazprom,271482.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,6,icbc,254592.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,7,toyota,241161.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,8,bank_of_america,239758.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,9,royal_dutch_shell,225781.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2006,10,bp,218643.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2006
+2007,1,petrochina,723952.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,2,standard_oil_nj,511887.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,3,ge,374637.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,4,china_mobile,354120.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,5,icbc,338989.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,6,microsoft,333054.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,7,gazprom,329591.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,8,royal_dutch_shell,269544.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,9,sbc,252051.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2007,10,sinopec,249645.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2007
+2008,1,standard_oil_nj,406067.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,2,petrochina,259836.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,3,walmart,219898.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,4,china_mobile,201291.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,5,procter_gamble,184576.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,6,icbc,173930.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,7,microsoft,172929.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,8,sbc,167950.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,9,johnson_johnson,166002.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2008,10,ge,161278.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2008
+2009,1,petrochina,353140.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,2,standard_oil_nj,323717.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,3,microsoft,270635.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,4,icbc,268956.2,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,5,walmart,203653.6,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,6,china_construction_bank,201436.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,7,bhp,201248.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,8,hsbc,199254.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,9,petrobras,199107.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2009
+2009,10,google,197140.8,USD,DERIVED full value (Class A+B) from Google 10-K x price (absent from FT list)
+2010,1,standard_oil_nj,368711.5,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,2,petrochina,303273.6,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,3,apple,295886.3,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,4,bhp,243540.3,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,5,microsoft,238784.5,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,6,icbc,233369.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,7,petrobras,229066.6,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,8,china_construction_bank,222245.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,9,royal_dutch_shell,208593.7,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2010,10,nestle,203534.3,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2010
+2011,1,standard_oil_nj,406272.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,2,apple,376410.6,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,3,petrochina,276844.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,4,royal_dutch_shell,236677.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,5,icbc,228168.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,6,microsoft,218380.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,7,ibm,216724.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,8,chevron,211893.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2011,9,google,210005.6,USD,DERIVED full value (Class A+B) from Google 10-K x price (absent from FT list)
+2011,10,walmart,204659.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2011
+2012,1,apple,500610.7,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,2,standard_oil_nj,394610.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,3,petrochina,264833.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,4,bhp,247409.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,5,icbc,236457.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,6,china_mobile,234040.2,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,7,google,233197.2,USD,DERIVED full value (Class A+B) from Google 10-K x price (absent from FT list)
+2012,8,walmart,228245.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,9,samsung,227581.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2012,10,microsoft,224801.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2012
+2013,1,apple,504770.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,2,standard_oil_nj,442142.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,3,google,376615.5,USD,DERIVED full value (Class A+B) from Google 10-K x price; FT list value excluded Class B
+2013,4,microsoft,312297.3,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,5,berkshire,292396.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,6,ge,283589.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,7,johnson_johnson,258415.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,8,walmart,254622.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,9,roche,241368.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2013,10,chevron,240223.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2013
+2014,1,apple,647361.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,2,standard_oil_nj,391481.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,3,microsoft,382880.3,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,4,berkshire,370652.6,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,5,google,359500.0,USD,companiesmarketcap.com/alphabet-google/marketcap/ (retrieved 2026-11-12) (full value; FT list showed 329.8bn)
+2014,6,petrochina,305536.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,7,johnson_johnson,292702.8,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,8,wells_fargo,284385.6,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,9,walmart,276807.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2014,10,icbc,271146.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2014
+2015,1,apple,598344.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,2,google,534090.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,3,microsoft,439680.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,4,standard_oil_nj,325167.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,5,berkshire,323750.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,6,amazon,323009.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,7,ge,313892.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,8,facebook,296600.0,USD,companiesmarketcap.com/meta-platforms/marketcap/ (retrieved 2026-11-12) (full value; absent from FT-based list)
+2015,9,johnson_johnson,287153.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2015,10,wells_fargo,281770.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2015
+2016,1,apple,617588.5,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,2,google,531970.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,3,microsoft,483160.3,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,4,berkshire,404390.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,5,standard_oil_nj,374280.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,6,amazon,356313.1,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,7,facebook,331590.0,USD,companiesmarketcap.com/meta-platforms/marketcap/ (retrieved 2026-11-12) (full value; absent from FT-based list)
+2016,8,johnson_johnson,313432.5,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,9,jpmorgan,308768.4,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2016,10,ge,279545.9,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2016
+2017,1,apple,868880.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,2,google,727040.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,3,microsoft,659910.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,4,amazon,563540.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,5,facebook,512760.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,6,tencent,493340.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,7,berkshire,489490.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,8,alibaba,440712.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,9,johnson_johnson,375360.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2017,10,jpmorgan,371050.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2017
+2018,1,microsoft,780520.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,2,apple,748680.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,3,amazon,735900.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,4,google,728360.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,5,berkshire,499590.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,6,facebook,375890.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,7,tencent,375110.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,8,alibaba,355130.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,9,johnson_johnson,346110.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2018,10,jpmorgan,324660.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2018
+2019,1,aramco,1880000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2019,2,apple,1305000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,3,microsoft,1203000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,4,google,922130.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,5,amazon,916150.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,6,facebook,585320.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,7,alibaba,569010.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,8,berkshire,553530.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,9,tencent,461370.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2019,10,jpmorgan,437230.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2019
+2020,1,apple,2254000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,2,aramco,2053000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2020,3,microsoft,1682000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,4,amazon,1634000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,5,google,1185000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,6,facebook,776590.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,7,tencent,683470.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,8,tesla,668080.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,9,alibaba,628650.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2020,10,tsmc,565280.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2020
+2021,1,apple,2913000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,2,microsoft,2525000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,3,google,1922000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,4,aramco,1908000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2021,5,amazon,1691000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,6,tesla,1061000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,7,facebook,935640.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,8,nvidia,732920.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,9,berkshire,668630.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2021,10,tsmc,623930.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2021
+2022,1,apple,2066000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,2,aramco,1881000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2022,3,microsoft,1787000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,4,google,1145000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,5,amazon,856940.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,6,berkshire,681770.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,7,unitedhealth,495370.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,8,johnson_johnson,461840.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,9,standard_oil_nj,454240.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2022,10,visa,439950.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2022
+2023,1,apple,2994000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,2,microsoft,2795000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,3,aramco,2133000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2023,4,google,1764000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,5,amazon,1570000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,6,nvidia,1223000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,7,facebook,909000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,8,tesla,789930.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,9,berkshire,783550.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2023,10,eli_lilly,553370.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2023
+2024,1,apple,3785000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,2,nvidia,3289000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,3,microsoft,3134000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,4,google,2331000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,5,amazon,2307000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,6,aramco,1805000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2024,7,facebook,1478000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,8,tesla,1296000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,9,broadcom,1087000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2024,10,tsmc,1024000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2024
+2025,1,nvidia,4638000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,2,apple,4057000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,3,google,3802000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,4,microsoft,3625000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,5,amazon,2485000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,6,facebook,1671000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,7,broadcom,1669000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,8,tesla,1580000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,9,tsmc,1570000.0,USD,Wikipedia 'List of public corporations by market capitalization' (retrieved 2026-11-12) https://en.wikipedia.org/wiki/List_of_public_corporations_by_market_capitalization Q4 2025
+2025,10,aramco,1527000.0,USD,companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) (excluded from Wikipedia lists for low free float)
+2026-11-12,1,apple,5168079.8,USD,"companiesmarketcap.com/apple/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,2,nvidia,4195058.2,USD,"companiesmarketcap.com/nvidia/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,3,microsoft,3869975.5,USD,"companiesmarketcap.com/microsoft/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,4,google,3573005.2,USD,"companiesmarketcap.com/alphabet-google/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,5,amazon,2878133.0,USD,"companiesmarketcap.com/amazon/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,6,tsmc,2143828.6,USD,"companiesmarketcap.com/tsmc/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,7,spacex,1897953.8,USD,"companiesmarketcap.com/spacex/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,8,aramco,1678112.1,USD,"companiesmarketcap.com/saudi-aramco/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,9,broadcom,1647952.5,USD,"companiesmarketcap.com/broadcom/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"
+2026-11-12,10,facebook,1607659.9,USD,"companiesmarketcap.com/meta-platforms/marketcap/ (retrieved 2026-11-12) latest (CMC global ranking page, 2026-11-12)"

@@ -1,0 +1,83 @@
+id,name,aka,country,exchange,industry,first_value_date,end_date,fate,successors,top10_years,confidence,notes
+ntt,Nippon Telegraph and Telephone,NTT; NTT Inc. (2025),Japan,Tokyo,telecom_media,1989-12-29,,alive,,1990-1997;1999-2000,high,"Listed Feb 1987; world #1 at end-1990 and 1991 by our estimates; parent of NTT DoCoMo (IPO 1998, re-absorbed 2020)."
+ntt_docomo,NTT DoCoMo,NTT Mobile Communications Network,Japan,Tokyo,telecom_media,1998-10-23,2020-12-25,taken_private,ntt,1999-2000,high,"IPO 1998-10-22 (NTT kept ~67%); world #3 at end-1999; tender offer by parent NTT completed Nov 2020, delisted 2020-12-25."
+ibj,Industrial Bank of Japan,IBJ; Nippon Kogyo Ginko,Japan,Tokyo,finance,1989,2000-09-29,merged,mizuho,1990-1991;1993-1994,low,World #1 in the MSCI 1989 list; merged into Mizuho Holdings (share transfer 2000-09-29).
+sumitomo_bank,Sumitomo Bank,"Sumitomo Mitsui Banking Corp (2001, with Sakura); Sumitomo Mitsui Financial Group (2002)",Japan,Tokyo,finance,1989,,alive,,1990-1991;1994,medium,Treated as the continuing vessel of SMFG (kabutan 8316 price history is spliced from Sumitomo Bank). Legally Sakura Bank was the surviving bank in the April 2001 merger; human decision whether to show Sakura as the receiver.
+fuji_bank,Fuji Bank,Yasuda Bank (pre-1948),Japan,Tokyo,finance,1989,2000-09-29,merged,mizuho,,low,Merged into Mizuho Holdings 2000-09-29.
+dai_ichi_kangyo,Dai-Ichi Kangyo Bank,DKB,Japan,Tokyo,finance,1989,2000-09-29,merged,mizuho,,low,Merged into Mizuho Holdings 2000-09-29.
+mitsubishi_bank,Mitsubishi Bank,Bank of Tokyo-Mitsubishi (1996); Mitsubishi Tokyo Financial Group (2001); Mitsubishi UFJ Financial Group (2005),Japan,Tokyo,finance,1989-12-29,,alive,,1990-1995,low,Merged with Bank of Tokyo 1996-04-01 (Mitsubishi the survivor); MTFG holding company 2001; absorbed UFJ 2005-10-01. Treated as one continuing vessel (MUFG).
+sanwa_bank,Sanwa Bank,"UFJ Holdings (2001, with Tokai Bank)",Japan,Tokyo,finance,1989-12-29,2005-10-01,merged,mitsubishi_bank,,low,Became UFJ Holdings with Tokai Bank (2001-04-02); UFJ merged into MUFG 2005-10-01 (UFJ valued at about $38bn in the deal). Values 1990-1995 are estimates only.
+mizuho,Mizuho Financial Group,Mizuho Holdings (2000-2003),Japan,Tokyo,finance,2006-12-31,,alive,,,medium,"Holding company formed 2000-09-29 by IBJ, Fuji Bank and Dai-Ichi Kangyo Bank. Never a top-10 company itself; included for lineage."
+tepco,Tokyo Electric Power,TEPCO; TEPCO Holdings (2016),Japan,Tokyo,industrial,1989,,alive,,,medium,"Top 10 in 1989 (era c); in 1990 about $36bn, just outside our top 10 estimate. Collapsed after the Fukushima accident (March 2011): $32bn (end-2010) to $3.8bn (end-2011)."
+toyota,Toyota Motor,Toyota Motor Corporation,Japan,Tokyo,autos,1989,,alive,,1990;1993-1997;2005-2007,high,
+standard_oil_nj,Exxon,Exxon (1972); Exxon Mobil (1999); ExxonMobil Holdings (2026),United States,NYSE,oil,1989,,alive,,1990-2018;2022,high,Absorbed Mobil 1999-11-30. Wikipedia names the current parent ExxonMobil Holdings Corporation (holding-company reorganisation; date not established in this research).
+socony,Mobil,Socony-Vacuum; Mobil Oil; Mobil Corp,United States,NYSE,oil,1992-12-31,1999-11-30,merged,standard_oil_nj,,medium,"Merged into Exxon 1999-11-30 (deal valued at $77.2bn at announcement, Dec 1998). Never top 10 in 1990-1999."
+ibm,International Business Machines,IBM,United States,NYSE,computing,1989,,alive,,1990;1998;2001;2003;2011-2013,high,
+royal_dutch_shell,Royal Dutch/Shell Group,"Royal Dutch Petroleum (NL, 60%) + Shell Transport & Trading (UK, 40%); Royal Dutch Shell plc (2005); Shell plc (2022)",Netherlands/United Kingdom,Amsterdam/London/NYSE,oil,1990-12-31,,alive,,1990-1998;2000-2012;2014,medium,Values 1990-2001 are DERIVED from Royal Dutch Petroleum NY share price x shares / 0.6 (Royal Dutch held 60% of the group). One vessel for the dual-listed group; human decision needed if era c treats Royal Dutch and Shell T&T separately. CMC Shell data for 2005-2021 are far too low (about half) and are not used.
+ge,General Electric,GE Aerospace (2024),United States,NYSE,industrial,1989,,alive,,1990-2008;2010;2012-2016,high,"Spun off Synchrony (2015 exchange offer), GE HealthCare (2023-01-04) and GE Vernova (2024-04-02); remaining company renamed GE Aerospace."
+philip_morris,Philip Morris Companies,Altria Group (2003),United States,NYSE,consumer,1989,,alive,,1990-1992;1996-1997,high,Spun off Kraft Foods (2007-03-30) and Philip Morris International (2008-03-28).
+walmart,Wal-Mart Stores,Walmart Inc. (2018),United States,NYSE,consumer,1990-12-31,,alive,,1991-1993;1998-2006;2008-2014,high,Listed on Nasdaq from Dec 2024.
+att,American Telephone & Telegraph,AT&T Corp,United States,NYSE,telecom_media,1989,2005-11-18,acquired,sbc,1992-1995,medium,"Spun off Lucent and NCR (1996), split off AT&T Wireless and Liberty Media (2001), AT&T Broadband to Comcast (2002); acquired by SBC 2005-11-18 for about $16bn."
+sbc,Southwestern Bell Corporation,SBC Communications (1995); AT&T Inc. (2005),United States,NYSE,telecom_media,1990-12-31,,alive,,2007-2009;2016,high,"Bought Pacific Telesis (1997), SNET (1998), Ameritech (1999), AT&T Corp (2005), BellSouth (2006), Time Warner (2018); spun WarnerMedia into Warner Bros. Discovery (2022). CMC slug att = this lineage."
+coca_cola,Coca-Cola,The Coca-Cola Company,United States,NYSE,consumer,1990-12-31,,alive,,1992-1998,high,
+merck,Merck & Co.,,United States,NYSE,chem_pharma,1989,,alive,,1991-1992;1995-1998,high,Absorbed Schering-Plough 2009.
+microsoft,Microsoft,,United States,Nasdaq,computing,1990-12-31,,alive,,1996-2026,high,
+intel,Intel,,United States,Nasdaq,semis,1990-12-31,,alive,,1996-2004,high,
+cisco,Cisco Systems,,United States,Nasdaq,computing,1990-12-31,,alive,,1999-2001,high,Networking hardware. 1990-1995 values are low-confidence (share count assumed constant back from 1996).
+lucent,Lucent Technologies,,United States,NYSE,computing,1997-01-02,2006-12-01,merged,alcatel_lucent,1999-2000,high,IPO April 1996 and spun off by AT&T Corp 1996-09-30; peak $259bn (1999-12-20); merged with Alcatel 2006-12-01.
+alcatel_lucent,Alcatel,Alcatel-Lucent (2006),France,Paris/NYSE,computing,2006-12-31,2016,acquired,nokia,,low,Lineage only: received Lucent 2006; acquired by Nokia 2016.
+nortel,Nortel Networks,Northern Telecom,Canada,Toronto/NYSE,computing,1997-03-31,2009-01-14,bankrupt,,,medium,"Peak $252bn (2000-07-26, CMC daily); possibly briefly in the world top 10 in July-August 2000 (not on any quarter-end list we hold); bankrupt January 2009."
+nokia,Nokia,,Finland,Helsinki/NYSE,telecom_media,1996-03-29,,alive,,1999-2000,high,Handsets/network equipment.
+vodafone,Vodafone Group,Vodafone AirTouch (1999-2000),United Kingdom,London,telecom_media,1990-12-31,,alive,,2000-2001,medium,"Merged with AirTouch 1999; took over Mannesmann 2000 (the largest takeover then, EUR 190bn). CMC values before 2000 look too low and are not used."
+mannesmann,Mannesmann,Vodafone GmbH (after takeover),Germany,Frankfurt,telecom_media,2000-02-04,2000-03-30,acquired,vodafone,,medium,"Acquired by Vodafone AirTouch (agreed 2000-02-04, EUR 190bn / about $183bn)."
+deutsche_telekom,Deutsche Telekom,,Germany,Frankfurt,telecom_media,1996-12-31,,alive,,2000,high,IPO November 1996.
+aol,America Online,AOL,United States,NYSE,internet,2000-01-07,2001-01-11,merged,aol_time_warner,,medium,Merged with Time Warner into AOL Time Warner (completed 2001-01-11).
+time_warner,Time Warner (1990),Time Inc. + Warner Communications,United States,NYSE,telecom_media,1997-03-31,2001-01-11,merged,aol_time_warner,,medium,Merged into AOL Time Warner 2001-01-11.
+aol_time_warner,AOL Time Warner,Time Warner Inc. (2003),United States,NYSE,telecom_media,2002-02-04,2018-06-14,acquired,sbc,,low,New holding company (2001); renamed Time Warner 2003; spun off Time Warner Cable (2009-03) and AOL (2009-12); acquired by AT&T Inc. 2018-06-14 (about $85bn).
+citicorp,Citicorp,First National City,United States,NYSE,finance,1998-04,1998-10-08,merged,citigroup,,medium,Merged with Travelers Group 1998-10-08 (Citicorp valued at about $70bn).
+travelers,Travelers Group,Primerica (to 1993),United States,NYSE,finance,1996-03-29,1998-10-08,merged,citigroup,,medium,Legally the surviving company (renamed Citigroup); shown here as merging into a new citigroup vessel - human decision.
+citigroup,Citigroup,,United States,NYSE,finance,1998-12-31,,alive,,2000-2007,high,Formed 1998-10-08 from Citicorp and Travelers Group.
+pfizer,Pfizer,,United States,NYSE,chem_pharma,1990-12-31,,alive,,1998;2000-2006,high,"Absorbed Warner-Lambert (2000), Pharmacia (2003), Wyeth (2009)."
+bp,BP,British Petroleum; BP Amoco (1998-2001),United Kingdom,London/NYSE,oil,1990-12-31,,alive,,2002-2007,medium,Absorbed Amoco (1998-12-31) and ARCO (2000). CMC 1996 value looks wrong and is not used.
+hsbc,HSBC Holdings,Hongkong and Shanghai Banking Corp,United Kingdom,London/Hong Kong,finance,1996-03-29,,alive,,2004;2006;2009,medium,CMC values for 2003-2006 appear about 15% above FT figures (FT lists exclude HSBC where CMC would rank it); treat with care.
+aig,American International Group,AIG,United States,NYSE,finance,1990-12-31,,alive,,2000-2004,high,Collapsed in 2008 (government rescue): $147bn end-2007 to $4bn end-2008.
+johnson_johnson,Johnson & Johnson,,United States,NYSE,chem_pharma,1990-12-31,,alive,,2001-2005;2008-2009;2013-2020;2022,high,
+procter_gamble,Procter & Gamble,,United States,NYSE,consumer,1990-12-31,,alive,,2005;2008-2010,high,
+bank_of_america,Bank of America,NationsBank lineage (1998 merger),United States,NYSE,finance,1996-03-29,,alive,,2004-2007,medium,CMC values near big stock mergers (e.g. MBNA 2006) use post-merger share counts; 2005 value taken from CAO list.
+gazprom,Gazprom,,Russia,Moscow,oil,2006-03-31,,alive,,2006-2008,medium,Top 10 in 2006-2008 (FT). Western investors largely shut out after 2022.
+petrochina,PetroChina,,China,Hong Kong/Shanghai,oil,2004-12-31,,alive,,2007-2015,medium,"H shares listed April 2000; A shares listed in Shanghai 2007-11-05, when the full share count at the A-share price gave about $1tn (Wikipedia peak $1.2tn nominal on that day)."
+icbc,Industrial and Commercial Bank of China,ICBC,China,Shanghai/Hong Kong,finance,2006-10-31,,alive,,2006-2015,medium,IPO 2006-10-27. CMC values for 2006-2019 are about 1.4-1.6x the FT values and are not used for ranking.
+china_mobile,China Mobile,China Telecom (Hong Kong) (1997-2000),China,Hong Kong,telecom_media,2000-01-31,,alive,,2007-2012;2015,high,
+sinopec,Sinopec,China Petroleum & Chemical,China,Hong Kong/Shanghai,oil,2001-08-31,,alive,,2007,medium,
+china_construction_bank,China Construction Bank,CCB,China,Hong Kong/Shanghai,finance,2007-09-28,,alive,,2009-2011,medium,
+petrobras,Petrobras,Petroleo Brasileiro,Brazil,Sao Paulo/NYSE,oil,2000-09-29,,alive,,2009-2011,medium,
+bhp,BHP Billiton,BHP (1885); BHP Billiton (2001); BHP Group (2018),Australia,Sydney/London,mining_metals,1996-03-29,,alive,,2009-2012,medium,CMC 2009 value (301bn) is inconsistent with FT (201bn) and not used.
+chevron,Chevron,Standard Oil of California; ChevronTexaco (2001-2005),United States,NYSE,oil,1990-12-31,,alive,,2011-2013,high,
+nestle,Nestle,,Switzerland,Zurich,consumer,1992-12-31,,alive,,2010-2011;2013;2015,medium,CMC values 1998-2002 are wrong (about 3x) and not used.
+roche,Roche Holding,Hoffmann-La Roche,Switzerland,Zurich,chem_pharma,1995-12-29,,alive,,1995;2013-2014,medium,#9 at end-1995 (CAO). CMC 2012 value is wrong and not used.
+novartis,Novartis,Ciba-Geigy + Sandoz (merged 1996-12-20),Switzerland,Zurich,chem_pharma,1998-12-31,,alive,,2014-2015,medium,
+wells_fargo,Wells Fargo,Norwest lineage (1998 merger),United States,NYSE,finance,1996-03-29,,alive,,2014-2017,high,
+berkshire,Berkshire Hathaway,,United States,NYSE,finance,1990-12-31,,alive,,2010;2013-2026,high,
+apple,Apple,Apple Computer (to 2007),United States,Nasdaq,computing,1990-12-31,,alive,,2009-2026,high,
+google,Google,Alphabet Inc. (2015),United States,Nasdaq,internet,2004-12-31,,alive,,2009;2011-2026,high,IPO 2004-08-19. Alphabet became the holding company on 2015-10-02 (treated as a rename). Values 2004-2013 computed from 10-K share counts (Class A + Class B) x year-end price; FT-based lists before 2015 excluded unlisted Class B shares.
+amazon,Amazon.com,Amazon,United States,Nasdaq,internet,1997-06-30,,alive,,2015-2026,high,
+facebook,Facebook,Meta Platforms (2021),United States,Nasdaq,internet,2012-05-31,,alive,,2015-2026,high,"IPO 2012-05-18; renamed Meta Platforms 2021-10-28. FT-based lists (to 2016) excluded unlisted Class B shares, so Facebook was missing from the Wikipedia Q4 2015/2016 lists although its full value ranked about #7-8."
+alibaba,Alibaba Group,,China,NYSE/Hong Kong,internet,2014-09-30,,alive,,2017-2021,high,IPO 2014-09-19 (NYSE).
+tencent,Tencent Holdings,,China,Hong Kong,internet,2007-12-31,,alive,,2016-2022,high,CMC tracks the TCEHY ADR.
+jpmorgan,JPMorgan Chase,Chemical Banking -> Chase Manhattan (1996) -> J.P. Morgan Chase (2000),United States,NYSE,finance,1996-03-29,,alive,,2015-2019,high,1990-1995 legal predecessor values not researched.
+visa,Visa,,United States,NYSE,finance,2008-05-30,,alive,,2019-2020;2022-2023,high,IPO 2008-03-19.
+unitedhealth,UnitedHealth Group,United HealthCare,United States,NYSE,consumer,1990-12-31,,alive,,2022,high,"Health insurer; industry list has no health-services class, put under consumer - human decision."
+tesla,Tesla,Tesla Motors,United States,Nasdaq,autos,2010-06-30,,alive,,2020-2026,high,IPO 2010-06-29.
+tsmc,Taiwan Semiconductor Manufacturing,TSMC,Taiwan,Taiwan/NYSE,semis,1997-12-31,,alive,,2020-2026,high,"Listed Taiwan 1994, NYSE ADR 1997. CMC tracks the ADR (ADR premium can inflate values; Wikipedia notes the ADR touched $1tn on 2024-07-08)."
+nvidia,Nvidia,,United States,Nasdaq,semis,1999-01-29,,alive,,2021-2026,high,"IPO 1999-01-22. World #1 2024-2026; peak $5.72tn (2026-05-14, Wikipedia)."
+eli_lilly,Eli Lilly,,United States,NYSE,chem_pharma,1990-12-31,,alive,,2023-2025,high,
+broadcom,Broadcom,Avago Technologies (IPO 2009; took Broadcom name 2016),United States,Nasdaq,semis,2009-11-30,,alive,,2024-2026,high,Absorbed VMware 2023-11-22.
+aramco,Saudi Aramco,Saudi Arabian Oil Company,Saudi Arabia,Tadawul,oil,2019-12-11,,alive,,2019-2026,high,"IPO 2019-12-11 (1.5% float). Wikipedia lists exclude it (free float under 15%); we include it in top10.csv. Peak $2.52tn nominal (2022-05-10, Wikipedia)."
+samsung,Samsung Electronics,,South Korea,Seoul,semis,2007-03-30,,alive,,2012;2026,medium,CMC values appear to cover common shares only; FT values (2012) about 9% higher (preferred shares).
+spacex,SpaceX,Space Exploration Technologies,United States,Nasdaq,industrial,2026-06-12,,alive,,2026,medium,"IPO 2026-06-12 (raised $86bn, Wikipedia); peak $2.44tn on 2026-06-19 (Wikipedia). Bought xAI for about $250bn in Feb 2026 while private. Industry: aerospace, classed as industrial."
+kraft_foods,Kraft Foods Inc.,Mondelez International (2012; Kraft Foods Group spun off),United States,NYSE,consumer,2001-06-29,,alive,,,medium,"Lineage only: IPO 2001 by Philip Morris, fully spun off 2007-03-30; renamed Mondelez International 2012 after spinning off Kraft Foods Group. Values from CMC mondelez page (same legal lineage)."
+pmi,Philip Morris International,,United States,NYSE,consumer,2008-03-31,,alive,,,high,Lineage only: spun off by Altria 2008-03-28.
+ge_healthcare,GE HealthCare,,United States,Nasdaq,industrial,2022-12-30,,alive,,,high,Lineage only: spun off by GE 2023-01-04.
+ge_vernova,GE Vernova,,United States,NYSE,industrial,2024-03-31,,alive,,,high,Lineage only: spun off by GE 2024-04-02.
+wbd,Warner Bros. Discovery,WarnerMedia (spun from AT&T) + Discovery,United States,Nasdaq,telecom_media,2022-04-16,,alive,,,high,Lineage only: WarnerMedia spun off by AT&T Inc. and merged with Discovery 2022-04-08.
+aol_inc,AOL Inc.,,United States,NYSE,internet,2009-11-24,2015,acquired,,,medium,Lineage only: spun off by Time Warner 2009-12-09; acquired by Verizon 2015.
