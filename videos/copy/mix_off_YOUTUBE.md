@@ -89,7 +89,10 @@ granular flow, powder mixing, Blender, kitchen science, food science, simulation
 17% depending only on where it went."
 
 **Before uploading.**
-* The mixers carry the KitchenAid name on the band and are painted in real KitchenAid colours (Scorched
+* **The 4K version is rendered from `videos/powder_mixer/blender/`** (open the files in Blender, render; see
+  the README there). It differs from the 720p preview in two ways: the metal is more realistic, and the
+  mixers' trim bands now show the KitchenAid name, which the preview did not.
+* The mixers are painted in real KitchenAid colours (Scorched
   Orange, Aqua Sky, Blue Velvet, Pistachio, Empire Red, Lavender Cream, Butter, Dried Rose; shades matched
   by eye). Showing a real product is normal on YouTube, but keep the "not sponsored by or affiliated with
   KitchenAid" line in the description; the end card says the same.

@@ -27,13 +27,15 @@ the percentage is measured from the simulated grains.
 | `models/kitchenaid/` | The stand mixer model (CC0, see "The stand mixer model" below). |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
+| `make_master.py` | Builds the Blender sequencer file that assembles the final film. |
+| `blender/` | Render-ready 4K project: nine shot files, the master file, overlay videos and music. Start with `blender/README.md`. |
 | `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
 | `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:54, 1280x720). |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |
 
-`cache/`, `renders/` and `.blend` files are generated, so they are git-ignored.
+`cache/` and `renders/` are generated, so they are git-ignored, as are `.blend` files outside `blender/` and `models/`.
 
 ## Quick start
 
@@ -340,9 +342,16 @@ released CC0; the licence text is in `models/kitchenaid/`.
 - **Size.** The mixer is drawn 1.36 times too large for the bowl, with a longer
   drive shaft. At true size the head sits just above the rim and hides the
   powder from the camera.
-- **Branding.** The model carries the KitchenAid name on its band. The film is
-  not sponsored by or affiliated with KitchenAid; say so in the description if
-  the name is legible in the upload (it is in the copy file).
+- **Branding.** The model's trim band and hub cap carry the KitchenAid name.
+  The 720p preview does not show it (that cut replaced the band's material
+  with plain metal); the 4K files in `blender/` do, and
+  `bowl_scene.py --no-lettering` leaves it off. The film is not sponsored by
+  or affiliated with KitchenAid; the end card and the description say so.
+- **Metal.** Chrome, brushed steel (trim band), turned steel (shaft, hub) and
+  polished steel (tools) are separate materials whose roughness varies across
+  the surface; three reflection cards and a studio environment, seen only in
+  reflections, give them something to reflect. This look postdates the 720p
+  preview, which has the earlier flat metal.
 - `bowl_scene.py --mixer capsule` swaps in the plain cylindrical motor housing
   used in earlier cuts.
 
@@ -365,8 +374,27 @@ python make_film.py compose && python make_film.py finish
 ### Upload-quality version on a GPU machine
 
 The preview holds up on a phone. On a desktop or TV it is soft, because the 3-D
-picture is 960x420 scaled up. For the upload, re-render the picture large on a
-GPU and compose at 1080p or 4K; the overlay scales with it.
+picture is 960x420 scaled up. For the upload, render it in 4K on a GPU.
+
+**The easy way: `blender/`.** That folder holds nine self-contained shot files,
+a master file that assembles the film in Blender's sequencer, the overlay and
+the music. Open, render, done; no Python and no simulations. See
+`blender/README.md`. They were made with:
+
+```bash
+python make_film.py blends --scale 3 --samples 128      # nine shot files, animation packed inside
+```
+
+```bash
+python make_film.py plates --scale 3                    # the overlay as two videos, plus the score
+```
+
+```bash
+python make_master.py                                   # the sequencer file
+```
+
+**From the scripts.** The same result from the command line, composing with
+Python instead of the sequencer; the overlay scales with the picture.
 
 ```bash
 pip install numpy numba pillow
