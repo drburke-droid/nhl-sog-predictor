@@ -13,8 +13,10 @@ be simulated or installed besides Blender.
 | `overlay_multiply.mp4`, `overlay_add.mp4` | The scores, charts, captions and cards, as two overlay videos |
 | `score.m4a` | The music |
 | `render_all.bat`, `render_all.sh`, `use_gpu.py` | Optional: render everything in one go |
+| `film_pics.json`, `film_timeline.json` | Which rendered frame sits under each film frame; used to build the master, not needed to render |
 
-Keep all of them in the same folder.
+Keep all of them in the same folder. `../stills/final_4k_look_crop.jpg` is a
+full-quality crop from `shot_Q3.blend`, to show what to expect.
 
 ## Steps
 
@@ -24,7 +26,8 @@ Keep all of them in the same folder.
 3. Open each `shot_*.blend` and choose Render > Render Animation (Ctrl+F12).
    Frames are written to `frames/Q1/`, `frames/Q2/` and so on, next to the files.
 4. Open `the_mix_off_MASTER.blend` and choose Render > Render Animation.
-   It writes `the_mix_off_4K.mp4` (3840x2160, 24 fps, 3:54, with the music).
+   It writes `the_mix_off_4K0001-5613.mp4` (3840x2160, 24 fps, 3:54, with the
+   music); Blender adds the frame range to the name.
 
 Or, instead of steps 3 and 4, double-click `render_all.bat` (Windows; edit the
 Blender path at the top if yours differs) or run `./render_all.sh`.

@@ -215,7 +215,8 @@ def stage_plates(args):
                                "--plate", c, "--out", os.path.join(tmp, c + ".mkv")]) for c in ("black", "white")]
     if any(p.wait() for p in procs):
         raise SystemExit("composing the plates failed")
-    enc = ["-c:v", "libx264", "-crf", "14", "-preset", "slow", "-colorspace", "bt709", "-color_primaries", "bt709",
+    # crf 23 keeps the 4K overlay under GitHub's 100 MB file limit (84 MB); at crf 14 it is 185 MB
+    enc = ["-c:v", "libx264", "-crf", "23", "-preset", "slow", "-colorspace", "bt709", "-color_primaries", "bt709",
            "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart"]
     to_yuv = "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p"
     black, white = os.path.join(tmp, "black.mkv"), os.path.join(tmp, "white.mkv")
@@ -229,10 +230,10 @@ def stage_plates(args):
     wav = os.path.join(tmp, "score.wav")
     subprocess.run([sys.executable, os.path.join(HERE, "film_score.py"), os.path.join(out, "film_timeline.json"), wav], check=True)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000",
-                    "-c:a", "flac", os.path.join(out, "score.flac")], check=True)
+                    "-c:a", "aac", "-b:a", "256k", os.path.join(out, "score.m4a")], check=True)
     import shutil
     shutil.rmtree(tmp)
-    print("wrote overlay_add.mp4, overlay_multiply.mp4, score.flac, film_pics.json, film_timeline.json to", out)
+    print("wrote overlay_add.mp4, overlay_multiply.mp4, score.m4a, film_pics.json, film_timeline.json to", out)
 
 
 def main():

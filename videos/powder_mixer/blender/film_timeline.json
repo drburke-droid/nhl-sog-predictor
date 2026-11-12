@@ -1,0 +1,203 @@
+{
+ "fps": 24,
+ "seconds": 233.88,
+ "segments": [
+  [
+   "cold_open",
+   0.0,
+   4.75
+  ],
+  [
+   "title",
+   5.17,
+   3.5
+  ],
+  [
+   "scoring",
+   9.08,
+   5.0
+  ],
+  [
+   "contestants",
+   14.5,
+   5.5
+  ],
+  [
+   "round_wedges",
+   20.42,
+   3.5
+  ],
+  [
+   "Q1",
+   24.33,
+   18.3
+  ],
+  [
+   "Q2",
+   43.04,
+   18.29
+  ],
+  [
+   "Q3",
+   61.75,
+   18.29
+  ],
+  [
+   "Q4",
+   80.46,
+   18.29
+  ],
+  [
+   "round_stripes",
+   99.17,
+   3.5
+  ],
+  [
+   "S1",
+   103.08,
+   18.3
+  ],
+  [
+   "S2",
+   121.79,
+   18.29
+  ],
+  [
+   "round_rings",
+   140.5,
+   3.5
+  ],
+  [
+   "F1",
+   144.42,
+   18.29
+  ],
+  [
+   "champion",
+   163.12,
+   4.5
+  ],
+  [
+   "takeaway1",
+   168.04,
+   4.5
+  ],
+  [
+   "takeaway2",
+   172.96,
+   4.5
+  ],
+  [
+   "takeaway3",
+   177.88,
+   4.5
+  ],
+  [
+   "takeaway4",
+   182.79,
+   5.0
+  ],
+  [
+   "research",
+   188.21,
+   5.0
+  ],
+  [
+   "caveats",
+   193.62,
+   3.5
+  ],
+  [
+   "satisfying_title",
+   197.54,
+   2.59
+  ],
+  [
+   "X6",
+   200.54,
+   14.75
+  ],
+  [
+   "X5",
+   215.71,
+   14.75
+  ],
+  [
+   "end",
+   230.88,
+   3.0
+  ]
+ ],
+ "matches": [
+  {
+   "key": "Q1",
+   "name": "Quarter-final 1",
+   "load": "wedges",
+   "a": "spoon",
+   "b": "spoon_centre",
+   "ra": 0.9786574006241842,
+   "rb": 0.16593966113508102,
+   "winner": "spoon"
+  },
+  {
+   "key": "Q2",
+   "name": "Quarter-final 2",
+   "load": "wedges",
+   "a": "wire_whip",
+   "b": "paddle_large",
+   "ra": 0.7200936709272893,
+   "rb": 0.7707821046792206,
+   "winner": "paddle_large"
+  },
+  {
+   "key": "Q3",
+   "name": "Quarter-final 3",
+   "load": "wedges",
+   "a": "twin_beaters",
+   "b": "whisk",
+   "ra": 0.6015142174870952,
+   "rb": 0.976828666799318,
+   "winner": "whisk"
+  },
+  {
+   "key": "Q4",
+   "name": "Quarter-final 4",
+   "load": "wedges",
+   "a": "fork",
+   "b": "paddle_small",
+   "ra": 0.8427197769405618,
+   "rb": 0.6574098003422619,
+   "winner": "fork"
+  },
+  {
+   "key": "S1",
+   "name": "Semi-final 1",
+   "load": "stripes",
+   "a": "paddle_large",
+   "b": "spoon",
+   "ra": 0.7830451302760304,
+   "rb": 0.9567478903511222,
+   "winner": "spoon"
+  },
+  {
+   "key": "S2",
+   "name": "Semi-final 2",
+   "load": "stripes",
+   "a": "whisk",
+   "b": "fork",
+   "ra": 0.9673233244876023,
+   "rb": 0.7941083349926611,
+   "winner": "whisk"
+  },
+  {
+   "key": "F1",
+   "name": "Final",
+   "load": "rings",
+   "a": "spoon",
+   "b": "whisk",
+   "ra": 0.8847516503782997,
+   "rb": 0.9446960366944018,
+   "winner": "whisk"
+  }
+ ]
+}
