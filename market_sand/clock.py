@@ -11,7 +11,8 @@ beat (the title, the finale).
 import numpy as np
 
 KNOTS = [   # (year, seconds per year); the beats each slowdown is for
-    (1602.0, 0.9), (1618, 0.6), (1625, 0.15),          # the VOC's first grains, the English East India Company beside it
+    (1602.0, 7.0), (1602.8, 7.0), (1603.6, 0.9),      # the VOC's first 19 grains pour in under the title (Aug 1602)
+    (1618, 0.6), (1625, 0.15),                          # the English East India Company beside it
     (1690, 0.15), (1696, 0.3), (1716, 0.3),             # the Bank of England (1694)
     (1719.0, 3.0), (1721.5, 3.0), (1724, 0.15),         # the Mississippi and South Sea bubbles
     (1795, 0.15), (1800, 0.3), (1805, 0.12),            # the VOC dies (1799)
@@ -24,7 +25,7 @@ KNOTS = [   # (year, seconds per year); the beats each slowdown is for
     (2007, 2.2), (2009.5, 2.2), (2012, 1.6),            # PetroChina, the financial crisis
     (2019, 2.4), (2026.9, 3.0),                         # Aramco, Covid, the AI boom
 ]
-HOLDS = [(1602.0, 6.0)]     # (year, seconds held) - the title over the first grains
+HOLDS = []                  # (year, seconds held): stop the year for a beat
 FINALE = 30.0               # seconds after the last year (the flight)
 
 

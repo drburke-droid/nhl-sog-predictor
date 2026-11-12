@@ -83,6 +83,7 @@ class Film:
         G = self.G
         gmax = G.max(axis=1, keepdims=True)
         relevant = (G >= np.maximum(0.5, 0.03 * gmax))
+        relevant[:, self.ids.index(layout.CENTRE)] = True     # open on the VOC's island
         seen = np.maximum.accumulate(relevant, axis=0)
         rmax = np.maximum.accumulate(radius(G), axis=0)
         reach = np.maximum(rmax, PED_R * 2) * 1.35 + 2.0
@@ -103,12 +104,12 @@ class Film:
         cy = (y0 + y1) / 2 - h * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
         # finale: ease out to the whole table
         n_fin = int(FINALE * self.fps)
-        whole_w = max(self.L.width / (SAFE[2] - SAFE[0]), self.L.height / (SAFE[3] - SAFE[1]) * 16 / 9)
+        whole_w = max(self.L.width * 1.05 / (SAFE[2] - SAFE[0]), self.L.height * 1.05 / (SAFE[3] - SAFE[1]) * 16 / 9)
         e = np.clip((np.arange(self.nf) - (self.nf - n_fin)) / (n_fin * 0.4), 0, 1)
         e = e * e * (3 - 2 * e)
         lw = np.log(w) * (1 - e) + np.log(whole_w) * e
-        wcx = self.L.width / 2 - whole_w * ((SAFE[0] + SAFE[2]) / 2 - 0.5)
-        wcy = self.L.height / 2 - whole_w * 9 / 16 * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
+        wcx = (self.L.x0 + self.L.x1) / 2 - whole_w * ((SAFE[0] + SAFE[2]) / 2 - 0.5)
+        wcy = (self.L.y0 + self.L.y1) / 2 - whole_w * 9 / 16 * ((SAFE[1] + SAFE[3]) / 2 - 0.5)
         cx = cx * (1 - e) + wcx * e
         cy = cy * (1 - e) + wcy * e
         n = int(3.0 * self.fps)
@@ -118,7 +119,11 @@ class Film:
     def _flows(self):
         S, L, fps = self.S, self.L, self.fps
         idx = {k: i for i, k in enumerate(self.ids)}
-        quay = np.array([(x, y + r + layout.CANAL * 0.5) for x, y, r in (L.lots[k] for k in self.ids)])
+        def shore(x, y, r):
+            n = math.hypot(x, y)
+            ux, uy = (x / n, y / n) if n > 1e-6 else (0.0, 1.0)
+            return x + ux * (r + layout.GAP * 0.5), y + uy * (r + layout.GAP * 0.5)
+        quay = np.array([shore(*L.lots[k]) for k in self.ids])
         rec = []      # (frame, src_x, src_y, dst_x, dst_y, kind, company index)
         acc = np.zeros(len(self.ids))
         handed = {idx[k] for k in S.hands_over}
@@ -170,33 +175,28 @@ class Film:
         def to_px(x, y):
             return (x - X0) * sc, (y - Y0) * sc
 
-        # canals, with a stream of pale sand down the middle
-        for ax0, ay0, ax1, ay1, cw in self.L.canals:
-            px0, py0 = to_px(ax0, ay0); px1, py1 = to_px(ax1, ay1)
-            i0, i1 = max(0, int(px0)), min(Wp, int(math.ceil(px1)))
-            j0, j1 = max(0, int(py0)), min(Hp, int(math.ceil(py1)))
-            if i0 >= i1 or j0 >= j1:
-                continue
-            img[j0:j1, i0:i1] = CHANNEL
-            vertical = (ay1 - ay0) > (ax1 - ax0)
-            wx = X0 + (np.arange(i0, i1) + 0.5) / sc
-            wy = Y0 + (np.arange(j0, j1) + 0.5) / sc
-            WX, WY = np.meshgrid(wx, wy)
-            if vertical:
-                across, along = WX - (ax0 + ax1) / 2, WY - t_film * 2.5
-                half = (ax1 - ax0) / 2
-            else:
-                across, along = WY - (ay0 + ay1) / 2, WX - t_film * 2.5
-                half = (ay1 - ay0) / 2
-            band = np.abs(across) < half * stream_frac
-            gi, gj = np.floor(along * 1.6), np.floor(across * 1.6)
-            dots = band & (hash2(gi, gj, 7.0) < 0.45)
-            fu, fv = np.modf(along * 1.6)[0] - 0.5, np.modf(across * 1.6 + 1000)[0] - 0.5
-            sph = np.sqrt(np.clip(1 - 4 * (fu ** 2 + fv ** 2), 0, 1))
-            k = 0.35 + 0.35 * sph if sc * 0.6 > 2 else 0.5
-            sub = img[j0:j1, i0:i1]
-            sub[dots] = STREAM * (k[dots, None] if np.ndim(k) else k) * 0.75
-            sub[band & ~dots] = sub[band & ~dots] * 0.6 + STREAM * 0.12
+        # the water between the islands, with pale uncoloured sand drifting outward (the market): sparse while
+        # there is little money on the table, denser as the total grows
+        wx = X0 + (np.arange(Wp) + 0.5) / sc
+        wy = Y0 + (np.arange(Hp) + 0.5) / sc
+        WX, WY = np.meshgrid(wx, wy)
+        rho = np.hypot(WX, WY) + 1e-6
+        th = np.arctan2(WX, -WY)
+        along = rho - t_film * 1.8
+        gi = np.floor(along * 1.1)
+        across = th * ((gi + 0.5) / 1.1 + t_film * 1.8)       # arc length at the ring's middle (no shear)
+        gj = np.floor(across * 1.1)
+        dens = 0.03 + 0.30 * stream_frac
+        fu, fv = np.modf(along * 1.1 + 1e5)[0] - 0.5, np.modf(across * 1.1 + 1e5)[0] - 0.5
+        rr = (fu ** 2 + fv ** 2) / 0.16
+        if sc > 2.5:
+            dots = (hash2(gi, gj, 7.0) < dens) & (rr < 1) & (rho > 4)
+            k = (0.35 + 0.5 * np.sqrt(np.clip(1 - rr, 0, 1)))[dots, None]
+        else:
+            dots = (hash2(gi, gj, 7.0) < dens) & (rho > 4)
+            k = 0.4
+        vis_k = float(np.clip(sc / 3.0, 0.2, 1.0))
+        img[dots] = img[dots] * (1 - 0.6 * vis_k) + STREAM[None, :] * 0.55 * vis_k * k
 
         # pedestals and tide marks (drawn with PIL on an overlay later), piles in numpy now
         vis = []
@@ -214,6 +214,9 @@ class Film:
             k = self.ids[i]
             px, py = to_px(*self.pos[i])
             dead = year > self.S.end[k]
+            ir = max(PED_R + 0.8, radius(self.S.peak_until(k, year)) * 1.12) * sc
+            dr.ellipse([px - ir, py - ir, px + ir, py + ir], fill=(15, 16, 19, 255) if dead else (24, 26, 31, 255),
+                       outline=(40, 44, 52, 255), width=max(1, int(sc * 0.15)))
             pr = PED_R * sc
             dr.ellipse([px - pr, py - pr, px + pr, py + pr], fill=(16, 18, 22, 255) if dead else (30, 34, 42, 255),
                        outline=(120, 130, 150, 90 if dead else 170), width=max(1, int(sc * 0.12)))
@@ -319,32 +322,36 @@ class Film:
         f_name, f_small = font("Inter-Medium.otf", fs), font("Inter-Regular.otf", fs * 0.82)
         order = np.argsort(-G)
         rank = {int(i): r + 1 for r, i in enumerate(order[:10]) if G[i] >= 1}
+        rank12 = {int(i) for i in order[:12] if G[i] >= 1}
         cands = []        # (priority, i): living companies by size first, then husks by their peak
         for i in vis:
             k = self.ids[i]
             r_now = max(float(radius(G[i])), PED_R)
             dead = year > self.S.end[k]
-            big = G[i] >= 1 and (r_now * sc > 10 or i in rank)
-            husk_seen = dead and radius(self.S.peak_grains[k]) * sc > 8
-            if big or husk_seen or sc > 14:
+            big = G[i] >= 1 and (r_now * sc > 22 or i in rank12)
+            husk_seen = dead and radius(self.S.peak_grains[k]) * sc > 16
+            if big or husk_seen or sc > 20:
                 cands.append((-(G[i] if not dead else 1e-3 * self.S.peak_grains[k]), i))
         boxes = []
 
         def free(bb):
             return all(bb[2] < o[0] or bb[0] > o[2] or bb[3] < o[1] or bb[1] > o[3] for o in boxes)
 
-        if sc < 3.5:
-            fd = font("Inter-SemiBold.otf", fs * 0.9)
-            al = int(200 * np.clip((3.5 - sc) / 2, 0, 1))
-            for name, (dx0, dy0, dx1, dy1) in sorted(self.L.districts.items(), key=lambda d: -(d[1][2] - d[1][0])):
-                ppx, ppy = to_px((dx0 + dx1) / 2, dy0)
-                if not (0 < ppx < Wp and -20 < ppy < Hp):
-                    continue
-                txt = layout.DISTRICTS[name]["label"].upper()
-                bb = dr.textbbox((ppx, ppy - 4), txt, font=fd, anchor="md")
-                if free(bb):
-                    boxes.append(bb)
-                    dr.text((ppx, ppy - 4), txt, font=fd, fill=MUTED + (al,), anchor="md")
+        fd = font("Inter-SemiBold.otf", fs * 0.9)
+        for name, (cen, half) in self.L.sectors.items():
+            out = [math.hypot(self.pos[i][0] / layout.ASPECT, self.pos[i][1]) + max(radius(self.S.peak_until(self.ids[i], year)), PED_R) * 1.3
+                   for i in range(len(self.ids)) if self.L.district_of[self.ids[i]] == name and self.S.start[self.ids[i]] - story.RAMP <= year]
+            if not out or name == "Amsterdam" and len(out) < 2:
+                continue
+            rr = max(out) + 3
+            ppx, ppy = to_px(rr * layout.ASPECT * math.sin(cen), -rr * math.cos(cen))
+            if not (0 < ppx < Wp and 0 < ppy < Hp):
+                continue
+            txt = layout.DISTRICTS[name]["label"].upper()
+            bb = dr.textbbox((ppx, ppy), txt, font=fd, anchor="mm")
+            if free(bb):
+                boxes.append(bb)
+                dr.text((ppx, ppy), txt, font=fd, fill=MUTED + (200,), anchor="mm")
         for _, i in sorted(cands):
             k = self.ids[i]
             px, py = to_px(*self.pos[i])
@@ -386,7 +393,7 @@ class Film:
         if t_film < 6.0:
             a = int(255 * min(1, (t_film - 0.4) / 0.8, (5.8 - t_film) / 0.8)) if t_film > 0.4 else 0
             if a > 0:
-                dr.text((Wp / 2, Hp * 0.16), TITLE, font=font("InterDisplay-SemiBold.otf", Hp / 18), fill=INK + (a,), anchor="mm")
+                dr.text((Wp / 2, Hp * 0.86), TITLE, font=font("InterDisplay-SemiBold.otf", Hp / 18), fill=INK + (a,), anchor="mm")
         return pil
 
 

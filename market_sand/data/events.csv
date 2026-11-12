@@ -72,8 +72,11 @@ t,type,from_ids,to_ids,detail
 1955.0014,rename,socony,socony,Socony-Vacuum -> Socony Mobil Oil (1955); Mobil Oil (1966); Mobil Corp (1976).
 1956.0479,listing,,ford,Ford Motor Co. IPO: the Ford Foundation sold 10.2m shares at $64.50; 53.46m shares x first-day close $70.50 = $3.8bn.
 1956.5698,nationalisation,suez,,"Egypt (Law 285/1956) nationalises the Suez Canal Company's Egyptian assets. Heads of Agreement (29 Apr 1958, signed 13 Jul 1958): Egypt pays GBP(E)28.3m (incl. GBP(E)5.3m of tolls already held), 1959-64; the company keeps its assets outside Egypt and becomes the Compagnie Financiere de Suez (1958)."
+1957.9180,spinoff,standard_oil_in,standard_oil_in;standard_oil_nj,Standard Oil (Indiana) distributed its holding of Standard Oil (NJ) shares (received in the 1932 sale of Pan American foreign properties) to its own shareholders in 1957; Indiana price fell from 61 1/8 (Jan) to 35 7/8 (Dec 1957). Size of the block not verified here.
+1958.1093,listing,royal_dutch_shell,royal_dutch_shell,"Royal Dutch Petroleum 1-for-8 rights issue ($228.1m); NY-registered shares rose to 14,158,000 = ~21% of all shares (implied total ~67.4m 20-guilder shares)."
 1959.3347,rename,texaco,texaco,The Texas Company -> Texaco Inc. (1959).
 1960.7952,merger,erie,,"Erie Railroad merges with the Delaware, Lackawanna & Western to form the Erie Lackawanna (into Conrail 1976). No values collected after 1882."
+1962.1680,spinoff,dupont,gm,"Court-ordered divestiture: du Pont distributed its ~63m GM shares (about 23% of GM) to its shareholders in instalments 1962-1965; du Pont market value fell from $12.1bn (end-1959) to $6.7bn (end-1966) partly for this reason. Share figure is the widely reported one, not re-verified."
 1962.5014,merger,rio_tinto,rio_tinto,"Rio Tinto Company merges with Consolidated Zinc to form the Rio Tinto-Zinc Corporation (RTZ); dual-listed with CRA from 1995, renamed Rio Tinto 1997."
 1968.0847,merger,new_york_central,pennsylvania_rr,New York Central merges into the Pennsylvania Railroad to form the Penn Central Transportation Co. (values at the merger not collected here).
 1970.1708,merger,great_northern_us;northern_pacific,,"Great Northern, Northern Pacific (with the CB&Q and SP&S) merge into Burlington Northern Inc. (later BNSF, owned by Berkshire Hathaway since 2010)."

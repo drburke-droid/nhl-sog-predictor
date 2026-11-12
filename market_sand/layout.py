@@ -1,54 +1,47 @@
-"""The table: districts by home market, one island (lot) per company, canals between them.
+"""The table: a city of islands that grows outward from the old centre, one island per company.
 
-Districts sit roughly where their markets are on a world map: the Americas on the left; London,
-Amsterdam and Paris side by side in the middle with the rest of Europe in front of them; Moscow and
-Riyadh; then East Asia on the right. Inside a district, islands are placed in rows from the back of the
-table (north, top) to the front, in the order the companies first appear, so the oldest ones (most of
-them husks by the end) stand at the back.
+The VOC stands at the centre. Every other company gets an island in its home market's district, a wedge
+pointing the way that market lies from Amsterdam (the initial great-circle bearing): New York to the west,
+London west-south-west, Paris south-west, Johannesburg south, Riyadh south-east, the rest of Europe east-
+south-east, Moscow, Shanghai and Tokyo to the north-east. Islands are placed in the order the companies
+first appear, each as close to the centre as its wedge allows, so the city grows in rings like Amsterdam's
+canals: the oldest companies (most of them husks by the end) form the old core, today's giants the outer
+rings. The water between the islands is the market.
 
-History starts in the middle: each district packs its oldest islands into the back corner nearest
-Amsterdam (London and New York from their right-hand edge, the rest from their left), so the VOC, the
-East India Company and the Mississippi Company stand a few canals apart and the opening can stay close.
-
-Every company keeps its island for the whole film, sized for the widest its pile ever gets, so nothing
-moves when a newcomer arrives and the husks stay where they were.
+Wedges are as wide as their companies need (New York's is the widest) and are spread to avoid each other
+while staying as close to their true bearing as they can. Distances from the centre are stretched sideways
+(ASPECT) so the finished city fills a 16:9 frame.
 
     L = build(companies, peak_radius)   # companies: list of dict(id, district, first); peak_radius: {id: cells}
-    L.lots[id] -> (cx, cy, r)            # island centre and radius, in cells
-    L.canals                             # list of (x0, y0, x1, y1, width): canal rectangles, in cells
-    L.districts[name] -> (x0, y0, x1, y1)
+    L.lots[id] -> (cx, cy, r)            # island centre and the widest it gets, in cells (centre of the table = 0, 0)
+    L.sectors[district] -> (bearing, half_width) in radians (0 = north/up, clockwise)
 """
-import re
+import math, re
 import numpy as np
 
-# col: left to right; band: back to front within the column; order: left to right within the band;
-# align: the edge a district packs its oldest islands against
+# bearing from Amsterdam in degrees (0 = north), and which home countries belong to the district
 DISTRICTS = {
-    "New York":   dict(col=0, band=0, order=0, align="right", label="New York",
-                       countries=["United States", "USA", "US", "U.S.", "American", "Canada", "Canadian"]),
-    "São Paulo":  dict(col=0, band=1, order=0, align="right", label="São Paulo", countries=["Brazil"]),
-    "London":     dict(col=1, band=0, order=0, align="right", label="London",
-                       countries=["United Kingdom", "UK", "England", "English", "Great Britain", "Britain", "British", "Scotland"]),
-    "Amsterdam":  dict(col=1, band=0, order=1, align="left", label="Amsterdam",
-                       countries=["Netherlands", "Dutch Republic", "Dutch", "Holland"]),
-    "Paris":      dict(col=1, band=0, order=2, align="left", label="Paris",
-                       countries=["France", "French", "Egypt"]),    # Egypt: the Suez Canal Company, run and listed in Paris
-    "Europe":     dict(col=1, band=1, order=0, align="left", label="Europe",
-                       countries=["Germany", "German", "Austria", "Switzerland", "Swiss", "Denmark", "Sweden", "Finland", "Italy", "Spain", "Belgium"]),
-    "Moscow":     dict(col=2, band=0, order=0, align="left", label="Moscow", countries=["Russia", "Russian Empire"]),
-    "Riyadh":     dict(col=2, band=1, order=0, align="left", label="Riyadh", countries=["Saudi Arabia"]),
-    "Johannesburg": dict(col=2, band=2, order=0, align="left", label="Johannesburg", countries=["South Africa"]),
-    "Tokyo":      dict(col=3, band=0, order=0, align="left", label="Tokyo", countries=["Japan"]),
-    "Seoul":      dict(col=3, band=1, order=0, align="left", label="Seoul", countries=["South Korea", "Korea"]),
-    "Shanghai · Hong Kong": dict(col=4, band=0, order=0, align="left", label="Shanghai · Hong Kong", countries=["China", "Hong Kong"]),
-    "Taipei":     dict(col=4, band=1, order=0, align="left", label="Taipei", countries=["Taiwan"]),
-    "Sydney":     dict(col=4, band=2, order=0, align="left", label="Sydney", countries=["Australia"]),
+    "Amsterdam":  dict(bearing=0, label="Amsterdam", countries=["Netherlands", "Dutch Republic", "Dutch", "Holland"]),
+    "Moscow":     dict(bearing=68, label="Moscow", countries=["Russia", "Russian Empire"]),
+    "Tokyo":      dict(bearing=33, label="Tokyo", countries=["Japan"]),
+    "Seoul":      dict(bearing=42, label="Seoul", countries=["South Korea", "Korea"]),
+    "Shanghai · Hong Kong": dict(bearing=52, label="Shanghai · Hong Kong", countries=["China", "Hong Kong"]),
+    "Taipei":     dict(bearing=58, label="Taipei", countries=["Taiwan"]),
+    "Sydney":     dict(bearing=75, label="Sydney", countries=["Australia"]),
+    "Europe":     dict(bearing=125, label="Europe", countries=["Germany", "German", "Austria", "Switzerland", "Swiss", "Denmark", "Sweden", "Finland", "Italy", "Spain", "Belgium"]),
+    "Riyadh":     dict(bearing=128, label="Riyadh", countries=["Saudi Arabia"]),
+    "Johannesburg": dict(bearing=168, label="Johannesburg", countries=["South Africa"]),
+    "Paris":      dict(bearing=207, label="Paris", countries=["France", "French", "Egypt"]),   # Egypt: the Suez Canal Company, run from Paris
+    "São Paulo":  dict(bearing=230, label="São Paulo", countries=["Brazil"]),
+    "London":     dict(bearing=255, label="London", countries=["United Kingdom", "UK", "England", "English", "Great Britain", "Britain", "British", "Scotland"]),
+    "New York":   dict(bearing=287, label="New York", countries=["United States", "USA", "US", "U.S.", "American", "Canada", "Canadian"]),
 }
+CENTRE = "voc"        # the island at the centre of the table
 LOT_PAD = 1.12        # island radius = pile's widest radius x this ...
-LOT_MIN = 3.0         # ... and at least this many cells (an empty pedestal still needs room)
-CANAL = 2.5           # canal width between islands, cells
-RIVER = 9.0           # river width between districts, cells
-MARGIN = 14.0         # table edge, cells
+LOT_MIN = 3.0         # ... and at least this many cells
+GAP = 3.0             # water between islands, cells
+ASPECT = 1.45         # sideways stretch of distances from the centre (the city fills a wide frame)
+TIME_ORDER = 0.82     # a company sits at least this fraction as far out as the one before it in its district
 
 
 def district_of(country, exchange=""):
@@ -66,74 +59,68 @@ class Layout:
     pass
 
 
-def _pack(items, width, align):
-    """Shelf packing: items [(id, r)] in order, rows of width <= width, from the back row forward.
-    Returns {id: (x, y)} relative to the block's top-left, the block size, and the rows [(top, h, [ids])]."""
-    pos, rows = {}, []
-    x, y, row_h, cur = 0.0, 0.0, 0.0, []
-    for key, r in items:
-        d = 2 * r
-        if cur and x + d > width:
-            rows.append((y, row_h, cur)); y += row_h + CANAL; x, row_h, cur = 0.0, 0.0, []
-        pos[key] = (x + r, y + r)
-        cur.append(key)
-        x += d + CANAL
-        row_h = max(row_h, d)
-    rows.append((y, row_h, cur))
-    w = max(max(pos[k][0] + r for k, r in items), 0)
-    if align == "right":
-        pos = {k: (w - px, py) for k, (px, py) in pos.items()}
-    return pos, (w, y + row_h), rows
+def _wrap(a):
+    return (a + math.pi) % (2 * math.pi) - math.pi
+
+
+def _sectors(area):
+    """Angular wedges: width from the district's island area, centred as near its bearing as the others allow."""
+    names = sorted(area, key=lambda n: DISTRICTS[n]["bearing"])
+    weight = {n: area[n] ** 0.55 for n in names}
+    tot = sum(weight.values())
+    half = {n: math.pi * 0.94 * weight[n] / tot for n in names}
+    cen = {n: math.radians(DISTRICTS[n]["bearing"]) for n in names}
+    for _ in range(400):                       # push overlapping neighbours apart (around the circle)
+        moved = False
+        for a, b in zip(names, names[1:] + names[:1]):
+            gap = _wrap(cen[b] - cen[a])
+            if gap < 0:
+                gap += 2 * math.pi
+            need = half[a] + half[b] + 0.02
+            if gap < need - 1e-6:
+                d = (need - gap) / 2
+                cen[a] -= d; cen[b] += d; moved = True
+        if not moved:
+            break
+    return {n: (cen[n], half[n]) for n in names}
 
 
 def build(companies, peak_radius):
     L = Layout()
-    by_d = {}
-    for c in sorted(companies, key=lambda c: c["first"]):
-        by_d.setdefault(c["district"], []).append((c["id"], max(LOT_MIN, peak_radius.get(c["id"], 0) * LOT_PAD)))
-    blocks = {}
-    for name, items in by_d.items():
-        area = sum((2 * r + CANAL) ** 2 for _, r in items)
-        width = max(max(2 * r for _, r in items), np.sqrt(area) * 1.15)
-        blocks[name] = _pack(items, width, DISTRICTS[name]["align"])
-    radius_of = {k: r for items in by_d.values() for k, r in items}
-    # columns -> bands -> districts side by side
-    cols = {}
-    for name in blocks:
-        d = DISTRICTS[name]
-        cols.setdefault(d["col"], {}).setdefault(d["band"], []).append((d["order"], name))
-    L.lots, L.districts, L.canals = {}, {}, []
-    x = MARGIN
-    col_spans = []
-    for col in sorted(cols):
-        bands = [[n for _, n in sorted(cols[col][b])] for b in sorted(cols[col])]
-        band_w = [sum(blocks[n][1][0] for n in names) + RIVER * (len(names) - 1) for names in bands]
-        col_w = max(band_w)
-        y = MARGIN
-        for names, bw in zip(bands, band_w):
-            bx = x + (col_w - bw) / 2
-            band_h = max(blocks[n][1][1] for n in names)
-            for j, n in enumerate(names):
-                pos, (w, h), rows = blocks[n]
-                for key, (px, py) in pos.items():
-                    L.lots[key] = (bx + px, y + py, radius_of[key])
-                L.districts[n] = (bx, y, bx + w, y + h)
-                # canals inside the district: along each row gap, and between neighbours in a row
-                for (top, rh, keys), nxt in zip(rows, rows[1:] + [None]):
-                    if nxt is not None:
-                        L.canals.append((bx, y + nxt[0] - CANAL, bx + w, y + nxt[0], CANAL))
-                    xs = sorted((L.lots[k][0], L.lots[k][2]) for k in keys)
-                    for (ax, ar), (cx_, cr) in zip(xs, xs[1:]):
-                        L.canals.append((ax + ar, y + top, cx_ - cr, y + top + rh, CANAL))
-                if j < len(names) - 1:      # river between districts side by side
-                    L.canals.append((bx + w, y - RIVER * 0.5, bx + w + RIVER, y + band_h + RIVER * 0.5, RIVER))
-                bx += w + RIVER
-            L.canals.append((x - RIVER * 0.5, y + band_h, x + col_w + RIVER * 0.5, y + band_h + RIVER, RIVER))   # river in front of the band
-            y += band_h + RIVER
-        col_spans.append((x, x + col_w, y - RIVER))
-        x += col_w + RIVER
-    L.width = x - RIVER + MARGIN
-    L.height = max(s[2] for s in col_spans) + MARGIN
-    for (x0, x1, _), nxt in zip(col_spans, col_spans[1:]):        # rivers between columns, back to front
-        L.canals.append((x1, MARGIN * 0.5, nxt[0], L.height - MARGIN * 0.5, RIVER))
+    comps = sorted(companies, key=lambda c: (c["id"] != CENTRE, c["first"]))
+    rad = {c["id"]: max(LOT_MIN, peak_radius.get(c["id"], 0) * LOT_PAD) for c in comps}
+    area = {}
+    for c in comps:
+        area[c["district"]] = area.get(c["district"], 0) + (2 * rad[c["id"]] + GAP) ** 2
+    L.sectors = _sectors(area)
+    placed = []            # (x, y, r)
+    last_rho = {}
+    L.lots = {}
+    for c in comps:
+        k, r = c["id"], rad[c["id"]]
+        if not placed:
+            pos = (0.0, 0.0)
+        else:
+            cen, half = L.sectors[c["district"]]
+            P = np.array(placed)
+            rho = max(0.0, TIME_ORDER * last_rho.get(c["district"], 0.0))
+            pos = None
+            while pos is None:
+                rho += 0.5
+                n = max(3, int(2 * half * rho / 0.7))
+                th = cen + np.linspace(-half, half, n)
+                th = th[np.argsort(np.abs(th - cen))]            # nearest the wedge's middle first
+                xs, ys = rho * ASPECT * np.sin(th), -rho * np.cos(th)
+                d = np.hypot(xs[:, None] - P[:, 0], ys[:, None] - P[:, 1]) - P[:, 2] - r - GAP
+                ok = np.nonzero((d >= 0).all(axis=1))[0]
+                if len(ok):
+                    pos = (float(xs[ok[0]]), float(ys[ok[0]]))
+            last_rho[c["district"]] = rho
+        placed.append((pos[0], pos[1], r))
+        L.lots[k] = (pos[0], pos[1], r)
+    P = np.array(placed)
+    L.x0, L.x1 = float((P[:, 0] - P[:, 2]).min()), float((P[:, 0] + P[:, 2]).max())
+    L.y0, L.y1 = float((P[:, 1] - P[:, 2]).min()), float((P[:, 1] + P[:, 2]).max())
+    L.width, L.height = L.x1 - L.x0, L.y1 - L.y0
+    L.district_of = {c["id"]: c["district"] for c in comps}
     return L

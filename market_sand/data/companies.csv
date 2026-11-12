@@ -66,23 +66,29 @@ att,American Telephone and Telegraph Company,AT&T,New York,telecom_media,acquire
 anglo_persian,Anglo-Persian Oil Company,Anglo-Persian Oil,London,oil,alive,,1925.958,2026.865
 burmah_oil,Burmah Oil,Burmah Oil,London,oil,alive,,1925.958,1925.958
 courtaulds,Courtaulds Ltd,Courtaulds,London,chem_pharma,alive,,1925.958,1925.958
-gm,General Motors Corp.,GM,New York,autos,bankrupt,,1929.223,2009.411
+gm,General Motors Corp.,GM,New York,autos,bankrupt,,1929.000,2009.411
+texaco,The Texas Company,The Texas,New York,oil,merged,standard_oil_ca,1929.000,2001.773
+sears,"Sears, Roebuck & Co.","Sears, Roebuck",New York,consumer,bankrupt,,1929.000,2018.790
+eastman_kodak,Eastman Kodak Co.,Eastman Kodak,New York,consumer,bankrupt,,1929.000,2012.051
+con_ed,Consolidated Gas Co. of New York,Consolidated Gas Co. of New York,New York,industrial,alive,,1929.000,2026.865
 union_carbide,Union Carbide & Carbon Corp.,Union Carbide & Carbon,New York,chem_pharma,acquired,dow_chemical,1929.667,2001.098
-texaco,The Texas Company,The Texas,New York,oil,merged,standard_oil_ca,1929.667,2001.773
-sears,"Sears, Roebuck & Co.","Sears, Roebuck",New York,consumer,bankrupt,,1929.667,2018.790
-eastman_kodak,Eastman Kodak Co.,Eastman Kodak,New York,consumer,bankrupt,,1929.667,2012.051
-con_ed,Consolidated Gas Co. of New York,Consolidated Gas Co. of New York,New York,industrial,alive,,1929.667,2026.865
 united_gas_improvement,United Gas Improvement Co.,United Gas Improvement,New York,industrial,alive,,1929.667,2026.865
 woolworth,F. W. Woolworth Co.,F. W. Woolworth,New York,consumer,acquired,,1929.667,2025.682
 rca,Radio Corporation of America,Radio Corporation of America,New York,telecom_media,acquired,ge,1929.667,1985.945
-dupont,E. I. du Pont de Nemours & Co.,E. I. du Pont de Nemours,New York,chem_pharma,merged,dowdupont,1953.668,2017.667
-gulf_oil,Gulf Oil Corp.,Gulf Oil,New York,oil,acquired,standard_oil_ca,1953.668,1984.000
+international_nickel,International Nickel Co. of Canada,International Nickel Co. of Canada,New York,mining_metals,acquired,,1931.000,1946.000
+dupont,E. I. du Pont de Nemours & Co.,E. I. du Pont de Nemours,New York,chem_pharma,merged,dowdupont,1931.000,2017.667
+coca_cola,The Coca-Cola Co.,The Coca-Cola,New York,consumer,alive,,1936.000,2026.865
+gulf_oil,Gulf Oil Corp.,Gulf Oil,New York,oil,acquired,standard_oil_ca,1944.000,1984.000
 shell_oil_us,Shell Oil Co. (US),Shell Oil,New York,oil,acquired,royal_dutch_shell,1953.668,1985.000
 ibm,International Business Machines Corp.,IBM,New York,computing,alive,,1953.706,2026.865
 dow_chemical,Dow Chemical Co.,Dow Chemical,New York,chem_pharma,merged,dowdupont,1953.706,2017.667
 phillips_petroleum,Phillips Petroleum Co.,Phillips Petroleum,New York,oil,merged,conocophillips,1953.706,2002.664
 mmm,Minnesota Mining & Manufacturing Co.,Minnesota Mining & Manufacturing,New York,industrial,alive,,1954.747,2026.865
 ford,Ford Motor Co.,Ford Motor,New York,autos,alive,,1956.048,2026.865
+xerox,Xerox Corp.,Xerox,New York,computing,alive,,1963.000,2026.865
+philip_morris,Philip Morris Cos.,Philip Morris · Altria,New York,consumer,alive,,1963.000,2026.865
+merck,Merck & Co.,Merck,New York,chem_pharma,alive,,1963.000,2026.865
+procter_gamble,Procter & Gamble Co.,Procter & Gamble,New York,consumer,alive,,1963.000,2026.865
 johnson_johnson,Johnson & Johnson,Johnson & Johnson,New York,chem_pharma,alive,,1963.000,2026.865
 walmart,Wal-Mart Stores,Walmart,New York,consumer,alive,,1970.751,2026.865
 sumitomo_bank,Sumitomo Bank,Sumitomo Bank,Tokyo,finance,alive,,1971.000,2026.865
@@ -97,12 +103,7 @@ bristol_myers,Bristol-Myers Co.,Bristol-Myers,New York,chem_pharma,alive,,1973.0
 pfizer,Pfizer,Pfizer,New York,chem_pharma,alive,,1973.000,2026.865
 eli_lilly,Eli Lilly,Eli Lilly,New York,chem_pharma,alive,,1973.000,2026.865
 aig,American International Group,AIG,New York,finance,alive,,1974.000,2026.865
-coca_cola,The Coca-Cola Co.,The Coca-Cola,New York,consumer,alive,,1980.000,2026.865
-xerox,Xerox Corp.,Xerox,New York,computing,alive,,1980.000,2026.865
 schlumberger,Schlumberger N.V.,Schlumberger,New York,oil,alive,,1980.000,2026.865
-philip_morris,Philip Morris Cos.,Philip Morris · Altria,New York,consumer,alive,,1980.000,2026.865
-merck,Merck & Co.,Merck,New York,chem_pharma,alive,,1980.000,2026.865
-procter_gamble,Procter & Gamble Co.,Procter & Gamble,New York,consumer,alive,,1980.000,2026.865
 getty_oil,Getty Oil Co.,Getty Oil,New York,oil,acquired,texaco,1980.000,1984.015
 rjr_nabisco,RJR Nabisco,RJR Nabisco,New York,consumer,taken_private,,1980.000,1989.000
 citicorp,Citicorp,Citicorp,New York,finance,merged,citigroup,1980.000,1998.292
