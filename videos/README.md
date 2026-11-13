@@ -17,6 +17,7 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 
 | File | Format | Length | What it is |
 |---|---|---|---|
+| where_to_drop_a_plinko_chip_blender_2m55s.mp4 | 16:9 | 2:55 | The Blender edition (use this one): a to-scale studio board rendered in Cycles, chips from the simulator with real motion blur, an LED bar-chart panel for the data, and the micron question (could perfect aim win every time? no). Copy: `copy/plinko_blender_YOUTUBE.md`, thumbnails plinko_blender_thumb_A/B |
 | where_to_drop_a_plinko_chip_3m21s.mp4 | 16:9 | 3:21 | Where to drop a Plinko chip: the board measured, the textbook coin-flip answer, 1,029 real chips, a physics rebuild tuned to them, chaos, and the verdict. Copy: `copy/plinko_YOUTUBE.md`, thumbnails plinko_thumb_A/B. Built by `plinko/` (see its README and ACCURACY.md) |
 | where_to_drop_a_plinko_chip_SHORT_58s.mp4 | vertical | 0:58 | Short cut of the same |
 

@@ -32,6 +32,7 @@ contestants dropping all over. Drop-position logs would settle it.
 
 | File | What |
 |---|---|
+| `../videos/plinko/where_to_drop_a_plinko_chip_blender_2m55s.mp4` | The Blender edition: 1920x1080, 30 fps, H.264 High / yuv420p, 5,250 frames = 175.0 s. Thumbnails `plinko_blender_thumb_A/B` (`thumbs3d.py`), stills in `media/stills_blender/` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_3m21s.mp4` | The film: 1920x1080, 30 fps, H.264 High / yuv420p, 6,030 frames = 201.0 s, on-screen captions, no narration |
 | `../videos/plinko/where_to_drop_a_plinko_chip_SHORT_58s.mp4` | Vertical cut, 1080x1920, 1,725 frames = 57.5 s |
 | `../videos/plinko/thumbnails/` | Thumbnails A (the question over a rain of chips) and B (the twin chips), 1280x720; `thumbs.py` |
@@ -40,6 +41,34 @@ contestants dropping all over. Drop-position logs would settle it.
 | `results/*.json, *.npz` | Every number on screen: transfer matrices, fits, sensitivity, chaos |
 | `data/real_outcomes.json` | The show's results, seasons 44 to 54 (tpirstats.com), plus the 2000 to 2011 tally |
 | `../videos/copy/plinko_YOUTUBE.md` | Titles, description and chapters |
+
+## The Blender edition
+
+A second cut of the film is rendered in Blender 4.5 (Cycles): a to-scale studio board built from the same
+`board.py` geometry (steel pins, sawtooth walls, the triangular plexiglass cover, slot dividers, LED value
+signs, a metal-rimmed chip), on a stage with stairs. The show's logo, sunburst frame and chip artwork are
+left out on purpose. An LED bar-chart panel on the pedestal is the film's data display.
+
+There is no GPU here, so full frames would cost about 53 s each on 4 CPU cores (about 37 hours for the film).
+Instead it is rendered the way visual-effects shots are:
+* **Plates** (`blender/render_plates.py`): each of three static cameras (hero, front, top close-up) renders
+  the set once at 2880x1620, plus the plexiglass cover alone as a separate layer.
+* **Chip passes** (`blender/render_chips.py`): only the moving chips, every frame, at 1920x1080 with real
+  motion blur. Everything else is a holdout, so pins and walls still hide the chips behind them. Only the
+  screen box around the chips renders: about 1 s a frame. A 2D push-in on a plate is the same as a longer
+  lens with a lens shift, so the chip camera matches each frame's crop exactly.
+* **Compositing** (`composite3d.py`): plate crop, contact shadow from the chip silhouette, chips, cover,
+  lit LED cells with bloom, and every caption, trail and callout projected through Blender's own camera
+  (checked against Blender's projection at startup).
+
+```bash
+python3 releasemap.py                       # the micron question: release map and twin tests
+python3 blender/make_textures.py            # cover lattice mask and chip face, from board.py
+python3 prepare3d.py                        # chip paths at 60 Hz (from physics.py) and the shot list
+for c in front hero top; do blender -b --factory-startup -P blender/render_plates.py -- $c 32; done
+./blender/run_all_chips.sh textbook measure twins open outro question zoom rain
+python3 composite3d.py film --workers 4     # -> out/plinko_blender.mp4
+```
 
 ## Run it
 
@@ -66,6 +95,8 @@ Seeds are fixed and every chip carries its own random stream, so reruns reproduc
 * `analyze.py`: Monte Carlo sweeps, the fit to the show's data, sensitivity and the twin-chip chaos test.
 * `draw.py`, `render.py`: cairo drawing and the frame-by-frame film; everything is computed, nothing is
   footage from the show.
+* `releasemap.py`: could perfect aim pick the slot? Release points scanned from 9 cm down to 1 nm.
+* `prepare3d.py`, `blender/`, `composite3d.py`: the Blender edition (see above).
 * `web/`: the Drop Lab page (a template plus `build_lab.py`, which fills in geometry and results).
 
 Independent analysis; not affiliated with the show or the network.

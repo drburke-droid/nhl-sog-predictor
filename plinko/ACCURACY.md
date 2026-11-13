@@ -147,6 +147,33 @@ The plexiglass cover (chips occasionally touch it), out-of-plane wobble, chip we
 between the 10 official chips, pins bent over 40 years, and air. The pin-imperfection term stands in for
 all of them together. The board is treated as perfectly level and symmetric.
 
+## 7. Could perfect aim beat it? (`releasemap.py`, `results/releasemap.*`)
+
+The question: with a robot's micron accuracy, could you land the $10,000 every time? To test it the board is
+made a perfect, repeatable machine: no pin imperfections, no random restitution, the chip let go at rest with
+no spin. Only the horizontal release point changes.
+
+* **Release map.** 20,001 release points at each of five zooms, across the 9 cm middle drop gap, then 1 mm,
+  10 um, 100 nm and 1 nm windows, each centred on the edge of a winning stretch from the level above. At every
+  zoom the landing slot changes from one sample to the next (the median unbroken stretch is one sample long),
+  and 13 to 25% of points win $10,000. The widest winning stretch in the 10 um window is 2.5 nm; in the 100 nm
+  window, 35 picometres, a third of an atom.
+* **Twin releases** (4,000 pairs on the perfect board): same slot 95% of the time when nudged by one unit of
+  the computer's rounding (1e-16 m), 48% at 1 picometre, 24% at 0.1 nm (about one atom), 17% at 1 nm, 15% at
+  10 nm and 14% at 1 um. Two unrelated chips from the middle share a slot 12% of the time. So the outcome is
+  set by differences far below an atom's width, and the computer's own rounding barely matters (the 95%).
+* **Dead centre sticks.** On the perfect board a chip let go at rest within about 0.12 mm of dead centre
+  lands squarely on the first pin and balances there (backboard friction holds it). The release map marks
+  these as stuck. A real hand always adds some sideways motion or spin, so real chips almost never do this
+  (the tuned model, with hand scatter, sticks about 1% of the time, re-dropped as on the show).
+* **Why so sensitive.** Round pins defocus a trajectory the way a convex mirror spreads light: each impact
+  multiplies a small offset several times over, and a chip makes about 33 impacts. This is the textbook
+  chaotic billiard (the Lorentz gas). It is a property of the geometry, not of this code.
+* **What this leaves out.** The model is a 2D rigid body with a fixed time step; a real board adds pin
+  vibration, chip wear, air currents and the thermal jiggle of atoms (about 10 pm in a solid at room
+  temperature), each larger than the 1 pm the twin test shows to matter. So the answer is no: aim cannot
+  pick the slot, at any precision a machine could reach.
+
 ## Sources
 
 * Price Is Right wiki, "Plinko" (rules, values, history, records): https://priceisright.fandom.com/wiki/Plinko
