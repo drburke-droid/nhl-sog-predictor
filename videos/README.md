@@ -1,6 +1,6 @@
 # Videos for social media
 
-Every eye video and every speed-of-light video we finished, renamed so the file says what it is.
+Every eye video, speed-of-light video and Plinko video we finished, renamed so the file says what it is.
 SHORT in a name means vertical 1080x1920 (Shorts, Reels, TikTok); everything else is 16:9 for YouTube.
 Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags already written are in `copy/`.
 
@@ -12,6 +12,13 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 | glasses_work_by_slowing_light_SHORT_68s.mp4 | vertical | 1:08 | Your glasses work by slowing light down (lenses, refraction, thin vs thick lens, the Mariana Trench) |
 | blur_adaptation_7m09s.mp4 | 16:9 | 7:09 | Blur adaptation. Copy: `copy/blur_adaptation_YOUTUBE.md`, thumbnails blur_adaptation_thumb_A/B/C |
 | blur_adaptation_we_didnt_start_the_fire_edition_7m16s.mp4 | 16:9 | 7:16 | Same film, "We Didn't Start the Fire" edition (pick one of the two). Copy: `copy/blur_adaptation_fire_edition_YOUTUBE.md`, thumbnails blur_adaptation_fire_thumb_A/B/C |
+
+## plinko/
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| where_to_drop_a_plinko_chip_3m21s.mp4 | 16:9 | 3:21 | Where to drop a Plinko chip: the board measured, the textbook coin-flip answer, 1,029 real chips, a physics rebuild tuned to them, chaos, and the verdict. Copy: `copy/plinko_YOUTUBE.md`, thumbnails plinko_thumb_A/B. Built by `plinko/` (see its README and ACCURACY.md) |
+| where_to_drop_a_plinko_chip_SHORT_58s.mp4 | vertical | 0:58 | Short cut of the same |
 
 Not here, because neither was saved to any repository: the BVD video (binocular vision dysfunction; AI-voice and
 no-voice versions plus Shorts, made with the neurogaze project) and the video of glasses lenses growing thicker up to -39D.

@@ -1,0 +1,374 @@
+<title>Plinko Drop Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column lab bench. The to-scale board on the left is the instrument; readouts on the right. */
+:root {
+  --bg: #f3f2ee; --panel: #ffffff; --ink: #17181b; --ink2: #55575c; --ink3: #8a8c91; --rule: #dedcd6;
+  --board: #ece4d4; --board-edge: #b3a891; --wall: #fbf8f2; --pin: #5b5e66; --chip: #d8403f; --chip-rim: #d9dbe0;
+  --accent: #c98500; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --slot-a: #33506f; --slot-b: #2b3e57; --slot-zero: #2a2a2c; --slot-top: #8a6510;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121316; --panel: #1b1c20; --ink: #f0efec; --ink2: #c3c2b7; --ink3: #8d8c86; --rule: #2c2d32;
+  --board: #e7decd; --board-edge: #8f8572; --wall: #f8f4ec; --pin: #4b4e55; --chip: #e34948; --chip-rim: #d9dbe0;
+  --accent: #eda100; --s1: #3987e5; --s2: #d95926; --s3: #199e70; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121316; --panel: #1b1c20; --ink: #f0efec; --ink2: #c3c2b7; --ink3: #8d8c86; --rule: #2c2d32;
+  --board: #e7decd; --board-edge: #8f8572; --wall: #f8f4ec; --pin: #4b4e55; --chip: #e34948; --chip-rim: #d9dbe0;
+  --accent: #eda100; --s1: #3987e5; --s2: #d95926; --s3: #199e70; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header h1 { font-family: var(--display); font-weight: 900; font-size: clamp(28px, 4vw, 44px); line-height: 1.05; margin: 0 0 8px; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; color: var(--ink2); max-width: 68ch; }
+.bench { display: grid; grid-template-columns: minmax(0, 470px) minmax(0, 1fr); gap: 28px; margin-top: 24px; align-items: start; }
+@media (max-width: 860px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.board-col { min-width: 0; }
+.board-frame { position: relative; width: 100%; max-width: 470px; margin: 0 auto; }
+canvas#board { width: 100%; height: auto; display: block; touch-action: manipulation; cursor: pointer; }
+.drops { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin: 0 0 8px; }
+.drops button { font: 600 13px var(--mono); padding: 6px 0; border-radius: 6px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); cursor: pointer; }
+.drops button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.drops button:focus-visible, .actions button:focus-visible, input:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.actions button { font: 600 14px var(--body); padding: 9px 14px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); cursor: pointer; }
+.actions button.primary { background: var(--chip); border-color: var(--chip); color: #fff; }
+.side { min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; }
+.card h2 { font-family: var(--display); font-weight: 700; font-size: 18px; margin: 0 0 4px; }
+.card .sub { color: var(--ink3); font-size: 13px; margin: 0 0 12px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tile .label { font-size: 12px; color: var(--ink2); }
+.tile .value { font-family: var(--display); font-weight: 900; font-size: clamp(22px, 3vw, 30px); font-variant-numeric: tabular-nums; }
+.tile .note { font: 12px var(--mono); color: var(--ink3); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink2); margin-bottom: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.ctrl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; margin-top: 10px; }
+.ctrl label { font-size: 13px; color: var(--ink2); }
+.ctrl output { font: 500 13px var(--mono); color: var(--ink); }
+.ctrl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--chip); }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 13px; }
+th, td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--rule); }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 600; color: var(--ink2); font-size: 12px; }
+tr.best td { font-weight: 700; }
+.tbl { overflow-x: auto; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font: 12px var(--mono); padding: 4px 8px; border-radius: 6px; white-space: nowrap; transform: translate(-50%, -120%); }
+footer { margin-top: 28px; color: var(--ink3); font-size: 12.5px; max-width: 80ch; }
+footer a { color: var(--ink2); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Plinko Drop Lab</h1>
+    <p>A to-scale physics model of the 9-slot TV Plinko board: 13 rows of pins, sawtooth walls, a 5.1 in chip that
+      spins and bounces. The bounce is tuned so the model reproduces 1,029 chips dropped on the show from 2015 to 2026.
+      Pick a drop position, drop chips, and watch the averages settle.</p>
+  </header>
+
+  <div class="bench">
+    <div class="board-col">
+      <div class="drops" role="group" aria-label="Drop position">
+        <button id="p1">1</button><button id="p2">2</button><button id="p3">3</button><button id="p4">4</button><button id="p5" aria-pressed="true">5</button><button id="p6">6</button><button id="p7">7</button><button id="p8">8</button><button id="p9">9</button>
+      </div>
+      <div class="board-frame"><canvas id="board" width="940" height="1300" aria-label="Plinko board; click above a slot to drop a chip there"></canvas></div>
+      <div class="actions">
+        <button class="primary" id="drop1">Drop a chip</button>
+        <button id="drop5">Drop 5</button>
+        <button id="drop1000">Run 1,000 fast</button>
+        <button id="reset">Clear</button>
+      </div>
+    </div>
+
+    <div class="side">
+      <section class="card" aria-live="polite">
+        <h2>This session, drop position <span id="posLabel">5</span></h2>
+        <p class="sub" id="countLabel">No chips yet. The example below shows what 1,000 drops look like.</p>
+        <div class="tiles">
+          <div class="tile"><div class="label">Average per chip</div><div class="value" id="tAvg">-</div><div class="note" id="tAvgN">model: -</div></div>
+          <div class="tile"><div class="label">Hit the $10,000</div><div class="value" id="tTop">-</div><div class="note" id="tTopN">model: -</div></div>
+          <div class="tile"><div class="label">Landed on $0</div><div class="value" id="tZero">-</div><div class="note" id="tZeroN">model: -</div></div>
+        </div>
+      </section>
+
+      <section class="card chart">
+        <h2>Where the chips land</h2>
+        <p class="sub">Share of chips per slot. Coin flips = the textbook model, where every pin is a fair 50/50.</p>
+        <div class="legend"><span><i style="background:var(--s3)"></i>Your drops</span><span><i style="background:var(--s1)"></i>Physics model, 24,000 drops</span><span><i style="background:var(--s2)"></i>Coin flips</span></div>
+        <div id="hist"></div>
+      </section>
+
+      <section class="card">
+        <h2>Board physics</h2>
+        <p class="sub">The tuned values reproduce the show. Move them to see how the board's character changes.</p>
+        <div class="ctrl"><label for="eSlider">Bounciness (coefficient of restitution)</label><output id="eOut"></output><input type="range" id="eSlider" min="0.20" max="0.70" step="0.01"></div>
+        <div class="ctrl"><label for="jSlider">Pin imperfection (degrees of scatter per impact)</label><output id="jOut"></output><input type="range" id="jSlider" min="0" max="8" step="0.5"></div>
+        <div class="ctrl"><label for="sSlider">Hand scatter at release (cm)</label><output id="sOut"></output><input type="range" id="sSlider" min="0" max="4" step="0.1"></div>
+        <div class="actions"><button id="tuned">Back to tuned values</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Average win per chip, by drop position</h2>
+        <p class="sub">From the offline runs at the tuned values (24,000 drops per position) and the exact coin-flip model.</p>
+        <div class="tbl"><table id="evTable"><thead><tr><th>Drop over</th><th>Physics</th><th>Coin flips</th><th>P($10k) physics</th><th>P($10k) coin</th></tr></thead><tbody></tbody></table></div>
+      </section>
+    </div>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+(() => {
+  const G = DATA.geom;               // metres
+  const W = G.pitch, H = G.row, R = G.chip / 2, RP = G.peg / 2, RD = G.div_t / 2;
+  const YDIV = G.y_div, YFLOOR = G.y_floor, NROWS = G.rows;
+  const VALUES = [100, 500, 1000, 0, 10000, 0, 1000, 500, 100];
+  const LABELS = ["$100", "$500", "$1,000", "$0", "$10,000", "$0", "$1,000", "$500", "$100"];
+  const SEGS = DATA.segs;            // [x0,y0,x1,y1] walls then dividers
+  const PEGS = DATA.pegs;            // [x,y]
+  const tuned = DATA.tuned;
+  const prm = { e: tuned.e, mu: tuned.mu, tilt: tuned.tilt_deg * Math.PI / 180, muBack: tuned.mu_back, jit: tuned.jitter_deg * Math.PI / 180,
+                ejit: tuned.e_jitter, eRest: tuned.e_rest_speed, kI: tuned.inertia, sx: tuned.sx };
+  const DT = 1e-4;
+
+  function gauss() { let u = 0, v = 0; while (u === 0) u = Math.random(); v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  // one chip's state
+  function newChip(pos) {
+    return { x: pos * W + gauss() * prm.sx, y: gauss() * 0.01, vx: gauss() * 0.05, vy: gauss() * 0.05, w: gauss(), ang: 0, t: 0, still: 0, slot: -1, pos };
+  }
+  function contact(c, nx, ny, depth) {
+    c.x += nx * depth; c.y += ny * depth;
+    let vn = c.vx * nx + c.vy * ny;
+    if (vn >= 0) return;
+    const impact = -vn > prm.eRest;
+    let ee = 0;
+    if (impact) {
+      ee = prm.e + prm.ejit * (2 * Math.random() - 1);
+      if (prm.jit > 0) { const a = prm.jit * gauss(), ca = Math.cos(a), sa = Math.sin(a); const nx2 = ca * nx - sa * ny, ny2 = sa * nx + ca * ny; nx = nx2; ny = ny2; vn = c.vx * nx + c.vy * ny; if (vn >= 0) return; }
+    }
+    const tx = -ny, ty = nx, invI = 1 / (prm.kI * R * R);
+    const vt = c.vx * tx + c.vy * ty - c.w * R;
+    const jn = -(1 + ee) * vn;
+    let jt = -vt / (1 + R * R * invI);
+    const lim = prm.mu * jn; if (jt > lim) jt = lim; else if (jt < -lim) jt = -lim;
+    c.vx += jn * nx + jt * tx; c.vy += jn * ny + jt * ty; c.w += -R * jt * invI;
+  }
+  function step(c) {
+    const gIn = 9.81 * Math.cos(prm.tilt), aF = prm.muBack * 9.81 * Math.sin(prm.tilt), invI = 1 / (prm.kI * R * R);
+    c.vy += gIn * DT;
+    const sp = Math.hypot(c.vx, c.vy);
+    if (sp > 1e-9) { const dec = aF * DT; if (dec >= sp) { c.vx = 0; c.vy = 0; } else { const f = (sp - dec) / sp; c.vx *= f; c.vy *= f; } }
+    const dw = aF * (2 / 3) * R * invI * DT;
+    if (Math.abs(c.w) <= dw) c.w = 0; else c.w -= Math.sign(c.w) * dw;
+    c.x += c.vx * DT; c.y += c.vy * DT; c.ang += c.w * DT; c.t += DT;
+    const reach = R + RP;
+    const rLo = Math.max(0, Math.floor((c.y - reach) / H)), rHi = Math.min(NROWS - 1, Math.ceil((c.y + reach) / H));
+    for (let r = rLo; r <= rHi; r++) {
+      const off = r % 2 === 0 ? 0.5 : 0, kMin = r % 2 === 0 ? 1 : 2;
+      const kLo = Math.max(kMin, Math.floor((c.x - reach) / W - off)), kHi = Math.min(8, Math.ceil((c.x + reach) / W - off));
+      for (let k = kLo; k <= kHi; k++) {
+        const dx = c.x - (k + off) * W, dy = c.y - r * H, d2 = dx * dx + dy * dy;
+        if (d2 < reach * reach) { const d = Math.sqrt(d2); contact(c, dx / d, dy / d, reach - d); }
+      }
+    }
+    const nearWall = c.x < W + R + 0.01 || c.x > 9 * W - R - 0.01;
+    for (const s of SEGS) {
+      const isDiv = s[0] === s[2] && s[0] > 0.75 * W && s[0] < 9.25 * W;
+      if (!isDiv && !nearWall) continue;
+      if (isDiv && c.y < YDIV - R - RD) continue;
+      if (c.y < Math.min(s[1], s[3]) - R - RD || c.y > Math.max(s[1], s[3]) + R + RD) continue;
+      const dx = s[2] - s[0], dy = s[3] - s[1];
+      let tt = ((c.x - s[0]) * dx + (c.y - s[1]) * dy) / (dx * dx + dy * dy); tt = Math.max(0, Math.min(1, tt));
+      const ex = c.x - (s[0] + tt * dx), ey = c.y - (s[1] + tt * dy), d2 = ex * ex + ey * ey, lim = R + (isDiv ? RD : 0);
+      if (d2 < lim * lim && d2 > 1e-18) { const d = Math.sqrt(d2); contact(c, ex / d, ey / d, lim - d); }
+    }
+    if (c.y >= YDIV) { let sl = Math.floor(c.x / W + 0.5); c.slot = Math.min(9, Math.max(1, sl)); return; }
+    if (c.vx * c.vx + c.vy * c.vy < 1e-4) { c.still += DT; if (c.still > 1.5) c.slot = 0; } else c.still = 0;
+    if (c.t > 40) c.slot = 0;
+  }
+
+  // ---------------------------------------------------------------- state
+  let pos = 5;
+  const counts = {};                  // pos -> [9]
+  const live = [];                    // animated chips
+  const resting = [];                 // landed chips shown in slots
+  function cnt(p) { return counts[p] || (counts[p] = new Array(9).fill(0)); }
+
+  // ---------------------------------------------------------------- drawing
+  const cv = document.getElementById("board"), ctx = cv.getContext("2d");
+  const YTOP = -0.55 * W, PAD = 0.12 * W;
+  const S = cv.width / (9 * W + 2 * PAD + 0.2 * W);
+  const OX = cv.width / 2 - 5 * W * S, OY = 34 + PAD * S - YTOP * S;
+  const px = x => OX + x * S, py = y => OY + y * S;
+  cv.height = Math.ceil(OY + YFLOOR * S + PAD * S + W * S * 0.5);   // room for the slot labels
+  function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  let colors = {};
+  function readColors() { for (const k of ["board", "board-edge", "wall", "pin", "chip", "chip-rim", "ink", "ink2", "accent", "slot-a", "slot-b", "slot-zero", "slot-top"]) colors[k] = css("--" + k); }
+  let staticLayer = null;
+  function drawStatic() {
+    readColors();
+    staticLayer = document.createElement("canvas"); staticLayer.width = cv.width; staticLayer.height = cv.height;
+    const g = staticLayer.getContext("2d");
+    const x0 = px(0.5 * W), x1 = px(9.5 * W), y0 = py(YTOP), y1 = py(YFLOOR);
+    g.fillStyle = colors["board-edge"]; g.beginPath(); g.roundRect(x0 - PAD * S, y0 - PAD * S, x1 - x0 + 2 * PAD * S, y1 - y0 + 2 * PAD * S, 10); g.fill();
+    g.fillStyle = colors.board; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    const slotCol = [colors["slot-b"], colors["slot-a"], colors["slot-a"], colors["slot-zero"], colors["slot-top"], colors["slot-zero"], colors["slot-a"], colors["slot-a"], colors["slot-b"]];
+    for (let k = 0; k < 9; k++) { g.fillStyle = slotCol[k]; g.fillRect(px((k + 0.5) * W), py(YDIV), W * S, (YFLOOR - YDIV) * S); }
+    g.save(); g.beginPath(); g.rect(x0, y0, x1 - x0, y1 - y0); g.clip();
+    for (const side of [0, 1]) {
+      const poly = DATA.walls[side], outer = side === 0 ? 0.3 * W : 9.7 * W;
+      g.beginPath(); g.moveTo(px(outer), py(poly[0][1]));
+      for (const p of poly) g.lineTo(px(p[0]), py(p[1]));
+      g.lineTo(px(outer), py(poly[poly.length - 1][1])); g.closePath();
+      g.fillStyle = colors.wall; g.fill(); g.strokeStyle = colors["board-edge"]; g.lineWidth = 1.5; g.stroke();
+    }
+    g.restore();
+    g.strokeStyle = "#3a3a3d"; g.lineWidth = 3; g.lineCap = "round";
+    for (const s of SEGS.slice(SEGS.length - 8)) { g.beginPath(); g.moveTo(px(s[0]), py(s[1])); g.lineTo(px(s[2]), py(s[3])); g.stroke(); }
+    for (const p of PEGS) { g.beginPath(); g.arc(px(p[0]), py(p[1]), Math.max(3, RP * S * 1.3), 0, 2 * Math.PI); g.fillStyle = colors.pin; g.fill(); }
+    g.font = `600 ${Math.round(W * S * 0.24)}px Inter, system-ui, sans-serif`; g.textAlign = "center";
+    for (let k = 0; k < 9; k++) { g.fillStyle = k === 4 ? colors.accent : colors.ink; g.fillText(LABELS[k], px((k + 1) * W), y1 + PAD * S + W * S * 0.32); }
+  }
+  function drawChip(c, alpha) {
+    const x = px(c.x), y = py(c.y), r = R * S;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = colors["chip-rim"]; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, r * 0.86, 0, 2 * Math.PI); ctx.fillStyle = colors.chip; ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = r * 0.12; ctx.lineCap = "round";
+    for (let k = 0; k < 3; k++) { const a = c.ang + k * 2.094; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r * 0.3, y + Math.sin(a) * r * 0.3); ctx.lineTo(x + Math.cos(a) * r * 0.66, y + Math.sin(a) * r * 0.66); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  }
+  function render() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(staticLayer, 0, 0);
+    // drop-position marker
+    ctx.fillStyle = colors.accent; const mx = px(pos * W);
+    ctx.beginPath(); ctx.moveTo(mx - 12, 6); ctx.lineTo(mx + 12, 6); ctx.lineTo(mx, 24); ctx.closePath(); ctx.fill();
+    resting.forEach((c, i) => drawChip(c, Math.max(0.15, 1 - (resting.length - 1 - i) * 0.12)));
+    live.forEach(c => drawChip(c, 1));
+  }
+
+  // ---------------------------------------------------------------- loop
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const steps = Math.round(dt / DT);
+    for (let i = live.length - 1; i >= 0; i--) {
+      const c = live[i];
+      for (let s = 0; s < steps && c.slot < 0; s++) step(c);
+      if (c.slot > 0) { c.y = Math.min(c.y, YFLOOR - R); cnt(c.pos)[c.slot - 1]++; resting.push(c); if (resting.length > 12) resting.shift(); live.splice(i, 1); updateStats(); }
+      else if (c.slot === 0) { live.splice(i, 1); live.push(newChip(c.pos)); }   // stuck: re-drop, as on the show
+    }
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  function dropAt(p, n = 1) { for (let i = 0; i < n; i++) setTimeout(() => live.push(newChip(p)), i * 450); }
+  function runFast(p, n) {
+    const c = cnt(p); let done = 0;
+    const btn = document.getElementById("drop1000"); btn.disabled = true;
+    function chunk() {
+      const t0 = performance.now();
+      while (done < n && performance.now() - t0 < 30) {
+        let ch = newChip(p);
+        while (ch.slot < 0) step(ch);
+        if (ch.slot === 0) continue;
+        c[ch.slot - 1]++; done++;
+      }
+      btn.textContent = done < n ? `Running ${done.toLocaleString()} / ${n.toLocaleString()}` : "Run 1,000 fast";
+      updateStats();
+      if (done < n) setTimeout(chunk, 0); else btn.disabled = false;
+    }
+    chunk();
+  }
+
+  // ---------------------------------------------------------------- stats
+  const fmt$ = v => "$" + Math.round(v).toLocaleString("en-US");
+  const fmtP = v => (100 * v).toFixed(1) + "%";
+  function modelRow(p) { return DATA.kernel[p - 1]; }
+  function updateStats() {
+    document.getElementById("posLabel").textContent = pos;
+    const c = cnt(pos), n = c.reduce((a, b) => a + b, 0);
+    const m = modelRow(pos), mEV = m.reduce((a, q, i) => a + q * VALUES[i], 0);
+    document.getElementById("tAvgN").textContent = "model: " + fmt$(mEV);
+    document.getElementById("tTopN").textContent = "model: " + fmtP(m[4]);
+    document.getElementById("tZeroN").textContent = "model: " + fmtP(m[3] + m[5]);
+    if (n === 0) {
+      document.getElementById("countLabel").textContent = "No chips yet. Drop one, or run 1,000 fast.";
+      for (const id of ["tAvg", "tTop", "tZero"]) document.getElementById(id).textContent = "-";
+    } else {
+      const ev = c.reduce((a, k, i) => a + k * VALUES[i], 0) / n;
+      document.getElementById("countLabel").textContent = `${n.toLocaleString()} chip${n === 1 ? "" : "s"} dropped over slot ${pos}.`;
+      document.getElementById("tAvg").textContent = fmt$(ev);
+      document.getElementById("tTop").textContent = fmtP(c[4] / n);
+      document.getElementById("tZero").textContent = fmtP((c[3] + c[5]) / n);
+    }
+    drawHist(n ? c.map(k => k / n) : null, m, DATA.coin[pos - 1]);
+  }
+  function drawHist(mine, model, coin) {
+    const w = 640, h = 250, l = 40, b = 36, top = 14, iw = w - l - 8, ih = h - b - top;
+    const series = [[mine, "var(--s3)"], [model, "var(--s1)"], [coin, "var(--s2)"]];
+    const ymax = Math.max(0.3, ...[model, coin, mine || [0]].flat()) * 1.1;
+    const band = iw / 9, bw = Math.min(16, (band - 10) / 3);
+    let svg = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Share of chips per slot">`;
+    for (let g = 0; g <= ymax; g += 0.1) { const y = top + ih - ih * g / ymax; svg += `<line x1="${l}" x2="${w - 8}" y1="${y}" y2="${y}" stroke="var(--rule)" stroke-width="1"/><text x="${l - 6}" y="${y + 4}" text-anchor="end" font-size="11" fill="var(--ink3)" font-family="IBM Plex Mono, monospace">${Math.round(g * 100)}%</text>`; }
+    for (let i = 0; i < 9; i++) {
+      const gx = l + band * i + (band - (bw * 3 + 4)) / 2;
+      series.forEach(([s, col], j) => {
+        if (!s) return;
+        const v = s[i], bh = ih * v / ymax, x = gx + j * (bw + 2), y = top + ih - bh;
+        const r = Math.min(4, bw / 2, bh);
+        if (bh > 0.5) svg += `<path d="M${x},${top + ih} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${top + ih} Z" fill="${col}"><title>${LABELS[i]}: ${fmtP(v)}</title></path>`;
+      });
+      svg += `<text x="${l + band * (i + 0.5)}" y="${h - 12}" text-anchor="middle" font-size="12" fill="var(--ink2)" font-family="Inter, sans-serif">${LABELS[i]}</text>`;
+    }
+    svg += `<line x1="${l}" x2="${w - 8}" y1="${top + ih}" y2="${top + ih}" stroke="var(--ink3)" stroke-width="1"/></svg>`;
+    document.getElementById("hist").innerHTML = svg;
+  }
+  function fillTable() {
+    const tb = document.querySelector("#evTable tbody"); let html = "";
+    const evP = DATA.kernel.map(r => r.reduce((a, q, i) => a + q * VALUES[i], 0));
+    const evC = DATA.coin.map(r => r.reduce((a, q, i) => a + q * VALUES[i], 0));
+    const best = evP.indexOf(Math.max(...evP));
+    for (let p = 0; p < 9; p++) html += `<tr class="${p === best ? "best" : ""}"><td>Slot ${p + 1} (${LABELS[p]})</td><td>${fmt$(evP[p])}</td><td>${fmt$(evC[p])}</td><td>${fmtP(DATA.kernel[p][4])}</td><td>${fmtP(DATA.coin[p][4])}</td></tr>`;
+    tb.innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------- controls
+  function setPos(p) { pos = p; for (let k = 1; k <= 9; k++) document.getElementById("p" + k).setAttribute("aria-pressed", k === p ? "true" : "false"); updateStats(); }
+  for (let k = 1; k <= 9; k++) document.getElementById("p" + k).addEventListener("click", () => setPos(k));
+  cv.addEventListener("click", ev => { const rect = cv.getBoundingClientRect(); const x = (ev.clientX - rect.left) * cv.width / rect.width; const p = Math.min(9, Math.max(1, Math.round((x - OX) / (W * S)))); setPos(p); dropAt(p); });
+  document.getElementById("drop1").addEventListener("click", () => dropAt(pos));
+  document.getElementById("drop5").addEventListener("click", () => dropAt(pos, 5));
+  document.getElementById("drop1000").addEventListener("click", () => runFast(pos, 1000));
+  document.getElementById("reset").addEventListener("click", () => { for (const k in counts) delete counts[k]; resting.length = 0; live.length = 0; updateStats(); });
+  const sliders = [["eSlider", "eOut", "e", v => v.toFixed(2)], ["jSlider", "jOut", "jitDeg", v => v.toFixed(1) + "°"], ["sSlider", "sOut", "sxCm", v => v.toFixed(1)]];
+  function syncSliders() {
+    document.getElementById("eSlider").value = prm.e; document.getElementById("jSlider").value = prm.jit * 180 / Math.PI; document.getElementById("sSlider").value = prm.sx * 100;
+    document.getElementById("eOut").textContent = prm.e.toFixed(2); document.getElementById("jOut").textContent = (prm.jit * 180 / Math.PI).toFixed(1) + "°"; document.getElementById("sOut").textContent = (prm.sx * 100).toFixed(1) + " cm";
+  }
+  document.getElementById("eSlider").addEventListener("input", e => { prm.e = +e.target.value; syncSliders(); });
+  document.getElementById("jSlider").addEventListener("input", e => { prm.jit = +e.target.value * Math.PI / 180; syncSliders(); });
+  document.getElementById("sSlider").addEventListener("input", e => { prm.sx = +e.target.value / 100; syncSliders(); });
+  document.getElementById("tuned").addEventListener("click", () => { prm.e = tuned.e; prm.jit = tuned.jitter_deg * Math.PI / 180; prm.sx = tuned.sx; syncSliders(); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawStatic);
+  new MutationObserver(drawStatic).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  document.getElementById("foot").innerHTML = DATA.footer;
+  drawStatic(); syncSliders(); fillTable();
+  // open in a working state: an example batch of 1,000 drops over the middle, labelled as such
+  (function seed() { const c = cnt(5); DATA.example.forEach((k, i) => c[i] = k); updateStats();
+    document.getElementById("countLabel").textContent = `Example: ${DATA.example.reduce((a, b) => a + b, 0).toLocaleString()} chips already dropped over slot 5 by the model. Drop more, or Clear to start fresh.`; })();
+  requestAnimationFrame(frame);
+})();
+</script>

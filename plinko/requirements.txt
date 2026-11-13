@@ -1,0 +1,4 @@
+numpy>=2.0
+numba>=0.60
+pycairo>=1.25
+# plus system ffmpeg (libx264) and the Inter font (/usr/share/fonts/opentype/inter)
