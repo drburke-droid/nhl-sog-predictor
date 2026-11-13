@@ -47,15 +47,15 @@ SCRIPT = [
 
     ("chaos", 0.6, "This is the heart of chaos theory. [p0.5] It studies systems that follow exact rules, with no "
                    "randomness at all, [p0.3] yet still can't be predicted for long."),
-    ("chaos", "+0.8", "It began with the weather. [p0.4] In 1961, the meteorologist Edward Lorenz reran a "
+    ("chaos", "+0.8", "It began with the weather. [p0.4] In 1961, the meteorologist Edward Lorenz repeated a "
                       "simulation, [p0.2] typing in point five zero six, instead of point five zero six one two "
                       "seven. [p0.4] A difference of about one part in four thousand. [p0.4] Two months into the "
                       "simulated weather, the two forecasts had nothing in common."),
-    ("chaos", "+0.8", "Here are two runs of Lorenz's equations, starting almost exactly together. [p0.4] For a "
+    ("chaos", 31.65, "Here are two runs of Lorenz's equations, starting almost exactly together. [p0.4] For a "
                       "while, they move as one. [p0.5] Then they part, [p0.3] and never agree again."),
-    ("chaos", "+0.8", "Chaos theory calls this sensitive dependence on initial conditions. [p0.4] Lorenz called "
+    ("chaos", 41.784, "Chaos theory calls this sensitive dependence on initial conditions. [p0.4] Lorenz called "
                       "it the butterfly effect."),
-    ("chaos", "+0.7", "A Plinko board is a perfect example."),
+    ("chaos", 48.914, "A Plinko board is a perfect example."),
 
     ("mechanism", 0.5, "So why is Plinko chaotic? [p0.4] Because the pins are round."),
     ("mechanism", "+0.8", "Bounce two chips off a flat wall, a hair apart, [p0.3] and they leave a hair apart. "

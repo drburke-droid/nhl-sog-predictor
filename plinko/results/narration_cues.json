@@ -192,9 +192,9 @@
    {
     "i": 9,
     "t0": 10.6,
-    "t1": 30.85,
+    "t1": 31.04,
     "path": "out/narration/line_09.wav",
-    "text": "It began with the weather. In 1961, the meteorologist Edward Lorenz reran a simulation, typing in point five zero six, instead of point five zero six one two seven. A difference of about one part in four thousand. Two months into the simulated weather, the two forecasts had nothing in common.",
+    "text": "It began with the weather. In 1961, the meteorologist Edward Lorenz repeated a simulation, typing in point five zero six, instead of point five zero six one two seven. A difference of about one part in four thousand. Two months into the simulated weather, the two forecasts had nothing in common.",
     "phrases": [
      [
       10.6,
@@ -202,19 +202,19 @@
      ],
      [
       12.14,
-      17.4
+      17.0
      ],
      [
-      17.6,
-      22.53
+      17.2,
+      22.72
      ],
      [
-      22.93,
-      26.17
+      23.12,
+      26.36
      ],
      [
-      26.57,
-      30.85
+      26.76,
+      31.04
      ]
     ]
    },
