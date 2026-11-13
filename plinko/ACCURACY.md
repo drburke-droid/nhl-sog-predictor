@@ -191,6 +191,21 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   tolerance by that factor per bounce gives the film's "how far ahead" bars (1 mm: 3 bounces, 1 um: 12, 1 nm:
   21, 1 atom: 24) and the 15 fm needed for a whole drop. These are typical
   values: islands grow slower, knife edges faster.
+* **One variable: the board's temperature** (`chaos2.py onevar`). 6,000 releases across the valid gap give
+  892 winners (14.9%). Each is replayed exactly (the same release to the last bit,
+  which wins every time on the same board) on a board warmed by a fixed dT: uniform expansion of 1e-5 per kelvin
+  about the centre line, pins and chip unchanged. Share that still win: 1e-9 C 98%,
+  1e-8 C 95%, 1e-7 C 88%, 1e-6 C 76%,
+  1e-5 C 60%, 1e-4 C 44%, 1e-3 C 35%,
+  0.01 C 23%, 0.1 C 17%, 1 C 17% (a fresh drop: 15%).
+  The heat of one drop: the chip falls 1.97 m (vertically) from the top row to rest on the slot
+  floor and stops, so its 4.8 J of potential energy all becomes heat. Spread evenly through an
+  assumed 50 kg wooden board (1,700 J/kg/K), that is 5.7e-05 C, and the 2.5 m board grows by
+  1.4 nm. On a board that much warmer 49% of winners win again. This is
+  an upper bound on the board's share of the heat (some warms the chip, some leaves as sound) but uniform
+  warming is also the gentlest way to spread it: the pins the chip actually hits warm far more, locally. The
+  film's pair (release -0.93 cm from the gap centre) wins $10,000 on the cool board and
+  lands in slot 6 ($0) on the warmed one, parting about 2.6 s into the drop.
 * **The real world** (perfect release, one thing varied). The chip's own thermal motion (equipartition, for a
   0.25 kg chip: 0.13 nm/s and 2.5 nrad/s at random): 55%. A board 0.001 C warmer or cooler (expansion 1e-5
   per kelvin, about 20 nm over 2 m, scaled about the board's centre line): 38%; 0.0001 C: 52%; 0.01 C: 26%;

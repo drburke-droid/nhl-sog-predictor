@@ -4,6 +4,7 @@
     python3 chaos2.py replay   # find winning drops, replay them at a given precision: does it win again?
     python3 chaos2.py extra    # board temperature changes, and how robust each winner is
     python3 chaos2.py film     # the film's hook pair, release maps, precision fit and horizon
+    python3 chaos2.py onevar   # perfect release, only the board's temperature changes (one drop's own heat)
     python3 chaos2.py all
 
 Everything runs on the perfect board (no pin imperfections, no random restitution) unless a "real-world"
@@ -266,6 +267,83 @@ def extra(n=300):
     json.dump(out, open("results/chaos2_extra.json", "w"), indent=1)
 
 
+# ------------------------------------------------------------------------------------------- one variable
+BOARD_KG, BOARD_C = 50.0, 1700.0    # backboard ~1.6 m x 2.5 m x 19 mm of wood (~45 kg) plus pins; wood J/(kg K)
+N_CAND1 = 6000
+
+
+def drop_heat():
+    """Heat one drop leaves behind: the chip falls from the top row to rest on the slot floor and stops, so all
+    of that potential energy becomes heat (an upper bound for the board: some warms the chip, some is sound).
+    Spread evenly through the board, it warms it by dT."""
+    along = B.last_row_y() + B.FLOOR_BELOW_LAST_ROW - B.CHIP_DIAMETER / 2
+    h = along * math.cos(math.radians(B.BOARD_TILT_DEG))
+    energy = CHIP_MASS * B.G * h
+    return energy, h, energy / (BOARD_KG * BOARD_C)
+
+
+def trajectory_scaled(x0, eps, fps=60):
+    """P.trajectory on a board scaled by (1 + eps) about its centre line (as _batch_scaled)."""
+    g, s = P.GEOM.copy(), P.SEGS.copy()
+    f = 1.0 + eps
+    g[[0, 1, 4, 5]] *= f
+    s[:, :4] *= f
+    every = max(1, int(round(1.0 / (fps * PRM[4]))))
+    rec = np.zeros((int(PRM[5] * fps) + 10, 5))
+    slot, t, c, nrec = P.simulate_one(x0 + 5.0 * P.GEOM[0] * eps, 0.0, 0.0, 0.0, 0.0, np.uint64(1), PRM, g, s,
+                                      every, rec)
+    return int(slot), rec[:nrec].copy()
+
+
+def onevar():
+    """A perfect release, everything held fixed except one thing: the board's temperature. Find winning drops,
+    warm the board by dT (uniform expansion), replay each exactly: what share still win? Plus one pair for the
+    film: a winner, and its exact replay on a board warmed by one drop's own heat
+    (results/chaos2_onevar.json, results/chaos2_warm.npz)."""
+    rng = np.random.default_rng(2026)
+    cand = np.zeros((N_CAND1, 5))
+    cand[:, 0] = B.drop_x(5) + rng.uniform(-GAP, GAP, N_CAND1)
+    s0 = run(cand)
+    win = cand[s0 == 5]
+    n = len(win)
+    assert (run(win, np.zeros(n)) == 5).all(), "an exact replay on the same board must win"
+    energy, h, dT_drop = drop_heat()
+    dTs = sorted(set([float(f"{v:.3g}") for v in np.logspace(-10, 0, 21)] + [float(f"{dT_drop:.3g}")]))
+    curve = []
+    for dT in dTs:
+        s = run(win, np.full(n, ALPHA * dT))
+        ok = s > 0
+        curve.append(float((s[ok] == 5).mean()))
+        print(f"board warmer by {dT:9.3g} C: {curve[-1]:.3f} of {n} winners win again", flush=True)
+    s_drop = run(win, np.full(n, ALPHA * dT_drop))
+    # the film's pair: the warmed replay misses, lands as far from $10,000 in value as possible, and parts from
+    # the original in the middle of the board, where it's easy to see
+    vals = B.SLOT_VALUES
+    best = None
+    for i in np.flatnonzero((s_drop > 0) & (s_drop != 5)):
+        sa, ra = trajectory_scaled(win[i, 0], 0.0)
+        sb, rb = trajectory_scaled(win[i, 0], ALPHA * dT_drop)
+        if sa != 5 or sb != s_drop[i]:
+            continue
+        m = min(len(ra), len(rb))
+        sep = np.hypot(ra[:m, 1] - rb[:m, 1], ra[:m, 2] - rb[:m, 2])
+        k = int(np.argmax(sep > 0.01))
+        frac = ra[k, 2] / B.last_row_y()
+        score = (vals[sb - 1] == 0) * 2 + (vals[sb - 1] <= 100) + (1 - abs(frac - 0.55))
+        if best is None or score > best[0]:
+            best = (score, i, sa, ra, sb, rb, float(ra[k, 0]), float(frac))
+    _, i, sa, ra, sb, rb, t_split, frac = best
+    np.savez_compressed("results/chaos2_warm.npz", win=ra[:, :4], replay=rb[:, :4])
+    out = dict(n_winners=n, n_candidates=N_CAND1, alpha_per_K=ALPHA, board_kg=BOARD_KG, board_c=BOARD_C,
+               drop_energy_J=energy, drop_height_m=h, drop_dT_C=dT_drop,
+               drop_expansion_m=ALPHA * dT_drop * 2.5, dT_C=dTs, wins_again=curve,
+               wins_again_drop=float((s_drop[s_drop > 0] == 5).mean()),
+               base_rate=float((s0 == 5).mean()), pair_release_m=float(win[i, 0] - B.drop_x(5)),
+               pair_slots=[int(sa), int(sb)], pair_split_t=t_split, pair_split_frac=frac)
+    json.dump(out, open("results/chaos2_onevar.json", "w"), indent=1)
+    print(json.dumps({k: v for k, v in out.items() if k not in ("dT_C", "wins_again")}, indent=1))
+
+
 if __name__ == "__main__":
     what = sys.argv[1:] or ["all"]
     if "growth" in what or "all" in what:
@@ -276,3 +354,5 @@ if __name__ == "__main__":
         extra()
     if "film" in what or "all" in what:
         film_data()
+    if "onevar" in what or "all" in what:
+        onevar()

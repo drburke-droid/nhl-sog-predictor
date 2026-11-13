@@ -28,6 +28,7 @@ REP = json.load(open("results/chaos2_replay.json"))
 FILM = json.load(open("results/chaos2_film.json"))
 EXTRA = json.load(open("results/chaos2_extra.json"))
 MAPS = C._load_npz("results/chaos2_maps.npz")
+ONE = json.load(open("results/chaos2_onevar.json"))
 W = C.W
 LX, LW = C.LX, C.LW
 FAC = GROW["per_bounce_factor"]
@@ -288,6 +289,8 @@ OVER = C._load_npz("results/chaos2_overview.npz")
 
 def strip_bin(ctx, x, y, w, h, slots, reveal=1.0, alpha=1.0):
     """One sliver per release point (nearest sample per pixel): gold if it wins $10,000, grey otherwise."""
+    if w < 1 or h < 1 or alpha <= 0:
+        return
     w_i, h_i = max(1, int(round(w))), max(1, int(round(h)))
     n = len(slots)
     idx = np.clip(((np.arange(w_i) + 0.5) * n / w_i).astype(int), 0, n - 1)
@@ -481,33 +484,132 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
                     D.fade(t, 22.5, 99, 0.5), "semibold")
 
 
-# ----------------------------------------------------------------------------------------------- 8 real world
+# ----------------------------------------------------------------------------------------------- 8 one variable
+def deg(dT):
+    """0.000057 -> '0.00006 °C'."""
+    d = max(0, -int(math.floor(math.log10(dT))))
+    return f"{dT:.{d}f} \u00b0C"
+
+
+def ov_warm(ctx, gctx, t, shot, cm, crop):
+    C.scrim(ctx)
+    win, rep = HP["warm_win"], HP["warm_replay"]
+    slow, t0 = shot["slowmo"], 2.5
+    tt = max(0.0, (t - t0) * slow)
+    for rec, col, wd in ((win, D.GOLD, 3.5), (rep, D.S1, 3.0)):
+        trail(gctx, cm, crop, rec, int(np.clip(tt * 60, 0, len(rec) - 1)), col, wd, 0.9)
+    ts = t0 + ONE["pair_split_t"] / slow
+    if t > ts:
+        i = int(ONE["pair_split_t"] * 60)
+        x, y = cm.px(C.board_world(rep[i, 1], rep[i, 2], 0.03), crop)
+        a = D.fade(t, ts, ts + 2.5, 0.3)
+        gctx.arc(x, y, 18 + 30 * D.ease_out(min(1.0, (t - ts) / 0.8)), 0, 2 * math.pi)
+        gctx.set_source_rgba(1, 1, 1, 0.8 * a)
+        gctx.set_line_width(3)
+        gctx.stroke()
+    for rec, gold in ((win, True), (rep, False)):
+        tl = t0 + rec[-1, 0] / slow
+        if t > tl:
+            k = int(round(rec[-1, 1] / W))
+            board_label(ctx, cm, crop, k, C.D.SLOT_LABELS[k - 1], gold, D.fade(t, tl, 99, 0.25))
+    dT = deg(ONE["drop_dT_C"])
+    D.text(ctx, "Make the start perfect.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
+    D.text(ctx, "Change just one thing.", LX, 244, 50, D.GOLD, D.fade(t, 1.0, 99, 0.5), "black")
+    D.paragraph(ctx, "Same chip, same spot, exact to the last atom. The only difference: the board is a little "
+                     "warmer, from the heat of the first drop.", LX, 314, 28, LW - 20, D.INK,
+                D.fade(t, 1.8, 99, 0.5), "medium")
+    D.paragraph(ctx, f"The chip falls {ONE['drop_height_m']:.0f} m and stops, turning about "
+                     f"{ONE['drop_energy_J']:.0f} joules into heat. Spread through the board, that's {dT} "
+                     f"warmer: the board grows by about {1e9 * ONE['drop_expansion_m']:.0f} nanometre.",
+                LX, 438, 24, LW - 20, D.INK2, D.fade(t, 3.2, 99, 0.5))
+    a = D.fade(t, 2.2, 99, 0.4)
+    y = 590
+    for col, lab in ((D.GOLD, "the first drop"), (D.S1, f"the same drop, board {dT} warmer")):
+        ctx.new_path()
+        ctx.arc(LX + 10, y - 8, 9, 0, 2 * math.pi)
+        ctx.set_source_rgba(*col, a)
+        ctx.fill()
+        D.text(ctx, lab, LX + 32, y, 22, D.INK2, a, "medium")
+        y += 36
+    t_land = t0 + max(win[-1, 0], rep[-1, 0]) / slow
+    a = D.fade(t, t_land + 0.6, 99, 0.5)
+    if a > 0:
+        k = int(round(rep[-1, 1] / W))
+        D.text(ctx, f"{dT} warmer:", LX, 760, 44, D.INK, a, "black")
+        D.text(ctx, f"$10,000 became {C.D.SLOT_LABELS[k - 1]}.", LX, 818, 44, D.GOLD, a, "black")
+
+
 def ov_realworld(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx, 1920, 0.84)
-    head2(ctx, "And a real board is never the same twice.", t,
-          "Replay a winning drop with the release perfect, and change only the things nobody can hold still.")
-    rows = [("Release replayed to within 1 atom", REP["position"]["1e-10"]),
-            ("Perfect release; only the chip's own heat jiggle differs", REP["real_world"]["chip's own thermal motion"]),
-            ("Perfect release; board 0.001 °C warmer or cooler", EXTRA["board 0.001 C"]),
-            ("Perfect release; board 0.01 °C", EXTRA["board 0.01 C"]),
-            ("Perfect release; board 1 °C", EXTRA["board 1 C"]),
-            ("a fresh drop", REP["base_rate"])]
-    x0, bw = LX + 860, 760
-    y = 300
-    for i, (lab, v) in enumerate(rows):
-        a = D.fade(t, 1.0 + 0.7 * i, 99, 0.35)
-        f = D.ease_out(min(1.0, max(0.0, (t - 1.0 - 0.7 * i) / 0.8)))
-        D.text(ctx, lab, LX, y + 32, 28, D.INK3 if i == 5 else D.INK, a, "medium")
-        ctx.rectangle(x0, y + 8, bw * v * f, 32)
-        ctx.set_source_rgba(*(D.INK3 if i == 5 else (D.GOLD if i == 0 else D.S1)), a)
-        ctx.fill()
-        D.text(ctx, f"{100 * v:.0f}%", x0 + bw * v * f + 14, y + 34, 26, D.INK, a, "semibold")
-        y += 70
-    D.text(ctx, "chance the replay wins again", x0, 290, 20, D.INK3, D.fade(t, 1.0, 99, 0.4))
-    a = D.fade(t, 6.5, 99, 0.5)
-    D.paragraph(ctx, "A thousandth of a degree stretches the board by about 20 nanometres, a couple of hundred atoms. No studio "
-                     "holds a board to a hundredth of a degree, so in practice a replay is barely better than a "
-                     "fresh drop.", LX, 800, 29, 1680, D.INK, a, "medium")
+    head2(ctx, "How much warmer is too warm?", t,
+          f"A perfect release, everything else fixed. Warm the board, then replay {ONE['n_winners']} winning drops "
+          f"exactly. How many still win?")
+    dts = np.array(ONE["dT_C"])
+    p = np.array(ONE["wins_again"])
+    base = ONE["base_rate"]
+    gx, gy, gw, gh = 230, 330, 1440, 470
+    lx_ = lambda d: gx + gw * (math.log10(d) + 10) / 10.0          # 1e-10 C (left) ... 1 C (right)
+    ly_ = lambda v: gy + gh * (1 - v)
+    a = D.fade(t, 1.0, 99, 0.4)
+    for v in (0.0, 0.25, 0.5, 0.75, 1.0):
+        ctx.move_to(gx, ly_(v))
+        ctx.line_to(gx + gw, ly_(v))
+        ctx.set_source_rgba(*D.GRID, a)
+        ctx.set_line_width(1)
+        ctx.stroke()
+        D.text(ctx, f"{100 * v:.0f}%", gx - 14, ly_(v), 18, D.INK3, a, align="right", anchor="middle")
+    for d, lab in ((1e-9, "a billionth"), (1e-6, "a millionth"), (1e-3, "a thousandth"), (1.0, "1 degree")):
+        D.text(ctx, lab, lx_(d), gy + gh + 34, 20, D.INK2, a, align="center")
+    D.text(ctx, "how much warmer the board is (\u00b0C)  \u2192", gx + gw / 2, gy + gh + 70, 20, D.INK3, a,
+           align="center")
+    ctx.move_to(gx, ly_(base))
+    ctx.line_to(gx + gw, ly_(base))
+    ctx.set_source_rgba(*D.INK3, a)
+    ctx.set_line_width(2)
+    ctx.stroke()
+    D.text(ctx, f"a fresh drop: {100 * base:.0f}%", gx + gw - 4, ly_(base) + 26, 20, D.INK3, a, align="right")
+    # one drop's heat
+    xd = lx_(ONE["drop_dT_C"])
+    ad = D.fade(t, 6.5, 99, 0.4)
+    if ad > 0:
+        ctx.set_dash([6, 6])
+        ctx.move_to(xd, gy)
+        ctx.line_to(xd, gy + gh)
+        ctx.set_source_rgba(*D.S1, ad)
+        ctx.set_line_width(2)
+        ctx.stroke()
+        ctx.set_dash([])
+        D.text(ctx, "the heat of one drop", xd, gy - 12, 20, D.S1, ad, "semibold", "center")
+    f = D.ease(min(1.0, max(0.0, (t - 2.5) / 5.0)))
+    xmax = gx + gw * f
+    pts = [(lx_(d), ly_(v)) for d, v in zip(dts, p)]
+    ctx.set_line_width(3)
+    ctx.set_source_rgba(*D.GOLD, a)
+    started = False
+    for (x, y) in pts:
+        if x > xmax:
+            break
+        (ctx.line_to if started else ctx.move_to)(x, y)
+        started = True
+    ctx.stroke()
+    for (x, y) in pts:
+        if x <= xmax:
+            ctx.arc(x, y, 5, 0, 2 * math.pi)
+            ctx.set_source_rgba(*D.GOLD, a)
+            ctx.fill()
+    pick = {f"{d:.3g}": v for d, v in zip(dts, p)}
+    for d, ts, dy in ((1e-9, 4.0, -40), (ONE["drop_dT_C"], 7.0, -40), (1.0, 8.0, -40)):
+        if t > ts:
+            v = pick[f"{d:.3g}"]
+            D.pill(ctx, f"{100 * v:.0f}%", lx_(d) - (30 if d == 1.0 else 0), ly_(v) + dy, 24, D.INK,
+                   alpha=D.fade(t, ts, 99, 0.3), weight="semibold")
+    a = D.fade(t, 10.0, 99, 0.5)
+    D.paragraph(ctx, f"Even a billionth of a degree spoils {100 * (1 - pick['1e-09']):.0f} replays in 100, and one "
+                     f"drop's heat spoils about half. No change is too small to matter.",
+                LX, 925, 28, 1700, D.INK, a, "medium")
+    a = D.fade(t, 14.5, 99, 0.5)
+    D.paragraph(ctx, "And every drop warms the board: in practice, a replay is barely better than a fresh drop.",
+                LX, 985, 28, 1700, D.GOLD, a, "semibold")
 
 
 # ----------------------------------------------------------------------------------------------- 9 statistics
@@ -561,7 +663,7 @@ def ov_outro(ctx, gctx, t, shot, cm, crop):
 
 
 OVERLAY = dict(hook=ov_hook, deterministic=ov_deterministic, twins=ov_twins, mechanism=ov_mechanism,
-               horizon=ov_horizon, crux=ov_crux, islands=ov_islands, realworld=ov_realworld,
+               horizon=ov_horizon, crux=ov_crux, islands=ov_islands, warm=ov_warm, realworld=ov_realworld,
                statistics=ov_statistics, outro=ov_outro)
 DARK = {"mechanism": (6.0, 0.5, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 5.0),
         "crux": (5.0, 0.6, 0.0), "realworld": (5.0, 0.6, 0.0)}
