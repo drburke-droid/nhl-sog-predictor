@@ -507,11 +507,13 @@ def ov_warm(ctx, gctx, t, shot, cm, crop):
         gctx.set_source_rgba(1, 1, 1, 0.8 * a)
         gctx.set_line_width(3)
         gctx.stroke()
+    adjacent = abs(round(win[-1, 1] / W) - round(rep[-1, 1] / W)) == 1
     for rec, gold in ((win, True), (rep, False)):
         tl = t0 + rec[-1, 0] / slow
         if t > tl:
             k = int(round(rec[-1, 1] / W))
-            board_label(ctx, cm, crop, k, C.D.SLOT_LABELS[k - 1], gold, D.fade(t, tl, 99, 0.25))
+            board_label(ctx, cm, crop, k, C.D.SLOT_LABELS[k - 1], gold, D.fade(t, tl, 99, 0.25),
+                        dy=-124 if (gold and adjacent) else -56)
     dT = deg(ONE["drop_dT_C"])
     D.text(ctx, "Make the start perfect.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
     D.text(ctx, "Change just one thing.", LX, 244, 50, D.GOLD, D.fade(t, 1.0, 99, 0.5), "black")
