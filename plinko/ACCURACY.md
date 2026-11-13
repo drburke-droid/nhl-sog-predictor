@@ -17,10 +17,10 @@ from broadcast frames, using the chip as the ruler.
 | Slots | 9, valued (left to right) $100, $500, $1,000, $0, $10,000, $0, $1,000, $500, $100 | Price Is Right wiki; every frame | solid |
 | Centre slot history | $5,000 from 3 Jan 1983; $10,000 permanent from 15 Oct 1998 | Price Is Right wiki | solid |
 | Drop positions | 9, one over each slot | frames; Biesterfeld (2001) | solid |
-| Pin rows | 13, alternating 8 pins (between slot centres) and 7 pins (over slots 2 to 8) | counted on 2017 and 2023 frames; Marasco and Assefa (Howard CC) say "thirteen rows of pegs" | solid |
+| Pin rows | 13, alternating 8 pins (between slot centres) and 7 pins (over slots 2 to 8) | counted on 2017 and 2023 frames; Marasco and Assefa (2020) say "thirteen rows of pegs" and their Figure 1 draws 13 | solid |
 | Pins | 98 (7 rows x 8 + 6 rows x 7) | follows from the rows | solid |
 | Pins met on the way down | 12 (the top row only frames the drop gaps) | geometry; Biesterfeld (2001): "it will encounter 12 pegs" | solid |
-| Side walls | sawtooth: 6 triangular teeth a side, each reaching to the slot 1 (slot 9) centre line on the 7-pin rows, where an end pin would otherwise be | 2017 close-up frame | measured |
+| Side walls | sawtooth: 6 triangular teeth a side, each reaching to the slot 1 (slot 9) centre line on the 7-pin rows, where an end pin would otherwise be | 2017 close-up frame; the schematic in Marasco and Assefa (2020), Figure 1, shows the same 6 teeth a side in the same rows | solid |
 | Slot dividers | 8 thin plates directly below the 8 pins of the bottom row | 2017 close-up frame | solid |
 | Chip diameter | 13.0 cm (5.1 in) | 13.5 cm scaled against a model's hand in a 4K frame; replicas sold as 5 in | measured, +-0.5 cm |
 | Chip thickness | about 19 mm (3/4 in) | replica listings | estimated (does not enter the 2D physics) |
@@ -69,7 +69,11 @@ which matches the one hobby source that gives a figure for the TV board.
 **Coin flips (the textbook).** Each pin sends the chip half a slot left or right with probability 1/2;
 at a wall tooth the chip can only go inward. This is the model in Biesterfeld (2001) and Hastings (1997),
 and `galton.py` reproduces their numbers exactly: a chip dropped in the middle wins $10,000 with
-probability 924/4096 = 22.56% and averages $2,557.91; one slot off, $2,265.92.
+probability 924/4096 = 22.56% and averages $2,557.91; one slot off, $2,265.92. Marasco and Assefa (2020)
+quote $2,555.32 for the same drop. The gap comes from their approximate "fold" at the walls (78 and 221 paths
+to the $100 and $500 slots, where the exact chain gives 66 and 232) and from a typo (4069 for 4096 in two
+terms). Their own 5,000-drop coin-flip simulation from the middle, 23.0% in the centre slot, agrees with the
+exact 22.56% within its noise.
 
 **Physics (`physics.py`).** A 2D rigid disc with spin, moving under gravity along the leaning board, with
 sliding friction against the backboard. It makes impulse contacts with the round pins, the sawtooth walls
@@ -148,7 +152,7 @@ all of them together. The board is treated as perfectly level and symmetric.
 * Price Is Right wiki, "Plinko" (rules, values, history, records): https://priceisright.fandom.com/wiki/Plinko
 * tpirstats.com, Pricing Game Stats: Plinko, seasons 44 to 54: http://tpirstats.com/Season48/Pricing/Plinko.htm (and Season44 ... Season54)
 * Biesterfeld, A. (2001), "The Price (or Probability) Is Right", *Journal of Statistics Education* 9(3): https://jse.amstat.org/v9n3/biesterfeld.html
-* Marasco, B. and Assefa, N., "So, You Want to Win Plinko?", *Journal of Research in Progress* 3, Howard Community College: https://pressbooks.howardcc.edu/jrip3/chapter/so-you-want-to-win-plinko/
+* Marasco, B. and Assefa, N. (2020), "So, You Want to Win Plinko?", *Journal of Research in Progress* 3, pp. 79-88, Howard Community College: https://pressbooks.howardcc.edu/jrip3/chapter/so-you-want-to-win-plinko/ (PDF of the published volume read in full)
 * Parsons, J. (2016), "A Friend of Mine Confirmed The Best Place to Drop a Plinko Chip Using Math" (Bowen Kerins' 2000 to 2011 tally), WJBQ: https://wjbq.com/a-friend-of-mine-confirmed-the-best-place-to-drop-a-plinko-chip-using-math/
 * Looper, "What You Probably Didn't Know About The Plinko Chips" (10 official chips, kept locked): https://looper.com/928265/what-you-probably-didnt-know-about-the-plinko-chips-on-the-price-is-right
 * BroBible, "6 pieces of Plinko trivia" (metal pins, plexiglass cover with triangular holes): https://brobible.com/guyism/article/plinko-price-is-right-history/
