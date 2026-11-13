@@ -12,6 +12,7 @@ Outputs: results/chaos2_growth.json, results/chaos2_replay.json
 """
 import json
 import math
+import os
 import sys
 import time
 
@@ -30,6 +31,19 @@ I_CHIP = 0.6 * CHIP_MASS * (B.CHIP_DIAMETER / 2) ** 2
 SIG_V = math.sqrt(KT / CHIP_MASS)   # thermal (equipartition) speed per axis, m/s
 SIG_W = math.sqrt(KT / I_CHIP)      # thermal spin, rad/s
 ALPHA = 1.0e-5                      # thermal expansion of a wood/steel board, per kelvin
+# A chip only fits between the two top pins if its centre is within +-(W/2 - pin radius - chip radius) = 1.93 cm
+# of the middle; releases further out would start overlapping a pin. Keep 0.1 mm clear.
+GAP = 0.5 * W - B.PEG_DIAMETER / 2 - B.CHIP_DIAMETER / 2 - 1e-4
+N_CAND, N_WIN = 2000, 80
+
+
+def candidates():
+    """Robot releases at rest, uniformly across the whole valid width of the middle gap; and the winners."""
+    rng = np.random.default_rng(2025)
+    cand = np.zeros((N_CAND, 5))
+    cand[:, 0] = B.drop_x(5) + rng.uniform(-GAP, GAP, N_CAND)
+    s0 = run(cand)
+    return cand, s0, cand[s0 == 5][:N_WIN]
 
 
 # ------------------------------------------------------------------------------------------- growth
@@ -105,18 +119,15 @@ def run(init, eps=None):
     return _batch_scaled(init, seeds, PRM, P.GEOM, P.SEGS, eps)
 
 
-def replay(n_candidates=1200, n_rep=300):
+def replay(n_rep=300):
     rng = np.random.default_rng(2024)
-    # candidate drops: a robot releasing at rest near the middle gap
-    cand = np.zeros((n_candidates, 5))
-    cand[:, 0] = B.drop_x(5) + rng.uniform(-0.03, 0.03, n_candidates)
-    s0 = run(cand)
+    cand, s0, winners = candidates()
     base = float((s0 == 5).mean())
-    winners = cand[s0 == 5][:60]
-    print(f"base rate (perfect board, release anywhere in the middle 6 cm): {base:.3f}; {len(winners)} winners")
+    print(f"base rate (perfect board, release anywhere in the valid gap): {base:.3f}; {len(winners)} winners")
     deltas = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 3e-11, 1e-11, 3e-12, 1e-12, 3e-13, 1e-13,
               1e-14, 1e-15]
-    res = {"base_rate": base, "n_winners": len(winners), "n_replays_each": n_rep, "chip_mass_kg": CHIP_MASS,
+    res = {"base_rate": base, "n_candidates": N_CAND, "release_half_range_m": GAP, "n_winners": len(winners),
+           "n_replays_each": n_rep, "chip_mass_kg": CHIP_MASS,
            "thermal_speed_m_s": SIG_V, "thermal_spin_rad_s": SIG_W, "position": {}, "real_world": {}}
     t0 = time.time()
     for d in deltas:
@@ -158,43 +169,40 @@ def replay(n_candidates=1200, n_rep=300):
 
 
 # ------------------------------------------------------------------------------------------- film data
-def film_data():
-    """Everything the chaos cut needs beyond growth() and replay():
-    the hook pair, release maps around a robust and a knife-edge winner, the precision fit, the horizon."""
+def hook_release():
+    """The opening shot's winning release point, exactly as it was found (seeded search over +-3 cm, 2024).
+
+    It sits at -1.898 cm, inside the valid gap; recovered bit-for-bit so its path matches the rendered film."""
     rng = np.random.default_rng(2024)
-    cand = np.zeros((1200, 5))
-    cand[:, 0] = B.drop_x(5) + rng.uniform(-0.03, 0.03, 1200)
-    s0 = run(cand)
-    winners = cand[s0 == 5][:60]
-    # how robust is each winner at atomic precision (deterministic +-0.1 nm probes, 200 of them)?
-    probe = np.linspace(-1e-10, 1e-10, 201)
+    old = B.drop_x(5) + rng.uniform(-0.03, 0.03, 1200)
+    x = float(old[np.argmin(np.abs(old - (B.drop_x(5) - 0.018982454584592134)))])
+    h = np.load("results/chaos2_hook.npz")
+    sa, ra = P.trajectory(x, 0.0, 0, 0, 0.0, seed=1, prm=PRM, fps=60)
+    sb, rb = P.trajectory(x - 1e-10, 0.0, 0, 0, 0.0, seed=1, prm=PRM, fps=60)
+    assert sa == 5 and np.allclose(ra[:, :4], h["win"]) and np.allclose(rb[:, :4], h["replay"]), "hook moved"
+    assert abs(x - B.drop_x(5)) < GAP
+    return x, int(sb)
+
+
+def film_data():
+    """Everything the chaos cut needs beyond growth() and replay(): how robust each winner is, release maps
+    around an island and around the opening's (knife-edge) winner, a strip across the whole valid gap,
+    the precision fit and the horizon."""
+    cand, s0, winners = candidates()
+    probe = np.linspace(-1e-10, 1e-10, 201)          # +-0.1 nm, deterministic probes
     rob = []
     for w in winners:
         rep = np.repeat(w[None, :], len(probe), 0)
         rep[:, 0] += probe
-        s = run(rep)
-        rob.append(float((s == 5).mean()))
+        rob.append(float((run(rep) == 5).mean()))
     rob = np.array(rob)
     robust = winners[int(np.argmax(rob))]
-    # the hook: a knife-edge winner whose replay 0.1 nm away lands far off, after a long shared stretch
-    hook = None
-    for w, r in sorted(zip(winners, rob), key=lambda z: z[1]):
-        if r > 0.6:
-            break
-        sa, ra = P.trajectory(w[0], 0.0, 0, 0, 0.0, seed=1, prm=PRM, fps=60)
-        for sgn in (1, -1):
-            sb, rb = P.trajectory(w[0] + sgn * 1e-10, 0.0, 0, 0, 0.0, seed=1, prm=PRM, fps=60)
-            if sa != 5 or sb == 0 or abs(sb - 5) < 3:
-                continue
-            m = min(len(ra), len(rb))
-            sep = np.hypot(ra[:m, 1] - rb[:m, 1], ra[:m, 2] - rb[:m, 2])
-            k = int(np.argmax(sep > 0.01))
-            frac = ra[k, 2] / B.last_row_y()
-            if 0.25 < frac < 0.8 and (hook is None or frac > hook[3]):
-                hook = (w, ra, rb, frac, sgn, int(sb), k / 60)
-    knife = hook[0]
-    np.savez_compressed("results/chaos2_hook.npz", win=hook[1][:, :4], replay=hook[2][:, :4])
-    # release maps around each: windows of 2 mm, 20 um, 200 nm, 2 nm, 20 pm (4,001 points each)
+    xk, hook_slot = hook_release()
+    knife = np.zeros(5)
+    knife[0] = xk
+    rep = np.repeat(knife[None, :], len(probe), 0)
+    rep[:, 0] += probe
+    knife_rob = float((run(rep) == 5).mean())
     maps = {}
     for name, w in (("robust", robust), ("knife", knife)):
         for k, half in enumerate([1e-3, 1e-5, 1e-7, 1e-9, 1e-11]):
@@ -202,7 +210,10 @@ def film_data():
             rep[:, 0] += np.linspace(-half, half, 4001)
             maps[f"{name}{k}"] = run(rep).astype(np.int8)
     np.savez_compressed("results/chaos2_maps.npz", **maps)
-    # precision fit: miss chance vs precision on log-log, over 1e-15..1e-9 m
+    ov = np.zeros((20001, 5))
+    ov[:, 0] = B.drop_x(5) + np.linspace(-GAP, GAP, 20001)
+    np.savez_compressed("results/chaos2_overview.npz", slots=run(ov).astype(np.int8),
+                        dx=np.linspace(-GAP, GAP, 20001))
     rp = json.load(open("results/chaos2_replay.json"))
     d = np.array([float(k) for k in rp["position"]])
     p = np.array(list(rp["position"].values()))
@@ -212,24 +223,25 @@ def film_data():
     fac = g["per_bounce_factor"]
     horizon = {lab: float(math.log(1e-2 / dd) / math.log(fac)) for lab, dd in
                (("1 mm", 1e-3), ("1 um", 1e-6), ("1 nm", 1e-9), ("1 atom", 1e-10), ("an atomic nucleus", 1e-14))}
-    out = dict(robustness_at_atom=sorted(rob.round(3).tolist()), share_robust=float((rob > 0.9).mean()),
-               share_knife=float((rob < 0.3).mean()), robust_x=float(robust[0] - B.drop_x(5)),
-               knife_x=float(knife[0] - B.drop_x(5)), hook_replay_slot=hook[5], hook_split_t=hook[6],
-               hook_offset_m=1e-10 * hook[4], uncertainty_exponent=slope,
+    old = json.load(open("results/chaos2_film.json")) if os.path.exists("results/chaos2_film.json") else {}
+    out = dict(release_half_range_m=GAP, robustness_at_atom=sorted(rob.round(3).tolist()),
+               share_robust=float((rob > 0.9).mean()), share_knife=float((rob < 0.3).mean()),
+               robust_x=float(robust[0] - B.drop_x(5)), knife_x=float(xk - B.drop_x(5)),
+               knife_robustness_at_atom=knife_rob, hook_replay_slot=hook_slot,
+               hook_split_t=old.get("hook_split_t"), hook_offset_m=-1e-10, uncertainty_exponent=slope,
                miss_cut_per_10x=float(10 ** -slope), horizon_bounces=horizon, per_bounce_factor=fac,
                whole_drop_precision_m=float(1e-2 / fac ** g["bounces_per_drop"]))
     json.dump(out, open("results/chaos2_film.json", "w"), indent=1)
     print(json.dumps({k: v for k, v in out.items() if k != "robustness_at_atom"}, indent=1))
+    for name in ("robust", "knife"):
+        print(name, [round(float((maps[f"{name}{k}"] == 5).mean()), 3) for k in range(5)])
 
 
 # ------------------------------------------------------------------------------------------- extra
 def extra(n=300):
     """Board temperature changes (0.001 to 1 C) and how robust each winner is (results/chaos2_extra.json)."""
     rng = np.random.default_rng(2024)
-    cand = np.zeros((1200, 5))
-    cand[:, 0] = B.drop_x(5) + rng.uniform(-0.03, 0.03, 1200)
-    s0 = run(cand)
-    winners = cand[s0 == 5][:60]
+    cand, s0, winners = candidates()
 
     def again(perturb):
         per = []

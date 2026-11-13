@@ -153,27 +153,37 @@ The question: find a release point that wins $10,000, then replay it as precisel
 again? To test it the board is made a perfect, repeatable machine: no pin imperfections, no random
 restitution, the chip let go at rest with no spin. Only what is named changes.
 
-**Correction to the earlier cut.** The first Blender cut said micron accuracy is "no better than
-random" (twins 1 um apart share a slot 14% of the time, against 12% for unrelated chips). That number is right
-only for releases within 0.5 mm of dead centre, where the chip lands almost on the tip of the first pin, the
-most sensitive spot on the board. Across the whole middle drop gap, replays are far more repeatable. The
-chaos cut uses the numbers below.
+**Corrections.** Two earlier claims were wrong, in opposite directions.
 
-* **Replays** (`chaos2.py replay`). 1,200 candidate releases spread over the middle 6 cm; the 60
-  that win are each replayed 300 times with a Gaussian release error of the given size.
-  A fresh drop anywhere in that 6 cm wins 19% of the time. Replays win again:
-  1 cm 23%, 1 mm 21%, 0.1 mm 42%, 10 um 54%, 1 um 57%,
-  100 nm 58%, 10 nm 61%, 1 nm 65%, 0.1 nm (about one atom) 71%,
-  10 pm 77%, 1 pm 82%, 0.1 pm 89%, 10 fm 94%, 1 fm 96%.
-  Better precision always helps, but the misses fall slowly: fitted over 1 fm to 1 nm, the miss chance scales
-  as precision^0.16, so each tenfold gain cuts misses by only
-  1.45 times. This is final-state sensitivity, and the fitted power is what Grebogi,
-  McDonald, Ott and Yorke (1983) call the uncertainty exponent.
+1. The first Blender cut said micron accuracy is "no better than random" (twins 1 um apart share a slot 14% of
+   the time, against 12% for unrelated chips). Measured over every valid release point it is slightly better
+   than random, not equal to it: 18% against 15% (below). The spirit of the claim holds.
+2. The first chaos cut said a micron-accurate replay wins again 57% of the time and an atom-accurate one 71%.
+   Those numbers came from a bug: the candidate releases were spread over the middle 6 cm, but the chip's
+   centre can only be let go within +-1.92 cm of the gap centre (half the 17.8 cm pin pitch, less half a pin
+   and half the 13 cm chip). Outside that, the simulated chip started overlapping a top pin and was shoved out
+   the same way every time, which made replays look far more repeatable than they are. `chaos2.py` now draws
+   releases only from the valid range (with 0.1 mm clearance) and every number below comes from that run.
+
+* **Replays** (`chaos2.py replay`). 2,000 candidate releases spread uniformly over the valid +-1.92 cm;
+  the first 80 that win are each replayed 300 times with a Gaussian release error of the given size.
+  A fresh drop anywhere in the gap wins 15% of the time. Replays win again:
+  1 cm 17%, 1 mm 16%, 0.1 mm 16%, 10 um 17%, 1 um 18%,
+  100 nm 19%, 10 nm 23%, 1 nm 31%, 0.1 nm (about one atom) 43%,
+  10 pm 59%, 1 pm 71%, 0.1 pm 84%, 10 fm 92%, 1 fm 98%.
+  At 1 um not one of the 80 winners repeats more than 27% of the time; at 0.1 nm they range from 0% to 100%.
+  Better precision always helps, but slowly: fitted over 1 fm to 1 nm, the miss chance scales as
+  precision^0.24, so each tenfold gain removes only about 42% of the remaining misses. This is
+  final-state sensitivity, and the fitted power is what Grebogi, McDonald, Ott and Yorke (1983) call the
+  uncertainty exponent.
 * **Islands and knife edges** (`chaos2.py film`). Probing 201 releases within +-0.1 nm of each winner:
-  58% of winners repeat more than 90% of the time (islands), 27%
-  less than 30% (knife edges). Release maps around one of each (4,001 points per zoom, windows 2 mm, 20 um,
-  200 nm, 2 nm, 20 pm) show the island turning solid gold from 200 nm down, while the knife edge stays mixed
-  (10 to 36% gold) at every zoom down to 20 pm. One win can't tell you which kind you found.
+  15% of winners repeat more than 90% of the time (islands), 45% less than 30%, the rest in between. The
+  release strip in the film (20,001 points across the whole +-1.92 cm) is 15% gold. Release maps around the
+  most robust winner (at +1.05 cm) and around the opening's winner (at -1.90 cm, which repeats 43% of the time
+  within +-0.1 nm), 4,001 points per zoom over windows of 2 mm, 20 um, 200 nm, 2 nm and 20 pm: the island is
+  14%, 17%, 19%, 88% and 100% gold, so it only turns solid within a few atoms; the knife edge is 11%, 11%, 13%,
+  20% and 36% gold, mixed at every zoom. At any scale a hand could control, both look like a random drop. One
+  win can't tell you which kind you found.
 * **How fast differences grow** (`chaos2.py growth`, 156 twin pairs starting 1 pm apart). While the gap
   grows from 10 pm to 1 mm it multiplies by about 2.15 per bounce (middle half
   1.98 to 2.54), doubling every
@@ -182,11 +192,9 @@ chaos cut uses the numbers below.
   21, 1 atom: 24) and the 15 fm needed for a whole drop. These are typical
   values: islands grow slower, knife edges faster.
 * **The real world** (perfect release, one thing varied). The chip's own thermal motion (equipartition, for a
-  0.25 kg chip: 0.13 nm/s and 2.5 nrad/s at random):
-  67%. A board 0.001 C warmer or cooler (expansion 1e-5 per
-  kelvin, about 20 nm over 2 m, scaled about the board's centre line): 43%; 0.01 C:
-  30%; 0.1 C: 30%; 1 C: 24%. Uniform
-  expansion is a smooth change, so some memory survives even at 1 C.
+  0.25 kg chip: 0.13 nm/s and 2.5 nrad/s at random): 55%. A board 0.001 C warmer or cooler (expansion 1e-5
+  per kelvin, about 20 nm over 2 m, scaled about the board's centre line): 38%; 0.0001 C: 52%; 0.01 C: 26%;
+  0.1 C: 21%; 1 C: 18%. Uniform expansion is a smooth change, so a little memory survives even at 1 C.
 * **The earlier release map** (`releasemap.py`, 20,001 points per zoom from the 9 cm gap down to 1 nm, centred
   on the edge of a winning stretch near dead centre) and **twin test** (4,000 pairs within 0.5 mm of centre)
   still stand for that region: same slot 95% of the time after a one-unit rounding nudge (so the computer's

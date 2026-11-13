@@ -1,11 +1,11 @@
 # YouTube copy: Plinko and chaos ("Same start, different finish")
 
-**Upload `plinko/plinko_chaos_same_start_different_finish_2m54s.mp4`:**
-* 2:54, 1920x1080, 30 fps, H.264; rendered in Blender (Cycles) and composited in code;
+**Upload `plinko/plinko_chaos_same_start_different_finish_3m00s.mp4`:**
+* 3:00, 1920x1080, 30 fps, H.264; rendered in Blender (Cycles) and composited in code;
 * on-screen captions, no narration, no music.
 
-This is the main Plinko upload. It replaces the Blender edition, whose micron segment overstated how random a
-replay is (see `plinko/ACCURACY.md` section 7).
+This is the main Plinko upload. It replaces the 2:54 chaos cut, whose replay numbers were inflated by
+simulated releases the chip can't physically make (see `plinko/ACCURACY.md` section 7).
 
 **Titles.**
 
@@ -24,11 +24,11 @@ There are no dice inside the board. Every bounce follows Newton's laws, so the s
 
 I measured the board from broadcast frames, rebuilt it in a physics engine and in Blender, and ran the experiment: find a release point that wins, then replay it as precisely as you like.
 
-- Replayed to within a micron, it wins again 57% of the time. A fresh drop wins 19%.
-- Replayed to within an atom: 71%. Better odds, never a sure thing.
-- Each tenfold gain in precision cuts the misses by only about 1.45 times. Even a hundred-thousandth of an atom misses 1 time in 26.
-- Why: some winning spots sit on stable "islands", others on knife edges that stay mixed however far you zoom in. One win can't tell you which you found.
-- And a real board is never the same twice: a board just 0.01 C warmer or cooler brings a perfect replay down to 30%.
+- Replayed to within a micron, it wins again 18% of the time, barely better than a fresh drop (15%).
+- Replayed to within an atom: 43%. Better odds, still worse than a coin flip, never a sure thing.
+- Below a nanometre, each tenfold gain in precision removes only about 42% of the remaining misses. Even a hundred-thousandth of an atom misses 1 time in 52.
+- Why: zoom in on the release points around two winning spots. At any scale a hand could control, both look like a random drop. One turns solid gold only within a few atoms (an island); the other stays mixed even at a fifth of an atom (a knife edge). Only 15 in 100 winning spots are islands, and one win can't tell you which you found.
+- And a real board is never the same twice: a board just 0.01 C warmer or cooler brings a perfect replay down to 26%.
 
 One drop can't be predicted. Four hundred can, and the pile they make is why the middle still pays best.
 
@@ -38,10 +38,10 @@ One drop can't be predicted. Four hundred can, and the pile they make is why the
 0:42 Why round pins make chaos
 1:00 How far ahead can you see?
 1:14 Replaying a winning drop
-1:42 Islands and knife edges
-2:06 A real board is never the same twice
-2:20 One drop vs four hundred
-2:44 Deterministic, and unpredictable
+1:42 Every place you could let go: islands and knife edges
+2:12 A real board is never the same twice
+2:26 One drop vs four hundred
+2:50 Deterministic, and unpredictable
 
 How it's made: the board is built in Blender from measurements of the TV board; every chip path comes from the simulator. Show results from tpirstats.com (seasons 44 to 54). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
 

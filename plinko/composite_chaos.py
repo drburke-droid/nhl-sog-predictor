@@ -261,64 +261,224 @@ def ov_crux(ctx, gctx, t, shot, cm, crop):
             ctx.arc(x, y, 5, 0, 2 * math.pi)
             ctx.set_source_rgba(*D.GOLD, a)
             ctx.fill()
-    for dd, lab, ts in ((1e-6, "1 µm: 57%", 5.5), (1e-10, "1 atom: 71%", 7.0), (1e-15, "96%", 8.6)):
+    for dd, lab, ts in ((1e-6, "1 µm", 5.0), (1e-10, "1 atom", 7.0), (1e-15, "1 fm", 8.6)):
         if t > ts:
             pp = REP["position"][f"{dd:g}"]
-            D.pill(ctx, f"{lab.split(':')[0]}: {100 * pp:.0f}%" if ":" in lab else f"{100 * pp:.0f}%",
-                   lx_(dd), ly_(pp) - 40, 24, D.INK, alpha=D.fade(t, ts, 99, 0.3), weight="semibold")
+            D.pill(ctx, f"{lab}: {100 * pp:.0f}%", lx_(dd) - (40 if dd == 1e-15 else 0), ly_(pp) - 40, 24, D.INK,
+                   alpha=D.fade(t, ts, 99, 0.3), weight="semibold")
+    pos = REP["position"]
     a = D.fade(t, 10.5, 99, 0.5)
-    D.paragraph(ctx, f"Atomic accuracy wins again {100 * REP['position']['1e-10']:.0f}% of the time: much better than "
-                     f"a fresh drop, and still not a sure thing. At a hundred-thousandth of an atom, 1 replay in "
-                     f"{1 / (1 - REP['position']['1e-15']):.0f} still misses.", LX, 940, 28, 1700, D.INK, a, "medium")
+    D.paragraph(ctx, f"Replayed to a micron, it wins again {100 * pos['1e-06']:.0f}% of the time, barely better than a "
+                     f"fresh drop. To an atom: {100 * pos['1e-10']:.0f}%, still worse than a coin flip. To a "
+                     f"hundred-thousandth of an atom, 1 replay in {1 / (1 - pos['1e-15']):.0f} still misses.",
+                LX, 940, 28, 1700, D.INK, a, "medium")
     a = D.fade(t, 18.0, 99, 0.5)
-    D.paragraph(ctx, f"Each tenfold gain in precision cuts the misses by only about {1 / FILM['miss_cut_per_10x']:.2f} "
-                     f"times. Certainty never arrives.", LX, 1020, 28, 1700, D.GOLD, a, "semibold")
+    D.paragraph(ctx, f"Below a nanometre, each tenfold gain in precision removes only about "
+                     f"{100 * (1 - FILM['miss_cut_per_10x']):.0f}% of the misses left. Certainty never arrives.",
+                LX, 1030, 28, 1700, D.GOLD, a, "semibold")
 
 
 # ----------------------------------------------------------------------------------------------- 7 islands
-ISL_LEVELS = [("2 mm", "a grain of sand"), ("20 µm", "a fifth of a hair"), ("200 nm", "a virus"),
+ISL_LEVELS = [("2 mm", "a grain of sand"), ("20 \u00b5m", "a fifth of a hair"), ("200 nm", "a virus"),
               ("2 nm", "a few atoms"), ("20 pm", "a fifth of an atom")]
+GOLD_C = C.VAL_COL[10000]
+GREY_C = (0.34, 0.35, 0.39)
+OVER = C._load_npz("results/chaos2_overview.npz")
+
+
+def strip_bin(ctx, x, y, w, h, slots, reveal=1.0, alpha=1.0):
+    """One sliver per release point (nearest sample per pixel): gold if it wins $10,000, grey otherwise."""
+    w_i, h_i = max(1, int(round(w))), max(1, int(round(h)))
+    n = len(slots)
+    idx = np.clip(((np.arange(w_i) + 0.5) * n / w_i).astype(int), 0, n - 1)
+    win = np.asarray(slots)[idx] == 5
+    cols = np.where(win[:, None], np.array(GOLD_C), np.array(GREY_C))
+    buf = np.zeros((h_i, w_i, 4), np.uint8)
+    rgb = (cols * 255).astype(np.uint8)
+    buf[..., 0], buf[..., 1], buf[..., 2] = rgb[:, 2], rgb[:, 1], rgb[:, 0]
+    buf[..., 3] = 255
+    buf[:, int(w_i * max(0.0, min(1.0, reveal))):] = 0
+    s = cairo.ImageSurface.create_for_data(memoryview(np.ascontiguousarray(buf)), cairo.FORMAT_ARGB32, w_i, h_i)
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.scale(w / w_i, h / h_i)
+    ctx.set_source_surface(s, 0, 0)
+    ctx.get_source().set_filter(cairo.FILTER_NEAREST)
+    ctx.paint_with_alpha(alpha)
+    ctx.restore()
+
+
+def zoom_lines(ctx, x0, x1, ytop, X0, X1, ybot, alpha):
+    """A magnifier: a bracket over [x0, x1] on one strip, opened out to [X0, X1] on the strip below."""
+    ctx.set_source_rgba(1, 1, 1, 0.10 * alpha)
+    ctx.move_to(x0, ytop)
+    ctx.line_to(x1, ytop)
+    ctx.line_to(X1, ybot)
+    ctx.line_to(X0, ybot)
+    ctx.close_path()
+    ctx.fill()
+    ctx.set_source_rgba(1, 1, 1, 0.85 * alpha)
+    ctx.set_line_width(1.5)
+    ctx.move_to(x0, ytop)
+    ctx.line_to(X0, ybot)
+    ctx.move_to(x1, ytop)
+    ctx.line_to(X1, ybot)
+    ctx.stroke()
+    ctx.set_line_width(2.5)
+    ctx.move_to(x0, ytop - 8)
+    ctx.line_to(x0, ytop)
+    ctx.line_to(x1, ytop)
+    ctx.line_to(x1, ytop - 8)
+    ctx.stroke()
+
+
+def tag(ctx, s, x, y, size=20, col=D.INK, alpha=1.0, weight="semibold", align="center"):
+    w = D.text_width(ctx, s, size, weight)
+    if align == "center":
+        x = min(max(x, 40 + w / 2), 1880 - w / 2)
+    xl = x - w / 2 if align == "center" else (x - w if align == "right" else x)
+    C.D.rounded_rect(ctx, xl - 8, y - size - 4, w + 16, size + 12, 6)
+    ctx.set_source_rgba(0.03, 0.035, 0.05, 0.85 * alpha)
+    ctx.fill()
+    D.text(ctx, s, x, y, size, col, alpha, weight, align)
 
 
 def ov_islands(ctx, gctx, t, shot, cm, crop):
-    C.scrim(ctx, 1920, 0.84)
-    head2(ctx, "Why never certain? Two kinds of winning spot.", t,
-          "Each strip is the release points around one winning spot, coloured by where they land. Zoom in on each.",
-          y=130)
-    lx = LX
+    GAP = FILM["release_half_range_m"]
+    # --- phase 1: a ghost chip sweeps the 3.8 cm window between the top pins; the window, blown up across the
+    # screen, fills with one sliver per release point
+    sc_a = 0.45 + 0.39 * D.ease(min(1.0, max(0.0, (t - 5.0) / 1.5)))
+    C.scrim(ctx, 1920, sc_a)
+    head2(ctx, "Every place you could let go", t,
+          "Each thin line is one place to let go of the chip. Gold: that drop wins $10,000. Grey: it lands "
+          "anywhere else.", y=110, size=48, width=1760)
     al = D.fade(t, 0.8, 99, 0.4)
-    for col, name in ((C.VAL_COL[10000], "$10,000"), (C.VAL_COL[1000], "$1,000"), (C.VAL_COL[500], "$500"),
-                      (C.VAL_COL[100], "$100"), (C.VAL_COL[0], "$0"), (C.STUCK_COL, "stuck")):
-        ctx.rectangle(lx, 232, 18, 18)
+    lx = 1800
+    for col, name in ((GREY_C, "lands anywhere else"), (GOLD_C, "wins $10,000")):
+        w = D.text_width(ctx, name, 20, "medium")
+        D.text(ctx, name, lx, 104, 20, D.INK2, al, "medium", "right")
+        ctx.new_path()
+        ctx.rectangle(lx - w - 28, 88, 18, 18)
         ctx.set_source_rgba(*col, al)
         ctx.fill()
-        lx += 28 + D.text(ctx, name, lx + 26, 248, 20, D.INK2, al) + 24
-    seg = 2.8
-    k = int(np.clip((t - 1.5) // seg, 0, 4))
-    a = D.fade(t, 1.5, 99, 0.3)
-    bx, bw, bh = 120, 1680, 110
-    for row, (name, title, y) in enumerate((("robust", "An island", 330), ("knife", "A knife edge", 560))):
-        if t < 1.5:
-            continue
-        sl = MAPS[f"{name}{k}"]
-        C.barcode(ctx, bx, y, bw, bh, sl, a)
-        ctx.move_to(bx + bw / 2, y - 10)
-        ctx.line_to(bx + bw / 2, y + bh + 10)
+        lx -= w + 64
+    gx0, gy = cm.px(C.board_world(5 * W - GAP, 0.0, 0.03), crop)
+    gx1, _ = cm.px(C.board_world(5 * W + GAP, 0.0, 0.03), crop)
+    rx, _ = cm.px(C.board_world(5 * W + C.B.CHIP_DIAMETER / 2, 0.0, 0.03), crop)
+    cx0, _ = cm.px(C.board_world(5 * W, 0.0, 0.03), crop)
+    rad = abs(rx - cx0)
+    ox, oy, ow, oh = ov_rect = (120, 262, 1680, 46)
+    big_y = 930
+    sweep = D.ease(min(1.0, max(0.0, (t - 1.2) / 3.6)))
+    lift = D.ease(min(1.0, max(0.0, (t - 5.3) / 1.2)))
+    sy = big_y + (oy - big_y) * lift
+    if t > 1.0 and lift < 1.0:
+        a = D.fade(t, 1.0, 5.3, 0.4)
+        hx = gx0 + (gx1 - gx0) * sweep
+        bx = ox + ow * sweep
+        ctx.new_path()
+        ctx.arc(hx, gy, rad, 0, 2 * math.pi)          # ghost chip at the current release point
+        ctx.set_source_rgba(1, 1, 1, 0.10 * a)
+        ctx.fill_preserve()
         ctx.set_source_rgba(1, 1, 1, 0.9 * a)
+        ctx.set_line_width(2.5)
+        ctx.stroke()
+        ctx.arc(hx, gy, 5, 0, 2 * math.pi)
+        ctx.fill()
+        zoom_lines(ctx, gx0, gx1, gy + 40, ox, ox + ow, big_y, a)
+        ctx.move_to(hx, gy + 5)                       # the chip's centre, carried down to its sliver
+        ctx.line_to(hx, gy + 40)
+        ctx.line_to(bx, big_y)
+        ctx.line_to(bx, big_y + oh + 10)
+        ctx.set_source_rgba(1, 1, 1, 0.95 * a)
         ctx.set_line_width(2)
         ctx.stroke()
-        gold = float((sl == 5).mean())
-        D.text(ctx, title, bx, y - 20, 30, D.GOLD if row == 0 else D.S1, a, "black")
-        D.text(ctx, f"{100 * gold:.0f}% gold", bx + bw, y - 20, 24, D.INK, a, "semibold", "right")
-    if t >= 1.5:
-        nm, ref = ISL_LEVELS[k]
-        D.text(ctx, f"Width shown: {nm}", 120, 760, 32, D.INK, a, "black")
-        D.text(ctx, f"({ref})", 120 + D.text_width(ctx, f"Width shown: {nm}", 32, "black") + 14, 760, 26, D.INK2, a)
-    a = D.fade(t, 16.0, 99, 0.5)
-    D.paragraph(ctx, f"{100 * FILM['share_robust']:.0f}% of winning spots sit on islands: within an atom's width, "
-                     f"nearly every release wins. {100 * FILM['share_knife']:.0f}% sit on knife edges: still mixed at "
-                     f"every zoom we tried, down to a fifth of an atom. One win can't tell you which kind you found.",
-                120, 830, 29, 1680, D.INK, a, "medium")
+        tag(ctx, f"the chip's centre has {200 * GAP:.1f} cm of room between the top pins", (gx0 + gx1) / 2,
+            gy - rad - 24, 22, D.INK, a * D.fade(t, 1.6, 99, 0.4))
+    if t > 1.2:
+        strip_bin(ctx, ox, sy, ow, oh, OVER["slots"], sweep if lift <= 0 else 1.0, D.fade(t, 1.2, 99, 0.3))
+    # --- phase 2: the overview with a scale, and two winning spots
+    oa = D.fade(t, 6.2, 99, 0.4)
+    if oa > 0:
+        xx = ox + ow / 2
+        ctx.move_to(xx, oy + oh)
+        ctx.line_to(xx, oy + oh + 8)
+        ctx.set_source_rgba(*D.INK3, oa)
+        ctx.set_line_width(1.5)
+        ctx.stroke()
+        D.text(ctx, "centre", xx, oy + oh + 28, 18, D.INK3, oa, align="center")
+        D.text(ctx, f"\u2212{100 * GAP:.1f} cm", ox - 10, oy + oh / 2 + 7, 18, D.INK3, oa, align="right")
+        D.text(ctx, f"+{100 * GAP:.1f} cm", ox + ow + 10, oy + oh / 2 + 7, 18, D.INK3, oa)
+    spots = sorted([("knife", FILM["knife_x"]), ("robust", FILM["robust_x"])], key=lambda s: s[1])
+    names = {"knife": "the winning drop from the start", "robust": "another winning drop"}
+    cols = {}
+    colx = {0: (120, 890), 1: (1030, 1800)}
+    for ci, (key, x) in enumerate(spots):
+        cols[key] = ci
+        mx = ox + ow * (x + GAP) / (2 * GAP)
+        a = D.fade(t, 7.0 + 0.6 * ci, 99, 0.4)
+        if a <= 0:
+            continue
+        ctx.move_to(mx, oy - 4)
+        ctx.line_to(mx - 9, oy - 18)
+        ctx.line_to(mx + 9, oy - 18)
+        ctx.close_path()
+        ctx.set_source_rgba(1, 1, 1, a)
+        ctx.fill()
+        tag(ctx, f"Spot {ci + 1}: {names[key]}", mx, oy - 26, 20, D.INK, a)
+    for t0, t1, msg in ((8.0, 12.9, "Both spots win $10,000. Now zoom in on each, a hundredfold at a time."),
+                        (13.3, 15.5, "Down to the size of a virus, both spots look like any random drop: mostly grey."),
+                        (15.9, 20.9, f"Zoom to a few atoms across and spot {cols['robust'] + 1} turns gold. "
+                                     f"Spot {cols['knife'] + 1} never does.")):
+        a = D.fade(t, t0, t1, 0.4)
+        if a > 0:
+            D.paragraph(ctx, msg, 120, 1010, 30, 1680, D.INK, a, "medium")
+    # --- phase 3: zoom ladders, a hundredfold per row
+    rows_y = [372, 484, 596, 708, 820]
+    t_row = [9.0 + 2.2 * k for k in range(5)]
+    for key, x in spots:
+        ci = cols[key]
+        x0c, x1c = colx[ci]
+        cw = x1c - x0c
+        mx = ox + ow * (x + GAP) / (2 * GAP)
+        half0 = 1e-3 / (2 * GAP) * ow                 # the 2 mm window on the overview
+        for k in range(5):
+            if t < t_row[k]:
+                break
+            f = D.ease(min(1.0, (t - t_row[k]) / 0.9))
+            y = rows_y[k]
+            if k == 0:
+                zoom_lines(ctx, mx - half0, mx + half0, oy + oh, x0c + cw / 2 - cw / 2 * f, x0c + cw / 2 + cw / 2 * f,
+                           y, D.fade(t, t_row[k], 99, 0.3))
+            else:
+                yp = rows_y[k - 1] + 40
+                c = x0c + cw / 2
+                zoom_lines(ctx, c - cw * 0.005 - 3, c + cw * 0.005 + 3, yp, c - cw / 2 * f, c + cw / 2 * f, y,
+                           D.fade(t, t_row[k], 99, 0.3))
+            sl = MAPS[f"{key}{k}"]
+            strip_bin(ctx, x0c + cw / 2 - cw / 2 * f, y, cw * f, 40, sl, 1.0, D.fade(t, t_row[k] + 0.3, 99, 0.3))
+            a = D.fade(t, t_row[k] + 0.6, 99, 0.3)
+            ctx.move_to(x0c + cw / 2, y - 6)
+            ctx.line_to(x0c + cw / 2, y + 46)
+            ctx.set_source_rgba(1, 1, 1, 0.9 * a)
+            ctx.set_line_width(1.5)
+            ctx.stroke()
+            D.text(ctx, f"{100 * float((sl == 5).mean()):.0f}% gold", x1c, y + 64, 18, D.INK, a, "semibold", "right")
+            if ci == 0:
+                nm, ref = ISL_LEVELS[k]
+                D.text(ctx, nm, 960, y + 22, 24, D.INK, a, "black", "center")
+                D.text(ctx, ref, 960, y + 46, 15, D.INK3, a, align="center")
+    # --- phase 4: what the two ladders show
+    a = D.fade(t, 21.2, 99, 0.5)
+    if a > 0:
+        for key, title, col in (("robust", "an island, solid gold within a few atoms", GOLD_C),
+                                ("knife", "a knife edge, still mixed at a fifth of an atom", D.S1)):
+            x0c, x1c = colx[cols[key]]
+            tag(ctx, f"Spot {cols[key] + 1}: {title}", (x0c + x1c) / 2, 950, 24, col, a, "black")
+        n_isl = round(100 * FILM["share_robust"])
+        D.paragraph(ctx, f"Only {n_isl} in 100 winning spots are islands like spot {cols['robust'] + 1}. "
+                         f"One win can't tell you which kind you found.", 120, 1020, 30, 1680, D.INK,
+                    D.fade(t, 22.5, 99, 0.5), "semibold")
 
 
 # ----------------------------------------------------------------------------------------------- 8 real world
@@ -403,8 +563,8 @@ def ov_outro(ctx, gctx, t, shot, cm, crop):
 OVERLAY = dict(hook=ov_hook, deterministic=ov_deterministic, twins=ov_twins, mechanism=ov_mechanism,
                horizon=ov_horizon, crux=ov_crux, islands=ov_islands, realworld=ov_realworld,
                statistics=ov_statistics, outro=ov_outro)
-DARK = {"mechanism": (6.0, 0.5), "horizon": (6.0, 0.5), "islands": (6.0, 0.5), "crux": (5.0, 0.6),
-        "realworld": (5.0, 0.6)}
+DARK = {"mechanism": (6.0, 0.5, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 5.0),
+        "crux": (5.0, 0.6, 0.0), "realworld": (5.0, 0.6, 0.0)}
 
 
 def render(shot, fr):
@@ -413,8 +573,14 @@ def render(shot, fr):
     img = img * C.vignette()
     cm = C.cam(shot["cam"])
     if shot["name"] in DARK:
-        blur, dim = DARK[shot["name"]]
-        img = cv2.GaussianBlur(img, (0, 0), 2 + blur * D.ease(min(1, t / 1.2))) * dim
+        blur, dim, t0 = DARK[shot["name"]]
+        f = D.ease(min(1.0, max(0.0, (t - t0) / 1.2)))
+        if t0 > 0:                                  # keep the board sharp until the effect starts
+            img = img * (0.8 + (dim - 0.8) * f)
+            if f > 0:
+                img = cv2.GaussianBlur(img, (0, 0), 0.3 + blur * f)
+        else:
+            img = cv2.GaussianBlur(img, (0, 0), 2 + blur * f) * dim
     if shot["name"] == "hook":
         img *= D.ease(min(1.0, t / 1.0))
     gsurf, gctx = C.glow_layer()

@@ -33,7 +33,7 @@ def main():
         dict(name="mechanism", cam="top", dur=18.0, crop=top, chips_from="zoom", chips=[]),
         dict(name="horizon", cam="top", dur=14.0, crop=top, chips_from="zoom", chips=[]),
         dict(name="crux", cam="front", dur=28.0, crop=front, chips=[]),
-        dict(name="islands", cam="top", dur=24.0, crop=top, chips_from="zoom", chips=[]),
+        dict(name="islands", cam="top", dur=30.0, crop=top, chips_from="none", chips=[]),
         dict(name="realworld", cam="front", dur=14.0, crop=front, chips=[]),
         dict(name="statistics", cam="front", dur=24.0, crop=front, chips_from="rain", frame_offset=120, chips=[]),
         dict(name="outro", cam="hero", dur=10.0, chips_from="outro",
