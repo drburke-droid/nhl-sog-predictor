@@ -170,9 +170,29 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
    centre can only be let go within +-1.92 cm of the gap centre (half the 17.8 cm pin pitch, less half a pin
    and half the 13 cm chip). Outside that, the simulated chip started overlapping a top pin and was shoved out
    the same way every time, which made replays look far more repeatable than they are. `chaos2.py` now draws
-   releases only from the valid range (with 0.1 mm clearance) and every number below comes from that run.
+   releases only from where a chip can be let go (with 0.1 mm clearance), and every number below comes from
+   those runs. (The middle-gap replay at 1 cm error could still start some replays overlapping a pin; the
+   whole-top run redraws those, and the two agree.)
 
-* **Replays** (`chaos2.py replay`). 2,000 candidate releases spread uniformly over the valid +-1.92 cm;
+* **Where a player can let go.** On the show a player may let go anywhere across the top: right at the top
+  pins or anywhere in the roughly 12 in (30 cm) above them, wall to wall. The simulated board has open space
+  above the top row between its side walls, so `chaos2.py regionmap` and `region` use that whole area: chip
+  centres between the walls (less a chip radius), from the top pins' centre line up to 30.48 cm above, and not
+  overlapping a top pin. Releases are at rest. The bullets below marked "middle gap" use only the line through
+  the middle gap at the pins (+-1.92 cm), which is one slice of that area.
+* **Replays, whole top** (`chaos2.py region`; the film's replay and temperature charts). 6,000 releases spread uniformly over the
+  area: a fresh drop wins 13%. The first 120 winners are each replayed 300 times with a random
+  release error of the given size in both directions (a replay that would start inside a pin or wall is
+  redrawn). Win again: 1 cm 13%, 1 mm 14%, 0.1 mm 14%, 10 um 15%,
+  1 um 16%, 100 nm 19%, 10 nm 23%, 1 nm 28%, 0.1 nm 39%,
+  10 pm 55%, 1 pm 67%, 0.1 pm 79%, 10 fm 87%, 1 fm 95%.
+  Fitted over 1 fm to 1 nm, misses scale as precision^0.19: each tenfold gain removes about
+  35% of the remaining misses. The chip's own thermal motion: 49%. Within +-0.1 nm,
+  13% of winners repeat more than 90% of the time (islands), 42% less than 30%. Board warmed by a
+  fixed dT, all 779 winners replayed exactly: 1e-9 C 94%, 1e-6 C 64%, one drop's heat
+  (5.7e-05 C) 39%, 1e-3 C 24%, 0.01 C 19%, 1 C 12%. All within a few points of
+  the middle-gap results below (slightly more sensitive), so where you let go doesn't change the story.
+* **Replays, middle gap** (`chaos2.py replay`). 2,000 candidate releases spread uniformly over the valid +-1.92 cm;
   the first 80 that win are each replayed 300 times with a Gaussian release error of the given size.
   A fresh drop anywhere in the gap wins 15% of the time. Replays win again:
   1 cm 17%, 1 mm 16%, 0.1 mm 16%, 10 um 17%, 1 um 18%,
@@ -183,7 +203,7 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   precision^0.24, so each tenfold gain removes only about 42% of the remaining misses. This is
   final-state sensitivity, and the fitted power is what Grebogi, McDonald, Ott and Yorke (1983) call the
   uncertainty exponent.
-* **Islands and knife edges** (`chaos2.py film`). Probing 201 releases within +-0.1 nm of each winner:
+* **Islands and knife edges, middle gap** (`chaos2.py film`). Probing 201 releases within +-0.1 nm of each winner:
   15% of winners repeat more than 90% of the time (islands), 45% less than 30%, the rest in between. The
   release strip in the film (20,001 points across the whole +-1.92 cm) is 15% gold. Release maps around the
   most robust winner (at +1.05 cm) and around the opening's winner (at -1.90 cm, which repeats 43% of the time
@@ -198,7 +218,7 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   tolerance by that factor per bounce gives the film's "how far ahead" bars (1 mm: 3 bounces, 1 um: 12, 1 nm:
   21, 1 atom: 24) and the 15 fm needed for a whole drop. These are typical
   values: islands grow slower, knife edges faster.
-* **One variable: the board's temperature** (`chaos2.py onevar`). 6,000 releases across the valid gap give
+* **One variable: the board's temperature, middle gap** (`chaos2.py onevar`). 6,000 releases across the valid gap give
   892 winners (14.9%). Each is replayed exactly (the same release to the last bit,
   which wins every time on the same board) on a board warmed by a fixed dT: uniform expansion of 1e-5 per kelvin
   about the centre line, pins and chip unchanged. Share that still win: 1e-9 C 98%,

@@ -530,7 +530,7 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
                                 ("knife", "a knife edge, still mixed at a fifth of an atom", D.S1)):
             x0c, x1c = colx[cols[key]]
             tag(ctx, f"Spot {cols[key] + 1}: {title}", (x0c + x1c) / 2, 950, 24, col, a, "black")
-        n_isl = round(100 * FILM["share_robust"])
+        n_isl = round(100 * REG["share_robust"])
         D.paragraph(ctx, f"Only {n_isl} in 100 winning spots are islands like spot {cols['robust'] + 1}. "
                          f"One win can't tell you which kind you found.", 120, 1020, 30, 1680, D.INK,
                     D.fade(t, 22.5, 99, 0.5), "semibold")
@@ -657,9 +657,11 @@ def ov_realworld(ctx, gctx, t, shot, cm, crop):
             v = pick[f"{d:.3g}"]
             D.pill(ctx, f"{100 * v:.0f}%", lx_(d) - (30 if d == 1.0 else 0), ly_(v) + dy, 24, D.INK,
                    alpha=D.fade(t, ts, 99, 0.3), weight="semibold")
+    v_drop = pick[f"{ONE['drop_dT_C']:.3g}"]
     a = D.fade(t, 10.0, 99, 0.5)
     D.paragraph(ctx, f"Even a billionth of a degree spoils {100 * (1 - pick['1e-09']):.0f} replays in 100, and one "
-                     f"drop's heat spoils about half. No change is too small to matter.",
+                     f"drop's heat spoils {100 * (1 - v_drop):.0f}. No change is too small "
+                     f"to matter.",
                 LX, 925, 28, 1700, D.INK, a, "medium")
     a = D.fade(t, 14.5, 99, 0.5)
     D.paragraph(ctx, "And every drop warms the board: in practice, a replay is barely better than a fresh drop.",
