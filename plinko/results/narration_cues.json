@@ -1,0 +1,984 @@
+{
+ "hook": {
+  "lines": [
+   {
+    "i": 0,
+    "t0": 0.4,
+    "t1": 5.458,
+    "path": "out/narration/line_00.wav",
+    "text": "This is Plinko, from The Price Is Right. And this drop wins ten thousand dollars.",
+    "phrases": [
+     [
+      0.4,
+      2.698
+     ],
+     [
+      3.198,
+      5.458
+     ]
+    ]
+   },
+   {
+    "i": 1,
+    "t0": 6.8,
+    "t1": 10.82,
+    "path": "out/narration/line_01.wav",
+    "text": "Now, the same drop again. Same spot, matched to the width of an atom.",
+    "phrases": [
+     [
+      6.8,
+      8.1
+     ],
+     [
+      8.5,
+      10.82
+     ]
+    ]
+   },
+   {
+    "i": 2,
+    "t0": 12.4,
+    "t1": 16.713,
+    "path": "out/narration/line_02.wav",
+    "text": "Same start. Different finish. That's chaos.",
+    "phrases": [
+     [
+      12.4,
+      13.143
+     ],
+     [
+      13.943,
+      14.763
+     ],
+     [
+      15.863,
+      16.713
+     ]
+    ]
+   }
+  ],
+  "need": 17.91
+ },
+ "deterministic": {
+  "lines": [
+   {
+    "i": 3,
+    "t0": 0.5,
+    "t1": 10.54,
+    "path": "out/narration/line_03.wav",
+    "text": "Here's the strange part. There are no dice inside this board. Every bounce follows Newton's laws of motion, so the same start should always give the same finish.",
+    "phrases": [
+     [
+      0.5,
+      1.73
+     ],
+     [
+      2.23,
+      4.2
+     ],
+     [
+      4.6,
+      7.15
+     ],
+     [
+      7.35,
+      10.54
+     ]
+    ]
+   },
+   {
+    "i": 4,
+    "t0": 11.14,
+    "t1": 14.74,
+    "path": "out/narration/line_04.wav",
+    "text": "If the replay lost, its start can't have been quite the same.",
+    "phrases": [
+     [
+      11.14,
+      12.45
+     ],
+     [
+      12.75,
+      14.74
+     ]
+    ]
+   }
+  ],
+  "need": 15.94
+ },
+ "twins": {
+  "lines": [
+   {
+    "i": 5,
+    "t0": 0.4,
+    "t1": 6.409,
+    "path": "out/narration/line_05.wav",
+    "text": "Here are two chips, released a thousandth of a millimetre apart. They fall together, then split.",
+    "phrases": [
+     [
+      0.4,
+      3.74
+     ],
+     [
+      4.14,
+      5.18
+     ],
+     [
+      5.48,
+      6.409
+     ]
+    ]
+   },
+   {
+    "i": 6,
+    "t0": 7.4,
+    "t1": 10.76,
+    "path": "out/narration/line_06.wav",
+    "text": "One wins ten thousand dollars. Its twin wins a hundred.",
+    "phrases": [
+     [
+      7.4,
+      8.97
+     ],
+     [
+      9.37,
+      10.76
+     ]
+    ]
+   },
+   {
+    "i": 7,
+    "t0": 11.56,
+    "t1": 15.501,
+    "path": "out/narration/line_07.wav",
+    "text": "A difference far too small to see, and a completely different result.",
+    "phrases": [
+     [
+      11.56,
+      13.351
+     ],
+     [
+      13.651,
+      15.501
+     ]
+    ]
+   }
+  ],
+  "need": 16.7
+ },
+ "chaos": {
+  "lines": [
+   {
+    "i": 8,
+    "t0": 0.6,
+    "t1": 9.8,
+    "path": "out/narration/line_08.wav",
+    "text": "This is the heart of chaos theory. It studies systems that follow exact rules, with no randomness at all, yet still can't be predicted for long.",
+    "phrases": [
+     [
+      0.6,
+      2.54
+     ],
+     [
+      3.04,
+      7.62
+     ],
+     [
+      7.92,
+      9.8
+     ]
+    ]
+   },
+   {
+    "i": 9,
+    "t0": 10.6,
+    "t1": 30.85,
+    "path": "out/narration/line_09.wav",
+    "text": "It began with the weather. In 1961, the meteorologist Edward Lorenz reran a simulation, typing in point five zero six, instead of point five zero six one two seven. A difference of about one part in four thousand. Two months into the simulated weather, the two forecasts had nothing in common.",
+    "phrases": [
+     [
+      10.6,
+      11.74
+     ],
+     [
+      12.14,
+      17.4
+     ],
+     [
+      17.6,
+      22.53
+     ],
+     [
+      22.93,
+      26.17
+     ],
+     [
+      26.57,
+      30.85
+     ]
+    ]
+   },
+   {
+    "i": 10,
+    "t0": 31.65,
+    "t1": 40.984,
+    "path": "out/narration/line_10.wav",
+    "text": "Here are two runs of Lorenz's equations, starting almost exactly together. For a while, they move as one. Then they part, and never agree again.",
+    "phrases": [
+     [
+      31.65,
+      36.04
+     ],
+     [
+      36.44,
+      38.205
+     ],
+     [
+      38.705,
+      39.454
+     ],
+     [
+      39.754,
+      40.984
+     ]
+    ]
+   },
+   {
+    "i": 11,
+    "t0": 41.784,
+    "t1": 48.214,
+    "path": "out/narration/line_11.wav",
+    "text": "Chaos theory calls this sensitive dependence on initial conditions. Lorenz called it the butterfly effect.",
+    "phrases": [
+     [
+      41.784,
+      45.724
+     ],
+     [
+      46.124,
+      48.214
+     ]
+    ]
+   },
+   {
+    "i": 12,
+    "t0": 48.914,
+    "t1": 51.054,
+    "path": "out/narration/line_12.wav",
+    "text": "A Plinko board is a perfect example.",
+    "phrases": [
+     [
+      48.914,
+      51.054
+     ]
+    ]
+   }
+  ],
+  "need": 52.25
+ },
+ "mechanism": {
+  "lines": [
+   {
+    "i": 13,
+    "t0": 0.5,
+    "t1": 3.743,
+    "path": "out/narration/line_13.wav",
+    "text": "So why is Plinko chaotic? Because the pins are round.",
+    "phrases": [
+     [
+      0.5,
+      2.023
+     ],
+     [
+      2.423,
+      3.743
+     ]
+    ]
+   },
+   {
+    "i": 14,
+    "t0": 4.543,
+    "t1": 11.895,
+    "path": "out/narration/line_14.wav",
+    "text": "Bounce two chips off a flat wall, a hair apart, and they leave a hair apart. A flat wall faces the same way everywhere.",
+    "phrases": [
+     [
+      4.543,
+      7.465
+     ],
+     [
+      7.765,
+      9.365
+     ],
+     [
+      9.665,
+      11.895
+     ]
+    ]
+   },
+   {
+    "i": 15,
+    "t0": 12.695,
+    "t1": 24.875,
+    "path": "out/narration/line_15.wav",
+    "text": "A round pin is different. Its surface faces a slightly different way at every point. So two chips that hit it a hair apart meet slopes tilted at different angles, and bounce off in different directions.",
+    "phrases": [
+     [
+      12.695,
+      14.105
+     ],
+     [
+      14.405,
+      17.275
+     ],
+     [
+      17.675,
+      22.215
+     ],
+     [
+      22.515,
+      24.875
+     ]
+    ]
+   },
+   {
+    "i": 16,
+    "t0": 25.475,
+    "t1": 30.125,
+    "path": "out/narration/line_16.wav",
+    "text": "The further they travel, the further apart they get. Then the next pin does it again.",
+    "phrases": [
+     [
+      25.475,
+      28.295
+     ],
+     [
+      28.595,
+      30.125
+     ]
+    ]
+   },
+   {
+    "i": 17,
+    "t0": 30.925,
+    "t1": 40.181,
+    "path": "out/narration/line_17.wav",
+    "text": "In the simulator, each bounce multiplies the gap by about two point two. Over a whole drop, about thirty-six bounces, that's nearly a trillion times.",
+    "phrases": [
+     [
+      30.925,
+      35.015
+     ],
+     [
+      35.415,
+      38.161
+     ],
+     [
+      38.361,
+      40.181
+     ]
+    ]
+   },
+   {
+    "i": 18,
+    "t0": 40.881,
+    "t1": 45.744,
+    "path": "out/narration/line_18.wav",
+    "text": "Doubling, over and over: that's exponential growth, the engine of chaos.",
+    "phrases": [
+     [
+      40.881,
+      42.234
+     ],
+     [
+      42.534,
+      44.084
+     ],
+     [
+      44.384,
+      45.744
+     ]
+    ]
+   }
+  ],
+  "need": 46.94
+ },
+ "horizon": {
+  "lines": [
+   {
+    "i": 19,
+    "t0": 0.5,
+    "t1": 10.015,
+    "path": "out/narration/line_19.wav",
+    "text": "So how far ahead can you see? Know the start to a millimetre, and you can predict about three bounces. To the width of a single atom, just twenty-four.",
+    "phrases": [
+     [
+      0.5,
+      2.35
+     ],
+     [
+      2.85,
+      6.92
+     ],
+     [
+      7.32,
+      8.915
+     ],
+     [
+      9.115,
+      10.015
+     ]
+    ]
+   },
+   {
+    "i": 20,
+    "t0": 10.715,
+    "t1": 15.196,
+    "path": "out/narration/line_20.wav",
+    "text": "To call a whole drop, you'd need the start to within the size of an atomic nucleus.",
+    "phrases": [
+     [
+      10.715,
+      11.836
+     ],
+     [
+      12.036,
+      15.196
+     ]
+    ]
+   }
+  ],
+  "need": 16.4
+ },
+ "crux": {
+  "lines": [
+   {
+    "i": 21,
+    "t0": 0.5,
+    "t1": 9.51,
+    "path": "out/narration/line_21.wav",
+    "text": "Here's the real test. Find a drop that wins, from anywhere across the top, then replay it from exactly the same spot, as precisely as you like.",
+    "phrases": [
+     [
+      0.5,
+      1.63
+     ],
+     [
+      2.13,
+      4.96
+     ],
+     [
+      5.26,
+      9.51
+     ]
+    ]
+   },
+   {
+    "i": 22,
+    "t0": 10.31,
+    "t1": 21.76,
+    "path": "out/narration/line_22.wav",
+    "text": "Match it to a micron, and it wins again just sixteen percent of the time, barely more than a fresh drop. Match it to a single atom: thirty-nine percent. Still worse than a coin flip.",
+    "phrases": [
+     [
+      10.31,
+      14.3
+     ],
+     [
+      14.6,
+      16.18
+     ],
+     [
+      16.68,
+      18.34
+     ],
+     [
+      18.64,
+      19.86
+     ],
+     [
+      20.26,
+      21.76
+     ]
+    ]
+   },
+   {
+    "i": 23,
+    "t0": 22.56,
+    "t1": 26.27,
+    "path": "out/narration/line_23.wav",
+    "text": "More precision always helps. But certainty never arrives.",
+    "phrases": [
+     [
+      22.56,
+      24.0
+     ],
+     [
+      24.6,
+      26.27
+     ]
+    ]
+   }
+  ],
+  "need": 27.47
+ },
+ "islands": {
+  "lines": [
+   {
+    "i": 24,
+    "t0": 0.5,
+    "t1": 9.696,
+    "path": "out/narration/line_24.wav",
+    "text": "On the show, you can let go anywhere across the top, at the pins or up to a foot above. Each dot here is one of those spots. The gold ones win.",
+    "phrases": [
+     [
+      0.5,
+      3.286
+     ],
+     [
+      3.486,
+      5.736
+     ],
+     [
+      6.136,
+      8.276
+     ],
+     [
+      8.576,
+      9.696
+     ]
+    ]
+   },
+   {
+    "i": 25,
+    "t0": 10.4,
+    "t1": 17.34,
+    "path": "out/narration/line_25.wav",
+    "text": "Take one line through the middle, and two winning spots on it. Now zoom in, a hundred times closer with each row.",
+    "phrases": [
+     [
+      10.4,
+      11.98
+     ],
+     [
+      12.18,
+      13.87
+     ],
+     [
+      14.17,
+      17.34
+     ]
+    ]
+   },
+   {
+    "i": 26,
+    "t0": 20.6,
+    "t1": 23.349,
+    "path": "out/narration/line_26.wav",
+    "text": "Down to the size of a virus, both look random.",
+    "phrases": [
+     [
+      20.6,
+      22.139
+     ],
+     [
+      22.339,
+      23.349
+     ]
+    ]
+   },
+   {
+    "i": 27,
+    "t0": 24.6,
+    "t1": 32.287,
+    "path": "out/narration/line_27.wav",
+    "text": "Only within a few atoms does spot two turn solid gold: an island. Spot one never settles: a knife edge.",
+    "phrases": [
+     [
+      24.6,
+      28.42
+     ],
+     [
+      28.72,
+      29.45
+     ],
+     [
+      29.85,
+      31.057
+     ],
+     [
+      31.357,
+      32.287
+     ]
+    ]
+   },
+   {
+    "i": 28,
+    "t0": 33.087,
+    "t1": 35.537,
+    "path": "out/narration/line_28.wav",
+    "text": "And one win can't tell you which kind you've found.",
+    "phrases": [
+     [
+      33.087,
+      35.537
+     ]
+    ]
+   }
+  ],
+  "need": 36.74
+ },
+ "heat": {
+  "lines": [
+   {
+    "i": 29,
+    "t0": 0.5,
+    "t1": 7.9,
+    "path": "out/narration/line_29.wav",
+    "text": "Now let's make the start perfect, exact to the last atom, and change just one thing: the temperature of the board.",
+    "phrases": [
+     [
+      0.5,
+      4.12
+     ],
+     [
+      4.42,
+      5.94
+     ],
+     [
+      6.34,
+      7.9
+     ]
+    ]
+   },
+   {
+    "i": 30,
+    "t0": 8.6,
+    "t1": 11.67,
+    "path": "out/narration/line_30.wav",
+    "text": "Where would the heat come from? The chips themselves.",
+    "phrases": [
+     [
+      8.6,
+      10.02
+     ],
+     [
+      10.42,
+      11.67
+     ]
+    ]
+   },
+   {
+    "i": 31,
+    "t0": 12.27,
+    "t1": 26.274,
+    "path": "out/narration/line_31.wav",
+    "text": "At the top, a chip holds about five joules of energy, just from its height. As it falls, that becomes speed. And every time it hits a pin, some of that speed turns into heat: in the pin, the board, and the chip.",
+    "phrases": [
+     [
+      12.27,
+      16.914
+     ],
+     [
+      17.214,
+      19.614
+     ],
+     [
+      19.914,
+      23.714
+     ],
+     [
+      23.914,
+      26.274
+     ]
+    ]
+   },
+   {
+    "i": 32,
+    "t0": 26.874,
+    "t1": 29.916,
+    "path": "out/narration/line_32.wav",
+    "text": "When it stops, all five joules have become heat.",
+    "phrases": [
+     [
+      26.874,
+      27.676
+     ],
+     [
+      27.876,
+      29.916
+     ]
+    ]
+   },
+   {
+    "i": 33,
+    "t0": 30.716,
+    "t1": 44.128,
+    "path": "out/narration/line_33.wav",
+    "text": "Spread through the board, that warms it by less than a ten-thousandth of a degree. But warm wood and steel expand. The board grows by about a nanometre, the width of ten atoms, and every pin shifts with it.",
+    "phrases": [
+     [
+      30.716,
+      35.081
+     ],
+     [
+      35.481,
+      37.681
+     ],
+     [
+      37.981,
+      40.131
+     ],
+     [
+      40.331,
+      41.797
+     ],
+     [
+      42.097,
+      44.127
+     ]
+    ]
+   },
+   {
+    "i": 34,
+    "t0": 44.928,
+    "t1": 52.551,
+    "path": "out/narration/line_34.wav",
+    "text": "A nanometre is nothing, until the bounces double it, about twenty times over. Then it's a centimetre: a different slot.",
+    "phrases": [
+     [
+      44.928,
+      46.441
+     ],
+     [
+      46.741,
+      49.561
+     ],
+     [
+      49.961,
+      51.091
+     ],
+     [
+      51.391,
+      52.552
+     ]
+    ]
+   }
+  ],
+  "need": 53.75
+ },
+ "warm": {
+  "lines": [
+   {
+    "i": 35,
+    "t0": 0.4,
+    "t1": 7.98,
+    "path": "out/narration/line_35.wav",
+    "text": "So drop the same chip again, from exactly the same spot, on the warmer board. Gold is the first drop. Blue is the replay.",
+    "phrases": [
+     [
+      0.4,
+      4.7
+     ],
+     [
+      5.1,
+      6.4
+     ],
+     [
+      6.6,
+      7.98
+     ]
+    ]
+   },
+   {
+    "i": 36,
+    "t0": 8.2,
+    "t1": 11.642,
+    "path": "out/narration/line_36.wav",
+    "text": "They fall as one, until the shifted pins catch up with them.",
+    "phrases": [
+     [
+      8.2,
+      9.162
+     ],
+     [
+      9.462,
+      11.642
+     ]
+    ]
+   },
+   {
+    "i": 37,
+    "t0": 12.6,
+    "t1": 15.185,
+    "path": "out/narration/line_37.wav",
+    "text": "Ten thousand dollars becomes zero.",
+    "phrases": [
+     [
+      12.6,
+      13.675
+     ],
+     [
+      14.175,
+      15.185
+     ]
+    ]
+   }
+  ],
+  "need": 16.38
+ },
+ "realworld": {
+  "lines": [
+   {
+    "i": 38,
+    "t0": 0.5,
+    "t1": 10.648,
+    "path": "out/narration/line_38.wav",
+    "text": "Try it with hundreds of winning drops. Warm the board by just a billionth of a degree, and six replays in a hundred already miss. One drop's heat spoils more than half.",
+    "phrases": [
+     [
+      0.5,
+      2.26
+     ],
+     [
+      2.56,
+      5.0
+     ],
+     [
+      5.2,
+      7.68
+     ],
+     [
+      8.08,
+      9.148
+     ],
+     [
+      9.348,
+      10.648
+     ]
+    ]
+   },
+   {
+    "i": 39,
+    "t0": 11.448,
+    "t1": 16.888,
+    "path": "out/narration/line_39.wav",
+    "text": "And every drop warms the board. So in practice, a replay is barely better than a fresh drop.",
+    "phrases": [
+     [
+      11.448,
+      13.078
+     ],
+     [
+      13.478,
+      16.888
+     ]
+    ]
+   }
+  ],
+  "need": 18.09
+ },
+ "statistics": {
+  "lines": [
+   {
+    "i": 40,
+    "t0": 0.5,
+    "t1": 3.95,
+    "path": "out/narration/line_40.wav",
+    "text": "So one drop can't be predicted. But four hundred can.",
+    "phrases": [
+     [
+      0.5,
+      2.21
+     ],
+     [
+      2.71,
+      3.95
+     ]
+    ]
+   },
+   {
+    "i": 41,
+    "t0": 5.5,
+    "t1": 12.235,
+    "path": "out/narration/line_41.wav",
+    "text": "Chaos scrambles every single path, yet the pile they make comes out the same, drop after drop.",
+    "phrases": [
+     [
+      5.5,
+      7.885
+     ],
+     [
+      8.185,
+      12.235
+     ]
+    ]
+   },
+   {
+    "i": 42,
+    "t0": 15.2,
+    "t1": 19.322,
+    "path": "out/narration/line_42.wav",
+    "text": "It matches the show's real chips, and it's why the middle still pays best.",
+    "phrases": [
+     [
+      15.2,
+      16.842
+     ],
+     [
+      17.142,
+      19.322
+     ]
+    ]
+   }
+  ],
+  "need": 20.52
+ },
+ "outro": {
+  "lines": [
+   {
+    "i": 43,
+    "t0": 0.3,
+    "t1": 5.702,
+    "path": "out/narration/line_43.wav",
+    "text": "So next time you see Plinko on The Price Is Right, drop it in the middle, and let chaos decide.",
+    "phrases": [
+     [
+      0.3,
+      2.602
+     ],
+     [
+      2.902,
+      3.822
+     ],
+     [
+      4.122,
+      5.702
+     ]
+    ]
+   },
+   {
+    "i": 44,
+    "t0": 6.602,
+    "t1": 10.801,
+    "path": "out/narration/line_44.wav",
+    "text": "Deterministic. Unpredictable. That's chaos.",
+    "phrases": [
+     [
+      6.602,
+      7.501
+     ],
+     [
+      8.201,
+      9.051
+     ],
+     [
+      9.951,
+      10.801
+     ]
+    ]
+   }
+  ],
+  "need": 12.0
+ }
+}

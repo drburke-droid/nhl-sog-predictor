@@ -1,7 +1,7 @@
 # YouTube copy: Plinko and chaos ("Same start, different finish")
 
-**Upload `plinko/plinko_chaos_same_start_different_finish_narrated_3m30s.mp4`:**
-* 3:30, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
+**Upload `plinko/plinko_chaos_same_start_different_finish_narrated_6m03s.mp4`:**
+* 6:03, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
 * narrated (ElevenLabs, "Lily" voice; script in `plinko_chaos_NARRATION.md`), on-screen captions, no music.
 
 This is the main Plinko upload. It replaces the 2:54 chaos cut, whose replay numbers were inflated by
@@ -20,7 +20,11 @@ simulated releases the chip can't physically make (see `plinko/ACCURACY.md` sect
 ```
 Here's a Plinko drop that wins $10,000. Drop it again from the same spot, matched to the width of an atom, and it lands in $500.
 
-There are no dice inside the board. Every bounce follows Newton's laws, so the same start should give the same finish. Plinko shows why that's not enough: it is chaotic. Two paths that start almost together are pushed apart at every round pin, about 2.2 times per bounce, so a tiny difference doubles every tenth of a second.
+There are no dice inside the board. Every bounce follows Newton's laws, so the same start should give the same finish. Plinko shows why that's not enough: it is chaotic.
+
+Chaos theory studies systems like this: exact rules, no randomness, yet no long-range prediction. It began in 1961, when Edward Lorenz reran a weather simulation from a rounded number (0.506 instead of 0.506127) and got a completely different forecast: sensitive dependence on initial conditions, the butterfly effect.
+
+On a Plinko board the culprit is the round pins. A flat wall faces the same way everywhere, so two chips a hair apart leave a hair apart. A round pin faces a slightly different way at every spot, so two chips that hit it a hair apart bounce off in different directions, and the next pin widens the gap again: about 2.2 times per bounce, doubling every tenth of a second.
 
 I measured the board from broadcast frames, rebuilt it in a physics engine and in Blender, and ran the experiment: find a release point that wins, then replay it as precisely as you like.
 
@@ -29,21 +33,23 @@ I measured the board from broadcast frames, rebuilt it in a physics engine and i
 - Replayed to within an atom: 39%. Better odds, still worse than a coin flip, never a sure thing.
 - Below a nanometre, each tenfold gain in precision removes only about 35% of the remaining misses. Even a hundred-thousandth of an atom misses 1 time in 22.
 - Why: zoom in on the release points around two winning spots. At any scale a hand could control, both look like a random drop. One turns solid gold only within a few atoms (an island); the other stays mixed even at a fifth of an atom (a knife edge). Only 13 in 100 winning spots are islands, and one win can't tell you which you found.
-- Make the start perfect and change just one thing: the board's temperature. The chip's fall turns about 5 joules into heat, warming the board by 0.00006 C. Replayed exactly on a board that much warmer, winning drops win again only 39% of the time. Even a billionth of a degree spoils 6 replays in 100.
+- Make the start perfect and change just one thing: the board's temperature. Where would the heat come from? The chips themselves. A chip at the top holds about 5 joules from its height; as it falls that becomes speed, and every hit on a pin turns some of it into heat, until all 5 joules are heat. Spread through the board, that's 0.00006 C warmer, and warm wood and steel expand: the board grows about a nanometre, the width of ten atoms. Doubled by about twenty bounces, a nanometre becomes a centimetre: a different slot. Replayed exactly on a board that much warmer, winning drops win again only 39% of the time; even a billionth of a degree spoils 6 replays in 100.
 
 One drop can't be predicted. Four hundred can, and the pile they make is why the middle still pays best.
 
 0:00 Same start, different finish
-0:17 No dice inside
-0:28 Sensitive dependence on initial conditions
-0:42 Why round pins make chaos
-1:00 How far ahead can you see?
-1:14 Replaying a winning drop
-1:42 Every place you could let go: islands and knife edges
-2:19 Perfect start, one thing changed: the board's temperature
-2:36 How much warmer is too warm?
-2:56 One drop vs four hundred
-3:20 Deterministic, and unpredictable
+0:18 No dice inside
+0:35 Two chips a thousandth of a millimetre apart
+0:52 What is chaos theory? Lorenz and the butterfly effect
+1:45 Why round pins make chaos
+2:32 How far ahead can you see?
+2:49 Replaying a winning drop
+3:17 Every place you could let go: islands and knife edges
+3:55 Where the heat comes from: one chip's energy
+4:49 Same drop, warmer board
+5:06 How much warmer is too warm?
+5:26 One drop vs four hundred
+5:50 Deterministic, and unpredictable
 
 How it's made: the board is built in Blender from measurements of the TV board; every chip path comes from the simulator. Show results from tpirstats.com (seasons 44 to 54). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
 

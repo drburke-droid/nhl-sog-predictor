@@ -38,6 +38,11 @@ of the board and the playfield measures about 140 cm wide at his depth, so the t
 consistent with 160 cm. The whole set piece, with its sign and sunburst frame, is about 3 m (10 ft) tall,
 which matches the one hobby source that gives a figure for the TV board.
 
+Prize values. On the show the values sit under the slots with their digits stacked top to bottom (1/0/0 for
+$100, 10/0/0/0 for $10,000), in a tall panel. The Blender board copies that layout, unbranded: a 50 cm panel
+with 10 cm digits in a condensed face (Anton, SIL Open Font License, `blender/assets/fonts`). The LED bar panel
+on the pedestal below it is the film's own invention, not the show's.
+
 ## 2. The game
 
 * One free chip plus up to four more, one per small prize. Each small prize shows a two-digit price with
@@ -241,6 +246,11 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   warming is also the gentlest way to spread it: the pins the chip actually hits warm far more, locally. The
   film's pair (release -0.93 cm from the gap centre) wins $10,000 on the cool board and
   lands in slot 6 ($0) on the warmed one, parting about 2.6 s into the drop.
+  The film's energy bar follows that drop sample by sample (60 a second): height energy left is
+  m g (y_end - y) cos(lean), speed energy is (1/2) m v^2 + (1/2) I w^2 from the path's own motion, and heat is
+  what has gone from the first and not into the second (held from falling back, which only smooths the
+  bar). The glows mark the pins it hit. A nanometre multiplied by 2.15 per bounce reaches a centimetre after
+  21 bounces; a drop has about 36.
 * **The real world** (perfect release, one thing varied). The chip's own thermal motion (equipartition, for a
   0.25 kg chip: 0.13 nm/s and 2.5 nrad/s at random): 55%. A board 0.001 C warmer or cooler (expansion 1e-5
   per kelvin, about 20 nm over 2 m, scaled about the board's centre line): 38%; 0.0001 C: 52%; 0.01 C: 26%;

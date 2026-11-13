@@ -121,6 +121,22 @@ def crop_at(shot, t):
 
 
 # ----------------------------------------------------------------------------------------------- base frame
+_held = {}
+
+
+def held_frame(cdir, frc):
+    """For a shot that runs past (or starts before) its chip pass: the nearest rendered frame."""
+    if cdir not in _held:
+        d = f"{OUT}/chips/{cdir}"
+        _held[cdir] = sorted(int(f[1:5]) for f in os.listdir(d) if f.startswith("f") and f.endswith(".png")) \
+            if os.path.isdir(d) else []
+    fs = _held[cdir]
+    if not fs:
+        return None
+    k = fs[0] if frc < fs[0] else (fs[-1] if frc > fs[-1] else None)
+    return f"{OUT}/chips/{cdir}/f{k:04d}.png" if k is not None else None
+
+
 def base_frame(shot, fr, t):
     crop = crop_at(shot, t)
     c = shot["cam"]
@@ -133,6 +149,8 @@ def base_frame(shot, fr, t):
         fj = json.load(open(f"{OUT}/chips/{cdir}/frames.json"))
         if frc >= fj.get("static_from", 10**9):
             chip_path = static
+    if not os.path.exists(chip_path) and shot.get("hold_chips"):
+        chip_path = held_frame(cdir, frc) or chip_path
     if os.path.exists(chip_path):
         ch = cv2.imread(chip_path, cv2.IMREAD_UNCHANGED).astype(np.float32) / 255.0
         a = ch[..., 3:4]

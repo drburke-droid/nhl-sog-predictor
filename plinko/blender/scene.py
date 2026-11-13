@@ -28,6 +28,9 @@ SLOT_FLOOR_Z = 0.85                                      # stage height of the s
 RIG_Z = SLOT_FLOOR_Z + FLOOR_Y * math.cos(TILT)
 FONT_DIR = "/usr/share/fonts/opentype/inter"
 SLOT_LABELS = ["$100", "$500", "$1,000", "$0", "$10,000", "$0", "$1,000", "$500", "$100"]
+SIGN_ROWS = [["1", "0", "0"], ["5", "0", "0"], ["1", "0", "0", "0"], ["0"], ["10", "0", "0", "0"], ["0"],
+             ["1", "0", "0", "0"], ["5", "0", "0"], ["1", "0", "0"]]
+SIGN_FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "fonts", "Anton-Regular.ttf")
 
 
 # --------------------------------------------------------------------------------------------- helpers
@@ -122,7 +125,7 @@ def text_obj(name, s, loc, size, material, parent=None, font="Inter-Bold.otf", a
              rot=(0, 0, 0)):
     cu = bpy.data.curves.new(name, "FONT")
     cu.body = s
-    cu.font = bpy.data.fonts.load(os.path.join(FONT_DIR, font), check_existing=True)
+    cu.font = bpy.data.fonts.load(font if os.path.isabs(font) else os.path.join(FONT_DIR, font), check_existing=True)
     cu.size = size
     cu.align_x = align
     cu.align_y = "CENTER"
@@ -272,7 +275,8 @@ def new_chip(name, M, face="chip_face"):
 
 # --------------------------------------------------------------------------------------------- board
 LED_ROWS = 20
-LED_Z0, LED_Z1 = 0.035, 0.485
+LED_Z0, LED_Z1 = 0.035, 0.285          # bar-chart panel on the pedestal, under the 50 cm prize panel
+FASCIA_H = 0.50                        # prize panel under the slots: tall enough for 10 cm stacked digits
 
 
 def led_cell(k, r):
@@ -355,16 +359,22 @@ def build_board(M):
     for loop, (u, v) in zip(cov.data.loops, [(0, 1), (1, 1), (1, 0), (0, 0)]):
         uv.data[loop.index].uv = (u, v)
     # fascia with LED value signs under the slots, and the pedestal
-    fz = bot_z - 0.03 - 0.16
-    box("fascia", (2 * (half + side), 0.12, 0.30), (0, -0.04, fz), M["fascia"], rig, 0.01)
+    fz = bot_z - 0.03 - FASCIA_H / 2 - 0.01
+    box("fascia", (2 * (half + side), 0.12, FASCIA_H), (0, -0.04, fz), M["fascia"], rig, 0.01)
+    # prize values as on the show's board: digits stacked top to bottom under each slot, in a tall condensed
+    # face (Anton, SIL OFL; digits are 0.875 em tall), centred in the 30 cm panel
     signs = []
+    pitch, dig_h = 0.118, 0.100
     for k in range(9):
         m = M["led_gold"] if k == 4 else M["led_white"]
-        t = text_obj(f"sign{k}", SLOT_LABELS[k], (lx((k + 1) * W), -0.101, fz), 0.052 if k != 4 else 0.046,
-                     m, rig, rot=(math.pi / 2, 0, 0))
-        signs.append(t)
+        rows = SIGN_ROWS[k]
+        z_top = fz + (len(rows) - 1) * pitch / 2
+        for r, txt in enumerate(rows):
+            t = text_obj(f"sign{k}_{r}", txt, (lx((k + 1) * W), -0.101, z_top - r * pitch), dig_h / 0.875, m, rig,
+                         font=SIGN_FONT, rot=(math.pi / 2, 0, 0))
+            signs.append(t)
     rig_world = rig_matrix()
-    base_top = (rig_world @ Vector((0, 0, fz - 0.15))).z
+    base_top = (rig_world @ Vector((0, 0, fz - FASCIA_H / 2))).z
     box("pedestal", (2 * (half + side) + 0.3, 0.9, base_top), (0, 0.15, base_top / 2), M["pedestal"], None, 0.02)
     box("pedestal_strip", (2 * (half + side) + 0.32, 0.02, 0.012), (0, -0.30, 0.006), M["strip"], None)
     # LED bar-chart panel on the pedestal front: 9 columns under the slots, LED_ROWS cells each

@@ -31,6 +31,13 @@ MAPS = C._load_npz("results/chaos2_maps.npz")
 REG = json.load(open("results/chaos2_region.json"))
 MSUM = json.load(open("results/chaos2_region_map_summary.json"))
 ONE = json.load(open("results/chaos2_onevar.json"))
+CUES = json.load(open("results/narration_cues.json"))
+
+
+def cue(shot, k, j=0, end=False):
+    """Film-shot time of narration line k (within the shot), phrase j: when it starts (or ends)."""
+    ph = CUES[shot]["lines"][k]["phrases"][j]
+    return ph[1] if end else ph[0]
 W = C.W
 LX, LW = C.LX, C.LW
 FAC = GROW["per_bounce_factor"]
@@ -87,94 +94,408 @@ def ov_hook(ctx, gctx, t, shot, cm, crop):
         gctx.stroke()
     a = D.fade(t, 0.4, 99, 0.5)
     D.text(ctx, "This drop wins $10,000.", LX, 180, 50, D.INK, a, "black")
-    a = D.fade(t, 6.0, 99, 0.5)
+    a = D.fade(t, cue("hook", 1) - 0.3, 99, 0.5)
     D.paragraph(ctx, "Now the same drop again: same spot, same everything, matched to the width of an atom.", LX, 262,
                 30, LW - 40, D.INK, a, "medium")
-    a = D.fade(t, 12.0, 99, 0.6)
-    if a > 0:
-        D.text(ctx, "Same start.", LX, 520, 66, D.INK, a, "black")
-        D.text(ctx, "Different finish.", LX, 600, 66, D.GOLD, a, "black")
-        D.paragraph(ctx, "A short film about chaos, told with a Plinko board.", LX, 670, 28, LW, D.INK2,
-                    D.fade(t, 13.0, 99, 0.6))
+    for j, (s_, col, y) in enumerate((("Same start.", D.INK, 520), ("Different finish.", D.GOLD, 600),
+                                      ("That's chaos.", D.INK, 690))):
+        a = D.fade(t, cue("hook", 2, j) - 0.1, 99, 0.4)
+        if a > 0:
+            D.text(ctx, s_, LX, y, 66 if j < 2 else 54, col, a, "black")
 
 
 # ----------------------------------------------------------------------------------------------- 2 deterministic
 def ov_deterministic(ctx, gctx, t, shot, cm, crop):
     a = D.fade(t, 0.5, 99, 0.6)
     C.scrim(ctx, 800, 0.6 * a)
+    a = D.fade(t, cue("deterministic", 0, 1) - 0.2, 99, 0.6)
     D.text(ctx, "There are no dice", 90, 420, 58, D.INK, a, "black")
     D.text(ctx, "inside the board.", 90, 490, 58, D.INK, a, "black")
     D.paragraph(ctx, "Every bounce follows Newton's laws. The same start must give the same finish.", 92, 560, 28,
-                560, D.INK2, D.fade(t, 3.0, 99, 0.5), "medium")
+                560, D.INK2, D.fade(t, cue("deterministic", 0, 2) - 0.2, 99, 0.5), "medium")
     D.paragraph(ctx, "So if the replay lost, its start can't have been quite the same.", 92, 660, 28, 560, D.GOLD,
-                D.fade(t, 6.5, 99, 0.5), "semibold")
+                D.fade(t, cue("deterministic", 1) - 0.2, 99, 0.5), "semibold")
 
 
 # ----------------------------------------------------------------------------------------------- 3 twins
 def ov_twins(ctx, gctx, t, shot, cm, crop):
     C.ov_twins(ctx, gctx, t, shot, cm, crop)
-    a = D.fade(t, 9.5, 99, 0.6)
+    a = D.fade(t, cue("twins", 2) - 0.2, 99, 0.6)
     D.text(ctx, "Sensitive dependence on initial conditions", LX, 640, 30, D.GOLD, a, "black")
-    D.paragraph(ctx, "Edward Lorenz hit it in 1961, rerunning a weather model with 0.506 typed in for 0.506127: "
-                     "the forecast came out completely different. It became known as the butterfly effect.", LX, 690,
-                26, LW, D.INK2, a)
+    D.paragraph(ctx, "A difference far too small to see, and a completely different result.", LX, 690, 26, LW,
+                D.INK2, a)
+
+
+# ----------------------------------------------------------------------------------------------- 3b chaos theory
+def _lorenz(s0, T, dt=0.002, sig=10.0, rho=28.0, beta=8.0 / 3.0):
+    x, y, z = map(float, s0)
+    n = int(round(T / dt))
+    out = np.empty((n + 1, 3))
+    out[0] = x, y, z
+    for i in range(n):
+        def f(x, y, z):
+            return sig * (y - x), x * (rho - z) - y, x * y - beta * z
+        k1 = f(x, y, z)
+        k2 = f(x + dt / 2 * k1[0], y + dt / 2 * k1[1], z + dt / 2 * k1[2])
+        k3 = f(x + dt / 2 * k2[0], y + dt / 2 * k2[1], z + dt / 2 * k2[2])
+        k4 = f(x + dt * k3[0], y + dt * k3[1], z + dt * k3[2])
+        x += dt / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0])
+        y += dt / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1])
+        z += dt / 6 * (k1[2] + 2 * k2[2] + 2 * k3[2] + k4[2])
+        out[i + 1] = x, y, z
+    return out
+
+
+LZ_RATE = 1.5                  # Lorenz time units per second of film, for the two runs on the attractor
+
+
+def lorenz_data():
+    """Lorenz's 1963 equations (sigma 10, rho 28, beta 8/3): the attractor, two 'forecasts' that differ only in
+    one starting number (0.506127 vs 0.506), and two runs on the attractor that part when the narration says so."""
+    path = f"{OUT}/anim3d_chaos/lorenz.npz"
+    if os.path.exists(path):
+        return C._load_npz(path)
+    bg = _lorenz((1.0, 1.0, 1.0), 110.0)[5000:]
+    i = int(np.argmin(np.abs(bg[:, 0] - 0.5) + 10 * (np.diff(bg[:, 0], append=0) < 0)))
+    _, y0, z0 = bg[i]
+    fa = _lorenz((0.506127, y0, z0), 25.0)
+    fb = _lorenz((0.506, y0, z0), 25.0)
+    p0 = bg[20000]
+    t_part = (cue("chaos", 2, 2) - cue("chaos", 2, 0)) * LZ_RATE
+    best = None
+    for d0 in np.logspace(-9, -2, 36):
+        ra = _lorenz(p0, 14.0)
+        rb = _lorenz(p0 + np.array([d0, 0, 0]), 14.0)
+        sep = np.linalg.norm(ra - rb, axis=1)
+        k = np.argmax(sep > 3.0)
+        tc = k * 0.002 if sep[k] > 3.0 else 99.0
+        if best is None or abs(tc - t_part) < abs(best[0] - t_part):
+            best = (tc, d0)
+    T = (CUES["chaos"]["need"] + 2.0 - cue("chaos", 2, 0)) * LZ_RATE
+    pa = _lorenz(p0, T)
+    pb = _lorenz(p0 + np.array([best[1], 0, 0]), T)
+    np.savez_compressed(path, bg=bg[::5], fa=fa, fb=fb, pa=pa, pb=pb, d0=best[1])
+    return C._load_npz(path)
+
+
+LZ = None
+
+
+def ov_chaos(ctx, gctx, t, shot, cm, crop):
+    global LZ
+    if LZ is None:
+        LZ = lorenz_data()
+    C.scrim(ctx, 1920, 0.80)
+    head2(ctx, "What is chaos theory?", t)
+    # 0: exact rules, no randomness, still unpredictable
+    out0 = 1 - D.ease(min(1.0, max(0.0, (t - cue("chaos", 1) + 0.6) / 0.6)))
+    for j, (s_, col, y, tc) in enumerate((("Exact rules.", D.INK, 430, cue("chaos", 0, 1)),
+                                          ("No randomness at all.", D.INK, 510, cue("chaos", 0, 1) + 1.6),
+                                          ("Still unpredictable.", D.GOLD, 590, cue("chaos", 0, 2)))):
+        a = D.fade(t, tc, 99, 0.4) * out0
+        if a > 0:
+            D.text(ctx, s_, LX, y, 60, col, a, "black")
+    # 1: Lorenz, 1961: two forecasts that differ in one rounded number
+    t1, t2 = cue("chaos", 1), cue("chaos", 2)
+    out1 = 1 - D.ease(min(1.0, max(0.0, (t - t2 + 0.8) / 0.7)))
+    a = D.fade(t, cue("chaos", 1, 1) - 0.2, 99, 0.4) * out1
+    if a > 0:
+        D.text(ctx, "1961", LX, 380, 64, D.GOLD, a, "black")
+        D.paragraph(ctx, "Edward Lorenz, a meteorologist at MIT, reruns a weather simulation.", LX, 430, 28, 680,
+                    D.INK, a, "medium")
+        a2 = D.fade(t, cue("chaos", 1, 2), 99, 0.4) * out1
+        D.text(ctx, "first run", LX, 560, 22, D.INK3, a2)
+        D.text(ctx, "0.506127", LX, 612, 54, D.GOLD, a2, "black")
+        D.text(ctx, "rerun, typed from a printout", LX, 670, 22, D.INK3, a2)
+        D.text(ctx, "0.506", LX, 722, 54, D.S1, a2, "black")
+        a3 = D.fade(t, cue("chaos", 1, 3), 99, 0.4) * out1
+        D.paragraph(ctx, "a difference of about 1 part in 4,000", LX, 790, 28, 680, D.INK, a3, "semibold")
+        # the two forecasts: one variable of Lorenz's equations over time
+        gx, gy, gw, gh = 900, 380, 900, 420
+        a4 = D.fade(t, cue("chaos", 1, 2), 99, 0.4) * out1
+        f = D.ease(min(1.0, max(0.0, (t - cue("chaos", 1, 2)) / (t2 - 1.0 - cue("chaos", 1, 2)))))
+        ctx.new_path()
+        ctx.move_to(gx, gy + gh / 2)
+        ctx.line_to(gx + gw, gy + gh / 2)
+        ctx.set_source_rgba(*D.GRID, a4)
+        ctx.set_line_width(1)
+        ctx.stroke()
+        D.text(ctx, "simulated weather, day after day  →", gx + gw / 2, gy + gh + 36, 20, D.INK3, a4,
+               align="center")
+        n = len(LZ["fa"])
+        for run, col in ((LZ["fb"], D.S1), (LZ["fa"], D.GOLD)):
+            m = max(2, int(f * (n - 1)))
+            xs = gx + gw * np.arange(0, m, 10) / (n - 1)
+            ys = gy + gh / 2 - run[:m:10, 0] / 22.0 * (gh / 2)
+            ctx.new_path()
+            ctx.move_to(xs[0], ys[0])
+            for xx, yy in zip(xs[1:], ys[1:]):
+                ctx.line_to(xx, yy)
+            ctx.set_source_rgba(*col, a4)
+            ctx.set_line_width(3)
+            ctx.stroke()
+        a5 = D.fade(t, cue("chaos", 1, 4), 99, 0.4) * out1
+        D.pill(ctx, "two months in: nothing in common", gx + gw * 0.78, gy - 18, 22, D.INK, alpha=a5,
+               weight="semibold")
+        D.text(ctx, "Illustrated with Lorenz's 1963 equations", gx + gw, gy + gh + 70, 16, D.INK3, a4,
+               align="right")
+    # 2: two runs on the attractor, together, then apart
+    a = D.fade(t, t2 - 0.4, 99, 0.6) * (1 - D.ease(min(1.0, max(0.0, (t - cue("chaos", 4) + 0.2) / 0.8))))
+    if a > 0:
+        cx, cy, sx, sy = 1290, 640, 15.5, 10.5
+        P = lambda q: (cx + q[..., 0] * sx, cy - (q[..., 2] - 25.0) * sy)
+        bx, by = P(LZ["bg"])
+        ctx.new_path()
+        ctx.move_to(bx[0], by[0])
+        for xx, yy in zip(bx[1:4000], by[1:4000]):
+            ctx.line_to(xx, yy)
+        ctx.set_source_rgba(1, 1, 1, 0.10 * a)
+        ctx.set_line_width(1)
+        ctx.stroke()
+        k = int(max(0.0, t - t2) * LZ_RATE / 0.002)
+        for run, col in ((LZ["pb"], D.S1), (LZ["pa"], D.GOLD)):
+            k1 = min(k, len(run) - 1)
+            k0 = max(0, k1 - int(2.2 / 0.002))
+            seg = run[k0:k1 + 1:4]
+            if len(seg) > 1:
+                xs, ys = P(seg)
+                for c0 in range(0, len(xs) - 1, 25):
+                    c1 = min(len(xs) - 1, c0 + 26)
+                    ctx.new_path()
+                    ctx.move_to(xs[c0], ys[c0])
+                    for xx, yy in zip(xs[c0 + 1:c1 + 1], ys[c0 + 1:c1 + 1]):
+                        ctx.line_to(xx, yy)
+                    ctx.set_source_rgba(*col, a * (0.15 + 0.85 * c1 / (len(xs) - 1)))
+                    ctx.set_line_width(3)
+                    ctx.stroke()
+            hx, hy = P(run[k1])
+            ctx.new_path()
+            ctx.arc(hx, hy, 8, 0, 2 * math.pi)
+            ctx.set_source_rgba(*col, a)
+            ctx.fill()
+        a2 = D.fade(t, t2, 99, 0.4)
+        d0 = float(LZ["d0"])
+        dtxt = f"{d0:.{max(1, -int(math.floor(math.log10(d0))))}f}"
+        D.paragraph(ctx, f"Two runs of Lorenz's equations, starting {dtxt} apart in one number.", LX, 400, 28, 640,
+                    D.INK, a2 * a, "medium")
+        D.text(ctx, "they move as one", LX, 520, 34, D.INK, D.fade(t, cue("chaos", 2, 1), 99, 0.4) * a, "black")
+        D.text(ctx, "then they part, for good", LX, 580, 34, D.GOLD, D.fade(t, cue("chaos", 2, 2), 99, 0.4) * a,
+               "black")
+        a3 = D.fade(t, cue("chaos", 3) - 0.2, 99, 0.5) * a
+        D.text(ctx, "Sensitive dependence", LX, 700, 40, D.GOLD, a3, "black")
+        D.text(ctx, "on initial conditions", LX, 748, 40, D.GOLD, a3, "black")
+        a4 = D.fade(t, cue("chaos", 3, 1) - 0.1, 99, 0.5) * a
+        D.text(ctx, "the butterfly effect", LX, 820, 34, D.INK, a4, "black")
+        D.paragraph(ctx, "Lorenz's 1972 talk: “Does the flap of a butterfly's wings in Brazil set off a tornado "
+                         "in Texas?”", LX, 870, 22, 660, D.INK2, a4)
+    # 4: and Plinko
+    a = D.fade(t, cue("chaos", 4) - 0.1, 99, 0.5)
+    if a > 0:
+        D.text(ctx, "A Plinko board is a perfect example.", 960, 560, 56, D.INK, a, "black", "center")
 
 
 # ----------------------------------------------------------------------------------------------- 4 mechanism
+def _hit(p, d, c, r):
+    """Distance along ray p + s d to circle (c, r), or None."""
+    f = p - c
+    b = f @ d
+    q = f @ f - r * r
+    disc = b * b - q
+    if disc < 0:
+        return None
+    s_ = -b - math.sqrt(disc)
+    return s_ if s_ > 1e-6 else None
+
+
+def _trace(p, d, circles, L):
+    """A ray reflecting off circles (perfect mirror), up to total length L: list of points, and the hits."""
+    pts, hits = [p.copy()], []
+    left = L
+    while left > 0:
+        best = None
+        for c, r in circles:
+            s_ = _hit(p, d, c, r)
+            if s_ is not None and (best is None or s_ < best[0]):
+                best = (s_, c, r)
+        if best is None or best[0] > left:
+            pts.append(p + d * left)
+            break
+        s_, c, r = best
+        p = p + d * s_
+        nrm = (p - c) / r
+        hits.append((p.copy(), nrm.copy(), len(pts)))
+        d = d - 2 * (d @ nrm) * nrm
+        pts.append(p.copy())
+        left -= s_
+    return pts, hits
+
+
+def _draw_path(ctx, pts, upto, col, alpha, width=3.0):
+    """Polyline pts drawn up to arc length `upto`."""
+    ctx.new_path()
+    ctx.move_to(*pts[0])
+    left = upto
+    for a_, b_ in zip(pts[:-1], pts[1:]):
+        seg = float(np.linalg.norm(b_ - a_))
+        if left >= seg:
+            ctx.line_to(*b_)
+            left -= seg
+        else:
+            q = a_ + (b_ - a_) * (left / seg)
+            ctx.line_to(*q)
+            break
+    ctx.set_source_rgba(*col, alpha)
+    ctx.set_line_width(width)
+    ctx.stroke()
+
+
+def _arrow(ctx, p, d, L, col, alpha, width=2.5):
+    q = p + d * L
+    ctx.new_path()
+    ctx.move_to(*p)
+    ctx.line_to(*q)
+    nx_, ny_ = -d[1], d[0]
+    ctx.move_to(*q)
+    ctx.line_to(q[0] - d[0] * 12 + nx_ * 7, q[1] - d[1] * 12 + ny_ * 7)
+    ctx.move_to(*q)
+    ctx.line_to(q[0] - d[0] * 12 - nx_ * 7, q[1] - d[1] * 12 - ny_ * 7)
+    ctx.set_source_rgba(*col, alpha)
+    ctx.set_line_width(width)
+    ctx.stroke()
+
+
+R_PIN = 110.0
+C_PIN = np.array([1300.0, 430.0])
+
+
+def _zigzag(t_frac, s0=6.0, grow=2.2):
+    """A falling path bending past three pins, drawn as two paths whose gap grows x2.2 past every pin."""
+    V = [np.array(v, float) for v in ((1150, 620), (1290, 710), (1160, 800), (1300, 890), (1170, 980))]
+    rs = 26.0
+    pins = []
+    for k in range(1, len(V) - 1):
+        d_in = (V[k] - V[k - 1]) / np.linalg.norm(V[k] - V[k - 1])
+        d = (V[k + 1] - V[k]) / np.linalg.norm(V[k + 1] - V[k])
+        out = d_in - d
+        out /= np.linalg.norm(out)
+        pins.append((V[k], out, k))
+    # each path has its own corners, side by side; the gap between them grows x2.2 at every pin
+    gaps = [s0, s0] + [s0 * grow ** k for k in range(1, len(V) - 1)]
+    gaps = gaps[:len(V)]
+    paths = [[V[k] + np.array([sg * gaps[k] / 2, 0.0]) for k in range(len(V))] for sg in (-1, 1)]
+    pins = [(V[k] + out * (rs + gaps[k] / 2 + 8), k) for V_k, out, k in pins]
+    return V, pins, paths, gaps, rs
+
+
 def ov_mechanism(ctx, gctx, t, shot, cm, crop):
-    C.scrim(ctx, 1920, 0.82)
-    head2(ctx, "Why so touchy? Round pins.", t,
-          "A chip bouncing off a round pin is like light off a convex mirror: two paths that arrive almost "
-          "together leave further apart.", width=1500)
-    # diagram: two parallel paths hitting a pin (the circle the chip's centre can't enter)
-    cx, cy, R = 470, 700, 130
-    a = D.fade(t, 1.2, 99, 0.4)
-    ctx.arc(cx, cy, R, 0, 2 * math.pi)
-    ctx.set_source_rgba(0.55, 0.56, 0.6, 0.35 * a)
-    ctx.fill()
-    ctx.arc(cx, cy, 16, 0, 2 * math.pi)
-    ctx.set_source_rgba(0.8, 0.81, 0.85, a)
-    ctx.fill()
-    D.text(ctx, "pin", cx, cy + 40, 20, D.INK3, a, align="center")
-    for off, col in ((52, D.GOLD), (62, D.S1)):
-        x0 = cx + off
-        yh = cy - math.sqrt(R * R - off * off)
-        f_in = D.ease(min(1.0, max(0.0, (t - 1.6) / 1.4)))
-        y_in = 400 + (yh - 400) * f_in
-        ctx.move_to(x0, 400)
-        ctx.line_to(x0, y_in)
-        ctx.set_source_rgba(*col, a)
+    C.scrim(ctx, 1920, 0.84)
+    head2(ctx, "Why so touchy? Round pins.", t)
+    g = 9.0
+    # left: a flat wall
+    fa = D.fade(t, cue("mechanism", 1) - 0.3, 99, 0.4) * (1 - D.ease(min(1.0, max(0.0, (t - cue("mechanism", 4)
+                                                                                         + 0.4) / 0.6))))
+    if fa > 0:
+        wy, wx0, wx1 = 690.0, 170.0, 830.0
+        ctx.new_path()
+        ctx.move_to(wx0, wy)
+        ctx.line_to(wx1, wy)
+        ctx.set_source_rgba(0.85, 0.86, 0.9, fa)
+        ctx.set_line_width(6)
+        ctx.stroke()
+        for xx in np.arange(wx0, wx1, 22):
+            ctx.move_to(xx, wy + 4)
+            ctx.line_to(xx - 14, wy + 22)
+        ctx.set_source_rgba(0.6, 0.62, 0.66, 0.6 * fa)
+        ctx.set_line_width(1.5)
+        ctx.stroke()
+        D.text(ctx, "a flat wall", (wx0 + wx1) / 2, wy + 58, 24, D.INK, fa, "semibold", "center")
+        din = np.array([math.cos(math.radians(55)), math.sin(math.radians(55))])
+        dout = np.array([din[0], -din[1]])
+        prog = 1400 * D.ease(min(1.0, max(0.0, (t - cue("mechanism", 1)) / 3.0)))
+        for k, col in ((0, D.GOLD), (1, D.S1)):
+            h = np.array([500.0 + k * g / math.sin(math.radians(55)), wy - 3])
+            _draw_path(ctx, [h - din * 380, h, h + dout * 380], prog, col, fa)
+        an = D.fade(t, cue("mechanism", 1, 2) - 0.2, 99, 0.4) * fa
+        if an > 0:
+            for k in (0, 1):
+                h = np.array([500.0 + k * g / math.sin(math.radians(55)), wy - 3])
+                _arrow(ctx, h, np.array([0.0, -1.0]), 80, (1, 1, 1), an)
+            D.paragraph(ctx, "It faces the same way everywhere, so the two leave exactly as far apart as they came "
+                             "in.", 170, 800, 26, 660, D.INK, an, "medium")
+    # right: a round pin
+    ra = D.fade(t, cue("mechanism", 2) - 0.3, 99, 0.4)
+    if ra > 0:
+        c1 = C_PIN
+        ctx.new_path()
+        ctx.arc(c1[0], c1[1], R_PIN, 0, 2 * math.pi)
+        ctx.set_source_rgba(0.55, 0.57, 0.62, 0.45 * ra)
+        ctx.fill()
+        ctx.arc(c1[0], c1[1], R_PIN, 0, 2 * math.pi)
+        ctx.set_source_rgba(0.85, 0.86, 0.9, ra)
         ctx.set_line_width(3)
         ctx.stroke()
-        if t > 3.0:
-            nx, ny = (x0 - cx) / R, (yh - cy) / R
-            dx, dy = 0.0, 1.0
-            dd = dx * nx + dy * ny
-            rx, ry = dx - 2 * dd * nx, dy - 2 * dd * ny
-            L = 420 * D.ease(min(1.0, (t - 3.0) / 1.5))
-            ctx.move_to(x0, yh)
-            ctx.line_to(x0 + rx * L, yh + ry * L)
-            ctx.stroke()
-    D.paragraph(ctx, "almost together going in", cx + 70, 420, 22, 260, D.INK2, D.fade(t, 2.0, 99, 0.4))
-    D.paragraph(ctx, "much further apart coming out", cx + 220, 820, 22, 300, D.INK2, D.fade(t, 4.3, 99, 0.4))
-    # the multiplier, bounce after bounce
-    xs = 1040
-    a = D.fade(t, 6.0, 99, 0.5)
-    D.text(ctx, f"In the simulator, a typical bounce multiplies the gap by about {FAC:.1f}", xs, 360, 28, D.INK, a,
-           "semibold")
-    rows = [(1, "1 bounce"), (5, "5 bounces"), (10, "10 bounces"), (20, "20 bounces"),
-            (round(GROW["bounces_per_drop"]), "a whole drop")]
-    y = 430
-    for i, (n, lab) in enumerate(rows):
-        a = D.fade(t, 7.0 + 0.9 * i, 99, 0.35)
-        v = FAC ** n
-        s = f"x {v:,.0f}" if v < 1e6 else (f"x {v / 1e6:,.0f} million" if v < 1e9 else f"x {v / 1e9:,.0f} billion")
-        D.text(ctx, lab, xs, y, 30, D.INK2, a, "medium")
-        D.text(ctx, s, xs + 640, y, 34, D.GOLD if i == 4 else D.INK, a, "black", "right")
-        y += 58
-    a = D.fade(t, 12.5, 99, 0.5)
-    D.paragraph(ctx, f"The gap doubles about every {1000 * GROW['doubling_time_s']:.0f} milliseconds. Growth like "
-                     f"that is exponential, and it is the signature of chaos.", xs, 760, 27, 700, D.INK2, a)
+        D.text(ctx, "a round pin", c1[0], c1[1] + 8, 24, D.INK, ra, "semibold", "center")
+        t_in, t_out = cue("mechanism", 2), cue("mechanism", 2, 2)
+        prog = 205 * D.ease(min(1.0, max(0.0, (t - t_in) / 1.4)))
+        prog += 420 * D.ease(min(1.0, max(0.0, (t - t_out) / 2.4)))
+        hits = []
+        for k, col in ((0, D.GOLD), (1, D.S1)):
+            p0 = np.array([c1[0] + 0.74 * R_PIN + k * g, c1[1] - 200.0])
+            pts, hh = _trace(p0, np.array([0.0, 1.0]), [(c1, R_PIN)], 640)
+            hits.append(hh[0])
+            _draw_path(ctx, pts, prog, col, ra)
+        an = D.fade(t, cue("mechanism", 2, 1) - 0.2, 99, 0.4)
+        if an > 0:
+            for h in hits:
+                _arrow(ctx, h[0], h[1], 80, (1, 1, 1), an)
+            D.paragraph(ctx, "but a curve faces a different way at every spot", 1450, 270, 24, 360, D.INK, an,
+                        "medium")
+        ad = D.fade(t, cue("mechanism", 2, 3) - 0.2, 99, 0.4)
+        D.paragraph(ctx, "so they bounce off in different directions", 1450, 610, 24, 360, D.INK, ad, "medium")
+        D.text(ctx, "two paths a hair apart (drawn much wider)", c1[0] + 90, c1[1] - 215, 18, D.INK3, ra,
+               align="center")
+    # the next pin does it again: the gap grows at every pin
+    az = D.fade(t, cue("mechanism", 3) - 0.2, 99, 0.4)
+    if az > 0:
+        V, pins, paths, gaps, rs = _zigzag(0)
+        f = D.ease(min(1.0, max(0.0, (t - cue("mechanism", 3)) / 4.0)))
+        for (c, k) in pins:
+            ctx.new_path()
+            ctx.arc(c[0], c[1], rs, 0, 2 * math.pi)
+            ctx.set_source_rgba(0.85, 0.86, 0.9, az * D.fade(t, cue("mechanism", 3) + 0.8 * (k - 1), 99, 0.3))
+            ctx.fill()
+        for pts, col in zip(paths, (D.GOLD, D.S1)):
+            total = sum(float(np.linalg.norm(q1 - q0)) for q0, q1 in zip(pts[:-1], pts[1:]))
+            _draw_path(ctx, pts, total * f, col, az, 2.5)
+        for (c, k) in pins:
+            at = az * D.fade(t, cue("mechanism", 3) + 0.8 * k, 99, 0.3)
+            D.text(ctx, f"gap x {FAC ** k:.0f}" if k > 1 else f"gap x {FAC:.1f}", c[0] + (40 if c[0] > 1220 else -40),
+                   c[1] + 8, 20, D.INK, at, "semibold", "left" if c[0] > 1220 else "right")
+        D.paragraph(ctx, "The further they travel, the wider the gap. Then the next pin widens it again.", 1520,
+                    800, 24, 340, D.INK, D.fade(t, cue("mechanism", 3) + 0.4, 99, 0.4), "medium")
+    # the multiplier, bounce after bounce (takes the flat wall's place)
+    ta = cue("mechanism", 4)
+    a = D.fade(t, ta - 0.2, 99, 0.5)
+    if a > 0:
+        xs = 120
+        D.text(ctx, f"In the simulator, a bounce multiplies the gap by about {FAC:.1f}", xs, 360, 28, D.INK, a,
+               "semibold")
+        rows = [(1, "1 bounce"), (5, "5 bounces"), (10, "10 bounces"), (20, "20 bounces"),
+                (round(GROW["bounces_per_drop"]), f"a whole drop ({round(GROW['bounces_per_drop'])} bounces)")]
+        y = 440
+        for i, (n_, lab) in enumerate(rows):
+            tr = ta + 0.6 + 0.7 * i if i < 4 else cue("mechanism", 4, 1)
+            ar = D.fade(t, tr, 99, 0.35)
+            v = FAC ** n_
+            s_ = f"x {v:,.0f}" if v < 1e6 else (f"x {v / 1e6:,.0f} million" if v < 1e9 else
+                                                 f"x {v / 1e9:,.0f} billion")
+            D.text(ctx, lab, xs, y, 30, D.INK2, ar, "medium")
+            D.text(ctx, s_, xs + 720, y, 34, D.GOLD if i == 4 else D.INK, ar, "black", "right")
+            y += 62
+        a2 = D.fade(t, cue("mechanism", 5) - 0.2, 99, 0.5)
+        D.paragraph(ctx, f"Doubling, over and over: the gap doubles about every "
+                         f"{1000 * GROW['doubling_time_s']:.0f} milliseconds. That's exponential growth, the engine "
+                         f"of chaos.", xs, 790, 28, 720, D.GOLD, a2, "semibold")
 
 
 # ----------------------------------------------------------------------------------------------- 5 horizon
@@ -551,6 +872,150 @@ def deg(dT):
     return f"{dT:.{d}f} \u00b0C"
 
 
+HEAT = None
+
+
+def heat_data():
+    """The first drop's energy, sample by sample (60 per second of drop): what's left as height, what's speed,
+    and what has already become heat; and the pins it hit."""
+    rec = HP["warm_win_full"]
+    tau, x, y, ang = rec[:, 0], rec[:, 1], rec[:, 2], rec[:, 3]
+    m, R = 0.25, C.B.CHIP_DIAMETER / 2
+    inertia = 0.6 * m * R * R
+    ct = math.cos(math.radians(C.B.BOARD_TILT_DEG))
+    vx, vy, w = np.gradient(x, tau), np.gradient(y, tau), np.gradient(ang, tau)
+    e_tot = ONE["drop_energy_J"]
+    pe_lost = np.clip(m * 9.81 * (y - y[0]) * ct, 0, e_tot)
+    ke = 0.5 * m * (vx * vx + vy * vy) + 0.5 * inertia * w * w
+    heat = np.clip(np.maximum.accumulate(np.clip(pe_lost - ke, 0, None)), 0, e_tot)
+    heat[-1] = e_tot
+    speed = np.clip(pe_lost - heat, 0, None)
+    speed[-1] = 0.0
+    height = e_tot - pe_lost
+    pegs, _ = C.B.pegs()
+    hits = []
+    for i in np.flatnonzero(rec[:, 4] > 0):
+        d = np.hypot(pegs[:, 0] - x[i], pegs[:, 1] - y[i])
+        j = int(np.argmin(d))
+        if d[j] < R + C.B.PEG_DIAMETER / 2 + 0.02:
+            hits.append((float(tau[i]), float(pegs[j, 0]), float(pegs[j, 1])))
+    return dict(tau=tau, height=height, speed=speed, heat=heat, hits=hits, e_tot=e_tot)
+
+
+def fmt_len(v):
+    for unit, k in (("cm", 1e-2), ("mm", 1e-3), ("µm", 1e-6), ("nm", 1e-9)):
+        if v >= k:
+            return f"{v / k:.0f} {unit}" if v / k >= 10 else f"{v / k:.1f} {unit}"
+    return f"{v * 1e9:.1f} nm"
+
+
+def ov_heat(ctx, gctx, t, shot, cm, crop):
+    global HEAT
+    if HEAT is None:
+        HEAT = heat_data()
+    C.scrim(ctx)
+    slow = shot["slowmo"]
+    t_fall = shot["chips"][0]["t0"]
+    tau_now = max(0.0, (t - t_fall) * slow)
+    k = int(np.searchsorted(HEAT["tau"], tau_now))
+    k = min(k, len(HEAT["tau"]) - 1)
+    # titles
+    D.text(ctx, "Make the start perfect.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
+    D.text(ctx, "Change just one thing:", LX, 244, 50, D.INK, D.fade(t, cue("heat", 0, 1) - 0.2, 99, 0.5),
+           "black")
+    D.text(ctx, "the board's temperature.", LX, 308, 50, D.GOLD, D.fade(t, cue("heat", 0, 2) - 0.2, 99, 0.5),
+           "black")
+    a = D.fade(t, cue("heat", 1) - 0.2, 99, 0.4)
+    w_ = D.text(ctx, "Where would heat come from?", LX, 390, 30, D.INK, a, "semibold")
+    D.text(ctx, "The chips themselves.", LX + w_ + 14, 390, 30, D.GOLD,
+           D.fade(t, cue("heat", 1, 1) - 0.2, 99, 0.4), "semibold")
+    # one chip's energy: height -> speed -> heat
+    a = D.fade(t, cue("heat", 2) - 0.2, 99, 0.4)
+    if a > 0:
+        e = HEAT["e_tot"]
+        parts = [(HEAT["height"][k], D.S1, "height"), (HEAT["speed"][k], D.INK, "speed"),
+                 (HEAT["heat"][k], D.S2, "heat")]
+        if tau_now <= 0:
+            parts = [(e, D.S1, "height"), (0.0, D.INK, "speed"), (0.0, D.S2, "heat")]
+        D.text(ctx, f"One chip's energy: {e:.1f} joules", LX, 470, 24, D.INK2, a, "semibold")
+        bx, by, bw, bh = LX, 488, 680, 34
+        x = bx
+        for v, col, _ in parts:
+            wv = bw * v / e
+            ctx.new_path()
+            ctx.rectangle(x, by, wv, bh)
+            ctx.set_source_rgba(*col, a)
+            ctx.fill()
+            x += wv
+        ctx.new_path()
+        ctx.rectangle(bx, by, bw, bh)
+        ctx.set_source_rgba(1, 1, 1, 0.4 * a)
+        ctx.set_line_width(1.5)
+        ctx.stroke()
+        x = bx
+        for v, col, lab in parts:
+            x += 8 + D.text(ctx, f"{lab} {v:.1f} J", x, by + bh + 32, 22, col, a, "semibold") + 28
+    # glows where the chip hits pins: each impact leaves heat behind
+    warm_all = D.ease(min(1.0, max(0.0, (t - cue("heat", 4)) / 2.0)))
+    for tau_i, px, py in HEAT["hits"]:
+        t_i = t_fall + tau_i / slow
+        if t < t_i:
+            continue
+        q = cm.px(C.board_world(px, py, 0.03), crop)
+        fresh = math.exp(-(t - t_i) / 0.6)
+        rad = 9 + 9 * (1 - fresh) + 6 * warm_all
+        g_ = cairo.RadialGradient(q[0], q[1], 0, q[0], q[1], rad)
+        alpha = (0.22 + 0.5 * fresh) * (1 - 0.5 * warm_all)
+        g_.add_color_stop_rgba(0, 1.0, 0.42, 0.08, alpha)
+        g_.add_color_stop_rgba(1, 0.9, 0.2, 0.02, 0.0)
+        gctx.new_path()
+        gctx.arc(q[0], q[1], rad, 0, 2 * math.pi)
+        gctx.set_source(g_)
+        gctx.fill()
+    # the heat spreads through the whole board
+    if warm_all > 0:
+        Wd = C.W
+        pts = [cm.px(C.board_world(xx, yy, 0.0), crop) for xx, yy in
+               ((0.5 * Wd, -0.05), (9.5 * Wd, -0.05), (9.5 * Wd, C.B.last_row_y() + 0.1),
+                (0.5 * Wd, C.B.last_row_y() + 0.1))]
+        C.quad(ctx, pts)
+        ctx.set_source_rgba(*D.S2, 0.16 * warm_all)
+        ctx.fill()
+    a = D.fade(t, cue("heat", 3) - 0.2, 99, 0.4)
+    D.text(ctx, "Stopped: every joule is now heat.", LX, 610, 26, D.S2, a, "semibold")
+    a = D.fade(t, cue("heat", 4) - 0.1, 99, 0.4)
+    D.paragraph(ctx, f"Spread through a ~{ONE['board_kg']:.0f} kg board: {deg(ONE['drop_dT_C'])} warmer.", LX, 670,
+                26, LW, D.INK, a, "medium")
+    # warm wood and steel expand: every pin moves, away from where the board is held
+    a = D.fade(t, cue("heat", 4, 1) - 0.1, 99, 0.4)
+    if a > 0:
+        Wd = C.W
+        pegs, rows = C.B.pegs()
+        for (px, py), r in zip(pegs, rows):
+            if r % 3 != 0 or r == 0:
+                continue
+            dvec = np.array([px - 5 * Wd, py])
+            dvec /= np.linalg.norm(dvec)
+            p0 = np.array(cm.px(C.board_world(px, py, 0.03), crop))
+            p1 = np.array(cm.px(C.board_world(px + dvec[0] * 0.06, py + dvec[1] * 0.06, 0.03), crop))
+            dd = p1 - p0
+            L = float(np.linalg.norm(dd))
+            _arrow(ctx, p0, dd / L, L, D.S2, a, 2.2)
+        D.paragraph(ctx, f"The board grows about {1e9 * ONE['drop_expansion_m']:.0f} nm, the width of ten atoms. "
+                         "Every pin shifts with it.", LX, 740, 26, LW, D.INK,
+                    D.fade(t, cue("heat", 4, 2) - 0.1, 99, 0.4), "medium")
+        D.text(ctx, "(arrows drawn 100 million times bigger than the real shift)", LX, 812, 18, D.INK3, a)
+    # a nanometre, doubled by every bounce
+    a = D.fade(t, cue("heat", 5) - 0.1, 99, 0.4)
+    if a > 0:
+        f = D.ease(min(1.0, max(0.0, (t - cue("heat", 5, 1)) / (cue("heat", 5, 2) - cue("heat", 5, 1)))))
+        n = int(round(21 * f))
+        v = 1e-9 * FAC ** n if n < 21 else 1e-2
+        D.text(ctx, f"after {n:2d} bounces:", LX, 870, 30, D.INK2, a, "medium")
+        D.text(ctx, fmt_len(v), LX + 300, 870, 40, D.GOLD if n >= 21 else D.INK, a, "black")
+        D.text(ctx, "a different slot", LX, 930, 34, D.GOLD, D.fade(t, cue("heat", 5, 3) - 0.1, 99, 0.4), "black")
+
+
 def ov_warm(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx)
     win, rep = HP["warm_win"], HP["warm_replay"]
@@ -575,26 +1040,23 @@ def ov_warm(ctx, gctx, t, shot, cm, crop):
             board_label(ctx, cm, crop, k, C.D.SLOT_LABELS[k - 1], gold, D.fade(t, tl, 99, 0.25),
                         dy=-124 if (gold and adjacent) else -56)
     dT = deg(ONE["drop_dT_C"])
-    D.text(ctx, "Make the start perfect.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
-    D.text(ctx, "Change just one thing.", LX, 244, 50, D.GOLD, D.fade(t, 1.0, 99, 0.5), "black")
-    D.paragraph(ctx, "Same chip, same spot, exact to the last atom. The only difference: the board is a little "
-                     "warmer, from the heat of the first drop.", LX, 314, 28, LW - 20, D.INK,
-                D.fade(t, 1.8, 99, 0.5), "medium")
-    D.paragraph(ctx, f"The chip falls {ONE['drop_height_m']:.0f} m and stops, turning about "
-                     f"{ONE['drop_energy_J']:.0f} joules into heat. Spread through the board, that's {dT} "
-                     f"warmer: the board grows by about {1e9 * ONE['drop_expansion_m']:.0f} nanometre.",
-                LX, 438, 24, LW - 20, D.INK2, D.fade(t, 3.2, 99, 0.5))
-    a = D.fade(t, 2.2, 99, 0.4)
-    y = 590
-    for col, lab in ((D.GOLD, "the first drop"), (D.S1, f"the same drop, board {dT} warmer")):
+    D.text(ctx, "Same drop.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
+    D.text(ctx, "Warmer board.", LX, 244, 50, D.GOLD, D.fade(t, 0.9, 99, 0.5), "black")
+    D.paragraph(ctx, f"Exactly the same release, to the last atom. The only difference: the board is {dT} "
+                     f"warmer, from the heat of the first drop.", LX, 314, 28, LW - 20, D.INK,
+                D.fade(t, 1.6, 99, 0.5), "medium")
+    a = D.fade(t, cue("warm", 0, 1) - 0.2, 99, 0.4)
+    y = 470
+    for col, lab in ((D.GOLD, "the first drop"), (D.S1, f"the replay, board {dT} warmer")):
         ctx.new_path()
         ctx.arc(LX + 10, y - 8, 9, 0, 2 * math.pi)
         ctx.set_source_rgba(*col, a)
         ctx.fill()
-        D.text(ctx, lab, LX + 32, y, 22, D.INK2, a, "medium")
-        y += 36
-    t_land = t0 + max(win[-1, 0], rep[-1, 0]) / slow
-    a = D.fade(t, t_land + 0.6, 99, 0.5)
+        D.text(ctx, lab, LX + 32, y, 24, D.INK2, a, "medium")
+        y += 40
+    D.paragraph(ctx, "They fall as one, until the shifted pins catch up with them.", LX, 600, 26, LW - 20,
+                D.INK, D.fade(t, cue("warm", 1) - 0.2, 99, 0.4), "medium")
+    a = D.fade(t, cue("warm", 2) - 0.1, 99, 0.5)
     if a > 0:
         k = int(round(rep[-1, 1] / W))
         D.text(ctx, f"{dT} warmer:", LX, 760, 44, D.INK, a, "black")
@@ -666,12 +1128,12 @@ def ov_realworld(ctx, gctx, t, shot, cm, crop):
             D.pill(ctx, f"{100 * v:.0f}%", lx_(d) - (30 if d == 1.0 else 0), ly_(v) + dy, 24, D.INK,
                    alpha=D.fade(t, ts, 99, 0.3), weight="semibold")
     v_drop = pick[f"{ONE['drop_dT_C']:.3g}"]
-    a = D.fade(t, 10.0, 99, 0.5)
+    a = D.fade(t, cue("realworld", 0, 1), 99, 0.5)
     D.paragraph(ctx, f"Even a billionth of a degree spoils {100 * (1 - pick['1e-09']):.0f} replays in 100, and one "
                      f"drop's heat spoils {100 * (1 - v_drop):.0f}. No change is too small "
                      f"to matter.",
                 LX, 925, 28, 1700, D.INK, a, "medium")
-    a = D.fade(t, 14.5, 99, 0.5)
+    a = D.fade(t, cue("realworld", 1), 99, 0.5)
     D.paragraph(ctx, "And every drop warms the board: in practice, a replay is barely better than a fresh drop.",
                 LX, 985, 28, 1700, D.GOLD, a, "semibold")
 
@@ -713,23 +1175,22 @@ def ov_outro(ctx, gctx, t, shot, cm, crop):
         C.quad(gctx, pts)
         gctx.set_source_rgba(*D.GOLD, 0.45 * a)
         gctx.fill()
-    a = D.fade(t, t_land + 0.4, 99, 0.5)
+    a = D.fade(t, cue("outro", 0, 1) - 0.2, 99, 0.5)
     if a > 0:
         C.scrim(ctx, 760, 0.55 * a)
-        D.text(ctx, "Deterministic.", 90, 430, 62, D.INK, a, "black")
-        D.text(ctx, "Unpredictable.", 90, 504, 62, D.INK, a, "black")
-        D.text(ctx, "That's chaos.", 90, 578, 62, D.GOLD, a, "black")
-        D.paragraph(ctx, "Drop it in the middle, and let chaos decide.", 92, 640, 26, 520, D.INK2,
-                    D.fade(t, t_land + 1.5, 99, 0.5))
+        for j, (s_, col, y) in enumerate((("Deterministic.", D.INK, 430), ("Unpredictable.", D.INK, 504),
+                                          ("That's chaos.", D.GOLD, 578))):
+            D.text(ctx, s_, 90, y, 62, col, D.fade(t, cue("outro", 1, j) - 0.1, 99, 0.4), "black")
+        D.paragraph(ctx, "Drop it in the middle, and let chaos decide.", 92, 640, 26, 520, D.INK2, a)
     if t > shot["dur"] - 1.2:
         ctx.set_source_rgba(0, 0, 0, D.ease((t - (shot["dur"] - 1.2)) / 1.2))
         ctx.paint()
 
 
 OVERLAY = dict(hook=ov_hook, deterministic=ov_deterministic, twins=ov_twins, mechanism=ov_mechanism,
-               horizon=ov_horizon, crux=ov_crux, islands=ov_islands, warm=ov_warm, realworld=ov_realworld,
+               horizon=ov_horizon, crux=ov_crux, islands=ov_islands, heat=ov_heat, warm=ov_warm, realworld=ov_realworld, chaos=ov_chaos,
                statistics=ov_statistics, outro=ov_outro)
-DARK = {"mechanism": (6.0, 0.5, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 0.0),
+DARK = {"chaos": (8.0, 0.35, 0.0), "mechanism": (6.0, 0.45, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 0.0),
         "crux": (5.0, 0.6, 0.0), "realworld": (5.0, 0.6, 0.0)}
 
 

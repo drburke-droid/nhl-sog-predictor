@@ -35,6 +35,9 @@ FPS, HZ = meta["fps"], meta["hz"]
 nframes = int(round(shot["dur"] * FPS))
 f_first = int(argv[1]) if len(argv) > 1 else 1
 f_last = int(argv[2]) if len(argv) > 2 else nframes
+if shot.get("render_window") and len(argv) <= 1:     # only the moving part; the compositor holds the ends
+    f_first = max(1, int(shot["render_window"][0] * FPS) + 1)
+    f_last = min(nframes, int(shot["render_window"][1] * FPS) + 1)
 outdir = os.path.join(ROOT, "out", "chips", shot_name)
 os.makedirs(outdir, exist_ok=True)
 

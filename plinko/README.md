@@ -32,7 +32,7 @@ contestants dropping all over. Drop-position logs would settle it.
 
 | File | What |
 |---|---|
-| `../videos/plinko/plinko_chaos_same_start_different_finish_narrated_3m30s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 6,300 frames = 210.0 s, narrated (ElevenLabs, Lily voice; script `../videos/copy/plinko_chaos_NARRATION.md`). Thumbnails `plinko_chaos_thumb_A/B` |
+| `../videos/plinko/plinko_chaos_same_start_different_finish_narrated_6m03s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 10,890 frames = 363.0 s, narrated (ElevenLabs, Lily voice; script `../videos/copy/plinko_chaos_NARRATION.md`). Thumbnails `plinko_chaos_thumb_A/B` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_blender_2m55s.mp4` | The Blender edition: 1920x1080, 30 fps, H.264 High / yuv420p, 5,250 frames = 175.0 s. Thumbnails `plinko_blender_thumb_A/B` (`thumbs3d.py`), stills in `media/stills_blender/` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_3m21s.mp4` | The film: 1920x1080, 30 fps, H.264 High / yuv420p, 6,030 frames = 201.0 s, on-screen captions, no narration |
 | `../videos/plinko/where_to_drop_a_plinko_chip_SHORT_58s.mp4` | Vertical cut, 1080x1920, 1,725 frames = 57.5 s |
@@ -45,9 +45,9 @@ contestants dropping all over. Drop-position logs would settle it.
 
 ## The chaos cut: "Same start, different finish" (the main film)
 
-A 3:30 film that uses the board to explain chaos. A winning drop is replayed from the same spot, matched to
-the width of an atom, and lands in $500. The film then shows sensitive dependence on initial conditions, why
-round pins make chaos (a gap grows about 2.2 times per bounce), the predictability horizon, and the replay
+A 6:03 film that uses the board to explain chaos. A winning drop is replayed from the same spot, matched to
+the width of an atom, and lands in $500. The film then explains chaos theory (Lorenz's 1961 rerun and the
+butterfly attractor), why round pins make chaos (a flat wall against a round pin) (a gap grows about 2.2 times per bounce), the predictability horizon, and the replay
 experiment. Players may let go anywhere across the top, at the pins or up to 30 cm (12 in) above them, so the
 experiment finds winning release points all over that area and replays each at a given precision:
 16% win again at 1 micron (a fresh drop: 13%), 39% at 1 atom, never 100%. A map of every release
@@ -61,10 +61,12 @@ and overstated replay odds (ACCURACY.md section 7).
 
 ```bash
 python3 chaos2.py all          # growth, replay, film data, board temperature, the whole top (~45 min)
+python3 narration.py lines     # ElevenLabs voice-over, phrase by phrase (sets each shot's length)
 python3 prepare_chaos.py       # shot list; reuses the Blender plates and chip passes
 CHIPS_ANIM=out/anim3d_chaos blender -b --factory-startup -P blender/render_chips.py -- hook
 CHIPS_ANIM=out/anim3d_chaos blender -b --factory-startup -P blender/render_chips.py -- warm
-python3 composite_chaos.py segments hook deterministic twins mechanism horizon crux islands warm realworld statistics outro
+CHIPS_ANIM=out/anim3d_chaos blender -b --factory-startup -P blender/render_chips.py -- heat
+python3 composite_chaos.py segments hook deterministic twins chaos mechanism horizon crux islands heat warm realworld statistics outro
 python3 composite_chaos.py assemble   # -> out/plinko_chaos.mp4
 python3 narration.py mix              # ElevenLabs voice-over (needs an API key for api.elevenlabs.io) -> out/plinko_chaos_narrated.mp4
 python3 thumbs_chaos.py
