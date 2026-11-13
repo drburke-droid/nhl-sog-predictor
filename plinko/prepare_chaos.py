@@ -36,7 +36,7 @@ def main():
         dict(name="mechanism", cam="top", dur=18.0, crop=top, chips_from="zoom", chips=[]),
         dict(name="horizon", cam="top", dur=14.0, crop=top, chips_from="zoom", chips=[]),
         dict(name="crux", cam="front", dur=28.0, crop=front, chips=[]),
-        dict(name="islands", cam="top", dur=30.0, crop=top, chips_from="none", chips=[]),
+        dict(name="islands", cam="top", dur=37.0, crop=top, chips_from="none", chips=[]),
         dict(name="warm", cam="front", dur=17.0, crop=front, slowmo=0.5,
              chips=[dict(path="warm_win", t0=2.5, appear=0.3, hold=True, linger=99, face="chip_face",
                          depth_offset=0.0004),

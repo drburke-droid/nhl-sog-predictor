@@ -5,6 +5,8 @@
     python3 chaos2.py extra    # board temperature changes, and how robust each winner is
     python3 chaos2.py film     # the film's hook pair, release maps, precision fit and horizon
     python3 chaos2.py onevar   # perfect release, only the board's temperature changes (one drop's own heat)
+    python3 chaos2.py regionmap  # every release point across the top, up to 30 cm above the pins: the slot
+    python3 chaos2.py region     # replay, thermal, robustness and warming for winners from anywhere on top
     python3 chaos2.py all
 
 Everything runs on the perfect board (no pin imperfections, no random restitution) unless a "real-world"
@@ -344,6 +346,141 @@ def onevar():
     print(json.dumps({k: v for k, v in out.items() if k not in ("dT_C", "wins_again")}, indent=1))
 
 
+# ------------------------------------------------------------------------------------------- the whole top
+# On the show a player may let go anywhere across the top: right at the top pins or anywhere in the ~12 in
+# (30 cm) above them, all the way between the side walls. A release is valid where the chip touches neither a
+# wall nor a top pin.
+TOP = 0.3048
+X_LO = 0.5 * W + B.CHIP_DIAMETER / 2 + 1e-4
+X_HI = 9.5 * W - B.CHIP_DIAMETER / 2 - 1e-4
+CLEAR = B.CHIP_DIAMETER / 2 + B.PEG_DIAMETER / 2 + 1e-4
+DELTAS = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 3e-11, 1e-11, 3e-12, 1e-12, 3e-13, 1e-13, 1e-14,
+          1e-15]
+
+
+def valid_release(x, y):
+    ok = (x >= X_LO) & (x <= X_HI) & (y <= 0.0) & (y >= -TOP)
+    for px, py in P.PEGS[P.PEG_ROWS == 0]:
+        ok &= np.hypot(x - px, y - py) >= CLEAR
+    return ok
+
+
+def region_releases(n, rng):
+    """n releases at rest, uniform over the valid area across the top."""
+    xs, ys = [], []
+    while sum(len(v) for v in xs) < n:
+        x = rng.uniform(0.5 * W, 9.5 * W, 2 * n)
+        y = rng.uniform(-TOP, 0.0, 2 * n)
+        ok = valid_release(x, y)
+        xs.append(x[ok])
+        ys.append(y[ok])
+    c = np.zeros((n, 5))
+    c[:, 0] = np.concatenate(xs)[:n]
+    c[:, 1] = np.concatenate(ys)[:n]
+    return c
+
+
+def jitter_valid(w, d, n, rng):
+    """n copies of release w, each moved by a random 2D error of d per axis; any that would start inside a
+    pin or wall are redrawn (a real release can't be there)."""
+    rep = np.repeat(w[None, :], n, 0)
+    todo = np.arange(n)
+    while len(todo):
+        rep[todo, 0] = w[0] + rng.normal(0, d, len(todo))
+        rep[todo, 1] = w[1] + rng.normal(0, d, len(todo))
+        todo = todo[~valid_release(rep[todo, 0], rep[todo, 1])]
+    return rep
+
+
+def region_map(nx=1680):
+    """Every release point across the top on a grid (1 px = 0.95 mm): the slot each one lands in
+    (-1 where a chip can't be let go). results/chaos2_region_map.npz"""
+    ny = int(round(nx * TOP / (9 * W)))
+    xs = 0.5 * W + (np.arange(nx) + 0.5) * 9 * W / nx
+    ys = -TOP + (np.arange(ny) + 0.5) * TOP / ny
+    X, Y = np.meshgrid(xs, ys)
+    ok = valid_release(X, Y)
+    slots = np.full(X.shape, -1, dtype=np.int8)
+    init = np.zeros((int(ok.sum()), 5))
+    init[:, 0], init[:, 1] = X[ok], Y[ok]
+    t0 = time.time()
+    out = np.zeros(len(init), dtype=np.int64)
+    for a in range(0, len(init), 50000):
+        out[a:a + 50000] = run(init[a:a + 50000])
+        print(f"map {a + 50000}/{len(init)} {time.time() - t0:.0f}s", flush=True)
+    slots[ok] = out
+    np.savez_compressed("results/chaos2_region_map.npz", slots=slots, x=xs, y=ys)
+    print("map: share gold", float((slots == 5).sum() / ok.sum()), "stuck", float((slots == 0).sum() / ok.sum()))
+
+
+def region(n_cand=6000, n_win=120, n_rep=300):
+    """The replay experiment, the chip's thermal motion, how robust winners are, and the board-warming sweep,
+    for winning releases from anywhere across the top. results/chaos2_region.json"""
+    rng = np.random.default_rng(2027)
+    cand = region_releases(n_cand, rng)
+    s0 = run(cand)
+    ok0 = s0 > 0
+    base = float((s0[ok0] == 5).mean())
+    allwin = cand[s0 == 5]
+    win = allwin[:n_win]
+    print(f"whole top: a fresh drop wins {base:.3f}; {len(allwin)} winners of {n_cand}", flush=True)
+    out = dict(top_m=TOP, n_candidates=n_cand, base_rate=base, n_winners=len(win), n_replays_each=n_rep,
+               position={}, per_winner={})
+    t0 = time.time()
+    for d in DELTAS:
+        hits = tot = 0
+        per = []
+        for w in win:
+            s = run(jitter_valid(w, d, n_rep, rng))
+            ok = s > 0
+            hits += (s[ok] == 5).sum()
+            tot += ok.sum()
+            per.append(float((s[ok] == 5).mean()))
+        out["position"][f"{d:g}"] = hits / tot
+        if d in (1e-6, 1e-10):
+            out["per_winner"][f"{d:g}"] = np.round(np.sort(per), 2).tolist()
+        print(f"whole top, replay {d:8.0e} m: wins again {hits / tot:.3f}   ({time.time() - t0:.0f}s)", flush=True)
+    hits = tot = 0
+    for w in win:
+        rep = np.repeat(w[None, :], n_rep, 0)
+        rep[:, 2] += rng.normal(0, SIG_V, n_rep)
+        rep[:, 3] += rng.normal(0, SIG_V, n_rep)
+        rep[:, 4] += rng.normal(0, SIG_W, n_rep)
+        s = run(rep)
+        hits += (s[s > 0] == 5).sum()
+        tot += (s > 0).sum()
+    out["thermal"] = hits / tot
+    print(f"whole top, chip's thermal motion: {out['thermal']:.3f}", flush=True)
+    probe = np.linspace(-1e-10, 1e-10, 201)
+    rob = []
+    for w in win:
+        rep = np.repeat(w[None, :], len(probe), 0)
+        rep[:, 0] += probe
+        rob.append(float((run(rep) == 5).mean()))
+    rob = np.array(rob)
+    out["share_robust"] = float((rob > 0.9).mean())
+    out["share_knife"] = float((rob < 0.3).mean())
+    d = np.array(DELTAS)
+    p = np.array([out["position"][f"{v:g}"] for v in DELTAS])
+    sel = (d <= 1e-9) & (d >= 1e-15)
+    slope = float(np.polyfit(np.log10(d[sel]), np.log10(1 - p[sel]), 1)[0])
+    out["uncertainty_exponent"], out["miss_cut_per_10x"] = slope, float(10 ** -slope)
+    energy, h, dT_drop = drop_heat()
+    dTs = sorted(set([float(f"{v:.3g}") for v in np.logspace(-10, 0, 21)] + [float(f"{dT_drop:.3g}")]))
+    n = len(allwin)
+    assert (run(allwin, np.zeros(n)) == 5).all()
+    out["warm_n_winners"], out["warm_dT_C"], out["warm_wins_again"] = n, dTs, []
+    for dT in dTs:
+        s = run(allwin, np.full(n, ALPHA * dT))
+        out["warm_wins_again"].append(float((s[s > 0] == 5).mean()))
+        print(f"whole top, board warmer by {dT:9.3g} C: {out['warm_wins_again'][-1]:.3f}", flush=True)
+    s = run(allwin, np.full(n, ALPHA * dT_drop))
+    out["warm_wins_again_drop"] = float((s[s > 0] == 5).mean())
+    json.dump(out, open("results/chaos2_region.json", "w"), indent=1)
+    print(json.dumps({k: v for k, v in out.items() if k not in ("per_winner", "warm_dT_C", "warm_wins_again")},
+                     indent=1))
+
+
 if __name__ == "__main__":
     what = sys.argv[1:] or ["all"]
     if "growth" in what or "all" in what:
@@ -356,3 +493,7 @@ if __name__ == "__main__":
         film_data()
     if "onevar" in what or "all" in what:
         onevar()
+    if "regionmap" in what or "all" in what:
+        region_map()
+    if "region" in what or "all" in what:
+        region()

@@ -28,6 +28,7 @@ REP = json.load(open("results/chaos2_replay.json"))
 FILM = json.load(open("results/chaos2_film.json"))
 EXTRA = json.load(open("results/chaos2_extra.json"))
 MAPS = C._load_npz("results/chaos2_maps.npz")
+REG = json.load(open("results/chaos2_region.json")) if os.path.exists("results/chaos2_region.json") else None
 ONE = json.load(open("results/chaos2_onevar.json"))
 W = C.W
 LX, LW = C.LX, C.LW
@@ -219,10 +220,11 @@ PREC_LABEL = {1e-2: "1 cm", 1e-3: "1 mm", 1e-6: "1 µm", 1e-9: "1 nm", 1e-10: "1
 def ov_crux(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx, 1920, 0.84)
     head2(ctx, "Find a drop that wins. Replay it.", t,
-          "From exactly the same spot, as precisely as you like. How often does it win again?")
-    d = np.array([float(k) for k in REP["position"]])
-    p = np.array(list(REP["position"].values()))
-    base = REP["base_rate"]
+          "Winning drops from anywhere across the top, each replayed from exactly the same spot, as precisely as "
+          "you like. How often do they win again?", width=1700)
+    d = np.array([float(k) for k in REG["position"]])
+    p = np.array(list(REG["position"].values()))
+    base = REG["base_rate"]
     gx, gy, gw, gh = 230, 330, 1440, 470
     lx_ = lambda dd: gx + gw * (-2 - math.log10(dd)) / 13.0       # 1 cm (left) ... 1 fm (right)
     ly_ = lambda pp: gy + gh * (1 - pp)
@@ -264,10 +266,10 @@ def ov_crux(ctx, gctx, t, shot, cm, crop):
             ctx.fill()
     for dd, lab, ts in ((1e-6, "1 µm", 5.0), (1e-10, "1 atom", 7.0), (1e-15, "1 fm", 8.6)):
         if t > ts:
-            pp = REP["position"][f"{dd:g}"]
+            pp = REG["position"][f"{dd:g}"]
             D.pill(ctx, f"{lab}: {100 * pp:.0f}%", lx_(dd) - (40 if dd == 1e-15 else 0), ly_(pp) - 40, 24, D.INK,
                    alpha=D.fade(t, ts, 99, 0.3), weight="semibold")
-    pos = REP["position"]
+    pos = REG["position"]
     a = D.fade(t, 10.5, 99, 0.5)
     D.paragraph(ctx, f"Replayed to a micron, it wins again {100 * pos['1e-06']:.0f}% of the time, barely better than a "
                      f"fresh drop. To an atom: {100 * pos['1e-10']:.0f}%, still worse than a coin flip. To a "
@@ -275,7 +277,7 @@ def ov_crux(ctx, gctx, t, shot, cm, crop):
                 LX, 940, 28, 1700, D.INK, a, "medium")
     a = D.fade(t, 18.0, 99, 0.5)
     D.paragraph(ctx, f"Below a nanometre, each tenfold gain in precision removes only about "
-                     f"{100 * (1 - FILM['miss_cut_per_10x']):.0f}% of the misses left. Certainty never arrives.",
+                     f"{100 * (1 - REG['miss_cut_per_10x']):.0f}% of the misses left. Certainty never arrives.",
                 LX, 1030, 28, 1700, D.GOLD, a, "semibold")
 
 
@@ -346,15 +348,38 @@ def tag(ctx, s, x, y, size=20, col=D.INK, alpha=1.0, weight="semibold", align="c
     D.text(ctx, s, x, y, size, col, alpha, weight, align)
 
 
+_MAP = {}
+
+
+def region_surface():
+    """The whole-top release map as a cairo surface, 1 px per grid point: gold wins $10,000, grey doesn't, dark
+    where a chip can't be let go (inside a wall or a top pin)."""
+    if "s" not in _MAP:
+        m = np.load("results/chaos2_region_map.npz")
+        sl = m["slots"]
+        rgb = np.where((sl == 5)[..., None], np.array(GOLD_C), np.array(GREY_C))
+        buf = np.zeros(sl.shape + (4,), np.uint8)
+        c = (rgb * 255).astype(np.uint8)
+        buf[..., 0], buf[..., 1], buf[..., 2], buf[..., 3] = c[..., 2], c[..., 1], c[..., 0], 255
+        buf[sl < 0] = (20, 15, 13, 255)
+        buf = np.ascontiguousarray(buf)
+        _MAP["buf"] = buf
+        _MAP["s"] = cairo.ImageSurface.create_for_data(memoryview(buf), cairo.FORMAT_ARGB32, sl.shape[1], sl.shape[0])
+        _MAP["gold"] = float((sl == 5).sum() / (sl >= 0).sum())
+    return _MAP["s"]
+
+
+ISL_SHIFT = 7.5          # the strip-and-zoom part starts this much later than in the earlier cut
+
+
 def ov_islands(ctx, gctx, t, shot, cm, crop):
     GAP = FILM["release_half_range_m"]
-    # --- phase 1: a ghost chip sweeps the 3.8 cm window between the top pins; the window, blown up across the
-    # screen, fills with one sliver per release point
-    sc_a = 0.45 + 0.39 * D.ease(min(1.0, max(0.0, (t - 5.0) / 1.5)))
-    C.scrim(ctx, 1920, sc_a)
+    TOP = REG["top_m"]
+    C.scrim(ctx, 1920, 0.84)
     head2(ctx, "Every place you could let go", t,
-          "Each thin line is one place to let go of the chip. Gold: that drop wins $10,000. Grey: it lands "
-          "anywhere else.", y=110, size=48, width=1760)
+          "A player can let go anywhere across the top: right at the top pins, or up to 30 cm (12 in) above "
+          "them, wall to wall. Each dot is one release point. Gold: that drop wins $10,000. Grey: it lands "
+          "anywhere else.", y=110, size=48, width=1700)
     al = D.fade(t, 0.8, 99, 0.4)
     lx = 1800
     for col, name in ((GREY_C, "lands anywhere else"), (GOLD_C, "wins $10,000")):
@@ -365,41 +390,68 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
         ctx.set_source_rgba(*col, al)
         ctx.fill()
         lx -= w + 64
-    gx0, gy = cm.px(C.board_world(5 * W - GAP, 0.0, 0.03), crop)
-    gx1, _ = cm.px(C.board_world(5 * W + GAP, 0.0, 0.03), crop)
-    rx, _ = cm.px(C.board_world(5 * W + C.B.CHIP_DIAMETER / 2, 0.0, 0.03), crop)
-    cx0, _ = cm.px(C.board_world(5 * W, 0.0, 0.03), crop)
-    rad = abs(rx - cx0)
-    ox, oy, ow, oh = ov_rect = (120, 262, 1680, 46)
-    big_y = 930
-    sweep = D.ease(min(1.0, max(0.0, (t - 1.2) / 3.6)))
-    lift = D.ease(min(1.0, max(0.0, (t - 5.3) / 1.2)))
-    sy = big_y + (oy - big_y) * lift
-    if t > 1.0 and lift < 1.0:
-        a = D.fade(t, 1.0, 5.3, 0.4)
-        hx = gx0 + (gx1 - gx0) * sweep
-        bx = ox + ow * sweep
+    # --- phase 0: the whole top, as a map of release points
+    surf = region_surface()
+    mw_i, mh_i = surf.get_width(), surf.get_height()
+    mx, my, mw = 120, 300, 1680
+    mh = mw * mh_i / mw_i
+    xm = lambda x: mx + mw * (x - 0.5 * W) / (9 * W)               # board x -> map px
+    ma = D.fade(t, 0.8, 99, 0.4) * (1 - D.ease(min(1.0, max(0.0, (t - 12.6) / 1.0))))
+    if ma > 0:
+        sweep0 = D.ease(min(1.0, max(0.0, (t - 1.0) / 3.5)))
+        ctx.save()
+        ctx.rectangle(mx, my, mw * sweep0, mh)
+        ctx.clip()
+        ctx.translate(mx, my)
+        ctx.scale(mw / mw_i, mh / mh_i)
+        ctx.set_source_surface(surf, 0, 0)
+        ctx.get_source().set_filter(cairo.FILTER_NEAREST)
+        ctx.paint_with_alpha(ma)
+        ctx.restore()
+        for k in range(1, 9):                                           # the top row of pins
+            ctx.new_path()
+            ctx.arc(xm((k + 0.5) * W), my + mh, max(3.0, mw * C.B.PEG_DIAMETER / 2 / (9 * W)), 0, 2 * math.pi)
+            ctx.set_source_rgba(0.85, 0.87, 0.9, ma)
+            ctx.fill()
         ctx.new_path()
-        ctx.arc(hx, gy, rad, 0, 2 * math.pi)          # ghost chip at the current release point
-        ctx.set_source_rgba(1, 1, 1, 0.10 * a)
-        ctx.fill_preserve()
-        ctx.set_source_rgba(1, 1, 1, 0.9 * a)
-        ctx.set_line_width(2.5)
+        ctx.rectangle(mx, my, mw, mh)
+        ctx.set_source_rgba(1, 1, 1, 0.35 * ma)
+        ctx.set_line_width(1.5)
         ctx.stroke()
-        ctx.arc(hx, gy, 5, 0, 2 * math.pi)
-        ctx.fill()
-        zoom_lines(ctx, gx0, gx1, gy + 40, ox, ox + ow, big_y, a)
-        ctx.move_to(hx, gy + 5)                       # the chip's centre, carried down to its sliver
-        ctx.line_to(hx, gy + 40)
-        ctx.line_to(bx, big_y)
-        ctx.line_to(bx, big_y + oh + 10)
-        ctx.set_source_rgba(1, 1, 1, 0.95 * a)
+        D.text(ctx, f"{100 * TOP:.0f} cm", mx - 10, my + 16, 18, D.INK3, ma, align="right")
+        D.text(ctx, "above", mx - 10, my + 38, 16, D.INK3, ma, align="right")
+        D.text(ctx, "pins", mx - 10, my + mh, 18, D.INK3, ma, align="right")
+        D.text(ctx, "wall", mx, my + mh + 30, 16, D.INK3, ma, align="center")
+        D.text(ctx, "wall", mx + mw, my + mh + 30, 16, D.INK3, ma, align="center")
+        pa = ma * (1 - D.ease(min(1.0, max(0.0, (t - 8.3) / 0.5))))
+        for k in range(1, 10):
+            D.text(ctx, f"{k}", xm(k * W), my + mh + 30, 20, D.INK2, pa, "semibold", "center")
+        D.text(ctx, "drop position", xm(1 * W) - 26, my + mh + 30, 16, D.INK3, pa, align="right")
+        ca = D.fade(t, 5.0, 12.4, 0.5) * ma
+        if ca > 0:
+            D.paragraph(ctx, f"{100 * _MAP['gold']:.0f}% of all release points win $10,000. Gold gathers over the "
+                             f"middle, but even there it is speckled with grey: move a hair, and the prize "
+                             f"changes.", 120, 740, 30, 1680, D.INK, ca, "medium")
+    # --- phase 1: one line through it, the middle gap right at the pins, blown up into a strip
+    ox, oy, ow, oh = ov_rect = (120, 262, 1680, 46)
+    big_y = 880
+    bx0, bx1 = xm(5 * W - GAP), xm(5 * W + GAP)
+    ba = D.fade(t, 8.5, 13.4, 0.4)
+    if ba > 0:
+        ctx.new_path()
+        ctx.rectangle(bx0 - 2, my + mh - 6, bx1 - bx0 + 4, 8)
+        ctx.set_source_rgba(1, 1, 1, ba)
         ctx.set_line_width(2)
         ctx.stroke()
-        tag(ctx, f"the chip's centre has {200 * GAP:.1f} cm of room between the top pins", (gx0 + gx1) / 2,
-            gy - rad - 24, 22, D.INK, a * D.fade(t, 1.6, 99, 0.4))
-    if t > 1.2:
-        strip_bin(ctx, ox, sy, ow, oh, OVER["slots"], sweep if lift <= 0 else 1.0, D.fade(t, 1.2, 99, 0.3))
+        tag(ctx, "one line through it: the middle gap, right at the pins", (bx0 + bx1) / 2, my + mh + 48, 22,
+            D.INK, ba)
+        zoom_lines(ctx, bx0, bx1, my + mh + 60, ox, ox + ow, big_y, ba * D.fade(t, 9.4, 99, 0.3))
+    sweep = D.ease(min(1.0, max(0.0, (t - 9.6) / 2.6)))
+    lift = D.ease(min(1.0, max(0.0, (t - 12.8) / 1.2)))
+    sy = big_y + (oy - big_y) * lift
+    if t > 9.6:
+        strip_bin(ctx, ox, sy, ow, oh, OVER["slots"], sweep if lift <= 0 else 1.0, D.fade(t, 9.6, 99, 0.3))
+    t = t - ISL_SHIFT
     # --- phase 2: the overview with a scale, and two winning spots
     oa = D.fade(t, 6.2, 99, 0.4)
     if oa > 0:
@@ -544,11 +596,11 @@ def ov_warm(ctx, gctx, t, shot, cm, crop):
 def ov_realworld(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx, 1920, 0.84)
     head2(ctx, "How much warmer is too warm?", t,
-          f"A perfect release, everything else fixed. Warm the board, then replay {ONE['n_winners']} winning drops "
-          f"exactly. How many still win?")
-    dts = np.array(ONE["dT_C"])
-    p = np.array(ONE["wins_again"])
-    base = ONE["base_rate"]
+          f"A perfect release, everything else fixed. Warm the board, then replay {REG['warm_n_winners']} winning drops "
+          f"from across the top, exactly. How many still win?", width=1700)
+    dts = np.array(REG["warm_dT_C"])
+    p = np.array(REG["warm_wins_again"])
+    base = REG["base_rate"]
     gx, gy, gw, gh = 230, 330, 1440, 470
     lx_ = lambda d: gx + gw * (math.log10(d) + 10) / 10.0          # 1e-10 C (left) ... 1 C (right)
     ly_ = lambda v: gy + gh * (1 - v)
@@ -667,7 +719,7 @@ def ov_outro(ctx, gctx, t, shot, cm, crop):
 OVERLAY = dict(hook=ov_hook, deterministic=ov_deterministic, twins=ov_twins, mechanism=ov_mechanism,
                horizon=ov_horizon, crux=ov_crux, islands=ov_islands, warm=ov_warm, realworld=ov_realworld,
                statistics=ov_statistics, outro=ov_outro)
-DARK = {"mechanism": (6.0, 0.5, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 5.0),
+DARK = {"mechanism": (6.0, 0.5, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 0.0),
         "crux": (5.0, 0.6, 0.0), "realworld": (5.0, 0.6, 0.0)}
 
 
