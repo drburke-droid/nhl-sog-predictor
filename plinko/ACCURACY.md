@@ -147,32 +147,58 @@ The plexiglass cover (chips occasionally touch it), out-of-plane wobble, chip we
 between the 10 official chips, pins bent over 40 years, and air. The pin-imperfection term stands in for
 all of them together. The board is treated as perfectly level and symmetric.
 
-## 7. Could perfect aim beat it? (`releasemap.py`, `results/releasemap.*`)
+## 7. Could perfect aim beat it? Chaos on the board (`chaos2.py`, `releasemap.py`)
 
-The question: with a robot's micron accuracy, could you land the $10,000 every time? To test it the board is
-made a perfect, repeatable machine: no pin imperfections, no random restitution, the chip let go at rest with
-no spin. Only the horizontal release point changes.
+The question: find a release point that wins $10,000, then replay it as precisely as you like. Does it win
+again? To test it the board is made a perfect, repeatable machine: no pin imperfections, no random
+restitution, the chip let go at rest with no spin. Only what is named changes.
 
-* **Release map.** 20,001 release points at each of five zooms, across the 9 cm middle drop gap, then 1 mm,
-  10 um, 100 nm and 1 nm windows, each centred on the edge of a winning stretch from the level above. At every
-  zoom the landing slot changes from one sample to the next (the median unbroken stretch is one sample long),
-  and 13 to 25% of points win $10,000. The widest winning stretch in the 10 um window is 2.5 nm; in the 100 nm
-  window, 35 picometres, a third of an atom.
-* **Twin releases** (4,000 pairs on the perfect board): same slot 95% of the time when nudged by one unit of
-  the computer's rounding (1e-16 m), 48% at 1 picometre, 24% at 0.1 nm (about one atom), 17% at 1 nm, 15% at
-  10 nm and 14% at 1 um. Two unrelated chips from the middle share a slot 12% of the time. So the outcome is
-  set by differences far below an atom's width, and the computer's own rounding barely matters (the 95%).
-* **Dead centre sticks.** On the perfect board a chip let go at rest within about 0.12 mm of dead centre
-  lands squarely on the first pin and balances there (backboard friction holds it). The release map marks
-  these as stuck. A real hand always adds some sideways motion or spin, so real chips almost never do this
-  (the tuned model, with hand scatter, sticks about 1% of the time, re-dropped as on the show).
-* **Why so sensitive.** Round pins defocus a trajectory the way a convex mirror spreads light: each impact
-  multiplies a small offset several times over, and a chip makes about 33 impacts. This is the textbook
-  chaotic billiard (the Lorentz gas). It is a property of the geometry, not of this code.
-* **What this leaves out.** The model is a 2D rigid body with a fixed time step; a real board adds pin
-  vibration, chip wear, air currents and the thermal jiggle of atoms (about 10 pm in a solid at room
-  temperature), each larger than the 1 pm the twin test shows to matter. So the answer is no: aim cannot
-  pick the slot, at any precision a machine could reach.
+**Correction to the earlier cut.** The first Blender cut said micron accuracy is "no better than
+random" (twins 1 um apart share a slot 14% of the time, against 12% for unrelated chips). That number is right
+only for releases within 0.5 mm of dead centre, where the chip lands almost on the tip of the first pin, the
+most sensitive spot on the board. Across the whole middle drop gap, replays are far more repeatable. The
+chaos cut uses the numbers below.
+
+* **Replays** (`chaos2.py replay`). 1,200 candidate releases spread over the middle 6 cm; the 60
+  that win are each replayed 300 times with a Gaussian release error of the given size.
+  A fresh drop anywhere in that 6 cm wins 19% of the time. Replays win again:
+  1 cm 23%, 1 mm 21%, 0.1 mm 42%, 10 um 54%, 1 um 57%,
+  100 nm 58%, 10 nm 61%, 1 nm 65%, 0.1 nm (about one atom) 71%,
+  10 pm 77%, 1 pm 82%, 0.1 pm 89%, 10 fm 94%, 1 fm 96%.
+  Better precision always helps, but the misses fall slowly: fitted over 1 fm to 1 nm, the miss chance scales
+  as precision^0.16, so each tenfold gain cuts misses by only
+  1.45 times. This is final-state sensitivity, and the fitted power is what Grebogi,
+  McDonald, Ott and Yorke (1983) call the uncertainty exponent.
+* **Islands and knife edges** (`chaos2.py film`). Probing 201 releases within +-0.1 nm of each winner:
+  58% of winners repeat more than 90% of the time (islands), 27%
+  less than 30% (knife edges). Release maps around one of each (4,001 points per zoom, windows 2 mm, 20 um,
+  200 nm, 2 nm, 20 pm) show the island turning solid gold from 200 nm down, while the knife edge stays mixed
+  (10 to 36% gold) at every zoom down to 20 pm. One win can't tell you which kind you found.
+* **How fast differences grow** (`chaos2.py growth`, 156 twin pairs starting 1 pm apart). While the gap
+  grows from 10 pm to 1 mm it multiplies by about 2.15 per bounce (middle half
+  1.98 to 2.54), doubling every
+  109 ms. A drop has about 36 bounces. Dividing a 1 cm
+  tolerance by that factor per bounce gives the film's "how far ahead" bars (1 mm: 3 bounces, 1 um: 12, 1 nm:
+  21, 1 atom: 24) and the 15 fm needed for a whole drop. These are typical
+  values: islands grow slower, knife edges faster.
+* **The real world** (perfect release, one thing varied). The chip's own thermal motion (equipartition, for a
+  0.25 kg chip: 0.13 nm/s and 2.5 nrad/s at random):
+  67%. A board 0.001 C warmer or cooler (expansion 1e-5 per
+  kelvin, about 20 nm over 2 m, scaled about the board's centre line): 43%; 0.01 C:
+  30%; 0.1 C: 30%; 1 C: 24%. Uniform
+  expansion is a smooth change, so some memory survives even at 1 C.
+* **The earlier release map** (`releasemap.py`, 20,001 points per zoom from the 9 cm gap down to 1 nm, centred
+  on the edge of a winning stretch near dead centre) and **twin test** (4,000 pairs within 0.5 mm of centre)
+  still stand for that region: same slot 95% of the time after a one-unit rounding nudge (so the computer's
+  own rounding barely matters), 48% at 1 pm, 24% at 0.1 nm, 14% at 1 um.
+* **Dead centre sticks.** On the perfect board a chip let go at rest within 0.12 mm of dead centre lands
+  squarely on the first pin and balances there (backboard friction holds it). A real hand always adds some
+  sideways motion or spin, so real chips almost never do this (the tuned model sticks about 1% of the time).
+* **Why so sensitive.** Round pins defocus trajectories the way a convex mirror spreads light, as in the
+  chaotic billiards studied since Sinai. Energy loss at each bounce lets some paths settle into stable
+  channels, which is where the islands come from.
+* **What this leaves out.** A 2D rigid body with a fixed 0.1 ms step; no air, no out-of-plane wobble, no chip
+  wear. The chip mass (0.25 kg) is an estimate; at 0.1 kg the thermal speeds are 1.6 times larger.
 
 ## Sources
 
@@ -185,5 +211,7 @@ no spin. Only the horizontal release point changes.
 * BroBible, "6 pieces of Plinko trivia" (metal pins, plexiglass cover with triangular holes): https://brobible.com/guyism/article/plinko-price-is-right-history/
 * Replica chip listings (5 in diameter, 3/4 in thick): e.g. https://www.amazon.com/Price-Right-Plinko-Chips-diameter/dp/B0D1NHCBFJ
 * CelebHeights, Drew Carey (5 ft 10 in): https://celebheights.com/s/Drew-Carey-1195.html
+* Grebogi, C., McDonald, S. W., Ott, E. and Yorke, J. A. (1983), "Final state sensitivity: an obstruction to predictability", *Physics Letters A* 99(9), 415-418.
+* Lorenz, E. N. (1963), "Deterministic nonperiodic flow", *Journal of the Atmospheric Sciences* 20(2), 130-141 (the 0.506 / 0.506127 rerun is from Lorenz's own account, *The Essence of Chaos*, 1993).
 * Broadcast frames used for measurement: Price Is Right wiki galleries for the 9 Oct 2017, 27 Jan 2023 and
   3 Nov 2026 playings (not redistributed here).

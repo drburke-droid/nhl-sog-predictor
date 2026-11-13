@@ -1,5 +1,10 @@
 # YouTube copy: Plinko, the Blender edition
 
+> **Superseded; don't upload as is.** Its micron segment says micron accuracy is "no better than random" and
+> quotes twins 1 um apart sharing a slot 14% of the time. That holds only for releases within 0.5 mm of dead
+> centre. Across the middle drop gap a replay to 1 um wins again 57% of the time (fresh drop: 19%). Use the
+> chaos cut (`plinko_chaos_YOUTUBE.md`) instead; details in `plinko/ACCURACY.md` section 7.
+
 **Upload `plinko/where_to_drop_a_plinko_chip_blender_2m55s.mp4`:**
 * 2:55, 1920x1080, 30 fps, H.264;
 * rendered in Blender (Cycles), on-screen captions, no narration, no music.

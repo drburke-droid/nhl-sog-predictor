@@ -32,6 +32,7 @@ contestants dropping all over. Drop-position logs would settle it.
 
 | File | What |
 |---|---|
+| `../videos/plinko/plinko_chaos_same_start_different_finish_2m54s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 5,220 frames = 174.0 s. Thumbnails `plinko_chaos_thumb_A/B` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_blender_2m55s.mp4` | The Blender edition: 1920x1080, 30 fps, H.264 High / yuv420p, 5,250 frames = 175.0 s. Thumbnails `plinko_blender_thumb_A/B` (`thumbs3d.py`), stills in `media/stills_blender/` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_3m21s.mp4` | The film: 1920x1080, 30 fps, H.264 High / yuv420p, 6,030 frames = 201.0 s, on-screen captions, no narration |
 | `../videos/plinko/where_to_drop_a_plinko_chip_SHORT_58s.mp4` | Vertical cut, 1080x1920, 1,725 frames = 57.5 s |
@@ -41,6 +42,27 @@ contestants dropping all over. Drop-position logs would settle it.
 | `results/*.json, *.npz` | Every number on screen: transfer matrices, fits, sensitivity, chaos |
 | `data/real_outcomes.json` | The show's results, seasons 44 to 54 (tpirstats.com), plus the 2000 to 2011 tally |
 | `../videos/copy/plinko_YOUTUBE.md` | Titles, description and chapters |
+
+## The chaos cut: "Same start, different finish" (the main film)
+
+A 2:54 film that uses the board to explain chaos. A winning drop is replayed from the same spot, matched to
+the width of an atom, and lands in $500. The film then shows sensitive dependence on initial conditions, why
+round pins make chaos (a gap grows about 2.2 times per bounce), the predictability horizon, and the replay
+experiment. That experiment finds a winning release point and replays it at a given precision: 57% win again
+at 1 micron, 71% at 1 atom, never 100%. It also shows islands and knife edges, why a real board is never the
+same twice, and how a predictable pile emerges from unpredictable drops.
+
+```bash
+python3 chaos2.py all          # growth rate, replay experiment, the film's data (~15 min)
+python3 prepare_chaos.py       # shot list; reuses the Blender plates and chip passes
+CHIPS_ANIM=out/anim3d_chaos blender -b --factory-startup -P blender/render_chips.py -- hook
+python3 composite_chaos.py segments hook deterministic twins mechanism horizon crux islands realworld statistics outro
+python3 composite_chaos.py assemble   # -> out/plinko_chaos.mp4
+python3 thumbs_chaos.py
+```
+
+ACCURACY.md section 7 has every number, and a correction: the first Blender cut said micron accuracy was "no
+better than random", which holds only for releases within 0.5 mm of dead centre.
 
 ## The Blender edition
 
@@ -96,6 +118,7 @@ Seeds are fixed and every chip carries its own random stream, so reruns reproduc
 * `draw.py`, `render.py`: cairo drawing and the frame-by-frame film; everything is computed, nothing is
   footage from the show.
 * `releasemap.py`: could perfect aim pick the slot? Release points scanned from 9 cm down to 1 nm.
+* `chaos2.py`, `prepare_chaos.py`, `composite_chaos.py`, `thumbs_chaos.py`: the chaos cut.
 * `prepare3d.py`, `blender/`, `composite3d.py`: the Blender edition (see above).
 * `web/`: the Drop Lab page (a template plus `build_lab.py`, which fills in geometry and results).
 

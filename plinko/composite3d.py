@@ -25,11 +25,17 @@ OUT = "out"
 FPS = 30
 OW, OH = 1920, 1080
 META = json.load(open(f"{OUT}/anim3d/shots.json"))
-PATHS = np.load(f"{OUT}/anim3d/paths.npz")
+def _load_npz(path):
+    """Read every array now: an open .npz shared by forked workers can return corrupted reads."""
+    with np.load(path) as z:
+        return {k: z[k] for k in z.files}
+
+
+PATHS = _load_npz(f"{OUT}/anim3d/paths.npz")
 STRAT = json.load(open("results/strategy.json"))
 TECH = json.load(open("results/technique.json"))["styles"]
 REAL = json.load(open("data/real_outcomes.json"))
-RMAP = np.load("results/releasemap.npz")
+RMAP = _load_npz("results/releasemap.npz")
 RMAP_J = json.load(open("results/releasemap.json"))
 CHAOS_TBL = [("1 micron", 0.143), ("1 nanometre", 0.170), ("1 atom (0.1 nm)", 0.237), ("1/100 of an atom", 0.476)]
 W, H = B.SLOT_PITCH, B.ROW_SPACING
@@ -119,11 +125,13 @@ def base_frame(shot, fr, t):
     crop = crop_at(shot, t)
     c = shot["cam"]
     img = crop_img(plate(c, "set"), crop)
-    chip_path = f"{OUT}/chips/{shot['name']}/f{fr:04d}.png"
-    static = f"{OUT}/chips/{shot['name']}/static.png"
+    cdir = shot.get("chips_from", shot["name"])       # a later cut can reuse an earlier shot's chip pass
+    frc = fr + shot.get("frame_offset", 0)
+    chip_path = f"{OUT}/chips/{cdir}/f{frc:04d}.png"
+    static = f"{OUT}/chips/{cdir}/static.png"
     if not os.path.exists(chip_path) and os.path.exists(static):
-        fj = json.load(open(f"{OUT}/chips/{shot['name']}/frames.json"))
-        if fr >= fj.get("static_from", 10**9):
+        fj = json.load(open(f"{OUT}/chips/{cdir}/frames.json"))
+        if frc >= fj.get("static_from", 10**9):
             chip_path = static
     if os.path.exists(chip_path):
         ch = cv2.imread(chip_path, cv2.IMREAD_UNCHANGED).astype(np.float32) / 255.0

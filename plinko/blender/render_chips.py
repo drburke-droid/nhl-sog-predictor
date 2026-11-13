@@ -27,8 +27,9 @@ import scene as S  # noqa: E402
 ROOT = os.path.dirname(HERE)
 argv = sys.argv[sys.argv.index("--") + 1:]
 shot_name = argv[0]
-meta = json.load(open(os.path.join(ROOT, "out/anim3d/shots.json")))
-paths = np.load(os.path.join(ROOT, "out/anim3d/paths.npz"))
+ANIM = os.environ.get("CHIPS_ANIM", "out/anim3d")        # which cut's shot list and paths
+meta = json.load(open(os.path.join(ROOT, ANIM, "shots.json")))
+paths = np.load(os.path.join(ROOT, ANIM, "paths.npz"))
 shot = [s for s in meta["shots"] if s["name"] == shot_name][0]
 FPS, HZ = meta["fps"], meta["hz"]
 nframes = int(round(shot["dur"] * FPS))
