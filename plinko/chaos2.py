@@ -7,6 +7,7 @@
     python3 chaos2.py onevar   # perfect release, only the board's temperature changes (one drop's own heat)
     python3 chaos2.py regionmap  # every release point across the top, up to 30 cm above the pins: the slot
     python3 chaos2.py region     # replay, thermal, robustness and warming for winners from anywhere on top
+    python3 chaos2.py square     # a 3.84 cm square of release points above the middle gap, 0.1 mm apart
     python3 chaos2.py all
 
 Everything runs on the perfect board (no pin imperfections, no random restitution) unless a "real-world"
@@ -492,6 +493,27 @@ def region(n_cand=6000, n_win=120, n_rep=300):
                      indent=1))
 
 
+def square_map(n=384):
+    """A square of release points just above the middle gap: the gap's full valid width (3.84 cm) and as high,
+    its bottom row right at the pins (the line the film's strip shows); 0.1 mm per point.
+    results/chaos2_square_map.npz"""
+    xs = B.drop_x(5) - GAP + (np.arange(n) + 0.5) * 2 * GAP / n
+    ys = -2 * GAP + (np.arange(n) + 0.5) * 2 * GAP / n
+    X, Y = np.meshgrid(xs, ys)
+    ok = valid_release(X, Y)
+    assert ok.all(), "every point of the square must be a possible release"
+    init = np.zeros((n * n, 5))
+    init[:, 0], init[:, 1] = X.ravel(), Y.ravel()
+    t0 = time.time()
+    out = np.zeros(n * n, dtype=np.int64)
+    for a in range(0, n * n, 50000):
+        out[a:a + 50000] = run(init[a:a + 50000])
+        print(f"square {min(a + 50000, n * n)}/{n * n} {time.time() - t0:.0f}s", flush=True)
+    sl = out.reshape(n, n).astype(np.int8)
+    np.savez_compressed("results/chaos2_square_map.npz", slots=sl, x=xs - B.drop_x(5), y=ys)
+    print("square: share gold", float((sl == 5).mean()), "bottom row", float((sl[-1] == 5).mean()))
+
+
 if __name__ == "__main__":
     what = sys.argv[1:] or ["all"]
     if "growth" in what or "all" in what:
@@ -508,3 +530,5 @@ if __name__ == "__main__":
         region_map()
     if "region" in what or "all" in what:
         region()
+    if "square" in what or "all" in what:
+        square_map()

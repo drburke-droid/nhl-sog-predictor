@@ -32,13 +32,13 @@ TAIL = 1.2                               # silence kept after a shot's last line
 
 SCRIPT = [
     ("hook", 0.4, "This is Plinko, from The Price Is Right. [p0.5] And this drop wins ten thousand dollars."),
-    ("hook", 6.8, "Now, the same drop again. [p0.4] Same spot, matched to the width of an atom."),
-    ("hook", 12.4, "Same start. [p0.8] Different finish. [p1.1] That's chaos."),
+    ("hook", 6.8, "Now, the same drop again. [p0.4] Same release point, matched to the width of an atom."),
+    ("hook", 12.4, "Same release point. [p0.8] Different finish. [p1.1] That's chaos."),
 
-    ("deterministic", 0.5, "Here's the strange part. [p0.5] There are no dice inside this board. [p0.4] Every bounce "
-                           "follows Newton's laws of motion, [p0.2] so the same start should always give the same "
-                           "finish."),
-    ("deterministic", "+0.6", "If the replay lost, [p0.3] its start can't have been quite the same."),
+    ("deterministic", 0.5, "Here's the strange part. [p0.5] Nothing on this board is random. [p0.4] Every bounce "
+                           "follows Newton's laws of motion, [p0.2] so the same release point should always lead "
+                           "to the same slot."),
+    ("deterministic", "+0.6", "If the replay lost, [p0.3] its release point can't have been quite the same."),
 
     ("twins", 0.4, "Here are two chips, released a thousandth of a millimetre apart. [p0.4] They fall together, "
                    "[p0.3] then split."),
@@ -69,31 +69,34 @@ SCRIPT = [
                           "whole drop, about thirty-six bounces, [p0.2] that's nearly a trillion times."),
     ("mechanism", "+0.7", "Doubling, over and over: [p0.3] that's exponential growth, [p0.3] the engine of chaos."),
 
-    ("horizon", 0.5, "So how far ahead can you see? [p0.5] Know the start to a millimetre, and you can predict "
+    ("horizon", 0.5, "So how far ahead can you see? [p0.5] Know the release point to within a millimetre, and you "
+                     "can predict "
                      "about three bounces. [p0.4] To the width of a single atom, [p0.2] just twenty-four."),
-    ("horizon", "+0.7", "To call a whole drop, [p0.2] you'd need the start to within the size of an atomic "
+    ("horizon", "+0.7", "To call a whole drop, [p0.2] you'd need the release point to within the size of an atomic "
                         "nucleus."),
 
     ("crux", 0.5, "Here's the real test. [p0.5] Find a drop that wins, from anywhere across the top, [p0.3] then "
-                  "replay it from exactly the same spot, as precisely as you like."),
+                  "replay it from exactly the same release point, as precisely as you like."),
     ("crux", "+0.8", "Match it to a micron, and it wins again just sixteen percent of the time, [p0.3] barely more "
                      "than a fresh drop. [p0.5] Match it to a single atom: [p0.3] thirty-nine percent. [p0.4] Still "
                      "worse than a coin flip."),
     ("crux", "+0.8", "More precision always helps. [p0.6] But certainty never arrives."),
 
     ("islands", 0.5, "On the show, you can let go anywhere across the top, [p0.2] at the pins or up to a foot "
-                     "above. [p0.4] Each dot here is one of those spots. [p0.3] The gold ones win."),
-    ("islands", 10.4, "Take one line through the middle, [p0.2] and two winning spots on it. [p0.3] Now zoom in, "
-                      "a hundred times closer with each row."),
-    ("islands", 20.6, "Down to the size of a virus, [p0.2] both look random."),
-    ("islands", 24.6, "Only within a few atoms does spot two turn solid gold: [p0.3] an island. [p0.4] Spot one "
-                      "never settles: [p0.3] a knife edge."),
-    ("islands", "+0.8", "And one win can't tell you which kind you've found."),
+                     "above. [p0.4] Each dot here is one release point. [p0.3] The gold ones win."),
+    ("islands", "+0.8", "Now zoom into one small square, [p0.2] just above the middle of the top row. [p0.4] Even "
+                        "this close, [p0.2] gold and grey are mixed like static."),
+    ("islands", "+0.8", "Take its bottom edge, [p0.2] right at the pins, [p0.3] and pick one release point that wins. "
+                        "[p0.4] Now zoom in on it, [p0.2] a hundred times closer with each row."),
+    ("islands", "+1.0", "Down to the size of a virus, [p0.2] it still looks random."),
+    ("islands", "+1.0", "Only within a few atoms of it [p0.2] does the gold turn solid. [p0.5] Most winning release "
+                        "points never do."),
 
-    ("heat", 0.5, "Now let's make the start perfect, exact to the last atom, [p0.3] and change just one thing: "
+    ("heat", 0.5, "Now let's make the release point perfect, exact to the last atom, [p0.3] and change just one "
+                  "thing: "
                   "[p0.4] the temperature of the board."),
     ("heat", "+0.7", "Where would the heat come from? [p0.4] The chips themselves."),
-    ("heat", "+0.6", "At the top, a chip holds about five joules of energy, just from its height. [p0.3] As it "
+    ("heat", 12.27, "At the top, a chip holds about five joules of energy, just from its height. [p0.3] As it "
                      "falls, that becomes speed. [p0.3] And every time it hits a pin, some of that speed turns "
                      "into heat: [p0.2] in the pin, the board, and the chip."),
     ("heat", "+0.6", "When it stops, [p0.2] all five joules have become heat."),
@@ -103,9 +106,10 @@ SCRIPT = [
     ("heat", "+0.8", "A nanometre is nothing, [p0.3] until the bounces double it, about twenty times over. [p0.4] "
                      "Then it's a centimetre: [p0.3] a different slot."),
 
-    ("warm", 0.4, "So drop the same chip again, from exactly the same spot, on the warmer board. [p0.4] Gold is "
+    ("warm", 0.4, "Now drop the same chip again, on the warmer board. [p0.4] "
+                  "Gold is "
                   "the first drop. [p0.2] Blue is the replay."),
-    ("warm", 8.2, "They fall as one, [p0.3] until the shifted pins catch up with them."),
+    ("warm", "+0.3", "They fall as one, [p0.3] until the shifted pins catch up with them."),
     ("warm", 12.6, "Ten thousand dollars [p0.5] becomes zero."),
 
     ("realworld", 0.5, "Try it with hundreds of winning drops. [p0.3] Warm the board by just a billionth of a "
@@ -300,14 +304,14 @@ def mix():
 def script_md():
     cues = json.load(open(CUES))
     starts, total = shot_starts()
-    names = {"hook": "Same start, different finish", "deterministic": "No dice inside",
+    names = {"hook": "Same release point, different finish", "deterministic": "Nothing on the board is random",
              "twins": "Two chips a thousandth of a millimetre apart", "chaos": "What chaos theory is",
              "mechanism": "Why round pins make chaos", "horizon": "How far ahead can you see?",
              "crux": "Replaying a winning drop", "islands": "Every place you could let go",
-             "heat": "Where the heat comes from", "warm": "Perfect start, one thing changed",
+             "heat": "Where the heat comes from", "warm": "Same drop, warmer board",
              "realworld": "How much warmer is too warm?", "statistics": "One drop vs four hundred",
              "outro": "Deterministic, and unpredictable"}
-    out = ["# Narration: Plinko and chaos (\"Same start, different finish\")", "",
+    out = ["# Narration: Plinko and chaos (\"Same release point, different finish\")", "",
            f"Voice: ElevenLabs \"Lily\" ({VOICE}), model `{MODEL}`. Built by `plinko/narration.py`; each line "
            "starts at the time shown (film time). \"…\" marks a deliberate pause.", ""]
     for shot, (t_shot, dur) in starts.items():

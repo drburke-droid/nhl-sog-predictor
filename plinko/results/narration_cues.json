@@ -21,90 +21,90 @@
    {
     "i": 1,
     "t0": 6.8,
-    "t1": 10.82,
+    "t1": 11.3,
     "path": "out/narration/line_01.wav",
-    "text": "Now, the same drop again. Same spot, matched to the width of an atom.",
+    "text": "Now, the same drop again. Same release point, matched to the width of an atom.",
     "phrases": [
      [
       6.8,
-      8.1
+      8.26
      ],
      [
-      8.5,
-      10.82
+      8.66,
+      11.3
      ]
     ]
    },
    {
     "i": 2,
     "t0": 12.4,
-    "t1": 16.713,
+    "t1": 16.942,
     "path": "out/narration/line_02.wav",
-    "text": "Same start. Different finish. That's chaos.",
+    "text": "Same release point. Different finish. That's chaos.",
     "phrases": [
      [
       12.4,
-      13.143
+      13.44
      ],
      [
-      13.943,
-      14.763
+      14.24,
+      15.036
      ],
      [
-      15.863,
-      16.713
+      16.136,
+      16.942
      ]
     ]
    }
   ],
-  "need": 17.91
+  "need": 18.14
  },
  "deterministic": {
   "lines": [
    {
     "i": 3,
     "t0": 0.5,
-    "t1": 10.54,
+    "t1": 10.596,
     "path": "out/narration/line_03.wav",
-    "text": "Here's the strange part. There are no dice inside this board. Every bounce follows Newton's laws of motion, so the same start should always give the same finish.",
+    "text": "Here's the strange part. Nothing on this board is random. Every bounce follows Newton's laws of motion, so the same release point should always lead to the same slot.",
     "phrases": [
      [
       0.5,
-      1.73
+      1.936
      ],
      [
-      2.23,
-      4.2
+      2.436,
+      4.196
      ],
      [
-      4.6,
-      7.15
+      4.596,
+      7.016
      ],
      [
-      7.35,
-      10.54
+      7.216,
+      10.596
      ]
     ]
    },
    {
     "i": 4,
-    "t0": 11.14,
-    "t1": 14.74,
+    "t0": 11.196,
+    "t1": 15.196,
     "path": "out/narration/line_04.wav",
-    "text": "If the replay lost, its start can't have been quite the same.",
+    "text": "If the replay lost, its release point can't have been quite the same.",
     "phrases": [
      [
-      11.14,
-      12.45
+      11.196,
+      12.516
      ],
      [
-      12.75,
-      14.74
+      12.816,
+      15.196
      ]
     ]
    }
   ],
-  "need": 15.94
+  "need": 16.4
  },
  "twins": {
   "lines": [
@@ -408,56 +408,56 @@
    {
     "i": 19,
     "t0": 0.5,
-    "t1": 10.015,
+    "t1": 10.404,
     "path": "out/narration/line_19.wav",
-    "text": "So how far ahead can you see? Know the start to a millimetre, and you can predict about three bounces. To the width of a single atom, just twenty-four.",
+    "text": "So how far ahead can you see? Know the release point to within a millimetre, and you can predict about three bounces. To the width of a single atom, just twenty-four.",
     "phrases": [
      [
       0.5,
-      2.35
+      2.079
      ],
      [
-      2.85,
-      6.92
+      2.579,
+      7.309
      ],
      [
-      7.32,
-      8.915
+      7.709,
+      9.304
      ],
      [
-      9.115,
-      10.015
+      9.504,
+      10.404
      ]
     ]
    },
    {
     "i": 20,
-    "t0": 10.715,
-    "t1": 15.196,
+    "t0": 11.104,
+    "t1": 16.032,
     "path": "out/narration/line_20.wav",
-    "text": "To call a whole drop, you'd need the start to within the size of an atomic nucleus.",
+    "text": "To call a whole drop, you'd need the release point to within the size of an atomic nucleus.",
     "phrases": [
      [
-      10.715,
-      11.836
+      11.104,
+      12.311
      ],
      [
-      12.036,
-      15.196
+      12.511,
+      16.031
      ]
     ]
    }
   ],
-  "need": 16.4
+  "need": 17.23
  },
  "crux": {
   "lines": [
    {
     "i": 21,
     "t0": 0.5,
-    "t1": 9.51,
+    "t1": 10.34,
     "path": "out/narration/line_21.wav",
-    "text": "Here's the real test. Find a drop that wins, from anywhere across the top, then replay it from exactly the same spot, as precisely as you like.",
+    "text": "Here's the real test. Find a drop that wins, from anywhere across the top, then replay it from exactly the same release point, as precisely as you like.",
     "phrases": [
      [
       0.5,
@@ -465,71 +465,71 @@
      ],
      [
       2.13,
-      4.96
+      5.6
      ],
      [
-      5.26,
-      9.51
+      5.9,
+      10.34
      ]
     ]
    },
    {
     "i": 22,
-    "t0": 10.31,
-    "t1": 21.76,
+    "t0": 11.14,
+    "t1": 22.59,
     "path": "out/narration/line_22.wav",
     "text": "Match it to a micron, and it wins again just sixteen percent of the time, barely more than a fresh drop. Match it to a single atom: thirty-nine percent. Still worse than a coin flip.",
     "phrases": [
      [
-      10.31,
-      14.3
+      11.14,
+      15.13
      ],
      [
-      14.6,
-      16.18
+      15.43,
+      17.01
      ],
      [
-      16.68,
-      18.34
+      17.51,
+      19.17
      ],
      [
-      18.64,
-      19.86
+      19.47,
+      20.69
      ],
      [
-      20.26,
-      21.76
+      21.09,
+      22.59
      ]
     ]
    },
    {
     "i": 23,
-    "t0": 22.56,
-    "t1": 26.27,
+    "t0": 23.39,
+    "t1": 27.1,
     "path": "out/narration/line_23.wav",
     "text": "More precision always helps. But certainty never arrives.",
     "phrases": [
      [
-      22.56,
-      24.0
+      23.39,
+      24.83
      ],
      [
-      24.6,
-      26.27
+      25.43,
+      27.1
      ]
     ]
    }
   ],
-  "need": 27.47
+  "need": 28.3
  },
  "islands": {
   "lines": [
    {
     "i": 24,
     "t0": 0.5,
-    "t1": 9.696,
+    "t1": 9.306,
     "path": "out/narration/line_24.wav",
-    "text": "On the show, you can let go anywhere across the top, at the pins or up to a foot above. Each dot here is one of those spots. The gold ones win.",
+    "text": "On the show, you can let go anywhere across the top, at the pins or up to a foot above. Each dot here is one release point. The gold ones win.",
     "phrases": [
      [
       0.5,
@@ -537,134 +537,150 @@
      ],
      [
       3.486,
-      5.736
+      5.366
      ],
      [
-      6.136,
-      8.276
+      5.766,
+      7.966
      ],
      [
-      8.576,
-      9.696
+      8.266,
+      9.306
      ]
     ]
    },
    {
     "i": 25,
-    "t0": 10.4,
-    "t1": 17.34,
+    "t0": 10.106,
+    "t1": 17.961,
     "path": "out/narration/line_25.wav",
-    "text": "Take one line through the middle, and two winning spots on it. Now zoom in, a hundred times closer with each row.",
+    "text": "Now zoom into one small square, just above the middle of the top row. Even this close, gold and grey are mixed like static.",
     "phrases": [
      [
-      10.4,
-      11.98
+      10.106,
+      11.871
      ],
      [
-      12.18,
-      13.87
+      12.071,
+      14.291
      ],
      [
-      14.17,
-      17.34
+      14.691,
+      15.751
+     ],
+     [
+      15.951,
+      17.961
      ]
     ]
    },
    {
     "i": 26,
-    "t0": 20.6,
-    "t1": 23.349,
+    "t0": 18.761,
+    "t1": 27.323,
     "path": "out/narration/line_26.wav",
-    "text": "Down to the size of a virus, both look random.",
+    "text": "Take its bottom edge, right at the pins, and pick one release point that wins. Now zoom in on it, a hundred times closer with each row.",
     "phrases": [
      [
-      20.6,
-      22.139
+      18.761,
+      19.743
      ],
      [
-      22.339,
-      23.349
+      19.943,
+      20.953
+     ],
+     [
+      21.253,
+      23.563
+     ],
+     [
+      23.963,
+      25.063
+     ],
+     [
+      25.263,
+      27.323
      ]
     ]
    },
    {
     "i": 27,
-    "t0": 24.6,
-    "t1": 32.287,
+    "t0": 28.323,
+    "t1": 31.405,
     "path": "out/narration/line_27.wav",
-    "text": "Only within a few atoms does spot two turn solid gold: an island. Spot one never settles: a knife edge.",
+    "text": "Down to the size of a virus, it still looks random.",
     "phrases": [
      [
-      24.6,
-      28.42
+      28.323,
+      29.816
      ],
      [
-      28.72,
-      29.45
-     ],
-     [
-      29.85,
-      31.057
-     ],
-     [
-      31.357,
-      32.287
+      30.016,
+      31.406
      ]
     ]
    },
    {
     "i": 28,
-    "t0": 33.087,
-    "t1": 35.537,
+    "t0": 32.405,
+    "t1": 37.921,
     "path": "out/narration/line_28.wav",
-    "text": "And one win can't tell you which kind you've found.",
+    "text": "Only within a few atoms of it does the gold turn solid. Most winning release points never do.",
     "phrases": [
      [
-      33.087,
-      35.537
+      32.405,
+      33.891
+     ],
+     [
+      34.091,
+      35.581
+     ],
+     [
+      36.081,
+      37.921
      ]
     ]
    }
   ],
-  "need": 36.74
+  "need": 39.12
  },
  "heat": {
   "lines": [
    {
     "i": 29,
     "t0": 0.5,
-    "t1": 7.9,
+    "t1": 8.021,
     "path": "out/narration/line_29.wav",
-    "text": "Now let's make the start perfect, exact to the last atom, and change just one thing: the temperature of the board.",
+    "text": "Now let's make the release point perfect, exact to the last atom, and change just one thing: the temperature of the board.",
     "phrases": [
      [
       0.5,
-      4.12
+      4.401
      ],
      [
-      4.42,
-      5.94
+      4.701,
+      6.061
      ],
      [
-      6.34,
-      7.9
+      6.461,
+      8.021
      ]
     ]
    },
    {
     "i": 30,
-    "t0": 8.6,
-    "t1": 11.67,
+    "t0": 8.721,
+    "t1": 11.791,
     "path": "out/narration/line_30.wav",
     "text": "Where would the heat come from? The chips themselves.",
     "phrases": [
      [
-      8.6,
-      10.02
+      8.721,
+      10.141
      ],
      [
-      10.42,
-      11.67
+      10.541,
+      11.791
      ]
     ]
    },
@@ -772,38 +788,38 @@
    {
     "i": 35,
     "t0": 0.4,
-    "t1": 7.98,
+    "t1": 6.383,
     "path": "out/narration/line_35.wav",
-    "text": "So drop the same chip again, from exactly the same spot, on the warmer board. Gold is the first drop. Blue is the replay.",
+    "text": "Now drop the same chip again, on the warmer board. Gold is the first drop. Blue is the replay.",
     "phrases": [
      [
       0.4,
-      4.7
+      2.82
      ],
      [
-      5.1,
-      6.4
+      3.22,
+      4.713
      ],
      [
-      6.6,
-      7.98
+      4.913,
+      6.383
      ]
     ]
    },
    {
     "i": 36,
-    "t0": 8.2,
-    "t1": 11.642,
+    "t0": 6.683,
+    "t1": 10.124,
     "path": "out/narration/line_36.wav",
     "text": "They fall as one, until the shifted pins catch up with them.",
     "phrases": [
      [
-      8.2,
-      9.162
+      6.683,
+      7.645
      ],
      [
-      9.462,
-      11.642
+      7.945,
+      10.125
      ]
     ]
    },

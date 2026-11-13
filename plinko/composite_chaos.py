@@ -1,4 +1,4 @@
-"""The chaos-theory cut: "Same start, different finish". Built on composite3d's layers and the Blender plates.
+"""The chaos-theory cut: "Same release point, different finish". Built on composite3d's layers and the Blender plates.
 
     python3 composite_chaos.py still <shot> <t> [...]     # PNG checks -> out/cc_<shot>_<t>.png
     python3 composite_chaos.py segments <shots...> [--workers n]
@@ -95,9 +95,10 @@ def ov_hook(ctx, gctx, t, shot, cm, crop):
     a = D.fade(t, 0.4, 99, 0.5)
     D.text(ctx, "This drop wins $10,000.", LX, 180, 50, D.INK, a, "black")
     a = D.fade(t, cue("hook", 1) - 0.3, 99, 0.5)
-    D.paragraph(ctx, "Now the same drop again: same spot, same everything, matched to the width of an atom.", LX, 262,
+    D.paragraph(ctx, "Now the same drop again: same release point, same everything, matched to the width of an atom.",
+                LX, 262,
                 30, LW - 40, D.INK, a, "medium")
-    for j, (s_, col, y) in enumerate((("Same start.", D.INK, 520), ("Different finish.", D.GOLD, 600),
+    for j, (s_, col, y) in enumerate((("Same release point.", D.INK, 520), ("Different finish.", D.GOLD, 600),
                                       ("That's chaos.", D.INK, 690))):
         a = D.fade(t, cue("hook", 2, j) - 0.1, 99, 0.4)
         if a > 0:
@@ -109,11 +110,13 @@ def ov_deterministic(ctx, gctx, t, shot, cm, crop):
     a = D.fade(t, 0.5, 99, 0.6)
     C.scrim(ctx, 800, 0.6 * a)
     a = D.fade(t, cue("deterministic", 0, 1) - 0.2, 99, 0.6)
-    D.text(ctx, "There are no dice", 90, 420, 58, D.INK, a, "black")
-    D.text(ctx, "inside the board.", 90, 490, 58, D.INK, a, "black")
-    D.paragraph(ctx, "Every bounce follows Newton's laws. The same start must give the same finish.", 92, 560, 28,
+    D.text(ctx, "Nothing on the board", 90, 420, 58, D.INK, a, "black")
+    D.text(ctx, "is random.", 90, 490, 58, D.INK, a, "black")
+    D.paragraph(ctx, "Every bounce follows Newton's laws. The same release point must lead to the same slot.", 92, 560,
+                28,
                 560, D.INK2, D.fade(t, cue("deterministic", 0, 2) - 0.2, 99, 0.5), "medium")
-    D.paragraph(ctx, "So if the replay lost, its start can't have been quite the same.", 92, 660, 28, 560, D.GOLD,
+    D.paragraph(ctx, "So if the replay lost, its release point can't have been quite the same.", 92, 660, 28, 560,
+                D.GOLD,
                 D.fade(t, cue("deterministic", 1) - 0.2, 99, 0.5), "semibold")
 
 
@@ -502,7 +505,7 @@ def ov_mechanism(ctx, gctx, t, shot, cm, crop):
 def ov_horizon(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx, 1920, 0.82)
     head2(ctx, "How far ahead can you see?", t,
-          "Know the chip's start to within this, and you can follow it for about this many bounces.")
+          "Know the release point to within this, and you can follow the chip for about this many bounces.")
     hb = FILM["horizon_bounces"]
     rows = [("1 mm", hb["1 mm"]), ("1 micron", hb["1 um"]), ("1 nanometre", hb["1 nm"]), ("1 atom (0.1 nm)", hb["1 atom"]),
             ("an atomic nucleus", hb["an atomic nucleus"])]
@@ -529,7 +532,7 @@ def ov_horizon(ctx, gctx, t, shot, cm, crop):
         y += 78
     a = D.fade(t, 6.5, 99, 0.5)
     D.paragraph(ctx, f"Every 1,000-fold gain in precision buys only about {math.log(1000) / math.log(FAC):.0f} more "
-                     f"bounces. To call a whole drop you'd need the start to about "
+                     f"bounces. To call a whole drop you'd need the release point to within about "
                      f"{FILM['whole_drop_precision_m'] * 1e15:.0f} femtometres: the size of an atomic nucleus.",
                 LX, 820, 30, 1500, D.INK, a, "medium")
 
@@ -542,8 +545,8 @@ PREC_LABEL = {1e-2: "1 cm", 1e-3: "1 mm", 1e-6: "1 µm", 1e-9: "1 nm", 1e-10: "1
 def ov_crux(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx, 1920, 0.84)
     head2(ctx, "Find a drop that wins. Replay it.", t,
-          "Winning drops from anywhere across the top, each replayed from exactly the same spot, as precisely as "
-          "you like. How often do they win again?", width=1700)
+          "Winning drops from anywhere across the top, each replayed from exactly the same release point, as "
+          "precisely as you like. How often do they win again?", width=1700)
     d = np.array([float(k) for k in REG["position"]])
     p = np.array(list(REG["position"].values()))
     base = REG["base_rate"]
@@ -691,12 +694,45 @@ def region_surface():
     return _MAP["s"]
 
 
-ISL_SHIFT = 7.5          # the strip-and-zoom part starts this much later than in the earlier cut
+
+
+SQ = C._load_npz("results/chaos2_square_map.npz")
+
+
+def slots_surface(key, sl):
+    """A slot grid as a cairo surface, one pixel per release point (cached)."""
+    if key not in _MAP:
+        rgb = np.where((sl == 5)[..., None], np.array(GOLD_C), np.array(GREY_C))
+        buf = np.zeros(sl.shape + (4,), np.uint8)
+        c = (rgb * 255).astype(np.uint8)
+        buf[..., 0], buf[..., 1], buf[..., 2], buf[..., 3] = c[..., 2], c[..., 1], c[..., 0], 255
+        buf[sl < 0] = (20, 15, 13, 255)
+        buf = np.ascontiguousarray(buf)
+        _MAP[key + "_buf"] = buf
+        _MAP[key] = cairo.ImageSurface.create_for_data(memoryview(buf), cairo.FORMAT_ARGB32, sl.shape[1], sl.shape[0])
+    return _MAP[key]
+
+
+def paint_surface(ctx, surf, x, y, w, h, alpha):
+    ctx.save()
+    ctx.rectangle(x, y, w, h)
+    ctx.clip()
+    ctx.translate(x, y)
+    ctx.scale(w / surf.get_width(), h / surf.get_height())
+    ctx.set_source_surface(surf, 0, 0)
+    ctx.get_source().set_filter(cairo.FILTER_NEAREST)
+    ctx.paint_with_alpha(alpha)
+    ctx.restore()
+
+
+def lerp_rect(r0, r1, f):
+    return tuple(a + (b - a) * f for a, b in zip(r0, r1))
 
 
 def ov_islands(ctx, gctx, t, shot, cm, crop):
     GAP = FILM["release_half_range_m"]
     TOP = REG["top_m"]
+    T1, T2, T3, T4 = cue("islands", 1), cue("islands", 2), cue("islands", 3), cue("islands", 4)
     C.scrim(ctx, 1920, 0.84)
     head2(ctx, "Every place you could let go", t,
           "A player can let go anywhere across the top: right at the top pins, or up to 30 cm (12 in) above "
@@ -705,7 +741,7 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
     al = D.fade(t, 0.8, 99, 0.4)
     lx = 1800
     legend = [(GREY_C, "lands anywhere else"), (GOLD_C, "wins $10,000")]
-    if t < 13.4:
+    if t < T1 + 1.6:
         legend.insert(0, ((0.05, 0.06, 0.08), "no room for the chip"))
     for col, name in legend:
         w = D.text_width(ctx, name, 20, "medium")
@@ -718,24 +754,16 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
         ctx.set_line_width(1)
         ctx.stroke()
         lx -= w + 64
-    # --- phase 0: the whole top, as a map of release points
+    # --- 0: the whole top, as a map of release points
     surf = region_surface()
-    mw_i, mh_i = surf.get_width(), surf.get_height()
     mx, my, mw = 120, 300, 1680
-    mh = mw * mh_i / mw_i
+    mh = mw * surf.get_height() / surf.get_width()
     xm = lambda x: mx + mw * (x - 0.5 * W) / (9 * W)               # board x -> map px
-    ma = D.fade(t, 0.8, 99, 0.4) * (1 - D.ease(min(1.0, max(0.0, (t - 12.6) / 1.0))))
+    ym = lambda y: my + mh * (y + TOP) / TOP                       # board y (<= 0 above the pins) -> map px
+    ma = D.fade(t, 0.8, 99, 0.4) * (1 - D.ease(min(1.0, max(0.0, (t - T1 - 0.5) / 1.0))))
     if ma > 0:
         sweep0 = D.ease(min(1.0, max(0.0, (t - 1.0) / 3.5)))
-        ctx.save()
-        ctx.rectangle(mx, my, mw * sweep0, mh)
-        ctx.clip()
-        ctx.translate(mx, my)
-        ctx.scale(mw / mw_i, mh / mh_i)
-        ctx.set_source_surface(surf, 0, 0)
-        ctx.get_source().set_filter(cairo.FILTER_NEAREST)
-        ctx.paint_with_alpha(ma)
-        ctx.restore()
+        paint_surface(ctx, surf, mx, my, mw * sweep0, mh, ma)
         for k in range(1, 9):                                           # the top row of pins
             ctx.new_path()
             ctx.arc(xm((k + 0.5) * W), my + mh, max(3.0, mw * C.B.PEG_DIAMETER / 2 / (9 * W)), 0, 2 * math.pi)
@@ -751,118 +779,118 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
         D.text(ctx, "pins", mx - 10, my + mh, 18, D.INK3, ma, align="right")
         D.text(ctx, "wall", mx, my + mh + 30, 16, D.INK3, ma, align="center")
         D.text(ctx, "wall", mx + mw, my + mh + 30, 16, D.INK3, ma, align="center")
-        pa = ma * (1 - D.ease(min(1.0, max(0.0, (t - 8.3) / 0.5))))
         for k in range(1, 10):
-            D.text(ctx, f"{k}", xm(k * W), my + mh + 30, 20, D.INK2, pa, "semibold", "center")
-        ca = D.fade(t, 4.6, 8.5, 0.4) * ma
+            D.text(ctx, f"{k}", xm(k * W), my + mh + 30, 20, D.INK2, ma, "semibold", "center")
+        ca = D.fade(t, 4.6, T1 - 0.2, 0.4) * ma
         if ca > 0:
             D.paragraph(ctx, f"{100 * MSUM['gold']:.0f}% of all release points win $10,000, sprinkled over the whole "
                              f"top: {100 * MSUM['middle']:.0f}% of the spots over the middle win, "
-                             f"{100 * MSUM['walls']:.0f}% of those by the walls. Up close it's pure speckle: move a "
-                             f"hair, and the prize changes.",
-                        120, 740, 30, 1680, D.INK, ca, "medium")
-    # --- phase 1: one line through it, the middle gap right at the pins, blown up into a strip
-    ox, oy, ow, oh = ov_rect = (120, 262, 1680, 46)
-    big_y = 880
-    bx0, bx1 = xm(5 * W - GAP), xm(5 * W + GAP)
-    ba = D.fade(t, 8.5, 13.4, 0.4)
+                             f"{100 * MSUM['walls']:.0f}% of those by the walls.", 120, 740, 30, 1680, D.INK, ca,
+                        "medium")
+    # --- 1: zoom into one small square, just above the middle gap
+    box = (xm(5 * W - GAP), ym(-2 * GAP), xm(5 * W + GAP) - xm(5 * W - GAP), ym(0.0) - ym(-2 * GAP))
+    big = (735.0, 290.0, 450.0, 450.0)
+    sq_out = 1 - D.ease(min(1.0, max(0.0, (t - T2 - 1.6) / 0.8)))
+    ba = D.fade(t, T1 - 0.1, 99, 0.3) * sq_out
     if ba > 0:
+        z = D.ease(min(1.0, max(0.0, (t - T1 - 0.5) / 1.3)))
+        r = lerp_rect(box, big, z)
+        if z > 0:
+            paint_surface(ctx, region_surface(), r[0], r[1], r[2], r[3], ba * (1 - z) * ma)
+            paint_surface(ctx, slots_surface("square", SQ["slots"]), r[0], r[1], r[2], r[3], ba * min(1.0, 2 * z))
         ctx.new_path()
-        ctx.rectangle(bx0 - 2, my + mh - 6, bx1 - bx0 + 4, 8)
+        ctx.rectangle(*r)
         ctx.set_source_rgba(1, 1, 1, ba)
         ctx.set_line_width(2)
         ctx.stroke()
-        tag(ctx, "one line through it: the middle gap, right at the pins", (bx0 + bx1) / 2, my + mh + 48, 22,
-            D.INK, ba)
-        zoom_lines(ctx, bx0, bx1, my + mh + 60, ox, ox + ow, big_y, ba * D.fade(t, 9.4, 99, 0.3))
-    sweep = D.ease(min(1.0, max(0.0, (t - 9.6) / 2.6)))
-    lift = D.ease(min(1.0, max(0.0, (t - 12.8) / 1.2)))
-    sy = big_y + (oy - big_y) * lift
-    if t > 9.6:
-        strip_bin(ctx, ox, sy, ow, oh, OVER["slots"], sweep if lift <= 0 else 1.0, D.fade(t, 9.6, 99, 0.3))
-    t = t - ISL_SHIFT
-    # --- phase 2: the overview with a scale, and two winning spots
-    oa = D.fade(t, 6.2, 99, 0.4)
-    if oa > 0:
-        xx = ox + ow / 2
-        ctx.move_to(xx, oy + oh)
-        ctx.line_to(xx, oy + oh + 8)
-        ctx.set_source_rgba(*D.INK3, oa)
-        ctx.set_line_width(1.5)
-        ctx.stroke()
-        D.text(ctx, "centre", xx, oy + oh + 28, 18, D.INK3, oa, align="center")
-        D.text(ctx, f"\u2212{100 * GAP:.1f} cm", ox - 10, oy + oh / 2 + 7, 18, D.INK3, oa, align="right")
-        D.text(ctx, f"+{100 * GAP:.1f} cm", ox + ow + 10, oy + oh / 2 + 7, 18, D.INK3, oa)
-    spots = sorted([("knife", FILM["knife_x"]), ("robust", FILM["robust_x"])], key=lambda s: s[1])
-    names = {"knife": "the winning drop from the start", "robust": "another winning drop"}
-    cols = {}
-    colx = {0: (120, 890), 1: (1030, 1800)}
-    for ci, (key, x) in enumerate(spots):
-        cols[key] = ci
-        mx = ox + ow * (x + GAP) / (2 * GAP)
-        a = D.fade(t, 7.0 + 0.6 * ci, 99, 0.4)
-        if a <= 0:
-            continue
-        ctx.move_to(mx, oy - 4)
-        ctx.line_to(mx - 9, oy - 18)
-        ctx.line_to(mx + 9, oy - 18)
+        a1 = D.fade(t, cue("islands", 1, 1), 99, 0.4) * sq_out
+        n_sq = SQ["slots"].shape[0]
+        D.paragraph(ctx, f"A square {200 * GAP:.1f} cm across, just above the middle gap: {n_sq * n_sq:,} release "
+                         f"points, one every {100 * 2 * GAP / n_sq * 10:.1f} mm.", 120, 400, 26, 560, D.INK, a1,
+                    "medium")
+        a2 = D.fade(t, cue("islands", 1, 2) - 0.1, 99, 0.4) * sq_out
+        D.paragraph(ctx, f"Even this close, gold and grey are mixed like static: {100 * float((SQ['slots'] == 5).mean()):.0f}"
+                         f"% gold.", 1240, 400, 26, 560, D.INK, a2, "medium")
+        a3 = D.fade(t, T1 + 1.8, 99, 0.4) * sq_out
+        D.text(ctx, "the top pins are just below this edge", big[0] + big[2] / 2, big[1] + big[3] + 34, 18,
+               D.INK3, a3, align="center")
+    # --- 2: its bottom edge, right at the pins, becomes the strip; pick a winner on it
+    ox, oy, ow, oh = 120, 262, 1680, 46
+    ea = D.fade(t, T2 - 0.1, 99, 0.3)
+    grow = D.ease(min(1.0, max(0.0, (t - T2 - 0.6) / 1.2)))
+    lift = D.ease(min(1.0, max(0.0, (t - cue("islands", 2, 2) + 1.2) / 1.0)))
+    if ea > 0:
+        r0 = (big[0], big[1] + big[3] - 6, big[2], 6)
+        r1 = (ox, 820.0, ow, oh)
+        r = lerp_rect(r0, r1, grow)
+        r = (r[0], r[1] + (oy - 820.0) * lift, r[2], r[3])
+        if grow <= 0:
+            ctx.new_path()
+            ctx.rectangle(r0[0] - 2, r0[1] - 2, r0[2] + 4, r0[3] + 4)
+            ctx.set_source_rgba(1, 1, 1, ea)
+            ctx.set_line_width(2.5)
+            ctx.stroke()
+        else:
+            strip_bin(ctx, r[0], r[1], r[2], r[3], OVER["slots"], 1.0, 1.0)
+        oa = D.fade(t, cue("islands", 2, 2) - 0.2, 99, 0.4)
+        if oa > 0 and lift >= 1.0:
+            D.text(ctx, f"−{100 * GAP:.1f} cm", ox - 10, oy + oh / 2 + 7, 18, D.INK3, oa, align="right")
+            D.text(ctx, f"+{100 * GAP:.1f} cm", ox + ow + 10, oy + oh / 2 + 7, 18, D.INK3, oa)
+            D.text(ctx, "release points right at the pins, across the middle gap", ox + ow / 2, oy + oh + 28, 18,
+                   D.INK3, oa, align="center")
+    # one winning release point on it
+    x_win = FILM["robust_x"]
+    sx = ox + ow * (x_win + GAP) / (2 * GAP)
+    a = D.fade(t, cue("islands", 2, 2), 99, 0.4)
+    if a > 0:
+        ctx.new_path()
+        ctx.move_to(sx, oy - 4)
+        ctx.line_to(sx - 9, oy - 18)
+        ctx.line_to(sx + 9, oy - 18)
         ctx.close_path()
         ctx.set_source_rgba(1, 1, 1, a)
         ctx.fill()
-        tag(ctx, f"Spot {ci + 1}: {names[key]}", mx, oy - 26, 20, D.INK, a)
-    for t0, t1, msg in ((8.0, 12.9, "Both spots win $10,000. Now zoom in on each, a hundredfold at a time."),
-                        (13.3, 15.5, "Down to the size of a virus, both spots look like any random drop: mostly grey."),
-                        (15.9, 20.9, f"Zoom to a few atoms across and spot {cols['robust'] + 1} turns gold. "
-                                     f"Spot {cols['knife'] + 1} never does.")):
-        a = D.fade(t, t0, t1, 0.4)
-        if a > 0:
-            D.paragraph(ctx, msg, 120, 1010, 30, 1680, D.INK, a, "medium")
-    # --- phase 3: zoom ladders, a hundredfold per row
+        tag(ctx, "a winning release point", sx, oy - 26, 20, D.INK, a)
+    # --- 3: one zoom ladder, a hundredfold per row
     rows_y = [372, 484, 596, 708, 820]
-    t_row = [9.0 + 2.2 * k for k in range(5)]
-    for key, x in spots:
-        ci = cols[key]
-        x0c, x1c = colx[ci]
-        cw = x1c - x0c
-        mx = ox + ow * (x + GAP) / (2 * GAP)
-        half0 = 1e-3 / (2 * GAP) * ow                 # the 2 mm window on the overview
-        for k in range(5):
-            if t < t_row[k]:
-                break
-            f = D.ease(min(1.0, (t - t_row[k]) / 0.9))
-            y = rows_y[k]
-            if k == 0:
-                zoom_lines(ctx, mx - half0, mx + half0, oy + oh, x0c + cw / 2 - cw / 2 * f, x0c + cw / 2 + cw / 2 * f,
-                           y, D.fade(t, t_row[k], 99, 0.3))
-            else:
-                yp = rows_y[k - 1] + 40
-                c = x0c + cw / 2
-                zoom_lines(ctx, c - cw * 0.005 - 3, c + cw * 0.005 + 3, yp, c - cw / 2 * f, c + cw / 2 * f, y,
-                           D.fade(t, t_row[k], 99, 0.3))
-            sl = MAPS[f"{key}{k}"]
-            strip_bin(ctx, x0c + cw / 2 - cw / 2 * f, y, cw * f, 40, sl, 1.0, D.fade(t, t_row[k] + 0.3, 99, 0.3))
-            a = D.fade(t, t_row[k] + 0.6, 99, 0.3)
-            ctx.move_to(x0c + cw / 2, y - 6)
-            ctx.line_to(x0c + cw / 2, y + 46)
-            ctx.set_source_rgba(1, 1, 1, 0.9 * a)
-            ctx.set_line_width(1.5)
-            ctx.stroke()
-            D.text(ctx, f"{100 * float((sl == 5).mean()):.0f}% gold", x1c, y + 64, 18, D.INK, a, "semibold", "right")
-            if ci == 0:
-                nm, ref = ISL_LEVELS[k]
-                D.text(ctx, nm, 960, y + 22, 24, D.INK, a, "black", "center")
-                D.text(ctx, ref, 960, y + 46, 15, D.INK3, a, align="center")
-    # --- phase 4: what the two ladders show
-    a = D.fade(t, 21.2, 99, 0.5)
-    if a > 0:
-        for key, title, col in (("robust", "an island, solid gold within a few atoms", GOLD_C),
-                                ("knife", "a knife edge, still mixed at a fifth of an atom", D.S1)):
-            x0c, x1c = colx[cols[key]]
-            tag(ctx, f"Spot {cols[key] + 1}: {title}", (x0c + x1c) / 2, 950, 24, col, a, "black")
-        n_isl = round(100 * REG["share_robust"])
-        D.paragraph(ctx, f"Only {n_isl} in 100 winning spots are islands like spot {cols['robust'] + 1}. "
-                         f"One win can't tell you which kind you found.", 120, 1020, 30, 1680, D.INK,
-                    D.fade(t, 22.5, 99, 0.5), "semibold")
+    R0 = cue("islands", 2, 3)
+    t_row = [R0, R0 + 1.5, T3, T4, cue("islands", 4, 1)]
+    x0c, x1c = 300.0, 1640.0
+    cw = x1c - x0c
+    half0 = 1e-3 / (2 * GAP) * ow                                     # the 2 mm window on the strip
+    for k in range(5):
+        if t < t_row[k]:
+            break
+        f = D.ease(min(1.0, (t - t_row[k]) / 0.9))
+        y = rows_y[k]
+        c = x0c + cw / 2
+        if k == 0:
+            zoom_lines(ctx, sx - half0, sx + half0, oy + oh, c - cw / 2 * f, c + cw / 2 * f, y,
+                       D.fade(t, t_row[k], 99, 0.3))
+        else:
+            zoom_lines(ctx, c - cw * 0.005 - 3, c + cw * 0.005 + 3, rows_y[k - 1] + 40, c - cw / 2 * f,
+                       c + cw / 2 * f, y, D.fade(t, t_row[k], 99, 0.3))
+        sl = MAPS[f"robust{k}"]
+        strip_bin(ctx, c - cw / 2 * f, y, cw * f, 40, sl, 1.0, D.fade(t, t_row[k] + 0.3, 99, 0.3))
+        a = D.fade(t, t_row[k] + 0.6, 99, 0.3)
+        ctx.new_path()
+        ctx.move_to(c, y - 6)
+        ctx.line_to(c, y + 46)
+        ctx.set_source_rgba(1, 1, 1, 0.9 * a)
+        ctx.set_line_width(1.5)
+        ctx.stroke()
+        D.text(ctx, f"{100 * float((sl == 5).mean()):.0f}% gold", 1800, y + 28, 22, D.GOLD if k >= 3 else D.INK, a,
+               "semibold", "right")
+        nm, ref = ISL_LEVELS[k]
+        D.text(ctx, nm, x0c - 20, y + 22, 24, D.INK, a, "black", "right")
+        D.text(ctx, ref, x0c - 20, y + 46, 15, D.INK3, a, align="right")
+    # --- 4: what it shows
+    D.paragraph(ctx, "The gold turns solid only within a few atoms of it.", 120, 960, 30, 1680, D.INK,
+                D.fade(t, cue("islands", 4, 1) + 0.4, 99, 0.5), "semibold")
+    n_isl = round(100 * REG["share_robust"])
+    D.paragraph(ctx, f"Most winning release points never do: only {n_isl} in 100 are solid gold even at the scale "
+                     f"of one atom.", 120, 1015, 30, 1680, D.GOLD, D.fade(t, cue("islands", 4, 2) - 0.1, 99, 0.5),
+                "semibold")
 
 
 # ----------------------------------------------------------------------------------------------- 8 one variable
@@ -920,7 +948,7 @@ def ov_heat(ctx, gctx, t, shot, cm, crop):
     k = int(np.searchsorted(HEAT["tau"], tau_now))
     k = min(k, len(HEAT["tau"]) - 1)
     # titles
-    D.text(ctx, "Make the start perfect.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
+    D.text(ctx, "Make the release point perfect.", LX, 180, 50, D.INK, D.fade(t, 0.3, 99, 0.5), "black")
     D.text(ctx, "Change just one thing:", LX, 244, 50, D.INK, D.fade(t, cue("heat", 0, 1) - 0.2, 99, 0.5),
            "black")
     D.text(ctx, "the board's temperature.", LX, 308, 50, D.GOLD, D.fade(t, cue("heat", 0, 2) - 0.2, 99, 0.5),

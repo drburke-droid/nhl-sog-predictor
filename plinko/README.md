@@ -32,7 +32,7 @@ contestants dropping all over. Drop-position logs would settle it.
 
 | File | What |
 |---|---|
-| `../videos/plinko/plinko_chaos_same_start_different_finish_narrated_6m03s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 10,890 frames = 363.0 s, narrated (ElevenLabs, Lily voice; script `../videos/copy/plinko_chaos_NARRATION.md`). Thumbnails `plinko_chaos_thumb_A/B` |
+| `../videos/plinko/plinko_chaos_same_release_point_different_finish_narrated_6m07s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 11,025 frames = 367.5 s, narrated (ElevenLabs, Lily voice; script `../videos/copy/plinko_chaos_NARRATION.md`). Thumbnails `plinko_chaos_thumb_A/B` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_blender_2m55s.mp4` | The Blender edition: 1920x1080, 30 fps, H.264 High / yuv420p, 5,250 frames = 175.0 s. Thumbnails `plinko_blender_thumb_A/B` (`thumbs3d.py`), stills in `media/stills_blender/` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_3m21s.mp4` | The film: 1920x1080, 30 fps, H.264 High / yuv420p, 6,030 frames = 201.0 s, on-screen captions, no narration |
 | `../videos/plinko/where_to_drop_a_plinko_chip_SHORT_58s.mp4` | Vertical cut, 1080x1920, 1,725 frames = 57.5 s |
@@ -43,17 +43,19 @@ contestants dropping all over. Drop-position logs would settle it.
 | `data/real_outcomes.json` | The show's results, seasons 44 to 54 (tpirstats.com), plus the 2000 to 2011 tally |
 | `../videos/copy/plinko_YOUTUBE.md` | Titles, description and chapters |
 
-## The chaos cut: "Same start, different finish" (the main film)
+## The chaos cut: "Same release point, different finish" (the main film)
 
-A 6:03 film that uses the board to explain chaos. A winning drop is replayed from the same spot, matched to
+A 6:07 film that uses the board to explain chaos. A winning drop is replayed from the same release point, matched to
 the width of an atom, and lands in $500. The film then explains chaos theory (Lorenz's 1961 rerun and the
 butterfly attractor), why round pins make chaos (a flat wall against a round pin) (a gap grows about 2.2 times per bounce), the predictability horizon, and the replay
 experiment. Players may let go anywhere across the top, at the pins or up to 30 cm (12 in) above them, so the
 experiment finds winning release points all over that area and replays each at a given precision:
 16% win again at 1 micron (a fresh drop: 13%), 39% at 1 atom, never 100%. A map of every release
-point across the top narrows to the middle gap at the pins, and a strip there zooms in on two winning spots, a
-hundredfold at a time, to show an island and a knife edge. Then the start is made perfect and only
-the board's temperature changes: one drop's own heat (0.00006 C) sends an exact replay of a $10,000 drop to $0,
+point across the top zooms into a 4 cm square of them (0.1 mm apart), then along its bottom edge at the pins
+to one winning release point, a hundredfold at a time: the gold turns solid only within a few atoms. Then the
+release point is made perfect and only the board's temperature changes: the film follows one chip's 5 joules
+from height to speed to heat at each pin, the board warming 0.00006 C and growing about a nanometre, and an
+exact replay of a $10,000 drop on that warmer board landing in $0,
 and a sweep from a ten-billionth of a degree to 1 degree shows how fast replays stop winning;
 and how a predictable pile emerges from unpredictable drops. Releases are drawn only from where the chip can
 physically be let go (its centre within +-1.92 cm of the gap centre); an earlier 2:54 cut drew them from +-3 cm

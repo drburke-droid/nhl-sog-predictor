@@ -193,6 +193,11 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   winning). On this perfect board a release at rest carries little aim past the first few pins; the
   where-to-drop results (sections 4 and 5) come from the tuned model with real hands, where the middle's edge
   is also modest.
+* **The square** (`chaos2.py square`, the film's zoom). 384 x 384 release points 0.1 mm apart, filling a
+  square the full valid width of the middle gap (3.84 cm) and as tall, its bottom row right at the top pins:
+  14.9% win $10,000 (11.7% along that bottom row), mixed like static at this scale too. The film then follows
+  that bottom row as the strip, and zooms into one winning release point (the most robust of the middle-gap
+  winners, at +1.05 cm) a hundredfold per row; the knife-edge ladder of earlier cuts is no longer shown.
 * **Replays, whole top** (`chaos2.py region`; the film's replay and temperature charts). 6,000 releases spread uniformly over the
   area: a fresh drop wins 13%. The first 120 winners are each replayed 300 times with a random
   release error of the given size in both directions (a replay that would start inside a pin or wall is
