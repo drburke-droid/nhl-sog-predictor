@@ -147,6 +147,13 @@ The plexiglass cover (chips occasionally touch it), out-of-plane wobble, chip we
 between the 10 official chips, pins bent over 40 years, and air. The pin-imperfection term stands in for
 all of them together. The board is treated as perfectly level and symmetric.
 
+**Hand releases past the top pins.** The hand-placement scatter (1 cm) puts 5.4% of simulated releases
+further from the gap centre than the chip can physically fit (+-1.92 cm), where it starts overlapping a top
+pin and is pushed out. Clipping those releases to the edge of the gap and re-running the same 40,000 drops
+changes the middle's average by $4 ($1,822 to $1,817) and the edge's by $5 ($1,644 to $1,639), and the middle's
+$10,000 chance from 14.25% to 14.20%. That is far inside the noise, so the strategy results stand; the chaos
+experiments in section 7 use only valid releases.
+
 ## 7. Could perfect aim beat it? Chaos on the board (`chaos2.py`, `releasemap.py`)
 
 The question: find a release point that wins $10,000, then replay it as precisely as you like. Does it win
