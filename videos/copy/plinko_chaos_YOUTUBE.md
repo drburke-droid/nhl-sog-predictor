@@ -1,8 +1,8 @@
 # YouTube copy: Plinko and chaos ("Same start, different finish")
 
-**Upload `plinko/plinko_chaos_same_start_different_finish_3m30s.mp4`:**
-* 3:30, 1920x1080, 30 fps, H.264; rendered in Blender (Cycles) and composited in code;
-* on-screen captions, no narration, no music.
+**Upload `plinko/plinko_chaos_same_start_different_finish_narrated_3m30s.mp4`:**
+* 3:30, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
+* narrated (ElevenLabs, "Lily" voice; script in `plinko_chaos_NARRATION.md`), on-screen captions, no music.
 
 This is the main Plinko upload. It replaces the 2:54 chaos cut, whose replay numbers were inflated by
 simulated releases the chip can't physically make (see `plinko/ACCURACY.md` section 7).
