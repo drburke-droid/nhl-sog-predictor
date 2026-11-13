@@ -412,6 +412,17 @@ def region_map(nx=1680):
     np.savez_compressed("results/chaos2_region_map.npz", slots=slots, x=xs, y=ys)
     print("map: share gold", float((slots == 5).sum() / ok.sum()), "stuck", float((slots == 0).sum() / ok.sum()))
 
+    def band(ks):
+        c = np.zeros_like(xs, bool)
+        for k in ks:
+            c |= (xs >= (k - 0.5) * W) & (xs < (k + 0.5) * W)
+        sub = slots[:, c]
+        return float((sub[sub >= 0] == 5).mean())
+    summ = dict(gold=float((slots == 5).sum() / ok.sum()), middle=band([5]), walls=band([1, 9]),
+                stuck=float((slots == 0).sum() / ok.sum()), n_points=int(ok.sum()))
+    json.dump(summ, open("results/chaos2_region_map_summary.json", "w"), indent=1)
+    print(summ)
+
 
 def region(n_cand=6000, n_win=120, n_rep=300):
     """The replay experiment, the chip's thermal motion, how robust winners are, and the board-warming sweep,

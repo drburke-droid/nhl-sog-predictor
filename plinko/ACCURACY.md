@@ -180,6 +180,14 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   centres between the walls (less a chip radius), from the top pins' centre line up to 30.48 cm above, and not
   overlapping a top pin. Releases are at rest. The bullets below marked "middle gap" use only the line through
   the middle gap at the pins (+-1.92 cm), which is one slice of that area.
+* **The whole-top release map** (`chaos2.py regionmap`, the film's map). Every point of a 0.95 mm grid over that
+  area (425,250 valid release points) dropped on the perfect board: 12.9% win $10,000, sprinkled
+  over the whole top rather than gathered in the middle: 14.7% of the points over the middle
+  (within half a pitch of position 5) win, 11.4% of those over positions 1 and 9. Height above the pins
+  barely matters (11% to 15% in every band from 0 to 30 cm). 0.9% balance on a pin (counted as not
+  winning). On this perfect board a release at rest carries little aim past the first few pins; the
+  where-to-drop results (sections 4 and 5) come from the tuned model with real hands, where the middle's edge
+  is also modest.
 * **Replays, whole top** (`chaos2.py region`; the film's replay and temperature charts). 6,000 releases spread uniformly over the
   area: a fresh drop wins 13%. The first 120 winners are each replayed 300 times with a random
   release error of the given size in both directions (a replay that would start inside a pin or wall is

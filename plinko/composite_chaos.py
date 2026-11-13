@@ -28,7 +28,8 @@ REP = json.load(open("results/chaos2_replay.json"))
 FILM = json.load(open("results/chaos2_film.json"))
 EXTRA = json.load(open("results/chaos2_extra.json"))
 MAPS = C._load_npz("results/chaos2_maps.npz")
-REG = json.load(open("results/chaos2_region.json")) if os.path.exists("results/chaos2_region.json") else None
+REG = json.load(open("results/chaos2_region.json"))
+MSUM = json.load(open("results/chaos2_region_map_summary.json"))
 ONE = json.load(open("results/chaos2_onevar.json"))
 W = C.W
 LX, LW = C.LX, C.LW
@@ -382,13 +383,19 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
           "anywhere else.", y=110, size=48, width=1700)
     al = D.fade(t, 0.8, 99, 0.4)
     lx = 1800
-    for col, name in ((GREY_C, "lands anywhere else"), (GOLD_C, "wins $10,000")):
+    legend = [(GREY_C, "lands anywhere else"), (GOLD_C, "wins $10,000")]
+    if t < 13.4:
+        legend.insert(0, ((0.05, 0.06, 0.08), "no room for the chip"))
+    for col, name in legend:
         w = D.text_width(ctx, name, 20, "medium")
         D.text(ctx, name, lx, 104, 20, D.INK2, al, "medium", "right")
         ctx.new_path()
         ctx.rectangle(lx - w - 28, 88, 18, 18)
         ctx.set_source_rgba(*col, al)
-        ctx.fill()
+        ctx.fill_preserve()
+        ctx.set_source_rgba(1, 1, 1, 0.35 * al)
+        ctx.set_line_width(1)
+        ctx.stroke()
         lx -= w + 64
     # --- phase 0: the whole top, as a map of release points
     surf = region_surface()
@@ -426,12 +433,13 @@ def ov_islands(ctx, gctx, t, shot, cm, crop):
         pa = ma * (1 - D.ease(min(1.0, max(0.0, (t - 8.3) / 0.5))))
         for k in range(1, 10):
             D.text(ctx, f"{k}", xm(k * W), my + mh + 30, 20, D.INK2, pa, "semibold", "center")
-        D.text(ctx, "drop position", xm(1 * W) - 26, my + mh + 30, 16, D.INK3, pa, align="right")
-        ca = D.fade(t, 5.0, 12.4, 0.5) * ma
+        ca = D.fade(t, 4.6, 8.5, 0.4) * ma
         if ca > 0:
-            D.paragraph(ctx, f"{100 * _MAP['gold']:.0f}% of all release points win $10,000. Gold gathers over the "
-                             f"middle, but even there it is speckled with grey: move a hair, and the prize "
-                             f"changes.", 120, 740, 30, 1680, D.INK, ca, "medium")
+            D.paragraph(ctx, f"{100 * MSUM['gold']:.0f}% of all release points win $10,000, sprinkled over the whole "
+                             f"top: {100 * MSUM['middle']:.0f}% of the spots over the middle win, "
+                             f"{100 * MSUM['walls']:.0f}% of those by the walls. Up close it's pure speckle: move a "
+                             f"hair, and the prize changes.",
+                        120, 740, 30, 1680, D.INK, ca, "medium")
     # --- phase 1: one line through it, the middle gap right at the pins, blown up into a strip
     ox, oy, ow, oh = ov_rect = (120, 262, 1680, 46)
     big_y = 880
