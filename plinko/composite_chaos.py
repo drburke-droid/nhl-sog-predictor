@@ -115,7 +115,7 @@ def ov_deterministic(ctx, gctx, t, shot, cm, crop):
     D.paragraph(ctx, "Every bounce follows Newton's laws. The same release point must lead to the same slot.", 92, 560,
                 28,
                 560, D.INK2, D.fade(t, cue("deterministic", 0, 2) - 0.2, 99, 0.5), "medium")
-    D.paragraph(ctx, "So if the replay lost, its release point can't have been quite the same.", 92, 660, 28, 560,
+    D.paragraph(ctx, "So if the replay lost, its release point can't have been quite the same.", 92, 700, 28, 560,
                 D.GOLD,
                 D.fade(t, cue("deterministic", 1) - 0.2, 99, 0.5), "semibold")
 
@@ -714,6 +714,8 @@ def slots_surface(key, sl):
 
 
 def paint_surface(ctx, surf, x, y, w, h, alpha):
+    if w < 1 or h < 1 or alpha <= 0:
+        return
     ctx.save()
     ctx.rectangle(x, y, w, h)
     ctx.clip()
@@ -1271,6 +1273,39 @@ def write_shot(args):
     return path
 
 
+def write_chunk(args):
+    name, f0, f1, path = args
+    shot = shot_by_name(name)
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{OW}x{OH}", "-r",
+           str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
+           "-profile:v", "high", path]
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    for fr in range(f0, f1 + 1):
+        p.stdin.write((render(shot, fr) * 255 + 0.5).astype(np.uint8).tobytes())
+    p.stdin.close()
+    p.wait()
+    return path
+
+
+def segment_split(name, workers=3):
+    """One shot rendered in `workers` parallel chunks, joined without re-encoding."""
+    i = [s["name"] for s in META["shots"]].index(name)
+    n = int(round(shot_by_name(name)["dur"] * FPS))
+    edges = np.linspace(0, n, workers + 1).astype(int)
+    jobs = [(name, edges[k] + 1, edges[k + 1], f"{OUT}/cc_part_{name}_{k}.mp4") for k in range(workers)]
+    with Pool(workers) as pool:
+        parts = pool.map(write_chunk, jobs)
+    lst = f"{OUT}/cc_part_{name}.txt"
+    with open(lst, "w") as f:
+        for q in parts:
+            f.write(f"file '{os.path.basename(q)}'\n")
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy",
+                    seg_path(i, name)], check=True)
+    for q in parts:
+        os.remove(q)
+    print("wrote", seg_path(i, name))
+
+
 def seg_path(i, name):
     return f"{OUT}/cc_seg_{i:02d}_{name}.mp4"
 
@@ -1302,5 +1337,7 @@ if __name__ == "__main__":
     elif a[0] == "segments":
         names = [x for x in a[1:] if not x.startswith("--") and not x.isdigit()]
         segments(names, int(a[a.index("--workers") + 1]) if "--workers" in a else 2)
+    elif a[0] == "split":
+        segment_split(a[1], int(a[a.index("--workers") + 1]) if "--workers" in a else 3)
     elif a[0] == "assemble":
         assemble()
