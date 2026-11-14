@@ -4,36 +4,51 @@
 * 6:07, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
 * narrated (ElevenLabs, "Lily" voice; script in `plinko_chaos_NARRATION.md`), on-screen captions, no music.
 
-This is the main Plinko upload. It replaces the 2:54 chaos cut, whose replay numbers were inflated by
-simulated releases the chip can't physically make (see `plinko/ACCURACY.md` section 7).
+This is the main Plinko upload. It replaces every earlier chaos cut (the 2:54 cut's replay numbers were inflated
+by simulated releases the chip can't physically make; see `plinko/ACCURACY.md` section 7).
 
-**Titles.**
+## Thumbnails
 
-| | Title |
-|---|---|
-| A | Same Drop, Different Prize: Chaos Theory on a Plinko Board |
-| B | Could You Win Plinko Twice With Atomic Precision? |
-| C | Why the Same Plinko Drop Doesn't Win Twice |
+In `plinko/thumbnails/`, 1280x720, built from the film's own frames (`plinko/thumbs_chaos.py`). Upload all three
+to YouTube's thumbnail test, or pair each with its title below.
 
-**Description**
+| | Thumbnail | Shows | Pairs with |
+|---|---|---|---|
+| A | `plinko_chaos_thumb_A.png` | "Same release point. Different prize." The hook's drop and its replay, $10,000 and $500 | Title A |
+| B | `plinko_chaos_thumb_B.png` | "Matched to an atom. Still missed." Same frame | Title B |
+| C | `plinko_chaos_thumb_C.png` | "0.00006 °C warmer: $10,000 became $0." The warm-board pair, $10,000 and $0 | Title D |
+
+## Titles
+
+| | Title | Length |
+|---|---|---|
+| A | Same Drop, Different Prize: Chaos Theory on a Plinko Board | 58 |
+| B | Could You Win Plinko Twice With Atomic Precision? | 49 |
+| C | Why You Can't Repeat a Winning Plinko Drop | 42 |
+| D | How 0.00006 °C Turns a $10,000 Plinko Drop Into $0 | 50 |
+| E | Plinko Is Chaos Theory: The Butterfly Effect on The Price Is Right | 66 |
+
+Recommended: A with thumbnail A. All are true to the film: the replay that "doesn't repeat" wins again
+39% of the time at atomic precision, never every time.
+
+## Description
 
 ```
-Here's a Plinko drop that wins $10,000. Drop it again from the same release point, matched to the width of an atom, and it lands in $500.
+This Plinko drop wins $10,000. Drop it again from the same release point, matched to the width of an atom, and it lands in $500. That's chaos.
 
-Nothing on the board is random. Every bounce follows Newton's laws, so the same release point should always lead to the same slot. Plinko shows why that's not enough: it is chaotic.
+Plinko, from The Price Is Right, is a perfect machine for chaos theory. Nothing on the board is random: every bounce follows Newton's laws, so the same release point should always lead to the same slot. It doesn't, and this film shows why.
 
-Chaos theory studies systems like this: exact rules, no randomness, yet no long-range prediction. It began in 1961, when Edward Lorenz reran a weather simulation from a rounded number (0.506 instead of 0.506127) and got a completely different forecast: sensitive dependence on initial conditions, the butterfly effect.
+Chaos theory studies systems like this: exact rules, no randomness, yet no long-range prediction. It began in 1961, when the meteorologist Edward Lorenz repeated a weather simulation from a rounded number (0.506 instead of 0.506127, about 1 part in 4,000) and two months into the simulated weather the forecasts had nothing in common: sensitive dependence on initial conditions, the butterfly effect.
 
-On a Plinko board the culprit is the round pins. A flat wall faces the same way everywhere, so two chips a hair apart leave a hair apart. A round pin faces a slightly different way at every spot, so two chips that hit it a hair apart bounce off in different directions, and the next pin widens the gap again: about 2.2 times per bounce, doubling every tenth of a second.
+On a Plinko board, the culprit is the round pins. A flat wall faces the same way everywhere, so two chips a hair apart bounce off a hair apart. A round pin faces a slightly different way at every spot, so two chips that hit it a hair apart bounce off in different directions, and the next pin widens the gap again: about 2.2 times per bounce, doubling every tenth of a second, nearly a trillion times over a whole drop.
 
-I measured the board from broadcast frames, rebuilt it in a physics engine and in Blender, and ran the experiment: find a release point that wins, then replay it as precisely as you like.
+I measured the board from broadcast frames, rebuilt it in a physics simulator and in Blender, and ran the experiment: find a release point that wins, then replay it as precisely as you like.
 
-- A player can let go anywhere across the top, at the pins or up to 30 cm (12 in) above them. Find winning drops from all over that area and replay each from exactly the same release point.
-- Replayed to within a micron, a winner wins again 16% of the time, barely better than a fresh drop (13%).
-- Replayed to within an atom: 39%. Better odds, still worse than a coin flip, never a sure thing.
-- Below a nanometre, each tenfold gain in precision removes only about 35% of the remaining misses. Even a hundred-thousandth of an atom misses 1 time in 22.
-- Why: zoom into the map of release points, first a square 4 cm across, then a single winning release point, a hundred times closer with each step. At any scale a hand could control, it looks like static. The gold turns solid only within a few atoms of it, and most winning release points never do (only 13 in 100 are solid gold even at the scale of one atom).
-- Make the release point perfect and change just one thing: the board's temperature. Where would the heat come from? The chips themselves. A chip at the top holds about 5 joules from its height; as it falls that becomes speed, and every hit on a pin turns some of it into heat, until all 5 joules are heat. Spread through the board, that's 0.00006 C warmer, and warm wood and steel expand: the board grows about a nanometre, the width of ten atoms. Doubled by about twenty bounces, a nanometre becomes a centimetre: a different slot. Replayed exactly on a board that much warmer, winning drops win again only 39% of the time; even a billionth of a degree spoils 6 replays in 100.
+- A player can let go anywhere across the top, at the pins or up to 30 cm (12 in) above them. Of all those release points, 13% win $10,000.
+- Replayed to within a micron, a winning drop wins again 16% of the time: barely better than a fresh drop.
+- Replayed to within an atom: 39%. Still worse than a coin flip. Even at a hundred-thousandth of an atom, 1 replay in 22 misses.
+- Zoom into the release points: at every scale a hand could control, gold and grey are mixed like static. Around one winning release point the gold turns solid only within a few atoms, and most winning release points never turn solid at all.
+- Then make the release point perfect and change just one thing: the board's temperature. A chip at the top holds about 5 joules of energy from its height. As it falls that becomes speed, and every hit on a pin turns some of it into heat, until all 5 joules are heat. Spread through the board, that's 0.00006 °C warmer, and warm wood and steel expand: the board grows about a nanometre, the width of ten atoms. Doubled by about twenty bounces, a nanometre becomes a centimetre: a different slot. On a board warmed by one drop, winning drops win again only 39% of the time. Even a billionth of a degree spoils 6 replays in 100.
 
 One drop can't be predicted. Four hundred can, and the pile they make is why the middle still pays best.
 
@@ -51,10 +66,21 @@ One drop can't be predicted. Four hundred can, and the pile they make is why the
 5:31 One drop vs four hundred
 5:55 Deterministic, and unpredictable
 
-How it's made: the board is built in Blender from measurements of the TV board; every chip path comes from the simulator. Show results from tpirstats.com (seasons 44 to 54). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
+How it's made: the board is built in Blender from measurements of the TV board, and every chip path comes from a 2D rigid-body simulator tuned to 1,029 real chips from the show (tpirstats.com, seasons 44 to 54). Narration: ElevenLabs ("Lily"). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
 
-Independent analysis; not affiliated with the show or the network. The board is a measured replica without the show's branding.
+Independent analysis; not affiliated with The Price Is Right, its producers or the network. The board is a measured replica without the show's branding.
+
+#chaostheory #plinko #physics
 ```
 
-**Tags:** chaos theory, butterfly effect, plinko, price is right, physics simulation, blender, sensitive
-dependence on initial conditions, deterministic chaos, lyapunov exponent
+## Tags
+
+chaos theory, butterfly effect, plinko, price is right, plinko physics, lorenz attractor, edward lorenz,
+sensitive dependence on initial conditions, deterministic chaos, exponential growth, lyapunov exponent,
+thermal expansion, physics simulation, blender
+
+## Pinned comment (optional)
+
+```
+Which would you rather have: aim accurate to a single atom, or a board held to a billionth of a degree? Neither gets you to 100%. (Chapters and every number are in the description.)
+```

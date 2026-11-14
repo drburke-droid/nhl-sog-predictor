@@ -32,7 +32,7 @@ contestants dropping all over. Drop-position logs would settle it.
 
 | File | What |
 |---|---|
-| `../videos/plinko/plinko_chaos_same_release_point_different_finish_narrated_6m07s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 11,025 frames = 367.5 s, narrated (ElevenLabs, Lily voice; script `../videos/copy/plinko_chaos_NARRATION.md`). Thumbnails `plinko_chaos_thumb_A/B` |
+| `../videos/plinko/plinko_chaos_same_release_point_different_finish_narrated_6m07s.mp4` | **The chaos cut (main film)**: 1920x1080, 30 fps, H.264, 11,025 frames = 367.5 s, narrated (ElevenLabs, Lily voice; script `../videos/copy/plinko_chaos_NARRATION.md`). Thumbnails `plinko_chaos_thumb_A/B/C` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_blender_2m55s.mp4` | The Blender edition: 1920x1080, 30 fps, H.264 High / yuv420p, 5,250 frames = 175.0 s. Thumbnails `plinko_blender_thumb_A/B` (`thumbs3d.py`), stills in `media/stills_blender/` |
 | `../videos/plinko/where_to_drop_a_plinko_chip_3m21s.mp4` | The film: 1920x1080, 30 fps, H.264 High / yuv420p, 6,030 frames = 201.0 s, on-screen captions, no narration |
 | `../videos/plinko/where_to_drop_a_plinko_chip_SHORT_58s.mp4` | Vertical cut, 1080x1920, 1,725 frames = 57.5 s |
