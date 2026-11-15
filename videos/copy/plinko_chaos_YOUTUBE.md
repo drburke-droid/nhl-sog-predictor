@@ -1,7 +1,7 @@
 # YouTube copy: Plinko and chaos ("Same release point, different finish")
 
-**Upload `plinko/plinko_chaos_same_release_point_different_finish_narrated_6m20s.mp4`:**
-* 6:20, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
+**Upload `plinko/plinko_chaos_same_release_point_different_finish_narrated_6m15s.mp4`:**
+* 6:15, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
 * narrated (ElevenLabs, "Lily" voice; script in `plinko_chaos_NARRATION.md`), on-screen captions, no music.
 
 This is the main Plinko upload. It replaces every earlier chaos cut (the 2:54 cut's replay numbers were inflated
@@ -22,13 +22,15 @@ The natural pairs are A1, B1 and C2, where the picture shows exactly what the te
 story on a photo of a real board (the official home game): the drop and its replay for A3 and B3, the warm-board
 pair for C3, drawn on that board's own pegs. C2 and C3 mark where the two paths part with a ring; C3 uses another
 pair from the same experiment that also lands in $0 but parts earlier and swings up to 54 cm apart, so the split
-reads at thumbnail size. Suggested test: A3, A1 and C2.
+reads at thumbnail size. Column 1 and 2 thumbnails show the film's own board and need no credit; suggested test:
+A1, B1 and C2. 
 
-The film opens on that photo, so the description above already credits it. **If you also use a thumbnail from
-column 3**, add this line too (those thumbnails adapt the photo and so are themselves CC BY-SA 4.0):
+**If you use a thumbnail from column 3**, add this line to the end of the description (the photo's licence requires
+the credit, and those thumbnails, as adaptations of it, are themselves CC BY-SA 4.0). The film itself does not use
+the photo.
 
 ```
-Thumbnail adapted from that photo, also CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+Thumbnail photo: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg). Thumbnail adapted from it, also CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
 ```
 
 Other free Plinko photos on Commons (a library event, a county fair, a state agency booth) are homemade boards with
@@ -69,22 +71,20 @@ I measured the board from broadcast frames, rebuilt it in a physics simulator an
 One drop can't be predicted. Four hundred can, and the pile they make is why the middle still pays best.
 
 0:00 Same release point, different finish
-0:23 Our rebuild, and why nothing on it is random
-0:48 Two chips a thousandth of a millimetre apart
-1:05 What is chaos theory? Lorenz and the butterfly effect
-1:58 Why round pins make chaos
-2:45 How far ahead can you see?
-3:03 Replaying a winning drop
-3:32 Every place you could let go
-4:12 Where the heat comes from: one chip's energy
-5:06 Same drop, warmer board
-5:23 How much warmer is too warm?
-5:43 One drop vs four hundred
-6:07 Deterministic, and unpredictable
+0:18 Our rebuild, and why nothing on it is random
+0:43 Two chips a thousandth of a millimetre apart
+1:00 What is chaos theory? Lorenz and the butterfly effect
+1:53 Why round pins make chaos
+2:41 How far ahead can you see?
+2:59 Replaying a winning drop
+3:28 Every place you could let go
+4:07 Where the heat comes from: one chip's energy
+5:02 Same drop, warmer board
+5:19 How much warmer is too warm?
+5:39 One drop vs four hundred
+6:03 Deterministic, and unpredictable
 
 How it's made: the board is built in Blender from measurements of the TV board, and every chip path comes from a 2D rigid-body simulator tuned to 1,029 real chips from the show (tpirstats.com, seasons 44 to 54). Narration: ElevenLabs ("Lily"). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
-
-Opening photo of a real Plinko board: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg).
 
 Independent analysis; not affiliated with The Price Is Right, its producers or the network. The simulated board is a measured replica of the TV board, in a 1970s palette, without the show's branding.
 

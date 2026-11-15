@@ -40,11 +40,11 @@ def main():
     T_warm = float(w["win"][-1, 0])
     d_det, d_out = need("deterministic", 11.0), need("outro", 10.0)
     shots = [
-        dict(name="real", cam="front", dur=need("real", 3.0), crop=front, chips_from="none", chips=[]),
         dict(name="hook", cam="front", dur=need("hook", 17.0), crop=front, hold_chips=True,
              chips=[dict(path="hook_win", t0=1.0, appear=0.3, hold=True, linger=99, face="chip_face"),
                     dict(path="hook_replay", t0=7.2, appear=6.7, hold=True, linger=99, face="chip_blue_face")]),
-        dict(name="rebuild", cam="front", dur=need("rebuild", 6.0), crop=front, chips_from="none", chips=[]),
+        dict(name="rebuild", cam="hero", dur=need("rebuild", 6.0), crop=[[0, 1.0, 0.50, 0.50], [8.0, 0.92, 0.46, 0.49]],
+             chips_from="none", chips=[]),
         dict(name="deterministic", cam="hero", dur=d_det, chips_from="open", hold_chips=True,
              crop=[[0, 1.0, 0.50, 0.50], [11.0, 0.80, 0.40, 0.47]], chips=[]),      # as its chip pass
         dict(name="twins", cam="front", dur=need("twins", 14.0), crop=front, chips_from="twins", hold_chips=True,
