@@ -41,8 +41,7 @@ which matches the one hobby source that gives a figure for the TV board.
 Prize values. On the show the values sit under the slots with their digits stacked top to bottom (1/0/0 for
 $100, 10/0/0/0 for $10,000), in a tall panel. The Blender board copies that layout, unbranded: a 50 cm panel
 with 10 cm digits in a rounded 1970s face (Righteous, SIL Open Font License, `blender/assets/fonts`) on coloured
-columns, and slanted coloured bands on the side frames, a palette taken from the official home game (the photo
-in `videos/plinko/thumbnails/sources`); the $10,000 column is gold, the film's colour for it. Colours and fonts are styling only:
+columns, and slanted coloured bands on the side frames, a palette inspired by the official home game; the $10,000 column is gold, the film's colour for it. Colours and fonts are styling only:
 geometry is unchanged. The LED bar panel on the pedestal is the film's own invention, not the show's.
 
 ## 2. The game

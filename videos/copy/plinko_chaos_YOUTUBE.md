@@ -9,32 +9,18 @@ by simulated releases the chip can't physically make; see `plinko/ACCURACY.md` s
 
 ## Thumbnails
 
-In `plinko/thumbnails/`, 1280x720, built by `plinko/thumbs_chaos.py`: every pairing of three lines of text with
-three pictures, named `plinko_chaos_thumb_<text><picture>.png`. YouTube's thumbnail test takes up to three.
+In `plinko/thumbnails/`, 1280x720, built by `plinko/thumbs_chaos.py` from our own board (no third-party images, so no
+credit is needed): every pairing of three lines of text with three pictures, named
+`plinko_chaos_thumb_<text><picture>.png`. YouTube's thumbnail test takes up to three.
 
-| | 1: the opening drop and its replay ($10,000 and $500) | 2: the warm-board pair ($10,000 and $0) | 3: a photo of a real Plinko board, cut out of its background, with the film's two paths and chips drawn on its pegs |
+| | 1: the opening drop and its replay, full board ($10,000 and $500) | 2: the warm-board pair, full board ($10,000 and $0) | 3: close-up of the lower board: the paths parting (ring), chips in their slots, the prize panel |
 |---|---|---|---|
 | **A** "Same release point. Different prize." | `A1` | `A2` | `A3` |
 | **B** "Match release point to an atom, different result." | `B1` | `B2` | `B3` |
 | **C** "0.00006 °C warmer: $10,000 became $0." | `C1` (prize pills left off: the chip shown lands in $500) | `C2` | `C3` |
 
-The natural pairs are A1, B1 and C2, where the picture shows exactly what the text says. Column 3 shows the same
-story on a photo of a real board (the official home game): the drop and its replay for A3 and B3, the warm-board
-pair for C3, drawn on that board's own pegs. C2 and C3 mark where the two paths part with a ring; C3 uses another
-pair from the same experiment that also lands in $0 but parts earlier and swings up to 54 cm apart, so the split
-reads at thumbnail size. Column 1 and 2 thumbnails show the film's own board and need no credit; suggested test:
-A1, B1 and C2. 
-
-**If you use a thumbnail from column 3**, add this line to the end of the description (the photo's licence requires
-the credit, and those thumbnails, as adaptations of it, are themselves CC BY-SA 4.0). The film itself does not use
-the photo.
-
-```
-Thumbnail photo: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg). Thumbnail adapted from it, also CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
-```
-
-Other free Plinko photos on Commons (a library event, a county fair, a state agency booth) are homemade boards with
-identifiable people, children among them, so they are not used.
+Column 3 reads best at small sizes. C3 uses another pair from the same warm-board experiment that also lands in
+$0 but parts earlier and swings up to 54 cm apart, so the split is easy to see. Suggested test: A3, B3 and C3.
 
 ## Titles
 
@@ -46,7 +32,7 @@ identifiable people, children among them, so they are not used.
 | D | How 0.00006 °C Turns a $10,000 Plinko Drop Into $0 | 50 |
 | E | Plinko Is Chaos Theory: The Butterfly Effect on The Price Is Right | 66 |
 
-Recommended: title A with thumbnail A1 or A3; title B with B1; title D with C2. All are true to the film: the replay that "doesn't repeat" wins again
+Recommended: title A with thumbnail A3; title B with B3; title D with C3. All are true to the film: the replay that "doesn't repeat" wins again
 39% of the time at atomic precision, never every time.
 
 ## Description
