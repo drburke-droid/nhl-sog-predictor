@@ -1,7 +1,7 @@
 # YouTube copy: Plinko and chaos ("Same release point, different finish")
 
-**Upload `plinko/plinko_chaos_same_release_point_different_finish_narrated_6m07s.mp4`:**
-* 6:07, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
+**Upload `plinko/plinko_chaos_same_release_point_different_finish_narrated_6m20s.mp4`:**
+* 6:20, 1920x1080, 30 fps, H.264, AAC stereo at -16 LUFS;
 * narrated (ElevenLabs, "Lily" voice; script in `plinko_chaos_NARRATION.md`), on-screen captions, no music.
 
 This is the main Plinko upload. It replaces every earlier chaos cut (the 2:54 cut's replay numbers were inflated
@@ -69,18 +69,18 @@ I measured the board from broadcast frames, rebuilt it in a physics simulator an
 One drop can't be predicted. Four hundred can, and the pile they make is why the middle still pays best.
 
 0:00 Same release point, different finish
-0:18 Nothing on the board is random
-0:35 Two chips a thousandth of a millimetre apart
-0:52 What is chaos theory? Lorenz and the butterfly effect
-1:45 Why round pins make chaos
-2:33 How far ahead can you see?
-2:51 Replaying a winning drop
-3:20 Every place you could let go
-3:59 Where the heat comes from: one chip's energy
-4:54 Same drop, warmer board
-5:11 How much warmer is too warm?
-5:31 One drop vs four hundred
-5:55 Deterministic, and unpredictable
+0:23 Our rebuild, and why nothing on it is random
+0:48 Two chips a thousandth of a millimetre apart
+1:05 What is chaos theory? Lorenz and the butterfly effect
+1:58 Why round pins make chaos
+2:45 How far ahead can you see?
+3:03 Replaying a winning drop
+3:32 Every place you could let go
+4:12 Where the heat comes from: one chip's energy
+5:06 Same drop, warmer board
+5:23 How much warmer is too warm?
+5:43 One drop vs four hundred
+6:07 Deterministic, and unpredictable
 
 How it's made: the board is built in Blender from measurements of the TV board, and every chip path comes from a 2D rigid-body simulator tuned to 1,029 real chips from the show (tpirstats.com, seasons 44 to 54). Narration: ElevenLabs ("Lily"). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
 

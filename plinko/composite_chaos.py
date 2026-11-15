@@ -108,16 +108,16 @@ def ov_real(ctx, gctx, t, shot, cm, crop):
 def ov_rebuild(ctx, gctx, t, shot, cm, crop):
     """The real game beside our rebuild of the TV board."""
     C.scrim(ctx, 1000, 0.9)
-    x, w = draw_photo(ctx, 450, 150, 760, D.fade(t, 0.0, 99, 0.3))
+    x, w = draw_photo(ctx, 450, 150, 840, D.fade(t, 0.0, 99, 0.3))
     a = D.fade(t, 0.6, 99, 0.4)
-    D.text(ctx, "A real Plinko board (the home game)", 450, 965, 26, D.INK, a, "semibold", "center")
-    D.text(ctx, PHOTO_CREDIT, 450, 1000, 14, D.INK3, a, align="center")
+    D.text(ctx, "A real Plinko board (the home game)", 450, 1040, 26, D.INK, a, "semibold", "center")
+    D.text(ctx, PHOTO_CREDIT, 450, 1070, 13, D.INK3, a, align="center")
     q0 = cm.px(C.board_world(1.0 * W, C.B.last_row_y() + 1.6 * W, 0.0), crop)
     q1 = cm.px(C.board_world(9.0 * W, C.B.last_row_y() + 1.6 * W, 0.0), crop)
     cx = (q0[0] + q1[0]) / 2
     a = D.fade(t, cue("rebuild", 0, 1) - 0.3, 99, 0.4)
-    D.text(ctx, "Our rebuild of the TV board,", cx, 965, 26, D.INK, a, "semibold", "center")
-    D.text(ctx, "measured pin for pin from broadcast frames", cx, 1000, 20, D.INK2, a, align="center")
+    D.text(ctx, "Our rebuild of the TV board, measured pin for pin", cx, 1040, 26, D.INK, a, "semibold", "center")
+    D.text(ctx, "from broadcast frames", cx, 1070, 18, D.INK2, a, align="center")
     D.text(ctx, "To study it, we rebuilt it.", LX, 110, 44, D.INK, D.fade(t, 0.3, 99, 0.4), "black")
 
 
