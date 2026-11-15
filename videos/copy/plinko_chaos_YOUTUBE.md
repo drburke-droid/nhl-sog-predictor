@@ -9,14 +9,26 @@ by simulated releases the chip can't physically make; see `plinko/ACCURACY.md` s
 
 ## Thumbnails
 
-In `plinko/thumbnails/`, 1280x720, built from the film's own frames (`plinko/thumbs_chaos.py`). Upload all three
-to YouTube's thumbnail test, or pair each with its title below.
+In `plinko/thumbnails/`, 1280x720 (`plinko/thumbs_chaos.py`). A to C are built from the film's own frames; D uses a
+free-to-use photo of a real Plinko board. YouTube's thumbnail test takes up to three, so pick three, or pair each
+with its title below.
+
+**If you use D**, add this line to the end of the description (the photo's licence requires the credit, and D, as an
+adaptation of it, is itself CC BY-SA 4.0):
+
+```
+Thumbnail photo: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg). Thumbnail adapted from it, also CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+```
+
+Other free Plinko photos on Commons (a library event, a county fair, a state agency booth) are homemade boards with
+identifiable people, children among them, so they are not used.
 
 | | Thumbnail | Shows | Pairs with |
 |---|---|---|---|
 | A | `plinko_chaos_thumb_A.png` | "Same release point. Different prize." The hook's drop and its replay, $10,000 and $500 | Title A |
 | B | `plinko_chaos_thumb_B.png` | "Matched to an atom. Still missed." Same frame | Title B |
 | C | `plinko_chaos_thumb_C.png` | "0.00006 °C warmer: $10,000 became $0." The warm-board pair, $10,000 and $0 | Title D |
+| D | `plinko_chaos_thumb_D.png` | "Same release point. Different prize. Why? Chaos theory." A photo of a real Plinko board (the official home game), free to use under CC BY-SA 4.0: **needs the credit line below** | Title A or E |
 
 ## Titles
 

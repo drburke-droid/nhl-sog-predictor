@@ -4,8 +4,12 @@
 
 A and B: the hook's last frame (a $10,000 drop and its atom-close replay in $500).
 C: the warm-board pair (the same release point, the board 0.00006 C warmer: $10,000 and $0).
+D: a photo of a Plinko board (the official home game), "The Price Is Right Plinko Home Game" by TaurusEmerald,
+   CC BY-SA 4.0 (Wikimedia Commons; see ../videos/plinko/thumbnails/sources/ATTRIBUTION.md). D adapts it, so D is
+   CC BY-SA 4.0 too, and the description must carry the attribution.
 """
 import cairo
+import cv2
 import numpy as np
 
 import composite3d as C3
@@ -36,6 +40,23 @@ def labels(cm, crop, win, rep):
     return draw
 
 
+def thumb_d():
+    OW, OH = CC.OW, CC.OH
+    photo = cv2.imread("../videos/plinko/thumbnails/sources/The_Price_Is_Right_Plinko_Home_Game_960px.jpg")
+    crop = photo[110:1180, 110:870]                       # the board, from its sign to the prize panel
+    crop = cv2.resize(crop, (int(crop.shape[1] * OH / crop.shape[0]), OH), interpolation=cv2.INTER_AREA)
+    bg = np.zeros((OH, OW, 3), np.float32)
+    bg[:] = (10 / 255, 12 / 255, 16 / 255)
+    img = bg.copy()
+    x0 = OW - crop.shape[1] - 40
+    img[:, x0:x0 + crop.shape[1]] = crop / 255.0                    # finish() takes BGR, as cv2 does
+    ramp = np.clip((np.arange(OW) - (x0 - 10)) / 140.0, 0, 1)[None, :, None]
+    img = img * ramp + bg * (1 - ramp)
+    T.finish(img, [("Same release point.", 80, 380, 84, D.INK, "black"), ("Different", 80, 560, 160, D.GOLD, "black"),
+                   ("prize.", 80, 720, 160, D.GOLD, "black"), ("Why? Chaos theory.", 84, 850, 64, D.INK, "black")],
+             "plinko_chaos_thumb_D")
+
+
 if __name__ == "__main__":
     img, cm, crop = shot_frame("hook", 16.0, CC.ov_hook)
     pills = labels(cm, crop, CC.HP["hook_win"], CC.HP["hook_replay"])
@@ -49,3 +70,4 @@ if __name__ == "__main__":
     T.finish(img.copy(), [("0.00006 °C", 80, 360, 128, D.GOLD, "black"), ("warmer:", 80, 490, 112, D.INK, "black"),
                           ("$10,000", 80, 650, 128, D.INK, "black"), ("became $0.", 80, 790, 128, D.INK, "black")],
              "plinko_chaos_thumb_C", extra=pills)
+    thumb_d()
