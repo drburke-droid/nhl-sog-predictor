@@ -8,6 +8,7 @@
     python3 chaos2.py regionmap  # every release point across the top, up to 30 cm above the pins: the slot
     python3 chaos2.py region     # replay, thermal, robustness and warming for winners from anywhere on top
     python3 chaos2.py square     # a 3.84 cm square of release points above the middle gap, 0.1 mm apart
+    python3 chaos2.py thumbpair  # a warm-board pair that parts early and wide, for the thumbnail
     python3 chaos2.py all
 
 Everything runs on the perfect board (no pin imperfections, no random restitution) unless a "real-world"
@@ -514,6 +515,36 @@ def square_map(n=384):
     print("square: share gold", float((sl == 5).mean()), "bottom row", float((sl[-1] == 5).mean()))
 
 
+def warm_thumb_pair():
+    """For the thumbnail: among the onevar winners whose exact replay on the board warmed by one drop's heat lands in
+    $0, the pair that parts in the top 60% of the board and swings furthest apart sideways (a clearer picture of the
+    split than the film's pair, with the same result). results/chaos2_warm_thumb.npz"""
+    o = json.load(open("results/chaos2_onevar.json"))
+    rng = np.random.default_rng(2026)
+    cand = np.zeros((N_CAND1, 5))
+    cand[:, 0] = B.drop_x(5) + rng.uniform(-GAP, GAP, N_CAND1)
+    win = cand[run(cand) == 5]
+    eps = ALPHA * o["drop_dT_C"]
+    s_drop = run(win, np.full(len(win), eps))
+    best = None
+    for i in np.flatnonzero(np.isin(s_drop, (4, 6))):
+        _, ra = trajectory_scaled(win[i, 0], 0.0)
+        sb, rb = trajectory_scaled(win[i, 0], eps)
+        m = min(len(ra), len(rb))
+        sep = np.hypot(ra[:m, 1] - rb[:m, 1], ra[:m, 2] - rb[:m, 2])
+        k = int(np.argmax(sep > 0.01))
+        if ra[k, 2] / B.last_row_y() > 0.6:
+            continue
+        gap = float(np.abs(ra[:m, 1] - rb[:m, 1]).max())
+        if best is None or gap > best[0]:
+            best = (gap, i, ra, rb, sb, float(ra[k, 0]))
+    gap, i, ra, rb, sb, t_split = best
+    np.savez_compressed("results/chaos2_warm_thumb.npz", win=ra[:, :4], replay=rb[:, :4], split_t=t_split,
+                        release_m=win[i, 0] - B.drop_x(5), replay_slot=sb, max_gap_m=gap)
+    print(f"thumbnail pair: winner {i} released {100 * (win[i, 0] - B.drop_x(5)):+.2f} cm; replay in slot {sb}; "
+          f"parts {t_split:.2f} s in; up to {100 * gap:.0f} cm apart")
+
+
 if __name__ == "__main__":
     what = sys.argv[1:] or ["all"]
     if "growth" in what or "all" in what:
@@ -532,3 +563,5 @@ if __name__ == "__main__":
         region()
     if "square" in what or "all" in what:
         square_map()
+    if "thumbpair" in what or "all" in what:
+        warm_thumb_pair()

@@ -251,6 +251,9 @@ restitution, the chip let go at rest with no spin. Only what is named changes.
   warming is also the gentlest way to spread it: the pins the chip actually hits warm far more, locally. The
   film's pair (release -0.93 cm from the gap centre) wins $10,000 on the cool board and
   lands in slot 6 ($0) on the warmed one, parting about 2.6 s into the drop.
+  Thumbnail C3 shows a different pair from the same 892 winners (`chaos2.py thumbpair`): of the 258 whose replay
+  on the warmed board lands in $0, the one that parts in the top 60% of the board and swings furthest apart
+  sideways (released -1.55 cm from the gap centre; parts 2.1 s in; up to 54 cm apart before landing in slot 4).
   The film's energy bar follows that drop sample by sample (60 a second): height energy left is
   m g (y_end - y) cos(lean), speed energy is (1/2) m v^2 + (1/2) I w^2 from the path's own motion, and heat is
   what has gone from the first and not into the second (held from falling back, which only smooths the

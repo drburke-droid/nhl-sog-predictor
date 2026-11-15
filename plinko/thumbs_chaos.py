@@ -7,7 +7,10 @@ Text  A  "Same release point. Different prize."
       C  "0.00006 °C warmer: $10,000 became $0."
 Picture 1  the hook's last frame: a $10,000 drop and its atom-close replay in $500 (prize pills shown, except
            with text C, which names $0)
-        2  the warm-board pair: the same release point, the board 0.00006 C warmer, $10,000 and $0
+        2  the warm-board pair: the same release point, the board 0.00006 C warmer, $10,000 and $0, with a ring
+           where the paths part
+           (picture 3 with text C uses another pair from the same experiment, results/chaos2_warm_thumb.npz, that
+           also lands in $0 but parts earlier and swings up to 54 cm apart, so the split is easy to see)
         3  a photo of a real Plinko board (the official home game) with the film's two paths drawn on its own pegs
            and our chips in the slots: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0
            (Wikimedia Commons; see
@@ -37,14 +40,44 @@ def shot_frame(name, t, overlay):
     return C3.add_glow(img, gsurf), cm, crop
 
 
-def labels(cm, crop, win, rep):
-    """Prize pills over the two landing slots, stacked when the slots are neighbours."""
+def pill_layer(to_px, win, rep, size, split_t=None):
+    """Prize pills for the two landing slots, and (when split_t is given) a ring where the two paths part. Pills for
+    neighbouring slots sit side by side, each pushed out away from the other, with a leader line to its chip."""
+    W_ = CC.W
+    kw, kr = int(round(win[-1, 1] / W_)), int(round(rep[-1, 1] / W_))
+    r_px = float(np.hypot(*(to_px(W_ + C3.B.CHIP_DIAMETER / 2, 1.0) - to_px(W_, 1.0))))
+
     def draw(ctx):
-        kw, kr = int(round(win[-1, 1] / CC.W)), int(round(rep[-1, 1] / CC.W))
-        adjacent = abs(kw - kr) == 1
-        CC.board_label(ctx, cm, crop, kw, "$10,000", True, 1.0, -150 if adjacent else -64, 46)
-        CC.board_label(ctx, cm, crop, kr, D.SLOT_LABELS[kr - 1], False, 1.0, -64, 46)
+        if split_t is not None:
+            q = to_px(*rep[int(round(split_t * 60)), 1:3])
+            for rad, wd, al in ((r_px * 1.9, 9, 0.25), (r_px * 1.9, 3.5, 1.0)):
+                ctx.new_path()
+                ctx.arc(q[0], q[1], rad, 0, 2 * np.pi)
+                ctx.set_source_rgba(1, 1, 1, al)
+                ctx.set_line_width(wd)
+                ctx.stroke()
+        y_lab = C3.B.last_row_y() + 0.1 * W_
+        if abs(kw - kr) == 1:
+            d = 1 if kw > kr else -1
+            for k, rec, lab, gold, side in ((kw, win, "$10,000", True, d), (kr, rep, D.SLOT_LABELS[kr - 1], False, -d)):
+                chip = to_px(*rec[-1, 1:3])
+                q = to_px(k * W_ + side * 1.05 * W_, y_lab)
+                ctx.new_path()
+                ctx.move_to(q[0] - side * 10, q[1] + 8)
+                ctx.line_to(chip[0] + side * r_px * 0.7, chip[1] - r_px * 0.7)
+                ctx.set_source_rgba(1, 1, 1, 0.9)
+                ctx.set_line_width(2.5)
+                ctx.stroke()
+                D.pill(ctx, lab, q[0], q[1], size, D.GOLD if gold else D.INK)
+        else:
+            for k, lab, gold in ((kw, "$10,000", True), (kr, D.SLOT_LABELS[kr - 1], False)):
+                q = to_px(k * W_, y_lab)
+                D.pill(ctx, lab, q[0], q[1], size, D.GOLD if gold else D.INK)
     return draw
+
+
+def labels(cm, crop, win, rep, split_t=None):
+    return pill_layer(lambda x, y: np.array(cm.px(C3.board_world(x, y, 0.03), crop)), win, rep, 46, split_t)
 
 
 SRC = "../videos/plinko/thumbnails/sources/The_Price_Is_Right_Plinko_Home_Game_960px.jpg"
@@ -96,7 +129,7 @@ def board_to_photo(im):
     return H
 
 
-def photo_frame(win, rep, ox=60, oy=105):
+def photo_frame(win, rep, ox=60, oy=105, split_t=None):
     """The real photo (background and all), with the film's two paths drawn on its pegs: one release point, two
     glowing trails, the chips in their slots and a faint chip where both were let go."""
     OW, OH = CC.OW, CC.OH
@@ -141,12 +174,7 @@ def photo_frame(win, rep, ox=60, oy=105):
     paste("blue", rep[-1, 1:3], rep[-1, 3])
     paste("red", win[-1, 1:3], win[-1, 3])
 
-    def pills(ctx):
-        kw, kr = int(round(win[-1, 1] / CC.W)), int(round(rep[-1, 1] / CC.W))
-        adjacent = abs(kw - kr) == 1
-        for k, lab, gold, dy in ((kw, "$10,000", True, 96 if adjacent else 50), (kr, D.SLOT_LABELS[kr - 1], False, 50)):
-            q = proj([[k * CC.W, C3.B.last_row_y() + 0.2 * CC.W]])[0]
-            D.pill(ctx, lab, q[0], q[1] - dy, 40, D.GOLD if gold else D.INK)
+    pills = pill_layer(lambda x, y: proj([[x, y]])[0], win, rep, 40, split_t)
     return img, pills, x0
 
 
@@ -180,9 +208,10 @@ if __name__ == "__main__":
     img, cm, crop = shot_frame("hook", 16.0, CC.ov_hook)
     pics["1"] = (img, labels(cm, crop, CC.HP["hook_win"], CC.HP["hook_replay"]), 860)
     img, cm, crop = shot_frame("warm", 15.5, CC.ov_warm)
-    pics["2"] = (img, labels(cm, crop, CC.HP["warm_win"], CC.HP["warm_replay"]), 860)
+    pics["2"] = (img, labels(cm, crop, CC.HP["warm_win"], CC.HP["warm_replay"], CC.ONE["pair_split_t"]), 860)
+    wt = np.load("results/chaos2_warm_thumb.npz")                  # a pair that parts earlier and wider (chaos2.py)
     photo = {"hook": photo_frame(CC.HP["hook_win"], CC.HP["hook_replay"]),
-             "warm": photo_frame(CC.HP["warm_win"], CC.HP["warm_replay"])}
+             "warm": photo_frame(wt["win"], wt["replay"], split_t=float(wt["split_t"]))}
     for tk, lines in TEXTS.items():
         img, pills, x0 = photo["warm" if tk == "C" else "hook"]
         pics["3"] = (img, pills, x0 - 120)

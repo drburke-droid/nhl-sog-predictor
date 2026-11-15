@@ -20,7 +20,9 @@ three pictures, named `plinko_chaos_thumb_<text><picture>.png`. YouTube's thumbn
 
 The natural pairs are A1, B1 and C2, where the picture shows exactly what the text says. Column 3 shows the same
 story on a photo of a real board (the official home game): the drop and its replay for A3 and B3, the warm-board
-pair for C3, drawn on that board's own pegs. Suggested test: A3, A1 and C2.
+pair for C3, drawn on that board's own pegs. C2 and C3 mark where the two paths part with a ring; C3 uses another
+pair from the same experiment that also lands in $0 but parts earlier and swings up to 54 cm apart, so the split
+reads at thumbnail size. Suggested test: A3, A1 and C2.
 
 **If you use a thumbnail from column 3**, add this line to the end of the description (the photo's licence requires
 the credit, and those thumbnails, as adaptations of it, are themselves CC BY-SA 4.0):
