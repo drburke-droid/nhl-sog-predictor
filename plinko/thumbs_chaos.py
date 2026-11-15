@@ -1,12 +1,18 @@
-"""Thumbnails for the chaos cut (1280x720), from the film's own frames without their captions.
+"""Thumbnails for the chaos cut (1280x720): every pairing of three lines of text with three pictures.
 
-    python3 thumbs_chaos.py   -> ../videos/plinko/thumbnails/plinko_chaos_thumb_A.png, _B.png, _C.png
+    python3 thumbs_chaos.py   -> ../videos/plinko/thumbnails/plinko_chaos_thumb_<text><picture>.png (9 files)
 
-A and B: the hook's last frame (a $10,000 drop and its atom-close replay in $500).
-C: the warm-board pair (the same release point, the board 0.00006 C warmer: $10,000 and $0).
-D: a photo of a Plinko board (the official home game), "The Price Is Right Plinko Home Game" by TaurusEmerald,
-   CC BY-SA 4.0 (Wikimedia Commons; see ../videos/plinko/thumbnails/sources/ATTRIBUTION.md). D adapts it, so D is
-   CC BY-SA 4.0 too, and the description must carry the attribution.
+Text  A  "Same release point. Different prize."
+      B  "Match release point to an atom, different result."
+      C  "0.00006 °C warmer: $10,000 became $0."
+Picture 1  the hook's last frame: a $10,000 drop and its atom-close replay in $500 (prize pills shown, except
+           with text C, which names $0)
+        2  the warm-board pair: the same release point, the board 0.00006 C warmer, $10,000 and $0
+        3  a photo of a real Plinko board (the official home game) cut out of its background: "The Price Is Right
+           Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0 (Wikimedia Commons; see
+           ../videos/plinko/thumbnails/sources/ATTRIBUTION.md). The *3 thumbnails adapt it, so they are CC BY-SA 4.0
+           too, and a description that uses one must carry the attribution.
+Text is sized down where needed so it never reaches the board.
 """
 import cairo
 import cv2
@@ -102,8 +108,8 @@ def smooth_bottom(im, fg, rim=7, corner=41):
     return np.where(low, opened, cut).astype(np.uint8)
 
 
-def thumb_d():
-    """A photo of a real Plinko board, cut out of its background, beside the film's line."""
+def photo_frame():
+    """A photo of a real Plinko board, cut out of its background, on the film's dark backdrop."""
     OW, OH = CC.OW, CC.OH
     cut = cv2.imread(CUTOUT, cv2.IMREAD_UNCHANGED)
     if cut is None:
@@ -124,22 +130,43 @@ def thumb_d():
     img *= 1 - 0.65 * sh
     reg = img[y0:y0 + H, x0:x0 + cut.shape[1]]
     img[y0:y0 + H, x0:x0 + cut.shape[1]] = rgb * a + reg * (1 - a)
-    T.finish(img, [("Same release point.", 80, 380, 84, D.INK, "black"), ("Different", 80, 560, 160, D.GOLD, "black"),
-                   ("prize.", 80, 720, 160, D.GOLD, "black"), ("Why? Chaos theory.", 84, 850, 64, D.INK, "black")],
-             "plinko_chaos_thumb_D")
+    return img, x0
+
+
+TEXTS = {
+    "A": [("Same release point.", 84, D.INK), ("Different", 160, D.GOLD), ("prize.", 160, D.GOLD)],
+    "B": [("Match release point", 96, D.INK), ("to an atom,", 120, D.INK), ("different", 150, D.GOLD),
+          ("result.", 150, D.GOLD)],
+    "C": [("0.00006 \u00b0C", 128, D.GOLD), ("warmer:", 112, D.INK), ("$10,000", 128, D.INK),
+          ("became $0.", 128, D.INK)],
+}
+
+
+def layout(lines, max_w, x=80, cy=540):
+    """Stack the lines, centred on cy; one common scale so the widest line fits in max_w."""
+    ctx = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 8, 8))
+    widest = max(D.text_width(ctx, s_, size, "black") / max_w for s_, size, _ in lines)
+    k = min(1.0, 1.0 / widest)
+    sizes = [size * k for _, size, _ in lines]
+    steps = [0.0] + [0.98 * b + 16 * k for b in sizes[1:]]
+    total = sum(steps) + 0.72 * sizes[0]
+    y = cy - total / 2 + 0.72 * sizes[0]
+    out = []
+    for (s_, _, col), size, step in zip(lines, sizes, steps):
+        y += step
+        out.append((s_, x, y, size, col, "black"))
+    return out
 
 
 if __name__ == "__main__":
+    pics = {}
     img, cm, crop = shot_frame("hook", 16.0, CC.ov_hook)
-    pills = labels(cm, crop, CC.HP["hook_win"], CC.HP["hook_replay"])
-    T.finish(img.copy(), [("Same release point.", 80, 360, 84, D.INK, "black"),
-                          ("Different", 80, 540, 160, D.GOLD, "black"), ("prize.", 80, 700, 160, D.GOLD, "black")],
-             "plinko_chaos_thumb_A", extra=pills)
-    T.finish(img.copy(), [("Matched to", 80, 360, 120, D.INK, "black"), ("an atom.", 80, 490, 120, D.INK, "black"),
-                          ("Still missed.", 80, 640, 120, D.GOLD, "black")], "plinko_chaos_thumb_B", extra=pills)
+    pics["1"] = (img, labels(cm, crop, CC.HP["hook_win"], CC.HP["hook_replay"]), 860)
     img, cm, crop = shot_frame("warm", 15.5, CC.ov_warm)
-    pills = labels(cm, crop, CC.HP["warm_win"], CC.HP["warm_replay"])
-    T.finish(img.copy(), [("0.00006 °C", 80, 360, 128, D.GOLD, "black"), ("warmer:", 80, 490, 112, D.INK, "black"),
-                          ("$10,000", 80, 650, 128, D.INK, "black"), ("became $0.", 80, 790, 128, D.INK, "black")],
-             "plinko_chaos_thumb_C", extra=pills)
-    thumb_d()
+    pics["2"] = (img, labels(cm, crop, CC.HP["warm_win"], CC.HP["warm_replay"]), 860)
+    img, x0 = photo_frame()
+    pics["3"] = (img, None, x0 - 160)
+    for tk, lines in TEXTS.items():
+        for pk, (img, pills, max_w) in pics.items():
+            extra = None if (tk == "C" and pk == "1") else pills       # don't show $500 beside "became $0"
+            T.finish(img.copy(), layout(lines, max_w), f"plinko_chaos_thumb_{tk}{pk}", extra=extra)
