@@ -11,8 +11,8 @@ Picture 1  the hook's last frame: a $10,000 drop and its atom-close replay in $5
            where the paths part
            (picture 3 with text C uses another pair from the same experiment, results/chaos2_warm_thumb.npz, that
            also lands in $0 but parts earlier and swings up to 54 cm apart, so the split is easy to see)
-        3  a photo of a real Plinko board (the official home game) with the film's two paths drawn on its own pegs
-           and our chips in the slots: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0
+        3  a photo of a real Plinko board (the official home game), cut out of its background (smooth curved
+           base), with the film's two paths drawn on its own pegs and our chips in the slots: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0
            (Wikimedia Commons; see
            ../videos/plinko/thumbnails/sources/ATTRIBUTION.md). The *3 thumbnails adapt it, so they are CC BY-SA 4.0
            too, and a description that uses one must carry the attribution.
@@ -129,32 +129,77 @@ def board_to_photo(im):
     return H
 
 
-def photo_frame(win, rep, ox=60, oy=105, split_t=None):
-    """The real photo (background and all), with the film's two paths drawn on its pegs: one release point, two
-    glowing trails, the chips in their slots and a faint chip where both were let go."""
+def board_alpha(im):
+    """The board alone: GrabCut from a box around it, the largest piece with its holes filled, smoothed, pulled in
+    1 px off the background fringe, its base replaced by one smooth curve (no feet), feathered. 0..1, photo size."""
+    mask = np.zeros(im.shape[:2], np.uint8)
+    bgd, fgd = np.zeros((1, 65), np.float64), np.zeros((1, 65), np.float64)
+    cv2.setRNGSeed(1)
+    cv2.grabCut(im, mask, (105, 105, 770, 1080), bgd, fgd, 8, cv2.GC_INIT_WITH_RECT)
+    fg = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
+
+    def largest(m):
+        _, lab, st, _ = cv2.connectedComponentsWithStats(m)
+        return np.where(lab == 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA])), 255, 0).astype(np.uint8)
+    fg = largest(fg)
+    cnts, _ = cv2.findContours(fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    fg = cv2.drawContours(np.zeros_like(fg), cnts, -1, 255, -1)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+    fg = largest(cv2.morphologyEx(cv2.morphologyEx(fg, cv2.MORPH_OPEN, k), cv2.MORPH_CLOSE, k))
+    fg = cv2.erode(fg, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+    fg = smooth_bottom(im, fg)
+    return cv2.GaussianBlur(fg, (0, 0), 1.2).astype(np.float32) / 255.0
+
+
+def smooth_bottom(im, fg, rim=7, corner=41):
+    """Replace the base (feet and the uneven rim under the prize panel) with one smooth curve: fit a parabola to
+    the bottom of the coloured panel, cut everything more than `rim` px below it, then round the corners where
+    the curve meets the sides (an opening, applied to the bottom of the board only)."""
+    hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+    ys_, xs_ = np.nonzero(fg)
+    y_bot = ys_.max()
+    band = slice(y_bot - 200, y_bot + 1)
+    xs, ys = [], []
+    for x in range(fg.shape[1]):
+        col = np.nonzero((hsv[band, x, 1] > 90) & (fg[band, x] > 0))[0]
+        if len(col):
+            xs.append(x)
+            ys.append(band.start + col.max())
+    xs, ys = np.array(xs, float), np.array(ys, float)
+    lo, hi = np.percentile(xs, 12), np.percentile(xs, 88)               # the panel's straight run, not its ends
+    sel = (xs >= lo) & (xs <= hi)
+    for _ in range(3):                                                   # robust: drop columns far off the fit
+        c = np.polyfit(xs[sel], ys[sel], 2)
+        r = ys - np.polyval(c, xs)
+        sel &= np.abs(r) < 6
+    curve = np.polyval(c, np.arange(fg.shape[1])) + rim
+    yy = np.arange(fg.shape[0])[:, None]
+    cut = np.where(yy <= curve[None, :], fg, 0).astype(np.uint8)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (corner, corner))
+    opened = cv2.morphologyEx(cut, cv2.MORPH_OPEN, k)
+    low = yy >= y_bot - 160
+    return np.where(low, opened, cut).astype(np.uint8)
+
+
+def photo_frame(win, rep, split_t=None, H_board=1000):
+    """The real board from the photo, cut out of its background, with the film's two paths drawn on its own pegs:
+    one release point, two glowing trails, the chips in their slots and a faint chip where both were let go; set
+    on the film's dark backdrop with a warm light behind it and a soft shadow."""
     OW, OH = CC.OW, CC.OH
     im = cv2.imread(SRC)
-    H = board_to_photo(im)
-    crop = im[oy:oy + OH, ox:].astype(np.float32) / 255.0
-    x0 = OW - crop.shape[1]
-    # backdrop: the same photo, blurred and dark, behind the text
-    cover = cv2.resize(im, (OW, int(im.shape[0] * OW / im.shape[1])))[:OH].astype(np.float32) / 255.0
-    img = cv2.GaussianBlur(cover, (0, 0), 30) * 0.28
-    ramp = np.clip((np.arange(OW) - x0) / 160.0, 0, 1)[None, :, None]
-    img[:, x0:] = crop * ramp[:, x0:] + img[:, x0:] * (1 - ramp[:, x0:])
-    to_canvas = lambda q: q - np.array([ox, oy]) + np.array([x0, 0])
+    Hm = board_to_photo(im)
+    ph = im.astype(np.float32) / 255.0
 
-    def proj(xy):
-        return to_canvas(cv2.perspectiveTransform(np.float32(xy)[None], H)[0])
-    # trails: a soft glow and a bright core, added to the photo
-    glow = np.zeros((OH, OW, 3), np.float32)
-    core = np.zeros((OH, OW, 3), np.float32)
+    def proj(xy):                                                      # board metres -> photo pixels
+        return cv2.perspectiveTransform(np.float32(xy)[None], Hm)[0]
+    glow = np.zeros_like(ph)
+    core = np.zeros_like(ph)
     for rec, col in ((rep, D.S1), (win, D.GOLD)):
         pts = proj(rec[:, 1:3]).astype(np.int32)
         bgr = np.array(col[::-1], np.float32)
         cv2.polylines(glow, [pts], False, tuple(float(v) for v in bgr), 10, cv2.LINE_AA)
         cv2.polylines(core, [pts], False, tuple(float(v) * 0.4 + 0.6 for v in bgr), 3, cv2.LINE_AA)
-    img = np.clip(img + 0.9 * cv2.GaussianBlur(glow, (0, 0), 9) + 0.85 * core, 0, 1)
+    ph = np.clip(ph + 0.9 * cv2.GaussianBlur(glow, (0, 0), 9) + 0.85 * core, 0, 1)
 
     def paste(name, xy_board, ang, alpha=1.0):
         ch = cv2.imread(CHIPS[name], cv2.IMREAD_UNCHANGED)
@@ -168,13 +213,33 @@ def photo_frame(win, rep, ox=60, oy=105, split_t=None):
         ch = cv2.warpAffine(ch, M_, (int(d), int(d)), flags=cv2.INTER_LINEAR, borderValue=(0, 0, 0, 0))
         x, y = int(round(c[0] - d / 2)), int(round(c[1] - d / 2))
         a = ch[..., 3:4] / 255.0 * alpha
-        reg = img[y:y + ch.shape[0], x:x + ch.shape[1]]
-        img[y:y + ch.shape[0], x:x + ch.shape[1]] = ch[..., :3] / 255.0 * a + reg * (1 - a)
+        reg = ph[y:y + ch.shape[0], x:x + ch.shape[1]]
+        ph[y:y + ch.shape[0], x:x + ch.shape[1]] = ch[..., :3] / 255.0 * a + reg * (1 - a)
     paste("red", win[0, 1:3], win[0, 3], 0.55)                     # where both were let go
     paste("blue", rep[-1, 1:3], rep[-1, 3])
     paste("red", win[-1, 1:3], win[-1, 3])
-
-    pills = pill_layer(lambda x, y: proj([[x, y]])[0], win, rep, 40, split_t, dy=-50)
+    # cut the board out and set it on the backdrop
+    al = board_alpha(im)
+    ys, xs = np.nonzero(al > 0.5)
+    bx0, by0, bx1, by1 = xs.min() - 6, ys.min() - 6, xs.max() + 7, ys.max() + 7
+    s = H_board / (by1 - by0)
+    size = (int(round((bx1 - bx0) * s)), H_board)
+    rgb = cv2.resize(ph[by0:by1, bx0:bx1], size, interpolation=cv2.INTER_AREA)
+    a = cv2.resize(al[by0:by1, bx0:bx1], size, interpolation=cv2.INTER_AREA)[..., None]
+    w_ = size[0]
+    x0, y0 = OW - w_ - 110, (OH - H_board) // 2 + 10
+    yy, xx = np.mgrid[0:OH, 0:OW]
+    lightg = np.exp(-(((xx - (x0 + w_ / 2)) / 620.0) ** 2 + ((yy - OH / 2) / 520.0) ** 2))[..., None]
+    img = np.empty((OH, OW, 3), np.float32)
+    img[:] = (0.04, 0.045, 0.06)                                     # BGR, as cv2 and finish() use
+    img += lightg * np.array([0.10, 0.12, 0.20])                     # warm light behind the board
+    sh = np.zeros((OH, OW), np.float32)                              # soft shadow, down and to the left
+    sh[y0 + 18:y0 + 18 + H_board, x0 - 22:x0 - 22 + w_] = a[..., 0]
+    img *= 1 - 0.65 * cv2.GaussianBlur(sh, (0, 0), 22)[..., None]
+    reg = img[y0:y0 + H_board, x0:x0 + w_]
+    img[y0:y0 + H_board, x0:x0 + w_] = rgb * a + reg * (1 - a)
+    to_canvas = lambda q: (q - np.array([bx0, by0])) * s + np.array([x0, y0])
+    pills = pill_layer(lambda x, y: to_canvas(proj([[x, y]])[0]), win, rep, 40, split_t, dy=-50 * s)
     return img, pills, x0
 
 

@@ -12,7 +12,7 @@ by simulated releases the chip can't physically make; see `plinko/ACCURACY.md` s
 In `plinko/thumbnails/`, 1280x720, built by `plinko/thumbs_chaos.py`: every pairing of three lines of text with
 three pictures, named `plinko_chaos_thumb_<text><picture>.png`. YouTube's thumbnail test takes up to three.
 
-| | 1: the opening drop and its replay ($10,000 and $500) | 2: the warm-board pair ($10,000 and $0) | 3: a photo of a real Plinko board, with the film's two paths and chips drawn on its pegs |
+| | 1: the opening drop and its replay ($10,000 and $500) | 2: the warm-board pair ($10,000 and $0) | 3: a photo of a real Plinko board, cut out of its background, with the film's two paths and chips drawn on its pegs |
 |---|---|---|---|
 | **A** "Same release point. Different prize." | `A1` | `A2` | `A3` |
 | **B** "Match release point to an atom, different result." | `B1` | `B2` | `B3` |
