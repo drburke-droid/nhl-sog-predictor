@@ -64,11 +64,42 @@ def make_cutout():
     k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
     fg = largest(cv2.morphologyEx(cv2.morphologyEx(fg, cv2.MORPH_OPEN, k), cv2.MORPH_CLOSE, k))
     fg = cv2.erode(fg, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+    fg = smooth_bottom(im, fg)
     alpha = cv2.GaussianBlur(fg, (0, 0), 1.2)
     x, y, w, h = cv2.boundingRect(fg)
     out = np.dstack([im, alpha])[max(0, y - 6):y + h + 6, max(0, x - 6):x + w + 6]
     cv2.imwrite(CUTOUT, out)
     return out
+
+
+def smooth_bottom(im, fg, rim=7, corner=41):
+    """Replace the base (feet and the uneven rim under the prize panel) with one smooth curve: fit a parabola to
+    the bottom of the coloured panel, cut everything more than `rim` px below it, then round the corners where
+    the curve meets the sides (an opening, applied to the bottom of the board only)."""
+    hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+    ys_, xs_ = np.nonzero(fg)
+    y_bot = ys_.max()
+    band = slice(y_bot - 200, y_bot + 1)
+    xs, ys = [], []
+    for x in range(fg.shape[1]):
+        col = np.nonzero((hsv[band, x, 1] > 90) & (fg[band, x] > 0))[0]
+        if len(col):
+            xs.append(x)
+            ys.append(band.start + col.max())
+    xs, ys = np.array(xs, float), np.array(ys, float)
+    lo, hi = np.percentile(xs, 12), np.percentile(xs, 88)               # the panel's straight run, not its ends
+    sel = (xs >= lo) & (xs <= hi)
+    for _ in range(3):                                                   # robust: drop columns far off the fit
+        c = np.polyfit(xs[sel], ys[sel], 2)
+        r = ys - np.polyval(c, xs)
+        sel &= np.abs(r) < 6
+    curve = np.polyval(c, np.arange(fg.shape[1])) + rim
+    yy = np.arange(fg.shape[0])[:, None]
+    cut = np.where(yy <= curve[None, :], fg, 0).astype(np.uint8)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (corner, corner))
+    opened = cv2.morphologyEx(cut, cv2.MORPH_OPEN, k)
+    low = yy >= y_bot - 160
+    return np.where(low, opened, cut).astype(np.uint8)
 
 
 def thumb_d():
