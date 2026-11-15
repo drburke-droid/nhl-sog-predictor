@@ -148,7 +148,22 @@ def board_alpha(im):
     fg = largest(cv2.morphologyEx(cv2.morphologyEx(fg, cv2.MORPH_OPEN, k), cv2.MORPH_CLOSE, k))
     fg = cv2.erode(fg, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
     fg = smooth_bottom(im, fg)
-    return cv2.GaussianBlur(fg, (0, 0), 1.2).astype(np.float32) / 255.0
+    return cv2.GaussianBlur(fg, (0, 0), 1.2).astype(np.float32) / 255.0, fg
+
+
+def bottom_rim(im, fg, width=9, above=170):
+    """A cream border of even width along the lower edge of the board (sides and base), in the border's own colour
+    sampled from the photo: where the photo's rim is lost in shadow (the bottom right) the frame still runs on.
+    Returns the band (0..1) and the colour (BGR, 0..1)."""
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * width + 1, 2 * width + 1))
+    ring = cv2.subtract(fg, cv2.erode(fg, k))
+    ys, _ = np.nonzero(fg)
+    ring[:ys.max() - above] = 0
+    hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+    cream = (ring > 0) & (hsv[..., 1] < 60) & (hsv[..., 2] > 170)
+    col = np.percentile(im[cream], 70, axis=0) / 255.0
+    band = cv2.GaussianBlur(ring.astype(np.float32) / 255.0, (0, 0), 1.0)
+    return band, col
 
 
 def smooth_bottom(im, fg, rim=7, corner=41):
@@ -174,6 +189,9 @@ def smooth_bottom(im, fg, rim=7, corner=41):
         sel &= np.abs(r) < 6
     curve = np.polyval(c, np.arange(fg.shape[1])) + rim
     yy = np.arange(fg.shape[0])[:, None]
+    # the lower board is convex: fill it to its hull, so shadow that ate into the photo's edge doesn't dent it
+    hull = cv2.fillConvexPoly(np.zeros_like(fg), cv2.convexHull(np.column_stack(np.nonzero(fg)[::-1])), 255)
+    fg = np.where(yy >= y_bot - 220, hull, fg).astype(np.uint8)
     cut = np.where(yy <= curve[None, :], fg, 0).astype(np.uint8)
     k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (corner, corner))
     opened = cv2.morphologyEx(cut, cv2.MORPH_OPEN, k)
@@ -218,8 +236,12 @@ def photo_frame(win, rep, split_t=None, H_board=1000):
     paste("red", win[0, 1:3], win[0, 3], 0.55)                     # where both were let go
     paste("blue", rep[-1, 1:3], rep[-1, 3])
     paste("red", win[-1, 1:3], win[-1, 3])
-    # cut the board out and set it on the backdrop
-    al = board_alpha(im)
+    # cut the board out, give it a continuous cream rim along the bottom, and set it on the backdrop
+    al, fg = board_alpha(im)
+    band, cream = bottom_rim(im, fg)
+    shade = cv2.GaussianBlur(cv2.cvtColor(im, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0, (0, 0), 6)
+    rim = np.clip(cream[None, None, :] * (0.92 + 0.12 * (shade[..., None] - shade[fg > 0].mean())), 0, 1)
+    ph = ph * (1 - band[..., None]) + rim * band[..., None]
     ys, xs = np.nonzero(al > 0.5)
     bx0, by0, bx1, by1 = xs.min() - 6, ys.min() - 6, xs.max() + 7, ys.max() + 7
     s = H_board / (by1 - by0)
