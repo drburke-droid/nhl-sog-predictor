@@ -5,7 +5,8 @@
 https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg
 licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
 
-`The_Price_Is_Right_Plinko_Home_Game_cutout.png` is the board cut out of its background (alpha mask from
-OpenCV GrabCut, `plinko/thumbs_chaos.py make_cutout`), and `plinko_chaos_thumb_A3.png`, `B3` and `C3` place that cut-out
-on a dark background beside text. All of these adapt the photo and are therefore also licensed CC BY-SA 4.0. The PLINKO name and logo on the board are trademarks of their owners; their appearance
-does not imply endorsement.
+`plinko_chaos_thumb_A3.png`, `B3` and `C3` adapt it: cropped, with the film's two simulated paths drawn on the
+board's pegs (mapped onto the photo by a homography fitted to 96 detected pegs), rendered chips added
+(`plinko/blender/render_thumb_chips.py`), prize labels and text beside it. They are therefore also licensed
+CC BY-SA 4.0. The PLINKO name and logo on the board are trademarks of their owners; their appearance does not
+imply endorsement.

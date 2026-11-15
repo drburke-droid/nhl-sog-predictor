@@ -12,14 +12,15 @@ by simulated releases the chip can't physically make; see `plinko/ACCURACY.md` s
 In `plinko/thumbnails/`, 1280x720, built by `plinko/thumbs_chaos.py`: every pairing of three lines of text with
 three pictures, named `plinko_chaos_thumb_<text><picture>.png`. YouTube's thumbnail test takes up to three.
 
-| | 1: the opening drop and its replay ($10,000 and $500) | 2: the warm-board pair ($10,000 and $0) | 3: a photo of a real Plinko board |
+| | 1: the opening drop and its replay ($10,000 and $500) | 2: the warm-board pair ($10,000 and $0) | 3: a photo of a real Plinko board, with the film's two paths and chips drawn on its pegs |
 |---|---|---|---|
 | **A** "Same release point. Different prize." | `A1` | `A2` | `A3` |
 | **B** "Match release point to an atom, different result." | `B1` | `B2` | `B3` |
 | **C** "0.00006 °C warmer: $10,000 became $0." | `C1` (prize pills left off: the chip shown lands in $500) | `C2` | `C3` |
 
-The natural pairs are A1, B1 and C2, where the picture shows exactly what the text says; column 3 trades that for
-instant recognition of a real board. Suggested test: A1, A3 and C2.
+The natural pairs are A1, B1 and C2, where the picture shows exactly what the text says. Column 3 shows the same
+story on a photo of a real board (the official home game): the drop and its replay for A3 and B3, the warm-board
+pair for C3, drawn on that board's own pegs. Suggested test: A3, A1 and C2.
 
 **If you use a thumbnail from column 3**, add this line to the end of the description (the photo's licence requires
 the credit, and those thumbnails, as adaptations of it, are themselves CC BY-SA 4.0):
