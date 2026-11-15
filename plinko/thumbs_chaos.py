@@ -40,18 +40,59 @@ def labels(cm, crop, win, rep):
     return draw
 
 
+SRC = "../videos/plinko/thumbnails/sources/The_Price_Is_Right_Plinko_Home_Game_960px.jpg"
+CUTOUT = "../videos/plinko/thumbnails/sources/The_Price_Is_Right_Plinko_Home_Game_cutout.png"
+
+
+def make_cutout():
+    """The board alone, background transparent: GrabCut from a box around the board, largest piece, holes
+    filled, smoothed, pulled in 1 px off the background fringe, feathered. Saved as RGBA (CC BY-SA 4.0, like
+    its source)."""
+    im = cv2.imread(SRC)
+    mask = np.zeros(im.shape[:2], np.uint8)
+    bgd, fgd = np.zeros((1, 65), np.float64), np.zeros((1, 65), np.float64)
+    cv2.setRNGSeed(1)
+    cv2.grabCut(im, mask, (105, 105, 770, 1080), bgd, fgd, 8, cv2.GC_INIT_WITH_RECT)
+    fg = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
+
+    def largest(m):
+        _, lab, st, _ = cv2.connectedComponentsWithStats(m)
+        return np.where(lab == 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA])), 255, 0).astype(np.uint8)
+    fg = largest(fg)
+    cnts, _ = cv2.findContours(fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    fg = cv2.drawContours(np.zeros_like(fg), cnts, -1, 255, -1)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+    fg = largest(cv2.morphologyEx(cv2.morphologyEx(fg, cv2.MORPH_OPEN, k), cv2.MORPH_CLOSE, k))
+    fg = cv2.erode(fg, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+    alpha = cv2.GaussianBlur(fg, (0, 0), 1.2)
+    x, y, w, h = cv2.boundingRect(fg)
+    out = np.dstack([im, alpha])[max(0, y - 6):y + h + 6, max(0, x - 6):x + w + 6]
+    cv2.imwrite(CUTOUT, out)
+    return out
+
+
 def thumb_d():
+    """A photo of a real Plinko board, cut out of its background, beside the film's line."""
     OW, OH = CC.OW, CC.OH
-    photo = cv2.imread("../videos/plinko/thumbnails/sources/The_Price_Is_Right_Plinko_Home_Game_960px.jpg")
-    crop = photo[110:1180, 110:870]                       # the board, from its sign to the prize panel
-    crop = cv2.resize(crop, (int(crop.shape[1] * OH / crop.shape[0]), OH), interpolation=cv2.INTER_AREA)
-    bg = np.zeros((OH, OW, 3), np.float32)
-    bg[:] = (10 / 255, 12 / 255, 16 / 255)
-    img = bg.copy()
-    x0 = OW - crop.shape[1] - 40
-    img[:, x0:x0 + crop.shape[1]] = crop / 255.0                    # finish() takes BGR, as cv2 does
-    ramp = np.clip((np.arange(OW) - (x0 - 10)) / 140.0, 0, 1)[None, :, None]
-    img = img * ramp + bg * (1 - ramp)
+    cut = cv2.imread(CUTOUT, cv2.IMREAD_UNCHANGED)
+    if cut is None:
+        cut = make_cutout()
+    H = 1000
+    cut = cv2.resize(cut, (int(cut.shape[1] * H / cut.shape[0]), H), interpolation=cv2.INTER_AREA)
+    rgb, a = cut[..., :3] / 255.0, cut[..., 3:4] / 255.0
+    yy, xx = np.mgrid[0:OH, 0:OW]
+    x0, y0 = OW - cut.shape[1] - 110, (OH - H) // 2 + 10
+    cx, cy = x0 + cut.shape[1] / 2, OH / 2
+    glow = np.exp(-(((xx - cx) / 620.0) ** 2 + ((yy - cy) / 520.0) ** 2))[..., None]
+    img = np.empty((OH, OW, 3), np.float32)
+    img[:] = (0.04, 0.045, 0.06)                                     # BGR, as cv2 and finish() use
+    img += glow * np.array([0.10, 0.12, 0.20])                       # warm light behind the board
+    sh = np.zeros((OH, OW), np.float32)                              # soft shadow, down and to the left
+    sh[y0 + 18:y0 + 18 + H, x0 - 22:x0 - 22 + cut.shape[1]] = a[..., 0]
+    sh = cv2.GaussianBlur(sh, (0, 0), 22)[..., None]
+    img *= 1 - 0.65 * sh
+    reg = img[y0:y0 + H, x0:x0 + cut.shape[1]]
+    img[y0:y0 + H, x0:x0 + cut.shape[1]] = rgb * a + reg * (1 - a)
     T.finish(img, [("Same release point.", 80, 380, 84, D.INK, "black"), ("Different", 80, 560, 160, D.GOLD, "black"),
                    ("prize.", 80, 720, 160, D.GOLD, "black"), ("Why? Chaos theory.", 84, 850, 64, D.INK, "black")],
              "plinko_chaos_thumb_D")
