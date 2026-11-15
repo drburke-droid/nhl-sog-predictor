@@ -31,7 +31,7 @@ CUES = "results/narration_cues.json"
 TAIL = 1.2                               # silence kept after a shot's last line
 
 SCRIPT = [
-    ("hook", 0.4, "This is Plinko, from The Price Is Right. [p0.5] And this drop wins ten thousand dollars."),
+    ("hook", 2.3, "And this drop wins ten thousand dollars."),
     ("hook", 6.8, "Now, the same drop again. [p0.4] Same release point, matched to the width of an atom."),
     ("hook", 12.4, "Same release point. [p0.8] Different finish. [p1.1] That's chaos."),
 
@@ -126,6 +126,10 @@ SCRIPT = [
     ("outro", 0.3, "So next time you see Plinko on The Price Is Right, [p0.3] drop it in the middle, [p0.3] and let "
                    "chaos decide."),
     ("outro", "+0.9", "Deterministic. [p0.7] Unpredictable. [p0.9] That's chaos."),
+    # added last so every earlier line keeps its index (and its cached audio)
+    ("real", 0.5, "This is Plinko, from The Price Is Right."),
+    ("rebuild", 0.4, "To study it, we rebuilt the TV board in a computer, [p0.3] pin for pin, [p0.2] from measurements "
+                     "of the show."),
 ]
 
 
@@ -304,7 +308,8 @@ def mix():
 def script_md():
     cues = json.load(open(CUES))
     starts, total = shot_starts()
-    names = {"hook": "Same release point, different finish", "deterministic": "Nothing on the board is random",
+    names = {"real": "This is Plinko", "rebuild": "The real game, and our rebuild",
+             "hook": "Same release point, different finish", "deterministic": "Nothing on the board is random",
              "twins": "Two chips a thousandth of a millimetre apart", "chaos": "What chaos theory is",
              "mechanism": "Why round pins make chaos", "horizon": "How far ahead can you see?",
              "crux": "Replaying a winning drop", "islands": "Every place you could let go",

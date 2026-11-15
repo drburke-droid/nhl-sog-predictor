@@ -3,18 +3,14 @@
   "lines": [
    {
     "i": 0,
-    "t0": 0.4,
-    "t1": 5.458,
+    "t0": 2.3,
+    "t1": 4.27,
     "path": "out/narration/line_00.wav",
-    "text": "This is Plinko, from The Price Is Right. And this drop wins ten thousand dollars.",
+    "text": "And this drop wins ten thousand dollars.",
     "phrases": [
      [
-      0.4,
-      2.698
-     ],
-     [
-      3.198,
-      5.458
+      2.3,
+      4.27
      ]
     ]
    },
@@ -996,5 +992,49 @@
    }
   ],
   "need": 12.0
+ },
+ "real": {
+  "lines": [
+   {
+    "i": 45,
+    "t0": 0.5,
+    "t1": 2.63,
+    "path": "out/narration/line_45.wav",
+    "text": "This is Plinko, from The Price Is Right.",
+    "phrases": [
+     [
+      0.5,
+      2.63
+     ]
+    ]
+   }
+  ],
+  "need": 3.83
+ },
+ "rebuild": {
+  "lines": [
+   {
+    "i": 46,
+    "t0": 0.4,
+    "t1": 6.349,
+    "path": "out/narration/line_46.wav",
+    "text": "To study it, we rebuilt the TV board in a computer, pin for pin, from measurements of the show.",
+    "phrases": [
+     [
+      0.4,
+      3.409
+     ],
+     [
+      3.709,
+      4.769
+     ],
+     [
+      4.969,
+      6.349
+     ]
+    ]
+   }
+  ],
+  "need": 7.55
  }
 }

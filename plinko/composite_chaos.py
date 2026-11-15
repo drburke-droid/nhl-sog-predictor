@@ -67,6 +67,60 @@ def trail(gctx, cm, crop, rec, n, col, width=3.0, alpha=0.9):
     gctx.stroke()
 
 
+# ----------------------------------------------------------------------------------------------- 0 the real game
+PHOTO = "../videos/plinko/thumbnails/sources/The_Price_Is_Right_Plinko_Home_Game_960px.jpg"
+PHOTO_CREDIT = "Photo: “The Price Is Right Plinko Home Game” by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons"
+_PH = {}
+
+
+def photo_surface():
+    """The photo of a real board, unmodified, as a cairo surface."""
+    if "s" not in _PH:
+        im = cv2.imread(PHOTO)
+        buf = np.ascontiguousarray(np.dstack([im, np.full(im.shape[:2], 255, np.uint8)]))
+        _PH["buf"] = buf
+        _PH["s"] = cairo.ImageSurface.create_for_data(memoryview(buf), cairo.FORMAT_ARGB32, im.shape[1], im.shape[0])
+    return _PH["s"]
+
+
+def draw_photo(ctx, cx, top, height, alpha=1.0):
+    surf = photo_surface()
+    k = height / surf.get_height()
+    w = surf.get_width() * k
+    ctx.save()
+    ctx.translate(cx - w / 2, top)
+    ctx.scale(k, k)
+    ctx.set_source_surface(surf, 0, 0)
+    ctx.get_source().set_filter(cairo.FILTER_BEST)
+    ctx.paint_with_alpha(alpha)
+    ctx.restore()
+    return cx - w / 2, w
+
+
+def ov_real(ctx, gctx, t, shot, cm, crop):
+    """The opening: a photo of a real Plinko board (the official home game), shown as it is."""
+    ctx.set_source_rgb(0.035, 0.038, 0.05)
+    ctx.paint()
+    draw_photo(ctx, 960, 40, 1000)
+    D.text(ctx, PHOTO_CREDIT, 1900, 1068, 15, D.INK3, 1.0, align="right")
+
+
+def ov_rebuild(ctx, gctx, t, shot, cm, crop):
+    """The real game beside our rebuild of the TV board."""
+    C.scrim(ctx, 1000, 0.9)
+    x, w = draw_photo(ctx, 450, 150, 760, D.fade(t, 0.0, 99, 0.3))
+    a = D.fade(t, 0.6, 99, 0.4)
+    D.text(ctx, "A real Plinko board (the home game)", 450, 965, 26, D.INK, a, "semibold", "center")
+    D.text(ctx, PHOTO_CREDIT, 450, 1000, 14, D.INK3, a, align="center")
+    q0 = cm.px(C.board_world(1.0 * W, C.B.last_row_y() + 1.6 * W, 0.0), crop)
+    q1 = cm.px(C.board_world(9.0 * W, C.B.last_row_y() + 1.6 * W, 0.0), crop)
+    cx = (q0[0] + q1[0]) / 2
+    a = D.fade(t, cue("rebuild", 0, 1) - 0.3, 99, 0.4)
+    D.text(ctx, "Our rebuild of the TV board,", cx, 965, 26, D.INK, a, "semibold", "center")
+    D.text(ctx, "measured pin for pin from broadcast frames", cx, 1000, 20, D.INK2, a, align="center")
+    D.text(ctx, "To study it, we rebuilt it.", LX, 110, 44, D.INK, D.fade(t, 0.3, 99, 0.4), "black")
+
+
 # ----------------------------------------------------------------------------------------------- 1 hook
 def ov_hook(ctx, gctx, t, shot, cm, crop):
     C.scrim(ctx)
@@ -1217,7 +1271,7 @@ def ov_outro(ctx, gctx, t, shot, cm, crop):
         ctx.paint()
 
 
-OVERLAY = dict(hook=ov_hook, deterministic=ov_deterministic, twins=ov_twins, mechanism=ov_mechanism,
+OVERLAY = dict(real=ov_real, rebuild=ov_rebuild, hook=ov_hook, deterministic=ov_deterministic, twins=ov_twins, mechanism=ov_mechanism,
                horizon=ov_horizon, crux=ov_crux, islands=ov_islands, heat=ov_heat, warm=ov_warm, realworld=ov_realworld, chaos=ov_chaos,
                statistics=ov_statistics, outro=ov_outro)
 DARK = {"chaos": (8.0, 0.35, 0.0), "mechanism": (6.0, 0.45, 0.0), "horizon": (6.0, 0.5, 0.0), "islands": (6.0, 0.5, 0.0),
@@ -1238,8 +1292,8 @@ def render(shot, fr):
                 img = cv2.GaussianBlur(img, (0, 0), 0.3 + blur * f)
         else:
             img = cv2.GaussianBlur(img, (0, 0), 2 + blur * f) * dim
-    if shot["name"] == "hook":
-        img *= D.ease(min(1.0, t / 1.0))
+    if shot["name"] == "real":
+        img *= D.ease(min(1.0, t / 0.8))
     gsurf, gctx = C.glow_layer()
     osurf = cairo.ImageSurface(cairo.FORMAT_ARGB32, OW, OH)
     octx = cairo.Context(osurf)
@@ -1249,7 +1303,7 @@ def render(shot, fr):
     o = np.ndarray((OH, OW, 4), np.uint8, osurf.get_data()).astype(np.float32) / 255.0
     img = o[..., :3] + img * (1 - o[..., 3:4])
     edge = min(t, shot["dur"] - t)
-    if edge < 0.2 and shot["name"] != "hook":
+    if edge < 0.2 and not (shot["name"] == "real" and t < 1.0):
         img *= edge / 0.2
     return np.clip(img, 0, 1)
 

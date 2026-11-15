@@ -24,11 +24,11 @@ pair for C3, drawn on that board's own pegs. C2 and C3 mark where the two paths 
 pair from the same experiment that also lands in $0 but parts earlier and swings up to 54 cm apart, so the split
 reads at thumbnail size. Suggested test: A3, A1 and C2.
 
-**If you use a thumbnail from column 3**, add this line to the end of the description (the photo's licence requires
-the credit, and those thumbnails, as adaptations of it, are themselves CC BY-SA 4.0):
+The film opens on that photo, so the description above already credits it. **If you also use a thumbnail from
+column 3**, add this line too (those thumbnails adapt the photo and so are themselves CC BY-SA 4.0):
 
 ```
-Thumbnail photo: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg). Thumbnail adapted from it, also CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+Thumbnail adapted from that photo, also CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
 ```
 
 Other free Plinko photos on Commons (a library event, a county fair, a state agency booth) are homemade boards with
@@ -84,7 +84,9 @@ One drop can't be predicted. Four hundred can, and the pile they make is why the
 
 How it's made: the board is built in Blender from measurements of the TV board, and every chip path comes from a 2D rigid-body simulator tuned to 1,029 real chips from the show (tpirstats.com, seasons 44 to 54). Narration: ElevenLabs ("Lily"). Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/plinko/ACCURACY.md
 
-Independent analysis; not affiliated with The Price Is Right, its producers or the network. The board is a measured replica without the show's branding.
+Opening photo of a real Plinko board: "The Price Is Right Plinko Home Game" by TaurusEmerald, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:The_Price_Is_Right_Plinko_Home_Game.jpg).
+
+Independent analysis; not affiliated with The Price Is Right, its producers or the network. The simulated board is a measured replica of the TV board, in a 1970s palette, without the show's branding.
 
 #chaostheory #plinko #physics
 ```

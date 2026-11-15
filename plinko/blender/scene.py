@@ -30,7 +30,8 @@ FONT_DIR = "/usr/share/fonts/opentype/inter"
 SLOT_LABELS = ["$100", "$500", "$1,000", "$0", "$10,000", "$0", "$1,000", "$500", "$100"]
 SIGN_ROWS = [["1", "0", "0"], ["5", "0", "0"], ["1", "0", "0", "0"], ["0"], ["10", "0", "0", "0"], ["0"],
              ["1", "0", "0", "0"], ["5", "0", "0"], ["1", "0", "0"]]
-SIGN_FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "fonts", "Anton-Regular.ttf")
+SIGN_FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "fonts", "Righteous-Regular.ttf")
+SIGN_DIGIT_H = 0.72                       # Righteous digit height, in ems (rounded 1970s display face, SIL OFL)
 
 
 # --------------------------------------------------------------------------------------------- helpers
@@ -141,6 +142,60 @@ def text_obj(name, s, loc, size, material, parent=None, font="Inter-Bold.otf", a
 
 
 # --------------------------------------------------------------------------------------------- materials
+def srgb(c):
+    """sRGB 0..1 -> linear, so the 1970s palette below reads as written."""
+    return tuple(((v + 0.055) / 1.055) ** 2.4 if v > 0.04045 else v / 12.92 for v in c)
+
+
+RETRO = dict(crimson=(0.78, 0.12, 0.30), sky=(0.36, 0.72, 0.92), purple=(0.42, 0.16, 0.48),
+             magenta=(0.90, 0.25, 0.55), mustard=(0.98, 0.78, 0.18), gold=(0.96, 0.66, 0.10),
+             plum=(0.20, 0.07, 0.28), cream=(0.97, 0.93, 0.85),
+             # deeper versions for the side frames, which sit under the frosted cover
+             s_purple=(0.33, 0.08, 0.42), s_magenta=(0.86, 0.10, 0.45), s_sky=(0.12, 0.55, 0.88),
+             s_mustard=(0.98, 0.68, 0.04))
+# prize columns under slots 1..9, as on the home game's panel, with gold for $10,000
+COLUMN_COLS = ["crimson", "sky", "purple", "crimson", "gold", "crimson", "purple", "sky", "crimson"]
+
+
+def stripes_mat(name, names, period=0.154, slant=0.55):
+    """Slanted bands cycling through the palette (the side frames of the board), in object coordinates."""
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    p = nt.nodes["Principled BSDF"]
+    p.inputs["Roughness"].default_value = 0.32
+    p.inputs["Coat Weight"].default_value = 0.35
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Object"], sep.inputs[0])
+    sx = nt.nodes.new("ShaderNodeMath")
+    sx.operation = "MULTIPLY"
+    sx.inputs[1].default_value = slant
+    nt.links.new(sep.outputs["X"], sx.inputs[0])
+    add = nt.nodes.new("ShaderNodeMath")
+    add.operation = "ADD"
+    nt.links.new(sep.outputs["Z"], add.inputs[0])
+    nt.links.new(sx.outputs[0], add.inputs[1])
+    div = nt.nodes.new("ShaderNodeMath")
+    div.operation = "DIVIDE"
+    div.inputs[1].default_value = period * len(names)
+    nt.links.new(add.outputs[0], div.inputs[0])
+    fr = nt.nodes.new("ShaderNodeMath")
+    fr.operation = "FRACT"
+    nt.links.new(div.outputs[0], fr.inputs[0])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.interpolation = "CONSTANT"
+    els = ramp.color_ramp.elements
+    while len(els) < len(names):
+        els.new(0.5)
+    for i, nm in enumerate(names):
+        els[i].position = i / len(names)
+        els[i].color = (*srgb(RETRO[nm]), 1)
+    nt.links.new(fr.outputs[0], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], p.inputs["Base Color"])
+    return m
+
+
 def materials():
     M = {}
     M["backboard"] = mat("backboard", (0.62, 0.53, 0.40), rough=0.42, coat=0.15)
@@ -149,8 +204,13 @@ def materials():
     M["steel"] = mat("pin_steel", (0.55, 0.56, 0.58), rough=0.22, metal=1.0)
     M["led_off"] = mat("led_off", (0.012, 0.013, 0.016), rough=0.25, coat=0.8)
     M["acrylic_white"] = mat("wall_acrylic", (0.93, 0.93, 0.91), rough=0.18, coat=0.4)
+    M["side_stripes"] = stripes_mat("side_stripes", ["s_purple", "s_magenta", "s_sky", "s_mustard"])
+    for nm, c in RETRO.items():
+        M["retro_" + nm] = mat("retro_" + nm, srgb(c), rough=0.3, coat=0.4)
+    M["digit_white"] = mat("digit_white", (1, 1, 1), emit=(1.0, 0.97, 0.92), strength=2.2, rough=0.3)
+    M["digit_dark"] = mat("digit_dark", srgb(RETRO["plum"]), rough=0.3, coat=0.4)
     M["divider"] = mat("divider_steel", (0.55, 0.56, 0.58), rough=0.25, metal=1.0)
-    M["fascia"] = mat("fascia", (0.025, 0.028, 0.035), rough=0.3, coat=0.5)
+    M["fascia"] = mat("fascia", srgb(RETRO["plum"]), rough=0.3, coat=0.5)
     M["pedestal"] = mat("pedestal", (0.035, 0.04, 0.05), rough=0.35, coat=0.6)
     M["floor"] = mat("stage_floor", (0.018, 0.02, 0.026), rough=0.16, coat=0.3)
     add_noise_bump(M["floor"], 60.0, 0.01)
@@ -163,9 +223,7 @@ def materials():
     M["led_dim"] = mat("led_dim", (0.2, 0.2, 0.2), emit=(0.45, 0.42, 0.4), strength=1.2)
     M["bulb"] = mat("marquee_bulb", (1, 0.9, 0.7), emit=(1.0, 0.82, 0.55), strength=12.0)
     M["strip"] = mat("trim_strip", (0.3, 0.6, 1.0), emit=(0.25, 0.55, 1.0), strength=4.0)
-    slot_cols = [(0.03, 0.06, 0.13), (0.03, 0.08, 0.19), (0.04, 0.12, 0.28), (0.012, 0.012, 0.014),
-                 (0.30, 0.17, 0.01), (0.012, 0.012, 0.014), (0.04, 0.12, 0.28), (0.03, 0.08, 0.19),
-                 (0.03, 0.06, 0.13)]
+    slot_cols = [tuple(0.55 * v for v in srgb(RETRO[nm])) for nm in COLUMN_COLS]     # the columns, a shade darker
     M["slots"] = [mat(f"slot_{k}", c, rough=0.4) for k, c in enumerate(slot_cols)]
     # plexiglass cover: frosted bars where the mask is white, holes elsewhere
     m = bpy.data.materials.new("cover_plexi")
@@ -319,7 +377,7 @@ def build_board(M):
             faces.append((i, j, j + n, i + n))
         faces.append(tuple(range(n))[::-1] if s > 0 else tuple(range(n)))
         faces.append(tuple(range(n, 2 * n)) if s > 0 else tuple(range(n, 2 * n))[::-1])
-        o = mesh_object(f"wall{s}", verts, faces, M["acrylic_white"], rig)
+        o = mesh_object(f"wall{s}", verts, faces, M["side_stripes"], rig)
         mod = o.modifiers.new("bevel", "BEVEL")
         mod.width = 0.002
         mod.segments = 2
@@ -361,16 +419,23 @@ def build_board(M):
     # fascia with LED value signs under the slots, and the pedestal
     fz = bot_z - 0.03 - FASCIA_H / 2 - 0.01
     box("fascia", (2 * (half + side), 0.12, FASCIA_H), (0, -0.04, fz), M["fascia"], rig, 0.01)
-    # prize values as on the show's board: digits stacked top to bottom under each slot, in a tall condensed
-    # face (Anton, SIL OFL; digits are 0.875 em tall), centred in the 30 cm panel
+    # prize values as on the show's board: digits stacked top to bottom under each slot, in a rounded 1970s
+    # face (Righteous, SIL OFL), on coloured columns like the home game's panel, centred in the 50 cm panel
     signs = []
     pitch, dig_h = 0.118, 0.100
+    for k in range(9):                                   # a coloured column under each slot, mustard between them
+        box(f"prizecol{k}", (0.86 * W, 0.003, 0.93 * FASCIA_H), (lx((k + 1) * W), -0.1012, fz),
+            M["retro_" + COLUMN_COLS[k]], rig)
+        if k < 8:
+            box(f"prizesep{k}", (0.012, 0.004, 0.93 * FASCIA_H), (lx((k + 1.5) * W), -0.1016, fz),
+                M["retro_mustard"], rig)
     for k in range(9):
-        m = M["led_gold"] if k == 4 else M["led_white"]
+        m = M["digit_dark"] if k == 4 else M["digit_white"]
         rows = SIGN_ROWS[k]
         z_top = fz + (len(rows) - 1) * pitch / 2
         for r, txt in enumerate(rows):
-            t = text_obj(f"sign{k}_{r}", txt, (lx((k + 1) * W), -0.101, z_top - r * pitch), dig_h / 0.875, m, rig,
+            size = dig_h / SIGN_DIGIT_H * (0.72 if len(txt) > 1 else 1.0)
+            t = text_obj(f"sign{k}_{r}", txt, (lx((k + 1) * W), -0.1035, z_top - r * pitch), size, m, rig,
                          font=SIGN_FONT, rot=(math.pi / 2, 0, 0))
             signs.append(t)
     rig_world = rig_matrix()
