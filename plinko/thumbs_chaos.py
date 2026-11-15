@@ -40,7 +40,7 @@ def shot_frame(name, t, overlay):
     return C3.add_glow(img, gsurf), cm, crop
 
 
-def pill_layer(to_px, win, rep, size, split_t=None):
+def pill_layer(to_px, win, rep, size, split_t=None, dy=-64):
     """Prize pills for the two landing slots, and (when split_t is given) a ring where the two paths part. Pills for
     neighbouring slots sit side by side, each pushed out away from the other, with a leader line to its chip."""
     W_ = CC.W
@@ -56,12 +56,12 @@ def pill_layer(to_px, win, rep, size, split_t=None):
                 ctx.set_source_rgba(1, 1, 1, al)
                 ctx.set_line_width(wd)
                 ctx.stroke()
-        y_lab = C3.B.last_row_y() + 0.1 * W_
+        y_lab = C3.B.last_row_y() + 0.2 * W_
         if abs(kw - kr) == 1:
             d = 1 if kw > kr else -1
             for k, rec, lab, gold, side in ((kw, win, "$10,000", True, d), (kr, rep, D.SLOT_LABELS[kr - 1], False, -d)):
                 chip = to_px(*rec[-1, 1:3])
-                q = to_px(k * W_ + side * 1.05 * W_, y_lab)
+                q = to_px(k * W_ + side * 1.05 * W_, y_lab) + np.array([0.0, dy])
                 ctx.new_path()
                 ctx.move_to(q[0] - side * 10, q[1] + 8)
                 ctx.line_to(chip[0] + side * r_px * 0.7, chip[1] - r_px * 0.7)
@@ -71,7 +71,7 @@ def pill_layer(to_px, win, rep, size, split_t=None):
                 D.pill(ctx, lab, q[0], q[1], size, D.GOLD if gold else D.INK)
         else:
             for k, lab, gold in ((kw, "$10,000", True), (kr, D.SLOT_LABELS[kr - 1], False)):
-                q = to_px(k * W_, y_lab)
+                q = to_px(k * W_, y_lab) + np.array([0.0, dy])
                 D.pill(ctx, lab, q[0], q[1], size, D.GOLD if gold else D.INK)
     return draw
 
@@ -174,7 +174,7 @@ def photo_frame(win, rep, ox=60, oy=105, split_t=None):
     paste("blue", rep[-1, 1:3], rep[-1, 3])
     paste("red", win[-1, 1:3], win[-1, 3])
 
-    pills = pill_layer(lambda x, y: proj([[x, y]])[0], win, rep, 40, split_t)
+    pills = pill_layer(lambda x, y: proj([[x, y]])[0], win, rep, 40, split_t, dy=-50)
     return img, pills, x0
 
 
