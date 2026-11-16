@@ -22,8 +22,8 @@ wedges, then stripes, then rings), so a winner has to cope with a new problem to
 | | Thumbnail | Title |
 |---|---|---|
 | A | `thumbnails/mix_off_thumb_A.png`: the two mixers (current look, "Kitchen Inc" bands), "SPOON vs STAND MIXER", 96% against 78% | Spoon vs Stand Mixer: We Simulated 23,000 Grains to Settle It |
-| B | `thumbnails/mix_off_thumb_B.png`: eight top-down bowls, "8 WAYS TO MIX. 1 WINNER." | 8 Ways to Mix Dry Ingredients, Ranked by Physics |
-| C | `thumbnails/mix_off_thumb_C.png`: two top-down bowls, "SAME SPOON.", 98% against 17% | Same Spoon, Same Bowl: 98% Mixed vs 17% |
+| B | `thumbnails/mix_off_thumb_B.png`: the eight methods as rendered bowls, five seconds in, "8 WAYS TO MIX. 1 WINNER." | 8 Ways to Mix Dry Ingredients, Ranked by Physics |
+| C | `thumbnails/mix_off_thumb_C.png`: the two spoon bowls as a rendered still, "SAME SPOON.", 98% against 17% | Same Spoon, Same Bowl: 98% Mixed vs 17% |
 
 **Description**
 
