@@ -31,7 +31,9 @@ the percentage is measured from the simulated grains.
 | `make_lettering.py` | Writes the generic "Kitchen Inc" lettering for the mixer's trim band. |
 | `blender/` | Render-ready 4K project: nine shot files, the master file, overlay videos and music. Start with `blender/README.md`. |
 | `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
-| `the_mix_off_PREVIEW_720p.mp4` | The knockout film, preview quality (3:48, 1280x720). |
+| `the_mix_off_1080p.mp4` | **The knockout film at 1080p** (3:48), rendered on a CPU from the `blender/` shot files at half size, 16 samples: the current look (realistic metal, "Kitchen Inc" bands). Encoded small to fit GitHub; the upload-quality copy (280 MB) was sent separately. |
+| `render_shot.py`, `render_hd.sh` | Render the `blender/` shot files on a CPU at 1920 wide (four workers per shot, resumable). |
+| `the_mix_off_PREVIEW_720p.mp4` | Earlier 720p preview of the same cut (3:48): older, flatter metal and blank trim bands. |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
 | `thumbnails/` | Thumbnail options A, B, C. YouTube copy is in `../copy/mix_off_YOUTUBE.md`. |
 | `stills/` | Test frames. |
@@ -376,10 +378,30 @@ python make_film.py render        # 7 matches and 2 closing shots; about 5.5 h o
 python make_film.py compose && python make_film.py finish
 ```
 
-### Upload-quality version on a GPU machine
+### 1080p, rendered here
 
-The preview holds up on a phone. On a desktop or TV it is soft, because the 3-D
-picture is 960x420 scaled up. For the upload, render it in 4K on a GPU.
+`the_mix_off_1080p.mp4` was rendered on a 4-core CPU with no GPU, from the same
+shot files as the 4K project at 50% size and 16 samples: 43 s a frame for the
+matches, 55 s for the closing shots, 40 hours for all 3,231 frames.
+
+```bash
+./render_hd.sh 16                                                   # frames -> renders/hd/<shot>/frames/
+```
+
+```bash
+python make_film.py compose --frames renders/hd --scale 1.5 --out mix_off_1080_silent.mp4
+```
+
+```bash
+python make_film.py finish --out mix_off_1080_silent.mp4 --final the_mix_off_1080p.mp4 --crf 28
+```
+
+Output is tagged BT.709. The repository copy is `--crf 28` (83 MB) to stay
+under GitHub's 100 MB limit; the upload copy keeps compose's crf 17 video.
+
+### 4K on a GPU machine
+
+For 4K, render on a GPU.
 
 **The easy way: `blender/`.** That folder holds nine self-contained shot files,
 a master file that assembles the film in Blender's sequencer, the overlay and

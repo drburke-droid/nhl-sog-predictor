@@ -437,7 +437,9 @@ def compose(args, matches):
     global PLATE
     PLATE = getattr(args, "plate", None)
     codec = (["-c:v", "libx264rgb", "-qp", "0", "-preset", "ultrafast"] if PLATE is not None       # lossless, for the plates
-             else ["-c:v", "libx264", "-crf", "17", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart"])
+             else ["-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p",       # HD colour, and say so:
+                   "-c:v", "libx264", "-crf", "17", "-preset", "slow", "-colorspace", "bt709",   # untagged files get guessed at
+                   "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart"])
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{spx(W)}x{spx(H)}", "-r", str(FPS),
            "-i", "-"] + codec + [args.out]
     enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)

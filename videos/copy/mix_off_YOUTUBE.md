@@ -5,11 +5,14 @@ match is two simulated bowls of 23,273 grains each, and the bowl is loaded diffe
 wedges, then stripes, then rings), so a winner has to cope with a new problem to go through.
 
 **What is in the repository (`videos/powder_mixer/`):**
-* `the_mix_off_PREVIEW_720p.mp4`: 3:48, 1280×720, 24 fps, H.264. On-screen captions, no narration,
+* `the_mix_off_1080p.mp4`: 3:48, 1920×1080, 24 fps, H.264, the current look (realistic metal, "Kitchen Inc"
+  mixers). The repository copy is compressed to 83 MB; **upload `the_mix_off_1080p_UPLOAD.mp4`** (280 MB, sent
+  separately) or the 4K render instead.
+* `the_mix_off_PREVIEW_720p.mp4`: 3:48, 1280×720, 24 fps, H.264. Earlier preview with the older metal. On-screen captions, no narration,
   original synthesized score at −16 LUFS.
-* This is a **preview**, not the upload. The 3-D picture was rendered on a CPU at 960×420 (854×480 for the
-  closing shots) with 8 samples and scaled up; the text, charts and top-down views are drawn at full resolution. For the upload,
-  re-render on a GPU machine and re-compose (commands in `videos/powder_mixer/README.md`).
+* The 1080p file is a true 1080p render (3-D picture 1920×840, closing shots 1920×1080, 16 samples, CPU), good
+  enough to upload. The 720p preview is the older 960×420 render scaled up. For 4K, render the `blender/`
+  folder on a GPU machine (instructions in `videos/powder_mixer/blender/README.md`).
 * `same_spoon_two_ways_SHORT.mp4`: vertical 1080×1920, the first quarter-final on its own.
 
 **A/B/C test.**

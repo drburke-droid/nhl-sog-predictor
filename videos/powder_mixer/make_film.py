@@ -267,7 +267,8 @@ def main():
         wav = base + "_score.wav"
         subprocess.run([sys.executable, os.path.join(HERE, "film_score.py"), base + "_timeline.json", wav], check=True)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", args.out, "-i", wav, "-c:v", "libx264", "-crf", str(args.crf),
-                        "-preset", "slow", "-pix_fmt", "yuv420p", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000",
+                        "-preset", "slow", "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
+                        "-color_trc", "bt709", "-color_range", "tv", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000",
                         "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", args.final], check=True)
         print("wrote", args.final, f"{os.path.getsize(args.final) / 1e6:.0f} MB")
     elif args.stage == "plates":
