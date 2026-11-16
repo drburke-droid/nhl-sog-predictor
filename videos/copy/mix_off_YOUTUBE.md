@@ -8,6 +8,8 @@ wedges, then stripes, then rings), so a winner has to cope with a new problem to
 * `the_mix_off_1080p.mp4`: 3:48, 1920×1080, 24 fps, H.264, the current look (realistic metal, "Kitchen Inc"
   mixers). The repository copy is compressed to 83 MB; **upload `the_mix_off_1080p_UPLOAD.mp4`** (280 MB, sent
   separately) or the 4K render instead.
+* `the_mix_off_1080p_HEVC.mp4`: the same film as HEVC, 99 MiB, noticeably better than the H.264 repository copy;
+  the next best thing to upload if the 280 MB file is not available.
 * `the_mix_off_PREVIEW_720p.mp4`: 3:48, 1280×720, 24 fps, H.264. Earlier preview with the older metal. On-screen captions, no narration,
   original synthesized score at −16 LUFS.
 * The 1080p file is a true 1080p render (3-D picture 1920×840, closing shots 1920×1080, 16 samples, CPU), good

@@ -32,6 +32,7 @@ the percentage is measured from the simulated grains.
 | `blender/` | Render-ready 4K project: nine shot files, the master file, overlay videos and music. Start with `blender/README.md`. |
 | `patterns.py` | Squares and 16x16 pixel art for loading a bowl. The film's closing section uses four of them. |
 | `the_mix_off_1080p.mp4` | **The knockout film at 1080p** (3:48), rendered on a CPU from the `blender/` shot files at half size, 16 samples: the current look (realistic metal, "Kitchen Inc" bands). Encoded small to fit GitHub; the upload-quality copy (280 MB) was sent separately. |
+| `the_mix_off_1080p_HEVC.mp4` | The same 1080p film as HEVC (H.265), 99 MiB: the best quality that fits GitHub's file limit. Use this one if the 280 MB upload copy is not to hand. |
 | `render_shot.py`, `render_hd.sh` | Render the `blender/` shot files on a CPU at 1920 wide (four workers per shot, resumable). |
 | `the_mix_off_PREVIEW_720p.mp4` | Earlier 720p preview of the same cut (3:48): older, flatter metal and blank trim bands. |
 | `same_spoon_two_ways_SHORT.mp4` | Vertical Short: the first quarter-final. |
