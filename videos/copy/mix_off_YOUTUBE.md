@@ -10,8 +10,8 @@ wedges, then stripes, then rings), so a winner has to cope with a new problem to
   separately) or the 4K render instead.
 * `the_mix_off_1080p_HEVC.mp4`: the same film as HEVC, 99 MiB, noticeably better than the H.264 repository copy;
   the next best thing to upload if the 280 MB file is not available.
-* `the_mix_off_PREVIEW_720p.mp4`: 3:48, 1280×720, 24 fps, H.264. Earlier preview with the older metal. On-screen captions, no narration,
-  original synthesized score at −16 LUFS.
+* `the_mix_off_PREVIEW_720p.mp4`: 3:48, 1280×720, 24 fps, H.264. Earlier preview with the older metal.
+* All versions: on-screen captions, no narration, original synthesized score at −16 LUFS.
 * The 1080p file is a true 1080p render (3-D picture 1920×840, closing shots 1920×1080, 16 samples, CPU), good
   enough to upload. The 720p preview is the older 960×420 render scaled up. For 4K, render the `blender/`
   folder on a GPU machine (instructions in `videos/powder_mixer/blender/README.md`).
@@ -21,7 +21,7 @@ wedges, then stripes, then rings), so a winner has to cope with a new problem to
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | `thumbnails/mix_off_thumb_A.png`: the two bowls, "SPOON vs STAND MIXER", 96% against 78% | Spoon vs Stand Mixer: We Simulated 23,000 Grains to Settle It |
+| A | `thumbnails/mix_off_thumb_A.png`: the two mixers (current look, "Kitchen Inc" bands), "SPOON vs STAND MIXER", 96% against 78% | Spoon vs Stand Mixer: We Simulated 23,000 Grains to Settle It |
 | B | `thumbnails/mix_off_thumb_B.png`: eight top-down bowls, "8 WAYS TO MIX. 1 WINNER." | 8 Ways to Mix Dry Ingredients, Ranked by Physics |
 | C | `thumbnails/mix_off_thumb_C.png`: two top-down bowls, "SAME SPOON.", 98% against 17% | Same Spoon, Same Bowl: 98% Mixed vs 17% |
 
@@ -50,8 +50,7 @@ And then some satisfying blending: four bowls loaded as coloured squares, a smil
 What this is, and is not
 Every tool, hand tools included, hangs from the same stand mixer, so the only thing that differs between two bowls is the tool and the way it moves. Each method has its own colour: mixer, score bar and chart line match. This is a physics simulation of dry, free-flowing grains of equal size: no clumping, no dust cloud, no butter. The bowl is a half-scale model of a 22 cm kitchen bowl. The hand tools move at 1.5 strokes a second, the stand mixer at 0.8 orbits a second, the hand mixer's beaters at 5 turns a second, which is on the slow side for a real one. Change those speeds and the machines' scores change; the hand tools' strokes-to-mix does not. There is no published experiment on spoon or whisk strokes for dry powders to check the hand-tool results against.
 
-0:00 The question
-0:05 How "% mixed" is measured, and who is playing
+0:00 The question, and how "% mixed" is measured
 0:19 Quarter-final 1: spoon vs spoon twirled in the middle
 0:38 Quarter-final 2: stand mixer, wire whip vs large paddle
 0:56 Quarter-final 3: hand mixer vs whisk
@@ -62,7 +61,7 @@ Every tool, hand tools included, hangs from the same stand mixer, so the only th
 2:37 The champion, and what it shows
 3:11 And now, some satisfying blending
 
-How it's made: the grains are simulated with position-based dynamics with friction, at a 1 ms time step. The pictures are rendered in Blender from the simulated grain positions, and every number on screen is measured from the same grains. Code, data and method: https://github.com/drburke-droid/nhl-sog-predictor/tree/master/videos/powder_mixer
+How it's made: the grains are simulated with position-based dynamics with friction, at a 1 ms time step. The pictures are rendered in Blender from the simulated grain positions, and every number on screen is measured from the same grains. Code, data and method: https://github.com/drburke-droid/nhl-sog-predictor/tree/claude/charming-dijkstra-sd3q1f/videos/powder_mixer
 
 Sources: P.M.C. Lacey, J Appl Chem 4:257 (1954). D. Brone, A. Alexander & F.J. Muzzio, AIChE J 44:271 (1998). G.R. Chandratilleke et al., Ind Eng Chem Res 49:5467 (2010). V. Boonkanokwong et al., Powder Technol 302:333 (2016). B. Jadidi et al., Processes 11:733 (2023). D.J. Pine et al., Nature 438:997 (2005).
 
@@ -74,8 +73,7 @@ Music: an original score, synthesized for this video (no samples).
 **Chapters**
 
 ```
-0:00 The question
-0:05 How "% mixed" is measured, and who is playing
+0:00 The question, and how "% mixed" is measured
 0:19 Quarter-final 1: spoon vs spoon twirled in the middle
 0:38 Quarter-final 2: stand mixer, wire whip vs large paddle
 0:56 Quarter-final 3: hand mixer vs whisk
@@ -104,7 +102,9 @@ granular flow, powder mixing, Blender, kitchen science, food science, simulation
 * The last bowl is the YouTube icon drawn in powder and stirred away. YouTube's brand guidelines ask that the
   logo is not altered, so this is your call; swapping it for another pattern is one line in `make_film.py`
   (`SATISFYING`) and a 20-minute re-render of that shot.
-* The repository link in the description points at `master`; the work is on the branch
-  `claude/charming-dijkstra-sd3q1f` until it is merged.
+* The repository link in the description points at the branch `claude/charming-dijkstra-sd3q1f`, where the
+  work is. Change it to `master` once the branch is merged, and delete the line if the repository is private
+  (viewers would get a 404).
+* Chapters: YouTube needs every chapter to be at least 10 seconds, so the opening is one chapter (0:00 to 0:19).
 * The score was synthesized and checked for level (−16 LUFS) and clipping, but nobody has listened to it.
   Listen before publishing, or replace it.
