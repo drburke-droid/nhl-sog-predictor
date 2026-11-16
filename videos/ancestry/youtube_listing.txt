@@ -104,3 +104,20 @@ youtube_thumbnail_e_bigtext.png  big type, built to win the click test: "200,000
 Test e against a and c (big promise, dark mystery, full colour); b shares e's picture, so test it separately.
 Rebuild: thumbnails/make_thumbnails.py (shot list in thumbnails/shots.json); thumbnails/feed_preview.jpg
 shows them at phone-feed size with their titles. The old gold-headline set is in thumbnails/old_v1/.
+
+
+SHORT (videos/ancestry/short/every_grain_of_us_short.mp4, 1080x1920, 50 s; rebuild with short/make_short.py)
+-----
+Title:
+  Every person alive descends from these grains of sand
+Alternatives:
+  The last 250 years of human migration, in sand
+  Watch the world fill with people
+
+Description:
+  The last 250 years of a 200,000-year story. Full film: https://youtu.be/akIcxuiuSvs
+  Each grain of sand is about 56,000 people today; each colour is a strand of ancestry from ancient-DNA studies.
+  #HumanMigration #Ancestry #History
+
+When uploading: set "Related video" to the full film, so the Short links straight to it.
+
