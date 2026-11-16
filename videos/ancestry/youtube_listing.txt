@@ -120,4 +120,6 @@ Description:
   #HumanMigration #Ancestry #History
 
 When uploading: set "Related video" to the full film, so the Short links straight to it.
+Thumbnail: short/short_thumbnail.png (1080x1920, the flight between Delhi and Dhaka, rendered fresh from the
+film file). If the app only lets you pick a frame, choose about 0:28: the same moment.
 
