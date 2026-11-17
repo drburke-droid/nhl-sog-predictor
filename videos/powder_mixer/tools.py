@@ -312,7 +312,9 @@ def build_tool(name, d, bowl=BOWL):
 class Motion:
     """Rotor angle, mount radius, part angles and plunge as functions of time."""
 
-    def __init__(self, tool, seconds, speed=1.0, t_ramp=0.5, dt=1e-3):
+    T_RAMP, T_TURN = 0.5, 0.15       # plunge ramp; half-width of the turn-round when reversing
+
+    def __init__(self, tool, seconds, speed=1.0, t_ramp=T_RAMP, dt=1e-3, reverse=False):
         self.tool, self.seconds = tool, seconds
         self.t = np.arange(0.0, seconds + 2.0, dt)
         up = np.clip(self.t / t_ramp, 0, 1)
@@ -320,8 +322,19 @@ class Motion:
         sm = lambda u: u * u * (3 - 2 * u)
         env = sm(up) * (1 - sm(dn))
         self.plunge = env                                         # 1 = tool down in the powder
-        self.turns = np.cumsum(env) * dt * speed                  # seconds of full-speed running x speed
+        drive = env
+        if reverse:
+            # stir forward for the first half, then retrace the same path backwards: the drive is
+            # mirrored about the midpoint, so the tool ends exactly where it started
+            mid = seconds / 2
+            drive = env * (1 - 2 * sm(np.clip((self.t - (mid - self.T_TURN)) / (2 * self.T_TURN), 0, 1)))
+        self.turns = np.cumsum(drive) * dt * speed                # seconds of full-speed running x speed
         self.speed = speed
+
+    @classmethod
+    def seconds_for_reversal(cls, forward):
+        """Total run time that gives `forward` seconds of full-speed stirring before the turn-round."""
+        return 2 * (forward + cls.T_RAMP / 2 + cls.T_TURN / 2)
 
     def at(self, t):
         tool = self.tool

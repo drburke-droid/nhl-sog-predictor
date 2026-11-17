@@ -63,7 +63,12 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out")
     ap.add_argument("--no-cache", action="store_true")
+    ap.add_argument("--reverse-after", type=float, metavar="S",
+                    help="stir forward for S seconds (at full speed), then retrace the tool's path backwards "
+                         "to where it started; --seconds is set to fit")
     args = ap.parse_args()
+    if args.reverse_after:
+        args.seconds = Motion.seconds_for_reversal(args.reverse_after)
     out = args.out or os.path.join(HERE, "cache", "bowl", args.tool)
     os.makedirs(out, exist_ok=True)
 
@@ -71,7 +76,7 @@ def main():
     R, rf = bowl["R"], bowl["rf"]
     rng = np.random.default_rng(args.seed)
     tool = build_tool(args.tool, d, bowl)
-    motion = Motion(tool, args.seconds, args.speed)
+    motion = Motion(tool, args.seconds, args.speed, reverse=bool(args.reverse_after))
     K = sum(len(p["pts"]) for p in tool["parts"])
 
     # ---- fill ---------------------------------------------------------------
@@ -121,7 +126,8 @@ def main():
     # substeps: short enough that nothing moves more than 0.4 grain, and <= max-dt
     probe = np.zeros((n_all, 3)); probe2 = np.zeros((n_all, 3))
     vmax_tool = 0.0
-    for t in np.linspace(1.0, min(args.seconds - 1.0, 8.0), 60):
+    t_probe = (0.3 * args.seconds, 0.45 * args.seconds) if args.reverse_after else (1.0, min(args.seconds - 1.0, 8.0))
+    for t in np.linspace(*t_probe, 60):
         place(t, probe); place(t + 1e-3, probe2)
         vmax_tool = max(vmax_tool, float(np.sqrt(((probe2[N:] - probe[N:]) ** 2).sum(1)).max()) / 1e-3)
     nsub = max(int(np.ceil(vmax_tool / fps / (0.4 * d))), int(np.ceil(1000.0 / (fps * args.max_dt))))
@@ -161,6 +167,8 @@ def main():
     ang = np.zeros((n_frames, len(tool["parts"])))
     snap_every = int(round(2.5 * fps))              # grain positions every 2.5 s, for top-down pictures
     snaps = []
+    f_mid = int(round(args.seconds / 2 * fps))        # the turn-round, when reversing
+    P_start, P_mid = P[:N].astype(np.float32).copy(), None
     t0 = time.time()
     active = False
     for f in range(n_frames):
@@ -181,6 +189,8 @@ def main():
         fpc.write(P[:N].astype("<f4").tobytes())
         if f % snap_every == 0 or f == n_frames - 1:
             snaps.append(P[:N].astype(np.float32).copy())
+        if f == f_mid:
+            P_mid = P[:N].astype(np.float32).copy()
         phi, e, angles, pl = motion.at(t)
         ch["t"][f], ch["phi"][f], ch["e"][f], ch["plunge"][f] = t, phi, e, pl
         ch["count"][f] = motion.count(t)
@@ -198,13 +208,25 @@ def main():
         return (float(ch["t"][i[0]]), float(ch["count"][i[0]])) if len(i) else (None, None)
 
     summary = {f"{int(l*100)}": reach(l) for l in (0.5, 0.8, 0.9, 0.95)}
+    rev = {}
+    if args.reverse_after:
+        # how far each grain is from where it started: at the turn-round, and after stirring back
+        P_end = P[:N].astype(np.float32)
+        d_mid = np.sqrt(((P_mid - P_start) ** 2).sum(1))
+        d_end = np.sqrt(((P_end - P_start) ** 2).sum(1))
+        rev = dict(reverse_after=args.reverse_after, frame_mid=f_mid, count_mid=float(ch["count"][f_mid]),
+                   mix_mid=float(ch["mix"][f_mid]), mix_peak=float(ch["mix"].max()), mix_end=float(ch["mix"][-1]),
+                   moved_mid_median=float(np.median(d_mid)), moved_end_median=float(np.median(d_end)),
+                   moved_mid_rms=float(np.sqrt((d_mid ** 2).mean())), moved_end_rms=float(np.sqrt((d_end ** 2).mean())),
+                   home_fraction=float((d_end < 2 * d).mean()))       # grains back within two grain sizes
+        np.savez_compressed(os.path.join(out, "reverse.npz"), start=P_start, mid=P_mid, end=P_end, ingredient=ingr)
     np.savez_compressed(os.path.join(out, "meta.npz"), ingredient=ingr, rand=rng.random((N, 4)).astype(np.float32),
                         angles=ang, snaps=np.array(snaps), **ch)
     meta = dict(tool=args.tool, label=tool["label"], unit=tool["unit"], bowl=bowl, grain=d, fps=fps,
                 seconds=args.seconds, speed=args.speed, load=args.load, n_grains=int(N), n_frames=n_frames,
                 ingredients=n_ing, rotor_radius=tool["e"], spiral=tool["spiral"], orbit=tool["orbit"],
                 part_du=[p["du"] for p in tool["parts"]], bed_top=bed_top, dt_ms=dt * 1e3,
-                final_mix=float(ch["mix"][-1]), reach=summary)
+                final_mix=float(ch["mix"][-1]), reach=summary, **rev)
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=1)
     print(f"{tool['label']}: {100*ch['mix'][-1]:.1f}% after {args.seconds:.0f}s; "
           + "  ".join(f"{k}% at {v[0]:.1f}s" if v[0] is not None else f"{k}% not reached" for k, v in summary.items()))

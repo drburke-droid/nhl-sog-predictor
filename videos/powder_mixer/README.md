@@ -27,6 +27,7 @@ the percentage is measured from the simulated grains.
 | `models/kitchenaid/` | The stand mixer model (CC0, see "The stand mixer model" below). |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
+| `reverse_experiment.py`, `plot_reverse.py` | Stir forward, then exactly backwards: does it un-mix? Runs and charts. |
 | `make_master.py` | Builds the Blender sequencer file that assembles the final film. |
 | `make_lettering.py` | Writes the generic "Kitchen Inc" lettering for the mixer's trim band. |
 | `blender/` | Render-ready 4K project: nine shot files, the master file, overlay videos and music. Start with `blender/README.md`. |
@@ -285,6 +286,66 @@ powder in or out, so it was not tested as a contestant.
   segregation. Wires are one grain thick. Grains cannot leave the bowl.
 - "% mixed" is rescaled so the bowl as loaded reads 0% for every loading
   pattern (thin rings otherwise start at 26%).
+
+## Can you un-mix by stirring backwards?
+
+```bash
+python reverse_experiment.py        # 56 runs, about 50 minutes on 4 cores
+```
+
+```bash
+python plot_reverse.py
+```
+
+Each run stirs forward for a set time, then makes the tool retrace its path
+exactly in reverse until it is back where it started (`bowl_sim.py
+--reverse-after SECONDS`). Forward time is counted in hand strokes (0.67 s),
+so every tool gets the same number of seconds. Varied: the tool (six), how long
+it stirred before turning back (1 to 16 strokes), how the bowl was loaded, and
+the grain size.
+
+![Stirring backwards does not un-mix](experiments/reverse_loops.png)
+
+![Top-down views](experiments/reverse_topviews_spoon.jpg)
+
+![How far the grains come back](experiments/reverse_home.png)
+
+- **It never un-mixes.** In no run did stirring back return the bowl towards
+  0%. Back at the starting point the bowl was as mixed as at the turn-round or
+  more so in 54 of 56 runs; the two exceptions were down 0.5 and 3 points.
+- **There is a brief dip.** With a spoon, fork or whisk, "% mixed" falls by up
+  to 10 points in the first stroke or two after turning back, about twice the
+  ordinary wobble of the curve (3 to 5 points), then recovers. The stand
+  mixer and hand mixer show no dip.
+- **The grains do come part of the way home.** After one or two strokes, the
+  backward strokes undo about half the distance a typical grain has travelled
+  (spoon 54% and 47%, whisk 62% and 53%, stand mixer 65% and 63%). For the
+  spoon and whisk that fades to 13% and 11% after 8 strokes and 2% and 6% after
+  16; for the stand mixer it was still 39% after the longest run. What comes
+  back is the bulk carry round the bowl; the shuffling of neighbours does not,
+  and that is what "% mixed" measures. Almost no grain returns to its own
+  place: after even one stroke, under 6% of grains end within two grain widths
+  of where they began with a spoon or whisk (13% with the fork).
+- **Backward strokes with a hand tool are mostly wasted.** Two strokes forward
+  and two back left the spoon at 24%, where four strokes forward reach 67%;
+  4+4 gave 66% against 82%, and 8+8 gave 87% against 96%. Retracing the path
+  visits no new powder. The machines lose little: the stand mixer's 4+4 gave
+  50% against 57% for 8 forward.
+- **Starting pattern.** It cannot change how the grains move, only how the
+  movement scores. On wedges, stripes and rings alike the score rose on the
+  way back (spoon after 8 strokes: 82 to 90, 77 to 88, 60 to 79).
+- **Grain size.** After 2 strokes coarser grains came back further (spoon 40%,
+  47%, 53% for 1.4, 1.8, 2.4 mm; whisk 49%, 53%, 62%). After 8 strokes there
+  was no consistent trend.
+
+How much to trust it: one run per case. A repeat with a different random fill
+agreed within 1 point. Halving the solver time step raised the distance
+recovered by 6 to 7 points (54% to 60%, 47% to 54%), so some of the
+irreversibility is numerical; the "% mixed" figures moved by 2 points or less.
+The tool plunging in and lifting out adds a few points at each end (the jump
+at the left end of each coloured line). Real powders also have cohesion and
+air, which this model does not. Numbers are in `experiments/reverse.csv`,
+curves in `experiments/reverse_curves.json`.
 
 ## The knockout film
 

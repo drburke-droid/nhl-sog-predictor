@@ -1,0 +1,57 @@
+set,tool,label,load,grain,strokes,seed,dt_ms,tool_count,unit,n_grains,mix_turn,mix_peak,mix_after_plunge,mix_before_lift,mix_end,moved_turn_mm,moved_end_mm,way_back,home_fraction
+grain,spoon,Spoon,wedges,1.4,2,7,,2.03,strokes,50160,23.3,34.9,0.7,25.1,31.5,27.4,16.4,0.401,0.023
+grain,spoon,Spoon,wedges,1.4,8,7,,8.03,strokes,50160,81.2,90.1,0.7,89.2,89.4,45.3,42.7,0.057,0.003
+grain,spoon,Spoon,wedges,2.4,2,7,,2.03,strokes,10062,22.1,32.8,1.3,23.4,31.2,34.3,16.0,0.533,0.052
+grain,spoon,Spoon,wedges,2.4,8,7,,8.03,strokes,10062,79.7,88.8,1.3,83.7,87.6,52.0,40.2,0.227,0.011
+grain,whisk,Whisk,wedges,1.4,2,7,,2.03,strokes,50160,21.3,31.9,0.4,21.2,30.2,32.5,16.7,0.486,0.019
+grain,whisk,Whisk,wedges,1.4,8,7,,8.03,strokes,50160,74.6,83.5,0.4,79.9,81.3,48.9,38.2,0.218,0.004
+grain,whisk,Whisk,wedges,2.4,2,7,,2.03,strokes,10062,25.1,36.3,1.7,28.4,36.0,49.5,18.6,0.624,0.037
+grain,whisk,Whisk,wedges,2.4,8,7,,8.03,strokes,10062,81.1,94.0,1.7,86.5,93.0,38.2,43.2,-0.128,0.006
+load,paddle_large,"Stand mixer, large paddle",rings,1.8,2,7,,1.08,orbits,23273,35.9,50.8,4.3,49.5,50.7,32.6,12.2,0.627,0.05
+load,paddle_large,"Stand mixer, large paddle",rings,1.8,8,7,,4.28,orbits,23273,72.4,84.8,4.3,83.7,84.1,57.4,35.1,0.389,0.007
+load,paddle_large,"Stand mixer, large paddle",stripes,1.8,2,7,,1.08,orbits,23273,25.3,39.1,2.4,37.5,39.1,32.6,12.2,0.627,0.05
+load,paddle_large,"Stand mixer, large paddle",stripes,1.8,8,7,,4.28,orbits,23273,55.3,72.2,2.4,71.7,72.2,57.4,35.1,0.389,0.007
+load,spoon,Spoon,rings,1.8,2,7,,2.03,strokes,23273,21.5,34.3,2.6,30.6,33.4,29.7,15.7,0.471,0.037
+load,spoon,Spoon,rings,1.8,8,7,,8.03,strokes,23273,60.5,79.7,2.6,75.1,79.1,46.3,40.4,0.128,0.006
+load,spoon,Spoon,stripes,1.8,2,7,,2.03,strokes,23273,24.1,28.2,4.9,22.9,28.2,29.7,15.7,0.471,0.037
+load,spoon,Spoon,stripes,1.8,8,7,,8.03,strokes,23273,77.4,89.2,4.9,84.7,88.4,46.3,40.4,0.128,0.006
+load,whisk,Whisk,rings,1.8,2,7,,2.03,strokes,23273,25.2,38.0,1.9,35.9,37.5,38.9,18.3,0.531,0.024
+load,whisk,Whisk,rings,1.8,8,7,,8.03,strokes,23273,67.7,87.2,1.9,84.9,83.7,45.2,40.3,0.109,0.004
+load,whisk,Whisk,stripes,1.8,2,7,,2.03,strokes,23273,23.6,31.1,3.7,26.4,31.1,38.9,18.3,0.531,0.024
+load,whisk,Whisk,stripes,1.8,8,7,,8.03,strokes,23273,76.7,87.1,3.7,83.1,87.0,45.2,40.3,0.109,0.004
+repeat,spoon,Spoon,wedges,1.8,2,8,,2.03,strokes,23273,22.2,32.6,1.1,22.5,29.6,29.4,15.9,0.459,0.033
+repeat,spoon,Spoon,wedges,1.8,8,8,,8.03,strokes,23273,82.4,90.0,1.1,86.1,89.6,46.5,40.6,0.126,0.005
+tools,fork,Fork,wedges,1.8,1,7,,1.03,strokes,23273,9.7,14.7,0.7,9.2,14.7,15.3,7.8,0.488,0.126
+tools,fork,Fork,wedges,1.8,2,7,,2.03,strokes,23273,13.3,19.3,0.7,12.4,19.3,17.6,9.2,0.475,0.096
+tools,fork,Fork,wedges,1.8,4,7,,4.03,strokes,23273,43.9,45.9,0.7,37.7,40.6,65.9,16.9,0.744,0.032
+tools,fork,Fork,wedges,1.8,8,7,,8.03,strokes,23273,61.1,67.2,0.7,63.9,62.4,56.1,31.7,0.434,0.009
+tools,paddle_large,"Stand mixer, large paddle",wedges,1.8,1,7,,0.55,orbits,23273,8.8,13.5,1.0,10.1,13.5,18.6,6.6,0.646,0.19
+tools,paddle_large,"Stand mixer, large paddle",wedges,1.8,2,7,,1.08,orbits,23273,20.9,30.6,1.0,28.3,30.6,32.6,12.2,0.627,0.05
+tools,paddle_large,"Stand mixer, large paddle",wedges,1.8,4,7,,2.15,orbits,23273,35.3,52.4,1.0,50.3,52.3,57.5,23.4,0.592,0.014
+tools,paddle_large,"Stand mixer, large paddle",wedges,1.8,8,7,,4.28,orbits,23273,56.7,72.4,1.0,72.2,72.3,57.4,35.1,0.389,0.007
+tools,spoon,Spoon,wedges,1.8,1,7,,1.03,strokes,23273,19.6,29.8,1.1,20.6,24.3,27.2,12.4,0.543,0.056
+tools,spoon,Spoon,wedges,1.8,2,7,,2.03,strokes,23273,22.7,33.9,1.1,23.6,30.2,29.7,15.7,0.471,0.037
+tools,spoon,Spoon,wedges,1.8,4,7,,4.03,strokes,23273,67.0,68.6,1.1,65.9,66.5,52.5,29.5,0.439,0.012
+tools,spoon,Spoon,wedges,1.8,8,7,,8.03,strokes,23273,82.0,89.6,1.1,87.1,89.5,46.3,40.4,0.128,0.006
+tools,spoon,Spoon,wedges,1.8,16,7,,16.03,strokes,23273,96.3,99.5,1.1,98.5,98.3,46.3,45.5,0.017,0.002
+tools,spoon_centre,Spoon twirled in the middle,wedges,1.8,1,7,,1.03,turns,23273,0.8,1.1,-0.1,0.5,1.1,1.2,1.8,-0.483,0.844
+tools,spoon_centre,Spoon twirled in the middle,wedges,1.8,2,7,,2.03,turns,23273,1.6,2.8,-0.1,1.9,2.8,1.6,2.3,-0.379,0.719
+tools,spoon_centre,Spoon twirled in the middle,wedges,1.8,4,7,,4.03,turns,23273,3.3,6.0,-0.1,5.3,6.0,2.3,3.1,-0.359,0.568
+tools,spoon_centre,Spoon twirled in the middle,wedges,1.8,8,7,,8.03,turns,23273,6.7,12.2,-0.1,11.4,12.2,3.3,4.7,-0.428,0.36
+tools,twin_beaters,Hand mixer (twin beaters),wedges,1.8,1,7,,0.27,laps,23273,4.3,7.1,1.1,5.2,7.1,4.3,5.0,-0.16,0.332
+tools,twin_beaters,Hand mixer (twin beaters),wedges,1.8,2,7,,0.54,laps,23273,10.2,15.9,1.1,13.5,15.8,10.2,7.3,0.282,0.184
+tools,twin_beaters,Hand mixer (twin beaters),wedges,1.8,4,7,,1.07,laps,23273,19.6,32.4,1.1,30.1,32.3,18.8,11.8,0.373,0.044
+tools,twin_beaters,Hand mixer (twin beaters),wedges,1.8,8,7,,2.14,laps,23273,34.2,51.5,1.1,49.7,51.5,36.6,20.2,0.447,0.011
+tools,whisk,Whisk,wedges,1.8,1,7,,1.03,strokes,23273,20.9,32.0,0.9,24.1,28.5,37.7,14.3,0.621,0.041
+tools,whisk,Whisk,wedges,1.8,2,7,,2.03,strokes,23273,23.5,34.1,0.9,26.6,33.1,38.9,18.3,0.531,0.024
+tools,whisk,Whisk,wedges,1.8,4,7,,4.03,strokes,23273,61.0,71.4,0.9,60.1,69.9,39.0,31.9,0.182,0.008
+tools,whisk,Whisk,wedges,1.8,8,7,,8.03,strokes,23273,79.7,88.5,0.9,84.7,87.7,45.2,40.3,0.109,0.004
+tools,whisk,Whisk,wedges,1.8,16,7,,16.03,strokes,23273,94.7,99.1,0.9,98.0,98.6,49.1,46.1,0.062,0.003
+small,paddle_large,"Stand mixer, large paddle",wedges,1.8,0.25,7,0.99,0.15,orbits,23273,0.3,0.5,0.3,0.3,0.4,1.7,2.1,-0.269,0.826
+small,paddle_large,"Stand mixer, large paddle",wedges,1.8,0.5,7,0.99,0.28,orbits,23273,2.5,3.3,1.0,2.1,3.3,7.0,4.5,0.362,0.365
+small,spoon,Spoon,wedges,1.8,0.25,7,0.99,0.28,strokes,23273,-0.1,0.2,-0.1,-0.1,0.2,0.9,1.9,-0.981,0.776
+small,spoon,Spoon,wedges,1.8,0.5,7,0.99,0.53,strokes,23273,4.9,7.7,1.1,4.9,7.7,4.1,7.1,-0.747,0.238
+small,whisk,Whisk,wedges,1.8,0.25,7,0.99,0.28,strokes,23273,-0.2,1.2,-0.2,-0.2,1.2,1.3,2.5,-0.918,0.642
+small,whisk,Whisk,wedges,1.8,0.5,7,0.99,0.53,strokes,23273,5.2,8.7,0.9,3.6,8.5,7.4,8.6,-0.164,0.163
+solver,spoon,Spoon,wedges,1.8,1,7,0.5,1.03,strokes,23273,17.7,27.7,1.2,18.3,24.0,33.8,13.5,0.599,0.055
+solver,spoon,Spoon,wedges,1.8,2,7,0.5,2.03,strokes,23273,21.3,28.8,1.2,21.1,27.8,36.3,16.6,0.541,0.035
