@@ -78,6 +78,16 @@ When all 8,274 frames are done, switch to the `Edit` scene and choose Render →
 - This takes a few minutes.
 - From the command line: `blender -b two_thousand_years_of_catastrophe.blend -y -S Edit -a`
 
+### If Blender crashes while assembling
+
+Use ffmpeg instead. Copy `assemble_4k.bat` into the project folder and double-click it. It does what the `Edit` scene does:
+- takes the frames in `render4k`;
+- multiplies them by `overlay_matte.mp4`, then adds `overlay_fill.mp4`;
+- holds the last frame for the closing words;
+- adds `narration.m4a`.
+
+Install ffmpeg first, once: `winget install --id Gyan.FFmpeg -e`
+
 ## Before the long render
 
 A frame in 1942, the busiest stretch, has 175,000 grains of sand, the glass and motion blur. At these settings in 4K it took 578 seconds (about 10 minutes) here on 4 CPU cores. A recent GPU is many times faster.
