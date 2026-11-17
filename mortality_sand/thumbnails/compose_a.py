@@ -142,6 +142,19 @@ def main(rd, out):
         "W3_wide_family_line": (wide, [("Your family line", 88, False), ("survived this.", 88, True)], wkw),
         "W4_wide_still_here": (wide, [("640 million lifted away.", 88, False), ("You're still here.", 88, True, CORAL)], wkw),
     })
+    # the final wording: the DIRECT family line, and plainly why (every direct ancestor lived long enough to have a
+    # child; many relatives did not, and some direct ancestors died in these catastrophes after their children were born)
+    designs.update({
+        "F1_wide_direct_line": (wide, [("Your direct family line", 76, False), ("survived all of this.", 76, True, CORAL),
+                                       ("", 12, False),
+                                       ("Every one of your direct ancestors lived long enough to have a child.", 28, False)],
+                                dict(wkw, x=450, y=518, step=86)),
+        "F2_blackdeath_direct_line": (bd_map, [("Your direct", 96, False), ("family line", 96, False),
+                                               ("survived this,", 96, False), ("and more.", 96, True, CORAL),
+                                               ("", 26, False),
+                                               ("Each direct ancestor lived", 36, True), ("long enough to have a child.", 36, True)],
+                                      dict(caption=bd_cap, y=76, step=84, left=0.58, strength=0.74)),
+    })
     for name, (photo, lines, kw) in designs.items():
         if not os.path.exists(photo):
             print("missing", photo)
