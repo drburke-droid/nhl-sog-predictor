@@ -20,6 +20,7 @@ ap.add_argument("--out", required=True, help="frames go to OUT/<shot>/frames/f_#
 ap.add_argument("--threads", type=int, default=0, help="0 = all cores")
 ap.add_argument("--start", type=int)
 ap.add_argument("--end", type=int)
+ap.add_argument("--step", type=int, default=1)
 a = ap.parse_args(argv)
 
 bpy.ops.wm.open_mainfile(filepath=os.path.abspath(a.blend))
@@ -37,6 +38,7 @@ if a.start:
     sc.frame_start = a.start
 if a.end:
     sc.frame_end = a.end
+sc.frame_step = a.step
 r.filepath = os.path.join(os.path.abspath(a.out), key, "frames", "f_")
 r.use_overwrite = False
 r.use_placeholder = True
