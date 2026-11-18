@@ -131,8 +131,73 @@ def frame(run, score, i, pic, info, speed=1):
     return im
 
 
+VW, VH = 1080, 1920                              # the Short
+V_PIC = (212, 950)                               # picture: top edge and height
+V_RIGHT = 930                                    # keep clear of the Shorts buttons on the right
+
+
+def frame_vertical(run, score, i, pic, info, speed=1):
+    """The same shot as a 1080 x 1920 Short: picture on top, score and grading underneath, with the
+    bottom of the frame left empty for the Shorts caption and buttons."""
+    im = Image.new("RGB", (VW, VH), F.PAPER)
+    d = F.Draw(im)
+    col = F.tool_rgb("whisk")
+    v, strokes, secs = float(score[i]), float(run.count[i]), float(min(run.t[i], run.meta["seconds"]))
+    F.text(d, (VW // 2, 96), "Can it reach 100% mixed?", F.font(76, "Black", True), F.INK, "ma")
+    y0, ph = V_PIC
+    scaled = pic.resize((VW, int(round(VW * pic.size[1] / pic.size[0]))), Image.LANCZOS)
+    top = int((scaled.size[1] - ph) * 0.2)
+    im.paste(scaled.crop((0, top, VW, top + ph)), (0, y0))
+    if speed > 1:
+        lab = f"{speed}x speed"
+        lw = d.textlength(lab, F.font(30, "Bold"))
+        d.rounded_rectangle((30, y0 + 26, 30 + lw + 56, y0 + 88), 31, fill=(255, 255, 255), outline=F.HAIR)
+        F.text(d, (58, y0 + 57), lab, F.font(30, "Bold"), F.INK, "lm")
+    F.paste_disc(im, gridded_disc(run, i, 210), 30, y0 + ph - 240, ring=(255, 255, 255))
+    x0 = 48
+    o = y0 + ph - 1100                           # the panel hangs under the picture
+    F.text(d, (x0, 1124 + o), "MIXED", F.font(22, "Bold"), F.MUTED, "la")
+    F.text(d, (x0 - 6, 1282 + o), f"{v:.1f}%", F.font(150, "Bold", True), F.INK, "ls")
+    for k, (lab, val) in enumerate((("STROKES", f"{int(strokes)}"), ("SECONDS", f"{secs:.1f}"))):
+        x = 640 + k * 170
+        F.text(d, (x, 1160 + o), lab, F.font(22, "Bold"), F.MUTED, "la")
+        F.text(d, (x, 1262 + o), val, F.font(64, "Bold", True), F.INK, "ls")
+    d.rounded_rectangle((x0, 1302 + o, V_RIGHT, 1316 + o), 7, fill=F.TRACK)
+    d.rounded_rectangle((x0, 1302 + o, x0 + max((V_RIGHT - x0) * min(v, 100) / 100, 14), 1316 + o), 7, fill=col)
+    F.text(d, (x0, 1340 + o), "THE LAST FIVE POINTS", F.font(20, "Bold"), F.MUTED, "la")
+    lo, hi = 95.0, 101.0
+    GX = lambda s: x0 + (V_RIGHT - x0) * (min(max(s, lo), hi) - lo) / (hi - lo)
+    d.rounded_rectangle((x0, 1372 + o, V_RIGHT, 1404 + o), 16, fill=F.TRACK)
+    d.rounded_rectangle((GX(BAND[0]), 1372 + o, GX(BAND[1]), 1404 + o), 0, fill=GREEN_BG)
+    d.line((GX(100), 1366 + o, GX(100), 1410 + o), fill=GREEN, width=3)
+    for sv in (95, 96, 97, 98, 99, 100):
+        F.text(d, (GX(sv), 1414 + o), str(sv), F.font(19, "Medium"), GREEN if sv == 100 else F.MUTED, "ma")
+    if v >= lo:
+        cx = GX(v)
+        d.rounded_rectangle((cx - 13, 1367 + o, cx + 13, 1409 + o), 13, fill=col, outline=(255, 255, 255), width=3)
+    note = "A perfect shuffle scores in the green band: 99.5 to 100.5."
+    if info["touch_frame"] is not None and i >= info["touch_frame"]:
+        note = f"In the green band on stroke {info['touch_stroke']}. A perfect shuffle scores 99.5 to 100.5."
+    F.text(d, (x0, 1450 + o), note, F.font(23, "Medium"), GREEN, "la")
+    F.text(d, (x0, 1500 + o), "HOW WE GRADE IT", F.font(20, "Bold"), F.MUTED, "la")
+    F.text(d, (x0, 1530 + o), f"Cut the bowl into {info['scoops']} scoops. Count the six colours in each.", F.font(25, "Medium"), F.INK, "la")
+    F.text(d, (x0, 1566 + o), "0% = as loaded.  100% = the scoops match a perfect shuffle.", F.font(25, "Medium"), F.INK, "la")
+    return im
+
+
+def card_vertical(lines):
+    im = Image.new("RGB", (VW, VH), F.PAPER)
+    d = F.Draw(im)
+    y = 620
+    for s, sz, wt, colr, gap in lines:
+        F.text(d, (VW // 2, y), s, F.font(sz, wt, sz >= 60), colr, "ma")
+        y += sz + gap
+    return im
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--vertical", action="store_true", help="make the 1080 x 1920 Short instead of the 16:9 segment")
     ap.add_argument("--run", default=os.path.join(HERE, "cache", "chase", "whisk_60"))
     ap.add_argument("--frames", default=os.path.join(HERE, "renders", "chase", "CH", "frames"))
     ap.add_argument("--out", default=os.path.join(HERE, "the_chase_for_100_1080p.mp4"))
@@ -140,6 +205,10 @@ def main():
     ap.add_argument("--crf", type=int, default=18)
     ap.add_argument("--stills", help="write a few test frames to this folder instead of the film")
     a = ap.parse_args()
+    if a.vertical:
+        a.scale = 1.0
+        if a.out == ap.get_default("out"):
+            a.out = os.path.join(HERE, "can_it_reach_100_SHORT.mp4")
     F.set_scale(a.scale)
     run = F.Run(a.run)
     z = np.load(os.path.join(a.run, "meta.npz"))
@@ -158,20 +227,23 @@ def main():
                 touch_stroke=int(np.ceil(run.count[touch])) if touch is not None else None)
     seq = [(f, 1) for f in range(0, REAL_FRAMES)] + [(f, STEP) for f in range(REAL_FRAMES + STEP - 1, run.n, STEP)]
     pic_size = (F.spx(PIC_W), F.spx(F.H))
+    make = frame_vertical if a.vertical else frame
+    out_size = (VW, VH) if a.vertical else (F.spx(F.W), F.spx(F.H))
 
     def picture(f):
-        return Image.open(os.path.join(a.frames, f"f_{f + 1:04d}.png")).convert("RGB").resize(pic_size, Image.LANCZOS)
+        im = Image.open(os.path.join(a.frames, f"f_{f + 1:04d}.png")).convert("RGB")
+        return im if a.vertical else im.resize(pic_size, Image.LANCZOS)
 
     if a.stills:
         os.makedirs(a.stills, exist_ok=True)
         for f, sp in ((0, 1), (120, 1), (300, 1), (touch, 1), (seq[-40][0], STEP)):
             p = os.path.join(a.frames, f"f_{f + 1:04d}.png")
-            pic = picture(f) if os.path.exists(p) and os.path.getsize(p) else Image.new("RGB", pic_size, (70, 72, 78))
-            frame(run, score, f, pic, info, sp).save(os.path.join(a.stills, f"chase_{f:04d}.png"))
+            pic = picture(f) if os.path.exists(p) and os.path.getsize(p) else Image.new("RGB", (1110, 1080), (70, 72, 78))
+            make(run, score, f, pic, info, sp).save(os.path.join(a.stills, f"chase_{'v_' if a.vertical else ''}{f:04d}.png"))
         return
 
     silent = os.path.splitext(a.out)[0] + "_silent.mp4"
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{F.spx(F.W)}x{F.spx(F.H)}", "-r", "24",
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{out_size[0]}x{out_size[1]}", "-r", "24",
            "-i", "-", "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p", "-c:v", "libx264", "-crf", str(a.crf),
            "-preset", "slow", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
            "-movflags", "+faststart", silent]
@@ -185,12 +257,12 @@ def main():
             enc.stdin.write(raw)
         n += repeat
 
-    first = frame(run, score, 0, picture(0), info)
+    first = make(run, score, 0, picture(0), info)
     emit(first, 24)                                              # a beat on the untouched bowl
     t_touch = None
     last = first
     for f, sp in seq:
-        last = frame(run, score, f, picture(f), info, sp)
+        last = make(run, score, f, picture(f), info, sp)
         if touch is not None and t_touch is None and f >= touch:
             t_touch = n / 24
         emit(last)
@@ -200,7 +272,14 @@ def main():
              (f"The next {run.count.max() - info['touch_stroke']:.0f} strokes changed nothing: it stayed between {lo:.1f}% and {hi:.1f}%,",
               24, "Medium", F.MUTED, 8),
              (f"averaging {score[after].mean():.1f}%. Once it is as good as a shuffle, more stirring cannot improve it.", 24, "Medium", F.MUTED, 0)]
-    card = F.card(lines)
+    if a.vertical:
+        lines = [(f"{info['touch_stroke']} strokes", 150, "Black", F.INK, 24),
+                 ("to reach a perfect shuffle's score.", 44, "SemiBold", F.INK, 60),
+                 (f"The next {run.count.max() - info['touch_stroke']:.0f} strokes changed nothing:", 38, "Medium", F.MUTED, 14),
+                 (f"it stayed between {lo:.1f}% and {hi:.1f}%.", 38, "Medium", F.MUTED, 60),
+                 ("Once it is as good as a shuffle,", 38, "Medium", F.INK, 14),
+                 ("more stirring cannot improve it.", 38, "Medium", F.INK, 0)]
+    card = card_vertical(lines) if a.vertical else F.card(lines)
     for k in range(10):
         emit(Image.blend(last, card, (k + 1) / 11))
     emit(card, int(5.0 * 24))
