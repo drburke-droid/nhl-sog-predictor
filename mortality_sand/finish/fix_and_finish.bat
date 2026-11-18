@@ -37,7 +37,7 @@ if not defined BLENDER (
   echo Could not find Blender. Paste the full path to blender.exe and press Enter:
   set /p "BLENDER="
 )
-set "BLENDER=%BLENDER:"=%"
+if defined BLENDER set "BLENDER=%BLENDER:"=%"
 if not exist "%BLENDER%" (
   echo Blender was not found at "%BLENDER%".
   pause
