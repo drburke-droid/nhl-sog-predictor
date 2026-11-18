@@ -27,6 +27,8 @@ the percentage is measured from the simulated grains.
 | `models/kitchenaid/` | The stand mixer model (CC0, see "The stand mixer model" below). |
 | `make_film.py`, `film_compose.py`, `film_score.py` | The knockout film: simulate the bracket, render each match, lay the frames over the data strip and cards, synthesize the score. |
 | `make_short.py`, `make_thumbs.py` | The vertical Short and the three thumbnails. |
+| `make_chase.py`, `render_chase.sh` | The single-mixer "Can it reach 100% mixed?" segment and its vertical Short. |
+| `the_chase_for_100_1080p.mp4`, `can_it_reach_100_SHORT.mp4` | That segment, 16:9 and vertical (38 s each). |
 | `reverse_experiment.py`, `plot_reverse.py` | Stir forward, then exactly backwards: does it un-mix? Runs and charts. |
 | `make_master.py` | Builds the Blender sequencer file that assembles the final film. |
 | `make_lettering.py` | Writes the generic "Kitchen Inc" lettering for the mixer's trim band. |
@@ -346,6 +348,33 @@ The tool plunging in and lifting out adds a few points at each end (the jump
 at the left end of each coloured line). Real powders also have cohesion and
 air, which this model does not. Numbers are in `experiments/reverse.csv`,
 curves in `experiments/reverse_curves.json`.
+
+## Can it reach 100% mixed?
+
+`the_chase_for_100_1080p.mp4` (16:9) and `can_it_reach_100_SHORT.mp4`
+(vertical), 38 seconds each: one mixer with the whisk stirs pie wedges for a
+minute while the score, a stroke counter and how the score is graded stay on
+screen. The first 24 seconds of stirring play in real time, the rest at six
+times speed.
+
+```bash
+python bowl_sim.py --tool whisk --load wedges --seconds 60 --out cache/chase/whisk_60
+```
+
+```bash
+./render_chase.sh                 # 722 frames at 1110x1080, 5.5 hours on 4 cores
+```
+
+```bash
+python make_chase.py && python make_chase.py --vertical
+```
+
+The finish line is not exactly 100. Dealing the same grains their colours at
+random 400 times scored 100.05 on average with a 95% range of 99.55 to 100.52:
+chance alone makes scoops differ. The whisk first scored inside that band on
+stroke 31 (20.6 s). Over the remaining 58 strokes it stayed between 98.8% and
+100.6% and averaged 99.9%; from 30 seconds on it was inside the band more than
+90% of the time. One run, so the stroke count is good to a few strokes.
 
 ## The knockout film
 

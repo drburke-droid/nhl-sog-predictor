@@ -95,8 +95,8 @@ def frame(run, score, i, pic, info, speed=1):
     F.text(d, (X0, 56), "Can it reach 100% mixed?", F.font(35, "Bold", True), F.INK, "la")
     # the score
     pct = f"{v:.1f}%"
-    F.text(d, (X0 - 4, 226), pct, F.font(118, "Bold", True), F.INK, "ls")
-    F.text(d, (X0 + d.textlength(pct, F.font(118, "Bold", True)) + 10, 226), "mixed", F.font(28, "SemiBold"), F.MUTED, "ls")
+    F.text(d, (X0 - 4, 226), pct, F.font(104, "Bold", True), F.INK, "ls")       # "100.6%" still fits beside "mixed"
+    F.text(d, (X0 + d.textlength(pct, F.font(104, "Bold", True)) + 8, 226), "mixed", F.font(24, "SemiBold"), F.MUTED, "ls")
     d.rounded_rectangle((X0, 246, X1, 258), 6, fill=F.TRACK)
     d.rounded_rectangle((X0, 246, X0 + max((X1 - X0) * min(v, 100) / 100, 12), 258), 6, fill=col)
     # the last five points, with the band a perfect shuffle scores in
