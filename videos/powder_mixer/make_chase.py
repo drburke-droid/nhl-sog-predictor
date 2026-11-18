@@ -195,8 +195,43 @@ def card_vertical(lines):
     return im
 
 
+def thumbnail(run, score, info, frames, out):
+    """Vertical thumbnail for the Short: the bowl as loaded on top, the bowl when it first reaches
+    the perfect-shuffle band underneath, and the question between them."""
+    F.set_scale(1.0)
+    im = Image.new("RGB", (VW, VH), (16, 18, 22))
+    band_h, ph = 250, (VH - 250) // 2
+    col = F.tool_rgb("whisk")
+
+    def tile(f, y, shift):
+        pic = Image.open(os.path.join(frames, f"f_{f + 1:04d}.png")).convert("RGB")
+        pic = pic.resize((VW, int(round(VW * pic.size[1] / pic.size[0]))), Image.LANCZOS)
+        top = int((pic.size[1] - ph) * shift)
+        im.paste(pic.crop((0, top, VW, top + ph)), (0, y))
+
+    tile(0, 0, 0.75)
+    tile(info["touch_frame"] + 24, ph + band_h, 0.75)
+    d = ImageDraw.Draw(im)
+    d.rectangle((0, ph, VW, ph + band_h), fill=(252, 196, 40))
+    d.text((VW // 2, ph + 70), "HOW MANY STIRS", font=F.font(104, "Black", True), fill=(16, 18, 22), anchor="mm")
+    d.text((VW // 2, ph + 178), "TO 100% MIXED?", font=F.font(104, "Black", True), fill=(16, 18, 22), anchor="mm")
+
+    def pill(xy, s, fill, ink=(255, 255, 255)):
+        f = F.font(84, "Bold", True)
+        w = int(d.textlength(s, font=f))
+        x, y = xy
+        d.rounded_rectangle((x, y, x + w + 96, y + 150), 75, fill=fill, outline=(255, 255, 255), width=6)
+        d.text((x + 48, y + 75), s, font=f, fill=ink, anchor="lm")
+
+    pill((48, 48), "0% MIXED", (16, 18, 22))
+    pill((48, ph + band_h + 48), f"{score[info['touch_frame'] + 24]:.1f}% MIXED", col)
+    im.save(out)
+    print("wrote", out)
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--thumb", action="store_true", help="write the Short's vertical thumbnail and stop")
     ap.add_argument("--vertical", action="store_true", help="make the 1080 x 1920 Short instead of the 16:9 segment")
     ap.add_argument("--run", default=os.path.join(HERE, "cache", "chase", "whisk_60"))
     ap.add_argument("--frames", default=os.path.join(HERE, "renders", "chase", "CH", "frames"))
@@ -225,6 +260,10 @@ def main():
     after = stirring & (np.arange(run.n) >= (touch or 0))
     info = dict(scoops=int((cells > 0.35 * cells.max()).sum()), cmax=float(run.count.max()), touch_frame=touch,
                 touch_stroke=int(np.ceil(run.count[touch])) if touch is not None else None)
+    if a.thumb:
+        os.makedirs(os.path.join(HERE, "thumbnails"), exist_ok=True)
+        thumbnail(run, score, info, a.frames, os.path.join(HERE, "thumbnails", "can_it_reach_100_thumb_SHORT.png"))
+        return
     seq = [(f, 1) for f in range(0, REAL_FRAMES)] + [(f, STEP) for f in range(REAL_FRAMES + STEP - 1, run.n, STEP)]
     pic_size = (F.spx(PIC_W), F.spx(F.H))
     make = frame_vertical if a.vertical else frame
