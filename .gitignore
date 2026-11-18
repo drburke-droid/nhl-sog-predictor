@@ -5,3 +5,6 @@ app.log
 *.vbs
 analysis.py
 nhl_history.db
+
+# Thumbnails made from a broadcast frame of the show: delivered directly, not hosted here
+videos/plinko/thumbnails/tv/

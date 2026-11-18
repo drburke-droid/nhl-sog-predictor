@@ -22,6 +22,15 @@ credit is needed): every pairing of three lines of text with three pictures, nam
 Column 3 reads best at small sizes. C3 uses another pair from the same warm-board experiment that also lands in
 $0 but parts earlier and swings up to 54 cm apart, so the split is easy to see. Suggested test: A3, B3 and C3.
 
+**On a broadcast frame (A4 to D4).** `plinko/thumbs_tv.py FRAME.png` traces the same paths onto a screenshot of
+the 1980s TV board (its pegs, slots and face edges are fitted, so the paths run on its pins and the chips rest in
+its slots), with the text on the darkened stairs at right. Text D is the short one: "Same release point. $10,000
+or $0." The frame and these four files are not kept in this repository. They use footage of the show, so they
+rest on fair use (the film analyses that board), not on a licence. That frame's board dates from when the centre
+paid $5,000; its digits can't be read at thumbnail size. Suggested test for click-through: D4, A4 and A3 (the
+current one, as the control). Pair D4 with title D, A4 with title A.
+Optional line for the description when using them: "Thumbnail: The Price Is Right (CBS), used for commentary."
+
 ## Titles
 
 | | Title | Length |
