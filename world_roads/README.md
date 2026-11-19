@@ -342,10 +342,13 @@ python fetch_lakes.py                 # lakes and reservoirs over 5 km2, with th
 python network.py                     # one planar network; right-hand-rule loops (~6 min, ~11 GB peak)
 python tour.py                        # river crossings, sea swims, leaps; the whole journey (~2 min)
 python render.py prepare && python zoom.py prepare && python labels.py
-python film.py video --workers 4      # -> out/coast_light_speed_r1.mp4 (1920x1080; RES=2 for 4K)
+python film.py video --workers 4      # -> out/coast_light_speed_r1.mp4 (1920x1080)
 python music.py                       # -> out/score.wav
-./master.sh                           # two-pass master with the score -> out/every_shore_light_speed.mp4
-python thumbs.py                      # after: python film.py clean 11.9 77.0 123.6
+./master.sh                           # 1080p with the score -> out/every_shore_light_speed.mp4
+RES=2 python render.py prepare && RES=2 python zoom.py prepare
+RES=2 python film.py video --workers 3   # 4K (~2.5 GB per worker; 3 fit in 16 GB) -> out/coast_light_speed_r2.mp4
+RES=2 ./master.sh                     # 4K upload master (H.264 + score) and a <100 MB HEVC copy
+RES=2 python film.py clean 12.6 77.0 123.6 && python thumbs.py   # thumbnails A/B/C
 ```
 
 * **The rule in code:** each node's edges are sorted anticlockwise, and arriving by one edge the fish leaves by
@@ -357,5 +360,8 @@ python thumbs.py                      # after: python film.py clean 11.9 77.0 12
   * Hypothetical leaps (rings) to the 65,595 river systems that no water connects to the sea: the Okavango,
     Lake Chad, the Aral basin, Lake Eyre, and rivers with gaps in their mapping.
   * The fish walks the tree depth first, so it swims out to each island as it passes.
-* **Sources and caveats:** [coast/ACCURACY.md](coast/ACCURACY.md). Master, thumbnails and YouTube copy:
+* **4K:** the same film at 3840x2160 shows single rivers where 1080p shows a texture; lines are drawn 1.45x
+  brighter there so the map keeps its overall brightness without thicker lines.
+* **Sources and caveats:** [coast/ACCURACY.md](coast/ACCURACY.md). Masters (1080p, and a 4K HEVC copy;
+  the 4K H.264 upload master is kept out of git for size, checksum in `SHA256.txt`), thumbnails and YouTube copy:
   `media/coast/`.

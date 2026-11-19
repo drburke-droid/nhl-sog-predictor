@@ -23,7 +23,10 @@ OUT = os.path.join(HERE, "out")
 C_KMS = 299_792.458
 SS = 2                                    # raster supersampling
 K_COAST, K_LAKE, K_RIVER, K_LINK = 0, 1, 2, 3
-INTEN = np.array([1.0, 0.8, 0.6, 0.6], np.float32)       # coast, lake shore, river, link
+# coast, lake shore, river, link. At 4K a line covers half as much of the frame: a brighter line keeps the
+# map's overall brightness without thickening it
+LINE_GAIN = 1.0 if RES == 1 else 1.45
+INTEN = np.array([1.0, 0.8, 0.6, 0.6], np.float32) * LINE_GAIN
 THICK = np.array([2, 2, 1, 1], np.int64)                  # line width on the supersampled canvas
 LAYERS = os.path.join(DATA, f"layers_r{RES}.npz")
 

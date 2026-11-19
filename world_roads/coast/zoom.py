@@ -79,6 +79,8 @@ def draw_view(wx, wy, segj, tfw, tbw, kind, cx, cy, zoom, t, flash_t, bank_px, S
             ax, ay = X0 + nx_ * off, Y0 + ny_ * off
             n = int(max(abs(dx), abs(dy))) + 1
             th = 2 if (kd <= 1 or zoom > 3.0) else 1
+            if zoom > 3.0 and Ww > 5000:
+                th = 3                                # 4K close-ups: keep the lines' width on screen
             for i in range(n + 1):
                 x = int(ax + dx * i / n + 0.5)
                 y = int(ay + dy * i / n + 0.5)
@@ -169,7 +171,7 @@ class Zoom:
         Ic, Ig, F, Wt = down(Ic), down(Ig), down(F), down(Wt)
         # thin lines on the 2x canvas average down; the world raster keeps intensity per 1x pixel the same way
         # close in, single lines would read fainter than the dense world map: lift them as the camera closes in
-        lift = 1.0 + 1.3 * min(1.0, max(0.0, math.log(max(zoom, 1.0)) / math.log(40.0)))
+        lift = (1.0 + 1.3 * min(1.0, max(0.0, math.log(max(zoom, 1.0)) / math.log(40.0)))) * R.LINE_GAIN
         E = cv2.merge([F * float(R.HOT[c]) + (Ic * float(R.CYAN[c] * 0.42) + Ig * float(R.GOLD[c])) * lift for c in range(3)])
         # background: the world background through the same camera, river water on top
         M = np.array([[zoom, 0, W / 2 - cx * zoom], [0, zoom, H / 2 - cy * zoom]], np.float32)
