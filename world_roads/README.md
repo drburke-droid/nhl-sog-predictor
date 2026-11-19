@@ -310,3 +310,52 @@ python thumbs.py                                                             # t
   (`cover.py`). Counts are in blocks (intersection to intersection): 91,022 in NYC, 23.0 million in the US.
 * **Sources and methods:** [roomba/ACCURACY.md](roomba/ACCURACY.md). Master, Shorts, thumbnails and
   YouTube copy: `media/roomba/`.
+
+## Every shore on Earth at light speed (`coast/`)
+
+A fish of light sets off down the Bow River in Calgary with one rule: keep the land on your right. At every fork
+it turns right; at a river's source it turns round and comes back down the other bank; then on to the next river,
+lake and coast. That is the wall-follower rule for mazes, and on a map it traces every coastline once, every lake
+shore once and both banks of every river. How long would light take to swim every shore on Earth?
+
+* **1 min 18.4 s**: 23.5 million km.
+  * coastline: 1.95 M km;
+  * lake shores: 1.13 M km;
+  * both banks of 9.58 M km of river: 19.15 M km;
+  * links across gaps in the river map: 0.41 M km;
+  * open-sea swims out to islands: 0.87 M km.
+* **The film (2:15).**
+  * The opening shows the rule in slow motion: down the Bow, right into the Elbow, up to its sources and back
+    down the other bank.
+  * It then speeds up to light speed and pulls back to the whole world.
+  * The middle 76.4 s run in real time.
+  * The fish ends where it started: the walk is one closed loop, and the last river it swims is the Bow, down
+    from Lake Louise.
+* **The coastline paradox:** the CIA World Factbook's 356,000 km of coastline is 1.2 light-seconds; traced at
+  OpenStreetMap's detail the same coasts are 1.95 million km.
+
+```bash
+cd coast
+python coast.py                       # OSM land polygons (osmdata.openstreetmap.de) -> every coastline ring
+python ../rivers/fetch2.py            # every OSM river line (Overture), shared with the rivers-and-pi film
+python fetch_lakes.py                 # lakes and reservoirs over 5 km2, with their class
+python network.py                     # one planar network; right-hand-rule loops (~6 min, ~11 GB peak)
+python tour.py                        # river crossings, sea swims, leaps; the whole journey (~2 min)
+python render.py prepare && python zoom.py prepare && python labels.py
+python film.py video --workers 4      # -> out/coast_light_speed_r1.mp4 (1920x1080; RES=2 for 4K)
+python music.py                       # -> out/score.wav
+./master.sh                           # two-pass master with the score -> out/every_shore_light_speed.mp4
+python thumbs.py                      # after: python film.py clean 11.9 77.0 123.6
+```
+
+* **The rule in code:** each node's edges are sorted anticlockwise, and arriving by one edge the fish leaves by
+  the next. Coasts and lake shores are one-way (land on the right) and rivers two-way. The rule turned out
+  consistent everywhere (no turn lands on the sea side), giving 1.32 million closed loops, one per piece of land.
+* **Joining the loops:** a minimum spanning tree.
+  * Free crossings where a river separates two loops.
+  * Straight swims between ocean coasts.
+  * Hypothetical leaps (rings) to the 65,595 river systems that no water connects to the sea: the Okavango,
+    Lake Chad, the Aral basin, Lake Eyre, and rivers with gaps in their mapping.
+  * The fish walks the tree depth first, so it swims out to each island as it passes.
+* **Sources and caveats:** [coast/ACCURACY.md](coast/ACCURACY.md). Master, thumbnails and YouTube copy:
+  `media/coast/`.

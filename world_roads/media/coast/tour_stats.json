@@ -1,0 +1,16 @@
+{
+ "loops": 1321345,
+ "water_bodies": 892547,
+ "water_bodies_reaching_ocean": 826952,
+ "shore_km": 22644651.55362123,
+ "swims": 826943,
+ "swim_km_each_way": 436149.74361859215,
+ "leaps": 65595,
+ "crossings": 428798,
+ "total_km": 23516947.57132041,
+ "seconds_at_c": 78.44409338449873,
+ "start": [
+  -114.0718816,
+  51.0568787
+ ]
+}

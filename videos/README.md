@@ -34,6 +34,7 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 | roomba_at_light_speed_every_road.mp4 | 16:9 | 3:23 | A Roomba-style photon covering every road. Copy: `copy/roomba_YOUTUBE.md`, thumbnails roomba_thumb_A/B/C |
 | roomba_at_light_speed_SHORT.mp4 | vertical | 0:50 | Roomba photon, short cut |
 | roomba_at_light_speed_calgary_SHORT.mp4 | vertical | 0:42 | Roomba photon in Calgary |
+| every_shore_on_earth_at_light_speed_2m15s.mp4 | 16:9 | 2:15 | A fish of light keeps the land on its right and swims every coastline, lake shore and both banks of every river on Earth: 1 min 18.4 s at light speed, starting and ending on the Bow River in Calgary. Copy: `copy/every_shore_YOUTUBE.md`, thumbnails every_shore_thumb_A/B/C; built in `world_roads/coast/` |
 
 Left out as superseded or drafts: the first hyperacuity video, the first cut of the world short, the world-roads
 preview, the daytime-only half of the flights film, and the signal-fires film (not speed of light).
