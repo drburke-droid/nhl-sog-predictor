@@ -56,3 +56,8 @@ gold world frame of the every-shore film.
 More directions in `channel/ideas/` (`channel/ideas.py`; compare them in `logos_sheet.jpg` and `banners_sheet.jpg`):
 logos gold, inverse, split (blue and gold), globe, eye chart, waiting-room TV; banners gold world, frontier,
 Calgary's rivers, eye chart (its last line is the joke), waiting-room TV.
+
+Video watermarks in `channel/watermarks/` (`channel/watermarks.py`; 150x150 transparent PNGs, compared on a dark and
+a bright frame in `watermarks_preview.jpg`): white, white with shadow, gold with shadow, round badge, split, TV.
+Upload one under YouTube Studio > Customization > Branding > Video watermark; on desktop it doubles as a
+Subscribe button.
