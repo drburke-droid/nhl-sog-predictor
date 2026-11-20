@@ -42,6 +42,7 @@ DEFAULTS = dict(
     v_body_median=0.3,        # launch speed at infinity of new big fragments / mutual escape speed
     v_debris_median=0.6,      # same for debris
     f_energy=0.5,             # debris may carry at most this fraction of the impact energy
+    moon_f=2.0,               # the Moon's true anomaly at the breakup (sets the lunar phase)
     years=20.0,
     dt_sample=0.1 * DAY,
     dt_frame=1.0 * DAY,
@@ -49,8 +50,9 @@ DEFAULTS = dict(
 )
 
 
-def voronoi_pieces(n, rng, npts=300_000):
-    """Split a uniform sphere into n power-diagram cells. Returns masses fractions and centroids (unit R)."""
+def voronoi_pieces(n, rng, npts=300_000, full=False):
+    """Split a uniform sphere into n power-diagram cells. Returns mass fractions and centroids (unit R);
+    with full=True also the seeds and power weights that define the cells (for the film's meshes)."""
     p = rng.normal(size=(npts, 3))
     p /= np.linalg.norm(p, axis=1, keepdims=True)
     p *= rng.random(npts)[:, None] ** (1 / 3)
@@ -62,6 +64,8 @@ def voronoi_pieces(n, rng, npts=300_000):
     lab = d2.argmin(1)
     frac = np.bincount(lab, minlength=n) / npts
     cen = np.stack([p[lab == k].mean(0) for k in range(n)])
+    if full:
+        return frac, cen, seeds, w
     return frac, cen
 
 
@@ -95,7 +99,7 @@ class FragmentSim:
         sim.add(m=M_SUN, name='sun')
         sim.add(m=M_EARTH, r=R_ENTRY, a=AU, e=E_EARTH, primary=sim.particles[0], name='earth')
         moon = rebound.Particle(simulation=sim, primary=sim.particles[1], m=M_MOON, a=A_MOON, e=E_MOON,
-                                inc=I_MOON, Omega=0.3, omega=1.1, f=2.0)
+                                inc=I_MOON, Omega=0.3, omega=1.1, f=cfg.get('moon_f', 2.0))
         xm = np.array(moon.xyz)
         vm = np.array(moon.vxyz)
         self.sim = sim

@@ -55,6 +55,8 @@ def reset_scene():
     sc.cycles.volume_bounces = 1
     sc.cycles.transparent_max_bounces = 8
     sc.cycles.volume_step_rate = 4.0
+    sc.cycles.dicing_rate = 1.5
+    sc.cycles.offscreen_dicing_scale = 8.0
     sc.render.resolution_x, sc.render.resolution_y = 1920, 1080
     sc.render.film_transparent = False
     sc.view_settings.view_transform = 'AgX'
@@ -316,7 +318,7 @@ def moon(loc=(0, 0, 0), name='Moon', exaggerate=1.0):
     sub = ob.modifiers.new('Subdiv', 'SUBSURF')
     sub.levels = 1
     ob.cycles.use_adaptive_subdivision = True
-    bpy.context.scene.cycles.dicing_rate = 1.0
+    bpy.context.scene.cycles.dicing_rate = 1.5
     return ob
 
 
