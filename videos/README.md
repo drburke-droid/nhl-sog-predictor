@@ -39,3 +39,16 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 
 Left out as superseded or drafts: the first hyperacuity video, the first cut of the world short, the world-roads
 preview, the daytime-only half of the flights film, and the signal-fires film (not speed of light).
+
+## channel/
+
+YouTube channel art for **Calgary Vision Centre**, "actually interesting waiting room videos", built by
+`channel/make_branding.py` from the CVC mark (`cvc_mark_source.png`, rebuilt as a clean symmetric shape) and the
+gold world frame of the every-shore film.
+
+| File | Upload where (YouTube Studio > Customization > Branding) |
+|---|---|
+| profile_800.png | Picture (shown as a circle; `profile_preview.png` shows it at 176, 98 and 48 px) |
+| banner_2560x1440.jpg | Banner image (name and tagline inside the 1546x423 area every device shows; `banner_preview.jpg` outlines the crops) |
+| watermark_150.png | Video watermark (white mark, transparent background) |
+| description.txt | Customization > Basic info > Description (760 of 1,000 characters) |
