@@ -17,6 +17,12 @@ data['lunar_impact'] = dict(rungs=li['rungs'], cases={k: dict(thresholds=li['cas
                             frac_to_earth=li['cases'][k]['frac_to_earth_30y'],
                             curve=[[r['D_km'], round(r['warming_C'], 2), r['E_total']] for r in li['cases'][k]['rows'][::2]])
                             for k in keep})
+lad = json.load(open(os.path.join(HERE, 'results', 'impact_ladder.json')))
+data['ladder'] = [dict(D=r['D_m'], crater=r['crater_km'], earth=r['to_earth_kg'], storm=r['storm_factor'],
+                       chely=r['chelyabinsks'], chely_hi=r['chelyabinsks_range'][1], tung=r['tunguskas'],
+                       tung_hi=r['tunguskas_range'][1], warm=r['warming_C'], ocean=r['ocean'],
+                       moon=r['moon_interval_yr'], earthint=r['earth_interval_yr'])
+                  for r in lad['rows'] if r['material'] == 'rock']
 html = open(os.path.join(HERE, 'page_template.html')).read().replace('/*DATA*/null', json.dumps(data, separators=(',', ':')))
 out = os.path.join(HERE, 'results', 'seveneves.html')
 open(out, 'w').write(html)

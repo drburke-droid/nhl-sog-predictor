@@ -17,6 +17,7 @@ This folder is a physics simulator built to test that scenario, with every dial 
 | 4. Results | `analyze.py` | Mass budget (where the Moon went), rain power, temperature and fraction of the ocean boiled, out to 10,000 years. Can re-weight the breakup debris without re-running, because tracers are test particles. |
 | Ensemble | `ensemble.py` | Fragments only, 6 random piece shapes × 5 dispersal speeds. |
 | The Agent | `lunar_impact.py` | The question turned around. An ordinary asteroid hits the *intact* Moon. How big must it be to hurt the Earth? Crater ejecta faster than lunar escape speed are followed with the same tracer integrator, from 6,000 launch sites. The ladder runs from "a Tunguska's energy every day for a year" to "the Moon shatters". |
+| The ladder | `impact_ladder.py` | Ever bigger objects hit the intact Moon (1 m to 1,000 km). For each: the crater, the ejecta reaching the Earth and when, the meteoroid storm (satellite hazard), big fireballs, warming, and how often objects that size hit the Moon and the Earth. Writes `results/impact_ladder.json`. |
 | Picture | `render_preview.py` | A top-down preview animation of the first years. |
 | Film | `film/` | A photoreal Blender/Cycles film driven by the simulation; see [film/README.md](film/README.md). |
 | Page | `results.py`, `build_page.py` | The findings page `results/seveneves.html`, built from `page_template.html` and `results/*.json`. |
@@ -55,6 +56,12 @@ leaves), and the collision constants `cstar`, `mubar`, `size_slope`, `f_energy`.
 * **Every setting sterilises the surface.** Even with no breakup debris at all, collision debris boils
   17% of the oceans. In two-thirds of the fragment-only runs at least one whole fragment of 80 km or
   more hits the Earth within 50 years.
+* **The ladder (the film).** Problems for the Earth start at ~1 km. Such an impact on the Moon gives a
+  week of meteoroids ~10,000× the normal background, which would wreck satellites, and possibly up to
+  ~100 Chelyabinsk-size fireballs. It happens to the Moon about once every 14 million years. A 10 km
+  impactor on the Moon, every ~2 billion years, sends ~150,000 Chelyabinsk-size airbursts over a few
+  years but warms the Earth by only 0.01 °C. Changing the climate takes ~100 km, and nothing that big
+  crosses the Earth's orbit today.
 * **The Agent.** At 20 km/s, an asteroid 80–190 km across hitting the Moon causes +10 °C on Earth.
   Starting to boil the oceans takes 175–405 km. Shattering the Moon takes a body ~3,000 km across.
 

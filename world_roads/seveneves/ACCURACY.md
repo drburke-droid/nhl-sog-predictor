@@ -63,6 +63,31 @@ What is computed from physics, what is a modelling choice, and what is left out.
   heating, the peak warming and the share of the ocean boiled. "A Tunguska's energy every day" is an
   energy equivalence. Most of that mass would arrive as small fireballs.
 
+## 3b. The impact ladder and how often (`impact_ladder.py`)
+
+* **Craters.** Collins, Melosh & Marcus (2005) transient-crater scaling with lunar gravity
+  (1.62 m/s²), impactor 2,600 kg/m³, target 2,800 kg/m³. The simple-to-complex transition is at
+  18 km, and complex depths follow Pike (1977). Small impacts are capped by target strength at
+  ~20× the impactor's diameter; LRO's newly formed craters from ~1 m impactors are 10–20 m across.
+  Formation time ≈ √(D_transient/g).
+* **Meteoroid storm (the satellite hazard).** The densest 7 days of arriving lunar ejecta (kg/day),
+  divided by the ~110 tonnes/day of meteoroids that reach the Earth normally (Love & Brownlee
+  1993). This compares mass, and uses mass as a proxy for the number of satellite-damaging grains.
+  Studies of asteroid 2024 YR4 hitting the Moon (December 2032, a few-percent chance as estimated in
+  2025) find short spikes in small-particle flux that are larger than our week-averaged mass ratio.
+* **Big fragments.** The size of the largest escaping fragments is not well known. We use ~1% of the
+  impactor (range 0.3–3%, from spall scaling: Melosh 1984), with the arriving mass spread evenly over
+  log(size) from 10 µm upwards. The counts of Chelyabinsk-class (≥20 m) and Tunguska-class (≥50 m)
+  fragments are order of magnitude only. Below ~1 km impactors there are none at all, because the
+  largest fragments are smaller than 20 m.
+* **How often.** Below 100 m: the bolide flux of Brown et al. (2002), N(>E) = 3.7 E^-0.90 per year
+  (E in kilotons), at 20 km/s. Above: Harris & Chodas (2021), with impacts of ≥1 km every ~700,000 years
+  and ≥10 km every ~100 million years, extrapolated beyond. The Moon receives ~1/20 of the Earth's
+  impacts (smaller target, weaker gravitational focusing; Le Feuvre & Wieczorek 2011). No known
+  near-Earth asteroid is bigger than ~35 km. Above that, an "interval" longer than the age of the Solar
+  System means it effectively doesn't happen today. It did happen ~3.9 billion years ago, when
+  Imbrium and the other basins formed.
+
 ## 4. The film (`film/`)
 
 * **Driven by the simulation.** Fragment positions, merges and debris are the simulation's own (the
@@ -112,6 +137,13 @@ What is computed from physics, what is a modelling choice, and what is left out.
 
 ## 6. Sources
 
+* Collins, G. S., Melosh, H. J. & Marcus, R. A. (2005). Earth Impact Effects Program. MAPS 40:817.
+* Brown, P. et al. (2002). The flux of small near-Earth objects colliding with the Earth. Nature 420:294.
+* Harris, A. W. & Chodas, P. W. (2021). The population of near-earth asteroids revisited and updated. Icarus 365:114452.
+* Love, S. G. & Brownlee, D. E. (1993). A direct measurement of the terrestrial mass accretion rate of cosmic dust. Science 262:550.
+* Le Feuvre, M. & Wieczorek, M. A. (2011). Nonuniform cratering of the Moon and a revised crater chronology. Icarus 214:1.
+* Melosh, H. J. (1984). Impact ejection, spallation, and the origin of meteorites. Icarus 59:234.
+* Pike, R. J. (1977). Size-dependence in the shape of fresh impact craters on the Moon.
 * Leinhardt, Z. M. & Stewart, S. T. (2012). Collisions between gravity-dominated bodies. I. ApJ 745:79.
 * Kokubo, E. & Genda, H. (2010). Formation of terrestrial planets from protoplanets under a realistic accretion condition. ApJL 714:L21.
 * Housen, K. R. & Holsapple, K. A. (2011). Ejecta from impact craters. Icarus 211:856–875.
