@@ -4,7 +4,9 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 data = json.load(open(os.path.join(HERE, 'results', 'results.json')))
-for sc in data['scenarios'].values():           # the page needs only a few summary fields
+for v, sc in data['scenarios'].items():         # the page needs only a few summary fields
+    if v != '150':                               # charts show the 150 m/s run only
+        sc.pop('series', None); sc.pop('series_no_breakup_debris', None); sc.pop('dial', None)
     s = sc['summary']
     sc['summary'] = dict(rain=s['rain'], climate=s['climate'], config=dict(debris0=s['config']['debris0']),
                          budget=s['budget_frac_of_moon'])

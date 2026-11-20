@@ -115,7 +115,7 @@ def run_ebm(t, P, f_space, TT, HH, MV, col_ocean):
         h = dt / nsub
         for _ in range(nsub):
             v = np.interp(T, TT, MV)
-            left = col_ocean - v
+            left = MV[-1] - v                      # liquid water left (MV is relative to today's vapour)
             fd = min(K_DEEP * (T - tdeep), F_MIX_MAX)
             q = (1 - f_space) * P[i - 1] + S_ABS - olr(T, left) - fd
             H += q * h
@@ -124,5 +124,5 @@ def run_ebm(t, P, f_space, TT, HH, MV, col_ocean):
         Ts[i] = T
         Td[i] = tdeep
         vap[i] = np.interp(T, TT, MV)
-        olr_o[i] = olr(T, col_ocean - vap[i])
+        olr_o[i] = olr(T, MV[-1] - vap[i])
     return Ts, Td, vap, olr_o
