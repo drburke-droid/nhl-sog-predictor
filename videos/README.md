@@ -52,3 +52,7 @@ gold world frame of the every-shore film.
 | banner_2560x1440.jpg | Banner image (name and tagline inside the 1546x423 area every device shows; `banner_preview.jpg` outlines the crops) |
 | watermark_150.png | Video watermark (white mark, transparent background) |
 | description.txt | Customization > Basic info > Description (916 of 1,000 characters; written from the channel's actual videos, Nov 2026) |
+
+More directions in `channel/ideas/` (`channel/ideas.py`; compare them in `logos_sheet.jpg` and `banners_sheet.jpg`):
+logos gold, inverse, split (blue and gold), globe, eye chart, waiting-room TV; banners gold world, frontier,
+Calgary's rivers, eye chart (its last line is the joke), waiting-room TV.
