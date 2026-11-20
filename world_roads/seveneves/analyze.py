@@ -54,6 +54,7 @@ def analyse(outdir, f_space=0.5, horizon_years=10_000, swarm_sigma_days=15.0, de
         ev['config'] = dict(ev['config'], debris0=debris0)
     bodies = np.load(os.path.join(outdir, 'bodies.npz'))
     t_end = float(np.load(os.path.join(outdir, 'field.npz'))['T'][-1])
+    t_end = min(t_end, float(np.max(rain['t_f'])))          # the tracer run may stop earlier
     events = ev['events']
     m = rain['m']
     fate = rain['fate']

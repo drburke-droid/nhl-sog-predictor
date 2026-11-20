@@ -385,11 +385,11 @@ def ejecta_tracers(res, field, m_quantum, rng):
 
 
 def run_cascade(outdir, rtol=1e-9, frame_dt=2 * DAY, frame_years=None, kick_dv=0.0, kick_tau_years=0.0,
-                max_gen=8, seed=1, subsample=1):
+                max_gen=8, seed=1, subsample=1, years=None):
     field = dict(np.load(os.path.join(outdir, 'field.npz')))
     tr = np.load(os.path.join(outdir, 'tracers0.npz'))
     T, F, SUN = field['T'], field['F'], field['SUN']
-    t_end = float(T[-1])
+    t_end = float(T[-1]) if years is None else min(float(T[-1]), years * YEAR)
     sel = np.arange(len(tr['m']))[::subsample]
     gen = dict(t=tr['t'][sel], y=np.hstack([tr['x'][sel], tr['v'][sel]]), m=tr['m'][sel] * subsample,
                src=tr['src'][sel])
