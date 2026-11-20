@@ -1,7 +1,8 @@
 """The score: a D-minor drone, a sub-bass hit when the Moon breaks, a pulse that builds through the rain,
 and a cold, sparse end. Synthesized (the felt piano, pad and reverb come from ../../vernier/music.py).
 
-python3 film/music.py   -> out/film_data/score.wav, timed to assemble.CUT
+python3 film/music.py             -> out/film_data/score_ladder.wav, timed to assemble.LADDER_CUT
+python3 film/music.py seveneves   -> out/film_data/score.wav, timed to assemble.CUT
 """
 import importlib.util
 import os
@@ -128,5 +129,55 @@ def main():
     print('wrote', out, f'{total:.1f} s')
 
 
+
+
+def ladder_score():
+    """Score for the impact-ladder cut: drone; for each impact a hit whose depth grows with the size;
+    a pulse under each Earth shot; a rising arpeggio under the summary."""
+    t, marks = 0.0, []
+    for item in assemble.LADDER_CUT:
+        if item[0] in ('card', 'summary'):
+            d = item[1]
+            marks.append((item[0], t, d))
+        else:
+            d = shots_meta.FRAMES[item[0]] / assemble.FPS
+            marks.append((item[0], t, d))
+        t += d
+    total = t
+    n = int((total + 4) * SR)
+    dry = np.zeros(n)
+    for note, g in (('D2', 0.30), ('A2', 0.18)):
+        add(dry, vm.pad_tone(vm.hz(note), total + 2, fade_in=4.0, fade_out=5.0, seed=3), 0.0, g)
+    size_gain = {'I1_1m': 0.15, 'I2_60m': 0.3, 'I3_1km': 0.55, 'I4_10km': 0.8, 'I5_100km': 1.1}
+    flash_at = {'I1_1m': 30 / 24, 'I2_60m': 30 / 24}
+    for name, t0, d in marks:
+        if name in size_gain:
+            add(dry, boom(5.0), t0 + flash_at.get(name, 0.05), size_gain[name])
+        if name.startswith('E'):
+            k = {'E3_1km': 0.35, 'E4_10km': 0.6, 'E5_100km': 0.85}[name]
+            add(dry, pulse(d, 60 + 10 * k, lambda x: k * (0.6 + 0.4 * x)), t0, 0.8)
+            add(dry, shimmer(d, lambda x: k * (0.5 + 0.5 * x)), t0, 1.0)
+        if name == 'H_ladder':
+            for i, note in enumerate(('A4', 'F4', 'D4')):
+                add(dry, vm.piano(vm.hz(note), 1.6, 0.32, seed=i), t0 + 0.8 + 1.6 * i, 0.5)
+        if name == 'summary':
+            for i, note in enumerate(('D4', 'F4', 'A4', 'C5', 'E5')):
+                add(dry, vm.piano(vm.hz(note), 1.2, 0.3 + 0.05 * i, seed=20 + i), t0 + 0.4 + 1.5 * i, 0.45)
+    ir = vm.reverb_ir(rt60=3.2, length=4.5)
+    wet = np.stack([fftconvolve(dry, ir[:, c])[:n] for c in range(2)], 1)
+    mix = np.stack([dry, dry], 1) * 0.6 + wet * 0.55
+    fade = np.ones(n)
+    k = int(3 * SR)
+    fade[-k:] = np.linspace(1, 0, k)
+    mix *= fade[:, None]
+    mix /= max(np.abs(mix).max() / 0.85, 1e-9)
+    out = os.path.join(ROOT, 'out', 'film_data', 'score_ladder.wav')
+    vm.write(mix.astype(np.float32), out)
+    print('wrote', out, f'{total:.1f} s')
+
+
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == 'seveneves':
+        main()
+    else:
+        ladder_score()

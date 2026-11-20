@@ -198,6 +198,19 @@ def shot_frames(quality, shot):
     times = json.load(open(os.path.join(d, 'times.json'))) if os.path.exists(os.path.join(d, 'times.json')) else {}
     import shots_meta
     n = shots_meta.FRAMES[shot]
+    mp4 = os.path.join(ROOT, 'media', 'shots', f'{shot}_{quality}.mp4')
+    if not os.path.exists(os.path.join(d, '0001.png')) and os.path.exists(mp4):
+        # rebuild from the committed shot video
+        times = json.load(open(mp4.replace('.mp4', '_times.json')))
+        p = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', mp4, '-f', 'rawvideo', '-pix_fmt', 'rgb24',
+                              '-s', f'{W}x{H}', '-'], stdout=subprocess.PIPE)
+        for f in range(n):
+            buf = p.stdout.read(W * H * 3)
+            if len(buf) < W * H * 3:
+                break
+            yield f, n, Image.frombytes('RGB', (W, H), buf), times.get(str(f), 0.0)
+        p.wait()
+        return
     last_img, last_t = None, 0.0
     for f in range(n):
         p = os.path.join(d, f'{f + 1:04d}.png')
@@ -272,7 +285,7 @@ def main(quality, out, cut=None):
     sys.path.insert(0, HERE)
     cut = CUT if cut is None else cut
     rain = Rain() if cut is CUT else None
-    score = os.path.join(ROOT, 'out', 'film_data', 'score.wav')
+    score = os.path.join(ROOT, 'out', 'film_data', 'score.wav' if cut is CUT else 'score_ladder.wav')
     audio = ['-i', score, '-c:a', 'aac', '-b:a', '192k', '-shortest'] if os.path.exists(score) else []
     ff = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24',
                            '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-'] + audio +
