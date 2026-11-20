@@ -188,8 +188,11 @@ def card(lines, secs):
 def main(quality, out):
     sys.path.insert(0, HERE)
     rain = Rain()
+    score = os.path.join(ROOT, 'out', 'film_data', 'score.wav')
+    audio = ['-i', score, '-c:a', 'aac', '-b:a', '192k', '-shortest'] if os.path.exists(score) else []
     ff = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24',
-                           '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+                           '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-'] + audio +
+                          ['-c:v', 'libx264', '-pix_fmt', 'yuv420p',
                            '-crf', '17', '-preset', 'medium', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
     for item in CUT:
         if item[0] == 'card':
