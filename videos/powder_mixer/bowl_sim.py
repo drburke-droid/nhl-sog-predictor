@@ -59,7 +59,8 @@ def main():
     ap.add_argument("--fps", type=int, default=24)
     ap.add_argument("--ingredients", type=int, default=6)
     ap.add_argument("--max-dt", type=float, default=1.0, help="longest solver time step in ms")
-    ap.add_argument("--mu", type=float, default=0.5)
+    ap.add_argument("--mu", type=float, default=0.5, help="Coulomb friction coefficient, grain on grain and grain on tool")
+    ap.add_argument("--mu-wall", type=float, default=0.4, help="Coulomb friction coefficient, grain on bowl")
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out")
     ap.add_argument("--no-cache", action="store_true")
@@ -136,7 +137,7 @@ def main():
           f"fastest point {vmax_tool:.0f} mm/s, substeps/frame {nsub} (dt {dt*1e3:.2f} ms)", flush=True)
 
     def step(n_active):
-        substep(P, Pprev, V, N, n_active, dt, G, d, args.mu, 0.4, 2,
+        substep(P, Pprev, V, N, n_active, dt, G, d, args.mu, args.mu_wall, 2,
                 1, R, rf, 0.0, 0.0, inv_h, ox, oy, oz, nx, ny, nz,
                 cell_of, start, order, 4.0, 0.45 * d / dt)
 
@@ -224,6 +225,7 @@ def main():
                         angles=ang, snaps=np.array(snaps), **ch)
     meta = dict(tool=args.tool, label=tool["label"], unit=tool["unit"], bowl=bowl, grain=d, fps=fps,
                 seconds=args.seconds, speed=args.speed, load=args.load, n_grains=int(N), n_frames=n_frames,
+                mu=args.mu, mu_wall=args.mu_wall,
                 ingredients=n_ing, rotor_radius=tool["e"], spiral=tool["spiral"], orbit=tool["orbit"],
                 part_du=[p["du"] for p in tool["parts"]], bed_top=bed_top, dt_ms=dt * 1e3,
                 final_mix=float(ch["mix"][-1]), reach=summary, **rev)

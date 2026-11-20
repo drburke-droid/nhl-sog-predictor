@@ -5,6 +5,7 @@ bowl was loaded?
 
     python tournament.py --set base            # the eight contestants
     python tournament.py --set grain speed load
+    python tournament.py --set friction        # grain friction 0 (frictionless), 0.25, 0.8; the base is 0.5
     python tournament.py --collect             # rebuild the CSV from finished runs
 
 Writes experiments/tournament.csv (one row per run) and tournament_curves.npz.
@@ -37,6 +38,10 @@ def runs_for(sets):
         out += [(f"speed2_{t}", "double speed", t, ["--speed", "2"], 10.0) for t in CONTESTANTS]
         if "half" in sets:                    # slow (40 s runs); not part of the default set
             out += [(f"speed0.5_{t}", "half speed", t, ["--speed", "0.5"], 40.0) for t in KEY]
+    if "friction" in sets:                    # Coulomb friction between grains (and grain on tool); bowl wall scaled with it
+        for mu in (0.0, 0.25, 0.8):
+            out += [(f"mu{mu:g}_{t}", f"friction {mu:g}", t, ["--mu", f"{mu:g}", "--mu-wall", f"{0.8 * mu:g}"], 20.0)
+                    for t in CONTESTANTS]
     if "load" in sets:
         for ld in ("stripes", "rings"):
             out += [(f"load_{ld}_{t}", f"loaded as {ld}", t, ["--load", ld], 20.0) for t in CONTESTANTS]
@@ -70,6 +75,7 @@ def collect(work):
         curves[name + "_t"], curves[name + "_mix"], curves[name + "_count"] = z["t"], mix, z["count"]
         row = dict(run=name, tool=m["tool"], label=m["label"], unit=m["unit"], grain_mm=m["grain"],
                    speed=m["speed"], load=m["load"], grains=m["n_grains"], seconds=m["seconds"],
+                   mu=m.get("mu", 0.5), mu_wall=m.get("mu_wall", 0.4),
                    strokes=round(float(z["count"][-1]), 1), final_percent=round(100 * float(mix[-1]), 1))
         for lvl in (50, 80, 90, 95):
             i = np.where(mix >= lvl / 100)[0]
@@ -88,7 +94,7 @@ def collect(work):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--set", nargs="*", default=["base"], choices=("base", "grain", "speed", "half", "load"))
+    ap.add_argument("--set", nargs="*", default=["base"], choices=("base", "grain", "speed", "half", "load", "friction"))
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--work", default=os.path.join(HERE, "cache", "tournament"))
     ap.add_argument("--force", action="store_true")

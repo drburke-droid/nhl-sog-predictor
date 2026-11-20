@@ -107,7 +107,54 @@ def fig_sensitivity(rows, curves, order):
     print("wrote", out)
 
 
+def fig_friction(rows):
+    """% mixed after 20 s against the friction coefficient between grains, one panel per method."""
+    from tools import TOOL_COLOR
+    mus = [(0.0, "mu0_{}"), (0.25, "mu0.25_{}"), (0.5, "base_{}"), (0.8, "mu0.8_{}")]
+    tools = [t for t in CONTESTANTS if all(p.format(t) in rows for _, p in mus)]
+    tools.sort(key=lambda t: -float(rows[f"base_{t}"]["final_percent"]))
+    val = {t: [float(rows[p.format(t)]["final_percent"]) for _, p in mus] for t in tools}
+    x = [m for m, _ in mus]
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10.5})
+    fig, axes = plt.subplots(2, 4, figsize=(15, 7.4), sharex=True, sharey=True, facecolor=SURFACE)
+    for ax, t in zip(axes.ravel(), tools):
+        ax.set_facecolor(SURFACE)
+        ax.axvspan(-0.06, 0.12, color="#f1efe9", lw=0, zorder=0)
+        ax.axvline(0.5, color=CONTEXT, lw=1, ls=(0, (3, 3)), zorder=1)
+        for o in tools:
+            if o != t:
+                ax.plot(x, val[o], color=CONTEXT, lw=1.1, zorder=2)
+        col = TOOL_COLOR[t]
+        ax.plot(x, val[t], color=col, lw=2.4, zorder=4, solid_capstyle="round")
+        ax.plot(x, val[t], "o", ms=8, color=col, mec=SURFACE, mew=2, zorder=5)
+        for i in (0, 2):                        # frictionless, and the film's value
+            ax.annotate(f"{val[t][i]:.0f}%", (x[i], val[t][i]), xytext=(0, 9 if val[t][i] < 92 else -17),
+                        textcoords="offset points", ha="center", color=INK, fontsize=10, fontweight="bold")
+        ax.set_title(TOOLS[t]["label"].replace(", by hand", ""), loc="left", color=INK, fontsize=11.5, fontweight="bold", pad=8)
+        ax.set_ylim(0, 105); ax.set_xlim(-0.06, 0.86)
+        ax.set_yticks(range(0, 101, 20)); ax.set_xticks(x); ax.set_xticklabels(["0", "0.25", "0.5", "0.8"])
+        ax.grid(axis="y", color=GRID, lw=1); ax.set_axisbelow(True)
+        for sp in ("top", "right", "left"):
+            ax.spines[sp].set_visible(False)
+        ax.spines["bottom"].set_color(GRID); ax.tick_params(colors=INK2, length=0)
+    axes[0, 0].text(0.03, 40, "no\nfriction", color=INK2, fontsize=9, ha="center", va="center")
+    axes[0, 0].text(0.52, 3, "the film", color=INK2, fontsize=9, ha="left", va="bottom")
+    for ax in axes[1]:
+        ax.set_xlabel("Friction coefficient between grains", color=INK2)
+    for ax in axes[:, 0]:
+        ax.set_ylabel("% mixed after 20 s", color=INK2)
+    fig.suptitle("Friction is what lets a spoon or whisk drag powder round the bowl", x=0.012, ha="left", color=INK,
+                 fontsize=16, fontweight="bold")
+    fig.text(0.012, 0.925, "Same bowl, pie wedges, 20 seconds, as Coulomb friction between grains (and grain on tool) changes. "
+             "The film uses 0.5. Grey: the other seven methods.", color=INK2, fontsize=10.5)
+    fig.subplots_adjust(left=0.05, right=0.985, top=0.84, bottom=0.09, wspace=0.1, hspace=0.36)
+    out = os.path.join(HERE, "experiments", "tournament_friction.png")
+    fig.savefig(out, dpi=160, facecolor=SURFACE)
+    print("wrote", out)
+
+
 if __name__ == "__main__":
     rows, curves = load()
     order = fig_base(rows, curves)
     fig_sensitivity(rows, curves, order)
+    fig_friction(rows)

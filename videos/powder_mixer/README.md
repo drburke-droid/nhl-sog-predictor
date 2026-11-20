@@ -196,7 +196,7 @@ deep instead of 15 mm.
 Eight ways of mixing dry ingredients, each given the same bowl of six powders.
 
 ```bash
-python tournament.py --set base load speed half grain      # about 3.5 h on 4 cores
+python tournament.py --set base load speed half grain friction      # about 4.5 h on 4 cores
 ```
 
 ```bash
@@ -269,6 +269,20 @@ powder in or out, so it was not tested as a contestant.
   beaters fling powder away from themselves. The large paddle reads 87, 83, 97%:
   best at double speed, where it starts throwing powder across the bowl. Half
   speed was run for five of the eight tools.
+- **Friction.** Grains have Coulomb friction with each other and with the tool
+  (μ = 0.5 in the film) and with the bowl (0.4). Varied from 0 to 0.8, with the
+  bowl at 0.8 × μ throughout (`--set friction`):
+
+  ![Friction](experiments/tournament_friction.png)
+
+  At 0.25 and 0.8 the whisk and spoon stay first and second (whisk 98, 99, 100%;
+  spoon 97, 99, 99% at μ = 0.25, 0.5, 0.8) and the twirled spoon stays last.
+  The fork gains most from friction (78, 90, 95%) and overtakes the stand
+  mixer's large paddle at 0.5 and above. With no friction at all the order
+  falls apart: narrow hand tools slip through the powder instead of dragging it
+  (spoon 78%, whisk 72%, fork 60%) and the large paddle comes first (93%).
+  Friction is what lets a spoon or whisk mix. These are 20-second wedge runs;
+  the knockout itself was not re-run at other friction values.
 - **Grain size.** The top two are unchanged from 1.4 to 2.4 mm. The fork and the
   wire whip get worse with finer grains (fork 95, 90, 78%; wire whip 94, 81,
   73%): more of the powder slips between tines and wires. All the stand-mixer

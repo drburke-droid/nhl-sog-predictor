@@ -48,7 +48,7 @@ What it shows
 And then some satisfying blending: four bowls loaded as coloured squares, a smiley, our logo and the YouTube icon, stirred away. No scores.
 
 What this is, and is not
-Every tool, hand tools included, hangs from the same stand mixer, so the only thing that differs between two bowls is the tool and the way it moves. Each method has its own colour: mixer, score bar and chart line match. This is a physics simulation of dry, free-flowing grains of equal size: no clumping, no dust cloud, no butter. The bowl is a half-scale model of a 22 cm kitchen bowl. The hand tools move at 1.5 strokes a second, the stand mixer at 0.8 orbits a second, the hand mixer's beaters at 5 turns a second, which is on the slow side for a real one. Change those speeds and the machines' scores change; the hand tools' strokes-to-mix does not. There is no published experiment on spoon or whisk strokes for dry powders to check the hand-tool results against.
+Every tool, hand tools included, hangs from the same stand mixer, so the only thing that differs between two bowls is the tool and the way it moves. Each method has its own colour: mixer, score bar and chart line match. This is a physics simulation of dry, free-flowing grains of equal size, with friction between grains, against the bowl and against the tool (Coulomb friction, μ = 0.5): no clumping, no dust cloud, no butter. A follow-up test from μ = 0.25 to 0.8 left the whisk and spoon on top; with no friction at all, hand tools slip through the powder and barely mix. The bowl is a half-scale model of a 22 cm kitchen bowl. The hand tools move at 1.5 strokes a second, the stand mixer at 0.8 orbits a second, the hand mixer's beaters at 5 turns a second, which is on the slow side for a real one. Change those speeds and the machines' scores change; the hand tools' strokes-to-mix does not. There is no published experiment on spoon or whisk strokes for dry powders to check the hand-tool results against.
 
 0:00 The question, and how "% mixed" is measured
 0:19 Quarter-final 1: spoon vs spoon twirled in the middle
@@ -108,3 +108,11 @@ granular flow, powder mixing, Blender, kitchen science, food science, simulation
 * Chapters: YouTube needs every chapter to be at least 10 seconds, so the opening is one chapter (0:00 to 0:19).
 * The score was synthesized and checked for level (−16 LUFS) and clipping, but nobody has listened to it.
   Listen before publishing, or replace it.
+
+**Replies to comments**
+
+> "Does not account for friction between the particles. Therefore these results are not very useful."
+
+```
+Thanks for the comment! Friction is in the model: every grain has Coulomb friction against its neighbours (μ = 0.5), the bowl (0.4) and the tool. You're right that it matters a lot, so I tested it. With no friction the spoon and whisk mostly slip through the powder (78% and 72% mixed after 20 s) and the stand mixer wins. From μ = 0.25 to 0.8 the whisk and spoon stayed on top every time. What the model does leave out is cohesion, the stickiness that makes flour clump, which the video mentions at the end. Chart and code: https://github.com/drburke-droid/nhl-sog-predictor/blob/claude/charming-dijkstra-sd3q1f/videos/powder_mixer/experiments/tournament_friction.png
+```
