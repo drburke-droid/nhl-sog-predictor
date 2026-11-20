@@ -78,7 +78,7 @@ def analyse(outdir, f_space=0.5, horizon_years=10_000, swarm_sigma_days=15.0, de
     biggest = float(last[:, 3].max()) if len(last) else 0.0
 
     # ---- the rain at the top of the atmosphere ----
-    hit = fate == 1
+    hit = (fate == 1) & (m > 0)
     th, mh, vh = rain['t_f'][hit], m[hit], v[hit]
     eh = 0.5 * mh * vh ** 2
     big = [(e['t'], e['m'], e['energy']) for e in events if e['kind'] == 'earth_impact']
@@ -92,7 +92,8 @@ def analyse(outdir, f_space=0.5, horizon_years=10_000, swarm_sigma_days=15.0, de
     r_earth = m[rem & (fate == 1)].sum() / (t_end - win)
     tau = m_alive / r_all if r_all > 0 else np.inf
     f_e = r_earth / r_all if r_all > 0 else 0.0
-    v_late = float(np.average(vh[th > win], weights=mh[th > win])) if (th > win).any() else 11.1e3
+    late = (th > win) & (mh > 0)
+    v_late = float(np.average(vh[late], weights=mh[late])) if late.any() else 11.1e3
 
     # time grid: 1 day out to the end of the N-body run, then 30 days, then 1 year
     g1 = np.arange(0, t_end, DAY)

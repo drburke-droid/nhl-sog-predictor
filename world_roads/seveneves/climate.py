@@ -3,7 +3,8 @@
 Global energy-balance model, one column averaged over the whole planet:
 
   dH/dt = (1 - f_space) * P_rain / A  +  S_abs  -  OLR(T)  -  k (T - T_deep)
-  C_deep dT_deep/dt = k (T - T_deep)
+  C_deep dT_deep/dt = k (T - T_deep), capped at F_MIX_MAX = 2 W/m^2 (a hot surface layer over cold
+  water is so stable that tides and wind cannot mix more heat down)
 
 H(T) is the enthalpy of the surface system relative to today: air, the ocean mixed layer, and all the
 water that has evaporated into the sky at T (water vapour column = p_sat(T)/g, from the IAPWS steam
@@ -31,7 +32,10 @@ COL_OCEAN = M_OCEAN / A_EARTH          # 2.6e6 kg/m^2: the ocean as a global lay
 C_AIR = 1.03e4 * 1004.0                 # J/m^2/K
 MIX_DEPTH = 70.0                        # m, ocean mixed layer (over 71% of the globe)
 M_MIX = 1025.0 * MIX_DEPTH * 0.71       # kg/m^2 global average
-K_DEEP = 0.7                            # W/m^2/K, ocean heat uptake efficiency
+K_DEEP = 0.7                            # W/m^2/K, ocean heat uptake efficiency (today)
+F_MIX_MAX = 2.0                         # W/m^2: most heat tides and wind can mix down through a hot,
+                                        # stably stratified surface layer (~2 TW of mixing power, 20%
+                                        # efficiency, thermal expansion 3e-4/K, 1 km)
 C_DEEP = 4.0e3 * (COL_OCEAN - M_MIX)    # J/m^2/K
 S_ABS = 239.7                           # W/m^2 absorbed sunlight today
 OLR_LIM = 282.0                         # runaway greenhouse limit
@@ -112,9 +116,10 @@ def run_ebm(t, P, f_space, TT, HH, MV, col_ocean):
         for _ in range(nsub):
             v = np.interp(T, TT, MV)
             left = col_ocean - v
-            q = (1 - f_space) * P[i - 1] + S_ABS - olr(T, left) - K_DEEP * (T - tdeep)
+            fd = min(K_DEEP * (T - tdeep), F_MIX_MAX)
+            q = (1 - f_space) * P[i - 1] + S_ABS - olr(T, left) - fd
             H += q * h
-            tdeep += K_DEEP * (T - tdeep) * h / C_DEEP
+            tdeep += fd * h / C_DEEP
             T = np.interp(H, HH, TT)
         Ts[i] = T
         Td[i] = tdeep

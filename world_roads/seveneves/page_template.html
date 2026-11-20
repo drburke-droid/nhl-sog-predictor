@@ -1,0 +1,422 @@
+<title>Seveneves Simulator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; charts span it; a three-number verdict strip under the title. */
+:root {
+  --bg: #f1f3f6;          /* regolith grey, faint blue bias */
+  --panel: #ffffff;
+  --ink: #141821;
+  --ink-2: #4a5160;
+  --ink-3: #7b8291;
+  --rule: #d9dde4;
+  --grid: #e6e9ee;
+  --ember: #c24a14;       /* the Hard Rain */
+  --ember-soft: #f6e3d8;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --ref: #8a6f00;
+  --f-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1017; --panel: #151a23; --ink: #e9ebef; --ink-2: #b4bac6; --ink-3: #8a91a0;
+    --rule: #2a313e; --grid: #222833; --ember: #f0864f; --ember-soft: #3a2116;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --ref: #d6b23a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1017; --panel: #151a23; --ink: #e9ebef; --ink-2: #b4bac6; --ink-3: #8a91a0;
+  --rule: #2a313e; --grid: #222833; --ember: #f0864f; --ember-soft: #3a2116;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --ref: #d6b23a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 48px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); letter-spacing: -0.02em; font-weight: 700; }
+h2 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); }
+.dek { font-size: 1.15rem; color: var(--ink-2); max-width: 60ch; }
+header { display: grid; gap: 14px; }
+section { display: grid; gap: 16px; padding-top: 44px; margin-top: 44px; border-top: 1px solid var(--rule); }
+.verdict { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+.vcard { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 16px 18px; display: grid; gap: 6px; align-content: start; }
+.vnum { font-family: var(--f-display); font-size: 2rem; font-weight: 700; color: var(--ember); line-height: 1.05; font-variant-numeric: tabular-nums; }
+.vcap { font-size: 0.92rem; color: var(--ink-2); line-height: 1.45; }
+@media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
+.chart { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 14px 8px; position: relative; min-width: 0; }
+.chart h3 { margin-bottom: 2px; }
+.chart .sub { font-size: 0.85rem; color: var(--ink-3); margin-bottom: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.85rem; color: var(--ink-2); margin: 4px 0 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 14px; height: 4px; border-radius: 2px; display: inline-block; }
+.legend i.sq { height: 12px; width: 12px; border-radius: 3px; }
+svg text { font-family: var(--f-mono); font-size: 11px; fill: var(--ink-3); }
+svg .lab { font-family: var(--f-body); font-size: 12px; fill: var(--ink-2); }
+svg .lab-strong { font-family: var(--f-body); font-size: 12px; font-weight: 600; fill: var(--ink); }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+  padding: 8px 10px; font-size: 0.8rem; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 150px; z-index: 5; }
+.tip b { font-family: var(--f-mono); font-weight: 500; }
+.tip .row { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
+.tip .row span:first-child { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.tip i { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+.tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+td { font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { text-align: left; }
+tr:last-child td { border-bottom: 0; }
+tr.hl td { background: var(--ember-soft); }
+.bar { display: inline-block; height: 8px; border-radius: 0 4px 4px 0; background: var(--ember); vertical-align: middle; margin-right: 8px; }
+.claims { display: grid; gap: 10px; }
+.claim { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.claim > div { padding: 12px 14px; display: grid; gap: 4px; align-content: start; }
+.claim > div + div { border-left: 1px solid var(--rule); }
+.claim .k { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.claim .tag { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 500; padding: 1px 7px; border-radius: 3px; justify-self: start; }
+.tag.yes { background: color-mix(in srgb, var(--s3) 18%, transparent); color: var(--ink); }
+.tag.no { background: color-mix(in srgb, var(--ember) 18%, transparent); color: var(--ink); }
+.tag.part { background: color-mix(in srgb, var(--ref) 20%, transparent); color: var(--ink); }
+@media (max-width: 640px) { .claim { grid-template-columns: 1fr; } .claim > div + div { border-left: 0; border-top: 1px solid var(--rule); } }
+.note { font-size: 0.85rem; color: var(--ink-3); }
+ul.plain { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; max-width: 70ch; }
+code { font-family: var(--f-mono); font-size: 0.85em; }
+a { color: var(--s1); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Testing a novel with an N-body simulation</div>
+  <h1>Seveneves Simulator</h1>
+  <p class="dek">In Neal Stephenson's <em>Seveneves</em> the Moon breaks into seven pieces. They grind each other
+  to rubble, and two years later the "Hard Rain" begins: thousands of years of falling Moon that sterilise
+  the Earth's surface. We simulated it: real gravity, real collision physics, and real steam tables.</p>
+  <div class="verdict" id="verdict"></div>
+</header>
+
+<section id="setup">
+  <div class="eyebrow">The setup</div>
+  <h2>Seven pieces, the Sun, the Earth, and the debris</h2>
+  <p>The Moon is cut into seven uneven pieces, from 6% to 19% of its mass. They get just enough energy to escape each
+  other's gravity, plus a leftover drift speed: the main dial. The Sun, the Earth and every fragment bigger than 80 km
+  are integrated together with full gravity. When two fragments touch, collision scaling laws for planet-sized bodies
+  decide whether they merge, chip or shatter. Every parcel of debris, from the breakup itself and from those collisions,
+  is then followed until it hits the Earth, hits a fragment, or leaves Earth orbit. The heat of whatever hits the Earth
+  goes into a climate model that has to boil the oceans to get hot.</p>
+</section>
+
+<section id="merge">
+  <div class="eyebrow">Finding 1</div>
+  <h2>The pieces don't shatter. They merge, or fly apart.</h2>
+  <p id="merge-text"></p>
+  <div class="chart" id="c-budget"><h3>Where the Moon went, by how hard it was broken</h3>
+    <div class="sub">Share of the Moon's mass after 50 years. Mean of 6 runs with different piece shapes. Fragments only.</div>
+    <div class="legend" id="l-budget"></div><div class="plot"></div></div>
+  <div class="tablewrap"><table id="t-maxcoll"></table></div>
+  <p class="note" id="maxcoll-note"></p>
+</section>
+
+<section id="cascade">
+  <div class="eyebrow">Finding 2</div>
+  <h2>The runaway cascade dies at the first step</h2>
+  <p id="cascade-text"></p>
+</section>
+
+<section id="rain">
+  <div class="eyebrow">Finding 3</div>
+  <h2>The rain starts in days, not years</h2>
+  <p id="rain-text"></p>
+  <div class="chart" id="c-rain"><h3>Heat arriving from falling debris</h3>
+    <div class="sub">Global average, W/m², log scales. Pieces drift apart at 150 m/s.</div>
+    <div class="legend" id="l-rain"></div><div class="plot"></div></div>
+</section>
+
+<section id="heat">
+  <div class="eyebrow">Finding 4</div>
+  <h2>The oceans boil, and the steam holds the heat for thousands of years</h2>
+  <p id="heat-text"></p>
+  <div class="chart" id="c-temp"><h3>Global average surface temperature</h3>
+    <div class="sub">°C, time on a log scale.</div>
+    <div class="legend" id="l-temp"></div><div class="plot"></div></div>
+  <div class="chart" id="c-ocean"><h3>Share of the oceans boiled into the sky</h3>
+    <div class="sub">Time on a log scale.</div>
+    <div class="legend" id="l-ocean"></div><div class="plot"></div></div>
+</section>
+
+<section id="dial">
+  <div class="eyebrow">The dial that matters</div>
+  <h2>How much dust did the breakup make?</h2>
+  <p>The novel never says how much of the Moon was turned straight into small debris by whatever broke it. It is
+  the setting that matters most for the Earth. Because debris parcels are followed as test particles, we can re-weight
+  them without re-running anything.</p>
+  <div class="tablewrap"><table id="t-dial"></table></div>
+  <p class="note">Pieces drift apart at 150 m/s. "0%" still includes the debris thrown off by the fragments' own collisions.</p>
+</section>
+
+<section id="speeds">
+  <div class="eyebrow">Every breakup speed</div>
+  <h2>Gentle or violent, the Earth loses</h2>
+  <div class="tablewrap"><table id="t-speeds"></table></div>
+  <div class="chart" id="c-impacts"><h3>Whole fragments that hit the Earth</h3>
+    <div class="sub">Each dot is one fragment of 80 km or more striking the Earth: its mass as a share of the Moon (log scale) against the year it hit. 30 fragment-only runs (6 piece shapes × 5 breakup speeds), 50 years each.</div>
+    <div class="plot"></div></div>
+</section>
+
+<section id="book">
+  <div class="eyebrow">Scorecard</div>
+  <h2>The novel against the simulation</h2>
+  <div class="claims" id="claims"></div>
+</section>
+
+<section id="limits">
+  <div class="eyebrow">What this leaves out</div>
+  <h2>Limits</h2>
+  <ul class="plain">
+    <li>Debris parcels don't collide with each other. Grinding into dust could spread their orbits (more rain) or flatten them into a ring (less).</li>
+    <li>Pieces thrown out of Earth orbit go round the Sun near the Earth's own orbit. Over 10,000 to a million years many would come back. They are not followed.</li>
+    <li>The climate is one global column: no geography, clouds, impact winter or melting crust. Bare land under that sky would be far hotter than the global average.</li>
+    <li>Whatever broke the Moon is not modelled; only its results are set by the dials.</li>
+  </ul>
+  <p class="note">Physics: REBOUND IAS15 (Rein &amp; Spiegel 2015); collisions, Leinhardt &amp; Stewart 2012 and Kokubo &amp; Genda 2010; crater ejecta, Housen &amp; Holsapple 2011;
+  runaway-greenhouse limit, Goldblatt et al. 2013; steam, IAPWS-IF97. Code and the full list of assumptions: <span class="mono">world_roads/seveneves</span> (README.md, ACCURACY.md).</p>
+</section>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const D = /*DATA*/null;
+const NS = 'http://www.w3.org/2000/svg';
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const pct = (x, d = 0) => (100 * x).toFixed(d) + '%';
+const fmtYears = y => y < 1 / 12 ? `day ${Math.round(y * 365.25)}` : y < 2 ? `${(y * 12).toFixed(1)} months` : y < 100 ? `${y.toFixed(1)} years` : `${Math.round(y).toLocaleString()} years`;
+const sig = (x, n = 2) => { if (x === 0) return '0'; const p = Math.floor(Math.log10(Math.abs(x))); return p >= 4 || p < -2 ? x.toExponential(n - 1).replace('e+', '×10^') : (+x.toPrecision(n)).toLocaleString(); };
+const tip = document.getElementById('tip');
+
+function showTip(host, html, x, y) {
+  tip.innerHTML = html; tip.hidden = false;
+  const r = host.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = r.left + window.scrollX + x + 14, top = r.top + window.scrollY + y - h - 10;
+  if (left + w > window.scrollX + document.documentElement.clientWidth - 8) left = r.left + window.scrollX + x - w - 14;
+  if (top < window.scrollY + 8) top = r.top + window.scrollY + y + 14;
+  tip.style.left = left + 'px'; tip.style.top = top + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+// ---------- log-x line chart ----------
+function lineChart(id, opts) {
+  const host = document.querySelector(`#${id} .plot`);
+  const leg = document.getElementById('l-' + id.slice(2));
+  if (leg) leg.innerHTML = opts.series.map(s => `<span><i style="background:${css(s.color)}"></i>${s.name}</span>`).join('');
+  function draw() {
+    host.innerHTML = '';
+    const W = Math.max(host.clientWidth, 300), H = Math.round(Math.min(340, Math.max(240, W * 0.5)));
+    const m = { l: 56, r: 16, t: 12, b: 34 };
+    const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': opts.aria }, host);
+    const [x0, x1] = opts.x, [y0, y1] = opts.y;
+    const X = v => m.l + (Math.log10(v) - Math.log10(x0)) / (Math.log10(x1) - Math.log10(x0)) * (W - m.l - m.r);
+    const Y = opts.ylog ? v => m.t + (1 - (Math.log10(Math.max(v, y0)) - Math.log10(y0)) / (Math.log10(y1) - Math.log10(y0))) * (H - m.t - m.b)
+                        : v => m.t + (1 - (v - y0) / (y1 - y0)) * (H - m.t - m.b);
+    for (const v of opts.yticks) {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: css('--grid'), 'stroke-width': 1 }, svg);
+      el('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg).textContent = opts.yfmt(v);
+    }
+    const narrow = W < 520;
+    const xt = narrow ? [[1/365.25, '1 day'], [1, '1 yr'], [100, '100'], [10000, '10k yr']]
+                      : [[1/365.25, '1 day'], [1/12, '1 month'], [1, '1 yr'], [10, '10'], [100, '100'], [1000, '1,000'], [10000, '10,000 yr']];
+    for (const [v, s] of xt) {
+      if (v < x0 || v > x1) continue;
+      el('line', { x1: X(v), x2: X(v), y1: H - m.b, y2: H - m.b + 4, stroke: css('--ink-3') }, svg);
+      el('text', { x: X(v), y: H - m.b + 18, 'text-anchor': v === x0 ? 'start' : v >= x1 ? 'end' : 'middle' }, svg).textContent = s;
+    }
+    el('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: css('--ink-3'), 'stroke-width': 1 }, svg);
+    for (const r of opts.refs || []) {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(r.v), y2: Y(r.v), stroke: css('--ref'), 'stroke-width': 1, 'stroke-dasharray': '4 4' }, svg);
+      const lx = r.at ? X(r.at) : W - m.r - 4;
+      el('text', { x: lx, y: Y(r.v) + (r.below ? 15 : -5), 'text-anchor': r.at ? 'start' : 'end', class: 'lab', style: `fill:${css('--ref')}` }, svg).textContent = narrow && r.short ? r.short : r.label;
+    }
+    for (const s of opts.series) {
+      let d = '';
+      s.t.forEach((t, i) => { if (t < x0 || t > x1) return; const v = s.v[i]; if (opts.ylog && v <= 0) { return; } d += (d ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(v).toFixed(1); });
+      el('path', { d, fill: 'none', stroke: css(s.color), 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    }
+    const cross = el('line', { y1: m.t, y2: H - m.b, stroke: css('--ink-3'), 'stroke-width': 1, visibility: 'hidden' }, svg);
+    const dots = opts.series.map(s => el('circle', { r: 4, fill: css(s.color), stroke: css('--panel'), 'stroke-width': 2, visibility: 'hidden' }, svg));
+    const hit = el('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: 'transparent' }, svg);
+    function move(ev) {
+      const pt = svg.getBoundingClientRect(), px = (ev.touches ? ev.touches[0].clientX : ev.clientX) - pt.left;
+      const tv = Math.pow(10, Math.log10(x0) + (px - m.l) / (W - m.l - m.r) * (Math.log10(x1) - Math.log10(x0)));
+      cross.setAttribute('x1', px); cross.setAttribute('x2', px); cross.setAttribute('visibility', 'visible');
+      let rows = '';
+      opts.series.forEach((s, k) => {
+        let i = s.t.findIndex(t => t >= tv); if (i < 0) i = s.t.length - 1;
+        const v = s.v[i];
+        if (opts.ylog && v <= 0) { dots[k].setAttribute('visibility', 'hidden'); }
+        else { dots[k].setAttribute('cx', X(s.t[i])); dots[k].setAttribute('cy', Y(v)); dots[k].setAttribute('visibility', 'visible'); }
+        rows += `<div class="row"><span><i style="background:${css(s.color)}"></i>${s.short}</span><b>${opts.tipfmt(v)}</b></div>`;
+      });
+      showTip(host, `<div style="margin-bottom:4px;color:${css('--ink-3')}">${fmtYears(tv)}</div>${rows}`, px, ev.touches ? 20 : (ev.clientY - pt.top));
+    }
+    hit.addEventListener('mousemove', move); hit.addEventListener('touchstart', move, { passive: true }); hit.addEventListener('touchmove', move, { passive: true });
+    hit.addEventListener('mouseleave', () => { hideTip(); cross.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); });
+  }
+  draw();
+  return draw;
+}
+
+// ---------- stacked horizontal bars ----------
+function budgetChart() {
+  const host = document.querySelector('#c-budget .plot');
+  const cats = [['orbiting', 'Still orbiting Earth', '--s1'], ['earth', 'Hit the Earth', '--s2'], ['escaped', 'Thrown out of Earth orbit', '--s3']];
+  document.getElementById('l-budget').innerHTML = cats.map(c => `<span><i class="sq" style="background:${css(c[2])}"></i>${c[1]}</span>`).join('');
+  host.innerHTML = '';
+  const W = Math.max(host.clientWidth, 300), row = 34, gap = 12, m = { l: 92, r: 12, t: 6, b: 26 };
+  const H = m.t + m.b + D.ensemble.length * (row + gap) - gap;
+  const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Where the Moon went by breakup speed' }, host);
+  const X = v => m.l + v * (W - m.l - m.r);
+  for (const v of [0, .25, .5, .75, 1]) {
+    el('line', { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, stroke: css('--grid') }, svg);
+    el('text', { x: X(v), y: H - 8, 'text-anchor': v === 0 ? 'start' : v === 1 ? 'end' : 'middle' }, svg).textContent = pct(v);
+  }
+  D.ensemble.forEach((e, i) => {
+    const y = m.t + i * (row + gap);
+    el('text', { x: m.l - 10, y: y + row / 2 + 4, 'text-anchor': 'end', class: 'lab-strong' }, svg).textContent = `${e.v} m/s`;
+    const tot = e.orbiting + e.earth + e.escaped;
+    let acc = 0;
+    cats.forEach(([k, name, c]) => {
+      const w = e[k] / tot; if (w <= 0) return;
+      const x = X(acc), ww = Math.max(X(acc + w) - X(acc) - 2, 1);
+      const r = el('rect', { x, y, width: ww, height: row, fill: css(c), rx: 3 }, svg);
+      if (ww > 44) el('text', { x: x + ww / 2, y: y + row / 2 + 4, 'text-anchor': 'middle', style: 'fill:#fff;font-weight:500' }, svg).textContent = pct(e[k]);
+      const html = `<div style="margin-bottom:4px"><b>${e.v} m/s</b> drift</div><div class="row"><span><i style="background:${css(c)}"></i>${name}</span><b>${pct(e[k], 1)}</b></div>`
+        + `<div style="color:${css('--ink-3')};margin-top:4px">Largest body left: ${pct(e.largest)} of the Moon<br>Collisions per run: ${e.collisions.toFixed(1)}</div>`;
+      r.addEventListener('mousemove', ev => { const b = svg.getBoundingClientRect(); showTip(host, html, ev.clientX - b.left, ev.clientY - b.top); });
+      r.addEventListener('mouseleave', hideTip);
+      acc += w;
+    });
+  });
+}
+
+// ---------- impacts dot plot ----------
+function impactsChart() {
+  const host = document.querySelector('#c-impacts .plot');
+  host.innerHTML = '';
+  const pts = D.ensemble.flatMap(e => e.impacts.map(p => ({ ...p, v: e.v })));
+  const W = Math.max(host.clientWidth, 300), H = 300, m = { l: 56, r: 16, t: 16, b: 34 };
+  const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Fragments hitting the Earth' }, host);
+  const X = v => m.l + v / 50 * (W - m.l - m.r);
+  const y0 = 5e-5, y1 = 0.5;
+  const Y = v => m.t + (1 - (Math.log10(v) - Math.log10(y0)) / (Math.log10(y1) - Math.log10(y0))) * (H - m.t - m.b);
+  for (const v of [1e-4, 1e-3, 1e-2, 1e-1]) {
+    el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: css('--grid') }, svg);
+    el('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg).textContent = (v * 100) + '%';
+  }
+  el('text', { x: m.l - 8, y: m.t + 2, 'text-anchor': 'end' }, svg);
+  for (const v of [0, 10, 20, 30, 40, 50]) el('text', { x: X(v), y: H - m.b + 18, 'text-anchor': v === 0 ? 'start' : v === 50 ? 'end' : 'middle' }, svg).textContent = v === 50 ? '50 years' : v;
+  el('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: css('--ink-3') }, svg);
+  const boil = 2 * 2.86e27 / 6.05e7 / 7.342e22;   // Moon fraction whose impact energy (half kept) boils the oceans
+  el('line', { x1: m.l, x2: W - m.r, y1: Y(boil), y2: Y(boil), stroke: css('--ref'), 'stroke-dasharray': '4 4' }, svg);
+  el('text', { x: W - m.r - 4, y: Y(boil) - 5, 'text-anchor': 'end', class: 'lab', style: `fill:${css('--ref')}` }, svg).textContent = 'enough to boil the oceans by itself';
+  for (const p of pts) {
+    const c = el('circle', { cx: X(p.year), cy: Y(p.moon_frac), r: 5, fill: css('--s1'), stroke: css('--panel'), 'stroke-width': 2 }, svg);
+    const km = 2 * Math.cbrt(3 * p.moon_frac * 7.342e22 / (4 * Math.PI * 3344)) / 1000;
+    const html = `<b>Year ${p.year.toFixed(1)}</b><br>${sig(p.moon_frac * 100, 2)}% of the Moon, ~${Math.round(km).toLocaleString()} km across<br>${sig(p.energy / 4.2e23, 2)} Chicxulubs of energy<br><span style="color:${css('--ink-3')}">breakup drift ${p.v} m/s, piece shapes #${p.seed}</span>`;
+    c.addEventListener('mousemove', ev => { const b = svg.getBoundingClientRect(); showTip(host, html, ev.clientX - b.left, ev.clientY - b.top); });
+    c.addEventListener('mouseleave', hideTip);
+  }
+}
+
+function fill() {
+  const S = D.scenarios['150'], s = S.summary, r = s.rain, c = s.climate;
+  const noDeb = S.dial[0];
+  document.getElementById('verdict').innerHTML = [
+    [`Day ${Math.round(r.first_debris_day)}`, 'The first debris from the breakup reaches the Earth. The book waits two years.'],
+    [pct(c.max_ocean_boiled), `of the oceans boil off when ${pct(r.mass_frac_of_moon, 2)} of the Moon lands, in the default run.`],
+    [`${(Math.round(c.years_above_50C / 100) * 100).toLocaleString()} yr`, 'before the global surface cools below 50 °C. The book\'s Hard Rain lasts 5,000.'],
+  ].map(([n, t]) => `<div class="vcard"><div class="vnum">${n}</div><div class="vcap">${t}</div></div>`).join('');
+
+  const E = D.ensemble, regimes = E.reduce((a, e) => { for (const k in e.regimes) a[k] = (a[k] || 0) + e.regimes[k]; return a; }, {});
+  const ncol = Object.values(regimes).reduce((a, b) => a + b, 0);
+  document.getElementById('merge-text').textContent =
+    `Across 30 runs the fragments collided ${ncol} times. ${regimes.merge} of those collisions were merges. Only ${regimes.supercatastrophic} shattered both bodies and ${regimes['hit-and-run']} was a hit-and-run. ` +
+    `Pieces this big are held together by gravity, not rock strength. Gravity also pulls colliding pieces together at about their mutual escape speed (${(D.max_collision.mutual_vesc / 1000).toFixed(1)} km/s). Shattering a pair head-on takes about ${(D.max_collision.shatter_speed / 1000).toFixed(1)} km/s, faster than two bodies orbiting the Earth at the Moon's distance can ever meet (${(D.max_collision.max_encounter / 1000).toFixed(1)} km/s). ` +
+    `So a gentle breakup re-forms a smaller moon from roughly half the mass, and close flybys sling the rest out of Earth orbit entirely. A violent breakup sends the pieces apart before they can ever hit each other.`;
+  const mc = D.max_collision;
+  document.getElementById('t-maxcoll').innerHTML = `<thead><tr><th>Approach speed</th><th>Impact speed</th><th>Survives (planet-like)</th><th>Survives (solid rock)</th></tr></thead><tbody>` +
+    mc.rows.map((x, i) => `<tr${i === mc.rows.length - 1 ? ' class="hl"' : ''}><td>${i === mc.rows.length - 1 ? 'Head-on, opposite orbits (the maximum)' : Math.round(x.v_rel) + ' m/s'}</td><td>${(x.v_imp / 1000).toFixed(2)} km/s</td><td>${pct(x.planet)}</td><td>${pct(x.rock)}</td></tr>`).join('') + '</tbody>';
+  document.getElementById('maxcoll-note').textContent = `Two equal pieces (each 1/7 of the Moon, ${Math.round(mc.piece_radius_km)} km radius) colliding head-on. "Survives" is the largest remnant's share of the mass (Leinhardt & Stewart 2012; planet-like c* = 5, solid rock c* = 1.9). The fastest two bodies can meet while both orbit the Earth at the Moon's distance is ${(mc.max_encounter / 1000).toFixed(1)} km/s, and only on opposite orbits.`;
+
+  const ca = S.cascade;
+  document.getElementById('cascade-text').textContent =
+    `In the novel every collision makes more pieces, which make more collisions, and the debris grows exponentially. The simulation tests this directly. ` +
+    `${sig(ca.hit_fragments_kg)} kg of debris struck the big fragments. The impacts blasted out craters, but only ${sig(ca.escaping_ejecta_kg)} kg of ejecta flew faster than the fragments' escape speed: ` +
+    `one kilogram out for every ${Math.round(1 / ca.multiplier).toLocaleString()} that hit. The fragments act as sponges, not grinders. Debris hits them at about their own escape speed, ` +
+    `and even the most generous crater scaling needs four to five times that before a crater throws out more than the impactor brought in.`;
+
+  const d0 = s.config.debris0;
+  document.getElementById('rain-text').textContent =
+    `The breakup itself throws debris in every direction. Some of it loses most of its orbital speed and falls straight in. ` +
+    `In the default run (${pct(d0)} of the Moon made into debris by the breakup) the first parcel arrives on day ${Math.round(r.first_debris_day)}. ` +
+    `For the first year the falling debris delivers an average of ${Math.round(r.mean_W_m2_first_year).toLocaleString()} W/m² over the whole planet: ` +
+    `${Math.round(r.mean_W_m2_first_year / 240)} times the sunlight the Earth absorbs. In total ${pct(r.mass_frac_of_moon, 2)} of the Moon lands, ` +
+    `${sig(r.mass_kg)} kg, about ${sig(r.chicxulub_size_impacts)} impactors the size of the one that killed the dinosaurs. ` +
+    `Even with no breakup debris at all, the debris from the fragments' own collisions brings ${pct(noDeb.rain_moon_frac, 2)} of the Moon down.`;
+  document.getElementById('heat-text').textContent =
+    `A wet planet can't radiate more than about 282 W/m² (the runaway-greenhouse limit), only 42 W/m² more than it absorbs from the Sun. ` +
+    `So almost all the heat of the rain goes into boiling the oceans, and the planet can only get rid of it slowly. ` +
+    `In the default run ${pct(c.max_ocean_boiled)} of the oceans become steam and the surface peaks at ${Math.round(c.peak_T_C)} °C. ` +
+    `It stays above 100 °C for ${Math.round(c.years_above_100C).toLocaleString()} years while the steam cools and rains back down. ` +
+    `A stable hot layer sits on top of the remaining deep water, so the deep ocean stays cold underneath: the same refuge the novel uses.`;
+
+  const lineOpts = (key, extra) => ({
+    series: [
+      { name: `Breakup makes ${pct(d0)} of the Moon into debris`, short: `${pct(d0)} breakup debris`, color: '--s1', t: S.series.t, v: S.series[key] },
+      { name: 'No breakup debris (collision debris only)', short: 'collision debris only', color: '--s2', t: S.series_no_breakup_debris.t, v: S.series_no_breakup_debris[key] },
+    ], x: [1 / 365.25, 10000], ...extra });
+  const draws = [];
+  draws.push(lineChart('c-rain', lineOpts('P', { ylog: true, y: [1, 1e6], yticks: [1, 10, 100, 1e3, 1e4, 1e5, 1e6],
+    yfmt: v => v >= 1e6 ? (v / 1e6) + 'M' : v >= 1e3 ? (v / 1e3) + 'k' : v, tipfmt: v => Math.round(v).toLocaleString() + ' W/m²', aria: 'Heat from falling debris over time',
+    refs: [{ v: 240, label: 'all sunlight the Earth absorbs, 240 W/m²', short: 'sunlight, 240' }] })));
+  draws.push(lineChart('c-temp', lineOpts('T', { y: [0, 400], yticks: [0, 100, 200, 300, 400], yfmt: v => v + '°', tipfmt: v => Math.round(v) + ' °C',
+    aria: 'Global surface temperature', refs: [{ v: 100, label: 'water boils at sea level', short: 'boiling', at: 1.2 }, { v: 50, label: '50 °C', at: 1.2, below: true }] })));
+  draws.push(lineChart('c-ocean', lineOpts('ocean', { y: [0, 1], yticks: [0, .25, .5, .75, 1], yfmt: v => pct(v), tipfmt: v => pct(v, 1), aria: 'Share of oceans boiled off' })));
+
+  document.getElementById('t-dial').innerHTML = `<thead><tr><th>Breakup debris</th><th>Moon that lands</th><th>Oceans boiled</th><th>Peak</th><th>Years above 100 °C</th></tr></thead><tbody>` +
+    S.dial.map(x => `<tr${Math.abs(x.debris0 - d0) < 1e-9 ? ' class="hl"' : ''}><td>${pct(x.debris0, x.debris0 && x.debris0 < 0.01 ? 1 : 0)} of the Moon</td><td>${pct(x.rain_moon_frac, 3)}</td><td><span class="bar" style="width:${Math.round(60 * x.ocean)}px"></span>${pct(x.ocean)}</td><td>${Math.round(x.peak_C)} °C</td><td>${Math.round(x.years100).toLocaleString()}</td></tr>`).join('') + '</tbody>';
+
+  const rows = D.ensemble.map(e => {
+    const sc = D.scenarios[String(e.v)];
+    const cell = sc ? `<td>${pct(sc.summary.rain.mass_frac_of_moon, 3)}</td><td>${pct(sc.summary.climate.max_ocean_boiled)}</td><td>${Math.round(sc.summary.climate.years_above_100C).toLocaleString()}</td>` : '<td>–</td><td>–</td><td>–</td>';
+    return `<tr${e.v === 150 ? ' class="hl"' : ''}><td>${e.v} m/s</td><td>${pct(e.largest)}</td><td>${e.runs_with_fragment_impact} of ${e.runs} runs</td>${cell}</tr>`;
+  }).join('');
+  document.getElementById('t-speeds').innerHTML = `<thead><tr><th>Drift</th><th>Moon re-formed</th><th>Fragment hit Earth</th><th>Debris landing</th><th>Oceans boiled</th><th>Years &gt;100 °C</th></tr></thead><tbody>${rows}</tbody>`;
+
+  const claims = [
+    ['The seven pieces keep colliding and breaking into ever more pieces', 'no', 'They collide a few times in the first weeks and mostly merge. The count of pieces falls, it never grows.'],
+    ['The debris cloud grows exponentially', 'no', `Crater ejecta from debris hitting fragments is 1/${Math.round(1 / ca.multiplier).toLocaleString()} of the mass that hits. Each generation is smaller than the last.`],
+    ['The Hard Rain starts about two years after the breakup', 'no', `Debris from the breakup itself arrives within days (day ${Math.round(r.first_debris_day)} here). The worst of it falls in the first year.`],
+    ['The rain sterilises the Earth\'s surface', 'yes', `Every setting delivers thousands of dinosaur-killer impacts' worth of mass, and at least ${pct(noDeb.ocean)} of the oceans boil.`],
+    ['The Earth is uninhabitable for thousands of years', 'yes', `Above 100 °C for ${Math.round(c.years_above_100C).toLocaleString()} years in the default run. The runaway-greenhouse limit sets the pace, not the rain.`],
+    ['Life can hide in the deep ocean', 'part', 'If enough ocean is left. Stable stratification keeps deep water cold under a boiling surface, but larger breakup-debris fractions boil it all.'],
+  ];
+  document.getElementById('claims').innerHTML = claims.map(([b, v, s]) =>
+    `<div class="claim"><div><span class="k">The novel</span><span>${b}</span></div><div><span class="k">The simulation</span><span class="tag ${v}">${v === 'yes' ? 'Holds up' : v === 'no' ? 'Doesn\'t hold up' : 'Partly'}</span><span>${s}</span></div></div>`).join('');
+
+  budgetChart(); impactsChart();
+  let t = null;
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { draws.forEach(d => d()); budgetChart(); impactsChart(); }, 150); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { draws.forEach(d => d()); budgetChart(); impactsChart(); });
+  new MutationObserver(() => { draws.forEach(d => d()); budgetChart(); impactsChart(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+}
+fill();
+</script>
