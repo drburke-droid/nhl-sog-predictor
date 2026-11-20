@@ -75,6 +75,18 @@ def setup(quality):
     sc.render.fps = FPS
     sc.render.use_persistent_data = True
     look.add_stars(0.0025)
+    # a little bloom, so bright flashes and fireballs read as bright
+    sc.use_nodes = True
+    ct = sc.node_tree
+    rl = ct.nodes.get('Render Layers') or ct.nodes.new('CompositorNodeRLayers')
+    comp = ct.nodes.get('Composite') or ct.nodes.new('CompositorNodeComposite')
+    gl = ct.nodes.new('CompositorNodeGlare')
+    gl.glare_type = 'FOG_GLOW'
+    gl.quality = 'HIGH'
+    gl.threshold = 1.5
+    gl.size = 7
+    ct.links.new(rl.outputs['Image'], gl.inputs['Image'])
+    ct.links.new(gl.outputs['Image'], comp.inputs['Image'])
     return sc
 
 

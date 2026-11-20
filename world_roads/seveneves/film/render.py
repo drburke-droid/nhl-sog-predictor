@@ -12,6 +12,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
 import shots
+import impact  # registers the impact-ladder shots
 
 argv = sys.argv[sys.argv.index('--') + 1:]
 name, first, last, quality = argv[0], int(argv[1]), int(argv[2]), argv[3]

@@ -101,6 +101,89 @@ CUT = [
                    'Moon: NASA LRO / LOLA (SVS CGI Moon Kit).  Earth: Solar System Scope, CC BY 4.0.']),
 ]
 
+LADDER_CUT = [
+    ('card', 4.5, ['Could something hitting the Moon', 'cause problems on Earth?', 'How big would it have to be?']),
+    ('H_ladder', ['The Moon is hit all the time', 'Here is what happens as the impactor gets bigger'], None),
+    ('I1_1m', ['1 metre', 'A flash visible from Earth through a telescope', 'Crater: ~20 m.  Earth: nothing'], ('freq', 1.0)),
+    ('I2_60m', ['60 metres (like asteroid 2024 YR4)', 'Crater: 1.2 km.  Bright enough to see by eye',
+                'Earth: meteors 2–4× normal for a week'], ('freq', 60.0)),
+    ('I3_1km', ['1 kilometre', 'Crater: 18 km'], ('crater', 1000.0)),
+    ('E3_1km', ['The Earth, the next four months', 'A meteoroid storm 10,000× normal: satellites at risk',
+                'Perhaps up to ~100 Chelyabinsk-size fireballs'], ('freq', 1000.0)),
+    ('I4_10km', ['10 kilometres (the dinosaur-killer\'s size)', 'Crater: 135 km'], ('crater', 10000.0)),
+    ('E4_10km', ['The Earth, the next year', '~150,000 Chelyabinsk-size and up to ~10,000 Tunguska-size airbursts',
+                 'The climate barely notices (+0.01 °C)'], ('freq', 10000.0)),
+    ('I5_100km', ['100 kilometres', 'A basin the size of Mare Imbrium'], ('crater', 100000.0)),
+    ('E5_100km', ['The Earth, the next three years', 'Enough heat to warm the planet by ~11 °C',
+                  'A mass extinction'], ('freq', 100000.0)),
+    ('summary', 9.0, None),
+    ('card', 6.0, ['Ejecta followed from 6,000 launch sites on the Moon with the Sun and the Earth (N-body).',
+                   'Craters: Collins et al. 2005.  Ejecta: Housen & Holsapple 2011.  Impact rates: Brown et al. 2002,',
+                   'Harris & Chodas 2021.  Moon: NASA LRO/LOLA.  Earth: Solar System Scope, CC BY 4.0.']),
+]
+
+
+def ladder_row(D):
+    rows = json.load(open(os.path.join(ROOT, 'results', 'impact_ladder.json')))['rows']
+    return [r for r in rows if r['material'] == 'rock' and abs(r['D_m'] - D) / D < 1e-6][0]
+
+
+def fmt_interval(y):
+    if y < 1:
+        return f'every {y * 12:.0f} months'
+    if y < 1e3:
+        return f'every {y:,.0f} years'
+    if y < 1e6:
+        return f'every {y / 1e3:,.0f},000 years'
+    if y < 1e9:
+        return f'every {y / 1e6:,.0f} million years'
+    if y < 13.8e9:
+        return f'every {y / 1e9:,.0f} billion years'
+    return 'never, in today\'s Solar System'
+
+
+def ladder_overlay(d, kind, f, n, t, a):
+    tag, D = kind
+    r = ladder_row(D)
+    if tag == 'crater':
+        text(d, (W - 80, 70), fmt_time(t), 44, path=FONT_M, anchor='ra', alpha=a)
+    if tag == 'freq':
+        y = H - 150
+        text(d, (80, y), 'Hits the Moon', 28, fill=(190, 190, 190), alpha=a)
+        text(d, (330, y), fmt_interval(r['moon_interval_yr']), 30, path=FONT_M, fill=(255, 196, 120), alpha=a)
+        text(d, (80, y + 50), 'Hits the Earth', 28, fill=(190, 190, 190), alpha=a)
+        text(d, (330, y + 50), fmt_interval(r['earth_interval_yr']), 30, path=FONT_M, fill=(255, 196, 120), alpha=a)
+        if D >= 1000:
+            text(d, (W - 80, 70), fmt_time(t), 44, path=FONT_M, anchor='ra', alpha=a)
+
+
+def summary_frames(secs):
+    rows = [(1.0, '1 m', 'a flash'), (60.0, '60 m', 'meteors 2–4× normal'),
+            (1000.0, '1 km', 'satellite-killing meteoroid storm'),
+            (10000.0, '10 km', '~150,000 city-shaking fireballs'),
+            (100000.0, '100 km', 'mass extinction (+11 °C)')]
+    n = int(secs * FPS)
+    for f in range(n):
+        a = min(1.0, f / 12.0, (n - f) / 12.0)
+        im = Image.new('RGB', (W, H), (6, 7, 10))
+        d = ImageDraw.Draw(im)
+        text(d, (160, 120), 'Hitting the Moon', 54, path=FONT_B, alpha=a, shadow=False)
+        text(d, (160, 200), 'Impactor', 26, fill=(150, 150, 150), alpha=a, shadow=False)
+        text(d, (420, 200), 'What the Earth gets', 26, fill=(150, 150, 150), alpha=a, shadow=False)
+        text(d, (1260, 200), 'How often it hits the Moon', 26, fill=(150, 150, 150), alpha=a, shadow=False)
+        for i, (D, ds, eff) in enumerate(rows):
+            r = ladder_row(D)
+            y = 280 + 120 * i
+            hot = D >= 1000
+            col = (255, 196, 120) if hot else (225, 225, 225)
+            text(d, (160, y), ds, 40, path=FONT_M, fill=col, alpha=a, shadow=False)
+            text(d, (420, y), eff, 34, fill=col, alpha=a, shadow=False)
+            text(d, (1260, y), fmt_interval(r['moon_interval_yr']), 34, path=FONT_M, fill=col, alpha=a, shadow=False)
+        text(d, (160, H - 120), 'Problems start around 1 km. An object that big hits the Moon about once every 14 million years.',
+             28, fill=(200, 200, 200), alpha=a, shadow=False)
+        yield im
+
+
 LADDER = [   # diameter km, label (20 km/s, rock-to-regolith range from results/lunar_impact.json)
     (4, '2–5 km', 'A Tunguska blast\'s energy every day for a year'),
     (100, '80–200 km', 'Mass extinction: +10 °C worldwide'),
@@ -185,25 +268,34 @@ def card(lines, secs):
         yield im
 
 
-def main(quality, out):
+def main(quality, out, cut=None):
     sys.path.insert(0, HERE)
-    rain = Rain()
+    cut = CUT if cut is None else cut
+    rain = Rain() if cut is CUT else None
     score = os.path.join(ROOT, 'out', 'film_data', 'score.wav')
     audio = ['-i', score, '-c:a', 'aac', '-b:a', '192k', '-shortest'] if os.path.exists(score) else []
     ff = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24',
                            '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-'] + audio +
                           ['-c:v', 'libx264', '-pix_fmt', 'yuv420p',
                            '-crf', '17', '-preset', 'medium', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
-    for item in CUT:
+    for item in cut:
         if item[0] == 'card':
             for im in card(item[2], item[1]):
+                ff.stdin.write(im.tobytes())
+            continue
+        if item[0] == 'summary':
+            for im in summary_frames(item[1]):
                 ff.stdin.write(im.tobytes())
             continue
         shot, lines, kind = item
         for f, n, im, t in shot_frames(quality, shot):
             a = min(1.0, f / 10.0, (n - f) / 10.0)
             d = ImageDraw.Draw(im)
-            if kind == 'ladder':
+            if isinstance(kind, tuple):
+                ca = min(1.0, f / 10.0, (n - f) / 10.0)
+                caption(d, lines, ca)
+                ladder_overlay(d, kind, f, n, t, a)
+            elif kind == 'ladder':
                 caption(d, lines, a)
                 ladder(d, f, n, a)
             else:
@@ -218,5 +310,6 @@ def main(quality, out):
 
 if __name__ == '__main__':
     q = sys.argv[1] if len(sys.argv) > 1 else 'animatic'
-    out = sys.argv[2] if len(sys.argv) > 2 else f'/opt/seveneves_render/seveneves_{q}.mp4'
-    main(q, out)
+    which = sys.argv[2] if len(sys.argv) > 2 else 'ladder'
+    out = sys.argv[3] if len(sys.argv) > 3 else f'/opt/seveneves_render/{which}_{q}.mp4'
+    main(q, out, LADDER_CUT if which == 'ladder' else CUT)
