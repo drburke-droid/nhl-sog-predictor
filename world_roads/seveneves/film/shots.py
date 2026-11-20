@@ -269,6 +269,7 @@ def set_points(ob, xyz, radius, bright=None):
     if n == 0:
         xyz = np.zeros((1, 3)) + 1e6
         radius = np.zeros(1)
+        bright = None
         n = 1
     if len(me.vertices) != n:
         me.clear_geometry()

@@ -129,6 +129,8 @@ def ladder_row(D):
 
 
 def fmt_interval(y):
+    if y < 1 / 12:
+        return f'every {y * 365.25:.0f} days'
     if y < 1:
         return f'every {y * 12:.0f} months'
     if y < 1e3:
