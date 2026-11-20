@@ -1,9 +1,11 @@
 Actually interesting waiting room videos.
 
-We're Calgary Vision Centre, an eye clinic in Calgary, Alberta. These are the videos we'd want on the screen while you wait: how your eyes really work, and big what-if experiments built from real data.
+We're Calgary Vision Centre, an eye clinic in Calgary, Alberta. These are the videos we'd rather have on the screen while you wait: big "what if" questions worked out with real data, plus a few about the eyes doing the watching.
 
-👁 Eye science: why you can see finer detail than your own retina's pixels, how your brain adapts to blur, why glasses work by slowing light down.
+🌍 Light-speed maps: every road on Earth (it takes light 4 min 40 s), every flight, a Roomba driving every road in America
+🎨 Scale you can see: coats of paint until a room disappears, a newspaper folded all the way to the Sun, 670 million mph next to a fighter jet
+⏳ Simulations: everyone alive as grains of sand, chaos on a Plinko board, whether a whisk can ever fully mix
+🔥 Fire and sightlines: signal fires around the world, the longest sightline on Earth
+👁 Eyes: how thick glasses get, binocular vision dysfunction, a trick to show friends how you see without glasses
 
-🌍 Light-speed maps: what if light had to drive every road on Earth, fly every flight, or swim every coastline and riverbank? Every map is built from real OpenStreetMap data and timed at the speed of light.
-
-New videos when we've made something worth watching. Nothing here is a sales pitch, but if you're in Calgary and due for an eye exam, you know where to find us.
+Got a "what if"? Leave it in the comments. The best ones become videos.
