@@ -14,7 +14,8 @@ for S in I3_1km I4_10km I5_100km E3_1km E4_10km E5_100km I1_1m I2_60m H_ladder; 
   ffmpeg -y -loglevel error -framerate 24 -i $ROOT/final/$S/%04d.png -c:v libx264 -pix_fmt yuv420p -crf 14 -preset slow "$OUT" \
     && cp $ROOT/final/$S/times.json media/shots/${S}_final_times.json \
     && git add "$OUT" media/shots/${S}_final_times.json \
-    && git commit -q -m "Impact-ladder film: final render of shot $S" \
+    && git commit -q -m "Impact-ladder film: final render of shot $S" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01S7EUN3W6exPjy1TpJCVruD" \
     && for i in 1 2 3 4; do git push -q -u origin claude/brave-goldberg-819x9p && break || sleep $((2**i)); done
   echo "SHOT DONE $S"
 done
