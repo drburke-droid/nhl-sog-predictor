@@ -10,6 +10,13 @@ for v, sc in data['scenarios'].items():         # the page needs only a few summ
     s = sc['summary']
     sc['summary'] = dict(rain=s['rain'], climate=s['climate'], config=dict(debris0=s['config']['debris0']),
                          budget=s['budget_frac_of_moon'])
+li = json.load(open(os.path.join(HERE, 'results', 'lunar_impact.json')))
+keep = ['20kms_rock_average', '20kms_rock_trailing', '20kms_regolith_average', '20kms_regolith_trailing',
+        '12kms_rock_average', '50kms_rock_average']
+data['lunar_impact'] = dict(rungs=li['rungs'], cases={k: dict(thresholds=li['cases'][k]['thresholds'],
+                            frac_to_earth=li['cases'][k]['frac_to_earth_30y'],
+                            curve=[[r['D_km'], round(r['warming_C'], 2), r['E_total']] for r in li['cases'][k]['rows'][::2]])
+                            for k in keep})
 html = open(os.path.join(HERE, 'page_template.html')).read().replace('/*DATA*/null', json.dumps(data, separators=(',', ':')))
 out = os.path.join(HERE, 'results', 'seveneves.html')
 open(out, 'w').write(html)

@@ -44,7 +44,51 @@ What is computed from physics, what is a modelling choice, and what is left out.
 | Crater ejecta | Housen & Holsapple 2011, "water/competent rock" fit (μ = 0.55, C₁ = 1.5, k = 0.2) | The most generous of their fits to a cascade | Tests the novel's runaway cascade |
 | `f_space` | 0.5 | Half the entry heat is radiated straight back to space from the hot upper atmosphere | Doubling or halving the rain gives the scale of this |
 
-## 3. Left out
+## 3. The lunar-impact ladder (`lunar_impact.py`)
+
+* **Impactor:** stony (2,600 kg/m³), 45° impact angle, 12, 20 or 50 km/s.
+* **Escaping mass:** Housen & Holsapple (2011) ejecta scaling,
+  M(>v)/m = (3k/4π)[(v/(C₁U))^(-3μ) − n₁³], with U the vertical impact speed. "Rock" uses
+  μ = 0.55, C₁ = 1.5, k = 0.2; "regolith" uses μ = 0.41, C₁ = 0.55, k = 0.3. For impactors big enough
+  to erode the Moon as a whole, the Leinhardt & Stewart (2012) largest-remnant law takes over
+  (whichever predicts more escaping mass). Above Q*_RD the Moon shatters. Basin-scale craters
+  (D ≳ 300 km) are beyond the strict validity of crater scaling, so treat the upper rungs as order of
+  magnitude.
+* **Where it goes:** 6,000 test particles launched from random sites in a 45° cone around the local
+  vertical, at random times over one lunar month. Speeds are spread evenly in log(v) from escape speed
+  to 16 km/s, then re-weighted to each case's speed distribution. They are followed for 30 years with
+  the Sun and the real Moon. The last fifth of the run is extrapolated as before. 10% of the
+  Earth-bound mass arrives within 9 days, half within about 400 days, and 90% within 6 years.
+* **On Earth:** the same climate model. The rungs use the first year's energy, the peak month's
+  heating, the peak warming and the share of the ocean boiled. "A Tunguska's energy every day" is an
+  energy equivalence. Most of that mass would arrive as small fireballs.
+
+## 4. The film (`film/`)
+
+* **Driven by the simulation.** Fragment positions, merges and debris are the simulation's own (the
+  12-day opening comes from a 10-minute-cadence run). The Sun's direction comes from the integrator.
+  Earth arrivals (time and entry point) come from the 50-year run. Rain power, temperature and ocean
+  boiled come from the climate model.
+* **The opening re-run.** For the film's first 12 days the breakup was re-run with the Moon at
+  gibbous phase (`moon_f = 3.95`), so its familiar face is lit. At the main run's phase the Moon is a
+  thin crescent seen from Earth. That re-run has one merge (hour 36) instead of the main run's two,
+  which is the system's chaos, not a different physics. The long-term numbers and the findings page
+  use the main run.
+* **Shapes.** The seven pieces are cut on the simulation's own power-diagram cells. They slump towards
+  lumpy spheroids within a few hours, because rock is about 100× too weak to hold a 900-km wedge
+  against its own gravity (ρgh ≈ 800 MPa against ~10 MPa). The slumping is a visual morph, not a
+  simulation.
+* **Glow.** Exposed interior glows by depth (1,650 K near the centre falling to 650 K below the crust,
+  roughly following lunar selenotherms) along crack networks, fading over ~5 h as the skin cools. The
+  night-side sky glow is a blackbody at the radiative temperature of the heated upper atmosphere,
+  2σT⁴ = (1 − f_space)·P. Its brightness is scaled by the eye-weighted Planck radiance, normalised so
+  980 K (the 30-day peak) is about as bright as city lights.
+* **Not to scale in time.** Time-lapse shots freeze the Earth's spin. Meteor streaks are
+  representative: their number follows the rain rate, and they cluster around real entry points.
+* **Textures.** Moon: NASA SVS CGI Moon Kit (LRO LROC WAC colour, LOLA elevation, public domain).
+  Earth: Solar System Scope 8K maps (CC BY 4.0, derived from NASA Blue Marble and Black Marble).
+
+## 5. Left out
 
 * **Debris hitting debris.** Debris parcels don't collide with each other. Grinding would turn debris
   into dust faster and could randomise its orbits (feeding the Earth-crossing ones) or damp them into
@@ -66,11 +110,12 @@ What is computed from physics, what is a modelling choice, and what is left out.
   boil the oceans, and how long does it take to get rid of it?
 * **The Agent.** Whatever broke the Moon is not modelled. Only its results are set by the dials above.
 
-## 4. Sources
+## 6. Sources
 
 * Leinhardt, Z. M. & Stewart, S. T. (2012). Collisions between gravity-dominated bodies. I. ApJ 745:79.
 * Kokubo, E. & Genda, H. (2010). Formation of terrestrial planets from protoplanets under a realistic accretion condition. ApJL 714:L21.
 * Housen, K. R. & Holsapple, K. A. (2011). Ejecta from impact craters. Icarus 211:856–875.
+* NASA Scientific Visualization Studio, CGI Moon Kit (svs.gsfc.nasa.gov/4720).
 * Rein, H. & Spiegel, D. S. (2015). IAS15: a fast, adaptive, high-order integrator. MNRAS 446:1424.
 * Goldblatt, C., Robinson, T. D., Zahnle, K. J. & Crisp, D. (2013). Low simulated radiation limit for runaway greenhouse climates. Nature Geoscience 6:661–667.
 * Wagner, W. & Pruss, A. (2002). The IAPWS formulation 1995 for the thermodynamic properties of ordinary water substance. J. Phys. Chem. Ref. Data 31:387.

@@ -173,6 +173,17 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--s1); outline-of
     <div class="plot"></div></div>
 </section>
 
+<section id="agent">
+  <div class="eyebrow">How small could the Agent be?</div>
+  <h2>The smallest rock that, hitting the Moon, wrecks the Earth</h2>
+  <p id="agent-text"></p>
+  <div class="tablewrap"><table id="t-agent"></table></div>
+  <div class="chart" id="c-agent"><h3>Peak global warming on Earth, by the size of the asteroid that hits the Moon</h3>
+    <div class="sub">At 20 km/s. Ejecta followed from 6,000 launch sites on the real Moon. Log scale for size.</div>
+    <div class="legend" id="l-agent"></div><div class="plot"></div></div>
+  <p class="note">Crater ejecta: Housen &amp; Holsapple (2011) for competent rock and for regolith. Whole-Moon disruption: Leinhardt &amp; Stewart (2012). "Trailing" impacts hit the side of the Moon facing away from its orbital motion, which throws ejecta backwards, towards the Earth.</p>
+</section>
+
 <section id="book">
   <div class="eyebrow">Scorecard</div>
   <h2>The novel against the simulation</h2>
@@ -409,11 +420,46 @@ function fill() {
     ['The Hard Rain starts about two years after the breakup', 'no', `Debris from the breakup itself arrives within days (day ${Math.round(r.first_debris_day)} here). The worst of it falls in the first year.`],
     ['The rain sterilises the Earth\'s surface', 'yes', `Every setting delivers thousands of dinosaur-killer impacts' worth of mass, and at least ${pct(noDeb.ocean)} of the oceans boil.`],
     ['The Earth is uninhabitable for thousands of years', 'yes', `Above 100 °C for ${Math.round(c.years_above_100C).toLocaleString()} years in the default run. The runaway-greenhouse limit sets the pace, not the rain.`],
+    ['Something broke the Moon', 'part', 'Not an ordinary asteroid. Shattering the Moon takes a body about as big as the Moon. A rock 100 km across hitting the Moon would already be a mass extinction on Earth.'],
     ['Life can hide in the deep ocean', 'part', 'If enough ocean is left. Stable stratification keeps deep water cold under a boiling surface, but larger breakup-debris fractions boil it all.'],
   ];
   document.getElementById('claims').innerHTML = claims.map(([b, v, s]) =>
     `<div class="claim"><div><span class="k">The novel</span><span>${b}</span></div><div><span class="k">The simulation</span><span class="tag ${v}">${v === 'yes' ? 'Holds up' : v === 'no' ? 'Doesn\'t hold up' : 'Partly'}</span><span>${s}</span></div></div>`).join('');
 
+  // ---- the Agent: lunar impact ladder
+  const LI = D.lunar_impact, C = LI.cases;
+  const km = v => v == null ? '–' : v < 10 ? v.toFixed(0) + ' km' : (Math.round(v / 5) * 5).toLocaleString() + ' km';
+  const order = ['tunguska_daily', 'chicxulub_year', 'warming_10', 'oceans_boil', 'oceans_gone', 'moon_shatters'];
+  const label = Object.fromEntries(LI.rungs);
+  document.getElementById('t-agent').innerHTML = `<thead><tr><th>What reaches the Earth</th><th>Rock, average site</th><th>Rock, trailing side</th><th>Regolith, average</th></tr></thead><tbody>` +
+    order.map(k => `<tr${k === 'warming_10' ? ' class="hl"' : ''}><td style="white-space:normal;min-width:16em">${label[k]}</td><td>${km(C['20kms_rock_average'].thresholds[k])}</td><td>${km(C['20kms_rock_trailing'].thresholds[k])}</td><td>${km(C['20kms_regolith_average'].thresholds[k])}</td></tr>`).join('') + '</tbody>';
+  const w10 = [C['20kms_rock_trailing'].thresholds.warming_10, C['20kms_regolith_average'].thresholds.warming_10];
+  document.getElementById('agent-text').textContent =
+    `The novel never says what broke the Moon. So we turned the question around. An ordinary asteroid hits the intact Moon at 20 km/s; ejecta faster than the Moon's escape speed (2.4 km/s) leave it; we follow where they go. ` +
+    `About ${pct(C['20kms_rock_average'].frac_to_earth)} of the escaping mass hits the Earth within 30 years (up to ${pct(C['20kms_regolith_trailing'].frac_to_earth)} from the trailing side); most of the rest leaves Earth orbit. ` +
+    `A mass extinction (+10 °C worldwide) takes an asteroid ${Math.round(w10[0] / 10) * 10}–${Math.round(w10[1] / 10) * 10} km across, ten to twenty times the one that killed the dinosaurs, and bigger than any asteroid that crosses Earth's orbit today. ` +
+    `Shattering the Moon itself, as in the novel, takes a body about as big as the Moon. Whatever the Agent was, it wasn't an ordinary rock.`;
+  const cv = k => ({ t: C[k].curve.map(r => r[0]), v: C[k].curve.map(r => Math.max(r[1], 0.01)) });
+  const agentDraw = () => {
+    const host = document.querySelector('#c-agent .plot');
+    const series = [{ name: 'Rock, average site', short: 'rock', color: '--s1', ...cv('20kms_rock_average') },
+                    { name: 'Regolith, average site', short: 'regolith', color: '--s2', ...cv('20kms_regolith_average') }];
+    document.getElementById('l-agent').innerHTML = series.map(s => `<span><i style="background:${css(s.color)}"></i>${s.name}</span>`).join('');
+    host.innerHTML = '';
+    const W = Math.max(host.clientWidth, 300), H = Math.round(Math.min(320, Math.max(230, W * 0.45))), m = { l: 56, r: 16, t: 12, b: 34 };
+    const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Warming vs impactor size' }, host);
+    const X = v => m.l + (Math.log10(v) - Math.log10(1)) / (Math.log10(5000) - 0) * (W - m.l - m.r);
+    const Y = v => m.t + (1 - (Math.log10(Math.max(v, 0.01)) + 2) / 6) * (H - m.t - m.b);
+    for (const v of [0.01, 0.1, 1, 10, 100, 1000, 10000]) { el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: css('--grid') }, svg); el('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg).textContent = v >= 1 ? v.toLocaleString() + '°' : v + '°'; }
+    for (const v of [1, 10, 100, 1000, 5000]) el('text', { x: X(v), y: H - m.b + 18, 'text-anchor': v === 1 ? 'start' : v === 5000 ? 'end' : 'middle' }, svg).textContent = v === 5000 ? '5,000 km' : v.toLocaleString();
+    el('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: css('--ink-3') }, svg);
+    el('line', { x1: m.l, x2: W - m.r, y1: Y(10), y2: Y(10), stroke: css('--ref'), 'stroke-dasharray': '4 4' }, svg);
+    el('text', { x: m.l + 6, y: Y(10) - 5, class: 'lab', style: `fill:${css('--ref')}` }, svg).textContent = '+10 °C: mass extinction';
+    el('line', { x1: X(10), x2: X(10), y1: m.t, y2: H - m.b, stroke: css('--ink-3'), 'stroke-dasharray': '2 4' }, svg);
+    el('text', { x: X(10) + 4, y: m.t + 12, class: 'lab' }, svg).textContent = 'dinosaur-killer size';
+    for (const s of series) { let d = ''; s.t.forEach((t, i) => { if (t < 1) return; d += (d ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(s.v[i]).toFixed(1); }); el('path', { d, fill: 'none', stroke: css(s.color), 'stroke-width': 2 }, svg); }
+  };
+  agentDraw(); draws.push(agentDraw);
   budgetChart(); impactsChart();
   let t = null;
   window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { draws.forEach(d => d()); budgetChart(); impactsChart(); }, 150); });
