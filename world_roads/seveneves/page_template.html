@@ -167,6 +167,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--s1); outline-of
   <div class="eyebrow">Every breakup speed</div>
   <h2>Gentle or violent, the Earth loses</h2>
   <div class="tablewrap"><table id="t-speeds"></table></div>
+  <p class="note">"Moon re-formed" (largest body left in orbit) and "Fragment hit Earth" come from 6 runs per speed with different piece shapes. The other columns come from the one run per speed whose debris was followed in full (piece shapes #7, 2% breakup debris).</p>
   <div class="chart" id="c-impacts"><h3>Whole fragments that hit the Earth</h3>
     <div class="sub">Each dot is one fragment of 80 km or more striking the Earth: its mass as a share of the Moon (log scale) against the year it hit. 30 fragment-only runs (6 piece shapes × 5 breakup speeds), 50 years each.</div>
     <div class="plot"></div></div>
@@ -396,10 +397,11 @@ function fill() {
 
   const rows = D.ensemble.map(e => {
     const sc = D.scenarios[String(e.v)];
-    const cell = sc ? `<td>${pct(sc.summary.rain.mass_frac_of_moon, 3)}</td><td>${pct(sc.summary.climate.max_ocean_boiled)}</td><td>${Math.round(sc.summary.climate.years_above_100C).toLocaleString()}</td>` : '<td>–</td><td>–</td><td>–</td>';
+    const pk = sc ? sc.summary.climate.peak_T_C : 0;
+    const cell = sc ? `<td>${pct(sc.summary.rain.mass_frac_of_moon, 3)}</td><td>${pct(sc.summary.climate.max_ocean_boiled)}</td><td>${pk > 1100 ? 'rock melts' : Math.round(pk) + ' °C'}</td><td>${Math.round(sc.summary.climate.years_above_100C).toLocaleString()}</td>` : '<td>–</td><td>–</td><td>–</td><td>–</td>';
     return `<tr${e.v === 150 ? ' class="hl"' : ''}><td>${e.v} m/s</td><td>${pct(e.largest)}</td><td>${e.runs_with_fragment_impact} of ${e.runs} runs</td>${cell}</tr>`;
   }).join('');
-  document.getElementById('t-speeds').innerHTML = `<thead><tr><th>Drift</th><th>Moon re-formed</th><th>Fragment hit Earth</th><th>Debris landing</th><th>Oceans boiled</th><th>Years &gt;100 °C</th></tr></thead><tbody>${rows}</tbody>`;
+  document.getElementById('t-speeds').innerHTML = `<thead><tr><th>Drift</th><th>Moon re-formed</th><th>Fragment hit Earth</th><th>Moon landing</th><th>Oceans boiled</th><th>Peak</th><th>Years &gt;100 °C</th></tr></thead><tbody>${rows}</tbody>`;
 
   const claims = [
     ['The seven pieces keep colliding and breaking into ever more pieces', 'no', 'They collide a few times in the first weeks and mostly merge. The count of pieces falls, it never grows.'],

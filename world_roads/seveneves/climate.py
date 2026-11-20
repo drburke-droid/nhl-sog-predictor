@@ -61,8 +61,8 @@ def p_sat(T):
 
 
 def enthalpy_table():
-    """H(T) per m^2 relative to today (T0), on a fine grid from 200 K to 3000 K."""
-    T = np.linspace(200, 3000, 28001)
+    """H(T) per m^2 relative to today (T0), on a fine grid from 200 K to 6000 K (no rock melting)."""
+    T = np.linspace(200, 6000, 58001)
     Tc_ = T - 273.15
     hf = np.interp(Tc_, _ST[:, 0], _ST[:, 1]) * 1e3
     hg = np.interp(Tc_, _ST[:, 0], _ST[:, 2]) * 1e3
