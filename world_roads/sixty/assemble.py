@@ -69,7 +69,7 @@ def main(crf=20):
         fc.append(f"[{last}][{k}:v]xfade=transition=fade:duration={XF}:offset={O[SECS[k]]:.3f}[v{k}]")
         last = f"v{k}"
     args += ["-filter_complex", ";".join(fc), "-map", f"[{last}]", "-map", f"{len(SECS)}:a",
-             "-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-tune", "animation", "-pix_fmt", "yuv420p", "-r", "30",
+             "-c:v", "libx264", "-preset", "medium", "-crf", str(crf), "-tune", "animation", "-pix_fmt", "yuv420p", "-r", "30",
              "-c:a", "aac", "-b:a", "256k", "-shortest", "-movflags", "+faststart", FINAL]
     subprocess.run(args, check=True)
     json.dump({"sections": {s: O[s] for s in SECS}, "total": total}, open(os.path.join(OUT, "timeline.json"), "w"), indent=1)
