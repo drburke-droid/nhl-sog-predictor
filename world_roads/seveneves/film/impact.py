@@ -476,3 +476,120 @@ class After10km(EarthAfter):
 @shot('E5_100km', 120)
 class After100km(EarthAfter):
     D, days = 100000.0, 365.0 * 3
+
+
+@shot('J_ejecta', 240)
+class EjectaFlow:
+    """One impact's escaping ejecta, 1 hour to 120 days: the simulated trajectories (ejecta_viz.py),
+    thrown from the Moon's trailing side. Most leaves the Earth-Moon system; some falls to the Earth."""
+
+    def build(self, sc):
+        d = np.load(os.path.join(ROOT, 'out', 'film_data', 'ejecta_paths.npz'))
+        self.d = {k: d[k] for k in d.files}
+        s0 = self.d['sun'][0]
+        self.sun_dir = Vector(s0).normalized()
+        self.sun = shots.sun_lamp(tuple(self.sun_dir))
+        self.earth, self.shell = make_earth(tuple(self.sun_dir), spin_deg=40)
+        self.moon = look.moon((0, 0, 0), name='MoonFar')
+        self.moon.rotation_mode = 'QUATERNION'
+        self.pts = debris_object('EjectaFlow', (0.62, 0.60, 0.57))
+        self.hot = debris_object('EjectaToEarth', (0.9, 0.55, 0.25))      # the ones the simulation sends to Earth
+        self.to_earth = self.d['fate'] == 1
+        m0 = Vector(self.d['moon'][0])
+        mid = m0 * 0.55
+        up = Vector((0, 0, 1))
+        side = m0.normalized().cross(up).normalized()
+        self.cam_loc = mid + up * 420.0 + side * 330.0
+        self.cam = look.camera(tuple(self.cam_loc), tuple(mid), 32)
+        self.mid = mid
+
+    def frame(self, f):
+        d = self.d
+        t = shots.logtime(f, 0, self.frames - 1, 1800.0, d['t'][-1])
+        k = int(np.clip(np.searchsorted(d['t'], t) - 1, 0, len(d['t']) - 2))
+        x = (t - d['t'][k]) / (d['t'][k + 1] - d['t'][k])
+        mp = d['moon'][k] * (1 - x) + d['moon'][k + 1] * x
+        self.moon.location = Vector(mp)
+        xh = Vector(-mp).normalized()
+        zh = (Vector((0, 0, 1)) - xh * xh.z).normalized()
+        yh = zh.cross(xh)
+        from mathutils import Matrix
+        self.moon.rotation_quaternion = Matrix((xh, yh, zh)).transposed().to_quaternion()
+        # each particle with a short trail back along its path (8 samples over the last ~6 frames' time)
+        tr_t = [t * (1 - 0.06 * j) for j in range(8)]
+        cam = np.array(self.cam_loc)
+        out = {False: ([], [], []), True: ([], [], [])}
+        for j, tj in enumerate(tr_t):
+            kj = int(np.clip(np.searchsorted(d['t'], tj) - 1, 0, len(d['t']) - 2))
+            xj = (tj - d['t'][kj]) / (d['t'][kj + 1] - d['t'][kj])
+            Pj = d['P'][kj] * (1 - xj) + d['P'][kj + 1] * xj
+            ok = ~np.isnan(Pj[:, 0])
+            for hot in (False, True):
+                sel = ok & (self.to_earth == hot)
+                p = Pj[sel]
+                dist = np.linalg.norm(p - cam, axis=1)
+                out[hot][0].append(p)
+                out[hot][1].append(0.00045 * dist * (1 - 0.08 * j))
+                out[hot][2].append(np.full(len(p), (0.0 if not hot else 2.5) * (1 - 0.1 * j)))
+        for hot, ob in ((False, self.pts), (True, self.hot)):
+            p = np.concatenate(out[hot][0]) if out[hot][0] else np.zeros((0, 3))
+            set_points(ob, p, np.concatenate(out[hot][1]), np.concatenate(out[hot][2]))
+        sd = Vector(d['sun'][k]).normalized()
+        shots.point_sun(self.sun, sd)
+        shots.set_sun_vectors(self.earth, self.shell, tuple(sd))
+        return t
+
+
+@shot('K_entry', 144)
+class Entry:
+    """A piece of Moon rock hitting the Earth's atmosphere at 11+ km/s, seen from 400 km up at night.
+    It lights up ~100 km high, heats the air around it, and explodes in the lower atmosphere."""
+
+    def build(self, sc):
+        self.sun_dir = Vector((1.0, 0.2, 0.1)).normalized()
+        self.sun = shots.sun_lamp(tuple(self.sun_dir))
+        self.earth, self.shell = make_earth(tuple(self.sun_dir), spin_deg=95)
+        # camera 400 km above a night-side point, looking towards the horizon
+        below = (-self.sun_dir + Vector((0, 0, 0.55))).normalized()
+        east = Vector((0, 0, 1)).cross(below).normalized()
+        north = below.cross(east)
+        self.below, self.east, self.north = below, east, north
+        self.cam_loc = below * (look.R_EARTH + 0.40)
+        tgt = below * (look.R_EARTH + 0.06) + north * 0.30 + east * 0.02
+        self.cam = look.camera(tuple(self.cam_loc), tuple(tgt), 30)
+        self.tgt = tgt
+        self.trail = debris_object('Fireball', (0.1, 0.1, 0.1))
+        self.trail.visible_shadow = False
+        lamp = bpy.data.lights.new('FireLight', 'POINT')
+        lamp.shadow_soft_size = 0.002
+        self.lamp = bpy.data.objects.new('FireLight', lamp)
+        bpy.context.collection.objects.link(self.lamp)
+        # entry path: from 120 km up, 35 degrees below horizontal, 12 km/s, across the view
+        self.start = below * look.R_EARTH + north * 0.30 - east * 0.10
+        self.p0 = self.start.normalized() * (look.R_EARTH + 0.12)
+        self.dirv = (east * math.cos(math.radians(35)) - self.p0.normalized() * math.sin(math.radians(35))).normalized()
+
+    def frame(self, f):
+        t = f / 24.0 - 0.6
+        if t < 0:
+            set_points(self.trail, np.zeros((0, 3)), 0)
+            self.lamp.data.energy = 0.0
+            return 0.0
+        v = 0.012                                       # units/s = 12 km/s
+        tt = np.linspace(max(0.0, t - 2.0), t, 120)
+        pts = np.array([tuple(self.p0 + self.dirv * (v * s)) for s in tt])
+        alt = np.linalg.norm(pts, axis=1) - look.R_EARTH
+        head = alt[-1]
+        # brighter as it goes deeper into thicker air; it bursts below ~30 km
+        burst = head < 0.032
+        age = t - tt
+        b = np.exp(-age / 0.5) * np.clip((0.12 - alt) / 0.06, 0, 1) ** 2 * 60.0
+        if burst:
+            b *= np.exp(-(t - (0.12 - 0.032) / (v * math.sin(math.radians(35)))) / 0.4)
+        rad = 0.0006 + 0.0015 * np.exp(-age / 0.3)
+        set_points(self.trail, pts, rad, b)
+        self.lamp.location = Vector(tuple(pts[-1]))
+        self.lamp.data.energy = float(b[-1]) * 2e-5     # a big fireball lights the ground at ~1/450 of sunlight
+        self.lamp.data.color = (1.0, 0.85, 0.65)
+        place_camera(self.cam, self.cam_loc, self.tgt + self.east * 0.0004 * f)
+        return t

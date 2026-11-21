@@ -136,9 +136,9 @@ def ladder_score():
     a pulse under each Earth shot; a rising arpeggio under the summary."""
     t, marks = 0.0, []
     for item in assemble.LADDER_CUT:
-        if item[0] in ('card', 'summary'):
+        if item[0] in ('card', 'summary', 'graphic'):
             d = item[1]
-            marks.append((item[0], t, d))
+            marks.append((item[0] if item[0] != 'graphic' else 'g_' + item[2], t, d))
         else:
             d = shots_meta.FRAMES[item[0]] / assemble.FPS
             marks.append((item[0], t, d))
@@ -153,7 +153,11 @@ def ladder_score():
     for name, t0, d in marks:
         if name in size_gain:
             add(dry, boom(5.0), t0 + flash_at.get(name, 0.05), size_gain[name])
-        if name.startswith('E'):
+        if name == 'J_ejecta':
+            add(dry, shimmer(d, lambda x: 0.4 * (1 - x) + 0.1), t0, 1.0)
+        if name == 'K_entry':
+            add(dry, boom(4.0), t0 + 1.2, 0.35)
+        if name.startswith('E') and name[1:2].isdigit():
             k = {'E3_1km': 0.35, 'E4_10km': 0.6, 'E5_100km': 0.85}[name]
             add(dry, pulse(d, 60 + 10 * k, lambda x: k * (0.6 + 0.4 * x)), t0, 0.8)
             add(dry, shimmer(d, lambda x: k * (0.5 + 0.5 * x)), t0, 1.0)

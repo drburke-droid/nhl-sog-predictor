@@ -107,14 +107,21 @@ LADDER_CUT = [
     ('I1_1m', ['1 metre', 'A flash visible from Earth through a telescope', 'Crater: ~20 m.  Earth: nothing'], ('freq', 1.0)),
     ('I2_60m', ['60 metres (like asteroid 2024 YR4)', 'Crater: 1.2 km.  Bright enough to see by eye',
                 'Earth: meteors 2–4× normal for a week'], ('freq', 60.0)),
-    ('I3_1km', ['1 kilometre', 'Crater: 18 km'], ('crater', 1000.0)),
+    ('I3_1km', ['1 kilometre', 'Crater: 18 km.  Rock is thrown out at up to several km/s'], ('crater', 1000.0)),
+    ('J_ejecta', ['The debris, over the next four months', 'Most of it flies off into orbit around the Sun',
+                  'The orange streaks are the pieces that hit the Earth'], ('time', 1000.0)),
+    ('graphic', 11.0, 'fate'),
+    ('graphic', 10.0, 'chely'),
     ('E3_1km', ['The Earth, the next four months', 'A meteoroid storm 10,000× normal: satellites at risk',
                 'Perhaps up to ~100 Chelyabinsk-size fireballs'], ('freq', 1000.0)),
     ('I4_10km', ['10 kilometres (the dinosaur-killer\'s size)', 'Crater: 135 km'], ('crater', 10000.0)),
+    ('graphic', 10.0, 'tung'),
     ('E4_10km', ['The Earth, the next year', '~150,000 Chelyabinsk-size and up to ~10,000 Tunguska-size airbursts',
-                 'The climate barely notices (+0.01 °C)'], ('freq', 10000.0)),
+                 'Yet the climate barely notices (+0.01 °C). Why?'], ('freq', 10000.0)),
+    ('K_entry', ['A piece of the Moon hits the air', '11 km/s, 100 km up'], None),
+    ('graphic', 13.0, 'heat'),
     ('I5_100km', ['100 kilometres', 'A basin the size of Mare Imbrium'], ('crater', 100000.0)),
-    ('E5_100km', ['The Earth, the next three years', 'Enough heat to warm the planet by ~11 °C',
+    ('E5_100km', ['The Earth, the next three years', 'More heat than the Sun\'s for months: ~11 °C of warming',
                   'A mass extinction'], ('freq', 100000.0)),
     ('summary', 9.0, None),
     ('card', 6.0, ['Ejecta followed from 6,000 launch sites on the Moon with the Sun and the Earth (N-body).',
@@ -147,7 +154,7 @@ def fmt_interval(y):
 def ladder_overlay(d, kind, f, n, t, a):
     tag, D = kind
     r = ladder_row(D)
-    if tag == 'crater':
+    if tag in ('crater', 'time'):
         text(d, (W - 80, 70), fmt_time(t), 44, path=FONT_M, anchor='ra', alpha=a)
     if tag == 'freq':
         y = H - 150
@@ -300,6 +307,11 @@ def main(quality, out, cut=None):
             continue
         if item[0] == 'summary':
             for im in summary_frames(item[1]):
+                ff.stdin.write(im.tobytes())
+            continue
+        if item[0] == 'graphic':
+            import graphics
+            for im in graphics.GRAPHICS[item[2]](item[1]):
                 ff.stdin.write(im.tobytes())
             continue
         shot, lines, kind = item
