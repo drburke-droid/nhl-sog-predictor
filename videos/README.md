@@ -1,6 +1,6 @@
 # Videos for social media
 
-Every eye video and every speed-of-light video we finished, renamed so the file says what it is.
+Every eye video, every speed-of-light video and the time explainer we finished, renamed so the file says what it is.
 SHORT in a name means vertical 1080x1920 (Shorts, Reels, TikTok); everything else is 16:9 for YouTube.
 Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags already written are in `copy/`.
 
@@ -34,6 +34,12 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 | roomba_at_light_speed_every_road.mp4 | 16:9 | 3:23 | A Roomba-style photon covering every road. Copy: `copy/roomba_YOUTUBE.md`, thumbnails roomba_thumb_A/B/C |
 | roomba_at_light_speed_SHORT.mp4 | vertical | 0:50 | Roomba photon, short cut |
 | roomba_at_light_speed_calgary_SHORT.mp4 | vertical | 0:42 | Roomba photon in Calgary |
+
+## time/
+
+| File | Format | Length | What it is |
+|---|---|---|---|
+| why_60_why_24_8m23s_1080p.mp4 | 16:9, 1080p | 8:23 | Why time is counted in 60s and 24s when almost everything else is base 10: Babylonian base 60 on clay tablets (and √2 on YBC 7289), Egypt's 12 + 12 hours from star tables and shadow clocks, Greek astronomers and the Latin "first and second small parts", clocks, France's decimal time, other cultures' days, the caesium second. Reference copy; upload the 4K master (sent separately). Copy: `copy/why60_YOUTUBE.md`, thumbnails why60_thumb_A/B/C; method and sources in `world_roads/sixty/ACCURACY.md` |
 
 Left out as superseded or drafts: the first hyperacuity video, the first cut of the world short, the world-roads
 preview, the daytime-only half of the flights film, and the signal-fires film (not speed of light).
