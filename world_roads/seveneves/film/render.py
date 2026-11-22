@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
 import shots
 import impact  # registers the impact-ladder shots
+import scale   # registers the scale cards
 
 argv = sys.argv[sys.argv.index('--') + 1:]
 name, first, last, quality = argv[0], int(argv[1]), int(argv[2]), argv[3]
@@ -24,6 +25,12 @@ sc = shots.setup(quality)
 s = shots.build(name, sc)
 last = min(last, s.frames - 1)
 tfile = os.path.join(out, 'times.json')
+if hasattr(s, 'labels'):                         # screen positions of the on-screen labels, every frame
+    lab = {}
+    for f in range(s.frames):
+        s.frame(f)
+        lab[str(f)] = dict(s.labels)
+    json.dump(lab, open(os.path.join(out, 'labels.json'), 'w'))
 times = json.load(open(tfile)) if os.path.exists(tfile) else {}
 for f in range(first, last + 1, step):
     path = os.path.join(out, f'{f + 1:04d}.png')

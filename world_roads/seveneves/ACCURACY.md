@@ -142,6 +142,15 @@ What is computed from physics, what is a modelling choice, and what is left out.
   representative: their number follows the rain rate, and they cluster around real entry points.
 * **Textures.** Moon: NASA SVS CGI Moon Kit (LRO LROC WAC colour, LOLA elevation, public domain).
   Earth: Solar System Scope 8K maps (CC BY 4.0, derived from NASA Blue Marble and Black Marble).
+* **Scale cards (`film/scale.py`).** Sizes are true: a rock's size is the mean of its length, width and
+  height, and it sits beside a 1.75 m person, a 60 m (20 × 3 m storeys) office block, an 828 m stepped
+  tower, an 8,849 m summit rising from plains at ~300 m, and the Earth itself. The rocks are procedural
+  and only representative of real shapes (a fractured boulder; a rubble pile like Itokawa; a spinning top
+  like Bennu or Ryugu; an elongated, cratered body like Eros; a cratered potato like Ida), dark grey-brown
+  (albedo ~0.1–0.2) like stony asteroids. They hover slightly so they can turn. The 10 km card is a
+  Himalaya-style procedural range, not Everest itself. In the 100 km card the air glows in layers that
+  thin out with height (scale height 14 km, a little thicker than the real ~8 km so it reads on screen).
+  The line-up of five rocks is not to scale, and says so.
 
 ## 5. Left out
 

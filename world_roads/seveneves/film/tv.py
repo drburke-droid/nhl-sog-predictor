@@ -222,98 +222,81 @@ def push(im, z):
     return im.crop((x, y, x + w, y + h)).resize((W, H), Image.BILINEAR)
 
 
+# ------------------------------------------------------------------------------------ rendered scale cards
+_LABELS = {}
+
+
+def shot_labels(shot, quality):
+    """Per-frame screen positions (fractions) of a rendered shot's labels, written by render.py."""
+    if shot not in _LABELS:
+        _LABELS[shot] = {}
+        for q in ([quality, 'animatic'] if quality != 'animatic' else ['animatic']):
+            f = os.path.join(RENDER, q, shot, 'labels.json')
+            if os.path.exists(f):
+                _LABELS[shot] = json.load(open(f))
+                break
+    return _LABELS[shot]
+
+
+def outlined(d, xy, s, f, fill, a, anchor='mm', stroke=4):
+    d.text(xy, s, font=f, fill=fill + (int(255 * a),), anchor=anchor, stroke_width=stroke,
+           stroke_fill=(0, 0, 0, int(200 * a)))
+
+
+def scale_overlay(im, t, dur, p, fr, quality):
+    """A rendered scene with the title and comparison in a band at the bottom, and labels that follow the rock
+    and the familiar thing (from the per-frame label positions render.py saved)."""
+    a = alpha_in_out(t, dur)
+    scrim = Image.new('L', (1, 380))
+    scrim.putdata([int(200 * a * (y / 380) ** 1.3) for y in range(380)])
+    im.paste((0, 0, 0), (0, H - 380, W, H), scrim.resize((W, 380)))
+    d = ImageDraw.Draw(im, 'RGBA')
+    outlined(d, (W / 2, H - 190), p['title'], font(FONT_B, 84), INK, a, stroke=3)
+    outlined(d, (W / 2, H - 92), p['compare'], font(FONT_M, 52), INK2, a * ease((t - 0.8) / 0.6), stroke=3)
+    lab = shot_labels(p['shot'], quality).get(str(int(min(fr, shots_meta.FRAMES[p['shot']] - 1))), {})
+    b = a * ease((t - 1.2) / 0.6)
+    if b <= 0:
+        return
+    f = font(FONT_B, 46)
+    for key, col in (('rock', AMBER), ('other', INK)):
+        if key not in lab or key not in p['labels']:
+            continue
+        x, y = lab[key][0] * W, lab[key][1] * H
+        lift = p.get('lift', {}).get(key, 72)
+        tw = d.textlength(p['labels'][key], font=f)
+        ty = max(y - lift, 150)
+        tx = min(max(x, tw / 2 + 40), W - tw / 2 - 40)
+        d.line([(x, y - 8), (x, ty + 28)], fill=col + (int(230 * b),), width=4)
+        d.ellipse([x - 7, y - 15, x + 7, y - 1], fill=col + (int(255 * b),))
+        outlined(d, (tx, ty), p['labels'][key], f, col, b, stroke=4)
+
+
+class LineupFrames:
+    """The line-up of five turning rocks (RGBA)."""
+    def __init__(self, quality):
+        self.n = shots_meta.FRAMES['P_lineup']
+        self.dirs = [os.path.join(RENDER, q, 'P_lineup') for q in dict.fromkeys([quality, 'animatic'])]
+        self.cache = {}
+
+    def get(self, f):
+        f = int(min(max(f, 0), self.n - 1))
+        for dd in self.dirs:
+            for g in range(f, max(-1, f - 6), -1):
+                pth = os.path.join(dd, f'{g + 1:04d}.png')
+                if os.path.exists(pth):
+                    if pth not in self.cache:
+                        im = Image.open(pth).convert('RGBA')
+                        if im.size != (W, H):
+                            im = im.resize((W, H), Image.LANCZOS)
+                        self.cache = {pth: im}
+                    return self.cache[pth]
+        return None
+
+
+_LINEUP = {}
+
+
 # ------------------------------------------------------------------------------------ the story
-def scale_card(rnd, title, compare, draw_fn):
-    """'ROUND n of 5', the rock, a familiar thing at the same scale."""
-    def fn(im, t, dur):
-        a = alpha_in_out(t, dur)
-        d = ImageDraw.Draw(im, 'RGBA')
-        d.text((W / 2, 230), title, font=font(FONT_B, 92), fill=INK + (int(255 * a),), anchor='mm')
-        d.text((W / 2, 340), compare, font=font(FONT_M, 54), fill=INK2 + (int(255 * ease((t - 0.8) / 0.6) * a),),
-               anchor='mm')
-        draw_fn(d, a * ease((t - 0.4) / 0.8), t)
-    return fn
-
-
-def draw_rock(d, cx, ground, r, a, col=(150, 140, 128)):
-    d.ellipse([cx - r, ground - 2 * r, cx + r, ground], fill=col + (int(255 * a),))
-    d.ellipse([cx - r * 0.5, ground - 1.6 * r, cx - r * 0.1, ground - 1.25 * r], fill=(120, 112, 102, int(255 * a)))
-
-
-def draw_person(d, x, ground, h, a, col=INK):
-    c = col + (int(255 * a),)
-    hd = h * 0.13
-    lw = max(3, int(h * 0.06))
-    d.ellipse([x - hd / 2, ground - h, x + hd / 2, ground - h + hd], fill=c)
-    d.line([x, ground - h + hd, x, ground - h * 0.45], fill=c, width=lw)
-    d.line([x, ground - h * 0.45, x - h * 0.13, ground], fill=c, width=lw)
-    d.line([x, ground - h * 0.45, x + h * 0.13, ground], fill=c, width=lw)
-    d.line([x - h * 0.16, ground - h * 0.72, x + h * 0.16, ground - h * 0.72], fill=c, width=lw)
-
-
-def label(d, xy, s, a, size=40, col=INK2):
-    d.text(xy, s, font=font(FONT_M, size), fill=col + (int(255 * a),), anchor='ma')
-
-
-def draw_1m(d, a, t):
-    g = 880
-    d.line([360, g, 1560, g], fill=INK3 + (int(255 * a),), width=3)
-    s = 220                                             # px per metre
-    draw_rock(d, 780, g, 0.5 * s, a)
-    label(d, (780, g + 22), '1 m rock', a)
-    draw_person(d, 1200, g, 1.75 * s, a)
-    label(d, (1200, g + 22), 'a person', a)
-
-
-def draw_60m(d, a, t):
-    g = 900
-    d.line([300, g, 1620, g], fill=INK3 + (int(255 * a),), width=3)
-    s = 7.0
-    draw_rock(d, 760, g, 30 * s, a)
-    label(d, (760, g + 22), '60 m rock', a)
-    bx = 1130
-    d.rectangle([bx, g - 60 * s, bx + 150, g], outline=INK2 + (int(255 * a),), width=4)
-    for k in range(1, 20):
-        d.line([bx, g - k * 60 * s / 20, bx + 150, g - k * 60 * s / 20], fill=INK3 + (int(160 * a),), width=1)
-    label(d, (bx + 75, g + 22), '20-storey building', a)
-
-
-def draw_1km(d, a, t):
-    g = 920
-    d.line([300, g, 1620, g], fill=INK3 + (int(255 * a),), width=3)
-    s = 0.5
-    draw_rock(d, 720, g, 500 * s, a)
-    label(d, (720, g + 22), '1 km rock', a)
-    # the world's tallest building (828 m), a tapering spire
-    bx = 1220
-    c = INK2 + (int(255 * a),)
-    d.polygon([(bx - 40, g), (bx + 40, g), (bx + 8, g - 700 * s), (bx, g - 828 * s), (bx - 8, g - 700 * s)], outline=c)
-    label(d, (bx, g + 22), 'tallest building (828 m)', a)
-
-
-def draw_10km(d, a, t):
-    g = 920
-    d.line([250, g, 1670, g], fill=INK3 + (int(255 * a),), width=3)
-    s = 0.05
-    draw_rock(d, 700, g, 5000 * s, a)
-    label(d, (700, g + 22), '10 km rock', a)
-    c = (150, 160, 175, int(255 * a))
-    d.polygon([(1000, g), (1260, g - 8849 * s), (1560, g)], fill=c)
-    d.polygon([(1205, g - 7400 * s), (1260, g - 8849 * s), (1320, g - 7300 * s), (1265, g - 7700 * s)],
-              fill=(235, 238, 242, int(255 * a)))
-    label(d, (1280, g + 22), 'Mount Everest (8.8 km)', a)
-
-
-def draw_100km(d, a, t):
-    g = 960
-    d.line([200, g, 1720, g], fill=INK3 + (int(255 * a),), width=3)
-    s = 0.0056
-    draw_rock(d, 760, g, 50000 * s, a)
-    label(d, (760, g + 22), '100 km rock', a)
-    draw_rock(d, 1300, g, 5000 * s, a, (190, 150, 110))
-    label(d, (1300, g + 22), 'the dinosaur-killer (10 km)', a)
-
-
 def casualties():
     rows = json.load(open(os.path.join(ROOT, 'results', 'casualties.json')))['rows']
     return {r['D_m']: r for r in rows}
@@ -343,6 +326,10 @@ def build():
     def draw(fn, dur, rnd=None, script=''):
         seg.append(('draw', dur, dict(fn=fn, rnd=rnd, script=script)))
 
+    def scale(shot, title, compare, labels, dur, rnd, script, **kw):
+        seg.append(('scale', dur, dict(bg=(shot, 0), play=1.0, shot=shot, title=title, compare=compare, labels=labels,
+                                       rnd=rnd, script=script, **kw)))
+
     def verdict(bg, v, note, rnd):
         seg.append(('verdict', 5.5, dict(bg=bg, v=v, note=note, rnd=rnd)))
 
@@ -361,24 +348,27 @@ def build():
     seg.append(('plan', 6.0, {}))
     # ---------------------------------------------------------------- round 1: 1 m
     r = L[1.0]
-    draw(scale_card(1, 'A rock 1 metre across', 'about the size of an armchair', draw_1m), 6.0, 1,
-         'Round 1: a rock 1 metre across, about the size of an armchair.')
+    scale('S1_1m', 'A rock 1 metre across', 'about the size of an armchair',
+          dict(rock='1 m rock', other='a person (1.75 m)'), 7.0, 1,
+          'Round 1: a rock 1 metre across, about the size of an armchair.')
     say(('I1_1m', 0), ['It hits the Moon at 20 km per second', '(about 60 times faster than a bullet).'], rnd=1, dur=6.0)
     say(('I1_1m', None), ['From Earth, you would see a tiny flash.', 'It leaves a crater about 20 m wide.'], rnd=1)
     say(('I1_1m', None), ['What does Earth get?', 'Nothing at all.'], rnd=1)
     verdict(('I1_1m', None), 'HARMLESS', happens(r['moon_interval_yr']), 1)
     # ---------------------------------------------------------------- round 2: 60 m
     r = L[60.0]
-    draw(scale_card(2, 'A rock 60 metres across', 'as tall as a 20-storey building', draw_60m), 6.0, 2,
-         'Round 2: a rock 60 metres across, as tall as a 20-storey building.')
+    scale('S2_60m', 'A rock 60 metres across', 'as tall as a 20-storey building',
+          dict(rock='60 m rock', other='20-storey building (60 m)'), 7.0, 2,
+          'Round 2: a rock 60 metres across, as tall as a 20-storey building.')
     say(('I2_60m', 0), ['Same speed: 20 km per second.', 'About as big as asteroid 2024 YR4.'], rnd=2)
     say(('I2_60m', None), ['A flash bright enough to see without a telescope.', 'Crater: about 1.2 km wide.'], rnd=2)
     say(('I2_60m', None), ['What does Earth get?', 'A few extra shooting stars for a week.'], rnd=2)
     verdict(('I2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
     # ---------------------------------------------------------------- round 3: 1 km
     r = L[1000.0]
-    draw(scale_card(3, 'A rock 1 kilometre across', 'taller than the world\'s tallest building', draw_1km), 6.0, 3,
-         'Round 3: a rock 1 kilometre across, taller than the world\'s tallest building.')
+    scale('S3_1km', 'A rock 1 kilometre across', 'taller than the world\'s tallest building',
+          dict(rock='1 km rock', other='world\'s tallest building (828 m)'), 7.0, 3,
+          'Round 3: a rock 1 kilometre across, taller than the world\'s tallest building.')
     say(('I3_1km', 0), ['It hits the Moon...'], rnd=3, dur=3.5)
     say(('I3_1km', None), ['...and blasts rock out of the crater', 'faster than the Moon\'s gravity can hold it.'], rnd=3)
     say(('I3_1km', None), ['The crater: 18 km wide.'], rnd=3, dur=4.0)
@@ -395,8 +385,9 @@ def build():
     verdict(('E3_1km', None), 'TROUBLE', happens(r['moon_interval_yr']), 3)
     # ---------------------------------------------------------------- round 4: 10 km
     r = L[1e4]
-    draw(scale_card(4, 'A rock 10 kilometres across', 'taller than Mount Everest: the size of the dinosaur-killer',
-                    draw_10km), 7.0, 4, 'Round 4: a rock 10 kilometres across, the size of the one that wiped out the dinosaurs.')
+    scale('S4_10km', 'A rock 10 kilometres across', 'taller than Mount Everest: the size of the dinosaur-killer',
+          dict(rock='10 km rock', other='Everest-height peak (8.8 km)'), 7.0, 4,
+          'Round 4: a rock 10 kilometres across, the size of the one that wiped out the dinosaurs.')
     say(('I4_10km', 0), ['It hits the Moon.'], rnd=4, dur=3.5)
     say(('I4_10km', None), ['A crater 135 km wide.', 'Now some of the pieces flying at Earth', 'are as big as office towers.'], rnd=4)
     card(['Pieces that big explode in our sky.', 'Two real explosions show what that means:'], dur=5.5, sizes=[72, 54], rnd=4)
@@ -416,8 +407,10 @@ def build():
     verdict(('E4_10km', None), 'DANGER', happens(r['moon_interval_yr']), 4)
     # ---------------------------------------------------------------- round 5: 100 km
     r = L[1e5]
-    draw(scale_card(5, 'A rock 100 kilometres across', '10 times wider than the dinosaur-killer', draw_100km), 6.5, 5,
-         'Round 5: a rock 100 kilometres across, ten times wider than the dinosaur-killer.')
+    scale('S5_100km', 'A rock 100 kilometres across', 'standing on the ground, it would reach the edge of space',
+          dict(rock='100 km rock', other='10 km (dinosaur-killer)'), 7.0, 5,
+          'Round 5: a rock 100 kilometres across, ten times wider than the dinosaur-killer. Standing on the ground, '
+          'it would reach the edge of space.')
     say(('I5_100km', 0), ['It hits the Moon.'], rnd=5, dur=3.5)
     say(('I5_100km', None), ['A crater 1,000 km wide,', 'like the Moon\'s biggest dark patches.'], rnd=5)
     say(('K_entry', 40), ['Every piece of Moon rock hits our air', 'at more than 11 km per second.'], rnd=5)
@@ -529,15 +522,28 @@ def heat_screen(im, t, dur, L):
            anchor='mm')
 
 
-def plan_screen(im, t, dur):
+def plan_screen(im, t, dur, quality='animatic'):
     a = alpha_in_out(t, dur)
     d = ImageDraw.Draw(im, 'RGBA')
-    d.text((W / 2, 250), 'Five rounds. Each rock is bigger.', font=font(FONT_B, 80), fill=INK + (int(255 * a),), anchor='mm')
+    d.text((W / 2, 230), 'Five rounds. Each rock is bigger.', font=font(FONT_B, 80), fill=INK + (int(255 * a),), anchor='mm')
+    d.text((W / 2, 320), '(not to scale: each one is 10 to 60 times bigger than the one before)', font=font(FONT_M, 38),
+           fill=INK3 + (int(255 * a),), anchor='mm')
     xs = [300, 620, 960, 1300, 1640]
-    rad = [8, 22, 48, 90, 150]
+    rad = [16, 30, 52, 92, 150]
+    if quality not in _LINEUP:
+        _LINEUP[quality] = LineupFrames(quality)
+    lu = _LINEUP[quality].get(t * FPS)
     for i, (x, r_, s) in enumerate(zip(xs, rad, SIZES)):
         b = ease((t - 0.6 - 0.5 * i) / 0.5) * a
-        d.ellipse([x - r_, 640 - r_, x + r_, 640 + r_], fill=(150, 140, 128, int(255 * b)))
+        if lu is not None and b > 0:
+            m = int(r_ * 1.7) + 6
+            box = (x - m, 600 - m, x + m, 600 + m)
+            crop = lu.crop(box)
+            al = crop.getchannel('A').point(lambda v, b=b: int(v * b))
+            crop.putalpha(al)
+            im.paste(crop, box[:2], crop)
+        elif lu is None:
+            d.ellipse([x - r_, 600 - r_, x + r_, 600 + r_], fill=(150, 140, 128, int(255 * b)))
         d.text((x, 830), s, font=font(FONT_B, 58), fill=INK + (int(255 * b),), anchor='mm')
         d.text((x, 900), f'round {i + 1}', font=font(FONT_M, 38), fill=INK3 + (int(255 * b),), anchor='mm')
 
@@ -646,7 +652,7 @@ def render(quality='final', out=None):
             text_for_script = ' '.join(p.get('big', [])) or ' '.join(p['lines'])
         elif kind == 'card':
             text_for_script = ' '.join(p['lines'])
-        elif kind == 'draw':
+        elif kind in ('draw', 'scale'):
             text_for_script = p['script']
         elif kind == 'verdict':
             text_for_script = f'Verdict: {p["v"].lower()}. {p["note"]}.'
@@ -707,6 +713,8 @@ def render(quality='final', out=None):
                 center_text(im, p['lines'], alpha_in_out(t, dur), sizes=p.get('sizes'), cols=p.get('cols'))
             elif kind == 'draw':
                 p['fn'](im, t, dur)
+            elif kind == 'scale':
+                scale_overlay(im, t, dur, p, fr, quality)
             elif kind == 'verdict':
                 d = ImageDraw.Draw(im, 'RGBA')
                 d.rectangle([0, 0, W, H], fill=(0, 0, 0, int(120 * alpha_in_out(t, dur))))
@@ -720,7 +728,7 @@ def render(quality='final', out=None):
             elif kind == 'heat':
                 heat_screen(im, t, dur, L)
             elif kind == 'plan':
-                plan_screen(im, t, dur)
+                plan_screen(im, t, dur, quality)
             elif kind == 'score':
                 score_screen(im, t, dur, L)
             elif kind == 'list':
