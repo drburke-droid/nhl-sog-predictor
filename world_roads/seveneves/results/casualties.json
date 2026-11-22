@@ -1,0 +1,235 @@
+{
+ "model": {
+  "v": 11100.0,
+  "rho": 2800.0,
+  "dens_per_km2": 15.882352941176471,
+  "k_severe": 11.356546041571885,
+  "k_light": 62.99605249474365,
+  "d_chely": 28.50556728210264,
+  "d_tung": 77.3760140015708
+ },
+ "rows": [
+  {
+   "D_m": 60,
+   "to_earth_kg": 21123150.478008445,
+   "storm": 2.463229848925762,
+   "warming": 2.2201334104465786e-09,
+   "satellite_years_in_a_week": 0.04720769046538078,
+   "central": {
+    "largest_m": 0.6,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 4.662670123035238e-06
+   },
+   "low": {
+    "largest_m": 0.18,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 1.2589209332195145e-07
+   },
+   "high": {
+    "largest_m": 1.7999999999999998,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 0.00012589209332195138
+   },
+   "chely_per_day_first_week": 0.0,
+   "city_chely_first_year": 0.0,
+   "city_tung_first_year": 0.0
+  },
+  {
+   "D_m": 140,
+   "to_earth_kg": 268342244.96136653,
+   "storm": 31.292142154871716,
+   "warming": 2.820740974129876e-08,
+   "satellite_years_in_a_week": 0.5997125122083559,
+   "central": {
+    "largest_m": 1.4000000000000001,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 5.9233179711151376e-05
+   },
+   "low": {
+    "largest_m": 0.42,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 1.5992958522010865e-06
+   },
+   "high": {
+    "largest_m": 4.2,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 0.001599295852201087
+   },
+   "chely_per_day_first_week": 0.0,
+   "city_chely_first_year": 0.0,
+   "city_tung_first_year": 0.0
+  },
+  {
+   "D_m": 1000.0,
+   "to_earth_kg": 97792363324.11317,
+   "storm": 11403.841893174824,
+   "warming": 1.0279609739427542e-05,
+   "satellite_years_in_a_week": 218.55412252491104,
+   "central": {
+    "largest_m": 10.0,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 0.02158643575479277
+   },
+   "low": {
+    "largest_m": 3.0,
+    "chely": 0.0,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 0.0,
+    "biggest_mt": 0.0005828337653794048
+   },
+   "high": {
+    "largest_m": 30.0,
+    "chely": 9.132064009605672,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 9339.280192699473,
+    "biggest_mt": 0.5828337653794048
+   },
+   "chely_per_day_first_week": 0.0,
+   "city_chely_first_year": 0.0,
+   "city_tung_first_year": 0.0
+  },
+  {
+   "D_m": 10000.0,
+   "to_earth_kg": 97792363324113.17,
+   "storm": 11403841.893174823,
+   "warming": 0.010279790572099046,
+   "satellite_years_in_a_week": 218554.12252491104,
+   "central": {
+    "largest_m": 100.0,
+    "chely": 58147.43194537247,
+    "tung": 1569.7883392068168,
+    "regional": 0.0,
+    "deaths": 38884720.888689384,
+    "injuries": 105511218.61714849,
+    "biggest_mt": 21.586435754792774
+   },
+   "low": {
+    "largest_m": 30.0,
+    "chely": 9132.06400960567,
+    "tung": 0.0,
+    "regional": 0.0,
+    "deaths": 0.0,
+    "injuries": 9333903.555394895,
+    "biggest_mt": 0.5828337653794048
+   },
+   "high": {
+    "largest_m": 300.0,
+    "chely": 55561.88875974558,
+    "tung": 2736.122566689015,
+    "regional": 228.49853295293428,
+    "deaths": 62026870.42236415,
+    "injuries": 157877801.53974062,
+    "biggest_mt": 582.8337653794049
+   },
+   "chely_per_day_first_week": 646.0825771708053,
+   "city_chely_first_year": 0.3609254590998673,
+   "city_tung_first_year": 0.0032630818010349616
+  },
+  {
+   "D_m": 30000.0,
+   "to_earth_kg": 2640393809751055.5,
+   "storm": 307903731.1157202,
+   "warming": 0.277552923164194,
+   "satellite_years_in_a_week": 5900961.3081725985,
+   "central": {
+    "largest_m": 300.0,
+    "chely": 1500170.9965131287,
+    "tung": 73875.30930060336,
+    "regional": 6169.460389729222,
+    "deaths": 1518174555.790545,
+    "injuries": 2729355716.0332904,
+    "biggest_mt": 582.8337653794049
+   },
+   "low": {
+    "largest_m": 90.0,
+    "chely": 1556228.7531964618,
+    "tung": 28323.270430611105,
+    "regional": 0.0,
+    "deaths": 882716727.7686452,
+    "injuries": 1985737641.025722,
+    "biggest_mt": 15.73651166524393
+   },
+   "high": {
+    "largest_m": 900.0,
+    "chely": 1414715.6928700104,
+    "tung": 69686.80350535625,
+    "regional": 6975.630989610225,
+    "deaths": 1612729568.259936,
+    "injuries": 2807317755.8881173,
+    "biggest_mt": 15736.51166524393
+   },
+   "chely_per_day_first_week": 16668.566627923654,
+   "city_chely_first_year": 0.9999903763761171,
+   "city_tung_first_year": 0.1425684638077096
+  },
+  {
+   "D_m": 100000.0,
+   "to_earth_kg": 9.779236332411317e+16,
+   "storm": 11403841893.174822,
+   "warming": 10.791167873621305,
+   "satellite_years_in_a_week": 218554122.52491105,
+   "central": {
+    "largest_m": 1000.0,
+    "chely": 52084835.066177174,
+    "tung": 2579396.9107820876,
+    "regional": 262864.3546289454,
+    "deaths": 8097831626.215608,
+    "injuries": 2168373.782739328,
+    "biggest_mt": 21586.43575479277
+   },
+   "low": {
+    "largest_m": 300.0,
+    "chely": 55561888.75974557,
+    "tung": 2736122.5666890154,
+    "regional": 228498.53295293418,
+    "deaths": 8096284509.284403,
+    "injuries": 3715490.7065827395,
+    "biggest_mt": 582.8337653794049
+   },
+   "high": {
+    "largest_m": 3000.0,
+    "chely": 50288445.78751069,
+    "tung": 2497702.863329997,
+    "regional": 240111.9855946566,
+    "deaths": 8097399804.7777605,
+    "injuries": 2600195.2189117665,
+    "biggest_mt": 582833.7653794049
+   },
+   "chely_per_day_first_week": 578720.3896241909,
+   "city_chely_first_year": 1.0,
+   "city_tung_first_year": 0.9953481866210737
+  }
+ ]
+}

@@ -18,7 +18,9 @@ This folder is a physics simulator built to test that scenario, with every dial 
 | Ensemble | `ensemble.py` | Fragments only, 6 random piece shapes × 5 dispersal speeds. |
 | The Agent | `lunar_impact.py` | The question turned around. An ordinary asteroid hits the *intact* Moon. How big must it be to hurt the Earth? Crater ejecta faster than lunar escape speed are followed with the same tracer integrator, from 6,000 launch sites. The ladder runs from "a Tunguska's energy every day for a year" to "the Moon shatters". |
 | The ladder | `impact_ladder.py` | Ever bigger objects hit the intact Moon (1 m to 1,000 km). For each: the crater, the ejecta reaching the Earth and when, the meteoroid storm (satellite hazard), big fireballs, warming, and how often objects that size hit the Moon and the Earth. Writes `results/impact_ladder.json`. |
+| People | `casualties.py` | For each impactor: blasts as strong as Chelyabinsk and Tunguska, expected deaths and injuries (with a range), blasts per day, the risk to a given city, and satellite exposure. Writes `results/casualties.json`. |
 | Picture | `render_preview.py` | A top-down preview animation of the first years. |
+| Waiting-room film | `film/tv.py` | A silent, self-explaining 5-minute loop: five rounds, a size ladder on screen, verdict stamps, explainers, and a narration script (`film/tv_script.md`). |
 | Film | `film/` | A photoreal Blender/Cycles film driven by the simulation; see [film/README.md](film/README.md). |
 | Page | `results.py`, `build_page.py` | The findings page `results/seveneves.html`, built from `page_template.html` and `results/*.json`. |
 

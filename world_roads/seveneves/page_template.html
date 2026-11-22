@@ -178,7 +178,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--s1); outline-of
   <h2>When does an impact on the Moon become a problem on Earth?</h2>
   <p id="ladder-text"></p>
   <div class="tablewrap"><table id="t-ladder"></table></div>
-  <p class="note">Stony impactor at 20 km/s, 45°, rock scaling, average site. "Meteoroids" compares the densest week of arrivals with the normal ~110 tonnes a day of meteoroids reaching the Earth (Love &amp; Brownlee 1993); it is the hazard to satellites. Fireball counts assume the largest escaping fragments are about 1% of the impactor (range 0.3–3%): order of magnitude only. How often: Brown et al. (2002) below 100 m, Harris &amp; Chodas (2021) above; the Moon gets about 1/20 of the Earth's impacts.</p>
+  <p class="note">Stony impactor at 20 km/s, 45°, rock scaling, average site. "Meteoroids" compares the densest week of arrivals with the normal ~110 tonnes a day of meteoroids reaching the Earth (Love &amp; Brownlee 1993); it is the hazard to satellites. Blasts are counted by energy: lunar debris arrives at ~11 km/s, so a Chelyabinsk-strength blast (0.5 Mt) needs a piece ≥29 m and a Tunguska-strength one (10 Mt) ≥77 m. Deaths scale the two real events' damage areas with energy and use blast-casualty rates from the Office of Technology Assessment (1979), with blasts landing at random. They assume the largest fragments are ~1% of the impactor (range 0.3–3%): order of magnitude only. How often: Brown et al. (2002) below 100 m, Harris &amp; Chodas (2021) above; the Moon gets about 1/20 of the Earth's impacts.</p>
 </section>
 
 <section id="agent">
@@ -441,9 +441,10 @@ function fill() {
   const every = y => y < 1 / 12 ? `${Math.round(y * 365.25)} days` : y < 1 ? `${Math.round(y * 12)} months` : y < 1e3 ? `${Math.round(y).toLocaleString()} yr` : y < 1e6 ? `${Math.round(y / 1e3).toLocaleString()},000 yr` : y < 1e9 ? `${Math.round(y / 1e6).toLocaleString()} million yr` : y < 13.8e9 ? `${(+(y / 1e9).toPrecision(2))} billion yr` : 'never (today)';
   const eff = r => {
     const out = [];
-    if (r.storm >= 1) out.push(`meteoroids ${sig(r.storm, 2)}× normal for a week`);
-    if (r.chely_hi >= 1) out.push(`${r.chely >= 1 ? '~' + sig(r.chely, 2) : 'up to ~' + sig(r.chely_hi, 1)} Chelyabinsk-size fireballs`);
-    if (r.tung_hi >= 1) out.push(`${r.tung >= 1 ? '~' + sig(r.tung, 2) : 'up to ~' + sig(r.tung_hi, 1)} Tunguska-size`);
+    if (r.storm >= 1) out.push(`meteoroids ${sig(r.storm, 2)}× normal for a week` + (r.sat_years >= 10 ? ` (${sig(r.sat_years, 2)} years of satellite wear)` : ''));
+    if (r.blast_chely >= 1) out.push(`~${sig(r.blast_chely, 2)} Chelyabinsk-strength blasts`);
+    if (r.blast_tung >= 1) out.push(`~${sig(r.blast_tung, 2)} Tunguska-strength`);
+    if (r.deaths >= 1000) out.push(r.deaths > 7.5e9 ? 'nearly everyone killed' : `~${sig(r.deaths, 1)} deaths (up to ${sig(r.deaths_hi, 1)})`);
     if (r.warm >= 0.1) out.push(`+${r.warm < 10 ? r.warm.toFixed(1) : Math.round(r.warm)} °C`);
     if (r.ocean >= 0.01) out.push(`${pct(r.ocean)} of oceans boiled`);
     return out.length ? out.join('; ') : 'nothing noticeable';
@@ -455,7 +456,7 @@ function fill() {
   document.getElementById('ladder-text').textContent =
     `Forget breaking the Moon. Hit the intact Moon with ever bigger rocks and follow what comes off it. Up to a few hundred metres, the Earth sees a meteor shower at most. ` +
     `At 1 km the arriving meteoroids are ${sig(r1.storm, 2)}× the normal background for a week: a storm that would sandblast satellites. Possibly a few big fireballs too. Such an impact hits the Moon about every ${every(r1.moon)}. ` +
-    `At 10 km, the size of the dinosaur-killer, the Earth gets ~${sig(r10.chely, 2)} Chelyabinsk-size airbursts over a few years, yet only +${r10.warm.toFixed(2)} °C; that happens to the Moon about every ${every(r10.moon)}. ` +
+    `At 10 km, the size of the dinosaur-killer, the Earth gets ~${sig(r10.blast_chely, 2)} blasts as strong as Chelyabinsk and ~${sig(r10.blast_tung, 2)} as strong as Tunguska over about six years: roughly ${sig(r10.deaths, 1)} deaths, yet only +${r10.warm.toFixed(2)} °C, because the danger is the blasts, not the heat. That happens to the Moon about every ${every(r10.moon)}. ` +
     `Changing the Earth's climate takes ~100 km (+${Math.round(r100.warm)} °C), and nothing that big crosses the Earth's orbit today.`;
   // ---- the Agent: lunar impact ladder
   const LI = D.lunar_impact, C = LI.cases;

@@ -88,6 +88,36 @@ What is computed from physics, what is a modelling choice, and what is left out.
   System means it effectively doesn't happen today. It did happen ~3.9 billion years ago, when
   Imbrium and the other basins formed.
 
+## 3c. Blasts, casualties and daily life (`casualties.py`)
+
+* **Energy, not size.** Lunar debris reaches the Earth at ~11.1 km/s, slower than Chelyabinsk
+  (19 km/s) or Tunguska, so a 20 m piece of Moon carries only ~0.17 Mt, a third of Chelyabinsk's
+  0.5 Mt. Blasts are therefore counted by energy. "Chelyabinsk-strength" is ≥0.5 Mt, a lunar
+  fragment ≥29 m. "Tunguska-strength" is ≥10 Mt, a fragment ≥77 m.
+* **Damage areas** scale with energy^(2/3), calibrated on the two real events:
+  * Severe (homes flattened): Tunguska's 2,150 km² of flattened forest at ~12 Mt. That is roughly the
+    ≥2.5 psi zone.
+  * Light (windows broken, injuries): Chelyabinsk's window damage out to ~50 km at 0.5 Mt.
+  * Small rocks burst high, so light damage fades in between 0.05 and 0.5 Mt, and severe damage
+    between 1 and 10 Mt.
+* **Casualties.**
+  * Severe zone: 20% killed and 45% injured, from the U.S. Office of Technology Assessment (1979),
+    *The Effects of Nuclear War*. Its blast-only figures are ~5% killed at 2–5 psi and ~50% at
+    5–12 psi; the inner third of the zone is above 5 psi.
+  * Light zone: 0.07% injured (Chelyabinsk: ~1,500 of ~2 million people).
+  * Blasts fall at random places, so the expected number of people in a zone is its area × 15.9 per km²
+    (8.1 billion people over the whole surface, oceans included). Totals saturate at the world
+    population.
+* **The big uncertainty** is the size of the largest fragments (0.3–3% of the impactor). For a 10 km
+  impactor the death estimate runs from ~0 (largest pieces ~30 m) through ~40 million (1%, ~100 m)
+  to ~60 million (3%, ~300 m). The film quotes the middle value and says so.
+* **City risk** is the chance that a Chelyabinsk-strength blast lands within 50 km of a given city in
+  the first year, when half the debris arrives.
+* **Satellites:** the meteoroid storm factor × 7 days = years of normal meteoroid exposure packed into
+  the first week.
+* **Not included:** tsunamis from ocean impacts of the largest fragments, fires, crop and economic
+  effects, deaths from infrastructure loss (no GPS or satellites), and any warning or sheltering.
+
 ## 4. The film (`film/`)
 
 * **Driven by the simulation.** Fragment positions, merges and debris are the simulation's own (the
@@ -143,6 +173,8 @@ What is computed from physics, what is a modelling choice, and what is left out.
 * Love, S. G. & Brownlee, D. E. (1993). A direct measurement of the terrestrial mass accretion rate of cosmic dust. Science 262:550.
 * Le Feuvre, M. & Wieczorek, M. A. (2011). Nonuniform cratering of the Moon and a revised crater chronology. Icarus 214:1.
 * Melosh, H. J. (1984). Impact ejection, spallation, and the origin of meteorites. Icarus 59:234.
+* U.S. Congress, Office of Technology Assessment (1979). *The Effects of Nuclear War*.
+* Popova, O. P. et al. (2013). Chelyabinsk airburst, damage assessment, meteorite recovery, and characterization. Science 342:1069.
 * Pike, R. J. (1977). Size-dependence in the shape of fresh impact craters on the Moon.
 * Leinhardt, Z. M. & Stewart, S. T. (2012). Collisions between gravity-dominated bodies. I. ApJ 745:79.
 * Kokubo, E. & Genda, H. (2010). Formation of terrestrial planets from protoplanets under a realistic accretion condition. ApJL 714:L21.

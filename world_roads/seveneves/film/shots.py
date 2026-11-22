@@ -631,7 +631,7 @@ class Steam:
         return t
 
 
-@shot('H_ladder', 144)
+@shot('H_ladder', 480)
 class Ladder:
     """The intact Moon, slowly turning: background for the impactor-size ladder (drawn in compositing)."""
 

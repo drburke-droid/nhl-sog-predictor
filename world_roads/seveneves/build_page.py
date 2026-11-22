@@ -23,6 +23,12 @@ data['ladder'] = [dict(D=r['D_m'], crater=r['crater_km'], earth=r['to_earth_kg']
                        tung_hi=r['tunguskas_range'][1], warm=r['warming_C'], ocean=r['ocean'],
                        moon=r['moon_interval_yr'], earthint=r['earth_interval_yr'])
                   for r in lad['rows'] if r['material'] == 'rock']
+cas = {r['D_m']: r for r in json.load(open(os.path.join(HERE, 'results', 'casualties.json')))['rows']}
+for row in data['ladder']:
+    c = cas.get(row['D'])
+    if c:
+        row.update(blast_chely=c['central']['chely'], blast_tung=c['central']['tung'], deaths=c['central']['deaths'],
+                   deaths_hi=c['high']['deaths'], injured=c['central']['injuries'], sat_years=c['satellite_years_in_a_week'])
 html = open(os.path.join(HERE, 'page_template.html')).read().replace('/*DATA*/null', json.dumps(data, separators=(',', ':')))
 out = os.path.join(HERE, 'results', 'seveneves.html')
 open(out, 'w').write(html)

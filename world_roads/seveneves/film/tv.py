@@ -314,9 +314,25 @@ def draw_100km(d, a, t):
     label(d, (1300, g + 22), 'the dinosaur-killer (10 km)', a)
 
 
+def casualties():
+    rows = json.load(open(os.path.join(ROOT, 'results', 'casualties.json')))['rows']
+    return {r['D_m']: r for r in rows}
+
+
+def millions(x):
+    if x < 1e3:
+        return f'{x:,.0f}'
+    if x < 1e6:
+        return f'{round(x, -3):,.0f}'
+    if x < 1e9:
+        return f'{x / 1e6:,.0f} million'
+    return f'{x / 1e9:,.1f} billion'
+
+
 def build():
     L = ladder()
-    seg = []          # (kind, duration, payload)
+    C = casualties()
+    seg = []          # (kind, duration, payload); a background (shot, None) continues from where that shot was
 
     def say(bg, lines, where='lower', dur=None, rnd=None, accent=None, **kw):
         seg.append(('say', dur or read_time(lines), dict(bg=bg, lines=lines, where=where, rnd=rnd, accent=accent, **kw)))
@@ -330,11 +346,16 @@ def build():
     def verdict(bg, v, note, rnd):
         seg.append(('verdict', 5.5, dict(bg=bg, v=v, note=note, rnd=rnd)))
 
-    moon = ('H_ladder', 0)
-    # ---------------------------------------------------------------- intro
-    say(moon, [], where='center', dur=4.5, big=['WHAT IF SOMETHING', 'HIT THE MOON?'])
-    say(moon, ['The Moon gets hit by space rocks all the time.', 'Most are tiny. A few have been huge.'])
-    say(moon, ['Could a big hit on the Moon', 'cause trouble here on Earth?'])
+    def bullets(title, items, rnd, per=None):
+        dur = 1.5 + sum(read_time([i], 2.6) for i in items) + 1.0
+        seg.append(('list', dur, dict(title=title, items=items, rnd=rnd)))
+
+    C3, C4, C5 = C[1000.0], C[1e4], C[1e5]
+    c4, lo4, hi4 = C4['central'], C4['low'], C4['high']
+    # ---------------------------------------------------------------- intro (the Moon turns slowly, never resets)
+    say(('H_ladder', 0), [], where='center', dur=4.5, big=['WHAT IF SOMETHING', 'HIT THE MOON?'])
+    say(('H_ladder', None), ['The Moon gets hit by space rocks all the time.', 'Most are tiny. A few have been huge.'])
+    say(('H_ladder', None), ['Could a big hit on the Moon', 'cause trouble here on Earth?'])
     card(['Let\'s find out.', 'We\'ll throw bigger and bigger rocks at the Moon,', 'and see what happens to Earth each time.'],
          dur=7.0, sizes=[96, 54, 54])
     seg.append(('plan', 6.0, {}))
@@ -343,66 +364,79 @@ def build():
     draw(scale_card(1, 'A rock 1 metre across', 'about the size of an armchair', draw_1m), 6.0, 1,
          'Round 1: a rock 1 metre across, about the size of an armchair.')
     say(('I1_1m', 0), ['It hits the Moon at 20 km per second', '(about 60 times faster than a bullet).'], rnd=1, dur=6.0)
-    say(('I1_1m', 40), ['From Earth, you would see a tiny flash.', 'It leaves a crater about 20 m wide.'], rnd=1)
-    say(('I1_1m', 95), ['What does Earth get?', 'Nothing at all.'], rnd=1)
-    verdict(('I1_1m', 95), 'HARMLESS', happens(r['moon_interval_yr']), 1)
+    say(('I1_1m', None), ['From Earth, you would see a tiny flash.', 'It leaves a crater about 20 m wide.'], rnd=1)
+    say(('I1_1m', None), ['What does Earth get?', 'Nothing at all.'], rnd=1)
+    verdict(('I1_1m', None), 'HARMLESS', happens(r['moon_interval_yr']), 1)
     # ---------------------------------------------------------------- round 2: 60 m
     r = L[60.0]
     draw(scale_card(2, 'A rock 60 metres across', 'as tall as a 20-storey building', draw_60m), 6.0, 2,
          'Round 2: a rock 60 metres across, as tall as a 20-storey building.')
-    say(('I2_60m', 0), ['Same speed: 20 km per second.', 'This one is about as big as asteroid 2024 YR4.'], rnd=2)
-    say(('I2_60m', 40), ['A flash bright enough to see without a telescope.', 'Crater: about 1.2 km wide.'], rnd=2)
-    say(('I2_60m', 95), ['What does Earth get?', 'A few extra shooting stars for a week.'], rnd=2)
-    verdict(('I2_60m', 95), 'HARMLESS', happens(r['moon_interval_yr']), 2)
+    say(('I2_60m', 0), ['Same speed: 20 km per second.', 'About as big as asteroid 2024 YR4.'], rnd=2)
+    say(('I2_60m', None), ['A flash bright enough to see without a telescope.', 'Crater: about 1.2 km wide.'], rnd=2)
+    say(('I2_60m', None), ['What does Earth get?', 'A few extra shooting stars for a week.'], rnd=2)
+    verdict(('I2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
     # ---------------------------------------------------------------- round 3: 1 km
     r = L[1000.0]
     draw(scale_card(3, 'A rock 1 kilometre across', 'taller than the world\'s tallest building', draw_1km), 6.0, 3,
          'Round 3: a rock 1 kilometre across, taller than the world\'s tallest building.')
     say(('I3_1km', 0), ['It hits the Moon...'], rnd=3, dur=3.5)
-    say(('I3_1km', 60), ['...and blasts rock out of the crater', 'faster than the Moon\'s gravity can hold it.'], rnd=3)
-    say(('I3_1km', 143), ['The crater: 18 km wide.'], rnd=3, dur=4.0)
+    say(('I3_1km', None), ['...and blasts rock out of the crater', 'faster than the Moon\'s gravity can hold it.'], rnd=3)
+    say(('I3_1km', None), ['The crater: 18 km wide.'], rnd=3, dur=4.0)
     say(('J_ejecta', 0), ['Where does the blasted rock go?'], rnd=3, dur=4.0)
     seg.append(('fate', 9.0, dict(rnd=3)))
-    say(('J_ejecta', 80), ['Most of what escapes drifts off around the Sun.',
-                           'The orange streaks are pieces that will hit Earth.'], rnd=3, dur=8.0, play=2.0)
-    seg.append(('chely', 9.5, dict(rnd=3)))
+    say(('J_ejecta', None), ['Most of what escapes drifts off around the Sun.',
+                             'The orange streaks are pieces that will hit Earth.'], rnd=3, dur=8.0, play=2.0)
     say(('E3_1km', 0), ['What does Earth get?', 'A storm of shooting stars:', '10,000 times more than normal, for a week.'],
-        rnd=3, play=1.0)
-    say(('E3_1km', 119), ['That could wreck satellites: GPS, TV, weather.', 'Maybe a few dozen Chelyabinsk-size fireballs.'],
         rnd=3)
-    verdict(('E3_1km', 119), 'TROUBLE', happens(r['moon_interval_yr']), 3)
+    bullets('What would that mean for us?',
+            [f'Satellites take ~{round(C3["satellite_years_in_a_week"], -1):.0f} years\' worth of meteoroid hits in one week.',
+             'Some would fail: GPS, satellite TV and weather forecasts could glitch.',
+             'On the ground: a spectacular meteor storm. Most likely nobody is hurt.'], 3)
+    verdict(('E3_1km', None), 'TROUBLE', happens(r['moon_interval_yr']), 3)
     # ---------------------------------------------------------------- round 4: 10 km
     r = L[1e4]
     draw(scale_card(4, 'A rock 10 kilometres across', 'taller than Mount Everest: the size of the dinosaur-killer',
                     draw_10km), 7.0, 4, 'Round 4: a rock 10 kilometres across, the size of the one that wiped out the dinosaurs.')
     say(('I4_10km', 0), ['It hits the Moon.'], rnd=4, dur=3.5)
-    say(('I4_10km', 70), ['A crater 135 km wide.', 'Far more rock escapes into space.'], rnd=4)
+    say(('I4_10km', None), ['A crater 135 km wide.', 'Now some of the pieces flying at Earth', 'are as big as office towers.'], rnd=4)
+    card(['Pieces that big explode in our sky.', 'Two real explosions show what that means:'], dur=5.5, sizes=[72, 54], rnd=4)
+    seg.append(('chely', 9.5, dict(rnd=4)))
     seg.append(('tung', 9.5, dict(rnd=4)))
-    say(('E4_10km', 0), ['What does Earth get, over a few years?', '~150,000 Chelyabinsk-size fireballs',
-                         'and up to ~10,000 Tunguska-size blasts.'], rnd=4, play=1.0)
-    say(('E4_10km', 119), ['Damage all over the world.', 'But the planet itself barely warms (+0.01 °C).'], rnd=4)
-    verdict(('E4_10km', 119), 'DANGER', happens(r['moon_interval_yr']), 4)
+    say(('E4_10km', 0), ['What does Earth get, over about six years?',
+                         f'~{round(c4["chely"], -3):,.0f} blasts as strong as Chelyabinsk,',
+                         f'~{round(c4["tung"], -2):,.0f} as strong as Tunguska.'], rnd=4)
+    bullets('What would daily life be like?',
+            [f'At first, ~{round(C4["chely_per_day_first_week"], -2):,.0f} big blasts a day, anywhere on Earth.',
+             f'Any city: about a 1 in {round(1 / C4["city_chely_first_year"]):.0f} chance of one nearby in the first year.',
+             'No warning: the pieces are too small and too many to track.',
+             'Every satellite gone within days: no GPS, satellite TV or weather satellites.'], 4)
+    seg.append(('toll', 10.0, dict(rnd=4, deaths=c4['deaths'], injured=c4['injuries'], hi=hi4['deaths'])))
+    say(('E4_10km', None), ['And the climate?', 'It barely changes (+0.01 °C): the heat is spread over years.',
+                            'The danger is the blasts, not the heat.'], rnd=4)
+    verdict(('E4_10km', None), 'DANGER', happens(r['moon_interval_yr']), 4)
     # ---------------------------------------------------------------- round 5: 100 km
     r = L[1e5]
     draw(scale_card(5, 'A rock 100 kilometres across', '10 times wider than the dinosaur-killer', draw_100km), 6.5, 5,
          'Round 5: a rock 100 kilometres across, ten times wider than the dinosaur-killer.')
     say(('I5_100km', 0), ['It hits the Moon.'], rnd=5, dur=3.5)
-    say(('I5_100km', 120), ['A crater 1,000 km wide,', 'like the Moon\'s biggest dark patches.'], rnd=5)
-    say(('K_entry', 40), ['Every piece of Moon rock hits our air', 'at more than 11 km per second.'], rnd=5, play=1.0)
-    say(('K_entry', 140), ['That carries 15 times the energy', 'of the same weight of dynamite.'], rnd=5)
+    say(('I5_100km', None), ['A crater 1,000 km wide,', 'like the Moon\'s biggest dark patches.'], rnd=5)
+    say(('K_entry', 40), ['Every piece of Moon rock hits our air', 'at more than 11 km per second.'], rnd=5)
+    say(('K_entry', None), ['That carries 15 times the energy', 'of the same weight of dynamite.'], rnd=5)
     seg.append(('heat', 9.0, dict(rnd=5)))
-    say(('E5_100km', 0), ['What does Earth get?', 'For months, the falling rock heats the planet', 'more than the Sun does.'],
-        rnd=5, play=1.0)
-    say(('E5_100km', 119), ['Earth warms by about 11 °C.', 'Most life would die out.'], rnd=5)
-    verdict(('E5_100km', 119), 'CATASTROPHE', happens(r['moon_interval_yr']), 5)
+    say(('E5_100km', 0), ['What does Earth get?', 'Blasts that flatten almost every city within a year,',
+                          'and for months, more heat from the sky than from the Sun.'], rnd=5)
+    say(('E5_100km', None), ['Earth warms by about 11 °C.', 'Most life would die out.'], rnd=5)
+    verdict(('E5_100km', None), 'CATASTROPHE', happens(r['moon_interval_yr']), 5)
     # ---------------------------------------------------------------- the end
-    seg.append(('score', 11.0, {}))
-    card(['Trouble starts at about 1 km.', 'A rock that big hits the Moon', 'about once every 14 million years.'],
-         dur=7.0, sizes=[86, 58, 58])
+    seg.append(('score', 12.0, dict(deaths4=c4['deaths'])))
+    card(['Satellites get hurt at about 1 km.', 'People are in danger at about 10 km.',
+          'That hits the Moon about once every 2 billion years.'], dur=8.0, sizes=[72, 72, 54],
+         cols=[INK, INK, INK2])
     card(['So relax.', 'The Moon is not going to rain down on us.'], dur=6.0, sizes=[96, 58])
-    card(['Real physics: crater scaling, 6,000 simulated debris paths, impact rates from', 'NASA-funded surveys.',
-          'Moon images: NASA LRO.  Earth: Solar System Scope (CC BY 4.0).'], dur=5.0, sizes=[34, 34, 34],
-         cols=[INK3, INK3, INK3])
+    card(['Real physics: crater scaling, 6,000 simulated debris paths, impact rates from', 'NASA-funded surveys,',
+          'casualties scaled from Chelyabinsk and Tunguska.',
+          'Moon images: NASA LRO.  Earth: Solar System Scope (CC BY 4.0).'], dur=5.5, sizes=[34, 34, 34, 34],
+         cols=[INK3] * 4)
     return seg
 
 
@@ -512,21 +546,71 @@ def score_screen(im, t, dur, L):
     a = alpha_in_out(t, dur)
     d = ImageDraw.Draw(im, 'RGBA')
     d.text((W / 2, 120), 'The results', font=font(FONT_B, 86), fill=INK + (int(255 * a),), anchor='mm')
-    rows = [('1 m', 'HARMLESS', L[1.0]), ('60 m', 'HARMLESS', L[60.0]), ('1 km', 'TROUBLE', L[1000.0]),
-            ('10 km', 'DANGER', L[1e4]), ('100 km', 'CATASTROPHE', L[1e5])]
-    d.text((260, 230), 'Rock', font=font(FONT_M, 38), fill=INK3 + (int(255 * a),), anchor='lm')
-    d.text((560, 230), 'For Earth', font=font(FONT_M, 38), fill=INK3 + (int(255 * a),), anchor='lm')
-    d.text((1120, 230), 'Hits the Moon', font=font(FONT_M, 38), fill=INK3 + (int(255 * a),), anchor='lm')
-    for i, (s, v, r) in enumerate(rows):
+    rows = [('1 m', 'HARMLESS', L[1.0], 'a flash'), ('60 m', 'HARMLESS', L[60.0], 'shooting stars'),
+            ('1 km', 'TROUBLE', L[1000.0], 'satellites hit'), ('10 km', 'DANGER', L[1e4], '~40 million die'),
+            ('100 km', 'CATASTROPHE', L[1e5], 'most life dies')]
+    d.text((120, 230), 'Rock', font=font(FONT_M, 38), fill=INK3 + (int(255 * a),), anchor='lm')
+    d.text((380, 230), 'For Earth', font=font(FONT_M, 38), fill=INK3 + (int(255 * a),), anchor='lm')
+    d.text((1300, 230), 'Hits the Moon', font=font(FONT_M, 38), fill=INK3 + (int(255 * a),), anchor='lm')
+    for i, (s, v, r, what) in enumerate(rows):
         b = ease((t - 0.6 - 0.6 * i) / 0.5) * a
         y = 330 + i * 140
         col, sym = VERDICT[v]
-        d.text((260, y), s, font=font(FONT_B, 62), fill=INK + (int(255 * b),), anchor='lm')
-        d.rounded_rectangle([550, y - 42, 1060, y + 42], radius=14, outline=col + (int(255 * b),), width=5)
-        d.text((805, y), f'{sym} {v}', font=font(FONT_X, 46), fill=col + (int(255 * b),), anchor='mm')
+        d.text((120, y), s, font=font(FONT_B, 62), fill=INK + (int(255 * b),), anchor='lm')
+        d.rounded_rectangle([370, y - 42, 800, y + 42], radius=14, outline=col + (int(255 * b),), width=5)
+        d.text((585, y), f'{sym} {v}', font=font(FONT_X, 42), fill=col + (int(255 * b),), anchor='mm')
+        d.text((840, y), what, font=font(FONT_M, 46), fill=INK2 + (int(255 * b),), anchor='lm')
         e = every(r['moon_interval_yr']).replace('about once every ', 'every ').replace('about every ', 'every ')
         e = e.replace(': no rocks this big are left near the Earth', '')
-        d.text((1120, y), e, font=font(FONT_M, 50), fill=INK + (int(255 * b),), anchor='lm')
+        d.text((1300, y), e, font=font(FONT_M, 46), fill=INK + (int(255 * b),), anchor='lm')
+
+
+def wrap(d, s, f, maxw):
+    lines, cur = [], ''
+    for w_ in s.split():
+        trial = (cur + ' ' + w_).strip()
+        if d.textlength(trial, font=f) <= maxw or not cur:
+            cur = trial
+        else:
+            lines.append(cur)
+            cur = w_
+    return lines + ([cur] if cur else [])
+
+
+def list_screen(im, t, dur, title, items):
+    a = alpha_in_out(t, dur)
+    d = ImageDraw.Draw(im, 'RGBA')
+    d.text((W / 2, 200), title, font=font(FONT_B, 80), fill=INK + (int(255 * a),), anchor='mm')
+    f = font(FONT_M, 52)
+    t0 = 1.0
+    y = 340
+    for it in items:
+        b = ease((t - t0) / 0.5) * a
+        d.ellipse([170, y + 20, 194, y + 44], fill=AMBER + (int(255 * b),))
+        for ln in wrap(d, it, f, 1500):
+            d.text((230, y), ln, font=f, fill=INK + (int(255 * b),), anchor='la')
+            y += 68
+        y += 44
+        t0 += read_time([it], 2.6)
+
+
+def toll_screen(im, t, dur, deaths, injured, hi):
+    a = alpha_in_out(t, dur)
+    d = ImageDraw.Draw(im, 'RGBA')
+    d.text((W / 2, 190), 'The toll, over about six years', font=font(FONT_B, 76), fill=INK + (int(255 * a),), anchor='mm')
+    b = ease((t - 0.8) / 0.5) * a
+    d.text((W / 2, 390), f'~{millions(round(deaths, -7))} deaths', font=font(FONT_X, 120), fill=(245, 130, 60, int(255 * b)),
+           anchor='mm')
+    d.text((W / 2, 520), 'about as many people as live in Canada', font=font(FONT_M, 50), fill=INK2 + (int(255 * b),),
+           anchor='mm')
+    c = ease((t - 2.6) / 0.5) * a
+    d.text((W / 2, 680), f'~{millions(round(injured, -7))} injured', font=font(FONT_B, 84), fill=INK + (int(255 * c),),
+           anchor='mm')
+    e = ease((t - 4.5) / 0.5) * a
+    d.text((W / 2, 850), f'Could be far fewer, or up to {millions(round(hi, -7))}: it depends on how big', font=font(FONT_M, 44),
+           fill=INK3 + (int(255 * e),), anchor='mm')
+    d.text((W / 2, 910), 'the largest pieces are, and where they happen to fall.', font=font(FONT_M, 44),
+           fill=INK3 + (int(255 * e),), anchor='mm')
 
 
 # ------------------------------------------------------------------------------------ render
@@ -545,12 +629,19 @@ def render(quality='final', out=None):
                           ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'medium',
                            '-movflags', '+faststart', out], stdin=subprocess.PIPE)
     clock = 0.0
-    prev_bg = None
+    playhead = {}
     for kind, dur, p in seg:
         n = int(round(dur * FPS))
         rnd = p.get('rnd')
         text_for_script = None
         bg = p.get('bg')
+        if bg is not None:
+            shot, start = bg
+            if start is None:
+                start = playhead.get(shot, 0.0)
+            play_ = p.get('play', 1.0 if kind == 'say' else 0.0)
+            playhead[shot] = start + n * play_
+            bg = (shot, start)
         if kind == 'say':
             text_for_script = ' '.join(p.get('big', [])) or ' '.join(p['lines'])
         elif kind == 'card':
@@ -575,8 +666,15 @@ def render(quality='final', out=None):
         elif kind == 'plan':
             text_for_script = 'Five rounds: 1 metre, 60 metres, 1 kilometre, 10 kilometres, 100 kilometres.'
         elif kind == 'score':
-            text_for_script = ('The results: 1 metre and 60 metres, harmless. 1 kilometre, trouble. 10 kilometres, '
-                               'danger. 100 kilometres, catastrophe.')
+            text_for_script = ('The results: 1 metre and 60 metres, harmless. 1 kilometre, trouble for satellites. '
+                               '10 kilometres, danger: tens of millions of deaths. 100 kilometres, catastrophe.')
+        elif kind == 'list':
+            text_for_script = p['title'] + ' ' + ' '.join(p['items'])
+        elif kind == 'toll':
+            text_for_script = (f'The toll, over about six years: about {millions(round(p["deaths"], -7))} deaths, about as many '
+                               f'people as live in Canada, and {millions(round(p["injured"], -7))} injured. It could be far '
+                               f'fewer, or up to {millions(round(p["hi"], -7))}, depending on how big the largest pieces are '
+                               'and where they fall.')
         script.append((clock, dur, text_for_script))
         hold_results = dict(results) if kind != 'verdict' else {k: v for k, v in results.items() if k != rnd}
         for f in range(n):
@@ -625,6 +723,10 @@ def render(quality='final', out=None):
                 plan_screen(im, t, dur)
             elif kind == 'score':
                 score_screen(im, t, dur, L)
+            elif kind == 'list':
+                list_screen(im, t, dur, p['title'], p['items'])
+            elif kind == 'toll':
+                toll_screen(im, t, dur, p['deaths'], p['injured'], p['hi'])
             hud(im, rnd, hold_results)
             ff.stdin.write(im.tobytes())
         clock += n / FPS
