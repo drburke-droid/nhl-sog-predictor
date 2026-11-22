@@ -377,6 +377,9 @@ class FlashShot:
         # thin crescent: Sun nearly behind the Moon, a little to the side
         self.sun_dir = Vector((-0.75, 0.66, 0.05)).normalized()
         self.sun = shots.sun_lamp(tuple(self.sun_dir))
+        # earthshine: sunlight reflected off the Earth dimly lights the Moon's night side (as in long exposures)
+        es = look.sun(tuple(to_earth), 0.15)
+        es.data.color = (0.75, 0.85, 1.0)
         self.moon = look.moon((0, 0, 0))
         site = site_vec(18.0, -20.0)
         self.fb = fireball()
