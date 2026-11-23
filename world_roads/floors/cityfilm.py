@@ -270,16 +270,18 @@ class CityRenderer:
             return np.maximum(tot - cl, 0), cl, np.maximum(lt - lc, 0), lc
         return np.maximum(tot - cl, 0), cl, None, None
 
-    def frame(self, cam, L, esb_detail=True, look=None):
-        """composite (float RGB, output size, linear before bloom)"""
-        gd, sd, gc, sc, lg = look or interp_log(cam.s, LOOK)
-        dirty, clean, ld, lc = self.layers(cam)
+    def frame(self, cam, L, esb_detail=True, look=None, nb=1.0, **esb_kw):
+        """composite (float RGB, output size, linear before bloom); nb scales the surrounding city (0 = the
+        Empire State Building alone, for cameras the plates weren't made for)"""
         img = np.zeros((cam.H, cam.W, 3), np.float32) + X.BG
-        img += (sd * (1 - np.exp(-dirty * gd)))[..., None] * X.CYAN
-        img += (sc * (1 - np.exp(-clean * gc)))[..., None] * X.GOLD * 1.25
-        if ld is not None and lg > 0:
-            img += (lg * np.minimum(ld, 1))[..., None] * X.CYAN + (lg * 1.3 * np.minimum(lc, 1))[..., None] * X.GOLD
-        img += self.esb_layer(cam, L, detail=esb_detail)
+        if nb > 0:
+            gd, sd, gc, sc, lg = look or interp_log(cam.s, LOOK)
+            dirty, clean, ld, lc = self.layers(cam)
+            img += nb * (sd * (1 - np.exp(-dirty * gd)))[..., None] * X.CYAN
+            img += nb * (sc * (1 - np.exp(-clean * gc)))[..., None] * X.GOLD * 1.25
+            if ld is not None and lg > 0:
+                img += nb * ((lg * np.minimum(ld, 1))[..., None] * X.CYAN + (lg * 1.3 * np.minimum(lc, 1))[..., None] * X.GOLD)
+        img += self.esb_layer(cam, L, detail=esb_detail, **esb_kw)
         return img
 
     def esb_layer(self, cam, L, detail=True, above_gain=0.55, below_gain=0.85):
@@ -296,7 +298,8 @@ class CityRenderer:
         if x1 - x0 < 2 or y1 - y0 < 2:
             return out
         ss = 2 if cam.s > 0.8 else 1
-        c2 = X.Cam(PSI, EL, cam.s, cam.t[0], cam.t[1], cam.t[2], ox=cam.o[0] - x0, oy=cam.o[1] - y0, W=x1 - x0, H=y1 - y0, ss=ss)
+        c2 = X.Cam(math.degrees(cam.psi), math.degrees(cam.elev), cam.s, cam.t[0], cam.t[1], cam.t[2], ox=cam.o[0] - x0,
+                   oy=cam.o[1] - y0, W=x1 - x0, H=y1 - y0, ss=ss)
         level = np.full(C.n, -1.0)
         level[self.esb], _, _ = self.esb_state(L)
         d0, c0 = X.slabs(C, c2, level, ks)

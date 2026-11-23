@@ -32,14 +32,19 @@ def track(O, total):
     SUS = MU.SUS
     T = MU.Track(total)
     h, e, n = O["hook"], O["esb"], O["nyc"]
-    # the opening: a heartbeat under the billion-times slow motion, a riser as time speeds up, the drop at 4 s
-    T.section(h, h + 3.9, "suspense", prog=SUS)
-    T.riser(h + 1.6, h + 3.9)
-    T.section(h + 3.9, h + 11.2, "full")
-    T.impact(h + 3.9, 0.9); T.crash(h + 3.9, 1.0)
-    T.section(h + 11.2, O["room"], "tension", prog=SUS)
-    T.riser(h + 11.2, h + 12.7)
-    T.impact(h + 12.7, 1.1); T.crash(h + 12.7, 0.8)
+    H = V.Hook
+    # the opening: a heartbeat under the billion-times slow motion, a lift as the floors start to fly by,
+    # the drop when it speeds up and pulls out, the hit on the question
+    T.section(h, h + H.FLOORS0, "suspense", prog=SUS)
+    T.riser(h + 2.6, h + H.FLOORS0)
+    T.impact(h + H.FLOORS0, 0.6)
+    T.section(h + H.FLOORS0, h + H.DROP, "tension", prog=SUS)
+    T.riser(h + H.DROP - 2.2, h + H.DROP)
+    T.section(h + H.DROP, h + H.EARTH, "full")
+    T.impact(h + H.DROP, 0.9); T.crash(h + H.DROP, 1.0)
+    T.section(h + H.EARTH, O["room"], "tension", prog=SUS)
+    T.riser(h + H.EARTH, h + H.Q)
+    T.impact(h + H.Q, 1.1); T.crash(h + H.Q, 0.8)
     # the rules: light, then mellow
     T.section(O["room"], O["rules"], "light")
     T.section(O["rules"], e, "mellow")

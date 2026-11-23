@@ -180,39 +180,54 @@ def globe_img(g, done, light=None, fire=0.0, glow=1.0, smooth=False, light_size=
 
 # ------------------------------------------------------------------------ 1. the hook
 class Hook(Section):
-    """One floor, the Empire State Building, Midtown, Manhattan, then off the planet: one continuous pull-back."""
-    name, dur = "hook", 15.0
+    """Low and close on one floor of the Empire State Building: the robot crawls along its row (slowed a billion
+    times), time speeds up and it sweeps a few floors, then the camera rises and pulls out over Midtown,
+    Manhattan and off the planet."""
+    name, dur = "hook", 21.0
     chunk = 150
-    KN = [(0, 9), (2.4, 9), (3.2, 5.0), (3.9, 3.0), (5.0, 2.1), (8.0, 1.25), (11, 0.8), (15, 0.7)]
+    FLOORS0, DROP, EL_UP, EARTH, Q = 4.6, 9.0, 11.8, 17.6, 19.1
+    PSI0 = 124.0                 # looking along the tower floor's rows, so each floor fills sideways; orbits to the plates' 34
+    KN = [(0, 9), (2.6, 9), (4.4, 4.75), (9.0, 4.6), (10.0, 3.7), (11.0, 3.1), (11.8, 2.6), (12.6, 2.4),
+          (15.2, 1.3), (17.4, 0.8), (21, 0.7)]
     G_FINAL = dict(cx=1100, cy=470, r=430, lon0=-62.0, lat0=30.0)
 
     def __init__(self):
         self.R = CF.CityRenderer()
         R, C = self.R, self.R.C
         self.tower = self._tower()
-        self.i14 = [i for i, q in enumerate(R.esb_slabs) if q[1] == self.tower][14]
-        self.zf = R.esb_slabs[self.i14][0]
+        tw = [i for i, q in enumerate(R.esb_slabs) if q[1] == self.tower]
+        self.i14 = tw[14]
         self.L0 = R.esb_time_at_slab(self.i14, 0.46)
         self.v, self.Lv, self.Fv = slow_map(self.KN, self.dur, self.L0)
         ex, ey = C.cx[R.esb], C.cy[R.esb]
+        ring = C.rxy[C.ps[self.tower]:C.pe[self.tower]][:-1]
+        tcx, tcy = ring.mean(0)
+        r0 = FR.robot_at(C, self.tower, 0.46)
+        z14 = R.esb_slabs[tw[14]][0]
+        _, i9, _ = R.esb_state(self.L(self.DROP))
+        z9 = R.esb_slabs[i9][0] if i9 is not None else z14 + 12
         mx, my = float(C.cx.mean()), float(C.cy.mean())
         au, av, _ = G.ortho_forward(np.array([NYC_LL[0]]), np.array([NYC_LL[1]]), self.G_FINAL)
         self.anchor = (float(au[0]), float(av[0]))
-        keys = [(0.0, math.log(2.05), ex, ey, 215, 1180, 500),
-                (3.6, math.log(1.9), ex, ey, 215, 1180, 500),
-                (8.0, math.log(0.55), ex + 120, ey + 250, 0, 1060, 640),
-                (10.8, math.log(0.105), ex + 1500, ey + 2500, 0, 1150, 560),
-                (12.6, math.log(0.0009), mx, my, 0, self.anchor[0], self.anchor[1]),
-                (14.6, math.log(430 / 6.371e6), mx, my, 0, self.anchor[0], self.anchor[1]),
-                (15.0, math.log(430 / 6.371e6), mx, my, 0, self.anchor[0], self.anchor[1])]
+        A = self.anchor
+        ln = math.log
+        P0 = self.PSI0
+        keys = [(0.0, ln(200), 13, P0, r0[0], r0[1], z14, 960, 690),
+                (2.8, ln(185), 13, P0, r0[0], r0[1], z14, 960, 690),
+                (self.FLOORS0, ln(16), 16, P0, tcx, tcy, z14 + 3.3, 960, 580),
+                (self.DROP, ln(11), 19, P0, tcx, tcy, z9 + 1.5, 960, 580),
+                (self.EL_UP, ln(2.05), 30, CF.PSI, ex, ey, 215, 1180, 500),
+                (12.6, ln(1.9), 30, CF.PSI, ex, ey, 215, 1180, 500),
+                (15.2, ln(0.55), 30, CF.PSI, ex + 120, ey + 250, 0, 1060, 640),
+                (17.4, ln(0.105), 30, CF.PSI, ex + 1500, ey + 2500, 0, 1150, 560),
+                (19.0, ln(0.0009), 30, CF.PSI, mx, my, 0, A[0], A[1]),
+                (20.6, ln(430 / 6.371e6), 30, CF.PSI, mx, my, 0, A[0], A[1]),
+                (21.0, ln(430 / 6.371e6), 30, CF.PSI, mx, my, 0, A[0], A[1])]
+        self.segs = {}
         self.cam_f = pchip_cols([k[0] for k in keys], [k[1:] for k in keys])
-        # ground plane: oblique 3/4 view -> top-down, north up (for lifting off toward the globe)
         p, e = math.radians(CF.PSI), math.radians(CF.EL)
-        A = np.array([[math.cos(p), -math.sin(p)], [-math.sin(p) * math.sin(e), -math.cos(p) * math.sin(e)]])
-        self.Mtd = np.array([[1, 0], [0, -1]]) @ np.linalg.inv(A)
-        ring = C.rxy[C.ps[self.tower]:C.pe[self.tower]][:-1]
-        segs = FR.rows_in(ring)
-        self.rows_len = sum(np.linalg.norm(q - p) for p, q in segs)
+        Am = np.array([[math.cos(p), -math.sin(p)], [-math.sin(p) * math.sin(e), -math.cos(p) * math.sin(e)]])
+        self.Mtd = np.array([[1, 0], [0, -1]]) @ np.linalg.inv(Am)
 
     def _tower(self):
         C, R = self.R.C, self.R
@@ -226,8 +241,22 @@ class Hook(Section):
         return float(np.interp(t, self.v, self.Fv))
 
     def cam(self, t):
-        ls, tx, ty, tz, ox, oy = (float(f(t)) for f in self.cam_f)
-        return city_cam(math.exp(ls), tx, ty, tz, ox, oy)
+        ls, el, psi, tx, ty, tz, ox, oy = (float(f(t)) for f in self.cam_f)
+        if t >= self.EL_UP:
+            el, psi = CF.EL, CF.PSI                            # exactly the plates' angles from here on
+        return X.Cam(psi, el, math.exp(ls), tx, ty, tz, ox=ox, oy=oy, W=W, H=H, ss=1)
+
+    def row_mid(self, k, f, z, cam):
+        """screen point at the middle of the row being cleaned (where the glow sits once rows blur together)"""
+        if k not in self.segs:
+            C = self.R.C
+            segs = FR.rows_in(C.rxy[C.ps[k]:C.pe[k]][:-1])
+            self.segs[k] = (segs, np.cumsum([np.linalg.norm(q - p) for p, q in segs]))
+        segs, cum = self.segs[k]
+        j = int(np.clip(np.searchsorted(cum, f * cum[-1]), 0, len(segs) - 1))
+        m = (segs[j][0] + segs[j][1]) / 2
+        u, v = cam.project(np.array([m[0]]), np.array([m[1]]), np.array([z]))
+        return float(u[0]), float(v[0])
 
     def prepare(self, t):
         self.R.advance(self.L(t))
@@ -236,30 +265,45 @@ class Hook(Section):
         R, C = self.R, self.R.C
         R.advance(L)
         cam = self.cam(t)
-        img = R.frame(cam, L)
+        s = cam.s
+        nb = ease((t - self.EL_UP) / 1.2) if t >= self.EL_UP else 0.0
+        img = R.frame(cam, L, nb=nb, above_gain=CF.interp_log(s, [(70, 0.22), (11, 0.32), (2.05, 0.55)]),
+                      below_gain=CF.interp_log(s, [(70, 0.45), (11, 0.6), (2.05, 0.85)]))
         z, i, f = R.esb_state(L)
-        pos = None
-        if i is not None and cam.s > 1.0:
+        pos, head = None, 0.0
+        if i is not None and s > 1.0:
             _, k, j, _ = R.esb_slabs[i]
-            x, y, _ = FR.active_floor(C, k, R.esb_slabs[i][0], f, cam.s, cam, img, dust_n=0, wake=False, rows_gain=0.9)
+            x, y, head = FR.active_floor(C, k, R.esb_slabs[i][0], f, s, cam, img, dust_n=220000 if s > 24 else 0,
+                                         wake=s > 5, rows_gain=CF.interp_log(s, [(70, 0.30), (11, 0.6), (2.05, 0.9)]))
             pos = (x, y)
         if pos is None:
             x, y, zz = R.frontier_point(L)
             u, v = cam.project(np.array([x]), np.array([y]), np.array([zz]))
             pos = (float(u[0]), float(v[0]))
-        CF.light_win(img, pos[0], pos[1], size=CF.interp_log(cam.s, [(2.05, 0.5), (0.5, 0.7), (0.01, 0.9)]))
-        lam = ease((t - 11.3) / 1.3)
+        Ft = max(self.F(t), 1.0)
+        glow = min(max((8.5 - math.log10(Ft)) / 2.5, 0.0), 1.0)
+        rows_per_frame = C_MS / (FPS * Ft) / 45.0
+        w = min(max(rows_per_frame - 0.3, 0.0), 1.0)
+        if w > 0 and i is not None and s > 1.0:
+            mu, mv = self.row_mid(R.esb_slabs[i][1], f, R.esb_slabs[i][0], cam)
+            pos = (pos[0] * (1 - w) + mu * w, pos[1] * (1 - w) + mv * w)
+        if glow > 0:
+            CF.light_win(img, pos[0], pos[1], size=CF.interp_log(s, [(16, 0.8), (2.05, 0.5), (0.5, 0.7), (0.01, 0.9)]), gain=glow)
+        lam = ease((t - 17.7) / 1.3)
         if lam > 0:
             T = (1 - lam) * np.eye(2) + lam * self.Mtd
             a = np.array(self.anchor)
             M = np.hstack([T, (a - T @ a)[:, None]])
             img = cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderValue=tuple(float(q) for q in X.BG))
-        return CF.finish(img), pos
+        fr = CF.finish(img)
+        if s > 24 and i is not None:
+            fr = FR.paste_rgba(fr, FR.robot_sprite(int(0.35 * s * 1.5), head), pos[0], pos[1])
+        return fr, (i, z)
 
     def globe(self, t, L):
         ls = float(self.cam_f[0](t))
         r = math.exp(ls) * 6.371e6
-        lam = ease((t - 12.4) / 2.2)
+        lam = ease((t - 18.8) / 2.2)
         lon0 = NYC_LL[0] + lam * (self.G_FINAL["lon0"] - NYC_LL[0])
         lat0 = NYC_LL[1] + lam * (self.G_FINAL["lat0"] - NYC_LL[1])
         u, v, _ = G.ortho_forward(np.array([NYC_LL[0]]), np.array([NYC_LL[1]]), dict(cx=0, cy=0, r=r, lon0=lon0, lat0=lat0))
@@ -267,41 +311,29 @@ class Hook(Section):
         done = self.R.R.progress(L)[1]
         return globe_img(g, done, light=NYC_LL, smooth=r > 900)
 
-    def inset(self, L, pos):
-        R, C = self.R, self.R.C
-        dist = 0.46 * self.rows_len + (L - self.L0) * C_MS
-        f = min(max(dist / self.rows_len, 0.0), 1.0)
-        r = FR.robot_at(C, self.tower, min(f, 0.999))
-        Ri, si = 230, 185.0
-        ci = X.Cam(CF.PSI, CF.EL, si, r[0], r[1], self.zf, ox=Ri, oy=Ri + 20, W=2 * Ri, H=2 * Ri, ss=1)
-        im2 = np.zeros((2 * Ri, 2 * Ri, 3), np.float32) + X.BG
-        ix, iy, ih = FR.active_floor(C, self.tower, self.zf, f, si, ci, im2, dust_n=200000, wake=True, rows_gain=0.30)
-        ins = CF.finish(im2, bloom=(0.12, 0.06, 0.02))
-        ins = FR.paste_rgba(ins, FR.robot_sprite(int(0.35 * si * 1.5), ih), ix, iy)
-        return ins
-
     def frame(self, t):
         L = self.L(t)
-        fr, pos = (None, None)
-        if t < 12.85:
-            fr, pos = self.city(t, L)
-        if t > 12.2:
+        fr, info = None, (None, 0.0)
+        if t < 19.25:
+            fr, info = self.city(t, L)
+        if t > 18.6:
             gfr = self.globe(t, L)
-            fr = gfr if fr is None else blend(fr, gfr, ease((t - 12.2) / 0.6))
-        a_in = fade(t, 0.25, 3.75, 0.4, 0.45)
-        if a_in > 0 and pos is not None:
-            m = FR.magnifier(fr, self.inset(L, pos), 470, 470, 230, pos[0], pos[1],
-                             "the robot: 35 cm across")
-            fr = blend(fr, m, a_in)
+            fr = gfr if fr is None else blend(fr, gfr, ease((t - 18.6) / 0.6))
         F = self.F(t)
-        fr = tag(fr, factor_label(F), fade(t, 0.3, 11.6, 0.4, 0.5))
-        fr = tag(fr, "EMPIRE STATE BUILDING · X-RAY VIEW", fade(t, 0.3, 3.9, 0.4, 0.4), y=96, col=MUTED, size=22)
-        fr = nyc_hud(fr, self.R, L, fade(t, 4.3, 11.4, 0.5, 0.5))
-        fr = captions(fr, t, [(0.35, 3.95, [("This robot vacuum moves at the speed of light.", 46, INK, "SemiBold")]),
-                              (4.4, 10.7, [("It's going to clean every floor of every building in New York.", 42, INK, "SemiBold")]),
-                              (11.2, 15.2, [("Then every floor on Earth.", 48, INK, "SemiBold"),
-                                            ("How long will it take?", 40, GOLD, "SemiBold", 12.7)])])
-        return fr
+        fr = tag(fr, factor_label(F), fade(t, 0.3, 18.0, 0.4, 0.5))
+        i, z = info
+        if i is not None:
+            floor = int(np.clip(round(self.R.esb_slabs[i][0] / 3.73) + 1, 1, 102))
+            fr = tag(fr, f"EMPIRE STATE BUILDING · FLOOR {floor}", fade(t, 0.3, self.DROP + 0.5, 0.4, 0.4), x=60, y=56,
+                     col=INK2, size=26, anchor="la")
+            fr = tag(fr, "X-ray view · gold floors are clean", fade(t, 0.3, self.DROP + 0.5, 0.4, 0.4), x=60, y=94,
+                     col=MUTED, size=22, anchor="la")
+        fr = nyc_hud(fr, self.R, L, fade(t, self.DROP + 1.0, self.EARTH - 0.1, 0.5, 0.5))
+        return captions(fr, t, [(0.35, 3.9, [("This robot vacuum moves at the speed of light.", 46, INK, "SemiBold")]),
+                                (self.FLOORS0 + 0.2, self.DROP - 0.1, [("Slowed down 50,000 times: a floor every second and a half.", 40, INK, "SemiBold")]),
+                                (self.DROP + 0.4, self.EARTH - 0.6, [("It's going to clean every floor of every building in New York.", 42, INK, "SemiBold")]),
+                                (self.EARTH, self.dur + 0.2, [("Then every floor on Earth.", 48, INK, "SemiBold"),
+                                                              ("How long will it take?", 40, GOLD, "SemiBold", self.Q)])])
 
 
 # ------------------------------------------------------------------------ 2. then and now
