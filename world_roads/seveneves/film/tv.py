@@ -352,6 +352,15 @@ def per_place(per_day_world, radius_km=500.0):
     return 'every couple of minutes' if mins < 4 else f'about every {mins:.0f} minutes'
 
 
+def seveneves():
+    """The default Seveneves run (pieces drift apart at 150 m/s): when the rain starts, how much ocean boils."""
+    r = json.load(open(os.path.join(ROOT, 'results', 'results.json')))['scenarios']['150']['summary']
+    frac = r['climate']['max_ocean_boiled']
+    words = {0.25: 'a quarter', 0.5: 'half', 0.75: 'three-quarters', 1.0: 'all'}
+    ocean = words[min(words, key=lambda k: abs(k - frac))]
+    return dict(ocean=ocean, days=max(1, round(r['rain']['first_debris_day'])))
+
+
 def millions(x):
     if x < 1e3:
         return f'{x:,.0f}'
@@ -391,8 +400,13 @@ def build():
     c4, lo4, hi4 = C4['central'], C4['low'], C4['high']
     # ---------------------------------------------------------------- intro (the Moon turns slowly, never resets)
     say(('H_ladder', 0), [], where='center', dur=4.5, big=['WHAT IF SOMETHING', 'HIT THE MOON?'])
-    say(('H_ladder', None), ['The Moon gets hit by space rocks all the time.', 'Most are tiny. A few have been huge.'])
-    say(('H_ladder', None), ['Could a big hit on the Moon', 'cause trouble here on Earth?'])
+    # the novel that asks the question
+    say(('B_breakup', 0), ['In Neal Stephenson\'s novel Seveneves,', 'something shatters the Moon', 'into seven pieces.'],
+        dur=7.0)
+    say(('E_rain', 60), ['The pieces grind each other to rubble.', 'Two years later it rains down on Earth:',
+                         'the "Hard Rain" sets the sky on fire', 'and wipes out almost all life.'], dur=8.0)
+    say(('H_ladder', None), ['Could a hit on the Moon really hurt us?', 'The Moon gets hit by space rocks all the time.',
+                             'Most are tiny. A few have been huge.'])
     card(['Let\'s find out.', 'We\'ll throw bigger and bigger rocks at the Moon,', 'and see what happens to Earth each time.'],
          dur=7.0, sizes=[96, 54, 54])
     seg.append(('plan', 6.0, {}))
@@ -403,10 +417,8 @@ def build():
           'Round 1: a rock 1 metre across, about the size of an armchair.')
     say(('I1_1m', 0), ['It hits the Moon at 20 km per second', '(about 60 times faster than a bullet).'], rnd=1, dur=6.0)
     say(('I1_1m', None), ['It leaves a crater about 20 m wide.'], rnd=1, dur=4.0)
-    say(('N1_1m', 0), ['From your back garden that night:', 'a tiny flash on the dark part of the Moon.',
-                       'Blink and you would miss it.'], rnd=1, dur=6.0, tag='WHAT YOU WOULD SEE')
-    say(('N1_1m', None), ['What does Earth get?', 'Nothing at all.'], rnd=1)
-    verdict(('N1_1m', None), 'HARMLESS', happens(r['moon_interval_yr']), 1)
+    say(('I1_1m', None), ['What does Earth get?', 'Nothing at all.'], rnd=1)
+    verdict(('I1_1m', None), 'HARMLESS', happens(r['moon_interval_yr']), 1)
     # ---------------------------------------------------------------- round 2: 60 m
     r = L[60.0]
     scale('S2_60m', 'A rock 60 metres across', 'as tall as a 20-storey building',
@@ -486,6 +498,13 @@ def build():
     card(['Satellites get hurt at about 1 km.', 'People are in danger at about 10 km.',
           'That hits the Moon about once every 2 billion years.'], dur=8.0, sizes=[72, 72, 54],
          cols=[INK, INK, INK2])
+    # back to the novel
+    sv = seveneves()
+    say(('B_breakup', 0), ['And Seveneves?', 'Shattering the Moon would take a rock about 3,000 km across,',
+                            'nearly as big as the Moon itself.', 'Nothing that big has hit it since it formed.'], dur=9.0)
+    say(('F_steam', 0), ['If the Moon did shatter...', 'our simulation agrees with the book: the falling rock',
+                         f'would boil away {sv["ocean"]} of the oceans.',
+                         f'Only it would start within {sv["days"]} days, not two years.'], dur=9.0, play=1.0)
     card(['So relax.', 'The Moon is not going to rain down on us.'], dur=6.0, sizes=[96, 58])
     card(['Real physics: crater scaling, 6,000 simulated debris paths, impact rates from', 'NASA-funded surveys,',
           'casualties scaled from Chelyabinsk and Tunguska.',
@@ -779,8 +798,6 @@ def render(quality='final', out=None):
                 im = push(sf.get(fr), z)
                 if shot in ('I1_1m', 'I2_60m') and fr >= 30:
                     ring(im, flash_xy(sf), min(1.0, (fr - 30) / 6.0) * (1.0 if z < 1.0001 else 1.0))
-                if shot == 'N1_1m' and 30 <= fr < 90:
-                    ring(im, flash_xy(sf), min(1.0, (fr - 30) / 4.0), 'the flash')
             else:
                 im = Image.new('RGB', (W, H), BG)
             if kind == 'say':

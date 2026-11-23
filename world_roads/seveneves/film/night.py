@@ -1,6 +1,5 @@
 """The night sky from the ground, as a person standing in a field outside a small town would see it.
 
-N1_1m     the Moon, and a brief star-like flash on its dark side (a 1 m rock hitting it)
 N3_1km    a few nights later, real speed: ~30 shooting stars a second (11,000x normal)
 N4_10km   real speed: ~30,000 a second (11 million x normal), as much light as a full Moon, and a fireball
           as bright as the Sun (about one a day, somewhere in view)
@@ -334,7 +333,7 @@ class NightShot:
     exposure = 4.2
     with_person = True
 
-    def base(self, sc, glow=0.0, town=0.25, stars=1.0, moonlight=0.0):
+    def base(self, sc, glow=0.0, town=0.25, stars=1.0):
         sc.cycles.samples = max(sc.cycles.samples, 8)
         gl = [n for n in sc.node_tree.nodes if n.type == 'GLARE']
         for g in gl:                                     # starlight-level points should not bloom
@@ -351,104 +350,10 @@ class NightShot:
             self.person = assets.human(pos.x, pos.y, 1.74, face_deg=180.0 - self.look_az, outfit=0)
         self.cam = look.camera(tuple(EYE), tuple(EYE + d * 10), self.lens)
         self.cam.data.clip_end = 20000.0
-        if moonlight > 0:
-            self.moon_lamp = look.sun(tuple(sky_dir(*self.moon_azel)), moonlight)
         self.streaks = streak_object(streak_material())
 
     def frame_cone(self):
         return tuple(sky_dir(self.look_az, self.look_el)), math.radians(62)
-
-
-def moon_in_sky(az, el, sun_dir, name='NightMoon', dist=9000.0):
-    """The Moon at its true angular size (0.52 degrees), lit by the Sun (below the horizon), with earthshine."""
-    r = dist * math.tan(math.radians(0.26))
-    d = sky_dir(az, el)
-    ob = look.uv_sphere(name, r, 96, 48, loc=tuple(EYE + d * dist))
-    m = bpy.data.materials.new(name)
-    m.use_nodes = True
-    nt = m.node_tree
-    nt.nodes.clear()
-    N = look.node
-    out = N(nt, 'ShaderNodeOutputMaterial', (600, 0))
-    geo = N(nt, 'ShaderNodeNewGeometry', (-800, 0))
-    dot = N(nt, 'ShaderNodeVectorMath', (-600, 0), operation='DOT_PRODUCT')
-    nt.links.new(geo.outputs['Normal'], dot.inputs[0])
-    dot.inputs[1].default_value = tuple(Vector(sun_dir).normalized())
-    lam = N(nt, 'ShaderNodeMath', (-400, 0), operation='MAXIMUM')
-    nt.links.new(dot.outputs['Value'], lam.inputs[0])
-    lam.inputs[1].default_value = 0.0
-    tex = N(nt, 'ShaderNodeTexImage', (-600, 300))
-    tex.image = look.img(f'{look.ASSETS}/moon/lroc_color_poles_8k.tif')
-    uv = N(nt, 'ShaderNodeTexCoord', (-800, 300))
-    nt.links.new(uv.outputs['UV'], tex.inputs['Vector'])
-    lit = N(nt, 'ShaderNodeMath', (-250, 0), operation='MULTIPLY_ADD')
-    nt.links.new(lam.outputs[0], lit.inputs[0])
-    lit.inputs[1].default_value = 1.0
-    lit.inputs[2].default_value = 0.004                      # earthshine on the dark side
-    col = N(nt, 'ShaderNodeMix', (0, 200), data_type='RGBA', blend_type='MULTIPLY')
-    col.inputs['Factor'].default_value = 1.0
-    nt.links.new(tex.outputs['Color'], col.inputs['A'])
-    col.inputs['B'].default_value = (1, 1, 1, 1)
-    em = N(nt, 'ShaderNodeEmission', (300, 0))
-    nt.links.new(col.outputs['Result'], em.inputs['Color'])
-    s = N(nt, 'ShaderNodeMath', (100, -100), operation='MULTIPLY')
-    nt.links.new(lit.outputs[0], s.inputs[0])
-    s.inputs[1].default_value = 2.5
-    nt.links.new(s.outputs[0], em.inputs['Strength'])
-    nt.links.new(em.outputs['Emission'], out.inputs['Surface'])
-    m.cycles.emission_sampling = 'NONE'
-    ob.data.materials.append(m)
-    ob.visible_diffuse = ob.visible_glossy = ob.visible_shadow = False
-    # face the near side (the texture's centre) towards us
-    ob.rotation_mode = 'QUATERNION'
-    ob.rotation_quaternion = (-d).to_track_quat('X', 'Z')
-    return ob, d, r
-
-
-@shot('N1_1m', 144)
-class Night1m(NightShot):
-    """The Moon over the town, and the flash of a 1 m rock hitting its dark side (~mag 0, for ~0.1 s)."""
-    frames = 144
-    with_person = False
-    look_az, look_el, lens = 160.0, 13.0, 40.0
-    moon_azel = (165.0, 19.0)
-    exposure = 3.2
-
-    def build(self, sc):
-        self.base(sc, town=0.35, moonlight=0.004)
-        sun_dir = sky_dir(255.0, -12.0)
-        self.moon, d, r = moon_in_sky(*self.moon_azel, sun_dir)
-        # the flash: a tiny glowing point just above the dark side of the disc
-        side = d.cross(Vector((0, 0, 1))).normalized()
-        self.flash_pos = Vector(self.moon.location) - d * r * 1.02 - side * (r * 0.55) + Vector((0, 0, r * 0.2))
-        self.flash = bpy.data.objects.new('Flash', bpy.data.meshes.new('Flash'))
-        bm = bmesh.new()
-        bmesh.ops.create_icosphere(bm, subdivisions=2, radius=r * 0.07)
-        bm.to_mesh(self.flash.data)
-        bm.free()
-        bpy.context.collection.objects.link(self.flash)
-        fm = bpy.data.materials.new('FlashMat')
-        fm.use_nodes = True
-        fm.node_tree.nodes.clear()
-        e = fm.node_tree.nodes.new('ShaderNodeEmission')
-        e.inputs['Color'].default_value = (1.0, 0.95, 0.85, 1)
-        o = fm.node_tree.nodes.new('ShaderNodeOutputMaterial')
-        fm.node_tree.links.new(e.outputs['Emission'], o.inputs['Surface'])
-        fm.cycles.emission_sampling = 'NONE'
-        self.flash.data.materials.append(fm)
-        self.flash_em = e
-        self.flash.location = self.flash_pos
-        self.flash.visible_diffuse = self.flash.visible_glossy = self.flash.visible_shadow = False
-        self.sporadic = Meteors(NORMAL_PER_HOUR / 3600.0, 7.0, tuple(sky_dir(60, 40)), seed=3)
-
-    def frame(self, f):
-        t = f / 24.0
-        # the impact flash at t = 1.25 s: rises in a frame, fades in ~0.15 s
-        k = f - 30
-        self.flash_em.inputs['Strength'].default_value = 0.0 if k < 0 else 500.0 * math.exp(-k / 2.5)
-        self.flash.hide_render = k < 0 or k > 14
-        set_streaks(self.streaks, self.sporadic.geometry(t))
-        return 0.0
 
 
 class StormShot(NightShot):

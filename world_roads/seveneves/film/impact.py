@@ -408,13 +408,102 @@ class Flash60m(FlashShot):
     D, peak = 60.0, 4000.0
 
 
+class Rain:
+    """Meteors entering the atmosphere, seen from space: each is a glowing trail that burns down through the
+    upper air along the stream's direction (all the Moon debris arrives on nearly parallel paths), lasting a
+    few frames. Airbursts (Chelyabinsk and Tunguska class) are flashes low in the air that bloom and fade."""
+    RE = look.R_EARTH
+
+    def __init__(self, radiant, seed):
+        self.R = np.array(radiant) / np.linalg.norm(radiant)
+        self.v = -self.R
+        self.rng = np.random.default_rng(seed)
+        self.m = dict(e=np.zeros((0, 3)), s=np.zeros(0), born=np.zeros(0), life=np.zeros(0), b=np.zeros(0),
+                      w=np.zeros(0))
+        self.fl = dict(p=np.zeros((0, 3)), born=np.zeros(0), life=np.zeros(0), r=np.zeros(0), b=np.zeros(0))
+
+    def _facing(self, n, min_cos=0.05):
+        out = []
+        while len(out) < n:
+            u = self.rng.normal(size=(2 * n + 8, 3))
+            u /= np.linalg.norm(u, axis=1)[:, None]
+            c = u @ self.R
+            keep = (c > min_cos) & (self.rng.random(len(u)) < c)       # flux falls off as cos(angle)
+            out.extend(u[keep].tolist())
+        return np.array(out[:n])
+
+    def step(self, f, n_new, bright, n_flash, flash_r, flash_b):
+        R0 = self.RE
+        if n_new:
+            nrm = self._facing(n_new)
+            e = nrm * (R0 + 0.30)                     # drawn long (300 km) so the trails read at this distance
+            big = self.rng.random(n_new) < 0.04
+            h_end = np.where(big, self.rng.uniform(0.02, 0.04, n_new), self.rng.uniform(0.06, 0.085, n_new))
+            ev = e @ self.v
+            disc = ev ** 2 - ((e * e).sum(1) - (R0 + h_end) ** 2)
+            s = np.where(disc > 0, -ev - np.sqrt(np.maximum(disc, 0)), -ev)       # grazing: to closest approach
+            b = np.minimum(self.rng.uniform(1e-3, 1, n_new) ** -0.8, 40.0) * bright * np.where(big, 4.0, 1.0)
+            w = np.where(big, 0.018, 0.009) * self.rng.uniform(0.7, 1.3, n_new)
+            add = dict(e=e, s=s, born=np.full(n_new, f), life=self.rng.integers(3, 8, n_new).astype(float), b=b, w=w)
+            self.m = {k: np.concatenate([self.m[k], add[k]]) for k in self.m}
+        keep = f - self.m['born'] < self.m['life']
+        self.m = {k: v[keep] for k, v in self.m.items()}
+        if n_flash:
+            nrm = self._facing(n_flash, 0.0)
+            add = dict(p=nrm * (R0 + self.rng.uniform(0.01, 0.03, (n_flash, 1))), born=np.full(n_flash, f),
+                       life=self.rng.integers(5, 10, n_flash).astype(float),
+                       r=flash_r * self.rng.uniform(0.4, 1.0, n_flash) ** 1.5,
+                       b=flash_b * self.rng.uniform(0.3, 1.0, n_flash))
+            self.fl = {k: np.concatenate([self.fl[k], add[k]]) for k in self.fl}
+        keep = f - self.fl['born'] < self.fl['life']
+        self.fl = {k: v[keep] for k, v in self.fl.items()}
+
+    def streaks(self, f, cam, seg=4):
+        m = self.m
+        k = len(m['s'])
+        if k == 0:
+            return None
+        age = f - m['born']
+        hf = np.minimum(1.0, (age + 1) / 2.0)                          # the head reaches the end in 2 frames
+        tf = np.clip((age - 1) / np.maximum(m['life'] - 1, 1), 0, 0.95)  # then the trail shortens from the top
+        env = np.clip(1.0 - age / m['life'], 0, 1) ** 0.6
+        sv = np.linspace(0, 1, seg + 1)
+        frac = tf[:, None] + (hf - tf)[:, None] * sv[None, :]
+        P = m['e'][:, None, :] + (m['s'][:, None] * frac)[..., None] * self.v[None, None, :]
+        to_cam = np.array(cam)[None, None, :] - P
+        side = np.cross(np.broadcast_to(self.v, P.shape), to_cam)
+        side /= np.maximum(np.linalg.norm(side, axis=2), 1e-9)[..., None]
+        wd = m['w'][:, None, None] * (0.5 + 0.5 * sv[None, :, None])
+        V = np.concatenate([P + side * wd, P - side * wd], axis=1)
+        along = np.concatenate([sv, sv])[None, :].repeat(k, 0)
+        across = np.concatenate([np.ones(seg + 1), -np.ones(seg + 1)])[None, :].repeat(k, 0)
+        bright = (m['b'] * env)[:, None].repeat(2 * (seg + 1), 1)
+        tint = np.ones((k, 2 * (seg + 1), 3))
+        base = (np.arange(k) * 2 * (seg + 1))[:, None]
+        j = np.arange(seg)[None, :]
+        q = np.stack([base + j, base + j + 1, base + seg + 1 + j + 1, base + seg + 1 + j], axis=2).reshape(-1, 4)
+        return V.reshape(-1, 3), q, along.ravel(), across.ravel(), bright.ravel(), tint.reshape(-1, 3)
+
+    def flashes(self, f):
+        fl = self.fl
+        if len(fl['b']) == 0:
+            return np.zeros((0, 3)), np.zeros(0), np.zeros(0)
+        age = f - fl['born']
+        x = age / fl['life']
+        r = fl['r'] * (0.35 + 0.65 * np.sqrt(np.clip(x, 0, 1)))
+        b = fl['b'] * np.exp(-age / 2.0)
+        return fl['p'], r, b
+
+
 class EarthAfter:
-    """The Earth over the months after an impact on the Moon: meteors and fireballs where the ejecta
-    arrive (the arrival-time distribution from the 6,000 simulated trajectories)."""
+    """The Earth over the months after an impact on the Moon: meteors and airbursts where the ejecta
+    arrive (the arrival-time distribution from the 6,000 simulated trajectories), time-lapsed. Each frame
+    spans hours to weeks, so the trails are drawn a few frames long to read as motion."""
     D = 1000.0
     days = 60.0
 
     def build(self, sc):
+        import night
         self.r = row(self.D)
         e = np.load(os.path.join(ROOT, 'out', 'lunar_impact', 'ejecta.npz'))
         # escaping-ejecta mass per log speed (rock, 20 km/s, 45 deg; as lunar_impact.speed_weights)
@@ -432,8 +521,14 @@ class EarthAfter:
         view = (-self.sun_dir * 0.8 + Vector((0, 0, 1)).cross(self.sun_dir).normalized() * 0.55 + Vector((0, 0, 0.2))).normalized()
         self.cam = look.camera(tuple(view * 26.0), (0, 0, 0), 50)
         self.view = view
-        self.met = debris_object('Meteors', (0.2, 0.2, 0.2))
-        self.rng = np.random.default_rng(int(self.D) % 1000)
+        # the stream comes from roughly behind the camera, so the hemisphere we see takes the hits
+        side = Vector((0, 0, 1)).cross(view).normalized()
+        radiant = (side * 0.85 + view * 0.35 + Vector((0, 0, 1)) * 0.25).normalized()   # trails cross the view
+        self.rain = Rain(tuple(radiant), int(self.D) % 1000)
+        self.streak_ob = night.streak_object(night.streak_material())
+        self.set_streaks = night.set_streaks
+        self.fl = debris_object('Airbursts', (0.2, 0.2, 0.2))
+        self.chely = self.r.get('chelyabinsks', 0.0)
 
     def frame(self, f):
         t = shots.logtime(f, 0, self.frames - 1, 0.5 * 86400, self.days * 86400)
@@ -442,23 +537,26 @@ class EarthAfter:
         sel = (self.arr > lo) & (self.arr < hi)
         rate = self.M * self.w[sel].sum() / ((hi - lo) / 86400)
         storm = rate / LADDER['background_kg_day']
-        n = int(min(900, 6 * math.log10(1 + storm) ** 2.2))
-        pts, br = np.zeros((0, 3)), np.zeros(0)
-        if n:
-            base = self.rng.normal(size=(n, 3))
-            base /= np.linalg.norm(base, axis=1, keepdims=True)
-            tang = np.cross(base, self.rng.normal(size=base.shape))
-            tang /= np.linalg.norm(tang, axis=1, keepdims=True)
-            Ls = self.rng.uniform(0.04, 0.2, n)
-            k = np.linspace(0, 1, 8)
-            pts = (base[:, None, :] * (6.371 + 0.11 - 0.05 * k[None, :, None])
-                   + tang[:, None, :] * (Ls[:, None] * (1 - k))[:, :, None]).reshape(-1, 3)
-            big = self.rng.random(n) < min(0.05, 0.002 * math.log10(1 + storm))
-            b0 = self.rng.lognormal(0, 0.7, n) * np.where(big, 25.0, 1.0)
-            br = ((1.0 + 7.0 * k ** 2)[None, :] * b0[:, None]).reshape(-1)
-        set_points(self.met, pts, 0.004, br * 6.0)
+        lg = math.log10(1 + storm)
+        n_new = int(min(700, 2.2 * lg ** 2))
+        bright = 2.0 + 0.8 * lg
+        # airbursts, for the impacts that send pieces big enough (10 km and up)
+        n_fl, fr_, fb = 0, 0.0, 0.0
+        if self.chely > 0:
+            n_fl = int(max(0.0, lg - 5.5) ** 2 * 1.5)
+            fr_ = 0.07 + 0.015 * max(0.0, lg - 6)       # the fireball and the cloud deck it lights
+            fb = 60.0
+        self.rain.step(f, n_new, bright, n_fl, fr_, fb)
+        self.set_streaks(self.streak_ob, self.rain.streaks(f, tuple(self.cam.location)))
+        p, r_, b_ = self.rain.flashes(f)
+        set_points(self.fl, p, r_, b_)
+        # the upper air: heat glow (blackbody) or, when stronger, the light of the meteors themselves (~1% of
+        # the entry power comes out as visible light; warm white)
         P = rate * 0.5 * 11.1e3 ** 2 / 86400 / 5.1e14
         T, glow = sky_heat_from_power(max(P, 1.0))
+        meteor_glow = 1.2e-5 * P                  # ~1/100 of the day side for the 100 km storm
+        if meteor_glow > glow:
+            T, glow = 3500.0, meteor_glow
         nt = self.shell.data.materials[0].node_tree
         nt.nodes['sky_T'].outputs[0].default_value = T
         nt.nodes['sky_glow'].outputs[0].default_value = glow

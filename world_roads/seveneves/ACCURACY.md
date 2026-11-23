@@ -155,6 +155,16 @@ What is computed from physics, what is a modelling choice, and what is left out.
   over the summit: it would dwarf the mountain. In the 100 km card the air glows in layers that thin out with
   height (scale height 14 km, a little thicker than the real ~8 km so it reads on screen). The line-up of five
   rocks is not to scale, and says so.
+* **The Earth from space after each impact (`film/impact.py`, E shots).** Time-lapse over months to years,
+  following the simulated arrival times. Meteor trails all run parallel (the debris arrives on nearly parallel
+  paths) and are drawn ~300 km long and a few frames long so they read from 25,000 km away; their number grows
+  with the logarithm of the storm. Airbursts (10 km and 100 km rounds) are flashes ~70–150 km across: the
+  fireball and the cloud deck it lights. After the 100 km impact the night side glows faintly with meteor light
+  (~1% of the entry power, about 1/100 of the day side).
+* **Seveneves (the film's opening and ending).** The novel's premise as told: the Moon breaks into seven pieces,
+  and two years later the "Hard Rain" falls. The ending uses this project's own results: at 20 km/s an impactor
+  must be ~3,000 km across to shatter the Moon (Leinhardt & Stewart largest-remnant law), and in the default
+  breakup run the rain starts on day 2 and boils 75% of the oceans.
 * **The night sky from the ground (`film/night.py`).** Meteor rates are the simulation's first-week averages
   (`storm_factor`) times a normal dark-sky rate of 10 visible meteors an hour: ~30 a second
   (1 km), ~30,000 a second (10 km), ~3×10⁷ a second (100 km). Brightnesses follow a power law (many faint, few
@@ -164,9 +174,10 @@ What is computed from physics, what is a modelling choice, and what is left out.
   becomes visible light, so the 10 km storm gives roughly full-Moon light and the 100 km storm roughly overcast
   daylight; the 100 km shot is exposed 8 stops darker, like eyes adjusting to glare. A fireball "as bright as the
   Sun" (Chelyabinsk class, visible to ~500 km) shows up in one place's sky about once a day after the 10 km hit
-  and every couple of minutes after the 100 km hit; each shot shows one. The 1 m impact flash is a brief,
-  star-like point on the Moon's dark side. The 60 m round (~25 shooting stars an hour instead of ~10) has no
-  ground view: at real speed you would barely notice it. The stars are a real all-sky photograph.
+  and every couple of minutes after the 100 km hit; each shot shows one. The 1 m and 60 m rounds have no
+  ground view: a 1 m impact's flash on the Moon is a brief faint point that takes a telescope to catch
+  reliably, and ~25 shooting stars an hour instead of ~10 is hard to notice. The stars are a real all-sky
+  photograph.
 
 ## 5. Left out
 

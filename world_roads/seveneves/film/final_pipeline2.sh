@@ -5,7 +5,7 @@ B=${BLENDER:-/opt/blender_dl/blender-4.5.16-linux-x64/blender}
 ROOT=/opt/seveneves_render
 cd "$(dirname "$0")/.."
 while pgrep -f final_pipeline.sh >/dev/null; do sleep 60; done
-for S in J_ejecta K_entry P_lineup S1_1m S2_60m S3_1km S4_10km S5_100km N1_1m N3_1km N4_10km N5_100km; do
+for S in J_ejecta K_entry P_lineup S1_1m S2_60m S3_1km S4_10km S5_100km N3_1km N4_10km N5_100km; do
   OUT=media/shots/${S}_final.mp4
   [ -f "$OUT" ] && { echo "skip $S"; continue; }
   "$B" -b -P film/render.py -- $S 0 9999 final $ROOT 1 2>&1 | grep --line-buffered -E "frame [0-9]+/|Error|Traceback"
