@@ -413,7 +413,7 @@ def build():
           dict(rock='60 m rock', other='20-storey building (60 m)'), 7.0, 2,
           'Round 2: a rock 60 metres across, as tall as a 20-storey building.')
     say(('I2_60m', 0), ['Same speed: 20 km per second.', 'About as big as asteroid 2024 YR4.'], rnd=2)
-    say(('I2_60m', None), ['A flash bright enough to see without a telescope.', 'Crater: about 1.2 km wide.'], rnd=2)
+    say(('I2_60m', None), ['A flash you could see without a telescope.', 'It leaves a crater about 1.2 km wide.'], rnd=2)
     say(('I2_60m', None), ['What does Earth get?', 'A few extra shooting stars for a week.'], rnd=2)
     verdict(('I2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
     # ---------------------------------------------------------------- round 3: 1 km
@@ -426,7 +426,7 @@ def build():
     say(('I3_1km', None), ['The crater: 18 km wide.'], rnd=3, dur=4.0)
     say(('J_ejecta', 0), ['Where does the blasted rock go?'], rnd=3, dur=4.0)
     seg.append(('fate', 9.0, dict(rnd=3)))
-    say(('J_ejecta', None), ['Most of what escapes drifts off around the Sun.',
+    say(('J_ejecta', None), ['Most of it drifts off around the Sun.',
                              'The orange streaks are pieces that will hit Earth.'], rnd=3, dur=8.0, play=2.0)
     say(('E3_1km', 0), ['What does Earth get?', 'A storm of shooting stars:', '10,000 times more than normal, for a week.'],
         rnd=3)
@@ -450,9 +450,10 @@ def build():
     say(('E4_10km', 0), ['What does Earth get, over about six years?',
                          f'~{round(c4["chely"], -3):,.0f} blasts as strong as Chelyabinsk,',
                          f'~{round(c4["tung"], -2):,.0f} as strong as Tunguska.'], rnd=4)
-    say(('N4_10km', 0), ['From the ground: ~30,000 shooting stars a second.', 'The night is as bright as under a full Moon,',
-                         f'and {per_place(C4["chely_per_day_first_week"])} a fireball as bright as the Sun.'],
-        rnd=4, dur=7.0, tag='REAL SPEED')
+    say(('N4_10km', 0), ['From the ground, at night:', 'about 30,000 shooting stars every second,',
+                         'as much light as a full Moon, and',
+                         f'{per_place(C4["chely_per_day_first_week"])} a fireball as bright as the Sun.'],
+        rnd=4, dur=7.5, tag='REAL SPEED')
     bullets('What would daily life be like?',
             [f'At first, ~{round(C4["chely_per_day_first_week"], -2):,.0f} big blasts a day, anywhere on Earth.',
              f'Any city: about a 1 in {round(1 / C4["city_chely_first_year"]):.0f} chance of one nearby in the first year.',
@@ -475,7 +476,7 @@ def build():
     seg.append(('heat', 9.0, dict(rnd=5)))
     say(('E5_100km', 0), ['What does Earth get?', 'Blasts that flatten almost every city within a year,',
                           'and for months, more heat from the sky than from the Sun.'], rnd=5)
-    say(('N5_100km', 0), ['From the ground: night turns to day,', 'lit by billions of shooting stars,',
+    say(('N5_100km', 0), ['From the ground, at night:', 'night turns to day, lit by countless shooting stars,',
                           f'and {per_place(C5["chely_per_day_first_week"])} a fireball as bright as the Sun.'],
         rnd=5, dur=7.0, tag='REAL SPEED (YOUR EYES ADJUST TO THE GLARE)')
     say(('E5_100km', None), ['Earth warms by about 11 °C.', 'Most life would die out.'], rnd=5)
