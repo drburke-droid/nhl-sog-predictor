@@ -25,7 +25,7 @@ python globe.py            # world sweep order, country and city floor area -> d
 python frames.py           # all 16 stills and 2 thumbnails -> out/frames/
 ```
 
-The film (3:18): `../../videos/speed_of_light/every_floor_on_earth_at_light_speed_3m18s.mp4`.
+The film (3:24): `../../videos/speed_of_light/every_floor_on_earth_at_light_speed_3m24s.mp4`.
 
 ```bash
 for s in hook room rules esb nyc earth1 far earth2 dust uturn spotless; do python video.py render $s 3; done

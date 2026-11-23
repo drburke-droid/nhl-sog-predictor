@@ -1,6 +1,6 @@
 # YouTube copy: a robot vacuum at the speed of light cleans every floor on Earth
 
-Upload `every_floor_on_earth_at_light_speed_3m18s.mp4` (3:18, 1920×1080, 30 fps, captions and music, no voice). The
+Upload `every_floor_on_earth_at_light_speed_3m24s.mp4` (3:24, 1920×1080, 30 fps, captions and music, no voice). The
 sequel to the Roomba film (`copy/roomba_YOUTUBE.md`). Thumbnails `every_floor_thumb_A.jpg` (the X-ray
 Empire State Building) and `every_floor_thumb_B.jpg` (the half-gold globe).
 
@@ -23,15 +23,15 @@ Last time, a Roomba with no map drove every road in America at the speed of ligh
 What should it clean next? Tell me in the comments.
 
 0:00 A robot vacuum at the speed of light
-0:14 Then and now
-0:24 The rules
-0:33 The Empire State Building
-0:48 Every floor in New York
-1:27 Every floor on Earth
-2:13 How far
-2:24 The last floor
-2:44 Footnotes: the dustbin and the U-turn
-3:06 Spotless
+0:20 Then and now
+0:30 The rules
+0:39 The Empire State Building
+0:54 Every floor in New York
+1:33 Every floor on Earth
+2:19 How far
+2:30 The last floor
+2:50 Footnotes: the dustbin and the U-turn
+3:12 Spotless
 
 How it's made: New York's buildings are the city's own data (NYC Building Footprints and PLUTO floor areas, NYC Open Data); the Empire State Building's setbacks come from OpenStreetMap via Overture Maps. Where the world's floor is comes from the European Commission's Global Human Settlement Layer (building volume, 2025), scaled to the published world total of 273 billion m² (UNEP / GlobalABC Global Status Report for Buildings and Construction, 2024). Rows 25 cm apart is an assumption: no maker publishes lane spacing. Every slow-motion and speed-up is labelled on screen.
 Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/floors/ACCURACY.md
@@ -43,15 +43,15 @@ Music: an original theme, synthesized for these videos (no samples).
 
 ```
 0:00 A robot vacuum at the speed of light
-0:14 Then and now
-0:24 The rules
-0:33 The Empire State Building
-0:48 Every floor in New York
-1:27 Every floor on Earth
-2:13 How far
-2:24 The last floor
-2:44 Footnotes: the dustbin and the U-turn
-3:06 Spotless
+0:20 Then and now
+0:30 The rules
+0:39 The Empire State Building
+0:54 Every floor in New York
+1:33 Every floor on Earth
+2:19 How far
+2:30 The last floor
+2:50 Footnotes: the dustbin and the U-turn
+3:12 Spotless
 ```
 
 **Tags:** robot vacuum, speed of light, Empire State Building, New York City, every floor, floor area, data

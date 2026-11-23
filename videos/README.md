@@ -34,7 +34,7 @@ no-voice versions plus Shorts, made with the neurogaze project) and the video of
 | roomba_at_light_speed_every_road.mp4 | 16:9 | 3:23 | A Roomba-style photon covering every road. Copy: `copy/roomba_YOUTUBE.md`, thumbnails roomba_thumb_A/B/C |
 | roomba_at_light_speed_SHORT.mp4 | vertical | 0:50 | Roomba photon, short cut |
 | roomba_at_light_speed_calgary_SHORT.mp4 | vertical | 0:42 | Roomba photon in Calgary |
-| every_floor_on_earth_at_light_speed_3m18s.mp4 | 16:9 | 3:18 | A modern robot vacuum (mapped, rows 25 cm apart) at light speed cleans every floor: the Empire State Building (3.5 ms), New York (7.4 s), Earth (about 1 h 08 min). Two-pass copy under 100 MB; the 147 MB master was sent separately. Copy: `copy/every_floor_YOUTUBE.md`, thumbnails every_floor_thumb_A/B; built by `world_roads/floors/` |
+| every_floor_on_earth_at_light_speed_3m24s.mp4 | 16:9 | 3:24 | A modern robot vacuum (mapped, rows 25 cm apart) at light speed cleans every floor: the Empire State Building (3.5 ms), New York (7.4 s), Earth (about 1 h 08 min). Opens low and close on the 44th floor before pulling out. Two-pass copy under 100 MB; the 150 MB master was sent separately. Copy: `copy/every_floor_YOUTUBE.md`, thumbnails every_floor_thumb_A/B; built by `world_roads/floors/` |
 
 Left out as superseded or drafts: the first hyperacuity video, the first cut of the world short, the world-roads
 preview, the daytime-only half of the flights film, and the signal-fires film (not speed of light).
