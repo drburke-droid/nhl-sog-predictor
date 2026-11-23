@@ -26,6 +26,11 @@ if len(argv) > 6:
 out = os.path.join(root, quality, name)
 os.makedirs(out, exist_ok=True)
 sc = shots.setup(quality)
+if quality == 'final' and name in ('B_breakup',):
+    # seven displaced Moon pieces at 1080p would need ~14 GB of micro-polygons: dice coarser (still finer than
+    # the animatic's 4 px)
+    sc.cycles.dicing_rate = 3.0
+    sc.cycles.max_subdivisions = 10
 s = shots.build(name, sc)
 last = min(last, s.frames - 1)
 tfile = os.path.join(out, 'times.json')
