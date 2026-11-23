@@ -414,9 +414,8 @@ def build():
           'Round 2: a rock 60 metres across, as tall as a 20-storey building.')
     say(('I2_60m', 0), ['Same speed: 20 km per second.', 'About as big as asteroid 2024 YR4.'], rnd=2)
     say(('I2_60m', None), ['A flash bright enough to see without a telescope.', 'Crater: about 1.2 km wide.'], rnd=2)
-    say(('N2_60m', 0), ['What does Earth get?', 'A few extra shooting stars for a week:',
-                        'about 25 an hour instead of 10.'], rnd=2, dur=7.0, tag='SPED UP: 1 HOUR IN 7 SECONDS')
-    verdict(('N2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
+    say(('I2_60m', None), ['What does Earth get?', 'A few extra shooting stars for a week.'], rnd=2)
+    verdict(('I2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
     # ---------------------------------------------------------------- round 3: 1 km
     r = L[1000.0]
     scale('S3_1km', 'A rock 1 kilometre across', 'taller than the world\'s tallest building',

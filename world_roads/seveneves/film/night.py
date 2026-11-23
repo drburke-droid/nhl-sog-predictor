@@ -1,7 +1,6 @@
 """The night sky from the ground, as a person standing in a field outside a small town would see it.
 
 N1_1m     the Moon, and a brief star-like flash on its dark side (a 1 m rock hitting it)
-N2_60m    a few nights later, sped up (1 hour in 7 s): ~2.5x the normal ~10 shooting stars an hour
 N3_1km    a few nights later, real speed: ~30 shooting stars a second (11,000x normal)
 N4_10km   real speed: ~30,000 a second (11 million x normal), as much light as a full Moon, and a fireball
           as bright as the Sun (about one a day, somewhere in view)
@@ -210,7 +209,6 @@ class Meteors:
         rng = np.random.default_rng(seed)
         n = int(rate_per_s * seconds * sky_frac)
         self.scale = 1.0
-        self.timelapse = None
         if n == 0:
             self.n = 0
             z = np.zeros(0)
@@ -255,30 +253,19 @@ class Meteors:
         self.tint = tint
 
     def geometry(self, t, seg=5):
-        """Vertices, quads and attributes for every meteor visible at time t. In time-lapse mode (a frame
-        stands for many seconds) each meteor is drawn whole, like a long exposure, and fades over ~2 frames."""
+        """Vertices, quads and attributes for every meteor visible at time t."""
         if self.n == 0:
             return None
-        if self.timelapse:
-            win = self.timelapse
-            a = (t >= self.t0) & (t < self.t0 + win)
-            idx = np.where(a)[0]
-            if len(idx) == 0:
-                return None
-            env = 1.0 - (t - self.t0[idx]) / win
-            th_h = self.w[idx] * self.dur[idx]
-            th_t = np.zeros(len(idx))
-        else:
-            a = (t >= self.t0) & (t <= self.t0 + self.dur + 0.4)
-            idx = np.where(a)[0]
-            if len(idx) == 0:
-                return None
-            tt = t - self.t0[idx]
-            life = np.clip(tt / self.dur[idx], 0, 1)
-            env = np.sin(np.pi * np.clip(life, 0, 1)) ** 0.7
-            env[tt > self.dur[idx]] *= np.exp(-(tt[tt > self.dur[idx]] - self.dur[idx][tt > self.dur[idx]]) / 0.12)
-            th_h = self.w[idx] * np.minimum(tt, self.dur[idx])
-            th_t = np.maximum(0.0, th_h - self.w[idx] * self.tail[idx])
+        a = (t >= self.t0) & (t <= self.t0 + self.dur + 0.4)
+        idx = np.where(a)[0]
+        if len(idx) == 0:
+            return None
+        tt = t - self.t0[idx]
+        life = np.clip(tt / self.dur[idx], 0, 1)
+        env = np.sin(np.pi * np.clip(life, 0, 1)) ** 0.7
+        env[tt > self.dur[idx]] *= np.exp(-(tt[tt > self.dur[idx]] - self.dur[idx][tt > self.dur[idx]]) / 0.12)
+        th_h = self.w[idx] * np.minimum(tt, self.dur[idx])
+        th_t = np.maximum(0.0, th_h - self.w[idx] * self.tail[idx])
         p0, m = self.p0[idx], self.m[idx]
         k = len(idx)
         s = np.linspace(0, 1, seg + 1)
@@ -468,7 +455,7 @@ class StormShot(NightShot):
     bright = 1.0
     rate = 0.0              # meteors per second over the whole sky
     seconds = 7.0
-    speed = 1.0             # 1 = real time; 3600/7 = an hour in 7 s
+    speed = 1.0             # real time
     glow = 0.0
     seed = 7
 
@@ -479,8 +466,6 @@ class StormShot(NightShot):
         self.met = Meteors(self.rate * self.speed, self.seconds, tuple(sky_dir(*self.radiant)), seed=self.seed,
                            sky_frac=frac, frame_dir=cone[0], frame_cone=cone[1], bright_scale=self.bright,
                            slow=1.0)
-        if self.speed > 1:
-            self.met.timelapse = 1.5 / 24.0
         self.extra(sc)
 
     def extra(self, sc):
@@ -504,22 +489,6 @@ def rate(D):
     if L is None:
         L = ladder()
     return NORMAL_PER_HOUR / 3600.0 * L[D]['storm_factor']
-
-
-@shot('N2_60m', 168)
-class Night60m(StormShot):
-    """A few nights after a 60 m hit, sped up: one hour in 7 seconds (~25 shooting stars instead of ~10)."""
-    speed = 3600.0 / 7.0
-    bright = 1.0
-
-    def build(self, sc):
-        self.rate = rate(60.0)
-        super().build(sc)
-
-    def more(self, f, t):
-        # the sky turns 15 degrees an hour about the celestial pole (latitude 51 N, like Calgary)
-        ang = math.radians(15.0) * t * self.speed / 3600.0
-        self.skymap.inputs['Rotation'].default_value = (0, math.radians(90 - 51) * 0, ang)
 
 
 @shot('N3_1km', 168)

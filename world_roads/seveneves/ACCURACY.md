@@ -156,7 +156,7 @@ What is computed from physics, what is a modelling choice, and what is left out.
   height (scale height 14 km, a little thicker than the real ~8 km so it reads on screen). The line-up of five
   rocks is not to scale, and says so.
 * **The night sky from the ground (`film/night.py`).** Meteor rates are the simulation's first-week averages
-  (`storm_factor`) times a normal dark-sky rate of 10 visible meteors an hour: ~25 an hour (60 m), ~30 a second
+  (`storm_factor`) times a normal dark-sky rate of 10 visible meteors an hour: ~30 a second
   (1 km), ~30,000 a second (10 km), ~3×10⁷ a second (100 km). Brightnesses follow a power law (many faint, few
   bright). Debris from the Moon arrives at ~11 km/s, so the meteors are slow, long and orange-tailed, and they
   radiate from one point (they share a direction of arrival). Where there are too many to draw (10 km and
@@ -165,8 +165,8 @@ What is computed from physics, what is a modelling choice, and what is left out.
   daylight; the 100 km shot is exposed 8 stops darker, like eyes adjusting to glare. A fireball "as bright as the
   Sun" (Chelyabinsk class, visible to ~500 km) shows up in one place's sky about once a day after the 10 km hit
   and every couple of minutes after the 100 km hit; each shot shows one. The 1 m impact flash is a brief,
-  star-like point on the Moon's dark side; the 60 m shot is a time-lapse (1 hour in 7 s, the sky turning). The
-  stars are a real all-sky photograph.
+  star-like point on the Moon's dark side. The 60 m round (~25 shooting stars an hour instead of ~10) has no
+  ground view: at real speed you would barely notice it. The stars are a real all-sky photograph.
 
 ## 5. Left out
 

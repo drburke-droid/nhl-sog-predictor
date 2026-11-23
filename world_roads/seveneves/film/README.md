@@ -11,7 +11,7 @@ Everything on screen is driven by the simulation in the folder above.
 | `impact.py` | The impact ladder: the intact Moon hit by 1 m to 100 km rocks (flash, crater, ejecta), the Earth afterwards, the ejecta's path to Earth, and a fireball entering the air |
 | `scale.py` | The scale cards: each rock as a turning, procedurally built asteroid (fractured boulder, rubble pile, spinning top, cratered potato) next to something familiar at true scale: a person on a cobbled square (1 m), a 20-storey office block in a city (60 m), an 828 m Y-plan supertall in a skyline (1 km), the real Mount Everest (10 km), and the curved Earth seen from orbit with the dinosaur-killer beside it (100 km). Also the line-up of all five rocks. Saves per-frame label positions |
 | `assets.py` | The real-world assets: the CC0 human (posed and dressed), Poly Haven trees and HDR skies, ambientCG facades and ground textures, the Y-plan tower, and the Copernicus 30 m terrain of Everest with its snow, ice and rock material |
-| `night.py` | The night sky from the ground for each round: the 1 m flash on the Moon, the extra shooting stars (time-lapse), and the 1 km, 10 km and 100 km meteor storms at real speed, radiating from one point, with a fireball |
+| `night.py` | The night sky from the ground for each round: the 1 m flash on the Moon, and the 1 km, 10 km and 100 km meteor storms at real speed, radiating from one point, with a fireball |
 | `render.py`, `render_all.sh`, `render_scale.sh` | Render frames (resumable). Quality is `animatic`, `preview`, `draft` or `final` (1920×1080, 16 samples, OIDN) |
 | `assemble.py` | Captions, live counters from the simulation, title cards, ladder circles drawn to scale, and the encode |
 | `tv.py` | The silent waiting-room cut (five rounds, verdict stamps, explainers, labels that follow the rendered objects) and its narration script `tv_script.md` |
@@ -57,7 +57,7 @@ film/render_all.sh animatic 2              # every other frame, ~40 min
 python3 film/assemble.py animatic
 film/render_all.sh final                   # the real thing, many hours; resumable
 python3 film/assemble.py final
-film/render_scale.sh animatic P_lineup S1_1m S2_60m S3_1km S4_10km S5_100km N1_1m N2_60m N3_1km N4_10km N5_100km
+film/render_scale.sh animatic P_lineup S1_1m S2_60m S3_1km S4_10km S5_100km N1_1m N3_1km N4_10km N5_100km
 python3 film/tv.py animatic                # the waiting-room cut (uses final frames where they exist)
 ```
 

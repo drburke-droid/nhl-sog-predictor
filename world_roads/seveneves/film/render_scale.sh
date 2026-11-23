@@ -3,7 +3,7 @@
 set -u
 Q=${1:-animatic}
 shift || true
-SHOTS=${@:-P_lineup S1_1m S2_60m S3_1km S4_10km S5_100km N1_1m N2_60m N3_1km N4_10km N5_100km}
+SHOTS=${@:-P_lineup S1_1m S2_60m S3_1km S4_10km S5_100km N1_1m N3_1km N4_10km N5_100km}
 cd "$(dirname "$0")/.."
 B=/opt/blender_dl/blender-4.5.16-linux-x64/blender
 for S in $SHOTS; do
