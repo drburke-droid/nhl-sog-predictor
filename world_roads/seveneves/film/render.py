@@ -20,6 +20,9 @@ argv = sys.argv[sys.argv.index('--') + 1:]
 name, first, last, quality = argv[0], int(argv[1]), int(argv[2]), argv[3]
 root = argv[4] if len(argv) > 4 else '/opt/seveneves_render'
 step = int(argv[5]) if len(argv) > 5 else 1
+only = None                                       # optional JSON {shot: [frames]}: render just the frames a cut uses
+if len(argv) > 6:
+    only = set(json.load(open(argv[6])).get(name, []))
 out = os.path.join(root, quality, name)
 os.makedirs(out, exist_ok=True)
 sc = shots.setup(quality)
@@ -35,7 +38,7 @@ if hasattr(s, 'labels'):                         # screen positions of the on-sc
 times = json.load(open(tfile)) if os.path.exists(tfile) else {}
 for f in range(first, last + 1, step):
     path = os.path.join(out, f'{f + 1:04d}.png')
-    if os.path.exists(path):
+    if os.path.exists(path) or (only is not None and f not in only):
         continue
     t0 = time.time()
     tsim = s.frame(f)

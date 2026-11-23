@@ -856,6 +856,31 @@ def render(quality='final', out=None):
 
 
 
+def used_frames(path=None):
+    """Which frames of each shot the cut actually shows (so a final render can skip the rest)."""
+    seg = build()
+    used, playhead = {}, {}
+    for kind, dur, p in seg:
+        n = int(round(dur * FPS))
+        bg = p.get('bg')
+        if bg is None:
+            continue
+        shot, start = bg
+        if start is None:
+            start = playhead.get(shot, 0.0)
+        play = p.get('play', 1.0 if kind == 'say' else 0.0)
+        playhead[shot] = start + n * play
+        N = shots_meta.FRAMES[shot]
+        s = used.setdefault(shot, set())
+        for f in range(n):
+            s.add(int(min(max(start + f * play, 0), N - 1)))
+    used.setdefault('P_lineup', set()).update(range(shots_meta.FRAMES['P_lineup']))
+    out = {k: sorted(v) for k, v in used.items()}
+    if path:
+        json.dump(out, open(path, 'w'))
+    return out
+
+
 
 def score():
     """Drone; a hit at each impact (deeper for bigger rocks); a chord at each verdict; a soft pulse under the
@@ -896,6 +921,9 @@ def score():
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == 'used':
+        used_frames(sys.argv[2])
+        sys.exit(0)
     q = sys.argv[1] if len(sys.argv) > 1 else 'final'
     score()
     render(q, sys.argv[2] if len(sys.argv) > 2 else None)
