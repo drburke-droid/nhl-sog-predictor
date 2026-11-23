@@ -102,3 +102,21 @@ Every number in the storyboard stills comes from the scripts here (`nyc_prep.py`
 * **Globe (`globe.py`):** brightness is floor area per area of ground (1 − e^(−30·d))^0.8, from the scaled
   GHSL grid; land from Natural Earth.
 * **Stills, not the film:** these are key frames for review. Motion and timing notes are in the storyboard.
+
+## 7. The film (`video.py`, `cityfilm.py`, `assemble.py`)
+
+* **Time on screen is the true light time.** Every stretch that isn't real time is labelled: SLOW MOTION
+  (×1,000,000,000 when the robot is visible at its true 35 cm and crawls at walking pace, falling smoothly to
+  ×5 over New York), TIME-LAPSE ×60 in the living room, SPED UP ×68 over the globe (60 s of film for the
+  whole planet). The label is the instantaneous factor, rounded to two significant figures.
+* **The hook replays the start of the run** (the Empire State Building, then outward), so Act 3 restarts the
+  clock: "Back to the start, slowed right down."
+* **The globe's light time** spreads the 7 minutes of travel evenly over the sweep, so the clock reads 1 h 08
+  min when the last floor is done.
+* **The lift-off** from New York to the globe tilts the 3/4 view to top-down (a 2D warp of the ground plane)
+  and cross-fades to the globe at the same scale; for that second the globe interpolates its 5-arcminute
+  floor grid.
+* **Fast city frames:** with an orthographic camera, zoom and pan are 2D scales and shifts, so every
+  building's slab density is rendered once at 2.5, 0.6 and 0.12 px/m and sampled per frame (area-averaged
+  mip level, then a sub-pixel affine); buildings are added to a "clean" copy as the light reaches them.
+* **Music:** the Roomba film's synthesized theme (`roomba/music.py`), re-cut to this film. No samples.

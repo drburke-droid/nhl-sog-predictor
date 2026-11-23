@@ -97,8 +97,10 @@ def main():
     lon = x0 + (cc + 0.5) * cell
     lat = y0 - (rr + 0.5) * cell
     pts, keys = densified()
-    _, i = cKDTree(pts).query(_xyz(lon, lat))
-    key = keys[i]
+    dch, i = cKDTree(pts).query(_xyz(lon, lat))
+    # cells off the path sort by how far off they are, so many cells nearest the same waypoint (all of the
+    # northeast is nearest New York) fill outward from it rather than in raster order
+    key = keys[i] + 0.5 * dch * R
     order = np.argsort(key, kind="stable")
     cum = np.cumsum(F[rr, cc][order])
     np.savez_compressed(os.path.join(D, "sweep.npz"), rr=rr[order].astype(np.int32), cc=cc[order].astype(np.int32),
@@ -167,7 +169,7 @@ class Globe:
                     d.polygon([((x + 180) / res, (90 - y) / res) for x, y in ring], fill=0 if k else 255)
         return np.asarray(im, np.float32) / 255.0, res
 
-    def render(self, g, done_m2, W=1920, H=1080, ss=2, glow=1.0, fire=0.0):
+    def render(self, g, done_m2, W=1920, H=1080, ss=2, glow=1.0, fire=0.0, smooth=False):
         """g: dict(cx, cy, r, lon0, lat0) in output px; done_m2: floor area cleaned so far (cells in sweep order)"""
         h, w = H * ss, W * ss
         gg = dict(g, cx=g["cx"] * ss, cy=g["cy"] * ss, r=g["r"] * ss)
@@ -194,6 +196,8 @@ class Globe:
         ri = np.clip(((self.y0 - lat) / self.cell).astype(np.int64), 0, self.F.shape[0] - 1)
         ci = np.clip(((lonw - self.x0) / self.cell).astype(np.int64), 0, self.F.shape[1] - 1)
         f = self.F[ri, ci]
+        if smooth:                                                     # zoomed right in: interpolate between cells
+            f = map_coordinates(self.F, [(self.y0 - lat) / self.cell - 0.5, (lonw - self.x0) / self.cell - 0.5], order=1, mode="nearest")
         cellkm2 = (self.cell * 111.32) ** 2 * np.cos(np.radians(lat))
         dens = f / np.maximum(cellkm2, 1e-3) / 1e6                   # floor m^2 per m^2 of ground
         it = (1 - np.exp(-dens * 30.0)) ** 0.8 * 1.7 * glow
@@ -211,7 +215,8 @@ class Globe:
         Rr = gg["r"]
         dist = np.hypot(px - gg["cx"], py - gg["cy"])
         rim_in = np.where(inside, np.clip(rho, 0, 1) ** 14, 0)
-        halo = np.where(~inside, np.exp(-(dist - Rr) / (16 * ss)), 0) + 0.35 * np.where(~inside, np.exp(-(dist - Rr) / (70 * ss)), 0)
+        dd = np.maximum(dist - Rr, 0)
+        halo = np.where(~inside, np.exp(-dd / (16 * ss)), 0) + 0.35 * np.where(~inside, np.exp(-dd / (70 * ss)), 0)
         sky = np.array([0.30, 0.55, 1.0], np.float32) if fire <= 0 else (1 - min(fire, 1)) * np.array([0.30, 0.55, 1.0], np.float32) + min(fire, 1) * np.array([1.0, 0.55, 0.2], np.float32)
         img += (0.55 * rim_in + 0.45 * halo * (1 + 2 * fire))[..., None] * sky * 0.6
         return img, gg
