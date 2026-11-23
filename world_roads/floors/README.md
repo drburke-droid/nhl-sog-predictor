@@ -1,4 +1,4 @@
-# Every floor on Earth at the speed of light (storyboard stage)
+# Every floor on Earth at the speed of light
 
 The sequel to the Roomba film (`../roomba/`): a present-day robot vacuum, one that maps each room and
 cleans in rows 25 cm apart, moves at the speed of light. It cleans every floor of every building in New
@@ -25,6 +25,16 @@ python globe.py            # world sweep order, country and city floor area -> d
 python frames.py           # all 16 stills and 2 thumbnails -> out/frames/
 ```
 
+The film (3:18): `../../videos/speed_of_light/every_floor_on_earth_at_light_speed_3m18s.mp4`.
+
+```bash
+for s in hook room rules esb nyc earth1 far earth2 dust uturn spotless; do python video.py render $s 3; done
+python assemble.py         # cross-fades + score -> out/video/every_floor_light_speed.mp4 (master, CRF 17)
+```
+
+* `cityfilm.py`: fast city frames. Zoom and pan are 2D with this camera, so slab density is rendered once at
+  three scales and sampled per frame; cleaned buildings are added as the light reaches them.
+* `video.py`: the eleven sections, their timing (true light time, labelled slow motion) and captions.
 * `xray.py`: the X-ray 3/4 renderer. Every floor slab of every building is projected and summed; blue is
   dirty, gold is clean.
 * `globe.py`: the night globe, the GHSL floor map scaled to the published world total, and the sweep.

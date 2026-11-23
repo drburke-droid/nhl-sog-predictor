@@ -12,9 +12,9 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "flights"))
 sys.path.insert(0, os.path.join(ROOT, "roomba"))
+sys.path.insert(0, HERE)                     # first, so `video` is this film's, not the Roomba film's
 OUT = os.path.join(HERE, "out", "video")
 XF = 0.5
 AF = "volume=-1.2dB,alimiter=limit=0.708:attack=3:release=60:level=false"
