@@ -1,0 +1,23 @@
+{
+ "footprints": 1081950,
+ "pluto_lots": 858284,
+ "pluto_floor_area_m2": 533880741.433801,
+ "floor_area_from_footprints_m2": 534862136.5317116,
+ "share_of_footprints_matched": 0.9925698969453302,
+ "floors_total": 2465588,
+ "floor_area_by_borough_m2": {
+  "QN": 119516533.32255322,
+  "SI": 27761949.09018539,
+  "BK": 144023520.63366798,
+  "MN": 170875339.33250767,
+  "BX": 71703399.05484805
+ },
+ "footprint_area_m2": 161119913.73384622,
+ "esb": {
+  "index": 816245,
+  "footprint_m2": 7903.920654296875,
+  "height_m": 377.58329171836806,
+  "floors": 102,
+  "floor_area_m2": 261312.00382656002
+ }
+}
