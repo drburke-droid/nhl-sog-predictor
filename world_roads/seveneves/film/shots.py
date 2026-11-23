@@ -85,6 +85,7 @@ def setup(quality):
     gl.quality = 'HIGH'
     gl.threshold = 1.5
     gl.size = 7
+    gl.inputs['Threshold'].default_value = 1.5             # Blender 4.5 reads the sockets
     ct.links.new(rl.outputs['Image'], gl.inputs['Image'])
     ct.links.new(gl.outputs['Image'], comp.inputs['Image'])
     return sc

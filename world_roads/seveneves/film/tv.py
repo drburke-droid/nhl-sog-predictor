@@ -50,6 +50,36 @@ def font(path, size):
     return _F[(path, size)]
 
 
+class _AlphaDraw(ImageDraw.ImageDraw):
+    """ImageDraw whose text() honours the alpha of an RGBA fill on an RGB image. (Pillow 12 draws such text fully
+    opaque, which made every caption and chart label appear at once instead of fading in after its graphic.)"""
+
+    def text(self, xy, text, fill=None, font=None, anchor=None, *args, stroke_width=0, stroke_fill=None, **kw):
+        if self._image.mode != 'RGB' or not (isinstance(fill, tuple) and len(fill) == 4):
+            return super().text(xy, text, fill, font, anchor, *args, stroke_width=stroke_width, stroke_fill=stroke_fill, **kw)
+        a = fill[3]
+        sa = stroke_fill[3] if isinstance(stroke_fill, tuple) and len(stroke_fill) == 4 else a
+        if a <= 0 and (not stroke_width or sa <= 0):
+            return
+        x0, y0, x1, y1 = self.textbbox(xy, text, font=font, anchor=anchor, stroke_width=stroke_width)
+        x0, y0, x1, y1 = int(x0) - 2, int(y0) - 2, int(x1) + 2, int(y1) + 2
+        if x1 <= x0 or y1 <= y0:
+            return
+        loc = (xy[0] - x0, xy[1] - y0)
+        if stroke_width and stroke_fill is not None and sa > 0:
+            m = Image.new('L', (x1 - x0, y1 - y0), 0)
+            ImageDraw.Draw(m).text(loc, text, fill=255, font=font, anchor=anchor, stroke_width=stroke_width, stroke_fill=255)
+            self._image.paste(tuple(stroke_fill[:3]), (x0, y0, x1, y1), m.point(lambda v: v * sa // 255))
+        if a > 0:
+            m = Image.new('L', (x1 - x0, y1 - y0), 0)
+            ImageDraw.Draw(m).text(loc, text, fill=255, font=font, anchor=anchor)
+            self._image.paste(tuple(fill[:3]), (x0, y0, x1, y1), m.point(lambda v: v * a // 255))
+
+
+def Draw(im, mode=None):
+    return _AlphaDraw(im, mode)
+
+
 def happens(y):
     e = every(y)
     return 'Today: never. No rocks this big are left near the Earth.' if e.startswith('never') else 'Happens ' + e
@@ -95,7 +125,7 @@ def panel_text(im, lines, a, where='lower', title_size=78, body_size=54, accent=
     """Lines in a soft dark panel. lines[0] is the headline."""
     if a <= 0 or not lines:
         return
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     sizes = [(FONT_B, title_size)] + [(FONT_M, body_size)] * (len(lines) - 1)
     gaps = [int(s * 1.28) for _, s in sizes]
     widths = [d.textlength(s, font=font(p, z)) for s, (p, z) in zip(lines, sizes)]
@@ -114,7 +144,7 @@ def panel_text(im, lines, a, where='lower', title_size=78, body_size=54, accent=
 
 
 def center_text(im, lines, a, sizes=None, y_mid=None, cols=None):
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     sizes = sizes or [96] + [58] * (len(lines) - 1)
     cols = cols or [INK] + [INK2] * (len(lines) - 1)
     hts = [int(s * 1.35) for s in sizes]
@@ -129,7 +159,7 @@ def hud(im, rnd, results, a=1.0):
     """'ROUND n OF 5' and the ladder of sizes, with past rounds' verdict colours."""
     if rnd is None:
         return
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.rectangle([0, 0, W, 96], fill=(4, 5, 8, int(170 * a)))
     d.text((60, 48), f'ROUND {rnd} OF 5', font=font(FONT_X, 40), fill=AMBER + (int(255 * a),), anchor='lm')
     x = 760
@@ -152,7 +182,7 @@ def hud(im, rnd, results, a=1.0):
 
 def stamp(im, verdict, note, a):
     col, sym = VERDICT[verdict]
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     s = 0.85 + 0.15 * ease(a)
     cx, cy = W / 2, H / 2 - 40
     f = font(FONT_X, int(120 * s))
@@ -207,7 +237,7 @@ def flash_xy(sf):
 
 
 def ring(im, xy, a, label_s='impact'):
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     x, y = xy
     for r_, w_ in ((70, 6),):
         d.ellipse([x - r_, y - r_, x + r_, y + r_], outline=AMBER + (int(255 * a),), width=w_)
@@ -250,7 +280,7 @@ def scale_overlay(im, t, dur, p, fr, quality):
     scrim = Image.new('L', (1, 380))
     scrim.putdata([int(200 * a * (y / 380) ** 1.3) for y in range(380)])
     im.paste((0, 0, 0), (0, H - 380, W, H), scrim.resize((W, 380)))
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     outlined(d, (W / 2, H - 190), p['title'], font(FONT_B, 84), INK, a, stroke=3)
     outlined(d, (W / 2, H - 92), p['compare'], font(FONT_M, 52), INK2, a * ease((t - 0.8) / 0.6), stroke=3)
     lab = shot_labels(p['shot'], quality).get(str(int(min(fr, shots_meta.FRAMES[p['shot']] - 1))), {})
@@ -264,9 +294,15 @@ def scale_overlay(im, t, dur, p, fr, quality):
         x, y = lab[key][0] * W, lab[key][1] * H
         lift = p.get('lift', {}).get(key, 72)
         tw = d.textlength(p['labels'][key], font=f)
-        ty = max(y - lift, 150)
-        tx = min(max(x, tw / 2 + 40), W - tw / 2 - 40)
-        d.line([(x, y - 8), (x, ty + 28)], fill=col + (int(230 * b),), width=4)
+        if y - lift >= 150:                                   # label above the object
+            ty = y - lift
+            tx = min(max(x, tw / 2 + 40), W - tw / 2 - 40)
+            d.line([(x, y - 8), (x, ty + 28)], fill=col + (int(230 * b),), width=4)
+        else:                                                 # too near the top: label beside it
+            ty = max(y, 150)
+            side = -1 if x - tw - 120 > 40 else 1
+            tx = x + side * (tw / 2 + 90)
+            d.line([(x, ty), (x + side * 70, ty)], fill=col + (int(230 * b),), width=4)
         d.ellipse([x - 7, y - 15, x + 7, y - 1], fill=col + (int(255 * b),))
         outlined(d, (tx, ty), p['labels'][key], f, col, b, stroke=4)
 
@@ -300,6 +336,20 @@ _LINEUP = {}
 def casualties():
     rows = json.load(open(os.path.join(ROOT, 'results', 'casualties.json')))['rows']
     return {r['D_m']: r for r in rows}
+
+
+def per_place(per_day_world, radius_km=500.0):
+    """How often a fireball seen worldwide `per_day_world` times a day shows up in one place's sky (visible
+    to ~500 km)."""
+    d = per_day_world * math.pi * radius_km ** 2 / 5.1e8
+    if d < 0.7:
+        return f'about once every {round(1 / d):.0f} days'
+    if d < 2:
+        return 'about once a day'
+    if d < 48:
+        return f'about {d:.0f} times a day'
+    mins = 1440 / d
+    return 'every couple of minutes' if mins < 4 else f'about every {mins:.0f} minutes'
 
 
 def millions(x):
@@ -352,9 +402,11 @@ def build():
           dict(rock='1 m rock', other='a person (1.75 m)'), 7.0, 1,
           'Round 1: a rock 1 metre across, about the size of an armchair.')
     say(('I1_1m', 0), ['It hits the Moon at 20 km per second', '(about 60 times faster than a bullet).'], rnd=1, dur=6.0)
-    say(('I1_1m', None), ['From Earth, you would see a tiny flash.', 'It leaves a crater about 20 m wide.'], rnd=1)
-    say(('I1_1m', None), ['What does Earth get?', 'Nothing at all.'], rnd=1)
-    verdict(('I1_1m', None), 'HARMLESS', happens(r['moon_interval_yr']), 1)
+    say(('I1_1m', None), ['It leaves a crater about 20 m wide.'], rnd=1, dur=4.0)
+    say(('N1_1m', 0), ['From your back garden that night:', 'a tiny flash on the dark part of the Moon.',
+                       'Blink and you would miss it.'], rnd=1, dur=6.0, tag='WHAT YOU WOULD SEE')
+    say(('N1_1m', None), ['What does Earth get?', 'Nothing at all.'], rnd=1)
+    verdict(('N1_1m', None), 'HARMLESS', happens(r['moon_interval_yr']), 1)
     # ---------------------------------------------------------------- round 2: 60 m
     r = L[60.0]
     scale('S2_60m', 'A rock 60 metres across', 'as tall as a 20-storey building',
@@ -362,8 +414,9 @@ def build():
           'Round 2: a rock 60 metres across, as tall as a 20-storey building.')
     say(('I2_60m', 0), ['Same speed: 20 km per second.', 'About as big as asteroid 2024 YR4.'], rnd=2)
     say(('I2_60m', None), ['A flash bright enough to see without a telescope.', 'Crater: about 1.2 km wide.'], rnd=2)
-    say(('I2_60m', None), ['What does Earth get?', 'A few extra shooting stars for a week.'], rnd=2)
-    verdict(('I2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
+    say(('N2_60m', 0), ['What does Earth get?', 'A few extra shooting stars for a week:',
+                        'about 25 an hour instead of 10.'], rnd=2, dur=7.0, tag='SPED UP: 1 HOUR IN 7 SECONDS')
+    verdict(('N2_60m', None), 'HARMLESS', happens(r['moon_interval_yr']), 2)
     # ---------------------------------------------------------------- round 3: 1 km
     r = L[1000.0]
     scale('S3_1km', 'A rock 1 kilometre across', 'taller than the world\'s tallest building',
@@ -378,6 +431,8 @@ def build():
                              'The orange streaks are pieces that will hit Earth.'], rnd=3, dur=8.0, play=2.0)
     say(('E3_1km', 0), ['What does Earth get?', 'A storm of shooting stars:', '10,000 times more than normal, for a week.'],
         rnd=3)
+    say(('N3_1km', 0), ['From the ground, at night:', 'about 30 shooting stars every second,', 'all week long.'],
+        rnd=3, dur=7.0, tag='REAL SPEED')
     bullets('What would that mean for us?',
             [f'Satellites take ~{round(C3["satellite_years_in_a_week"], -1):.0f} years\' worth of meteoroid hits in one week.',
              'Some would fail: GPS, satellite TV and weather forecasts could glitch.',
@@ -385,8 +440,8 @@ def build():
     verdict(('E3_1km', None), 'TROUBLE', happens(r['moon_interval_yr']), 3)
     # ---------------------------------------------------------------- round 4: 10 km
     r = L[1e4]
-    scale('S4_10km', 'A rock 10 kilometres across', 'taller than Mount Everest: the size of the dinosaur-killer',
-          dict(rock='10 km rock', other='Everest-height peak (8.8 km)'), 7.0, 4,
+    scale('S4_10km', 'A rock 10 kilometres across', 'it would dwarf Mount Everest: the size of the dinosaur-killer',
+          dict(rock='10 km rock', other='Mount Everest (8,849 m)'), 7.0, 4,
           'Round 4: a rock 10 kilometres across, the size of the one that wiped out the dinosaurs.')
     say(('I4_10km', 0), ['It hits the Moon.'], rnd=4, dur=3.5)
     say(('I4_10km', None), ['A crater 135 km wide.', 'Now some of the pieces flying at Earth', 'are as big as office towers.'], rnd=4)
@@ -396,6 +451,9 @@ def build():
     say(('E4_10km', 0), ['What does Earth get, over about six years?',
                          f'~{round(c4["chely"], -3):,.0f} blasts as strong as Chelyabinsk,',
                          f'~{round(c4["tung"], -2):,.0f} as strong as Tunguska.'], rnd=4)
+    say(('N4_10km', 0), ['From the ground: ~30,000 shooting stars a second.', 'The night is as bright as under a full Moon,',
+                         f'and {per_place(C4["chely_per_day_first_week"])} a fireball as bright as the Sun.'],
+        rnd=4, dur=7.0, tag='REAL SPEED')
     bullets('What would daily life be like?',
             [f'At first, ~{round(C4["chely_per_day_first_week"], -2):,.0f} big blasts a day, anywhere on Earth.',
              f'Any city: about a 1 in {round(1 / C4["city_chely_first_year"]):.0f} chance of one nearby in the first year.',
@@ -418,6 +476,9 @@ def build():
     seg.append(('heat', 9.0, dict(rnd=5)))
     say(('E5_100km', 0), ['What does Earth get?', 'Blasts that flatten almost every city within a year,',
                           'and for months, more heat from the sky than from the Sun.'], rnd=5)
+    say(('N5_100km', 0), ['From the ground: night turns to day,', 'lit by billions of shooting stars,',
+                          f'and {per_place(C5["chely_per_day_first_week"])} a fireball as bright as the Sun.'],
+        rnd=5, dur=7.0, tag='REAL SPEED (YOUR EYES ADJUST TO THE GLARE)')
     say(('E5_100km', None), ['Earth warms by about 11 °C.', 'Most life would die out.'], rnd=5)
     verdict(('E5_100km', None), 'CATASTROPHE', happens(r['moon_interval_yr']), 5)
     # ---------------------------------------------------------------- the end
@@ -428,15 +489,18 @@ def build():
     card(['So relax.', 'The Moon is not going to rain down on us.'], dur=6.0, sizes=[96, 58])
     card(['Real physics: crater scaling, 6,000 simulated debris paths, impact rates from', 'NASA-funded surveys,',
           'casualties scaled from Chelyabinsk and Tunguska.',
-          'Moon images: NASA LRO.  Earth: Solar System Scope (CC BY 4.0).'], dur=5.5, sizes=[34, 34, 34, 34],
-         cols=[INK3] * 4)
+          'Moon images: NASA LRO.  Earth: Solar System Scope (CC BY 4.0).',
+          'Everest: Copernicus DEM GLO-30 (© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH',
+          '2014-2018, provided under COPERNICUS by the European Union and ESA).',
+          'People: Blender Studio Human Base Meshes (CC0).  Trees and skies: Poly Haven (CC0).',
+          'Building and ground textures: ambientCG (CC0).'], dur=8.0, sizes=[32] * 8, cols=[INK3] * 8)
     return seg
 
 
 # ------------------------------------------------------------------------------------ explainer screens
 def fate_screen(im, t, dur):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 190), 'For every 1,000 tonnes of rock the impact blasts out...', font=font(FONT_B, 58),
            fill=INK + (int(255 * a),), anchor='mm')
     rows = [(1.2, '996 tonnes', 'fall back onto the Moon', (140, 140, 140)),
@@ -451,7 +515,7 @@ def fate_screen(im, t, dur):
 
 def chely_screen(im, t, dur):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 170), 'What is a "Chelyabinsk"?', font=font(FONT_B, 84), fill=INK + (int(255 * a),), anchor='mm')
     lines = [(0.8, 'In 2013 a 20-metre rock exploded in the sky over Chelyabinsk, Russia.'),
              (2.6, 'The blast broke windows across the whole city.'),
@@ -472,12 +536,13 @@ def chely_screen(im, t, dur):
     flash = ease((t - 2.0) / 0.4) * a
     for r_, al in ((70, 60), (40, 140), (18, 255)):
         d.ellipse([fx - r_, fy - r_, fx + r_, fy + r_], fill=(255, 230, 180, int(al * flash)))
-    d.text((fx + 90, fy), '~30 km up', font=font(FONT_M, 36), fill=INK3 + (int(255 * b),), anchor='lm')
+    d.text((fx + 90, fy), '~30 km up', font=font(FONT_M, 36), fill=INK3 + (int(255 * ease((t - 2.5) / 0.5) * a),),
+           anchor='lm')
 
 
 def tung_screen(im, t, dur):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 170), 'What is a "Tunguska"?', font=font(FONT_B, 84), fill=INK + (int(255 * a),), anchor='mm')
     lines = [(0.8, 'In 1908 a rock about 50–60 metres across'),
              (0.8, 'exploded over a forest in Siberia.'),
@@ -486,19 +551,29 @@ def tung_screen(im, t, dur):
     for i, (t0, s) in enumerate(lines):
         b = ease((t - t0) / 0.6) * a
         d.text((W / 2, 320 + i * 76), s, font=font(FONT_M, 52), fill=INK2 + (int(255 * b),), anchor='mm')
-    b = ease((t - 3.2) / 0.8) * a
+    # each circle grows first; its label appears only once the circle is drawn
     k = 4.6
     rt, rl = math.sqrt(2150 / math.pi) * k, math.sqrt(1572 / math.pi) * k
     cy = 740
-    d.ellipse([760 - rt, cy - rt, 760 + rt, cy + rt], fill=(70, 50, 28, int(255 * b)), outline=AMBER + (int(255 * b),), width=4)
-    d.text((760, cy + rt + 40), 'flattened forest', font=font(FONT_M, 38), fill=AMBER + (int(255 * b),), anchor='mm')
-    d.ellipse([1200 - rl, cy - rl, 1200 + rl, cy + rl], outline=INK2 + (int(255 * b),), width=3)
-    d.text((1200, cy + rt + 40), 'Greater London', font=font(FONT_M, 38), fill=INK2 + (int(255 * b),), anchor='mm')
+    g1 = ease((t - 3.4) / 0.9)
+    if g1 > 0:
+        r_ = rt * g1
+        d.ellipse([760 - r_, cy - r_, 760 + r_, cy + r_], fill=(70, 50, 28, int(255 * a)), outline=AMBER + (int(255 * a),),
+                  width=4)
+    b1 = ease((t - 4.3) / 0.5) * a
+    d.text((760, cy + rt + 40), 'flattened forest', font=font(FONT_M, 38), fill=AMBER + (int(255 * b1),), anchor='mm')
+    g2 = ease((t - 4.7) / 0.9)
+    if g2 > 0:
+        r_ = rl * g2
+        d.ellipse([1200 - r_, cy - r_, 1200 + r_, cy + r_], fill=(60, 70, 90, int(200 * a)), outline=INK2 + (int(255 * a),),
+                  width=4)
+    b2 = ease((t - 5.6) / 0.5) * a
+    d.text((1200, cy + rt + 40), 'Greater London', font=font(FONT_M, 38), fill=INK2 + (int(255 * b2),), anchor='mm')
 
 
 def heat_screen(im, t, dur, L):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 160), 'Heat from falling rock vs. heat from the Sun', font=font(FONT_B, 70),
            fill=INK + (int(255 * a),), anchor='mm')
     d.text((W / 2, 240), 'watts per square metre, averaged over the whole Earth, in the worst month', font=font(FONT_M, 38),
@@ -508,15 +583,19 @@ def heat_screen(im, t, dur, L):
     X0, X1 = 600, 1700
     lo, hi = -3, 3
     for i, (lab, v) in enumerate(rows):
-        b = ease((t - 0.8 - 1.2 * i) / 0.6) * a
+        t0 = 0.8 + 1.2 * i
+        b = ease((t - t0) / 0.5) * a                        # the row's name
+        grow = ease((t - t0 - 0.3) / 0.7)                   # then the bar grows out to its value
+        bv = ease((t - t0 - 1.0) / 0.4) * a                 # and only then the number
         y = 330 + i * 150
         sun = lab == 'The Sun'
         col = (120, 170, 240) if sun else ((235, 90, 70) if v > 240 else AMBER)
-        x = X0 + (math.log10(v) - lo) / (hi - lo) * (X1 - X0)
+        x = max(X0 + (math.log10(v) - lo) / (hi - lo) * (X1 - X0), X0 + 8)
         d.text((X0 - 30, y + 35), lab, font=font(FONT_B, 54), fill=INK + (int(255 * b),), anchor='rm')
-        d.rounded_rectangle([X0, y, max(x, X0 + 8), y + 70], radius=10, fill=col + (int(255 * b),))
-        s = 'almost none' if v < 0.01 else (f'{v:.1f}' if v < 10 else f'{v:,.0f}')
-        d.text((max(x, X0 + 8) + 24, y + 35), s, font=font(FONT_M, 50), fill=INK + (int(255 * b),), anchor='lm')
+        if grow > 0:
+            d.rounded_rectangle([X0, y, X0 + max((x - X0) * grow, 8), y + 70], radius=10, fill=col + (int(255 * a),))
+        s_ = 'almost none' if v < 0.01 else (f'{v:.1f}' if v < 10 else f'{v:,.0f}')
+        d.text((x + 24, y + 35), s_, font=font(FONT_M, 50), fill=INK + (int(255 * bv),), anchor='lm')
     b = ease((t - 6.0) / 0.6) * a
     d.text((W / 2, 960), 'Only the 100 km rock out-heats the Sun.', font=font(FONT_M, 54), fill=INK + (int(255 * b),),
            anchor='mm')
@@ -524,7 +603,7 @@ def heat_screen(im, t, dur, L):
 
 def plan_screen(im, t, dur, quality='animatic'):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 230), 'Five rounds. Each rock is bigger.', font=font(FONT_B, 80), fill=INK + (int(255 * a),), anchor='mm')
     d.text((W / 2, 320), '(not to scale: each one is 10 to 60 times bigger than the one before)', font=font(FONT_M, 38),
            fill=INK3 + (int(255 * a),), anchor='mm')
@@ -544,13 +623,14 @@ def plan_screen(im, t, dur, quality='animatic'):
             im.paste(crop, box[:2], crop)
         elif lu is None:
             d.ellipse([x - r_, 600 - r_, x + r_, 600 + r_], fill=(150, 140, 128, int(255 * b)))
-        d.text((x, 830), s, font=font(FONT_B, 58), fill=INK + (int(255 * b),), anchor='mm')
-        d.text((x, 900), f'round {i + 1}', font=font(FONT_M, 38), fill=INK3 + (int(255 * b),), anchor='mm')
+        bl = ease((t - 0.9 - 0.5 * i) / 0.5) * a             # each size label just after its rock
+        d.text((x, 830), s, font=font(FONT_B, 58), fill=INK + (int(255 * bl),), anchor='mm')
+        d.text((x, 900), f'round {i + 1}', font=font(FONT_M, 38), fill=INK3 + (int(255 * bl),), anchor='mm')
 
 
 def score_screen(im, t, dur, L):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 120), 'The results', font=font(FONT_B, 86), fill=INK + (int(255 * a),), anchor='mm')
     rows = [('1 m', 'HARMLESS', L[1.0], 'a flash'), ('60 m', 'HARMLESS', L[60.0], 'shooting stars'),
             ('1 km', 'TROUBLE', L[1000.0], 'satellites hit'), ('10 km', 'DANGER', L[1e4], '~40 million die'),
@@ -585,7 +665,7 @@ def wrap(d, s, f, maxw):
 
 def list_screen(im, t, dur, title, items):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 200), title, font=font(FONT_B, 80), fill=INK + (int(255 * a),), anchor='mm')
     f = font(FONT_M, 52)
     t0 = 1.0
@@ -602,7 +682,7 @@ def list_screen(im, t, dur, title, items):
 
 def toll_screen(im, t, dur, deaths, injured, hi):
     a = alpha_in_out(t, dur)
-    d = ImageDraw.Draw(im, 'RGBA')
+    d = Draw(im, 'RGBA')
     d.text((W / 2, 190), 'The toll, over about six years', font=font(FONT_B, 76), fill=INK + (int(255 * a),), anchor='mm')
     b = ease((t - 0.8) / 0.5) * a
     d.text((W / 2, 390), f'~{millions(round(deaths, -7))} deaths', font=font(FONT_X, 120), fill=(245, 130, 60, int(255 * b)),
@@ -699,12 +779,20 @@ def render(quality='final', out=None):
                 im = push(sf.get(fr), z)
                 if shot in ('I1_1m', 'I2_60m') and fr >= 30:
                     ring(im, flash_xy(sf), min(1.0, (fr - 30) / 6.0) * (1.0 if z < 1.0001 else 1.0))
+                if shot == 'N1_1m' and 30 <= fr < 90:
+                    ring(im, flash_xy(sf), min(1.0, (fr - 30) / 4.0), 'the flash')
             else:
                 im = Image.new('RGB', (W, H), BG)
             if kind == 'say':
                 a = alpha_in_out(t, dur)
+                if p.get('tag'):
+                    dt = Draw(im, 'RGBA')
+                    ft = font(FONT_X, 30)
+                    tw = dt.textlength(p['tag'], font=ft)
+                    dt.rounded_rectangle([W - tw - 100, 120, W - 50, 172], radius=12, fill=(5, 6, 9, int(170 * a)))
+                    dt.text((W - 75 - tw / 2, 146), p['tag'], font=ft, fill=AMBER + (int(255 * a),), anchor='mm')
                 if p.get('big'):
-                    dd = ImageDraw.Draw(im, 'RGBA')
+                    dd = Draw(im, 'RGBA')
                     dd.rectangle([0, 0, W, H], fill=(0, 0, 0, int(150 * a)))
                     center_text(im, p['big'], a, sizes=[110] * len(p['big']))
                 else:
@@ -716,7 +804,7 @@ def render(quality='final', out=None):
             elif kind == 'scale':
                 scale_overlay(im, t, dur, p, fr, quality)
             elif kind == 'verdict':
-                d = ImageDraw.Draw(im, 'RGBA')
+                d = Draw(im, 'RGBA')
                 d.rectangle([0, 0, W, H], fill=(0, 0, 0, int(120 * alpha_in_out(t, dur))))
                 stamp(im, p['v'], p['note'], alpha_in_out(t, dur, 0.3, 0.45))
             elif kind == 'fate':

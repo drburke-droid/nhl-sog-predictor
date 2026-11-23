@@ -82,13 +82,18 @@ def fate(secs=11.0):
     p_sun = 1 - p_earth - p_moon
     X0, X1 = 160, 1760
 
-    def bar(d, y, parts, a, label):
+    def bar(d, y, parts, a, label, g=1.0, al=None):
+        """A stacked bar that grows out from the left (g: 0..1); its part labels (alpha al) come after."""
+        al = a if al is None else al
         txt(d, (X0, y - 46), label, 28, INK2, a=a)
         x = X0
         for frac, col, _ in parts:
             w = max((X1 - X0) * frac, 6)
-            d.rectangle([x, y, x + w - 3, y + 54], fill=fade(col, a))
+            x0, x1 = x, min(x + w - 3, X0 + (X1 - X0) * g)
+            if x1 > x0:
+                d.rectangle([x0, y, x1, y + 54], fill=fade(col, a))
             x += w
+        a = al
         x = X0
         for frac, col, lab in parts:
             w = max((X1 - X0) * frac, 6)
@@ -106,22 +111,23 @@ def fate(secs=11.0):
         a1 = appear(t, 0.8) * A
         bar(d, 290, [(1 - esc / excavated, GREY, f'{100 * (1 - esc / excavated):.1f}% falls back onto the Moon'),
                      (esc / excavated, AMBER, f'{100 * esc / excavated:.1f}% is faster than 2.4 km/s and escapes the Moon')],
-            a1, f'Everything the impact digs out: ~{sci(excavated)} kg')
+            a1, f'Everything the impact digs out: ~{sci(excavated)} kg', appear(t, 1.0, 0.9), appear(t, 2.0) * A)
         a2 = appear(t, 3.4) * A
         bar(d, 530, [(p_sun, BLUE, f'{100 * p_sun:.0f}% leaves into orbit around the Sun'),
                      (p_earth, RED, f'{100 * p_earth:.0f}% hits the Earth'),
                      (p_moon, GREY, '')],
-            a2, f'What escapes: ~{sci(esc)} kg (twice the asteroid\'s own mass)')
+            a2, f'What escapes: ~{sci(esc)} kg (twice the asteroid\'s own mass)', appear(t, 3.6, 0.9), appear(t, 4.6) * A)
         a3 = appear(t, 6.2) * A
         txt(d, (X0, 730), 'When the Earth-bound part arrives', 28, INK2, a=a3)
         y = 800
         d.line([X0, y, X1, y], fill=fade(INK3, a3), width=3)
         marks = [(9, '10% by day 9'), (400, 'half by month 13'), (2286, '90% by year 6')]
         lo, hi = math.log10(1), math.log10(4000)
-        for day, lab in marks:
+        for k, (day, lab) in enumerate(marks):
             x = X0 + (math.log10(day) - lo) / (hi - lo) * (X1 - X0)
-            d.ellipse([x - 9, y - 9, x + 9, y + 9], fill=fade(RED, a3))
-            txt(d, (x, y + 26), lab, 26, INK, FONT_M, a3, 'ma')
+            am = appear(t, 6.6 + 0.4 * k) * A                  # each dot, then its label
+            d.ellipse([x - 9, y - 9, x + 9, y + 9], fill=fade(RED, am))
+            txt(d, (x, y + 26), lab, 26, INK, FONT_M, appear(t, 7.0 + 0.4 * k) * A, 'ma')
         for day, lab in [(1, '1 day'), (30, '1 month'), (365, '1 year'), (3650, '10 years')]:
             x = X0 + (math.log10(day) - lo) / (hi - lo) * (X1 - X0)
             txt(d, (x, y - 40), lab, 22, INK3, a=a3, anchor='ma')
@@ -159,15 +165,16 @@ def chely(secs=10.0):
         ground, s = 900, 14.0
         d.line([1180, ground, 1760, ground], fill=fade(INK3, a), width=2)
         d.ellipse([1240, ground - 20 * s, 1240 + 20 * s, ground], fill=fade((140, 130, 120), a))
-        txt(d, (1240 + 10 * s, ground + 18), '20 m rock', 24, INK2, a=a, anchor='ma')
+        al = appear(t, 1.4) * A                                # labels after the drawing
+        txt(d, (1240 + 10 * s, ground + 18), '20 m rock', 24, INK2, a=al, anchor='ma')
         bx = 1560
         d.rectangle([bx, ground - 20 * s, bx + 120, ground], outline=fade(INK2, a), width=3)
         for k in range(1, 6):
             d.line([bx, ground - k * 20 * s / 6, bx + 120, ground - k * 20 * s / 6], fill=fade(INK3, a), width=1)
-        txt(d, (bx + 60, ground + 18), '6-storey building', 24, INK2, a=a, anchor='ma')
+        txt(d, (bx + 60, ground + 18), '6-storey building', 24, INK2, a=al, anchor='ma')
         person(d, 1720, ground, 1.8 * s, fade(INK, a))
         a2 = appear(t, 3.2) * A
-        txt(d, (160, 690), 'Hiroshima bombs', 24, INK3, a=a2)
+        txt(d, (160, 690), 'Hiroshima bombs', 24, INK3, a=appear(t, 3.8) * A)
         for k in range(30):
             x = 160 + (k % 15) * 46
             yy = 730 + (k // 15) * 46
@@ -192,21 +199,26 @@ def tung(secs=10.0):
             txt(d, (160, y), s, 32, INK, a=appear(t, t0) * A)
             y += 58
         # areas to scale: 1 km^2 = 0.165 px^2 ... circles of equal area
-        a = appear(t, 3.2) * A
+        a = A
         k = 7.2                                          # px per km
         r_t = math.sqrt(2150 / math.pi) * k
         r_l = math.sqrt(1572 / math.pi) * k
         cx, cy = 1340, 640
-        d.ellipse([cx - r_t, cy - r_t, cx + r_t, cy + r_t], outline=fade(AMBER, a), width=4)
-        d.ellipse([cx - r_t, cy - r_t, cx + r_t, cy + r_t], fill=fade((60, 42, 24), a * 0.9))
+        g1, g2 = appear(t, 3.4, 0.9), appear(t, 4.6, 0.9)    # each circle grows, then gets its label
+        if g1 > 0:
+            r_ = r_t * g1
+            d.ellipse([cx - r_, cy - r_, cx + r_, cy + r_], fill=fade((60, 42, 24), a * 0.9), outline=fade(AMBER, a), width=4)
         lx = cx + r_t + 60 + r_l
-        d.ellipse([lx - r_l, cy - r_l, lx + r_l, cy + r_l], outline=fade(INK2, a), width=3)
-        txt(d, (cx, cy - 10), 'Forest flattened', 26, AMBER, FONT_M, a, 'ma')
-        txt(d, (cx, cy + 24), '2,150 km²', 26, AMBER, a=a, anchor='ma')
-        txt(d, (lx, cy - 10), 'Greater London', 24, INK2, a=a, anchor='ma')
-        txt(d, (lx, cy + 22), '1,572 km²', 24, INK2, a=a, anchor='ma')
-        d.line([cx - r_t, cy + r_t + 30, cx - r_t + 20 * k, cy + r_t + 30], fill=fade(INK2, a), width=3)
-        txt(d, (cx - r_t, cy + r_t + 40), '20 km', 22, INK3, a=a)
+        if g2 > 0:
+            r_ = r_l * g2
+            d.ellipse([lx - r_, cy - r_, lx + r_, cy + r_], fill=fade((50, 58, 75), a * 0.8), outline=fade(INK2, a), width=3)
+        a1, a2 = appear(t, 4.3) * A, appear(t, 5.5) * A
+        txt(d, (cx, cy - 10), 'Forest flattened', 26, AMBER, FONT_M, a1, 'ma')
+        txt(d, (cx, cy + 24), '2,150 km²', 26, AMBER, a=a1, anchor='ma')
+        txt(d, (lx, cy - 10), 'Greater London', 24, INK2, a=a2, anchor='ma')
+        txt(d, (lx, cy + 22), '1,572 km²', 24, INK2, a=a2, anchor='ma')
+        d.line([cx - r_t, cy + r_t + 30, cx - r_t + 20 * k, cy + r_t + 30], fill=fade(INK2, a1), width=3)
+        txt(d, (cx - r_t, cy + r_t + 40), '20 km', 22, INK3, a=a1)
         a3 = appear(t, 6.0) * A
         txt(d, (160, 990), 'A 10 km impact on the Moon could send thousands of these to the Earth over a few years.', 28, INK2, a=a3)
 
@@ -240,18 +252,21 @@ def heat(secs=13.0):
             r = lad[D]
             v = max(r['peak_month_W'], 1e-3)
             yy = y0 + i * 92
-            ai = appear(t, 6.2 + 0.5 * i) * A
+            ai = appear(t, 6.2 + 0.7 * i) * A
+            g = appear(t, 6.4 + 0.7 * i, 0.6)                  # the bar grows out, then its value appears
             txt(d, (160, yy + 8), f'{lab} impactor', 30, INK, FONT_M, ai)
-            d.rectangle([X0, yy, X(v), yy + 52], fill=fade(RED if v > 42 else AMBER, ai))
+            if g > 0:
+                d.rectangle([X0, yy, X0 + max((X(v) - X0) * g, 4), yy + 52], fill=fade(RED if v > 42 else AMBER, A))
             s = f'{v:.2f} W/m²' if v < 1 else f'{v:,.0f} W/m²'
             if r['peak_month_W'] < 1e-3:
                 s = 'less than 0.001 W/m²'
-            txt(d, (X(v) + 16, yy + 10), s, 28, INK, a=ai)
-        a5 = appear(t, 8.6) * A
+            txt(d, (X(v) + 16, yy + 10), s, 28, INK, a=appear(t, 7.0 + 0.7 * i) * A)
+        a5 = appear(t, 9.2) * A
         xs = X(240)
         d.line([xs, y0 - 12, xs, y0 + 4 * 92 + 30], fill=fade(BLUE, a5), width=3)
-        txt(d, (xs - 12, y0 + 4 * 92 + 2), 'all the sunlight the Earth absorbs: 240 W/m²', 24, BLUE, FONT_M, a5, 'ra')
-        a6 = appear(t, 10.0) * A
+        txt(d, (xs - 12, y0 + 4 * 92 + 2), 'all the sunlight the Earth absorbs: 240 W/m²', 24, BLUE, FONT_M,
+            appear(t, 9.7) * A, 'ra')
+        a6 = appear(t, 10.6) * A
         txt(d, (160, 950), 'A wet planet can only shed ~40 W/m² of extra heat. Keep adding more for years and the oceans start to boil.', 26, INK2, a=a6)
 
     return frames(draw, secs)

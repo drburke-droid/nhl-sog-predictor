@@ -14,6 +14,7 @@ import bpy
 import shots
 import impact  # registers the impact-ladder shots
 import scale   # registers the scale cards
+import night   # registers the night-sky views from the ground
 
 argv = sys.argv[sys.argv.index('--') + 1:]
 name, first, last, quality = argv[0], int(argv[1]), int(argv[2]), argv[3]

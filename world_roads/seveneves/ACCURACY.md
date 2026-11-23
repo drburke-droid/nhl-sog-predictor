@@ -142,15 +142,31 @@ What is computed from physics, what is a modelling choice, and what is left out.
   representative: their number follows the rain rate, and they cluster around real entry points.
 * **Textures.** Moon: NASA SVS CGI Moon Kit (LRO LROC WAC colour, LOLA elevation, public domain).
   Earth: Solar System Scope 8K maps (CC BY 4.0, derived from NASA Blue Marble and Black Marble).
-* **Scale cards (`film/scale.py`).** Sizes are true: a rock's size is the mean of its length, width and
-  height, and it sits beside a 1.75 m person, a 60 m (20 × 3 m storeys) office block, an 828 m stepped
-  tower, an 8,849 m summit rising from plains at ~300 m, and the Earth itself. The rocks are procedural
-  and only representative of real shapes (a fractured boulder; a rubble pile like Itokawa; a spinning top
-  like Bennu or Ryugu; an elongated, cratered body like Eros; a cratered potato like Ida), dark grey-brown
-  (albedo ~0.1–0.2) like stony asteroids. They hover slightly so they can turn. The 10 km card is a
-  Himalaya-style procedural range, not Everest itself. In the 100 km card the air glows in layers that
-  thin out with height (scale height 14 km, a little thicker than the real ~8 km so it reads on screen).
-  The line-up of five rocks is not to scale, and says so.
+* **Scale cards (`film/scale.py`, `film/assets.py`).** Sizes are true: a rock's size is the mean of its
+  length, width and height. Beside it: a 1.75 m person (Blender Studio's CC0 realistic human base mesh, arms
+  lowered from its A-pose, dressed with smoothed copies of its own body regions), a 60 m office block (20
+  storeys of 3 m, a real facade texture), an 828 m Y-plan tower that steps back in a spiral like the world's
+  tallest building, and the real Mount Everest: Copernicus GLO-30 elevation data (30 m) with the summit restored
+  to the surveyed 8,849 m (30 m cells shave ~110 m off sharp peaks) and the Earth's curvature included. Snow,
+  ice, rock and moraine are painted by height and slope, not from imagery. Skies are real HDR photographs whose
+  sun lights the scene. The rocks are procedural (fractured boulder; rubble pile like Itokawa; spinning top like
+  Bennu; elongated and cratered like Eros; cratered potato like Ida), dark grey-brown like stony asteroids, and
+  hover slightly so they can turn. Around Everest the ground is 5.5–7 km high, so the floating 10 km rock towers
+  over the summit: it would dwarf the mountain. In the 100 km card the air glows in layers that thin out with
+  height (scale height 14 km, a little thicker than the real ~8 km so it reads on screen). The line-up of five
+  rocks is not to scale, and says so.
+* **The night sky from the ground (`film/night.py`).** Meteor rates are the simulation's first-week averages
+  (`storm_factor`) times a normal dark-sky rate of 10 visible meteors an hour: ~25 an hour (60 m), ~30 a second
+  (1 km), ~30,000 a second (10 km), ~3×10⁷ a second (100 km). Brightnesses follow a power law (many faint, few
+  bright). Debris from the Moon arrives at ~11 km/s, so the meteors are slow, long and orange-tailed, and they
+  radiate from one point (they share a direction of arrival). Where there are too many to draw (10 km and
+  100 km), the brightest 60,000 are drawn and the rest become an even sky glow. Light: ~1% of the entry energy
+  becomes visible light, so the 10 km storm gives roughly full-Moon light and the 100 km storm roughly overcast
+  daylight; the 100 km shot is exposed 8 stops darker, like eyes adjusting to glare. A fireball "as bright as the
+  Sun" (Chelyabinsk class, visible to ~500 km) shows up in one place's sky about once a day after the 10 km hit
+  and every couple of minutes after the 100 km hit; each shot shows one. The 1 m impact flash is a brief,
+  star-like point on the Moon's dark side; the 60 m shot is a time-lapse (1 hour in 7 s, the sky turning). The
+  stars are a real all-sky photograph.
 
 ## 5. Left out
 
