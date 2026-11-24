@@ -28,12 +28,12 @@ What should it clean next? Tell me in the comments.
 0:39 The Empire State Building
 0:54 Every floor in New York
 1:33 Every floor on Earth
-2:19 How far
-2:30 The last floor
+2:26 The last floor
+2:39 How far
 2:50 Footnotes: the dustbin and the U-turn
 3:12 Spotless
 
-How it's made: New York's buildings are the city's own data (NYC Building Footprints and PLUTO floor areas, NYC Open Data); the Empire State Building's setbacks come from OpenStreetMap via Overture Maps. Where the world's floor is comes from the European Commission's Global Human Settlement Layer (building volume, 2025), scaled to the published world total of 273 billion m² (UNEP / GlobalABC Global Status Report for Buildings and Construction, 2024). Rows 25 cm apart is an assumption: no maker publishes lane spacing. Every slow-motion and speed-up is labelled on screen.
+How it's made: New York's buildings are the city's own data (NYC Building Footprints and PLUTO floor areas, NYC Open Data); the Empire State Building's setbacks come from OpenStreetMap via Overture Maps. Where the world's floor is comes from the European Commission's Global Human Settlement Layer (building volume, 2025), scaled to the published world total of 273 billion m² (UNEP / GlobalABC Global Status Report for Buildings and Construction, 2024). Rows 25 cm apart is an assumption: no maker publishes lane spacing. Every slow-motion and speed-up is labelled on screen, and the world total's source is on screen whenever the total is.
 Method, sources and every number: https://github.com/drburke-droid/nhl-sog-predictor/blob/master/world_roads/floors/ACCURACY.md
 
 Music: an original theme, synthesized for these videos (no samples).
@@ -48,8 +48,8 @@ Music: an original theme, synthesized for these videos (no samples).
 0:39 The Empire State Building
 0:54 Every floor in New York
 1:33 Every floor on Earth
-2:19 How far
-2:30 The last floor
+2:26 The last floor
+2:39 How far
 2:50 Footnotes: the dustbin and the U-turn
 3:12 Spotless
 ```
