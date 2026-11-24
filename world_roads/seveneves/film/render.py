@@ -31,6 +31,10 @@ if quality == 'final' and name in ('B_breakup',):
     # the animatic's 4 px)
     sc.cycles.dicing_rate = 3.0
     sc.cycles.max_subdivisions = 10
+if quality == 'final' and name in ('S5_100km',):
+    # twelve nested glowing air shells make every sample slow (~150 s a frame at 16): this smooth space view
+    # denoises cleanly at 8
+    sc.cycles.samples = 8
 s = shots.build(name, sc)
 last = min(last, s.frames - 1)
 tfile = os.path.join(out, 'times.json')
