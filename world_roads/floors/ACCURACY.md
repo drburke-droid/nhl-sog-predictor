@@ -120,3 +120,13 @@ Every number in the storyboard stills comes from the scripts here (`nyc_prep.py`
   building's slab density is rendered once at 2.5, 0.6 and 0.12 px/m and sampled per frame (area-averaged
   mip level, then a sub-pixel affine); buildings are added to a "clean" copy as the light reaches them.
 * **Music:** the Roomba film's synthesized theme (`roomba/music.py`), re-cut to this film. No samples.
+* **The spire isn't cleaned.** The Empire State Building's mast and antenna (OpenStreetMap parts above 330 m
+  with under 150 m² of footprint) have no floors, so they stay blue. The same holds for every spire and mast
+  in the city.
+* **"It clears the Atlantic in 45 milliseconds."** The sweep's own jump from the Americas to Europe: from its
+  last cell in the South Atlantic (South Georgia, 54.5° S 36.5° W) to its first in Europe (Iceland, 65.0° N
+  16.9° W), 13,393 km of great circle, 44.7 ms at c.
+* **"Real robot vacuums can't climb stairs."** True of the cleaning robots on sale; this one is assumed to take
+  them (each building's height, up and down, is in the travel time).
+* **The world total's source is on screen** whenever the world total is: a card when 273 billion m² first
+  appears, then a source line under the clock for the whole sweep and on the final total.

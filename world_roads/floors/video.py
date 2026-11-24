@@ -473,7 +473,7 @@ class Rules(Section):
         ring, segs = self.ring, self.segs
         mn, mx = ring.min(0), ring.max(0)
         s = 640 / max(mx - mn)
-        ox, oy = 560, 540
+        ox, oy = 560, 445
         tf = lambda xy: (ox + (xy[0] - (mn[0] + mx[0]) / 2) * s, oy - (xy[1] - (mn[1] + mx[1]) / 2) * s)
         im = Image.new("RGB", (W, H), (5, 8, 15))
         d = ImageDraw.Draw(im, "RGBA")
@@ -490,7 +490,7 @@ class Rules(Section):
             d.line([tf(p), tf(m)], fill=(255, 240, 210, 255), width=max(2, int(LANE * s)))
         d.polygon([tf(p) for p in ring], outline=(150, 200, 240), width=3)
         a = fade(t, 0.3, 1e9)
-        text(d, (ox, oy + 360), f"One floor of the Empire State Building's tower · {self.area:,.0f} m²", 26, INK2, a, "SemiBold", "ma")
+        text(d, (ox, oy + 318), f"One floor of the Empire State Building's tower · {self.area:,.0f} m²", 26, INK2, a, "SemiBold", "ma")
         x0 = 1060
         text(d, (x0, 150), "THE RULES", 26, MUTED, a)
         rules = [("Rows 25 cm apart.", "Every square metre of floor, once."),
@@ -506,7 +506,8 @@ class Rules(Section):
         aa = fade(t, 7.0, 1e9, 0.45)
         text(d, (x0, y + 20), f"This floor: {self.rows_m / 1e3:.1f} km of rows", 34, GOLD, aa)
         text(d, (x0, y + 66), f"Light needs {self.rows_m / C_MS * 1e6:.0f} microseconds.", 34, GOLD, aa)
-        return np.asarray(im)
+        return captions(np.asarray(im), t, [(4.6, 10.2, [("Real robot vacuums can't climb stairs.", 42, INK, "SemiBold"),
+                                                       ("This one takes them at 300,000 km a second.", 38, GOLD, "SemiBold", 5.8)])])
 
 
 # ------------------------------------------------------------------------ 4. the Empire State Building
@@ -631,6 +632,19 @@ class Sweep:
         vs /= np.linalg.norm(vs, axis=1, keepdims=True)
         self.clon = np.degrees(np.arctan2(vs[:, 1], vs[:, 0]))
         self.clat = np.degrees(np.arcsin(vs[:, 2]))
+        # the jump across the Atlantic: last cell before the European sequence starts, first cell after it
+        key = s["key"]
+        k0, starts = 0.0, []
+        for seq in G.SEQUENCES:
+            vv = G._xyz(*np.array(seq, float).T)
+            starts.append(k0)
+            k0 += sum(np.arccos(np.clip(a @ b, -1, 1)) for a, b in zip(vv[:-1], vv[1:])) * G.R + 2000.0
+        eu = np.nonzero((key >= starts[4]) & (self.lon > -30) & (self.lat > 30))[0][0]
+        a3, b3 = G._xyz(self.lon[eu - 1], self.lat[eu - 1]), G._xyz(self.lon[eu], self.lat[eu])
+        self.atl_km = float(np.arccos(np.clip(a3 @ b3, -1, 1)) * G.R)
+        self.atl_from = (float(self.lon[eu - 1]), float(self.lat[eu - 1]))
+        self.atl_to = (float(self.lon[eu]), float(self.lat[eu]))
+        self.u_atl = self.u_of(self.cum[eu - 1])
         cities = {"Tokyo": (139.69, 35.69), "Beijing": (116.40, 39.90), "Shanghai": (121.47, 31.23), "Delhi": (77.21, 28.61)}
         cj = json.load(open(os.path.join(HERE, "data", "ghsl", "cities.json")))
         self.cities = {}
@@ -653,11 +667,40 @@ class Sweep:
         return self.flon[i], self.flat[i], self.clon[i], self.clat[i]
 
 
+SOURCE_1 = "Source: UN Environment Programme & GlobalABC,"
+SOURCE_2 = "Global Status Report for Buildings and Construction 2025–26"
+
+
+def source_lines(fr, y, a=1.0):
+    fr = tag(fr, SOURCE_1, a, x=60, y=y, col=INK2, size=22, anchor="la")
+    return tag(fr, SOURCE_2, a, x=60, y=y + 28, col=INK2, size=22, anchor="la")
+
+
 def world_hud(fr, done, a=1.0):
     t = done / WORLD_FLOOR_M2 * WORLD_T
-    return hud(fr, [("LIGHT TIME", fmt_s(t), GOLD, 64),
-                    ("FLOOR CLEANED", f"{done / 1e9:,.1f} billion m²" if done > 1e9 else f"{done / 1e6:,.0f} million m²", INK, 40),
-                    ("OF ABOUT", "273 billion m²", INK2, 34)], a=a, title="EVERY FLOOR ON EARTH")
+    fr = hud(fr, [("LIGHT TIME", fmt_s(t), GOLD, 64),
+                  ("FLOOR CLEANED", f"{done / 1e9:,.1f} billion m²" if done > 1e9 else f"{done / 1e6:,.0f} million m²", INK, 40),
+                  ("OF ABOUT", "273 billion m²", INK2, 34)], a=a, title="EVERY FLOOR ON EARTH")
+    return source_lines(fr, 418, a)
+
+
+def source_card(fr, a, x=60, y=520):
+    """where the world total comes from, big, when it first appears"""
+    if a <= 0:
+        return fr
+    im = Image.fromarray(fr)
+    d = ImageDraw.Draw(im, "RGBA")
+    w, h = 700, 318
+    d.rounded_rectangle([x, y, x + w, y + h], 18, fill=ST.PANEL + (int(225 * a),), outline=GOLD + (int(200 * a),), width=3)
+    p = x + 30
+    text(d, (p, y + 24), "WHERE 273 BILLION m² COMES FROM", 22, MUTED, a)
+    text(d, (p, y + 60), "UN Environment Programme", 38, INK, a, "Bold")
+    text(d, (p, y + 108), "& the Global Alliance for Buildings and Construction", 25, INK, a)
+    text(d, (p, y + 146), "Global Status Report for Buildings", 27, INK2, a, "SemiBold")
+    text(d, (p, y + 180), "and Construction 2025–2026", 27, INK2, a, "SemiBold")
+    text(d, (p, y + 222), "World building floor area, 2024: 273 billion m²", 26, GOLD, a)
+    text(d, (p, y + 264), "Where it is on the map: EU Global Human Settlement Layer", 20, MUTED, a, "Regular")
+    return np.asarray(im)
 
 
 class Earth1(Section):
@@ -668,8 +711,11 @@ class Earth1(Section):
         self.S = Sweep()
         bj = self.S.cities["Beijing"][2]
         tk = self.S.cities["Tokyo"][2]
+        ua, ms = self.S.u_atl, self.S.atl_km / (C_MS / 1e3) * 1e3
         self.caps = [(1.0, 8.2, [("Now every floor on Earth: about 273 billion m².", 44, INK, "SemiBold"),
                                  ("About the area of New Zealand, mostly in homes.", 34, GOLD, "SemiBold", 2.4)]),
+                     (ua - 0.2, ua + 5.6, [("Robot vacuums and water don't mix.", 42, INK, "SemiBold"),
+                                           (f"This one clears the Atlantic in {ms:.0f} milliseconds. Bone dry.", 36, GOLD, "SemiBold", ua + 1.1)]),
                      (bj - 2.5, bj + 4.5, [("China has about a fifth of Earth's floor (20%).", 42, INK, "SemiBold")]),
                      (max(tk, bj + 4.8), max(tk, bj + 4.8) + 6.5,
                       [("Greater Tokyo is the biggest single city: 24 seconds of light.", 40, GOLD, "SemiBold")])]
@@ -685,6 +731,7 @@ class Earth1(Section):
         g = dict(cx=1240, cy=500, r=440, lon0=clon, lat0=float(np.clip(0.75 * clat, -62, 50)))
         fr = globe_img(g, done, light=(flon, flat))
         fr = world_hud(fr, done)
+        fr = source_card(fr, fade(t, 0.6, 12.5, 0.5, 0.6))
         fr = tag(fr, f"SPED UP  ×{S.SP:.0f}", 1.0)
         im = Image.fromarray(fr)
         d = ImageDraw.Draw(im, "RGBA")
@@ -736,11 +783,12 @@ class Earth2(Earth1):
                       ("VACUUMING", fmt_s(WORLD_CLEAN_S), INK, 40),
                       ("GETTING THERE", "≈ 7 min", INK, 40),
                       ("BUILDINGS", "≈ 2.5 billion", INK, 40)], a=fade(t, Sweep.E2 + 0.2, 1e9, 0.5), title="EVERY FLOOR ON EARTH")
+        fr = source_lines(fr, 530, fade(t, Sweep.E2 + 0.2, 1e9, 0.5))
         a = fade(t, Sweep.E2 - 0.6, 1e9, 0.5)
         if a > 0:
             u_, v_, vis = G.ortho_forward(np.array([self.POLE[0]]), np.array([self.POLE[1]]), g)
             if vis[0]:
-                fr = ST.ring_label(fr, int(u_[0]), int(v_[0]), "Amundsen–Scott South Pole Station: the last floor", a, side=-1)
+                fr = ST.ring_label(fr, int(u_[0]), int(v_[0]), "South Pole Station: the last floor", a, side=1)
         return captions(fr, t, [(Sweep.E2 + 0.3, self.dur + 0.2,
                                  [("Every floor on Earth: about 1 hour 8 minutes.", 46, GOLD, "Bold"),
                                   ("An hour of vacuuming, and 7 minutes getting between 2.5 billion buildings.", 32, INK2, "Regular",
@@ -875,7 +923,8 @@ class Spotless(Section):
 
 
 SECTIONS = {c.name: c for c in (Hook, Room, Rules, ESB, NYCRun, Earth1, Far, Earth2, Dust, UTurn, Spotless)}
-ORDER = ["hook", "room", "rules", "esb", "nyc", "earth1", "far", "earth2", "dust", "uturn", "spotless"]
+ORDER = ["hook", "room", "rules", "esb", "nyc", "earth1", "earth2", "far", "dust", "uturn", "spotless"]
+FILM = ["hook", "room", "rules", "esb", "nyc", "earth", "far", "dust", "uturn", "spotless"]   # earth = earth1 + earth2, hard-joined
 
 
 # ======================================================================== rendering

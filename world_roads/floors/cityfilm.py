@@ -137,7 +137,8 @@ class Plate:
         for i in range(0, len(k), step):
             self._raster(k[i:i + step], out=self.clean)
             if self.lines:
-                self._raster(k[i:i + step], lines=True, out=self.lclean)
+                kk = k[i:i + step]
+                self._raster(kk[self.C.pnfl[kk] > 0], lines=True, out=self.lclean)     # spires stay uncleaned
         self.n = n
 
     def sample(self, arr, cam):

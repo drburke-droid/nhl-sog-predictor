@@ -58,16 +58,16 @@ def track(O, total):
     T.section(n, done, "full")
     T.riser(done - 3.0, done)
     T.impact(done, 1.2); T.crash(done, 1.0); T.bell(done, 83)
-    T.section(done, O["earth1"], "triumph")
-    # Earth: a key change for the planet, a breath for the distance, the last floor
-    T.section(O["earth1"], O["far"], "full2", key=2)
-    T.impact(O["earth1"], 0.8)
-    T.section(O["far"], O["earth2"], "mellow", key=2)
-    last = O["earth2"] + V.Sweep.E2
-    T.section(O["earth2"], last, "full", key=2)
+    T.section(done, O["earth"], "triumph")
+    # Earth: a key change for the planet, one long build to the last floor, then a breath for the distance
+    E = O["earth"]
+    last = E + V.Sweep.E1 + V.Sweep.E2
+    T.section(E, last, "full2", key=2)
+    T.impact(E, 0.8)
     T.riser(last - 3.5, last)
     T.impact(last, 1.3); T.crash(last, 1.0); T.bell(last, 85)
-    T.section(last, O["dust"], "triumph", key=2)
+    T.section(last, O["far"], "triumph", key=2)
+    T.section(O["far"], O["dust"], "mellow", key=2)
     T.section(O["dust"], O["uturn"], "light")
     T.chime(O["dust"] + 0.5, 0, 0.6)
     # the U-turn: a hush, the boom, then the burning planet and home
@@ -85,7 +85,13 @@ def track(O, total):
 def main():
     import video as V
     import score as SC
-    secs = V.ORDER
+    secs = V.FILM
+    # the Earth sweep is one continuous shot rendered in two parts: join them with a hard cut (no cross-fade)
+    e1, e2, ej = (os.path.join(OUT, f"{n}.mp4") for n in ("earth1", "earth2", "earth"))
+    if not os.path.exists(ej) or os.path.getmtime(ej) < max(os.path.getmtime(e1), os.path.getmtime(e2)):
+        lst = os.path.join(OUT, "earth.txt")
+        open(lst, "w").write(f"file '{e1}'\nfile '{e2}'\n")
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", ej], check=True)
     paths = [os.path.join(OUT, f"{s}.mp4") for s in secs]
     ds = [dur(p) for p in paths]
     off = [0.0]

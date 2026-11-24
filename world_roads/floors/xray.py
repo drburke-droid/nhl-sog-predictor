@@ -211,7 +211,7 @@ def edges(C, cam, idx, level, floor_lines=True, verticals=True, roofs=True):
                     cv2.polylines(out[c], _polys(C, cam, k[sel], z[sel]), True, 255, lw, cv2.LINE_AA, shift=4)
                     acc[c] += out[c].astype(np.float32) / 255
     if roofs:
-        cl = C.pz1[idx] <= level[C.pb[idx]] + 0.01
+        cl = (C.pz1[idx] <= level[C.pb[idx]] + 0.01) & (C.pnfl[idx] > 0)     # spires and masts have no floors: never cleaned
         for c, sel in ((0, ~cl), (1, cl)):
             if sel.any():
                 out[c][:] = 0
@@ -225,7 +225,7 @@ def edges(C, cam, idx, level, floor_lines=True, verticals=True, roofs=True):
                 r = r[:: int(math.ceil(len(r) / 40))]
             lv = level[C.pb[k]]
             u0, v0 = cam.project(r[:, 0], r[:, 1], np.full(len(r), C.pz0[k]))
-            zm = min(max(lv, C.pz0[k]), C.pz1[k])
+            zm = min(max(lv, C.pz0[k]), C.pz1[k]) if C.pnfl[k] > 0 else C.pz0[k]
             um, vm = cam.project(r[:, 0], r[:, 1], np.full(len(r), zm))
             u1, v1 = cam.project(r[:, 0], r[:, 1], np.full(len(r), C.pz1[k]))
             for a in range(len(r)):
