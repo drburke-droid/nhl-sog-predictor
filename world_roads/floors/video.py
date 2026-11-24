@@ -385,6 +385,10 @@ class Room(Section):
             out.append(f)
         return out
 
+    @property
+    def t_done(self):
+        return 0.5 + self.T / self.T_LAPSE
+
     def sim_t(self, t):
         return min(max(t - 0.5, 0.0) * self.T_LAPSE, self.T)
 
@@ -438,17 +442,18 @@ class Room(Section):
         text(d, (self.ox_l, 190), "LAST TIME · A 2002 ROOMBA", 26, MUTED, a)
         text(d, (self.ox_l, 226), "No map. Bump, turn, repeat.", 34, INK2, a)
         text(d, (self.ox_r, 190), "THIS TIME · A MODERN ROBOT VACUUM", 26, MUTED, a)
-        text(d, (self.ox_r, 226), "Maps the room. Rows, then the edges.", 34, INK2, a)
+        text(d, (self.ox_r, 226), "Maps the room. Back and forth, never twice.", 34, INK2, a)
         yb = self.oy + RM.RH * PX + 24
         mm, ss = divmod(int(st), 60)
         text(d, (self.ox_l, yb), f"{mm}:{ss:02d} · {covered[0]:.0%} of the floor", 30, INK, a)
         done = st >= self.T - 1e-6
-        text(d, (self.ox_r, yb), f"{mm}:{ss:02d} · " + (f"done ({covered[1]:.0%})" if done else f"{covered[1]:.0%} of the floor"),
+        text(d, (self.ox_r, yb), f"{mm}:{ss:02d} · " + (f"finished: {covered[1]:.0%} of the floor" if done else f"{covered[1]:.0%} of the floor"),
              30, GOLD if done else INK, a)
+        text(d, (self.ox_r, yb + 40), "a few awkward corners left; it doesn't go back for them", 24, MUTED, fade(t, self.t_done + 0.2, 1e9, 0.4), "Regular")
         text(d, (W - 60, 56), f"TIME-LAPSE  ×{int(self.T_LAPSE)}", 26, INK2, a, "SemiBold", "ra")
         fr = np.asarray(im)
         return captions(fr, t, [(0.3, 4.9, [("Last time: a 2002 Roomba with no map, at random.", 42, INK, "SemiBold")]),
-                                (5.1, 9.9, [("This one has a map. Rows 25 cm apart, every square metre once.", 40, INK, "SemiBold")])])
+                                (5.1, 9.9, [("This one has a map: back and forth in rows 25 cm apart, never going back.", 38, INK, "SemiBold")])])
 
 
 # ------------------------------------------------------------------------ 3. the rules

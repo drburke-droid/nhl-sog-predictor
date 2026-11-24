@@ -457,32 +457,72 @@ def f04():
 
 # ================================================================== 05: then and now
 def modern_route(RM, lane=LANE):
-    """rows across the free floor (robot centre kept R from everything), then an edge pass round the walls and furniture.
-    Returns a list of polylines (metres) in driving order."""
+    """A mapping robot's route: rows 25 cm apart across the free floor (robot centre kept R from everything),
+    taken back and forth. After each row it moves to the nearest row it hasn't done (the next row over when it
+    can get there without touching anything), so each strip of floor is swept once and nothing is gone back
+    for: awkward corners the rows can't reach are left. Returns [one continuous polyline] in metres."""
     ys = np.arange(RM.R, RM.RH - RM.R + 1e-6, lane)
     xs = np.arange(RM.R, RM.RW - RM.R + 1e-6, 0.02)
-    paths = []
+    runs = []
     for i, yy in enumerate(ys):
         free = np.array([not RM.blocked(x, yy) for x in xs])
-        runs, start = [], None
+        start = None
         for x, fv in zip(xs, free):
             if fv and start is None:
                 start = x
             if not fv and start is not None:
-                runs.append((start, x - 0.02)); start = None
+                runs.append((i, yy, start, x - 0.02)); start = None
         if start is not None:
-            runs.append((start, xs[-1]))
-        for a, c in (runs if i % 2 == 0 else runs[::-1]):
-            paths.append(np.array([[a, yy], [c, yy]]) if i % 2 == 0 else np.array([[c, yy], [a, yy]]))
-    R = RM.R
-    paths.append(np.array([[R, R], [RM.RW - R, R], [RM.RW - R, RM.RH - R], [R, RM.RH - R], [R, R]]))   # walls
-    for _, (x0, y0, x1, y1) in RM.BOXES:
-        a0, b0, a1, b1 = max(R, x0 - R), max(R, y0 - R), min(RM.RW - R, x1 + R), min(RM.RH - R, y1 + R)
-        paths.append(np.array([[a0, b0], [a1, b0], [a1, b1], [a0, b1], [a0, b0]]))
-    x, y, r = RM.PLANT
-    th = np.linspace(0, 2 * np.pi, 40)
-    paths.append(np.c_[x + (r + R) * np.cos(th), y + (r + R) * np.sin(th)])
-    return paths
+            runs.append((i, yy, start, xs[-1]))
+
+    def clear(p, q):
+        n = max(2, int(np.hypot(*(q - p)) / 0.03))
+        return all(not RM.blocked(*(p + (q - p) * u)) for u in np.linspace(0, 1, n))
+
+    def connect(p, q):
+        """a way from p to q that touches nothing: straight, or one corner"""
+        if clear(p, q):
+            return [q]
+        for c in (np.array([q[0], p[1]]), np.array([p[0], q[1]])):
+            if clear(p, c) and clear(c, q):
+                return [c, q]
+        return None
+
+    left = set(range(len(runs)))
+    i0, y0, a0, b0 = runs[0]
+    pos = np.array([b0, y0])
+    path = [np.array([a0, y0]), pos]
+    row = i0
+    left.discard(0)
+    while left:
+        best = None
+        for k in left:
+            ik, yk, ak, bk = runs[k]
+            for e, other in ((np.array([ak, yk]), np.array([bk, yk])), (np.array([bk, yk]), np.array([ak, yk]))):
+                d = float(np.hypot(*(e - pos))) + (4.0 if abs(ik - row) > 1 else 0.0)
+                if best is None or d < best[0]:
+                    best = (d, k, e, other)
+        # the cheapest few, checked for a clear way in
+        cands = []
+        for k in left:
+            ik, yk, ak, bk = runs[k]
+            for e, other in ((np.array([ak, yk]), np.array([bk, yk])), (np.array([bk, yk]), np.array([ak, yk]))):
+                cands.append((float(np.hypot(*(e - pos))) + (4.0 if abs(ik - row) > 1 else 0.0), k, e, other))
+        cands.sort(key=lambda c: c[0])
+        chosen = None
+        for d, k, e, other in cands[:24]:
+            way = connect(pos, e)
+            if way is not None:
+                chosen = (k, way, other)
+                break
+        if chosen is None:
+            d, k, e, other = cands[0]
+            chosen = (k, [e], other)
+        k, way, other = chosen
+        path += way + [other]
+        pos, row = other, runs[k][0]
+        left.discard(k)
+    return [np.array(path)]
 
 
 def f05():

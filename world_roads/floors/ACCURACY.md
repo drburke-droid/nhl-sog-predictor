@@ -18,10 +18,12 @@ Every number in the storyboard stills comes from the scripts here (`nyc_prep.py`
 * **Floors only.** Gross floor area as the city and the world's building statistics count it (inside the
   outer walls, every storey). Walls, furniture and stairs are not subtracted.
 * **Light speed the whole way**, 299,792,458 m/s, including between buildings and up and down stairs.
-* **Then and now (frame 05).** The 2002 Roomba is the earlier film's simulation (`roomba/room.py`: bump,
-  turn at random, 0.3 m/s). The modern robot drives rows 25 cm apart across the same room's free floor,
-  then an edge pass round the walls and furniture: 152 m in all, so 8.5 min at the same 0.3 m/s. By then
-  the random Roomba has covered 82% of the floor; the modern one 99%.
+* **Then and now.** The 2002 Roomba is the earlier film's simulation (`roomba/room.py`: bump, turn at random,
+  0.3 m/s). The modern robot drives rows 25 cm apart across the same room's free floor, back and forth: after
+  each row it moves to the nearest row it hasn't done, next door when it can get there without touching
+  anything. It never goes back for the awkward corners the rows miss, which is how the film times every floor
+  (area ÷ 0.25 m, nothing extra). Its route is 71.6 m, 3 min 58 s at the same 0.3 m/s; it finishes having
+  covered 90% of the free floor, while the random Roomba has covered 60% by then.
 
 ## 2. New York City
 
