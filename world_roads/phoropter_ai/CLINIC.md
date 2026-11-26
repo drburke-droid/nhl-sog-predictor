@@ -108,26 +108,43 @@ the same buttons and the same patients:
 - Simulated patients are therefore harder to refract than real ones, or a rigid script does worse than a
   clinician's judgement, or both. Compare the AI with the script, not with real optometrists.
 
-## 4. Training (`train.py --clinic`)
+## 4. Training (`train.py --clinic`): one AI, two practice terms
 
 ```bash
+# term 1: the axis dial always starts at 180 (runs/f; stopped at 1,630,473 patients)
 python train.py --clinic --gamma 1.0 --steps 200e6 --shape_frac 0.15 --hard_frac 0.3 --ent 0.01 --lr 3e-4 \
     --eval_every 25 --out runs/f
+# term 2: the same network; the dial starts where the last patient left it (runs/f2)
+python train.py --clinic --gamma 1.0 --init runs/f/ckpt/term1_full.pt --exams_offset 1630473 \
+    --steps_offset 100925440 --steps 70e6 --shape_frac 0.4 --hard_frac 0.4 --ent 0.01 --lr 2e-4 \
+    --critic_warmup 5 --eval_every 25 --out runs/f2
 ```
 
-- PPO; actor and critic are separate MLPs, 2 × 256. It runs 1,024 exam rooms at once with 64-button
+- **PPO.** Actor and critic are separate MLPs, 2 × 256. It runs 1,024 exam rooms at once with 64-button
   rollouts.
 - **No discount (γ = 1).** The AI is paid total points per patient. Two short test runs used γ = 0.995,
   and the AI learned never to prescribe: discounting makes a bad outcome 200 buttons away look smaller than
   one now. Every exam ran to the time limit.
-- **The mentor (training wheels).** For the first 15% of practice, every button also earned "warmer/colder":
-  2 × (how much closer the two eyes' lenses got to the truth, on average), fading linearly to zero. A first
-  version used the textbook form of this hint (potential-based, zero at the end of the exam). That form pays
-  a large bonus for ending an exam far from the truth, and the AI again learned to stall. The video says the
-  mentor whispered for the first 15% of practice, then left.
-- **Harder practice patients early.** Bigger cylinders, fading to normal by 30% of training, so cylinder
-  matters while the AI is exploring.
-- Checkpoints at milestone patient counts (`runs/f/ckpt/exams_*.pt`); `latest.pt` every 20 updates.
+- **The mentor (training wheels).** Every button also earned "warmer/colder": 2 × (how much closer the two
+  eyes' lenses got to the truth, on average), fading linearly to zero. It was on for the first 15% of term 1
+  and the first 40% of term 2. A first version used the textbook form of this hint (potential-based, zero at
+  the end of the exam). That form pays a large bonus for ending an exam far from the truth, and the AI again
+  learned to stall.
+- **Harder practice patients early.** Bigger cylinders, fading to normal by 30% of term 1 and 40% of term 2.
+- **Why there is a term 2.** Term 1 started every exam with the axis dial at 180°. After 1.63 million
+  patients the AI had excellent sphere and balance but almost never turned the axis. 99% of the cylinders it
+  prescribed were at exactly 180°, so only with-the-rule astigmatism was corrected. That was a shortcut:
+  most young astigmatism is near 180°, and turning the dial only pays off after several moves in a row.
+  - The fix was made in the environment, not the reward: a real phoropter's dial starts wherever the last
+    patient left it. With no cylinder in the phoropter this changes nothing optically, but adding cylinder
+    now only helps once the axis has been found.
+  - The same network continued. Its score fell overnight (see `results_f.json`, "term1"), and the video says
+    so ("The shortcut").
+  - Every number in the video's results is from the term-2 network, in the clinic with the realistic dial.
+    The textbook script and "plano" are scored in the same clinic.
+- Checkpoints at milestone patient counts (`runs/f/ckpt`, `runs/f2/ckpt`). `latest.pt` is saved every 20
+  updates. `runs/f/ckpt/term1_full.pt` holds term 1's final weights and optimizer, which is where term 2
+  starts.
 
 ## 5. Evaluation (`evaluate3.py`)
 
@@ -145,8 +162,10 @@ python train.py --clinic --gamma 1.0 --steps 200e6 --shape_frac 0.15 --hard_frac
 - All on the showcase patient (`record3.SHOWCASE3`, the same 24-year-old as the earlier video):
   OD −2.25 −1.00 × 170, OS −2.50 −0.75 × 010; prefers minus; proximal accommodation 0.35 D; right-eye
   dominant. Chosen before any exam was filmed.
-- Day one is the untrained network (`exams_0.pt`), sampling buttons as it does in practice; the
-  recording's random seed was fixed before looking at it. The graduate exam is the final network, greedy.
+- Day one is the untrained network (`runs/f/ckpt/exams_0.pt`), sampling buttons as it does in practice, in the
+  term-1 clinic (dial at 180). The recording's random seed was fixed before looking at it.
+- For the graduate and textbook exams the showcase patient's dials were left at 90° by "the last patient"
+  (chosen before filming). The graduate exam is the final network, greedy.
 - The patient's odds on screen are exact for the model: the normal-distribution chance of each answer,
   and the binomial chance of each letter count. Reading the smallest line is estimated from 4,000 simulated
   readings. A ✓ marks the answer that points toward the true prescription: the option whose lenses are

@@ -10,3 +10,5 @@ initialised from runs/f/ckpt/term1_full.pt {'exams': 1630473, 'steps': 100925440
 [shape 0.91] up 40/1068 steps 103.5M exams 1,670,773 1.8 min | train err 1.298 within 0.07 len 60.9 ent 0.56 pts -69.1 min 3.2
 [shape 0.90] up 45/1068 steps 103.9M exams 1,676,290 2.0 min | train err 1.215 within 0.08 len 59.3 ent 0.57 pts -64.7 min 3.2
 [shape 0.89] up 50/1068 steps 104.2M exams 1,681,814 2.3 min | train err 1.187 within 0.09 len 58.4 ent 0.57 pts -60.8 min 3.1 | EVAL pts -1.0 min 2.7 happy 0.34 | EVAL err 0.568 within 0.223 exact 0.143 steps 47.6 overminus_y 0.16
+[shape 0.87] up 55/1068 steps 104.5M exams 1,687,250 2.5 min | train err 1.196 within 0.08 len 60.6 ent 0.59 pts -63.9 min 3.3
+[shape 0.86] up 60/1068 steps 104.9M exams 1,692,771 2.8 min | train err 1.172 within 0.08 len 58.7 ent 0.59 pts -59.9 min 3.2

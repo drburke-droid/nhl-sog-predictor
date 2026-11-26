@@ -11,7 +11,9 @@ One AI that knows nothing about eyes opens an eye clinic:
 * Every exam starts at plano: no autorefractor, no retinoscopy. It runs right eye, left eye, then both.
 * The AI is paid in clinic points: a happy patient who returns and refers +100; annoyed +30; an unpaid Rx
   check −80; a re-check with a bad review −150; −4 per minute of chair time.
-* On day one it presses random buttons and hands out lenses close to plano. Then it practises.
+* On day one it presses random buttons and hands out lenses close to plano. Then it practises: term 1 with
+  the axis dial always at 180° (it found a shortcut and never turned the axis), term 2 with the dial wherever
+  the last patient left it.
 * The video compares its exam with the textbook sequence, step by step, and with published data on real
   refractions ([PUBLISHED.md](PUBLISHED.md)).
 
@@ -25,7 +27,8 @@ One AI that knows nothing about eyes opens an eye clinic:
 | `clinic_ui.py`, `scenes3.py`, `film3_intro.py`, `film3.py`, `thumbs3.py` | The second video |
 
 ```bash
-python train.py --clinic --gamma 1.0 --steps 200e6 --shape_frac 0.15 --hard_frac 0.3 --ent 0.01 --lr 3e-4 --eval_every 25 --out runs/f
+python train.py --clinic --gamma 1.0 --steps 200e6 --shape_frac 0.15 --hard_frac 0.3 --ent 0.01 --lr 3e-4 --eval_every 25 --out runs/f   # term 1 (stopped at 1.63M patients)
+python train.py --clinic --gamma 1.0 --init runs/f/ckpt/term1_full.pt --exams_offset 1630473 --steps_offset 100925440 --steps 70e6 --shape_frac 0.4 --hard_frac 0.4 --ent 0.01 --lr 2e-4 --critic_warmup 5 --eval_every 25 --out runs/f2   # term 2
 python evaluate3.py && python stages3.py && python traces3.py
 python film3.py all          # -> out/ai_optometry.mp4
 python thumbs3.py
