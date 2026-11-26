@@ -270,7 +270,13 @@ class Exam(Section):
         text(d, (820, 790), f"MOVE {max(k + 1, 0)}" + (f"  ·  {nq} QUESTION{'S' if nq != 1 else ''} ASKED" if nq else ""),
              20, MUTED, "SemiBold")
         x, y = 820, 826
+        lo = max(0, k + 1 - 30)                              # the most recent 30 moves (three rows at most)
+        if lo > 0:
+            text(d, (x, y + 15), "\u2026", 20, MUTED, "SemiBold", "lm")
+            x += 26
         for i, s in enumerate(self.steps[:k + 1]):
+            if i < lo:
+                continue
             lab, col = CHIP[s["a"]]
             f = ui.font(17, "SemiBold")
             w = d.textlength(lab, font=f) + 20
