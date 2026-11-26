@@ -15,7 +15,7 @@ import env3 as E3
 
 HERE = ui.HERE
 SPHERE, CYL, AXIS, JCC, PRISM, OCC, CHART, RXC = ((70, 150, 255), (60, 200, 120), (176, 124, 255), (255, 88, 88),
-                                                  (255, 150, 40), (196, 206, 222), (236, 240, 248), (255, 205, 80))
+                                                  (255, 150, 40), (128, 140, 160), (236, 240, 248), (255, 205, 80))
 GROUP_COL = {"sphere": SPHERE, "cyl": CYL, "axis": AXIS, "jcc": JCC, "prism": PRISM, "occ": OCC, "chart": CHART,
              "rx": RXC}
 GROUP_NAME = {"sphere": "SPHERE: lens power", "cyl": "CYLINDER: astigmatism power", "axis": "AXIS: turn the cylinder",
