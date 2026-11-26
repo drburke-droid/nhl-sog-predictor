@@ -170,7 +170,7 @@ def sections():
             17.0, kicker="PRACTICE ROUND")
         tf = trace("c_final")
         S["c_exam"] = Exam(tf, f"AFTER {fmt_n(tf['meta']['exams'])} PRACTICE EXAMS", "Attempt 3, training wheels "
-                           "long gone", notes=notes("c_final"), outro=6.0)
+                           "long gone", notes=notes("c_final"), outro=6.0, speed=0.6)
         xc, yc, shc = RS.load_curve(os.path.join(HERE, "runs", "c", "logs", "train.csv"))
         end_hint = xc[np.argmax(shc <= 0.0)] if (shc <= 0).any() else xc[-1]
         S["c_curve"] = RS.Curve("ATTEMPT 3: THE LEARNING CURVE", "Share of 1,000 check patients within 0.25 D, fair "
@@ -179,16 +179,19 @@ def sections():
                                 [("Textbook script", Af["textbook"]["within_025"], RS.TB_ORANGE),
                                  ("Autorefractor alone", Af["autoref"]["within_025"], RS.GREY)],
                                 dur=12.0, draw_secs=7.0, shade=(xc[0], end_hint, "TRAINING WHEELS FADING"))
-        rows3 = rows(Af) + [("AI, attempt 2", B["ai"]["summary"], RS.GREY, False),
-                            ("AI, attempt 3", Cf, RS.AI_BLUE, True)]
-        rows3[3] = ("AI, attempt 1", Af["ai"], RS.GREY, False)
+        rows3 = [("Autorefractor reading alone", Af["autoref"], RS.GREY, False),
+                 ("Script: textbook (letter chart)", C3["textbook"]["summary"], RS.TB_ORANGE, False),
+                 ("AI, attempt 1", Af["ai"], RS.GREY, False),
+                 ("AI, attempt 2", B["ai"]["summary"], RS.GREY, False),
+                 ("AI, attempt 3", Cf, RS.AI_BLUE, True)]
         S["c_score"] = RS.Scoreboard("5,000 NEW PATIENTS, FAIR SCORE", "Starting from the autorefractor reading. The "
                                      "same 5,000 simulated patients as before.", rows3, dur=14.0,
-                                     note="Exact: within half a click (0.13 D). Moves: lens changes plus questions.")
+                                     note="Attempt 3 and its textbook script read the letter chart; attempts 1\u20132 "
+                                          "read whole lines. Exact: within half a click (0.13 D).")
         ec = np.load(os.path.join(HERE, "data", "errors_c.npz"))
         S["c_clouds"] = RS.ErrorClouds("WHERE THE ERRORS LAND", "Each dot is one of 5,000 test patients: the cylinder "
                                        "left over after the exam",
-                                       [("Textbook script", ea["textbook"], RS.TB_ORANGE, stat(ea["textbook"])),
+                                       [("Textbook script", ec["textbook"], RS.TB_ORANGE, stat(ec["textbook"])),
                                         ("AI, attempt 2", eb["ai"], RS.GREY, stat(eb["ai"])),
                                         ("AI, attempt 3", ec["ai"], RS.AI_BLUE, stat(ec["ai"]))], dur=14.0,
                                        note="Gold ring: 0.25 D. Bars: spherical-equivalent error (prescription minus "
@@ -202,7 +205,7 @@ def sections():
                   "for cylinder at four axes, and refines.", 30, MUTED, "Medium"),
             (8.6, "Exams may now run to 80 moves.", 30, MUTED, "Medium")], 12.0, kicker="THE SECOND TEST")
         tn = trace("c_noauto")
-        S["n_exam"] = Exam(tn, "NO AUTOREFRACTOR", f"Attempt 3, same patient, starting at plano", speed=0.75,
+        S["n_exam"] = Exam(tn, "NO AUTOREFRACTOR", "Attempt 3, same patient, starting at plano", speed=0.42,
                            notes=notes("c_noauto"), outro=6.0)
         rows_n = [("Prescribe nothing (plano)", Cp["start"]["summary"], RS.GREY, False),
                   ("Script: textbook, from scratch", Cp["textbook"]["summary"], RS.TB_ORANGE, False),
