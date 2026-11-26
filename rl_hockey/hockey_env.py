@@ -66,11 +66,13 @@ PUCK_FRICTION = 4.0
 PUCK_REST = 0.7
 PUCK_OFFSET = 1.5
 STEAL_R = 3.0
-STEAL_P = 0.025             # per close opponent per sub-step
+STEAL_P = 0.02              # per close opponent per sub-step
 SHOT_SPEED, PASS_SPEED, DUMP_SPEED = 100.0, 60.0, 75.0
 SHOT_SIGMA, PASS_SIGMA, DUMP_SIGMA = 0.05, 0.035, 0.10
 RECV_REACH = 4.0            # the intended receiver is expecting the pass
-CATCH_SPEED = 65.0          # pucks slower than this are always controlled
+CATCH_SPEED = 65.0          # pucks slower than this are always controlled (by a stick that gets to them)
+SLOW_PUCK = 20.0            # a puck slower than this is simply collected
+REACT_T = 0.1               # a moving puck can't be picked off in its first 0.1 s of flight
 SAVE_P = 0.90               # goalie stops a hard puck he gets a piece of
 FREEZE_P = 0.5
 FREEZE_DIST = 12.0
@@ -181,6 +183,7 @@ class HockeyVecEnv:
         self.shot_live = np.zeros(n, bool)
         self.pass_team = np.full(n, -1)
         self.pass_tgt = np.full(n, -1)
+        self.flight = np.zeros(n)
         self.score = np.zeros((n, 2), int)
         self.pulled = np.zeros((n, 2), bool)
         self.setup = np.zeros(n, int)
@@ -319,6 +322,7 @@ class HockeyVecEnv:
         d = d / (_norm(d)[:, None] + 1e-9)
         d = _rot(d, self.rng.normal(0, 1, c) * sigma)
         self.pvel[idx] = d * speed[:, None] * s
+        self.flight[idx] = 0.0
         self.owner[idx] = -1
         self.last_team[idx] = T
         self.cool[idx, o] = COOLDOWN
@@ -459,6 +463,7 @@ class HockeyVecEnv:
             p1 = np.where(owned[:, None], car, p1)
             self.pvel = np.where(owned[:, None], self.vel[idx, o], self.pvel)
         if loose.any():
+            self.flight += SUB_DT
             sp = _norm(self.pvel)
             f = np.maximum(sp - PUCK_FRICTION * SUB_DT, 0) / (sp + 1e-9)
             f = np.where(sp < 0.5, 0.0, f)
@@ -592,7 +597,13 @@ class HockeyVecEnv:
         if s.any():
             gs, ks, Ts = gi[s], k[s], T[s]
             cap_p = np.where(sp[s] < CATCH_SPEED, 1.0, np.maximum(0.3, 1 - (sp[s] - CATCH_SPEED) / 70))
-            cap = u[s] < cap_p
+            # anyone but the intended receiver only sometimes picks off a moving puck,
+            # more often the closer his stick is to its line, and not before he can react
+            intended = ks == self.pass_tgt[gs]
+            p_int = np.clip(0.25 + 0.6 * (1 - dq[s] / REACH_K[ks]), 0, 1)
+            p_int = np.where(self.flight[gs] < REACT_T, 0.0, p_int)
+            p_int = np.where(intended | (sp[s] < SLOW_PUCK), 1.0, p_int)
+            cap = u[s] < cap_p * p_int
             if cap.any():
                 c = gs[cap]
                 ok = self.pass_team[c] == Ts[cap]
