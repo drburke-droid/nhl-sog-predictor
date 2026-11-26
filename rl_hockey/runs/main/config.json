@@ -23,6 +23,7 @@
  "shape_zero": 12000000.0,
  "no_offside": false,
  "no_icing": false,
+ "learned_goalie": false,
  "ckpt_every": 25,
  "seed": 0,
  "threads": 4
