@@ -17,7 +17,10 @@ and two wingers, or something else.
   the boards and the net frame, and is carried a stick's length in front of its
   carrier, who skates slightly slower.
 * **Puck play**: a loose puck is collected by the first stick it reaches. Hard
-  pucks are harder to control, and bodies block shots. Opponents within 3 ft
+  pucks are harder to control, and bodies block shots. Passes travel at
+  60 ft/s with ~2° of aiming noise toward the receiver's interception point.
+  The intended receiver reaches 4 ft for the puck, anyone else 2.5 ft, so
+  passes through traffic get picked off. Opponents within 3 ft
   can strip the carrier, and a hard hit can knock the puck loose. A goalie
   saves 90% of hard pucks he gets a piece of; near his crease he freezes half
   of them, otherwise he gives up a rebound.

@@ -67,8 +67,10 @@ PUCK_REST = 0.7
 PUCK_OFFSET = 1.5
 STEAL_R = 3.0
 STEAL_P = 0.025             # per close opponent per sub-step
-SHOT_SPEED, PASS_SPEED, DUMP_SPEED = 100.0, 50.0, 75.0
-SHOT_SIGMA, PASS_SIGMA, DUMP_SIGMA = 0.05, 0.06, 0.10
+SHOT_SPEED, PASS_SPEED, DUMP_SPEED = 100.0, 60.0, 75.0
+SHOT_SIGMA, PASS_SIGMA, DUMP_SIGMA = 0.05, 0.035, 0.10
+RECV_REACH = 4.0            # the intended receiver is expecting the pass
+CATCH_SPEED = 65.0          # pucks slower than this are always controlled
 SAVE_P = 0.90               # goalie stops a hard puck he gets a piece of
 FREEZE_P = 0.5
 FREEZE_DIST = 12.0
@@ -178,6 +180,7 @@ class HockeyVecEnv:
         self.icing_armed = np.full(n, -1)
         self.shot_live = np.zeros(n, bool)
         self.pass_team = np.full(n, -1)
+        self.pass_tgt = np.full(n, -1)
         self.score = np.zeros((n, 2), int)
         self.pulled = np.zeros((n, 2), bool)
         self.setup = np.zeros(n, int)
@@ -235,6 +238,7 @@ class HockeyVecEnv:
         self.icing_armed[m] = -1
         self.shot_live[m] = False
         self.pass_team[m] = -1
+        self.pass_tgt[m] = -1
         self.cool[m] = 0.0
 
     # ------------------------------------------------------------ coach
@@ -303,7 +307,10 @@ class HockeyVecEnv:
             tp = self.pos[idx[pas], j] * s[pas]
             tv = self.vel[idx[pas], j] * s[pas]
             lead = _norm(tp - p[pas]) / PASS_SPEED
+            for _ in range(3):   # solve for the interception point
+                lead = _norm(tp + tv * lead[:, None] - p[pas]) / PASS_SPEED
             tgt[pas] = tp + tv * lead[:, None]
+            self.pass_tgt[idx[pas]] = j
             speed[pas], sigma[pas] = PASS_SPEED, PASS_SIGMA
             self.stats["passes"][idx[pas], T[pas]] += 1
             self.pass_team[idx[pas]] = T[pas]
@@ -317,6 +324,7 @@ class HockeyVecEnv:
         self.cool[idx, o] = COOLDOWN
         self.shot_live[idx] = shoot
         self.pass_team[idx[~pas]] = -1
+        self.pass_tgt[idx[~pas]] = -1
         self.icing_armed[idx] = np.where(p[:, 0] < 0, T, -1) if self.icing_on else -1
 
     # ------------------------------------------------------------ players
@@ -440,6 +448,7 @@ class HockeyVecEnv:
                 tk = np.where(steal)[0]
                 self.stats["takeaways"][tk, TEAM_OF[j[tk]]] += 1
                 self.pass_team[lost] = -1
+                self.pass_tgt[lost] = -1
             o = np.maximum(self.owner, 0)
             owned = live & (self.owner >= 0)
         loose = live & (self.owner < 0)
@@ -464,7 +473,10 @@ class HockeyVecEnv:
             t = np.clip(_dot(rel, seg[:, None]) / sl2[:, None], 0, 1)
             q = p0[:, None] + t[..., None] * seg[:, None]
             dq = _norm(self.pos - q)
-            cand = loose[:, None] & self.active & (self.cool <= 0) & (dq < REACH_K[None])
+            reach = np.broadcast_to(REACH_K, (n, K)).copy()
+            pt = self.pass_tgt >= 0
+            reach[np.where(pt)[0], self.pass_tgt[pt]] = RECV_REACH
+            cand = loose[:, None] & self.active & (self.cool <= 0) & (dq < reach)
             score = np.where(cand, t + 1e-3 * dq, np.inf)
             k = np.argmin(score, 1)
             hit = np.isfinite(score[idx, k])
@@ -573,12 +585,13 @@ class HockeyVecEnv:
                 self.icing_armed[r] = -1
                 self.shot_live[r] = False
                 self.pass_team[r] = -1
+                self.pass_tgt[r] = -1
             self.cool[gg, k[g]] = 0.25
         # skaters
         s = ~is_g
         if s.any():
             gs, ks, Ts = gi[s], k[s], T[s]
-            cap_p = np.where(sp[s] < 45, 1.0, np.maximum(0.3, 1 - (sp[s] - 45) / 80))
+            cap_p = np.where(sp[s] < CATCH_SPEED, 1.0, np.maximum(0.3, 1 - (sp[s] - CATCH_SPEED) / 70))
             cap = u[s] < cap_p
             if cap.any():
                 c = gs[cap]
@@ -589,6 +602,7 @@ class HockeyVecEnv:
                 self.icing_armed[c] = -1
                 self.shot_live[c] = False
                 self.pass_team[c] = -1
+                self.pass_tgt[c] = -1
                 p1[c] = self.pos[c, ks[cap]] + self.facing[c, ks[cap]] * PUCK_OFFSET
                 self.pvel[c] = self.vel[c, ks[cap]]
             body = ~cap & (dq[s] < RAD_K[ks])
@@ -601,6 +615,7 @@ class HockeyVecEnv:
                 self.icing_armed[b] = -1
                 self.shot_live[b] = False
                 self.pass_team[b] = -1
+                self.pass_tgt[b] = -1
             self.cool[gs[~cap], ks[~cap]] = 0.15
 
     # ------------------------------------------------------------ step
