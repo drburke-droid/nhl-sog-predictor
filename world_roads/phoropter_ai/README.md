@@ -35,7 +35,8 @@ video is in [RESULTS.md](RESULTS.md).
 | `env2.py` | The two-eye exam room (attempt 4): yoked and proximal accommodation, line-size-dependent judgement, prism balance |
 | `clinicians2.py` | Scripted two-eye examiners: the textbook, and the optometrist's own routine |
 | `policy.py` | The AI (actor-critic MLP) and a runner that scores it on a test set |
-| `train.py` | PPO training; checkpoints at milestone exam counts; learning-curve log |
+| `train.py` | PPO training; checkpoints at milestone exam counts; learning-curve log; `--init` / `--resume` |
+| `imitate.py` | Attempt 5, stage 1: behaviour cloning of the textbook script ("watch the textbook") |
 | `evaluate.py` | One-eye 5,000-patient comparison and strategy analysis → `data/results_*.json` |
 | `evaluate2.py` | Two-eye 5,000-patient comparison → `data/results_d.json` |
 | `record.py` | Records one exam move by move (the showcase patient is defined here) |
@@ -51,7 +52,9 @@ video is in [RESULTS.md](RESULTS.md).
   both faded out by 30% of training), the letter chart with line buttons, and half its practice with no
   autorefractor.
 * `runs/d/` holds attempt 4, the two-eye exam with binocular balance, compared with the textbook and the
-  optometrist's own routine.
+  optometrist's own routine. It taught itself and fell short (stopped at 1.27M exams).
+* `runs/e/` holds attempt 5. It watched the textbook script examine about 97,000 patients
+  (`ckpt/watched.pt`), then practised from there with reinforcement learning.
 
 ## Run it
 
@@ -68,7 +71,10 @@ python evaluate.py runs/b/ckpt/exams_2002626.pt b
 python evaluate.py runs/b/ckpt/exams_2002626.pt b_plano plano
 python evaluate.py runs/c/ckpt/final.pt c
 python evaluate.py runs/c/ckpt/final.pt c_plano plano
-python evaluate2.py runs/d/ckpt/final.pt d
+python evaluate2.py runs/d/ckpt/exams_1273013.pt d
+python imitate.py --samples 10e6 --out runs/e   # attempt 5, stage 1 (about 6 min)
+python train.py --binocular --init runs/e/ckpt/watched.pt --critic_warmup 30 --steps 70e6 --lr 1e-4 --ent 0.002 --t_max 120 --eval_every 25 --out runs/e
+python evaluate2.py runs/e/ckpt/final.pt e
 python traces.py && python traces.py d        # record the exams the video plays
 python report.py
 python film.py all                            # renders every section and assembles out/phoropter_ai.mp4

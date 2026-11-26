@@ -333,7 +333,8 @@ def sections():
     S["outro"] = Card("The fine print", [
         (0.6, "Every patient here was simulated. The optics are real physics; the people are a model.", 34, INK2,
          "Medium"),
-        (4.0, "Real patients get tired, guess, change their minds, and have two eyes.", 34, INK2, "Medium"),
+        (4.0, "Real patients get tired, guess and change their minds, and real eyes do more than any model of them.",
+         34, INK2, "Medium"),
         (7.4, "This AI has never examined a real person. It is a demonstration, not a clinical tool.", 34, GOLD,
          "SemiBold"),
         (11.0, "Code, every assumption, and the numbers behind each chart: see the description.", 26, MUTED,
