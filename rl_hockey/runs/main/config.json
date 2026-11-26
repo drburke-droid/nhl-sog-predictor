@@ -3,7 +3,7 @@
  "envs": 128,
  "rollout": 120,
  "game_seconds": 180,
- "hours": 1.95,
+ "hours": 1.9,
  "max_steps": 1000000000000.0,
  "lr": 0.0005,
  "gamma": 0.995,
