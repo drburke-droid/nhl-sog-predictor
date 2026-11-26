@@ -22,9 +22,11 @@ and two wingers, or something else.
   saves 90% of hard pucks he gets a piece of; near his crease he freezes half
   of them, otherwise he gives up a rebound.
 * **Rules**: goals; immediate offside; no-touch icing; goalie freezes; faceoffs
-  with every player on his own side of the dot. Goalies stay in their own end:
-  a simplification of the red-line rule, added because goalies otherwise
-  learned to roam to centre ice and kick the puck.
+  with every player on his own side of the dot. Goalies stay within 12 ft of
+  the middle of their own goal line, in front of it, a stand-in for the crease
+  and trapezoid rules. Free-roaming goalies first walked to centre ice to kick
+  the puck around, then drifted out of position, which made pulling the
+  goalie almost free.
 * **Goalie pull**: a team's coach can pull the goalie at any moment. An extra
   attacker (skater slot 6) comes off the bench, and the goalie can only return
   at a stoppage.
@@ -40,7 +42,7 @@ and two wingers, or something else.
 |---|---|---|---|
 | skater (one network for all 6 skater slots) | every 0.1 s: skate direction (8) / glide / brake; with the puck: keep, shoot, dump left, dump right, pass to slot *j* | the whole game state in its own team's frame (always attacking +x), plus a one-hot **slot id** | +1 goal for, −1 goal against |
 | goalie | every 0.1 s: skate direction / glide / brake | same | +1 / −1 per goal |
-| coach | every 1 s: goalie in / out | score, time left, possession, puck position | **winning**: +1 win, 0 tie, −1 loss |
+| coach | every 1 s: goalie in / out (starts learning after 12M steps, once the players can play) | score, time left, possession, puck position | **winning**: +1 win, 0 tie, −1 loss |
 
 The slot id is the only thing that tells two skaters apart. Slots *can*
 specialise, but nothing tells them how to. Each team sees the game rotated
