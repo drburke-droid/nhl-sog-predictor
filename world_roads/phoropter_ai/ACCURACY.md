@@ -190,6 +190,11 @@ shows it as that: the AI teaching itself the full exam, and falling short.
 
    Attempt 5 is "learned from the textbook, then improved on it", not "taught itself".
 
+   A third machine restart stopped the practice run at update 220 (14.4M steps). It resumed from its
+   saved full state (weights and optimizer). To finish while the session was active, the run was
+   shortened from 70M to 40M steps. The learning-rate and entropy schedules follow the shorter run from
+   update 221.
+
 ## 3. The scripted examiners
 
 They are scripts, not people. A skilled clinician adapts in ways they do not.

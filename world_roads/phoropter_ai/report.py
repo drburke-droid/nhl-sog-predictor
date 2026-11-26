@@ -27,7 +27,7 @@ def table(rows, both=False):
 
 
 def main():
-    A, B, Bp, C, Cp, D = (load(n) for n in ("a", "b", "b_plano", "c", "c_plano", "d"))
+    A, B, Bp, C, Cp, D, E5 = (load(n) for n in ("a", "b", "b_plano", "c", "c_plano", "d", "e"))
     L = ["# Results", "",
          "Simulated test patients drawn independently of training (seed 2026). Every examiner in a table saw the same "
          "patients. Error is optics.rx_error: the length of (spherical-equivalent error, leftover cylinder), with "
@@ -60,17 +60,22 @@ def main():
     if D:
         L += ["", "## Two eyes, binocular balance, line-size-dependent judgement (attempt 4)", "",
               "Within, exact, mean error and over-minus are per eye (both eyes pooled).", ""]
-        L += table([("Autorefractor reading alone", D["autoref"]["summary"]),
-                    ("Script: textbook", D["textbook"]["summary"]),
-                    ("Script: the optometrist's routine", D["mine"]["summary"]),
-                    ("AI, attempt 4", D["ai"]["summary"])], both=True)
-        L += ["", "Moves used per exam (mean):", "", "| Move | AI, attempt 4 | Textbook | Optometrist's routine |",
-              "|---|---:|---:|---:|"]
-        for m, v in D["ai"]["habits"]["mean_count"].items():
-            t = D["textbook"]["habits"]["mean_count"][m]
-            o = D["mine"]["habits"]["mean_count"][m]
-            if max(v, t, o) >= 0.01:
-                L.append(f"| {m} | {v:.2f} | {t:.2f} | {o:.2f} |")
+        rows = [("Autorefractor reading alone", D["autoref"]["summary"]),
+                ("Script: textbook", D["textbook"]["summary"]),
+                ("Script: the optometrist's routine (with binocular MPMVA)", D["mine"]["summary"]),
+                ("AI, attempt 4 (taught itself; 1,273,013 exams)", D["ai"]["summary"])]
+        if E5:
+            rows.append((f"AI, attempt 5 (watched {E5['meta'].get('watched', 97103):,} textbook exams, then "
+                         f"{E5['meta']['exams']:,} practice exams)", E5["ai"]["summary"]))
+        L += table(rows, both=True)
+        cols = [("AI, attempt 4", D["ai"])] + ([("AI, attempt 5", E5["ai"])] if E5 else []) + \
+               [("Textbook", D["textbook"]), ("Optometrist's routine", D["mine"])]
+        L += ["", "Moves used per exam (mean):", "", "| Move | " + " | ".join(c for c, _ in cols) + " |",
+              "|---|" + "---:|" * len(cols)]
+        for m in D["ai"]["habits"]["mean_count"]:
+            vals = [R["habits"]["mean_count"][m] for _, R in cols]
+            if max(vals) >= 0.01:
+                L.append(f"| {m} | " + " | ".join(f"{v:.2f}" for v in vals) + " |")
     for name, R in (("attempt 1", A), ("attempt 3", C)):
         if not R or "strategy" not in R["ai"]:
             continue
