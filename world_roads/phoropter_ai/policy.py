@@ -18,33 +18,42 @@ def mlp(i, o, h=HID, gain=1.0):
 
 
 class Agent(nn.Module):
-    def __init__(self, n_obs=N_OBS, n_act=N_ACT, flag=None):
+    def __init__(self, n_obs=N_OBS, n_act=N_ACT, flag=None, masked=False, kind=None):
         super().__init__()
         self.n_obs, self.n_act = n_obs, n_act
+        self.masked = masked                               # clinic exam: the last n_act inputs say which buttons work
+        self.kind = kind
         self.letters = n_act > N_ACT                       # attempt 3: letter chart and projector buttons
         self.flag = (n_obs == N_OBS + 1) if flag is None else flag   # sees "has an autorefractor reading"
         self.pi = mlp(n_obs, n_act, gain=0.01)
         self.v = mlp(n_obs, 1, gain=1.0)
 
+    def logits(self, obs):
+        lg = self.pi(obs)
+        if self.masked:
+            lg = lg.masked_fill(obs[..., -self.n_act:] < 0.5, -1e9)
+        return lg
+
     def dist(self, obs):
-        return torch.distributions.Categorical(logits=self.pi(obs))
+        return torch.distributions.Categorical(logits=self.logits(obs))
 
     @torch.no_grad()
     def act(self, obs, greedy=False):
-        logits = self.pi(torch.as_tensor(obs))
+        logits = self.logits(torch.as_tensor(obs))
         if greedy:
             return logits.argmax(-1).numpy()
         return torch.distributions.Categorical(logits=logits).sample().numpy()
 
     @torch.no_grad()
     def probs(self, obs):
-        return torch.softmax(self.pi(torch.as_tensor(obs)), -1).numpy()
+        return torch.softmax(self.logits(torch.as_tensor(obs)), -1).numpy()
 
 
 def load(path):
     sd = torch.load(path, map_location="cpu", weights_only=False)
     meta = sd.get("meta", {})
-    a = Agent(meta.get("n_obs", N_OBS), meta.get("n_act", N_ACT), meta.get("flag"))
+    a = Agent(meta.get("n_obs", N_OBS), meta.get("n_act", N_ACT), meta.get("flag"), meta.get("masked", False),
+              meta.get("kind"))
     a.load_state_dict({k: v.float() for k, v in sd["model"].items()})
     a.eval()
     return a, sd.get("meta", {})

@@ -16,6 +16,8 @@ from patients import TestSet
 HERE = os.path.dirname(os.path.abspath(__file__))
 MILESTONES = [0, 1_000, 3_000, 10_000, 30_000, 100_000, 300_000, 1_000_000, 2_000_000, 3_000_000,
               5_000_000, 8_000_000]
+CLINIC_MILESTONES = [0, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 200_000, 300_000, 500_000, 750_000,
+                     1_000_000, 1_500_000, 2_000_000, 3_000_000, 4_000_000]
 
 
 def main():
@@ -40,6 +42,7 @@ def main():
     ap.add_argument("--flag", action="store_true", help="tell the AI whether there is an autorefractor reading")
     ap.add_argument("--letters", action="store_true", help="letter-by-letter projector chart with line buttons")
     ap.add_argument("--binocular", action="store_true", help="two eyes and binocular balance (env2.py)")
+    ap.add_argument("--clinic", action="store_true", help="the clinic exam (env3.py): plano start, clinic points")
     ap.add_argument("--init", default=None, help="start from these weights (e.g. the watched-the-textbook network)")
     ap.add_argument("--critic_warmup", type=int, default=0,
                     help="first N updates train only the value estimate, so the starting habits are not disturbed")
@@ -60,7 +63,13 @@ def main():
     from functools import partial
     from patients import sample_patients
     state = {"hard": 0.0}
-    if args.binocular:
+    if args.clinic:
+        global MILESTONES
+        MILESTONES = CLINIC_MILESTONES
+        from env3 import ClinicEnv, plano_pair, PlanoPairTestSet
+        from clinicians3 import run3, summary3
+        env = ClinicEnv(args.envs, seed=args.seed + 1, sampler=lambda rng, n: plano_pair(rng, n, hard=state["hard"]))
+    elif args.binocular:
         from env2 import BinocularEnv
         from patients import sample_pair, PairTestSet
         from clinicians2 import summary2
@@ -69,8 +78,9 @@ def main():
         env = RefractionEnv(args.envs, seed=args.seed + 1, flag=args.flag, letters=args.letters,
                             sampler=lambda rng, n: sample_patients(rng, n, start=args.start, hard=state["hard"]))
     env.cyl_weight = args.cyl_weight
-    env.t_max = args.t_max
-    agent = Agent(env.n_obs, env.n_act, args.flag)
+    if not args.clinic:
+        env.t_max = args.t_max
+    agent = Agent(env.n_obs, env.n_act, args.flag, masked=args.clinic, kind="clinic" if args.clinic else None)
     opt = torch.optim.Adam(agent.parameters(), lr=args.lr, eps=1e-5)
     E, T = args.envs, args.rollout
     n_up = int(args.steps // (E * T))
@@ -79,7 +89,8 @@ def main():
     ms_done = set()
     start_up = 1
     header = ["update", "steps", "exams", "hours", "shaping", "hard", "train_err", "train_within", "train_len",
-              "entropy", "eval_err", "eval_within", "eval_exact", "eval_steps", "eval_over_minus_young"]
+              "entropy", "eval_err", "eval_within", "eval_exact", "eval_steps", "eval_over_minus_young", "eval_points",
+              "eval_minutes", "train_points", "train_minutes"]
     if args.init:
         sd0 = torch.load(args.init, map_location="cpu", weights_only=False)
         agent.load_state_dict({k: v.float() for k, v in sd0["model"].items()})
@@ -108,16 +119,18 @@ def main():
     def save(tag_exams):
         torch.save({"model": {k: v.half() for k, v in agent.state_dict().items()},
                     "meta": {"exams": int(tag_exams), "steps": int(steps), "n_obs": agent.n_obs, "n_act": agent.n_act,
-                             "flag": agent.flag}},
+                             "flag": agent.flag, "masked": agent.masked, "kind": agent.kind, "update": int(cur_up[0])}},
                    os.path.join(ck, f"exams_{int(tag_exams)}.pt"))
 
     def save_latest(up):
         """Every 20 updates: full state (weights + optimizer), so a machine restart loses at most a minute."""
         torch.save({"model": agent.state_dict(), "opt": opt.state_dict(),
                     "meta": {"exams": int(exams), "steps": int(steps), "n_obs": agent.n_obs, "n_act": agent.n_act,
-                             "flag": agent.flag, "update": up}}, os.path.join(ck, "latest.tmp"))
+                             "flag": agent.flag, "masked": agent.masked, "kind": agent.kind, "update": up}},
+                   os.path.join(ck, "latest.tmp"))
         os.replace(os.path.join(ck, "latest.tmp"), os.path.join(ck, "latest.pt"))
 
+    cur_up = [0]
     if not args.resume:
         save(0)
         ms_done.add(0)
@@ -134,7 +147,8 @@ def main():
         env.shaping = max(0.0, 1.0 - prog / args.shape_frac) if args.shape_frac > 0 else 0.0
         state["hard"] = max(0.0, 1.0 - prog / args.hard_frac) if args.hard_frac > 0 else 0.0
         env.gamma = args.gamma
-        errs, wins, lens = [], [], []
+        errs, wins, lens, pts, secs = [], [], [], [], []
+        cur_up[0] = up
         with torch.no_grad():
             for t in range(T):
                 d = agent.dist(obs)
@@ -149,6 +163,9 @@ def main():
                     errs += list(info["err"])
                     wins += list(info["err"] <= 0.25)
                     lens += list(info["steps"])
+                    if "points" in info:
+                        pts += list(info["points"])
+                        secs += list(info["secs"])
             last_v = agent.v(obs).squeeze(-1)
         steps += E * T
         exams += len(errs)
@@ -193,7 +210,9 @@ def main():
                 ms_done.add(m)
         ev = {}
         if up % args.eval_every == 0 or up == 1 or up == n_up:
-            if args.binocular:
+            if args.clinic:
+                ev = summary3(run3(agent=agent, test=PlanoPairTestSet(1000, seed=999), n_par=1000))
+            elif args.binocular:
                 ev = summary2(run_policy(agent, PairTestSet(1000, seed=999), n_par=1000, t_max=args.t_max))
             else:
                 check = TestSet(1000, seed=999, start=args.start if args.start != "mix" else "autoref")
@@ -202,21 +221,27 @@ def main():
         w.writerow([up, steps, exams, f"{hrs:.4f}", f"{env.shaping:.3f}", f"{state['hard']:.3f}", f"{np.mean(errs):.4f}", f"{np.mean(wins):.4f}",
                     f"{np.mean(lens):.2f}", f"{np.mean(ents):.4f}",
                     *(f"{ev[k]:.4f}" if ev else "" for k in ("mean_err", "within_025", "exact", "steps",
-                                                             "over_minus_young"))])
+                                                             "over_minus_young")),
+                    f"{ev['points']:.2f}" if "points" in ev else "", f"{ev['minutes']:.3f}" if "minutes" in ev else "",
+                    f"{np.mean(pts):.2f}" if pts else "", f"{np.mean(secs) / 60:.3f}" if secs else ""])
         log.flush()
         if up % 20 == 0:
             save_latest(up)
         if up % 5 == 0 or ev:
             msg = (f"[shape {env.shaping:.2f}] up {up}/{n_up} steps {steps / 1e6:.1f}M exams {exams:,} {hrs * 60:.1f} min | train err "
                    f"{np.mean(errs):.3f} within {np.mean(wins):.2f} len {np.mean(lens):.1f} ent {np.mean(ents):.2f}")
+            if pts:
+                msg += f" pts {np.mean(pts):+.1f} min {np.mean(secs) / 60:.1f}"
             if ev:
+                if "points" in ev:
+                    msg += f" | EVAL pts {ev['points']:+.1f} min {ev['minutes']:.1f} happy {ev['happy']:.2f}"
                 msg += f" | EVAL err {ev['mean_err']:.3f} within {ev['within_025']:.3f} exact {ev['exact']:.3f} " \
                        f"steps {ev['steps']:.1f} overminus_y {ev['over_minus_young']:.2f}"
             print(msg, flush=True)
     save(exams)
     torch.save({"model": {k: v.half() for k, v in agent.state_dict().items()},
                 "meta": {"exams": int(exams), "steps": int(steps), "n_obs": agent.n_obs, "n_act": agent.n_act,
-                         "flag": agent.flag}}, os.path.join(ck, "final.pt"))
+                         "flag": agent.flag, "masked": agent.masked, "kind": agent.kind}}, os.path.join(ck, "final.pt"))
     json.dump({"exams": exams, "steps": steps, "hours": (time.time() - t0) / 3600, "args": vars(args)},
               open(os.path.join(lg, "train_meta.json"), "w"), indent=1)
 
