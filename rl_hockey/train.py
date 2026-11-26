@@ -75,13 +75,14 @@ def sample(logits_list, greedy=False):
 
 
 def evaluate(logits_list, acts):
-    logp, ent = 0, 0
+    """log-prob of the joint action and the entropy of each head."""
+    logp, ents = 0, []
     for h, lg in enumerate(logits_list):
         lsm = torch.log_softmax(lg, -1)
         logp = logp + lsm.gather(-1, acts[:, h:h + 1]).squeeze(-1)
         p = lsm.exp()
-        ent = ent - (p * lsm.clamp(min=-1e4)).sum(-1)
-    return logp, ent
+        ents.append(-(p * lsm.clamp(min=-1e4)).sum(-1))
+    return logp, ents
 
 
 def make_nets(hidden=256):
@@ -157,13 +158,21 @@ def ppo_update(net, opt, data, args, n_mb, ent_coef):
             mm = m[mb].float()
             denom = mm.sum().clamp(min=1.0)
             lg = net.logits(obs[mb], {1: masks[mb]} if masks is not None else None)
-            lp, ent = evaluate(lg, acts[mb])
+            lp, ents = evaluate(lg, acts[mb])
             ratio = (lp - old_lp[mb]).exp()
             a = adv[mb]
             pg = -(torch.min(ratio * a, ratio.clamp(1 - args.clip, 1 + args.clip) * a) * mm).sum() / denom
             v = net.value(obs[mb])
             vf = 0.5 * ((v - ret[mb]) ** 2).mean()
-            en = (ent * mm).sum() / denom
+            # each head's entropy is averaged over the samples where it is a real choice
+            # (the puck head only matters for the carrier, ~1 skater in 10)
+            en = 0
+            for h, e in enumerate(ents):
+                if h == 1 and masks is not None:
+                    real = mm * (masks[mb].sum(-1) > 1).float()
+                    en = en + (e * real).sum() / real.sum().clamp(min=1.0)
+                else:
+                    en = en + (e * mm).sum() / denom
             loss = pg + args.vf_coef * vf - ent_coef * en
             opt.zero_grad()
             loss.backward()
@@ -191,6 +200,12 @@ def best_perm_share(counts):
         if s > best:
             best, arg = s, perm
     return best / tot, list(arg)
+
+
+def goal_distance(env):
+    """[N,2] distance from the puck to the goal mouth each team attacks."""
+    gx = np.array([GOAL_X, -GOAL_X])[None, :]
+    return np.sqrt((env.ppos[:, None, 0] - gx) ** 2 + env.ppos[:, None, 1] ** 2)
 
 
 def closest_skater(env):
@@ -230,8 +245,9 @@ def main():
     ap.add_argument("--coach_start", type=float, default=12e6,
                     help="game steps before the coach starts learning (results are noise until the players can play)")
     ap.add_argument("--hidden", type=int, default=256)
-    ap.add_argument("--poss_reward", type=float, default=0.002)
-    ap.add_argument("--progress_reward", type=float, default=0.2)
+    ap.add_argument("--poss_reward", type=float, default=0.0002)
+    ap.add_argument("--progress_reward", type=float, default=0.1,
+                    help="per 89 ft the puck gets closer to the opponent's goal mouth")
     ap.add_argument("--chase_reward", type=float, default=0.5, help="per 100 ft the team's closest skater gains on a loose puck")
     ap.add_argument("--shape_full", type=float, default=4e6, help="game steps with full shaping")
     ap.add_argument("--shape_zero", type=float, default=12e6, help="game steps when shaping reaches 0")
@@ -317,16 +333,14 @@ def main():
                         depth[ph, :, 0] += (rel * msk).sum(0)[: N_SLOTS + 1]
                         depth[ph, :, 1] += msk.sum(0)[: N_SLOTS + 1]
             # ---- shaping terms (team level)
-            pre_x = env.ppos[:, 0].copy()
+            pre_g = goal_distance(env)
             pre_d = closest_skater(env)
             o, r, done, ev = env.step(move, puck, want)
             own = np.where(env.owner >= 0, env.owner // E, -1)
             poss = np.stack([(own == 0).astype(float) - (own == 1), (own == 1).astype(float) - (own == 0)], -1)
-            prog = (env.ppos[:, 0] - pre_x) / GOAL_X
-            prog = np.where(ev == 1, 0.0, prog)                  # the goal itself is the reward
+            prog = np.where((ev == 1)[:, None], 0.0, (pre_g - goal_distance(env)) / GOAL_X)  # the goal itself is the reward
             chase = np.where((ev == 0)[:, None], (pre_d - closest_skater(env)) / 100.0, 0.0)
-            shape = (args.poss_reward * poss + args.progress_reward * np.stack([prog, -prog], -1)
-                     + args.chase_reward * chase)
+            shape = args.poss_reward * poss + args.progress_reward * prog + args.chase_reward * chase
             team_r = r + w * shape
             B["xs"].append(out["xs"]); B["pm"].append(out["pm"]); B["a_s"].append(out["a_s"])
             B["lp_s"].append(out["lp_s"]); B["v_s"].append(out["v_s"])

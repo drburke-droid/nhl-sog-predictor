@@ -67,10 +67,16 @@ specialise, but nothing tells them how to. Each team sees the game rotated
 is randomised per game.
 
 **Bootstrap reward.** Random agents almost never touch the puck, so early on a
-small extra reward helps learning get started. It has three parts: a bonus for
-having possession, a bonus for moving the puck toward the other net, and a
-bonus when the team's closest skater gets nearer a loose puck. All three are
-team-level and say nothing about *which* player should do anything. The bonus
+small extra reward helps learning get started. It has three parts:
+
+* the team's closest skater gets nearer a loose puck: 0.5 per 100 ft
+* the puck gets closer to the goal mouth the team attacks: 0.1 per 89 ft
+* a tiny possession bonus: 0.0002 per 0.1 s
+
+All three are team-level and say nothing about *which* player should do
+anything. An earlier version measured progress as puck x and paid more for
+possession. Agents learned to park the puck behind the opponent's net
+(maximum x) and never shoot. The bonus
 is at full weight for the first 4M game steps, fades to zero by 12M, and from
 then on goals are the only reward.
 
