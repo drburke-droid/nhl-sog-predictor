@@ -1,0 +1,23 @@
+{
+ "meta": {
+  "exams": 0,
+  "watched": 97103,
+  "steps": 0,
+  "n_obs": 755,
+  "n_act": 25,
+  "flag": false,
+  "teacher": "textbook2"
+ },
+ "check": {
+  "exams": 1000,
+  "eyes": 2000,
+  "mean_err": 0.34528869830534575,
+  "within_025": 0.4545,
+  "exact": 0.3475,
+  "both_within": 0.296,
+  "steps": 102.558,
+  "over_minus_young": 0.3404255319148936,
+  "over_plus": 0.303,
+  "start_within_025": 0.1075
+ }
+}

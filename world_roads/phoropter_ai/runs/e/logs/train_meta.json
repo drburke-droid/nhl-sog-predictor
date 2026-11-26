@@ -1,0 +1,30 @@
+{
+ "exams": 476351,
+ "steps": 39976960,
+ "hours": 0.3021407928069433,
+ "args": {
+  "steps": 40000000.0,
+  "envs": 1024,
+  "rollout": 64,
+  "epochs": 3,
+  "mb": 8192,
+  "lr": 0.0001,
+  "gamma": 0.995,
+  "lam": 0.95,
+  "ent": 0.002,
+  "seed": 0,
+  "eval_every": 25,
+  "out": "runs/e",
+  "cyl_weight": 2.0,
+  "start": "autoref",
+  "hard_frac": 0.0,
+  "flag": false,
+  "letters": false,
+  "binocular": true,
+  "init": null,
+  "critic_warmup": 0,
+  "resume": "runs/e/ckpt/latest.pt",
+  "t_max": 120,
+  "shape_frac": 0.0
+ }
+}

@@ -58,7 +58,7 @@ def main():
         rows.append(("AI, attempt 3", Cp["ai"]["summary"]))
         L += table(rows)
     if D:
-        L += ["", "## Two eyes, binocular balance, line-size-dependent judgement (attempt 4)", "",
+        L += ["", "## Two eyes, binocular balance, line-size-dependent judgement (attempts 4 and 5)", "",
               "Within, exact, mean error and over-minus are per eye (both eyes pooled).", ""]
         rows = [("Autorefractor reading alone", D["autoref"]["summary"]),
                 ("Script: textbook", D["textbook"]["summary"]),

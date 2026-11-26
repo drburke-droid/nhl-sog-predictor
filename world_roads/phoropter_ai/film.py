@@ -328,7 +328,7 @@ def sections():
                                     f"{Ex['ai']['habits']['common_n']} of 5,000 exams went exactly like this",
                                     RS.AI_BLUE),
                                    ("Textbook script: a typical exam", Ex["textbook"]["habits"]["common_seq"][:60],
-                                    "the routine it copied", RS.TB_ORANGE)],
+                                    "the routine it copied: its first 60 moves, of about 100", RS.TB_ORANGE)],
                                   facts("e"), dur=16.0, chip=CHIP2)
     S["outro"] = Card("The fine print", [
         (0.6, "Every patient here was simulated. The optics are real physics; the people are a model.", 34, INK2,

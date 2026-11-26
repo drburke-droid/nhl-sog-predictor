@@ -1,0 +1,5 @@
+autoref   within 0.102 exact 0.049 mean err 0.503 moves 0.0 over-minus(<40) 0.572 over-plus 0.198
+textbook  within 0.446 exact 0.344 mean err 0.360 moves 102.5 over-minus(<40) 0.319 over-plus 0.323 both eyes within 0.298
+mine      within 0.440 exact 0.329 mean err 0.347 moves 66.2 over-minus(<40) 0.393 over-plus 0.258 both eyes within 0.289
+ai        within 0.704 exact 0.584 mean err 0.159 moves 71.4 over-minus(<40) 0.104 over-plus 0.129 both eyes within 0.555
+AI mean uses: {'Sphere +0.25': 4.14, 'Sphere -0.25': 11.75, 'Sphere +1.00': 1.98, 'Cylinder -0.25': 1.08, 'Cylinder +0.25': 2.18, 'Axis +5°': 0.7, 'Axis -5°': 1.02, 'Axis +15°': 0.54, 'Axis -15°': 0.46, 'Read the chart': 14.45, 'Cross-cyl: axis': 4.88, 'Cross-cyl: power': 5.29, 'Done': 1.0, 'Line larger': 4.06, 'Read this line': 2.21, 'Test right eye': 1.83, 'Test left eye': 1.69, 'Both eyes open': 2.0, '+0.25 both eyes': 4.06, '-0.25 both eyes': 3.95, 'Balance: top or bottom?': 2.18}

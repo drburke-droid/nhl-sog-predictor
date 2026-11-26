@@ -38,6 +38,47 @@ No autorefractor (starting at plano, up to 80 moves):
 | AI, attempt 2 (never practised without one) | 11.9% | 10.2% | 0.997 | 31.8 | 15.8% | 19.8% |
 | AI, attempt 3 | 84.5% | 77.7% | 0.176 | 41.6 | 7.8% | 4.0% |
 
+## Two eyes, binocular balance, line-size-dependent judgement (attempts 4 and 5)
+
+Within, exact, mean error and over-minus are per eye (both eyes pooled).
+
+| Examiner | Within 0.25 D | Exact | Mean error (D) | Moves per exam | Over-minused, under 40 | Over-plussed | Both eyes within 0.25 D |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Autorefractor reading alone | 10.2% | 4.9% | 0.503 | 0.0 | 57.2% | 19.8% | |
+| Script: textbook | 44.5% | 34.4% | 0.360 | 102.5 | 31.9% | 32.3% | 29.8% |
+| Script: the optometrist's routine (with binocular MPMVA) | 44.0% | 32.9% | 0.347 | 66.2 | 39.3% | 25.8% | 28.9% |
+| AI, attempt 4 (taught itself; 1,273,013 exams) | 27.8% | 14.5% | 0.364 | 15.8 | 55.0% | 12.9% | 11.6% |
+| AI, attempt 5 (watched 97,103 textbook exams, then 476,351 practice exams) | 70.4% | 58.4% | 0.159 | 71.4 | 10.4% | 12.9% | 55.5% |
+
+Moves used per exam (mean):
+
+| Move | AI, attempt 4 | AI, attempt 5 | Textbook | Optometrist's routine |
+|---|---:|---:|---:|---:|
+| Sphere +0.25 | 0.00 | 4.14 | 11.80 | 8.41 |
+| Sphere -0.25 | 1.07 | 11.75 | 18.96 | 6.51 |
+| Sphere +1.00 | 0.00 | 1.98 | 2.00 | 0.00 |
+| Cylinder -0.25 | 0.00 | 1.08 | 0.76 | 1.02 |
+| Cylinder +0.25 | 2.05 | 2.18 | 1.59 | 1.89 |
+| Axis +5° | 0.00 | 0.70 | 1.54 | 0.81 |
+| Axis -5° | 0.52 | 1.02 | 1.56 | 0.79 |
+| Axis +15° | 0.00 | 0.54 | 1.26 | 1.00 |
+| Axis -15° | 0.00 | 0.46 | 0.72 | 0.52 |
+| Read the chart | 2.00 | 14.45 | 27.33 | 14.75 |
+| 1 or 2? (+0.25) | 0.66 | 0.00 | 0.00 | 0.00 |
+| 1 or 2? (-0.25) | 1.60 | 0.00 | 0.00 | 0.00 |
+| Cross-cyl: axis | 0.00 | 4.88 | 8.53 | 4.63 |
+| Cross-cyl: power | 4.78 | 5.29 | 4.04 | 4.91 |
+| Done | 1.00 | 1.00 | 0.92 | 1.00 |
+| Line smaller | 0.06 | 0.00 | 0.30 | 1.20 |
+| Line larger | 0.85 | 4.06 | 4.28 | 4.30 |
+| Read this line | 0.00 | 2.21 | 2.00 | 0.00 |
+| Test right eye | 0.10 | 1.83 | 1.80 | 1.99 |
+| Test left eye | 1.06 | 1.69 | 1.59 | 1.64 |
+| Both eyes open | 0.00 | 2.00 | 1.98 | 2.00 |
+| +0.25 both eyes | 0.00 | 4.06 | 4.02 | 3.00 |
+| -0.25 both eyes | 0.00 | 3.95 | 3.49 | 3.33 |
+| Balance: top or bottom? | 0.00 | 2.18 | 2.07 | 2.45 |
+
 ## Habits, attempt 1
 
 | Move | Mean uses per exam | Exams using it |
