@@ -13,8 +13,9 @@ goalie can only come back at a stoppage.  Rules that are hard-coded:
   * faceoffs: puck frozen on the dot for a set-up period while every player must
     be on his own side of the dot; after a goal every skater is re-spawned at a
     random spot in his own half, so no line-up is ever imposed
-  * goalies stay in their own end (a simplification of the red-line rule;
-    without it goalies learned to roam to centre ice and kick the puck)
+  * goalies stay within 12 ft of the middle of their goal line, in front of
+    it (a stand-in for the crease / trapezoid rules; free-roaming goalies
+    learned to wander off and leave the net open)
 
 Nothing about positions, formations or roles is coded anywhere.
 
@@ -73,7 +74,8 @@ FREEZE_P = 0.5
 FREEZE_DIST = 12.0
 COOLDOWN = 0.3
 SETUP_GOAL, SETUP_STOP = 20, 10   # faceoff set-up (decisions)
-GOALIE_MAX_X = -60.0        # team frame: goalies stay in their own end
+GOALIE_RANGE = 12.0         # goalie centre stays within this of the goal mouth
+GOALIE_MIN_X = -88.0        # team frame: and in front of the goal line
 
 # ---------------------------------------------------------------- actions
 # move: 0 glide, 1 brake, 2..9 accelerate in one of 8 directions (team frame)
@@ -370,9 +372,27 @@ class HockeyVecEnv:
                 p = np.where(pen[..., None], q + nn * RAD_K[None, :, None], p)
                 vv = _dot(v, nn)
                 v = np.where((pen & (vv < 0))[..., None], v - vv[..., None] * nn, v)
-        # goalies stay in their own end
+        # goalies stay in front of their own net
+        gx = SIGN_K[None, IS_G] * p[:, IS_G, 0]
+        gy = SIGN_K[None, IS_G] * p[:, IS_G, 1]
+        gx = np.maximum(gx, GOALIE_MIN_X)
+        dx, dy = gx + GOAL_X, gy
+        dg = np.sqrt(dx * dx + dy * dy) + 1e-9
+        f = np.minimum(1.0, GOALIE_RANGE / dg)
+        gx, gy = np.maximum(-GOAL_X + dx * f, GOALIE_MIN_X), dy * f
+        moved = f < 1.0
+        p[:, IS_G, 0] = SIGN_K[None, IS_G] * gx
+        p[:, IS_G, 1] = SIGN_K[None, IS_G] * gy
+        if moved.any():  # drop the outward part of the goalie's velocity
+            nx, ny = dx / dg, dy / dg
+            vg = v[:, IS_G]
+            vo = (vg[..., 0] * nx + vg[..., 1] * ny) * SIGN_K[None, IS_G]
+            vo = np.where(moved & (vo > 0), vo, 0.0)
+            vg[..., 0] -= vo * nx * SIGN_K[None, IS_G]
+            vg[..., 1] -= vo * ny * SIGN_K[None, IS_G]
+            v[:, IS_G] = vg
         xt = SIGN_K * p[..., 0]
-        lim = np.where(IS_G, GOALIE_MAX_X, np.inf)
+        lim = np.full(K, np.inf)
         over = xt > lim
         if self.setup.any():   # faceoff set-up: everyone on own side of the dot
             fo_t = SIGN_K[None, :] * self.fo_pt[:, None, 0] - 1.5

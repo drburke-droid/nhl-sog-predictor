@@ -224,7 +224,10 @@ def main():
     ap.add_argument("--epochs", type=int, default=2)
     ap.add_argument("--vf_coef", type=float, default=0.5)
     ap.add_argument("--ent", type=float, default=0.01)
-    ap.add_argument("--ent_coach", type=float, default=0.01)
+    ap.add_argument("--ent_coach", type=float, default=0.003)
+    ap.add_argument("--lr_coach", type=float, default=1e-4)
+    ap.add_argument("--coach_start", type=float, default=12e6,
+                    help="game steps before the coach starts learning (results are noise until the players can play)")
     ap.add_argument("--hidden", type=int, default=256)
     ap.add_argument("--poss_reward", type=float, default=0.002)
     ap.add_argument("--progress_reward", type=float, default=0.2)
@@ -245,7 +248,7 @@ def main():
     sk, gk, co = make_nets(args.hidden)
     opt_s = torch.optim.Adam(sk.parameters(), lr=args.lr, eps=1e-5)
     opt_g = torch.optim.Adam(gk.parameters(), lr=args.lr, eps=1e-5)
-    opt_c = torch.optim.Adam(co.parameters(), lr=args.lr, eps=1e-5)
+    opt_c = torch.optim.Adam(co.parameters(), lr=args.lr_coach, eps=1e-5)
     it, steps = 0, 0
     ck = os.path.join(args.run, "latest.pt")
     if os.path.exists(ck):
@@ -378,7 +381,8 @@ def main():
         t1 = time.time()
         st_s = ppo_update(sk, opt_s, data_s, args, n_mb=8, ent_coef=args.ent)
         st_g = ppo_update(gk, opt_g, data_g, args, n_mb=2, ent_coef=args.ent)
-        st_c = ppo_update(co, opt_c, data_c, args, n_mb=2, ent_coef=args.ent_coach)
+        st_c = (ppo_update(co, opt_c, data_c, args, n_mb=2, ent_coef=args.ent_coach)
+                if steps >= args.coach_start else {"pg": 0.0, "vf": 0.0, "ent": 0.0, "kl": 0.0, "clip": 0.0})
         t_upd = time.time() - t1
         it += 1
 
