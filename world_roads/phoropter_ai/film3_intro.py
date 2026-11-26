@@ -43,7 +43,7 @@ class Hook3(Section):
         CU.draw_phoropter(im, 450, 30, 0.7, None, hot=hot, rings=True)
         d = ImageDraw.Draw(im, "RGBA")
         CU.draw_buttons(d, 40, 800, 1840, 260, pressed=lit, mask=None, title=False)
-        rr(d, [0, 0, W, 790], 0, fill=BG + (int(150 * smooth((t - 4.0) / 1.0)),))
+        rr(d, [0, 0, W, 790], 0, fill=BG + (int(222 * smooth((t - 4.0) / 1.0)),))
         big_title(d, W / 2, 210, "This AI has never seen an eye.", 64, fade(t, 4.2, 99, 0.6, 0.1))
         big_title(d, W / 2, 310, "It doesn't know what a phoropter is.", 44, fade(t, 6.0, 99, 0.6, 0.1), INK2, "SemiBold")
         big_title(d, W / 2, 430, "Today it opens an eye clinic.", 56, fade(t, 8.2, 99, 0.6, 0.1), GOLD, "Bold")

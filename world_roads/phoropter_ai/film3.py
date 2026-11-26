@@ -631,10 +631,10 @@ def sections():
     S["day1_exam"] = Exam3(d1, "DAY ONE", "its first patient, before any practice", speed=1.6, outro=6.0,
                            notes={0: "It has no idea what any button does. It presses them at random."})
     st0 = R["stages"][0]
-    S["day1_grid"] = OutcomeGrid("1,000 PATIENTS ON DAY ONE", "Random buttons, then “Prescribe”. Nearly everyone walks "
-                                 "out with plano lenses. One square per patient.", [("Day one", st0["sampled_outcomes"], st0["sampled"]["net"],
+    S["day1_grid"] = OutcomeGrid("1,000 PATIENTS ON DAY ONE", "Random buttons, then “Prescribe”: two eyes in three leave "
+                                 "within half a dioptre of plano. One square per patient.", [("Day one", st0["sampled_outcomes"], st0["sampled"]["net"],
                                                              st0["sampled"]["minutes"])], dur=12.0,
-                                 note="Most people need glasses. Plano isn't glasses.")
+                                 note="Most people need real glasses. Plano-ish isn't glasses.")
     # learning
     tb_net = R["textbook"]["summary"]["net"]
     S["curve"] = PracticeCurve(refs=[("Plano for everyone", R["plano"]["summary"]["net"], GREY),

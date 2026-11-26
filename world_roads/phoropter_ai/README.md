@@ -1,7 +1,37 @@
 # I gave an AI a phoropter
 
-A reinforcement-learning agent teaches itself subjective refraction on simulated patients, and a video
+A reinforcement-learning agent teaches itself subjective refraction on simulated patients, and two videos
 of how it learned.
+
+## The second video: "Day one at AI Optometry" (`runs/f`, [CLINIC.md](CLINIC.md))
+
+One AI that knows nothing about eyes opens an eye clinic:
+* The phoropter is a real photograph (`assets/phoropter.webp`, supplied by the optometrist), its parts
+  colour-coded to the AI's 27 buttons.
+* Every exam starts at plano: no autorefractor, no retinoscopy. It runs right eye, left eye, then both.
+* The AI is paid in clinic points: a happy patient who returns and refers +100; annoyed +30; an unpaid Rx
+  check −80; a re-check with a bad review −150; −4 per minute of chair time.
+* On day one it presses random buttons and hands out lenses close to plano. Then it practises.
+* The video compares its exam with the textbook sequence, step by step, and with published data on real
+  refractions ([PUBLISHED.md](PUBLISHED.md)).
+
+| File | What it does |
+|---|---|
+| `env3.py` | The clinic exam: plano start, stages, masked buttons, chair time, the patient's exact answer odds |
+| `clinic.py` | The clinic scorecard: outcome chances by prescription error, points, chair time |
+| `clinicians3.py` | The textbook script for the clinic exam (Wilkinson 2016 / Borish sequence) and a lock-step runner |
+| `evaluate3.py`, `stages3.py` | 5,000-patient comparison, practice checkpoints, repeatability, habits |
+| `record3.py`, `traces3.py` | Record exams step by step, with the patient's odds and the AI's odds for every button |
+| `clinic_ui.py`, `scenes3.py`, `film3_intro.py`, `film3.py`, `thumbs3.py` | The second video |
+
+```bash
+python train.py --clinic --gamma 1.0 --steps 200e6 --shape_frac 0.15 --hard_frac 0.3 --ent 0.01 --lr 3e-4 --eval_every 25 --out runs/f
+python evaluate3.py && python stages3.py && python traces3.py
+python film3.py all          # -> out/ai_optometry.mp4
+python thumbs3.py
+```
+
+## The first video: "I gave an AI a phoropter" (attempts 1–5)
 
 The AI sits at a phoropter with 16 buttons:
 * change sphere, cylinder or axis;
