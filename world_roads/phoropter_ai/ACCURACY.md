@@ -96,6 +96,59 @@ leftover cylinder): √(ΔM² + (2ΔJ0)² + (2ΔJ45)²).
 The AI learned never to touch the axis. The video tells this story. Attempt 2 is identical except that
 it is trained on the full-cylinder measure.
 
+## 2b. The two-eye exam (attempt 4, `env2.py`, `clinicians2.py`)
+
+The last comparison uses a fuller exam, prompted by the optometrist's own experience.
+
+**Two eyes.** The left eye is correlated with the right:
+* spherical equivalent differs by N(0, 0.25) D (5% of patients: N(0, 1.0) D);
+* cylinder differs by N(0, 0.25) D;
+* the axis is about the mirror image (180 − axis ± 8°).
+
+Each eye has its own autorefractor error. The young-eye minus bias is shared (correlation 0.54).
+Acuity is nearly equal in the two eyes, except 5% of patients with one weaker eye.
+
+**Yoked accommodation.** With one eye occluded, the open eye accommodates for itself. With both
+open, both accommodate by the smaller of the two eyes' needs.
+
+**Proximal accommodation** (assumption, informed by instrument myopia). With one eye occluded behind
+the phoropter, accommodation will not relax below a floor:
+* 0–0.50 D, scaled down as amplitude falls below 4 D;
+* fog relaxes the floor (gone at 0.50 D of fog);
+* with both eyes open only 30% of it remains.
+
+So monocular endpoints drift toward minus. This is the over-minus that binocular balancing and a
+binocular plus check are meant to catch. Without it, the model gave no reason to balance at all.
+
+**Line size and judgement** (assumption, informed by clinical experience).
+* Patients see one projected line, not the whole chart.
+* Each "1 or 2" answer is judged on that line. The real clarity difference is scaled by a gain that
+  depends on δ, the line's size above the patient's threshold (logMAR):
+
+  | Judgement | Gain peaks at | Fall-off width (bigger / smaller letters) | Example |
+  |---|---|---|---|
+  | Sphere and balance | δ = −0.05 | 0.35 / 0.20 | 20/200 with 20/63 vision: gain 0.08 |
+  | Cross-cylinder | δ = +0.15 | 0.35 / 0.25 | ~1.5 lines bigger than threshold: gain 1.0 |
+
+**Ocular dominance.** 70% of patients are right-eye dominant. In the prism-split balance the dominant
+eye looks 0.02 logMAR clearer than it is.
+
+**The two-eye scripts.**
+* **Textbook.** For each eye in turn:
+  1. Fog +1.00, then MPMVA by chart with a one-letter tolerance.
+  2. Cylinder search if there is no cylinder.
+  3. Cross-cylinder one line bigger than best: axis, power, axis.
+  4. MPMVA re-check, then an isolated-line +0.25 check.
+
+  Then the binocular steps:
+  1. Both eyes +0.75 on the 20/40 line, prism-split.
+  2. +0.25 to the clearer eye until equal. A flip takes the last +0.25 back.
+  3. Prism out, then binocular MPMVA (stop at the first −0.25 that gains no letters).
+* **The optometrist's routine.** As described by the optometrist (text in `clinicians2.py`). Gaps
+  were filled the standard way, as noted there. The final "20/20 OU?" check acts: if both eyes
+  together read worse than the better eye did alone, −0.25 OU (up to twice). With the check only
+  looked at, the routine scored 33% within 0.25 D instead of 41%.
+
 ## 3. The scripted examiners
 
 They are scripts, not people. A skilled clinician adapts in ways they do not.
@@ -135,6 +188,13 @@ They are scripts, not people. A skilled clinician adapts in ways they do not.
   * the second sent high hyperopes who couldn't read the top line toward −8 D;
   * the third fogged +2.00 D and stopped unfogging too early. This one was the best on the test patients (49% within 0.25 D, versus 54% for
   the same script given an autorefractor reading).
+
+**A bug fixed along the way.** All three scripts' cross-cylinder power step first kept the spherical
+equivalent by adding 0.25 D sphere on every second cylinder click, even when the two clicks cancelled
+("more", then "less"). That left 0.25 D of extra minus on some exams. It now compensates for the *net*
+cylinder change. Every script result in RESULTS.md and the video is from the fixed version:
+* the one-eye textbook went from 54.2% to 55.2% within 0.25 D;
+* the patient-pleaser went from 33.6% to 36.3%.
 
 ## 4. Training
 

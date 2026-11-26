@@ -33,7 +33,7 @@ def _jcc_axis(env, i):
 
 
 def _jcc_power(env, i):
-    clicks, last = 0, 0
+    net, comp, last = 0, 0, 0     # net cylinder clicks (-1 = more minus); sphere clicks applied
     for _ in range(10):
         code, _, *_ = yield JCC_PW
         if code == 2:
@@ -43,9 +43,12 @@ def _jcc_power(env, i):
             return
         reverse = last and d != last
         yield CYL_MORE if d < 0 else CYL_LESS
-        clicks += 1
-        if clicks % 2 == 0:                              # keep the spherical equivalent: 0.25 sph per 0.50 cyl
-            yield SP25 if d < 0 else SM25
+        net += d
+        if net % 2 == 0:                                 # keep the spherical equivalent: 0.25 sph per net 0.50 cyl
+            need = -net // 2 - comp
+            for _ in range(abs(need)):
+                yield SP25 if need > 0 else SM25
+            comp += need
         if reverse:
             return
         last = d

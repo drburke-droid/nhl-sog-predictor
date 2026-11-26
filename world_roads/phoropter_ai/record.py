@@ -49,3 +49,59 @@ if __name__ == "__main__":
         ans = {-1: "", 0: "1", 1: "2", 2: "same", 3: f"logMAR {s['va']:.1f}"}[s["code"]]
         S, C, ax = s["after"]
         print(f"{k + 1:2d} {s['name']:18s} {ans:12s} -> {S:+.2f} {C:+.2f} x {ax:.0f}" + (f"  err {s['err']:.3f}" if "err" in s else ""))
+
+
+# ---------------------------------------------------------------------------- two eyes (attempt 4)
+# The same 24-year-old, now with both eyes: the left eye slightly more myopic, its reading also too minus,
+# a fair amount of proximal accommodation behind the phoropter, right-eye dominant.
+SHOWCASE2 = dict(SHOWCASE, S_os=-2.50, C_os=-0.75, axis_os=10, S0_os=-3.00, C0_os=-0.50, ax0_os=2,
+                 mar0_os=10 ** -0.08, prox=0.35, dom=1.0)
+
+
+def fixed_pair(**kw):
+    from patients import sample_pair
+
+    def fn(rng, n):
+        base = sample_pair(rng, n, age=kw.get("age"))
+        for k, v in kw.items():
+            base[k] = np.full(n, float(v))
+        return base
+    return fn
+
+
+def record2(agent=None, script=None, patient=SHOWCASE2, greedy=True, seed=3, t_max=120):
+    """Record a two-eye exam by an AI (agent) or a scripted examiner (script generator function)."""
+    from env2 import BinocularEnv, ACTS, DONE as DONE2
+    env = BinocularEnv(1, seed=seed, sampler=fixed_pair(**patient), record=True)
+    env.t_max = t_max
+    obs = env.obs()
+    gen = script(env, 0) if script else None
+    a = next(gen) if gen else None
+    steps = []
+    for _ in range(t_max):
+        before = [(float(env.S[0, e]), float(env.C[0, e]), float(env.ax[0, e])) for e in (0, 1)]
+        cur0, bin0, scr0 = int(env.cur[0]), float(env.bin[0]), float(env.line[0])
+        if gen is None:
+            a = int(agent.act(obs, greedy=greedy)[0])
+        obs, r, done, info = env.step(np.array([a]))
+        L = env.last
+        st = dict(a=int(a), name=ACTS[a], code=int(L["code"][0]), va=float(L["va"][0]), k=int(L["k"][0]),
+                  nl=int(L["nl"][0]), line=float(L["line"][0]), screen=float(L["screen"][0]), cur=int(L["cur"][0]),
+                  bin=float(L["bin"][0]), cur_before=cur0, bin_before=bin0, screen_before=scr0, before=before,
+                  letters=True, two_eyes=True)
+        if done[0]:
+            st["after"] = [(float(info["S"][0]), float(info["C"][0]), float(info["ax"][0])),
+                           (float(info["S_os"][0]), float(info["C_os"][0]), float(info["ax_os"][0]))]
+            st["err"] = [float(info["err"][0]), float(info["err_os"][0])]
+            steps.append(st)
+            break
+        st["after"] = [(float(env.S[0, e]), float(env.C[0, e]), float(env.ax[0, e])) for e in (0, 1)]
+        steps.append(st)
+        if gen is not None:
+            try:
+                a = gen.send((st["code"], st["va"], st["k"], st["nl"], st["line"]))
+            except StopIteration:
+                a = DONE2
+    true = [[float(x) for x in to_pv(patient["S"], patient["C"], patient["axis"])],
+            [float(x) for x in to_pv(patient["S_os"], patient["C_os"], patient["axis_os"])]]
+    return dict(patient={k: float(v) for k, v in patient.items()}, true_pv=true, steps=steps, two_eyes=True)
