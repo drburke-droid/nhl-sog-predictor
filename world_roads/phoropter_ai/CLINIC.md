@@ -104,7 +104,7 @@ the same buttons and the same patients:
   Steps 2 and 7 above (fog check, plateau rule, the same patience with both eyes) fixed the tails.
 - No single patient-noise setting moved the agreement much. That was tested for lapses, response noise,
   the "same" band, letter-reading jitter, the minus preference and proximal accommodation.
-- Final version: 66% agreement from an objective start; [TBD]% from plano on the 5,000-patient test.
+- Final version: 66% agreement from an objective start, and 59% from plano (2,000 test patients; RESULTS_CLINIC.md).
 - Simulated patients are therefore harder to refract than real ones, or a rigid script does worse than a
   clinician's judgement, or both. Compare the AI with the script, not with real optometrists.
 
@@ -175,4 +175,31 @@ python train.py --clinic --gamma 1.0 --init runs/f/ckpt/term1_full.pt --exams_of
 
 ## 7. Results
 
-[TBD after the evaluation]
+The full tables are in [RESULTS_CLINIC.md](RESULTS_CLINIC.md) (`python report3.py`). On 5,000 new patients:
+
+- **Clinic points.** The AI earns +5.6 per patient after chair time; the textbook script −8.9; plano −107.4.
+- **Speed.** The AI takes 3:06 per exam and 57 buttons. The textbook takes 9:07 and 157 buttons.
+- **Sphere.** The AI gets the spherical equivalent within 0.25 D in 90% of eyes, against 71% for the textbook.
+  It also over-minuses young eyes less often: 13% against 46%.
+- **Astigmatism.** The AI gets the cylinder within 0.25 D in 52% of eyes, against 79% for the textbook. Its
+  whole prescription is within 0.25 D in 31% of eyes, against 40%. It never asks the cross-cylinder axis
+  question; it only turns the dial back toward 180°. With-the-rule astigmatism is corrected about as often as
+  by the textbook, but against-the-rule and oblique astigmatism almost never are.
+- **Happy patients.** The textbook's glasses make more people happy: 51% against 43%. The AI wins on points by
+  saving 6 minutes per patient, which is what the scorecard pays for.
+- **Repeatability.** The AI agrees with itself within 0.25 D 87% of the time, the textbook script 59% of the
+  time. Real optometrists manage about 80% (PUBLISHED.md).
+
+What the AI does, in order (the showcase exam; the same pattern in the habit counts):
+
+1. **Each eye.** It reads the chart once, then takes big −1.00 steps well past the eye's need. Too much minus
+   still looks clear to an eye that can focus.
+2. **Cylinder.** It turns the dial back toward 180° and asks cross-cylinder power questions, adding −0.25 D
+   cylinder while the answer is "one".
+3. **Plus back.** It adds +1.00 at a time, reading the chart, until the chart blurs, and leaves the eye fogged.
+4. **Both eyes.** It balances with the prism split, adding +0.25 to the clearer eye, interleaved with −0.25 on
+   both eyes. In effect it balances and unfogs at the same time.
+5. **Endpoint.** "Clearer with −0.25?" while the answer is a confident yes, then it prescribes.
+
+It finds the sphere with both eyes open, where only 30% of the extra phoropter focusing remains, instead of
+one eye at a time. That is why its sphere is more accurate and less often over-minused.

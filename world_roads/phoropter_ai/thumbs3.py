@@ -51,7 +51,7 @@ def thumb_B(R):
     grid(d, 825, 196, last, cols=15, cell=25)
     shadow_text(d, (640, 18), "AN AI OPENED AN EYE CLINIC", 66, ui.INK)
     shadow_text(d, (267, 118), "DAY ONE", 52, CU.OUT_COL["review"])
-    shadow_text(d, (1012, 124), f"{R['meta']['exams'] // 1000:,}K PATIENTS LATER", 38, CU.OUT_COL["happy"])
+    shadow_text(d, (1012, 124), f"{R['meta']['exams'] / 1e6:.1f} MILLION PATIENTS LATER", 34, CU.OUT_COL["happy"])
     d.polygon([(500, 420), (720, 420), (720, 385), (790, 445), (720, 505), (720, 470), (500, 470)], fill=ui.GOLD)
     im.save(os.path.join(ui.OUT, "thumb3_B.png"))
 

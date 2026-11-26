@@ -402,8 +402,8 @@ class HabitsTable(Section):
 class Results3(Section):
     """Plano, the textbook and the AI on the same new patients."""
 
-    def __init__(self, R, dur=34.0):
-        self.R, self.dur = R, dur
+    def __init__(self, R, dur=34.0, note=None):
+        self.R, self.dur, self.note = R, dur, note
         self.sfx = [(1.0 + 0.4 * i, "tick") for i in range(3)]
 
     def frame(self, t):
@@ -458,6 +458,9 @@ class Results3(Section):
         for o in range(5):
             text(d, (lx, 900), "■ " + OUTL[o], 21, OUTC[o], "SemiBold", a=ao)
             lx += 240
+        if self.note:
+            al = fade(t, 9.0, 999, 0.6, 0.1) * a
+            para(d, 60, 960, self.note, 25, 1800, GOLD, "SemiBold", al, lh=1.3)
         return np.asarray(im)
 
 
@@ -532,7 +535,8 @@ class Shortcut(Section):
              "Medium", a=a)
         rows = [("Eyes with the spherical equivalent within 0.25 D", f"{100 * A['summary']['se_within_025']:.0f}%", INK),
                 ("Times it turned the axis, per exam", f"{A['axis_turns']:.2f}", RED),
-                ("Cylinders it prescribed at exactly 180°", f"{100 * A['cyl_at_180']:.0f}%", RED),
+                ("Cylinders it prescribed at exactly 180°", f"{100 * A['cyl_at_180']:.1f}%" if A['cyl_at_180'] > 0.99
+                 else f"{100 * A['cyl_at_180']:.0f}%", RED),
                 ("With-the-rule astigmatism (axis near 180°): within 0.25 D", f"{100 * A['wtr_within']:.0f}%", INK2),
                 ("Against-the-rule (near 90°): within 0.25 D", f"{100 * A['atr_within']:.0f}%", RED),
                 ("Oblique: within 0.25 D", f"{100 * A['obl_within']:.0f}%", RED)]
@@ -543,7 +547,7 @@ class Shortcut(Section):
             text(d, (1180, y - 4), v, 36, col, "Bold", "ra", al)
             y += 64
         # the dial
-        cx, cy, r = 1560, 400, 190
+        cx, cy, r = 1580, 320, 150
         al = fade(t, 2.0, 999, 0.6, 0.1) * a
         d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=CU.AXIS + (int(255 * al),), width=6)
         for deg in range(0, 180, 15):
@@ -552,9 +556,9 @@ class Shortcut(Section):
                 d.line([(cx + sg * (r - 14) * math.cos(tt), cy - sg * (r - 14) * math.sin(tt)),
                         (cx + sg * r * math.cos(tt), cy - sg * r * math.sin(tt))], fill=INK2 + (int(200 * al),), width=3)
         d.line([(cx - r * 0.9, cy), (cx + r * 0.9, cy)], fill=CU.AXIS + (int(255 * al),), width=10)
-        text(d, (cx, cy + r + 20), "the dial always started at 180°", 22, INK2, "SemiBold", "ma", al)
+        text(d, (cx, cy + r + 18), "the dial always started at 180°", 22, INK2, "SemiBold", "ma", al)
         al = fade(t, 9.5, 999, 0.6, 0.1) * a
-        para(d, 100, 570, "The phoropter's axis dial started at 180° for every patient, and most young people's "
+        para(d, 100, 590, "The phoropter's axis dial started at 180° for every patient, and most young people's "
                           "astigmatism sits near 180°. Turning the dial only pays off after several moves in a row, so "
                           "it never found out it should.", 27, 1760, INK, "Medium", al, lh=1.35)
         al = fade(t, 16.0, 999, 0.6, 0.1) * a
@@ -739,17 +743,23 @@ def sections():
                          [(0.8, "The same first patient, again.", 34, INK2, "Medium"),
                           (2.4, "Hidden from the AI: right −2.25 −1.00 × 170, left −2.50 −0.75 × 010.", 28, MUTED,
                            "Medium")], 7.0, kicker="GRADUATION DAY")
-    S["ai_exam"] = Exam3(ai_tr, "THE AI", f"after {fmt_n(R['meta']['exams'])} practice patients",
+    S["ai_exam"] = Exam3(ai_tr, "THE AI", f"after {fmt_n(R['meta']['exams'])} practice patients", speed=0.8,
                          notes=NOTES.get("ai_exam", {}), outro=8.0)
     # the textbook
     S["tb_card"] = TextbookCard()
+    k_l = next(k for k, s_ in enumerate(tb_tr["steps"]) if s_["a"] == E3.NEXT)
+    k_b = next(k for k, s_ in enumerate(tb_tr["steps"]) if s_["a"] == E3.NEXT and k > k_l)
     S["tb_exam"] = Exam3(tb_tr, "THE TEXTBOOK", "the same patient, the textbook script", who="TEXTBOOK",
-                         show_ai_probs=False, panel_title="THE SAME BUTTONS", speed=0.45,
-                         notes=NOTES.get("tb_exam", {}), outro=7.0)
+                         show_ai_probs=False, panel_title="THE SAME BUTTONS", speed=0.36,
+                         fast=[(k_l + 2, k_b, 0.4)], notes=NOTES.get("tb_exam", {}), outro=7.0)
     S["sidebyside"] = SideBySide(ai_tr, tb_tr, NOTES.get("sidebyside", []))
     S["timelines"] = Timelines(ai_tr, tb_tr, NOTES.get("timelines", []))
     S["habits"] = HabitsTable(R, NOTES.get("habits", []))
-    S["results"] = Results3(R)
+    hp = lambda e: 100 * R[e]["outcomes"][0] / sum(R[e]["outcomes"])
+    S["results"] = Results3(R, note=f"The textbook's glasses are better: {hp('textbook'):.0f}% happy patients against "
+                                    f"{hp('ai'):.0f}%. The AI wins on points by saving "
+                                    f"{R['textbook']['summary']['minutes'] - R['ai']['summary']['minutes']:.0f} minutes "
+                                    f"per patient. That's what the scorecard paid for.")
     S["real"] = RealWorld(R)
     S["outro"] = Card("The fine print", [
         (0.6, "Every patient is simulated. The optics are real (power vectors, accommodation, a wave-optics model of the "
@@ -829,10 +839,10 @@ def make_notes(R, ai_tr, tb_tr):
     N["timelines"] = [
         (8.0, f"The textbook reads the chart {Th['chart reading']:.0f} times per patient: at 8 seconds a reading, about "
               f"{Th['chart reading'] * 8 / 60:.0f} minutes. The AI reads it {Ah['chart reading']:.0f} times."),
-        (15.0, f"Interleaving costs time. Within each eye, the textbook switches between sphere and cylinder work "
-               f"{T['habits']['sph_cyl_switches']:.1f} times per exam (sphere, cylinder, sphere again); the AI "
-               f"{A['habits']['sph_cyl_switches']:.1f} times. Neither goes back and forth: the AI does sphere, then "
-               f"cylinder, then plus back, once."),
+        (15.0, f"Does interleaving sphere and cylinder cost time? The AI switches between them more often than the "
+               f"textbook ({A['habits']['sph_cyl_switches']:.1f} times per exam against {T['habits']['sph_cyl_switches']:.1f}), "
+               f"but its switches are one-second dial turns while it adds minus, not extra questions. Its questions "
+               f"come in blocks: cylinder questions, then chart readings."),
         (24.0, "Where the AI does interleave is with both eyes open: balance and unfog in the same few clicks, instead "
                "of balancing first and unfogging after.")]
     N["habits"] = [
@@ -844,15 +854,17 @@ def make_notes(R, ai_tr, tb_tr):
                f"{Th['balance']:.0f}.")]
     # the practice curve: what it learned when (from data/stages_f.json)
     N["curve"] = CURVE_NOTES
-    N["curve2"] = [(2_000_000, "With the dial anywhere, it learned to turn it back toward 180° before adding cylinder."),
-                   (2_600_000, f"Final: {As['net']:+.0f} points per patient, {mmss(As['minutes'])} per exam.")]
+    N["curve2"] = [(1_700_000, "The realistic dial cost it about 20 points per patient."),
+                   (2_000_000, "It learned to turn the dial back toward 180° before adding cylinder."),
+                   (2_600_000, f"Final, on new patients: {As['net']:+.0f} points per patient, {mmss(As['minutes'])} per exam.")]
     return N
 
 
-CURVE_NOTES = [(20_000, "Around 20,000 patients: it starts asking “1 or 2?”."),
-               (50_000, "By 50,000 it never hands out plano any more."),
-               (200_000, "By 200,000: cross-cylinder power questions, cylinder at 180°."),
-               (1_000_000, "By a million: the two eyes balanced with prism, exams down to 3 minutes.")]
+CURVE_NOTES = [(20_000, "About 20,000 patients: it starts asking “1 or 2?”, ten times an exam."),
+               (50_000, "50,000: it never hands out plano any more. Half the eyes get the sphere within 0.25 D."),
+               (200_000, "200,000: cross-cylinder power questions. Cylinder, always at 180°."),
+               (1_000_000, "A million: it balances the two eyes with prism and drops most “1 or 2?” questions. "
+                           "Exams down to 3 minutes.")]
 
 
 ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "shortcut",
