@@ -60,3 +60,13 @@ initialised from runs/f/ckpt/term1_full.pt {'exams': 1630473, 'steps': 100925440
 [shape 0.32] up 290/1068 steps 119.9M exams 1,884,877 13.2 min | train err 0.676 within 0.22 len 79.5 ent 0.67 pts -5.8 min 4.2
 [shape 0.31] up 295/1068 steps 120.3M exams 1,889,017 13.4 min | train err 0.655 within 0.27 len 80.0 ent 0.67 pts -1.8 min 4.2
 [shape 0.30] up 300/1068 steps 120.6M exams 1,893,192 13.6 min | train err 0.608 within 0.25 len 79.1 ent 0.66 pts +1.8 min 4.2 | EVAL pts +23.8 min 3.7 happy 0.45 | EVAL err 0.444 within 0.323 exact 0.209 steps 67.8 overminus_y 0.13
+[shape 0.29] up 305/1068 steps 120.9M exams 1,897,293 13.8 min | train err 0.612 within 0.24 len 78.1 ent 0.67 pts -0.4 min 4.2
+[shape 0.28] up 310/1068 steps 121.2M exams 1,901,404 14.1 min | train err 0.638 within 0.23 len 79.2 ent 0.66 pts -4.4 min 4.3
+[shape 0.26] up 315/1068 steps 121.6M exams 1,905,639 14.3 min | train err 0.661 within 0.24 len 78.6 ent 0.66 pts -4.9 min 4.2
+[shape 0.25] up 320/1068 steps 121.9M exams 1,909,840 14.4 min | train err 0.653 within 0.24 len 79.3 ent 0.68 pts -3.8 min 4.2
+[shape 0.24] up 325/1068 steps 122.2M exams 1,914,112 14.7 min | train err 0.630 within 0.24 len 75.2 ent 0.66 pts +0.6 min 4.0 | EVAL pts +24.5 min 3.6 happy 0.46 | EVAL err 0.440 within 0.330 exact 0.222 steps 65.9 overminus_y 0.12
+[shape 0.23] up 330/1068 steps 122.6M exams 1,918,420 14.9 min | train err 0.590 within 0.23 len 76.0 ent 0.68 pts +2.5 min 4.0
+[shape 0.22] up 335/1068 steps 122.9M exams 1,922,759 15.1 min | train err 0.609 within 0.23 len 75.3 ent 0.66 pts +1.6 min 4.0
+[shape 0.21] up 340/1068 steps 123.2M exams 1,927,169 15.3 min | train err 0.599 within 0.22 len 74.4 ent 0.66 pts +3.1 min 3.9
+[shape 0.19] up 345/1068 steps 123.5M exams 1,931,701 15.5 min | train err 0.577 within 0.26 len 73.1 ent 0.65 pts +7.2 min 3.9
+[shape 0.18] up 350/1068 steps 123.9M exams 1,936,197 15.7 min | train err 0.586 within 0.23 len 73.2 ent 0.66 pts +2.5 min 3.9 | EVAL pts +23.7 min 3.4 happy 0.45 | EVAL err 0.440 within 0.332 exact 0.229 steps 63.6 overminus_y 0.14
