@@ -1,0 +1,626 @@
+<title>Hockey Self-Play Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (max 1080px) on ice-white; rinks are the hero object of every section; scoreboard-condensed display type */
+:root {
+  --page: #f3f6f8;
+  --surface: #ffffff;
+  --ink: #15212b;
+  --ink-2: #566571;
+  --hair: #dde5ea;
+  --axis: #b7c2ca;
+  --ice: #fbfdfe;
+  --boards: #7f8e9a;
+  --rink-red: #cf3a3f;
+  --rink-blue: #2c5fb4;
+  --crease: #d7ebf8;
+  --team-a: #257de0;
+  --team-b: #f47230;
+  --on-team: #ffffff;
+  --puck: #0b0f12;
+  --puck-ring: #ffffff;
+  --accent: #1b64be;
+  --h0: #f4f9fe; --h1: #cce3fd; --h2: #9dc8f7; --h3: #6aabf1; --h4: #338ced; --h5: #1b64be; --h6: #0e3d7e;
+  --o0: #fff6f0; --o1: #fdd9c2; --o2: #f9b48c; --o3: #f47230; --o4: #c9531a; --o5: #8f3a10;
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0d1317; --surface: #141b20; --ink: #e7edf1; --ink-2: #98a6b1; --hair: #25303a; --axis: #3b4853;
+    --ice: #18222a; --boards: #6c7b87; --rink-red: #e05a5e; --rink-blue: #5f8ee3; --crease: #1f3a52;
+    --team-a: #338ced; --team-b: #e76624; --on-team: #ffffff; --puck: #f4f7f9; --puck-ring: #0b0f12; --accent: #6aabf1;
+    --h0: #1a2631; --h1: #1b3550; --h2: #1d4d80; --h3: #2370cd; --h4: #3d93ee; --h5: #7db6f2; --h6: #cce3fd;
+    --o0: #22201e; --o1: #4a2a17; --o2: #7c3a14; --o3: #c4561c; --o4: #ea7a3d; --o5: #f8b48a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0d1317; --surface: #141b20; --ink: #e7edf1; --ink-2: #98a6b1; --hair: #25303a; --axis: #3b4853;
+  --ice: #18222a; --boards: #6c7b87; --rink-red: #e05a5e; --rink-blue: #5f8ee3; --crease: #1f3a52;
+  --team-a: #338ced; --team-b: #e76624; --on-team: #ffffff; --puck: #f4f7f9; --puck-ring: #0b0f12; --accent: #6aabf1;
+  --h0: #1a2631; --h1: #1b3550; --h2: #1d4d80; --h3: #2370cd; --h4: #3d93ee; --h5: #7db6f2; --h6: #cce3fd;
+  --o0: #22201e; --o1: #4a2a17; --o2: #7c3a14; --o3: #c4561c; --o4: #ea7a3d; --o5: #f8b48a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--page); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: 0.005em; }
+h1 { font-size: clamp(2.2rem, 5.4vw, 3.6rem); }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.1rem); }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.82rem; color: var(--ink-2); }
+.muted { color: var(--ink-2); }
+.mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+section { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-direction: column; gap: 8px; }
+header.mast { padding-top: 40px; display: flex; flex-direction: column; gap: 16px; }
+.lede { font-size: 1.15rem; max-width: 62ch; }
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 8px; }
+.fig { background: var(--surface); border: 1px solid var(--hair); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fig .v { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.fig .l { font-size: 0.88rem; color: var(--ink-2); }
+.scale { position: relative; height: 6px; border-radius: 3px; background: var(--hair); margin-top: 8px; }
+.scale i { position: absolute; top: -4px; width: 3px; height: 14px; border-radius: 2px; background: var(--accent); }
+.scale span { position: absolute; top: 10px; font-size: 0.7rem; color: var(--ink-2); font-family: var(--font-data); transform: translateX(-50%); white-space: nowrap; }
+.scale span.end { transform: translateX(-100%); }
+.scale-wrap { padding-bottom: 14px; }
+
+/* replay */
+.panel { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.hud { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; justify-content: space-between; }
+.board { display: flex; align-items: center; gap: 14px; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.team { display: inline-flex; align-items: center; gap: 8px; }
+.chip { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.clock { font-family: var(--font-data); font-size: 1.05rem; padding: 2px 8px; border: 1px solid var(--hair); border-radius: 4px; }
+.event { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.9rem; min-width: 7em; }
+.event.on { color: var(--rink-red); }
+canvas { display: block; width: 100%; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+button, select { font: inherit; font-size: 0.92rem; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 5px; padding: 5px 12px; cursor: pointer; }
+button:hover, select:hover { border-color: var(--ink-2); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.seg { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.timeline { position: relative; flex: 1 1 240px; min-width: 0; padding-bottom: 10px; }
+.timeline input { width: 100%; accent-color: var(--accent); }
+.ticks { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; pointer-events: none; }
+.ticks b { position: absolute; width: 3px; height: 8px; border-radius: 1px; transform: translateX(-50%); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.88rem; color: var(--ink-2); }
+.legend .k { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 0.75rem; color: var(--on-team); }
+
+/* small multiples */
+.grid-sm { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.mini { background: var(--surface); border: 1px solid var(--hair); border-radius: 6px; padding: 10px 10px 8px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mini .t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.mini .t b { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; }
+.role-tag { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.mini .s { font-size: 0.8rem; color: var(--ink-2); }
+.ramp { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--ink-2); }
+.ramp i { display: inline-block; width: 120px; height: 8px; border-radius: 2px; }
+
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; width: 100%; }
+.tbl-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--hair); border-radius: 6px; }
+th, td { padding: 8px 12px; text-align: right; border-bottom: 1px solid var(--hair); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.03em; color: var(--ink-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td.cell { font-family: var(--font-data); font-size: 0.88rem; }
+td.best { box-shadow: inset 0 0 0 2px var(--ink); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.chart { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 12px; min-width: 0; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+.note { font-size: 0.9rem; color: var(--ink-2); max-width: 75ch; }
+.tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 0.82rem; line-height: 1.35; padding: 6px 9px; border-radius: 5px; max-width: 260px; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px 28px; }
+.cols h3 { margin-bottom: 6px; }
+.cols ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+.cols li { max-width: 60ch; }
+details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
+.status { padding: 40px 0; color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow">Reinforcement-learning experiment · 5 skaters + goalie a side · self-play</div>
+    <h1>Did the agents invent hockey positions?</h1>
+    <p class="lede" id="lede">Two teams of learning agents played each other on a simulated rink, with only the rules of hockey hard-coded. Nobody told them what a defenceman or a winger is. Loading results…</p>
+    <div class="figs" id="figs"></div>
+  </header>
+
+  <section id="replay" aria-label="Game replay">
+    <div class="sec-head">
+      <div class="eyebrow">Replay</div>
+      <h2>Watch the trained agents play</h2>
+      <p class="muted">Overhead view, one dot per player. Blue attacks to the right. Numbers are slot ids, the only identity an agent has. Every slot runs the same network; the slot number is one of its inputs. After every goal each skater is dropped at a random spot in his own half, so any structure you see they rebuild themselves.</p>
+    </div>
+    <div class="panel">
+      <div class="hud">
+        <div class="board"><span class="team"><span class="chip" style="background:var(--team-a)"></span><span id="sa">0</span></span><span class="muted">–</span><span class="team"><span id="sb">0</span><span class="chip" style="background:var(--team-b)"></span></span></div>
+        <span class="event" id="evt" aria-live="polite"></span>
+        <span class="clock" id="clk">3:00</span>
+      </div>
+      <canvas id="rink" aria-label="Animated rink showing player positions"></canvas>
+      <div class="controls">
+        <button id="play" aria-pressed="false">Play</button>
+        <div class="seg" id="speeds" role="group" aria-label="Playback speed"></div>
+        <div class="timeline"><input id="scrub" type="range" min="0" max="1799" value="0" aria-label="Game time"><div class="ticks" id="ticks"></div></div>
+        <select id="gamesel" aria-label="Choose game"></select>
+      </div>
+      <div class="legend" id="rlegend"></div>
+    </div>
+  </section>
+
+  <section id="positions">
+    <div class="sec-head">
+      <div class="eyebrow">The answer</div>
+      <h2>Where each slot spends its time</h2>
+      <p class="muted" id="pos-text">Each rink is drawn from that slot's team's point of view, attacking to the right, pooled over both teams and every evaluation game. Darker means more time spent there.</p>
+    </div>
+    <div class="controls"><div class="seg" id="phase" role="group" aria-label="Game situation"></div><div class="ramp" id="ramp1"></div></div>
+    <div class="grid-sm" id="heat"></div>
+    <h3>Which real position does each slot match?</h3>
+    <p class="note">Every frame, the five skaters are labelled by where they stand: the two deepest are defence (the one further left is LD), and the other three are forwards, left to right LW, C, RW. The table shows how often each slot gets each label. A slot with a real position lands in one column almost every frame. With no positions every slot would sit near 20% everywhere.</p>
+    <div class="tbl-wrap"><table id="roles"></table></div>
+  </section>
+
+  <section id="emergence">
+    <div class="sec-head">
+      <div class="eyebrow">Emergence</div>
+      <h2>How the positions formed during training</h2>
+      <p class="muted">Role consistency is the share of frames in which each slot holds its own position, under the best slot-to-position match. The defence/forward line asks only whether the same two slots are the deepest. The dashed lines show what positionless play would score.</p>
+    </div>
+    <div class="chart" id="evo"></div>
+    <h3>Average spot of each slot, at points during training</h3>
+    <div class="grid-sm" id="snaps"></div>
+  </section>
+
+  <section id="formation">
+    <div class="sec-head">
+      <div class="eyebrow">Systems</div>
+      <h2>Shape with and without the puck</h2>
+      <p class="muted">The average position of each slot when its team has the puck and when the other team has it. The small dark disc is the puck's average position.</p>
+    </div>
+    <div class="two" id="form"></div>
+  </section>
+
+  <section id="coach">
+    <div class="sec-head">
+      <div class="eyebrow">The bench</div>
+      <h2>When the coach pulls the goalie</h2>
+      <p class="muted" id="coach-text">The coach decides once per second of game time whether the goalie should be on the bench. It is the only agent rewarded for winning: +1 for a win, 0 for a tie, −1 for a loss. The grid shows the chance it picks goalie out, by score and time left, with its team carrying the puck in the offensive zone.</p>
+    </div>
+    <div class="chart" id="coachgrid"></div>
+  </section>
+
+  <section id="game">
+    <div class="sec-head">
+      <div class="eyebrow">Box score</div>
+      <h2>What kind of hockey they play</h2>
+      <p class="muted">Averages per team per 3-minute game from the evaluation games.</p>
+    </div>
+    <div class="tbl-wrap"><table id="stats"></table></div>
+  </section>
+
+  <section id="method">
+    <div class="sec-head">
+      <div class="eyebrow">Method</div>
+      <h2>How the experiment works</h2>
+    </div>
+    <div class="cols" id="method-cols"></div>
+  </section>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const ROLE = ["LD", "RD", "LW", "C", "RW"];
+const ROLE_LONG = { LD: "left defence", RD: "right defence", LW: "left wing", C: "centre", RW: "right wing" };
+const PHASES = ["All play", "With the puck", "Without the puck"];
+const $ = s => document.querySelector(s);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const pct = (v, d = 0) => (100 * v).toFixed(d) + "%";
+const slotName = i => i < 5 ? "Slot " + (i + 1) : (i === 5 ? "Slot 6 (extra attacker)" : "Goalie");
+const slotLabel = i => i < 5 ? String(i + 1) : (i === 5 ? "6" : "G");
+let D = null;
+
+// ---------------------------------------------------------------- tooltip
+const tip = $("#tip");
+function showTip(e, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+  if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.hidden = true; }
+
+// ---------------------------------------------------------------- color ramps
+function hex2rgb(h) { h = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function ramp(prefix, n) {
+  const stops = Array.from({ length: n }, (_, i) => hex2rgb(css(`--${prefix}${i}`)));
+  return t => {
+    t = Math.max(0, Math.min(1, t)) * (stops.length - 1);
+    const i = Math.min(stops.length - 2, Math.floor(t)), f = t - i;
+    const c = stops[i].map((v, k) => Math.round(v + (stops[i + 1][k] - v) * f));
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  };
+}
+function rampCss(prefix, n) { return `linear-gradient(90deg, ${Array.from({ length: n }, (_, i) => css(`--${prefix}${i}`)).join(",")})`; }
+
+// ---------------------------------------------------------------- rink drawing (feet, x right, y up)
+function setupCanvas(cv, cssW, cssH) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
+  cv.style.height = cssH + "px";
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+function rinkGeom(W, pad = 4) {
+  const s = (W - 2 * pad) / 200;
+  return { s, pad, H: 85 * s + 2 * pad, tx: x => pad + (x + 100) * s, ty: y => pad + (42.5 - y) * s };
+}
+function rinkPath(ctx, g) {
+  const { tx, ty, s } = g, r = 28;
+  ctx.beginPath();
+  ctx.moveTo(tx(-72), ty(42.5)); ctx.lineTo(tx(72), ty(42.5));
+  ctx.arc(tx(72), ty(14.5), r * s, -Math.PI / 2, 0);
+  ctx.lineTo(tx(100), ty(-14.5));
+  ctx.arc(tx(72), ty(-14.5), r * s, 0, Math.PI / 2);
+  ctx.lineTo(tx(-72), ty(-42.5));
+  ctx.arc(tx(-72), ty(-14.5), r * s, Math.PI / 2, Math.PI);
+  ctx.lineTo(tx(-100), ty(14.5));
+  ctx.arc(tx(-72), ty(14.5), r * s, Math.PI, 1.5 * Math.PI);
+  ctx.closePath();
+}
+function drawRink(ctx, g, opt = {}) {
+  const { tx, ty, s } = g;
+  const lw = Math.max(1, s * 0.9);
+  ctx.save();
+  rinkPath(ctx, g); ctx.fillStyle = css("--ice"); ctx.fill();
+  ctx.clip();
+  if (opt.under) opt.under(ctx);
+  const red = css("--rink-red"), blue = css("--rink-blue");
+  ctx.globalAlpha = opt.faint ? 0.55 : 1;
+  // creases
+  ctx.fillStyle = css("--crease");
+  [[89, Math.PI / 2, 1.5 * Math.PI], [-89, -Math.PI / 2, Math.PI / 2]].forEach(([x, a0, a1]) => {
+    ctx.beginPath(); ctx.moveTo(tx(x), ty(0)); ctx.arc(tx(x), ty(0), 6 * s, a0, a1); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = red; ctx.lineWidth = Math.max(0.75, lw * 0.5); ctx.stroke();
+  });
+  // lines
+  const vline = (x, w, col) => { ctx.fillStyle = col; ctx.fillRect(tx(x) - w / 2, ty(42.5), w, 85 * s); };
+  vline(0, Math.max(1.5, s * 1.0), red);
+  vline(25, Math.max(1.5, s * 1.0), blue); vline(-25, Math.max(1.5, s * 1.0), blue);
+  vline(89, Math.max(0.75, s * 0.25), red); vline(-89, Math.max(0.75, s * 0.25), red);
+  ctx.lineWidth = Math.max(0.75, lw * 0.45);
+  ctx.strokeStyle = blue; ctx.beginPath(); ctx.arc(tx(0), ty(0), 15 * s, 0, 2 * Math.PI); ctx.stroke();
+  ctx.strokeStyle = red;
+  [[69, 22], [69, -22], [-69, 22], [-69, -22]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(tx(x), ty(y), 15 * s, 0, 2 * Math.PI); ctx.stroke(); });
+  ctx.fillStyle = red;
+  [[69, 22], [69, -22], [-69, 22], [-69, -22], [20, 22], [20, -22], [-20, 22], [-20, -22]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(tx(x), ty(y), Math.max(1.2, s * 1.0), 0, 2 * Math.PI); ctx.fill(); });
+  ctx.fillStyle = blue; ctx.beginPath(); ctx.arc(tx(0), ty(0), Math.max(1.2, s * 0.6), 0, 2 * Math.PI); ctx.fill();
+  // nets
+  ctx.strokeStyle = red; ctx.lineWidth = Math.max(1, lw * 0.6);
+  ctx.strokeRect(tx(89), ty(3), 3.33 * s, 6 * s); ctx.strokeRect(tx(-92.33), ty(3), 3.33 * s, 6 * s);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+  rinkPath(ctx, g); ctx.strokeStyle = css("--boards"); ctx.lineWidth = Math.max(1.5, s * 0.8); ctx.stroke();
+}
+function drawPlayer(ctx, g, x, y, fill, label, opt = {}) {
+  const r = (opt.r || 2.1) * g.s;
+  ctx.beginPath(); ctx.arc(g.tx(x), g.ty(y), r, 0, 2 * Math.PI);
+  ctx.fillStyle = fill; ctx.fill();
+  ctx.lineWidth = Math.max(1, g.s * 0.35); ctx.strokeStyle = css("--ice"); ctx.stroke();
+  if (opt.ring) { ctx.beginPath(); ctx.arc(g.tx(x), g.ty(y), r + g.s * 0.9, 0, 2 * Math.PI); ctx.lineWidth = Math.max(1.5, g.s * 0.45); ctx.strokeStyle = css("--ink"); ctx.stroke(); }
+  if (label && r > 5) {
+    ctx.fillStyle = css("--on-team"); ctx.font = `700 ${Math.round(r * 1.15)}px ${css("--font-display")}`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(label, g.tx(x), g.ty(y) + r * 0.06);
+  }
+}
+
+// ---------------------------------------------------------------- header figures
+function renderHeader() {
+  const f = D.final;
+  const steps = f.steps, gameHours = steps * 0.1 / 3600;
+  const cons = f.role_consistency, df = f.df_consistency;
+  const figs = [
+    { v: pct(cons), l: "role consistency: how often each slot is in its own position", scale: [[0.2, "20% = none"], [1, "100% = rigid"]], at: cons },
+    { v: pct(df), l: "defence/forward consistency: are the same two slots the deepest?", scale: [[0.52, "52% = none"], [1, "100% = rigid"]], at: df },
+    { v: (steps / 1e6).toFixed(0) + "M", l: `game steps of self-play, about ${Math.round(gameHours)} hours of game time` },
+    { v: f.stats.games, l: "full evaluation games behind the charts below" },
+  ];
+  $("#figs").innerHTML = figs.map(x => `<div class="fig"><div class="v">${x.v}</div><div class="l">${x.l}</div>${x.scale ? `<div class="scale-wrap"><div class="scale">${x.scale.map(([p, t]) => `<span class="${p >= 1 ? "end" : ""}" style="left:${p * 100}%">${t}</span>`).join("")}<i style="left:calc(${x.at * 100}% - 1.5px)"></i></div></div>` : ""}</div>`).join("");
+  if (window.LEDE) $("#lede").textContent = window.LEDE;
+}
+
+// ---------------------------------------------------------------- replay
+const RP = { g: 0, f: 0, playing: false, speed: 1, last: 0, evtUntil: -1, evtText: "" };
+const EVN = { 1: "Goal", 2: "Offside", 3: "Icing", 4: "Goalie freeze" };
+function replayInit() {
+  const sel = $("#gamesel");
+  sel.innerHTML = D.replays.map((r, i) => `<option value="${i}">Game ${i + 1} · final ${r.final[0]}–${r.final[1]}</option>`).join("");
+  sel.onchange = () => { RP.g = +sel.value; RP.f = 0; setupTimeline(); drawFrame(); };
+  $("#speeds").innerHTML = [0.5, 1, 2, 4].map(s => `<button data-s="${s}" aria-pressed="${s === 1}">${s}×</button>`).join("");
+  $("#speeds").onclick = e => { const b = e.target.closest("button"); if (!b) return; RP.speed = +b.dataset.s; $("#speeds").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+  $("#play").onclick = () => { RP.playing = !RP.playing; $("#play").textContent = RP.playing ? "Pause" : "Play"; $("#play").setAttribute("aria-pressed", RP.playing); RP.last = performance.now(); if (RP.playing) requestAnimationFrame(tick); };
+  $("#scrub").oninput = e => { RP.f = +e.target.value; drawFrame(); };
+  const perm = D.final.role_perm, rc = D.final.role_counts;
+  $("#rlegend").innerHTML = perm.map((r, i) => { const tot = rc[i].reduce((a, b) => a + b, 0) || 1; return `<span class="k"><span class="dot" style="background:var(--team-a)">${i + 1}</span>slot ${i + 1} · mostly ${ROLE[r]} (${pct(rc[i][r] / tot)})</span>`; }).join("")
+    + `<span class="k"><span class="dot" style="background:var(--team-a)">6</span>extra attacker</span><span class="k"><span class="dot" style="background:var(--team-a)">G</span>goalie</span><span class="k"><span class="dot" style="background:var(--ink);width:10px;height:10px"></span>ring = puck carrier</span>`;
+  setupTimeline();
+  drawFrame();
+}
+function setupTimeline() {
+  const R = D.replays[RP.g];
+  $("#scrub").max = R.n - 1; $("#scrub").value = Math.round(RP.f);
+  $("#ticks").innerHTML = R.E.filter(e => e[1] === 1).map(([i]) => {
+    const sc = R.S.slice(2 * (i + 1), 2 * (i + 1) + 2), prev = R.S.slice(2 * i, 2 * i + 2);
+    const who = sc[0] > prev[0] ? "--team-a" : "--team-b";
+    return `<b style="left:${100 * i / (R.n - 1)}%;background:var(${who})" title="Goal"></b>`;
+  }).join("");
+}
+function tick(now) {
+  if (!RP.playing) return;
+  const dt = Math.min(0.1, (now - RP.last) / 1000); RP.last = now;
+  const R = D.replays[RP.g];
+  const prev = Math.floor(RP.f);
+  RP.f += dt * 10 * RP.speed;
+  if (RP.f >= R.n - 1) { RP.f = R.n - 1; RP.playing = false; $("#play").textContent = "Play"; $("#play").setAttribute("aria-pressed", false); }
+  for (const [i, c] of R.E) if (i >= prev && i < Math.floor(RP.f) + 0) { RP.evtText = EVN[c]; RP.evtUntil = RP.f + 20; }
+  $("#scrub").value = Math.round(RP.f);
+  drawFrame();
+  if (RP.playing) requestAnimationFrame(tick);
+}
+function drawFrame() {
+  const R = D.replays[RP.g], cv = $("#rink");
+  const W = cv.parentElement.clientWidth - 28;
+  const g = rinkGeom(W, 6);
+  const ctx = setupCanvas(cv, W, g.H);
+  ctx.clearRect(0, 0, W, g.H);
+  drawRink(ctx, g);
+  const i0 = Math.floor(RP.f), i1 = Math.min(R.n - 1, i0 + 1), fr = RP.f - i0;
+  const P = (i, k, d) => R.P[i * 28 + k * 2 + d] / 10;
+  const act = R.A[i0], own = R.O[i0];
+  const cols = [css("--team-a"), css("--team-b")];
+  for (let k = 0; k < 14; k++) {
+    if (!(act & (1 << k))) continue;
+    let x = P(i0, k, 0), y = P(i0, k, 1);
+    const x1 = P(i1, k, 0), y1 = P(i1, k, 1);
+    if ((R.A[i1] & (1 << k)) && Math.hypot(x1 - x, y1 - y) < 12) { x += (x1 - x) * fr; y += (y1 - y) * fr; }
+    const slot = k % 7;
+    drawPlayer(ctx, g, x, y, cols[Math.floor(k / 7)], slotLabel(slot), { r: slot === 6 ? 2.6 : 2.1, ring: own === k });
+  }
+  let px = R.K[2 * i0] / 10, py = R.K[2 * i0 + 1] / 10;
+  const qx = R.K[2 * i1] / 10, qy = R.K[2 * i1 + 1] / 10;
+  if (Math.hypot(qx - px, qy - py) < 15) { px += (qx - px) * fr; py += (qy - py) * fr; }
+  ctx.beginPath(); ctx.arc(g.tx(px), g.ty(py), Math.max(2.5, g.s * 0.85), 0, 2 * Math.PI);
+  ctx.fillStyle = css("--puck"); ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = css("--puck-ring"); ctx.stroke();
+  $("#sa").textContent = R.S[2 * i0]; $("#sb").textContent = R.S[2 * i0 + 1];
+  const left = Math.max(0, (R.n - RP.f) / 10);
+  $("#clk").textContent = `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, "0")}`;
+  const ev = $("#evt");
+  if (RP.f < RP.evtUntil) { ev.textContent = RP.evtText; ev.className = "event on"; }
+  else if (R.U[i0]) { ev.textContent = "Faceoff"; ev.className = "event"; }
+  else { ev.textContent = ""; ev.className = "event"; }
+}
+
+// ---------------------------------------------------------------- heatmaps
+let phase = 0;
+const NX = 50, NY = 22, BIN = 4;
+function renderHeat() {
+  const f = D.final, perm = f.role_perm, rc = f.role_counts;
+  $("#phase").innerHTML = PHASES.map((p, i) => `<button data-p="${i}" aria-pressed="${i === phase}">${p}</button>`).join("");
+  $("#phase").onclick = e => { const b = e.target.closest("button"); if (!b) return; phase = +b.dataset.p; renderHeat(); };
+  $("#ramp1").innerHTML = `less time <i style="background:${rampCss("h", 7)}"></i> more time`;
+  const H = f.heat[phase];
+  const host = $("#heat"); host.innerHTML = "";
+  const col = ramp("h", 7);
+  for (let s = 0; s < 7; s++) {
+    const card = document.createElement("div"); card.className = "mini";
+    let tag = "", sub = "";
+    if (s < 5) {
+      const tot = rc[s].reduce((a, b) => a + b, 0) || 1;
+      tag = `<span class="role-tag">${ROLE[perm[s]]} · ${pct(rc[s][perm[s]] / tot)}</span>`;
+      sub = `plays ${ROLE_LONG[ROLE[perm[s]]]} in ${pct(rc[s][perm[s]] / tot)} of 5-on-5 frames`;
+    } else if (s === 5) { sub = "on the ice only while the goalie is pulled"; }
+    else { sub = "the goalie network"; }
+    card.innerHTML = `<div class="t"><b>${slotName(s)}</b>${tag}</div><canvas aria-label="Heatmap for ${slotName(s)}"></canvas><div class="s">${sub}</div>`;
+    host.appendChild(card);
+    const cv = card.querySelector("canvas");
+    const W = card.clientWidth - 20, g = rinkGeom(W, 2), ctx = setupCanvas(cv, W, g.H);
+    const grid = H[s]; let mx = 0, tot = 0;
+    grid.forEach(r => r.forEach(v => { mx = Math.max(mx, v); tot += v; }));
+    drawRink(ctx, g, { faint: true, under: c => {
+      if (!mx) return;
+      for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) {
+        const v = grid[i][j]; if (!v) continue;
+        c.fillStyle = col(Math.pow(v / mx, 0.6));
+        c.fillRect(g.tx(-100 + i * BIN), g.ty(-42.5 + (j + 1) * BIN), BIN * g.s + 0.5, BIN * g.s + 0.5);
+      }
+    } });
+    cv.onmousemove = e => {
+      const rect = cv.getBoundingClientRect();
+      const x = (e.clientX - rect.left - g.pad) / g.s - 100, y = 42.5 - (e.clientY - rect.top - g.pad) / g.s;
+      const i = Math.floor((x + 100) / BIN), j = Math.floor((y + 42.5) / BIN);
+      if (i < 0 || i >= NX || j < 0 || j >= NY || !tot) return hideTip();
+      const v = grid[i][j];
+      const zone = x > 25 ? "offensive zone" : x < -25 ? "defensive zone" : "neutral zone";
+      showTip(e, `<b>${slotName(s)}</b><br>${Math.round(x)} ft from centre, ${y >= 0 ? "left" : "right"} side (${zone})<br>${pct(v / tot, 1)} of its time in this 4×4 ft cell`);
+    };
+    cv.onmouseleave = hideTip;
+  }
+}
+
+// ---------------------------------------------------------------- role table
+function renderRoles() {
+  const f = D.final, rc = f.role_counts, perm = f.role_perm, col = ramp("h", 7);
+  let html = `<thead><tr><th>Slot</th>${ROLE.map(r => `<th title="${ROLE_LONG[r]}">${r}</th>`).join("")}<th>Best match</th></tr></thead><tbody>`;
+  rc.forEach((row, i) => {
+    const tot = row.reduce((a, b) => a + b, 0) || 1;
+    html += `<tr><td><b>Slot ${i + 1}</b></td>` + row.map((v, j) => {
+      const p = v / tot, bg = col(Math.min(1, p / 0.9)), light = p < 0.45;
+      return `<td class="cell${j === perm[i] ? " best" : ""}" style="background:${bg};color:${light ? "var(--ink)" : "#fff"}">${pct(p)}</td>`;
+    }).join("") + `<td>${ROLE_LONG[ROLE[perm[i]]]}</td></tr>`;
+  });
+  $("#roles").innerHTML = html + "</tbody>";
+}
+
+// ---------------------------------------------------------------- evolution chart
+function smooth(arr, k) { return arr.map((_, i) => { const a = arr.slice(Math.max(0, i - k), i + k + 1).filter(v => v != null); return a.length ? a.reduce((s, v) => s + v, 0) / a.length : null; }); }
+function renderEvo() {
+  const host = $("#evo"); const W = host.clientWidth - 24, H = Math.max(240, Math.min(340, W * 0.42));
+  const L = D.log; if (!L.length) return;
+  const m = { l: 44, r: 92, t: 16, b: 40 };
+  const xs = L.map(r => r.steps / 1e6), xmax = xs[xs.length - 1];
+  const k = Math.max(2, Math.round(L.length / 120));
+  const s1 = smooth(L.map(r => r.roles), k), s2 = smooth(L.map(r => r.df), k);
+  const X = v => m.l + (v / xmax) * (W - m.l - m.r), Y = v => m.t + (1 - v) * (H - m.t - m.b);
+  const cA = css("--team-a"), cB = css("--team-b");
+  const line = (s) => s.map((v, i) => `${i ? "L" : "M"}${X(xs[i]).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+  const shapeEnd = (() => { const i = L.findIndex(r => r.shaping === 0); return i < 0 ? xmax : xs[i]; })();
+  const shapeFull = (() => { const i = L.findIndex(r => r.shaping < 1); return i < 0 ? xmax : xs[i]; })();
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Role consistency over training">`;
+  svg += `<defs><linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="${css("--hair")}" stop-opacity="0.9"/><stop offset="${(shapeFull / Math.max(shapeEnd, 1e-9)).toFixed(3)}" stop-color="${css("--hair")}" stop-opacity="0.9"/><stop offset="1" stop-color="${css("--hair")}" stop-opacity="0"/></linearGradient></defs>`;
+  svg += `<rect x="${X(0)}" y="${m.t}" width="${X(shapeEnd) - X(0)}" height="${H - m.t - m.b}" fill="url(#fade)"/>`;
+  svg += `<text x="${X(0) + 6}" y="${m.t + 14}">bootstrap reward on, fading out</text>`;
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => { svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css("--hair")}" stroke-width="1"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end">${v * 100}%</text>`; });
+  const ticks = niceTicks(xmax, 6);
+  ticks.forEach(v => { svg += `<text x="${X(v)}" y="${H - m.b + 18}" text-anchor="middle">${v}M</text>`; });
+  svg += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle">game steps of self-play (0.1 s each)</text>`;
+  svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(0)}" y2="${Y(0)}" stroke="${css("--axis")}"/>`;
+  [[0.2, "no positions (roles)"], [0.52, "no positions (D/F)"]].forEach(([v, t]) => { svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css("--ink-2")}" stroke-dasharray="4 4" stroke-width="1"/><text x="${W - m.r + 6}" y="${Y(v) + 4}">${t.replace(" (", " (")}</text>`; });
+  svg += `<path d="${line(s2)}" fill="none" stroke="${cB}" stroke-width="2" stroke-linejoin="round"/>`;
+  svg += `<path d="${line(s1)}" fill="none" stroke="${cA}" stroke-width="2" stroke-linejoin="round"/>`;
+  const e1 = s1[s1.length - 1], e2 = s2[s2.length - 1];
+  const y1 = Y(e1), y2 = Math.abs(Y(e2) - y1) < 14 ? (Y(e2) < y1 ? y1 - 14 : y1 + 14) : Y(e2);
+  svg += `<circle cx="${X(xmax)}" cy="${Y(e1)}" r="4" fill="${cA}" stroke="${css("--surface")}" stroke-width="2"/><circle cx="${X(xmax)}" cy="${Y(e2)}" r="4" fill="${cB}" stroke="${css("--surface")}" stroke-width="2"/>`;
+  svg += `<text x="${X(xmax) + 8}" y="${y1 + 4}" style="fill:var(--ink)">roles ${pct(e1)}</text><text x="${X(xmax) + 8}" y="${y2 + 4}" style="fill:var(--ink)">D/F ${pct(e2)}</text>`;
+  svg += `<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="${css("--axis")}" visibility="hidden"/>`;
+  svg += `<rect id="hit" x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent"/></svg>`;
+  host.innerHTML = `<div class="legend" style="margin:2px 0 8px 4px"><span class="k"><span class="chip" style="background:${cA}"></span>role consistency (5 positions)</span><span class="k"><span class="chip" style="background:${cB}"></span>defence/forward consistency</span></div>` + svg;
+  const hit = host.querySelector("#hit"), xh = host.querySelector("#xh");
+  hit.onmousemove = e => {
+    const rect = host.querySelector("svg").getBoundingClientRect();
+    const xv = ((e.clientX - rect.left) * (W / rect.width) - m.l) / (W - m.l - m.r) * xmax;
+    let i = 0; while (i < xs.length - 1 && xs[i] < xv) i++;
+    xh.setAttribute("x1", X(xs[i])); xh.setAttribute("x2", X(xs[i])); xh.setAttribute("visibility", "visible");
+    const r = L[i];
+    showTip(e, `<b>${xs[i].toFixed(1)}M steps</b> · iteration ${r.it}<br>role consistency ${pct(s1[i])}<br>D/F consistency ${pct(s2[i])}<br>bootstrap reward weight ${r.shaping.toFixed(2)}${r.goals != null ? `<br>goals per team per game ${r.goals.toFixed(2)}` : ""}`);
+  };
+  hit.onmouseleave = () => { xh.setAttribute("visibility", "hidden"); hideTip(); };
+}
+function niceTicks(max, n) {
+  const raw = max / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), st = [1, 2, 5, 10].map(v => v * mag).find(v => v >= raw);
+  const out = []; for (let v = 0; v <= max + 1e-9; v += st) out.push(+v.toFixed(6)); return out;
+}
+
+// ---------------------------------------------------------------- snapshot strip & formations
+function meanRink(host, title, sub, pos, opt = {}) {
+  const card = document.createElement("div"); card.className = opt.big ? "chart" : "mini";
+  card.innerHTML = `<div class="t" style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b style="font-family:var(--font-display);font-size:1.05rem">${title}</b><span class="s muted" style="font-size:.82rem">${sub}</span></div><canvas></canvas>`;
+  host.appendChild(card);
+  const cv = card.querySelector("canvas"), W = card.clientWidth - (opt.big ? 24 : 20), g = rinkGeom(W, 3), ctx = setupCanvas(cv, W, g.H);
+  drawRink(ctx, g, { faint: true });
+  if (opt.puck) { ctx.beginPath(); ctx.arc(g.tx(opt.puck[0]), g.ty(opt.puck[1]), Math.max(3, g.s * 1.4), 0, 2 * Math.PI); ctx.fillStyle = css("--puck"); ctx.fill(); }
+  pos.forEach((p, s) => { if (p && (p[0] || p[1])) drawPlayer(ctx, g, p[0], p[1], css("--team-a"), slotLabel(s), { r: opt.big ? 2.6 : 3.2 }); });
+  cv.onmousemove = e => {
+    const rect = cv.getBoundingClientRect();
+    const x = (e.clientX - rect.left - g.pad) / g.s - 100, y = 42.5 - (e.clientY - rect.top - g.pad) / g.s;
+    let best = -1, bd = 6;
+    pos.forEach((p, s) => { if (!p) return; const d = Math.hypot(p[0] - x, p[1] - y); if (d < bd) { bd = d; best = s; } });
+    if (best < 0) return hideTip();
+    const p = pos[best];
+    showTip(e, `<b>${slotName(best)}</b><br>average spot ${p[0].toFixed(0)} ft from centre, ${Math.abs(p[1]).toFixed(0)} ft ${p[1] >= 0 ? "left" : "right"} of the middle`);
+  };
+  cv.onmouseleave = hideTip;
+}
+function renderSnaps() {
+  const host = $("#snaps"); host.innerHTML = "";
+  (D.snapshots || []).forEach(sn => meanRink(host, `${(sn.steps / 1e6).toFixed(1)}M steps`, `roles ${pct(sn.role_consistency)}`, sn.mean_pos[0].slice(0, 5)));
+}
+function renderForm() {
+  const host = $("#form"); host.innerHTML = "";
+  const f = D.final;
+  [[1, "When we have the puck"], [2, "When they have the puck"]].forEach(([ph, t]) => {
+    const mp = f.mean_pos[ph], rp = f.rel_puck[ph];
+    const puck = [mp[0][0] - rp[0][0], mp[0][1] - rp[0][1]];
+    meanRink(host, t, "attacking right →", mp.slice(0, 5), { big: true, puck });
+  });
+}
+
+// ---------------------------------------------------------------- coach
+function renderCoach() {
+  const C = D.coach, host = $("#coachgrid");
+  const W = host.clientWidth - 24;
+  const rows = C.diffs.slice().reverse();
+  const m = { l: 70, r: 12, t: 10, b: 44 }, cols = C.seconds_left.length;
+  const cw = (W - m.l - m.r) / cols, ch = 30, H = m.t + rows.length * ch + m.b;
+  const col = ramp("o", 6);
+  const name = d => d === 0 ? "Tied" : d > 0 ? `Up ${d}` : `Down ${-d}`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Probability of pulling the goalie">`;
+  rows.forEach((d, r) => {
+    const p = C.p_pull[C.diffs.indexOf(d)];
+    svg += `<text x="${m.l - 10}" y="${m.t + r * ch + ch / 2 + 4}" text-anchor="end">${name(d)}</text>`;
+    for (let c = 0; c < cols; c++) {
+      const ci = cols - 1 - c;   // left = start of game (most time left)
+      svg += `<rect data-d="${d}" data-c="${ci}" x="${m.l + c * cw + 1}" y="${m.t + r * ch + 1}" width="${Math.max(1, cw - 2)}" height="${ch - 2}" rx="2" fill="${col(Math.min(1, p[ci] / 0.6))}"/>`;
+    }
+  });
+  const tk = [180, 120, 60, 30, 0];
+  tk.forEach(s => { const c = cols - 1 - C.seconds_left.findIndex(v => Math.abs(v - s) < 2.6); svg += `<text x="${m.l + (c + 0.5) * cw}" y="${m.t + rows.length * ch + 16}" text-anchor="middle">${s === 0 ? "0:00" : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`}</text>`; });
+  svg += `<text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle">time left in the 3-minute game</text></svg>`;
+  host.innerHTML = `<div class="ramp" style="margin:2px 0 10px 4px">P(goalie out) 0% <i style="background:${rampCss("o", 6)}"></i> 60%+</div>` + svg;
+  host.querySelectorAll("rect[data-d]").forEach(el => {
+    el.onmousemove = e => { const d = +el.dataset.d, c = +el.dataset.c, p = C.p_pull[C.diffs.indexOf(d)][c]; showTip(e, `<b>${name(d)}, ${C.seconds_left[c].toFixed(0)} s left</b><br>coach picks goalie out ${pct(p, 1)} of the time`); };
+    el.onmouseleave = hideTip;
+  });
+}
+
+// ---------------------------------------------------------------- stats
+function renderStats() {
+  const s = D.final.stats;
+  const rows = [
+    ["Goals", s.goals.toFixed(2)], ["Shot attempts", s.shots.toFixed(2)], ["Shots on goal", s.sog.toFixed(2)],
+    ["Save percentage", s.save_pct.toFixed(3)], ["Shooting percentage (goals ÷ attempts)", pct(s.shooting_pct, 1)],
+    ["Passes", s.passes.toFixed(1)], ["Pass completion", pct(s.pass_completion)], ["Takeaways", s.takeaways.toFixed(1)],
+    ["Offsides", s.offside.toFixed(2)], ["Icings", s.icing.toFixed(2)], ["Goalie freezes", s.freeze.toFixed(2)],
+    ["Goalie pulls", s.pulls.toFixed(3)], ["Empty-net goals allowed", s.en_goals_against.toFixed(3)], ["Ties", pct(s.tie_rate)],
+  ];
+  $("#stats").innerHTML = `<thead><tr><th>Per team, per 3-minute game</th><th>Value</th></tr></thead><tbody>${rows.map(r => `<tr><td>${r[0]}</td><td class="mono">${r[1]}</td></tr>`).join("")}</tbody>`;
+}
+
+function renderMethod() {
+  const cols = window.METHOD || [];
+  $("#method-cols").innerHTML = cols.map(c => `<div><h3>${c.h}</h3><ul>${c.li.map(x => `<li>${x}</li>`).join("")}</ul></div>`).join("");
+  if (window.POS_TEXT) $("#pos-text").textContent = window.POS_TEXT;
+  if (window.COACH_TEXT) $("#coach-text").textContent = window.COACH_TEXT;
+}
+
+function renderAll() { renderHeader(); renderHeat(); renderRoles(); renderEvo(); renderSnaps(); renderForm(); renderCoach(); renderStats(); renderMethod(); drawFrame(); }
+
+fetch("data.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
+  D = d; replayInit(); renderAll();
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
+  new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+}).catch(err => { $("#lede").textContent = "The results data could not be loaded (" + err.message + "). Reload the page to try again."; });
+</script>
+<script>
+// Narrative copy, written after the run finished.
+window.LEDE = "";
+window.METHOD = [];
+</script>
