@@ -174,7 +174,7 @@ class Exam(Section):
                                     outline=GOLD + (230,), width=4)
         if acc >= 0.12:
             text(d, (CH_X, CH_Y + ui.CHART_H + 30), f"Patient is focusing {math.floor(acc * 100 + 0.5) / 100:.2f} D "
-                 "to see it clearly", 22, GOLD, "SemiBold")
+                 "to cancel the extra minus", 22, GOLD, "SemiBold")
 
         # ---- top: titles and the hidden answer
         text(d, (80, 50), self.title, 44, INK, "Bold")
