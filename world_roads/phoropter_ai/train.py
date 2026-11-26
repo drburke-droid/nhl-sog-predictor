@@ -39,6 +39,8 @@ def main():
                     help="fraction of training with harder practice patients (bigger cylinders, worse axes), fading")
     ap.add_argument("--flag", action="store_true", help="tell the AI whether there is an autorefractor reading")
     ap.add_argument("--letters", action="store_true", help="letter-by-letter projector chart with line buttons")
+    ap.add_argument("--resume", default=None,
+                    help="checkpoint to continue from (latest.pt has the optimizer; an exams_*.pt restarts it)")
     ap.add_argument("--t_max", type=int, default=60, help="moves before an exam times out")
     ap.add_argument("--shape_frac", type=float, default=0.0,
                     help="fraction of training with the warmer/colder hint; its weight falls linearly 1 -> 0")
@@ -65,10 +67,28 @@ def main():
     obs = torch.as_tensor(env.obs())
     exams, steps, t0 = 0, 0, time.time()
     ms_done = set()
-    log = open(os.path.join(lg, "train.csv"), "w", newline="")
-    w = csv.writer(log)
-    w.writerow(["update", "steps", "exams", "hours", "shaping", "hard", "train_err", "train_within", "train_len", "entropy",
-                "eval_err", "eval_within", "eval_exact", "eval_steps", "eval_over_minus_young"])
+    start_up = 1
+    header = ["update", "steps", "exams", "hours", "shaping", "hard", "train_err", "train_within", "train_len",
+              "entropy", "eval_err", "eval_within", "eval_exact", "eval_steps", "eval_over_minus_young"]
+    if args.resume:
+        sd = torch.load(args.resume, map_location="cpu", weights_only=False)
+        agent.load_state_dict({k: v.float() for k, v in sd["model"].items()})
+        if "opt" in sd:
+            opt.load_state_dict(sd["opt"])
+        exams, steps = sd["meta"]["exams"], sd["meta"]["steps"]
+        start_up = steps // (E * T) + 1
+        ms_done = {m for m in MILESTONES if m <= exams}
+        # keep the log up to the resume point; anything after it belonged to the interrupted run
+        rows = list(csv.reader(open(os.path.join(lg, "train.csv"))))
+        rows = [rows[0]] + [r for r in rows[1:] if int(r[0]) < start_up]
+        log = open(os.path.join(lg, "train.csv"), "w", newline="")
+        w = csv.writer(log)
+        w.writerows(rows)
+        print(f"resumed from {args.resume}: update {start_up}, {steps:,} steps, {exams:,} exams", flush=True)
+    else:
+        log = open(os.path.join(lg, "train.csv"), "w", newline="")
+        w = csv.writer(log)
+        w.writerow(header)
     check = None
 
     def save(tag_exams):
@@ -77,13 +97,21 @@ def main():
                              "flag": agent.flag}},
                    os.path.join(ck, f"exams_{int(tag_exams)}.pt"))
 
-    save(0)
-    ms_done.add(0)
+    def save_latest(up):
+        """Every 20 updates: full state (weights + optimizer), so a machine restart loses at most a minute."""
+        torch.save({"model": agent.state_dict(), "opt": opt.state_dict(),
+                    "meta": {"exams": int(exams), "steps": int(steps), "n_obs": agent.n_obs, "n_act": agent.n_act,
+                             "flag": agent.flag, "update": up}}, os.path.join(ck, "latest.tmp"))
+        os.replace(os.path.join(ck, "latest.tmp"), os.path.join(ck, "latest.pt"))
+
+    if not args.resume:
+        save(0)
+        ms_done.add(0)
     NO = agent.n_obs
     buf_o = torch.zeros(T, E, NO)
     buf_a = torch.zeros(T, E, dtype=torch.long)
     buf_lp, buf_r, buf_d, buf_v = (torch.zeros(T, E) for _ in range(4))
-    for up in range(1, n_up + 1):
+    for up in range(start_up, n_up + 1):
         frac = 1 - (up - 1) / n_up
         for g in opt.param_groups:
             g["lr"] = args.lr * max(frac, 0.1)
@@ -157,6 +185,8 @@ def main():
                     *(f"{ev[k]:.4f}" if ev else "" for k in ("mean_err", "within_025", "exact", "steps",
                                                              "over_minus_young"))])
         log.flush()
+        if up % 20 == 0:
+            save_latest(up)
         if up % 5 == 0 or ev:
             msg = (f"[shape {env.shaping:.2f}] up {up}/{n_up} steps {steps / 1e6:.1f}M exams {exams:,} {hrs * 60:.1f} min | train err "
                    f"{np.mean(errs):.3f} within {np.mean(wins):.2f} len {np.mean(lens):.1f} ent {np.mean(ents):.2f}")

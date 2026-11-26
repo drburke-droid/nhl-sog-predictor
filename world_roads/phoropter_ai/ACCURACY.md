@@ -171,6 +171,13 @@ They are scripts, not people. A skilled clinician adapts in ways they do not.
     input tells it whether a reading exists (`--flag`). Exams may run to 80 moves (`--t_max 80`).
   * **The letter chart and its three buttons** (`--letters`; see above).
 
+  **Interruption.** At 42.6M steps the machine restarted and the training process was lost.
+  * Training resumed from the last saved checkpoint (1,000,488 exams, 33.4M steps), with fresh
+    optimizer state and every schedule at the same point.
+  * The log of the lost stretch is kept in `runs/c/logs/train_interrupted_run.csv`. The learning
+    curve in the video uses only the resumed run after that point.
+  * The trainer now also saves its full state every 20 updates (`ckpt/latest.pt`, `--resume`).
+
   A first version of attempt 3 without the letter chart (`runs/old_c_line_chart`, log only) was
   stopped after about 6M steps when the letter chart was added.
 
