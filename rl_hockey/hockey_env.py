@@ -14,8 +14,13 @@ goalie can only come back at a stoppage.  Rules that are hard-coded:
     be on his own side of the dot; after a goal every skater is re-spawned at a
     random spot in his own half, so no line-up is ever imposed
   * goalies stay within 12 ft of the middle of their goal line, in front of
-    it (a stand-in for the crease / trapezoid rules; free-roaming goalies
-    learned to wander off and leave the net open)
+    it (a stand-in for the crease / trapezoid rules)
+  * by default goalies are scripted, not learned: they stay square to the
+    puck and come out to cut the angle, with a real goalie's lateral speed,
+    so shots from distance are usually saved while quick cross-ice passes
+    and rebounds beat them.  Learned goalies stayed near-random and stopped
+    ~35% of shots on goal, which made shot quality (and so positioning)
+    irrelevant.
 
 Nothing about positions, formations or roles is coded anywhere.
 
@@ -53,8 +58,8 @@ VIEW = np.array([list(range(0, 14)), list(range(7, 14)) + list(range(0, 7))])
 DT = 0.1                    # one decision
 SUBSTEPS = 4
 SUB_DT = DT / SUBSTEPS
-VMAX_K = np.where(IS_G, 14.0, 30.0)
-ACC_K = np.where(IS_G, 40.0, 22.0)
+VMAX_K = np.where(IS_G, 10.0, 30.0)
+ACC_K = np.where(IS_G, 25.0, 22.0)
 RAD_K = np.where(IS_G, 2.2, 1.5)        # body (goalie incl. pads)
 REACH_K = np.where(IS_G, 2.2, 2.5)      # stick / blocking reach
 BRAKE = 35.0
@@ -73,7 +78,9 @@ RECV_REACH = 4.0            # the intended receiver is expecting the pass
 CATCH_SPEED = 65.0          # pucks slower than this are always controlled (by a stick that gets to them)
 SLOW_PUCK = 20.0            # a puck slower than this is simply collected
 REACT_T = 0.1               # a moving puck can't be picked off in its first 0.1 s of flight
-SAVE_P = 0.90               # goalie stops a hard puck he gets a piece of
+SAVE_P = 0.90               # a set goalie stops a hard puck he gets a piece of
+SAVE_P_MOVING = 0.65        # ... while still sliding across (speed > 4 ft/s)
+GLOVE_REACH = 3.0           # extra goalie reach per second a shot is in the air (reaction time)
 FREEZE_P = 0.5
 FREEZE_DIST = 12.0
 COOLDOWN = 0.3
@@ -163,11 +170,12 @@ def role_assign(xt, yt):
 
 
 class HockeyVecEnv:
-    def __init__(self, n_envs=64, game_seconds=180, seed=0, offside=True, icing=True):
+    def __init__(self, n_envs=64, game_seconds=180, seed=0, offside=True, icing=True, scripted_goalie=True):
         self.n = n_envs
         self.T_steps = int(round(game_seconds / DT))
         self.rng = np.random.default_rng(seed)
         self.offside_on, self.icing_on = offside, icing
+        self.scripted_goalie = scripted_goalie
         n = n_envs
         self.pos = np.zeros((n, K, 2))
         self.vel = np.zeros((n, K, 2))
@@ -336,6 +344,8 @@ class HockeyVecEnv:
         act = self.active
         wdir = DIRS[move] * SIGN_K[None, :, None]
         v = self.vel + wdir * (ACC_K[None, :, None] * SUB_DT)
+        if self.scripted_goalie:
+            v[:, IS_G] = self._goalie_velocity()
         sp = _norm(v)
         brake = move == 1
         dec = np.minimum(sp, BRAKE * SUB_DT)
@@ -418,6 +428,33 @@ class HockeyVecEnv:
         v[~act] = 0.0
         self.pos, self.vel = p, v
 
+    def _goalie_velocity(self):
+        """Scripted goalie: glide toward the spot on the puck-to-net line that
+        cuts the angle, with limited acceleration and lateral speed."""
+        s = SIGN[None, :]                                   # [1,2] team signs
+        px, py = self.ppos[:, None, 0] * s, self.ppos[:, None, 1] * s   # team frame [N,2]
+        gx = self.pos[:, IS_G, 0] * s
+        gy = self.pos[:, IS_G, 1] * s
+        dx, dy = px + GOAL_X, py
+        dist = np.sqrt(dx * dx + dy * dy) + 1e-9
+        out = np.clip(2.0 + 0.08 * dist, 2.0, 5.0)
+        tx = -GOAL_X + dx / dist * out
+        ty = dy / dist * out
+        behind = px < -GOAL_X + 1.0                         # puck behind the goal line: hug the post
+        tx = np.where(behind, GOALIE_MIN_X + 0.5, tx)
+        ty = np.where(behind, np.sign(py) * (POST_Y - 0.5), ty)
+        tx = np.maximum(tx, GOALIE_MIN_X)
+        vx_des = np.clip((tx - gx) / 0.15, -VMAX_K[GOALIE], VMAX_K[GOALIE])
+        vy_des = np.clip((ty - gy) / 0.15, -VMAX_K[GOALIE], VMAX_K[GOALIE])
+        setting = self.shot_live[:, None]                   # a shot is on its way: stop and set
+        vx_des = np.where(setting, 0.0, vx_des)
+        vy_des = np.where(setting, 0.0, vy_des)
+        vg = self.vel[:, IS_G] * s[..., None]
+        ax = np.clip(vx_des - vg[..., 0], -ACC_K[GOALIE] * SUB_DT, ACC_K[GOALIE] * SUB_DT)
+        ay = np.clip(vy_des - vg[..., 1], -ACC_K[GOALIE] * SUB_DT, ACC_K[GOALIE] * SUB_DT)
+        nv = np.stack([vg[..., 0] + ax, vg[..., 1] + ay], -1)
+        return nv * s[..., None]
+
     # ------------------------------------------------------------ puck
     def _puck_substep(self, ev, ev_team):
         n = self.n
@@ -479,6 +516,7 @@ class HockeyVecEnv:
             q = p0[:, None] + t[..., None] * seg[:, None]
             dq = _norm(self.pos - q)
             reach = np.broadcast_to(REACH_K, (n, K)).copy()
+            reach[:, IS_G] += np.where(self.shot_live, GLOVE_REACH * self.flight, 0.0)[:, None]
             pt = self.pass_tgt >= 0
             reach[np.where(pt)[0], self.pass_tgt[pt]] = RECV_REACH
             cand = loose[:, None] & self.active & (self.cool <= 0) & (dq < reach)
@@ -562,7 +600,8 @@ class HockeyVecEnv:
             g = is_g
             gg = gi[g]
             hard = sp[g] > 40
-            saved = ~hard | (u[g] < SAVE_P)
+            gsp = _norm(self.vel[gg, k[g]])
+            saved = ~hard | (u[g] < np.where(gsp > 4.0, SAVE_P_MOVING, SAVE_P))
             shot = self.shot_live[gg] & hard
             self.stats["sog"][gg[shot & saved], 1 - T[g][shot & saved]] += 1
             self.stats["saves"][gg[shot & saved], T[g][shot & saved]] += 1

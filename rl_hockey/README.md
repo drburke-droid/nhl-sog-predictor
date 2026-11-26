@@ -29,6 +29,15 @@ and two wingers, or something else.
   can knock the puck loose. A goalie
   saves 90% of hard pucks he gets a piece of; near his crease he freezes half
   of them, otherwise he gives up a rebound.
+* **Goalies are scripted** (`--learned_goalie` switches to a learned one). The
+  goalie stays square to the puck and comes out to cut the angle, moving at
+  10 ft/s laterally. He sets when a shot is released and gets extra glove
+  reach the longer the shot is in the air. A set goalie stops 90% of what he
+  gets a piece of; one still sliding across stops 65%. In tests, set shots
+  from the slot, the dots and the point score 9–13%, and a cross-ice pass
+  into a one-timer scores about 50%. Learned goalies stayed near-random
+  (≈35% saves), which made shot quality, and with it positioning, irrelevant.
+  Play turned into a swarm.
 * **Rules**: goals; immediate offside; no-touch icing; goalie freezes; faceoffs
   with every player on his own side of the dot. Goalies stay within 12 ft of
   the middle of their own goal line, in front of it, a stand-in for the crease
@@ -49,7 +58,7 @@ and two wingers, or something else.
 | Policy | Acts | Sees | Rewarded for |
 |---|---|---|---|
 | skater (one network for all 6 skater slots) | every 0.1 s: skate direction (8) / glide / brake; with the puck: keep, shoot, dump left, dump right, pass to slot *j* | the whole game state in its own team's frame (always attacking +x), plus a one-hot **slot id** | +1 goal for, −1 goal against |
-| goalie | every 0.1 s: skate direction / glide / brake | same | +1 / −1 per goal |
+| goalie (only with `--learned_goalie`) | every 0.1 s: skate direction / glide / brake | same | +1 / −1 per goal |
 | coach | every 1 s: goalie in / out (starts learning after 12M steps, once the players can play) | score, time left, possession, puck position | **winning**: +1 win, 0 tie, −1 loss |
 
 The slot id is the only thing that tells two skaters apart. Slots *can*

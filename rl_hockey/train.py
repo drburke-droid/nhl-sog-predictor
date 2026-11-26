@@ -3,7 +3,8 @@
 Three policies, all shared by both teams (self-play):
   * skater  - one network for all six skater slots; the slot id is an input, so
               slots *may* specialise but nothing tells them to
-  * goalie  - one network for both goalies
+  * goalie  - scripted by default (see hockey_env); --learned_goalie trains one
+              network for both goalies instead
   * coach   - decides once a second whether the goalie should be out; it is the
               only policy rewarded for winning the game (+1 win, 0 tie, -1 loss)
 
@@ -236,6 +237,7 @@ def main():
     ap.add_argument("--shape_zero", type=float, default=12e6, help="game steps when shaping reaches 0")
     ap.add_argument("--no_offside", action="store_true")
     ap.add_argument("--no_icing", action="store_true")
+    ap.add_argument("--learned_goalie", action="store_true", help="learn goalie movement instead of the scripted goalie")
     ap.add_argument("--ckpt_every", type=int, default=25)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--threads", type=int, default=4)
@@ -264,7 +266,8 @@ def main():
     policy = Policy(sk, gk, co)
 
     env = HockeyVecEnv(args.envs, args.game_seconds, seed=args.seed + 1000 * it,
-                       offside=not args.no_offside, icing=not args.no_icing)
+                       offside=not args.no_offside, icing=not args.no_icing,
+                       scripted_goalie=not args.learned_goalie)
     o = env.reset()
     N, T = args.envs, args.rollout
     want = np.zeros((N, 2), bool)
@@ -380,7 +383,8 @@ def main():
                       active=torch.ones(rc.size, dtype=torch.bool))
         t1 = time.time()
         st_s = ppo_update(sk, opt_s, data_s, args, n_mb=8, ent_coef=args.ent)
-        st_g = ppo_update(gk, opt_g, data_g, args, n_mb=8, ent_coef=args.ent)
+        st_g = (ppo_update(gk, opt_g, data_g, args, n_mb=8, ent_coef=args.ent) if args.learned_goalie
+                else {"pg": 0.0, "vf": 0.0, "ent": 0.0, "kl": 0.0, "clip": 0.0})
         st_c = (ppo_update(co, opt_c, data_c, args, n_mb=2, ent_coef=args.ent_coach)
                 if steps >= args.coach_start else {"pg": 0.0, "vf": 0.0, "ent": 0.0, "kl": 0.0, "clip": 0.0})
         t_upd = time.time() - t1
