@@ -102,3 +102,64 @@ class TestSet:
         for k, v in self.pool.items():
             out[k][real] = v[take[real]]
         return out
+
+
+# ---------------------------------------------------------------------------- two eyes (attempt 4)
+def sample_pair(rng, n, hard=0.0, age=None):
+    """Two eyes per patient. The right eye is drawn exactly as sample_patients; the left eye is correlated:
+    spherical equivalent differs by N(0, 0.25) D (5% of patients: N(0, 1.0) D, anisometropia), cylinder by
+    N(0, 0.25) D, and the axis is roughly the mirror image (180 - axis, +/- 8 deg). Best-corrected acuity is
+    nearly the same in both eyes, except 5% with one weaker eye (+0.2..0.4 logMAR). Each eye gets its own
+    autorefractor error; the instrument-myopia bias is shared. Pupil, accommodation and answering style are
+    the person's, so shared."""
+    p = sample_patients(rng, n, age=age, hard=hard)
+    age = p["age"]
+    M_od = p["S"] + p["C"] / 2
+    aniso = np.where(rng.uniform(size=n) < 0.05, rng.normal(0, 1.0, n), rng.normal(0, 0.25, n))
+    cyl = np.clip(-p["C"] + rng.normal(0, 0.25, n), 0, 3.5)
+    C = -q(cyl)
+    S = q(np.clip(M_od + aniso, -9, 7) - C / 2)
+    axis = wrap_axis(180 - p["axis"] + rng.normal(0, 8, n))
+    weak = rng.uniform(size=n) < 0.05
+    mar0 = p["mar0"] * 10 ** rng.normal(0, 0.03, n)
+    mar0 = np.where(weak, mar0 * 10 ** rng.uniform(0.2, 0.4, n), mar0)
+    young = age < 40
+    mu = np.where(young, -0.25, np.where(age < 55, -0.10, 0.0))
+    # the right eye's autorefractor error relative to its truth, so the shared bias is the same draw
+    E_od = to_pv(p["S"], p["C"], p["axis"])
+    R_od = to_pv(p["S0"], p["C0"], p["ax0"])
+    shared = R_od[0] - E_od[0]                                # the right eye's SE offset carries the person's bias
+    bad = rng.uniform(size=n) < 0.12
+    sM = np.where(bad, 0.9, 0.30)
+    sJ = np.where(bad, 0.30, 0.10) * (1 + 2 * hard)
+    E = to_pv(S, C, axis)
+    dM = 0.5 * (shared - mu) + mu + rng.normal(0, sM * 0.85, n)   # correlated with the right eye's reading
+    S0, C0, ax0 = from_pv(E[0] + dM, E[1] + rng.normal(0, sJ), E[2] + rng.normal(0, sJ))
+    # proximal ("instrument") accommodation behind the phoropter with one eye occluded: a person-level extra
+    # effort that fogging relaxes, and that mostly relaxes when both eyes are open (env2.py uses 30% of it)
+    prox = rng.uniform(0, 0.5, n) * np.clip(p["amp"] / 4, 0, 1)
+    dom = np.where(rng.uniform(size=n) < 0.7, 1.0, -1.0)      # +1 right-eye dominant (about 70% of people)
+    p.update(S_os=S, C_os=C, axis_os=axis, mar0_os=mar0, S0_os=q(S0), C0_os=q(C0), ax0_os=wrap_axis(ax0), prox=prox,
+             dom=dom)
+    return p
+
+
+class PairTestSet(TestSet):
+    """A fixed, numbered set of two-eyed patients."""
+
+    def __init__(self, size, seed=12345):
+        self.size = size
+        self.start = "autoref"
+        self.pool = sample_pair(np.random.default_rng(seed), size)
+        self.pool["pid"] = np.arange(size, dtype=np.float64)
+        self.next = 0
+
+    def sampler(self, rng, n):
+        take = np.arange(self.next, self.next + n)
+        self.next += n
+        out = sample_pair(rng, n)
+        out["pid"] = np.full(n, -1.0)
+        real = take < self.size
+        for k, v in self.pool.items():
+            out[k][real] = v[take[real]]
+        return out

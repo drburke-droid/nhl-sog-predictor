@@ -39,6 +39,7 @@ def main():
                     help="fraction of training with harder practice patients (bigger cylinders, worse axes), fading")
     ap.add_argument("--flag", action="store_true", help="tell the AI whether there is an autorefractor reading")
     ap.add_argument("--letters", action="store_true", help="letter-by-letter projector chart with line buttons")
+    ap.add_argument("--binocular", action="store_true", help="two eyes and binocular balance (env2.py)")
     ap.add_argument("--resume", default=None,
                     help="checkpoint to continue from (latest.pt has the optimizer; an exams_*.pt restarts it)")
     ap.add_argument("--t_max", type=int, default=60, help="moves before an exam times out")
@@ -56,8 +57,14 @@ def main():
     from functools import partial
     from patients import sample_patients
     state = {"hard": 0.0}
-    env = RefractionEnv(args.envs, seed=args.seed + 1, flag=args.flag, letters=args.letters,
-                        sampler=lambda rng, n: sample_patients(rng, n, start=args.start, hard=state["hard"]))
+    if args.binocular:
+        from env2 import BinocularEnv
+        from patients import sample_pair, PairTestSet
+        from clinicians2 import summary2
+        env = BinocularEnv(args.envs, seed=args.seed + 1, sampler=lambda rng, n: sample_pair(rng, n, hard=state["hard"]))
+    else:
+        env = RefractionEnv(args.envs, seed=args.seed + 1, flag=args.flag, letters=args.letters,
+                            sampler=lambda rng, n: sample_patients(rng, n, start=args.start, hard=state["hard"]))
     env.cyl_weight = args.cyl_weight
     env.t_max = args.t_max
     agent = Agent(env.n_obs, env.n_act, args.flag)
@@ -177,8 +184,11 @@ def main():
                 ms_done.add(m)
         ev = {}
         if up % args.eval_every == 0 or up == 1 or up == n_up:
-            check = TestSet(1000, seed=999, start=args.start if args.start != "mix" else "autoref")
-            ev = summary(run_policy(agent, check, n_par=1000, t_max=args.t_max))
+            if args.binocular:
+                ev = summary2(run_policy(agent, PairTestSet(1000, seed=999), n_par=1000, t_max=args.t_max))
+            else:
+                check = TestSet(1000, seed=999, start=args.start if args.start != "mix" else "autoref")
+                ev = summary(run_policy(agent, check, n_par=1000, t_max=args.t_max))
         hrs = (time.time() - t0) / 3600
         w.writerow([up, steps, exams, f"{hrs:.4f}", f"{env.shaping:.3f}", f"{state['hard']:.3f}", f"{np.mean(errs):.4f}", f"{np.mean(wins):.4f}",
                     f"{np.mean(lens):.2f}", f"{np.mean(ents):.4f}",

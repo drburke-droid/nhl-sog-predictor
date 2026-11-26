@@ -53,8 +53,13 @@ def load(path):
 def run_policy(agent, test, n_par=1000, seed=7, greedy=True, record_actions=False, t_max=60):
     """Score an agent on a TestSet; returns arrays indexed by patient id (same format as run_scripted)."""
     from clinicians import collect
-    env = RefractionEnv(n_par, seed=seed, sampler=test.sampler, flag=agent.flag, letters=agent.letters)
-    env.t_max = t_max
+    from env2 import BinocularEnv, N_ACT2
+    if agent.n_act == N_ACT2:                                  # attempt 4: two eyes
+        env = BinocularEnv(n_par, seed=seed, sampler=test.sampler)
+        env.t_max = max(t_max, 120)
+    else:
+        env = RefractionEnv(n_par, seed=seed, sampler=test.sampler, flag=agent.flag, letters=agent.letters)
+        env.t_max = t_max
     obs = env.obs()
     out, n_real = {}, 0
     acts_log = [[] for _ in range(n_par)]
