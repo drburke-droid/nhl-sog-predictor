@@ -137,8 +137,8 @@ class Exam2(Section):
         bin_b = s["bin_before"] if s else 0.0
         cur_a = s["cur"] if s else 0
         bin_a = s["bin"] if s else 0.0
-        scr_b = s["screen_before"] if s else 0.3
-        scr_a = s["screen"] if s else 0.3
+        scr_b = s["screen_before"] if s else first["screen_before"]
+        scr_a = s["screen"] if s else first["screen_before"]
         late = st["dt"] > st["d"] * 0.45
         changed = a is not None and (a < 10 or a in (15, 16, 17, 19, 20, 21, 22, 23)) and st["dt"] > 0.12
         lenses = lenses_a if (changed or st.get("done")) else lenses_b

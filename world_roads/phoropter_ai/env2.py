@@ -75,7 +75,7 @@ class BinocularEnv:
         self.S, self.C, self.ax = z(2), z(2), z(2)
         self.cur = np.zeros(n, np.int64)                  # 0 = right eye, 1 = left eye
         self.bin = np.zeros(n)                            # 1 = both eyes open
-        self.line = np.full(n, 0.3)
+        self.line = np.full(n, 0.0)
         self.t = z()
         self.hist_a = np.full((n, H2), -1, np.int64)
         self.hist_r, self.hist_m, self.hist_l = z(H2, 5), z(H2, 2), z(H2, 5)
@@ -106,7 +106,7 @@ class BinocularEnv:
             self.P[k][idx] = v
         self.S[idx, 0], self.C[idx, 0], self.ax[idx, 0] = p["S0"], p["C0"], p["ax0"]
         self.S[idx, 1], self.C[idx, 1], self.ax[idx, 1] = p["S0_os"], p["C0_os"], p["ax0_os"]
-        self.cur[idx], self.bin[idx], self.line[idx], self.t[idx] = 0, 0, 0.3, 0
+        self.cur[idx], self.bin[idx], self.line[idx], self.t[idx] = 0, 0, 0.0, 0     # projector starts on 20/20
         self.hist_a[idx] = -1
         for arr in (self.hist_r, self.hist_m, self.hist_l, self.lq_ans, self.lq_on, self.lq_l, self.lq_t, self.bal_ans,
                     self.bal_on, self.bal_m, self.bal_t, self.best_va, self.best_on, self.best_l):

@@ -160,6 +160,17 @@ eye looks 0.02 logMAR clearer than it is.
     | Monocular MPMVA re-checks instead | 38.9% |
     | Textbook, for reference | 46.2% |
 
+**Attempt 4** (`runs/d`, `--binocular`).
+* It is trained on this two-eye exam, with the same fading training wheels as attempt 3 (harder
+  practice patients and the warmer/colder hint, both gone by 30% of training).
+* Settings: entropy bonus 0.015, 100M steps, up to 120 moves per exam.
+* The projector starts on the 20/20 line.
+
+A first run started on the 20/40 line (`runs/old_d_start_2040`, log only). It never learned to read
+the chart. On 20/40, a 0.25 D sphere step is hard to judge for most patients, so its sphere questions
+told it little, and by 1M exams it only shrank cylinders (24% of eyes within 0.25 D). It was stopped
+there. The scripts always read the chart first, so where the projector starts does not affect them.
+
 ## 3. The scripted examiners
 
 They are scripts, not people. A skilled clinician adapts in ways they do not.
