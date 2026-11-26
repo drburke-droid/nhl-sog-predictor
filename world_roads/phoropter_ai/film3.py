@@ -126,27 +126,40 @@ class OutcomeGrid(Section):
 
 
 # ======================================================================== the practice curve
-def practice_curve(path=os.path.join(HERE, "runs", "f", "logs", "train.csv")):
+TERM1_END = 1_630_473          # practice term 1 ended here (the axis dial always started at 180)
+
+
+def practice_curve():
+    """Both practice terms, joined: runs/f up to the end of term 1, then runs/f2."""
     xs, ys, mins, sh = [], [], [], []
-    for r in csv.DictReader(open(path)):
-        if r.get("train_points"):
-            xs.append(int(r["exams"]))
-            ys.append(float(r["train_points"]) - clinic.POINTS_PER_MIN * float(r["train_minutes"]))
-            mins.append(float(r["train_minutes"]))
-            sh.append(float(r["shaping"]))
+    for path, lo, hi in ((os.path.join(HERE, "runs", "f", "logs", "train.csv"), 0, TERM1_END),
+                         (os.path.join(HERE, "runs", "f2", "logs", "train.csv"), TERM1_END + 1, 10 ** 9)):
+        if not os.path.exists(path):
+            continue
+        for r in csv.DictReader(open(path)):
+            if r.get("train_points") and lo <= int(r["exams"]) <= hi:
+                xs.append(int(r["exams"]))
+                ys.append(float(r["train_points"]) - clinic.POINTS_PER_MIN * float(r["train_minutes"]))
+                mins.append(float(r["train_minutes"]))
+                sh.append(float(r["shaping"]))
     xs, ys, mins, sh = map(np.array, (xs, ys, mins, sh))
     k = 9
     ker = np.ones(k) / k
     pad = lambda v: np.concatenate([np.full(k // 2, v[0]), v, np.full(k // 2, v[-1])])
-    return xs, np.convolve(pad(ys), ker, "valid"), np.convolve(pad(mins), ker, "valid"), sh
+    sm = lambda v: np.convolve(pad(v), ker, "valid")
+    t1 = xs <= TERM1_END                                  # smooth each term on its own (no blur across the change)
+    ys = np.concatenate([sm(ys[t1]), sm(ys[~t1])]) if (~t1).any() else sm(ys)
+    mins = np.concatenate([sm(mins[t1]), sm(mins[~t1])]) if (~t1).any() else sm(mins)
+    return xs, ys, mins, sh
 
 
 class PracticeCurve(Section):
     """Net clinic points per patient (points for the glasses minus chair time) while it practised."""
 
-    def __init__(self, refs, notes=(), dur=34.0, draw_secs=14.0):
+    def __init__(self, refs, notes=(), dur=34.0, draw_secs=14.0, x_from=None, x_to=None, title="LEARNING ON THE JOB"):
         self.xs, self.ys, self.mins, self.sh = practice_curve()
         self.refs, self.notes, self.dur, self.draw_secs = refs, notes, dur, draw_secs
+        self.x_from, self.x_to, self.title = x_from, x_to, title
         self.X0, self.X1, self.Y0, self.Y1 = 230, 1500, 900, 220
         self.lx0, self.lx1 = 3.0, math.log10(self.xs.max()) + 0.08
         self.v0, self.v1 = -160, 80
@@ -159,17 +172,31 @@ class PracticeCurve(Section):
     def frame(self, t):
         im, d = ui.new_frame()
         a = fade(t, 0, self.dur, 0.5, 0.5)
-        text(d, (60, 30), "LEARNING ON THE JOB", 40, INK, "Bold", a=a)
+        text(d, (60, 30), self.title, 40, INK, "Bold", a=a)
         text(d, (60, 86), "Points per patient while it practised (glasses minus chair time), every simulated patient a new one",
              24, MUTED, "Medium", a=a)
         X0, X1, Y0, Y1 = self.X0, self.X1, self.Y0, self.Y1
-        # mentor shading
-        mend = self.xs[np.nonzero(self.sh > 0)[0][-1]] if (self.sh > 0).any() else None
-        if mend:
-            xa, _ = self.px(10 ** self.lx0, 0)
-            xb, _ = self.px(mend, 0)
-            d.rectangle([xa, Y1, xb, Y0], fill=(255, 186, 80, int(18 * a)))
-            text(d, ((xa + xb) / 2, Y1 + 8), "mentor's hints (fading)", 18, GOLD, "SemiBold", "ma", a * 0.9)
+        # mentor shading: each stretch where the hint was on
+        on = self.sh > 0
+        j = 0
+        while j < len(on):
+            if on[j]:
+                k2 = j
+                while k2 + 1 < len(on) and on[k2 + 1]:
+                    k2 += 1
+                xa, _ = self.px(self.xs[j] if j else 10 ** self.lx0, 0)
+                xb, _ = self.px(self.xs[k2], 0)
+                if self.x_to is None or self.xs[j] <= self.x_to:
+                    d.rectangle([xa, Y1, xb, Y0], fill=(255, 186, 80, int(18 * a)))
+                    text(d, ((xa + xb) / 2, Y1 + 8), "mentor", 18, GOLD, "SemiBold", "ma", a * 0.9)
+                j = k2 + 1
+            else:
+                j += 1
+        if (self.xs > TERM1_END).any() and (self.x_to is None or self.x_to > TERM1_END):
+            xm, _ = self.px(TERM1_END, 0)
+            d.line([(xm, Y1), (xm, Y0)], fill=INK2 + (int(200 * a),), width=2)
+            text(d, (xm - 8, Y1 + 36), "dial no longer", 17, INK2, "SemiBold", "ra", a)
+            text(d, (xm - 8, Y1 + 58), "starts at 180°", 17, INK2, "SemiBold", "ra", a)
         for v in range(-150, 81, 50):
             _, y = self.px(1e4, v)
             d.line([(X0, y), (X1, y)], fill=GRID + (int(255 * a),), width=1)
@@ -187,7 +214,9 @@ class PracticeCurve(Section):
             text(d, (X1 + 14, y + 26), f"{v:+.0f}", 20, MUTED, "Medium", "lm", a)
         prog = smooth((t - 1.0) / self.draw_secs)
         lxs = np.log10(np.maximum(self.xs, 10 ** self.lx0))
-        cut = self.lx0 + (self.lx1 - self.lx0) * prog
+        c0 = math.log10(self.x_from) if self.x_from else self.lx0
+        c1 = math.log10(self.x_to) if self.x_to else self.lx1
+        cut = c0 + (c1 - c0) * prog
         m = lxs <= cut
         P = [self.px(x, y) for x, y in zip(self.xs[m], self.ys[m])]
         if len(P) > 1:
@@ -485,6 +514,59 @@ def mmss(m):
     return f"{m_}:{s_:02d}"
 
 
+# ======================================================================== the shortcut
+class Shortcut(Section):
+    """End of practice term 1: great at sphere, never turns the axis, because the dial always started at 180."""
+
+    def __init__(self, R, dur=34.0):
+        self.T = R["term1"]
+        self.dur = dur
+        self.n1 = R["meta"]["term1_end"]
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        A, B = self.T["dial180"], self.T["random_dial"]
+        text(d, (60, 30), "THE SHORTCUT", 40, GOLD, "Bold", a=a)
+        text(d, (60, 86), f"After {fmt_n(self.n1)} practice patients: fast, and very good at sphere. But…", 24, MUTED,
+             "Medium", a=a)
+        rows = [("Eyes with the spherical equivalent within 0.25 D", f"{100 * A['summary']['se_within_025']:.0f}%", INK),
+                ("Times it turned the axis, per exam", f"{A['axis_turns']:.2f}", RED),
+                ("Cylinders it prescribed at exactly 180°", f"{100 * A['cyl_at_180']:.0f}%", RED),
+                ("With-the-rule astigmatism (axis near 180°): within 0.25 D", f"{100 * A['wtr_within']:.0f}%", INK2),
+                ("Against-the-rule (near 90°): within 0.25 D", f"{100 * A['atr_within']:.0f}%", RED),
+                ("Oblique: within 0.25 D", f"{100 * A['obl_within']:.0f}%", RED)]
+        y = 160
+        for i, (lab, v, col) in enumerate(rows):
+            al = fade(t, 0.8 + 1.2 * i, 999, 0.5, 0.1) * a
+            text(d, (100, y), lab, 27, INK2, "Medium", a=al)
+            text(d, (1180, y - 4), v, 36, col, "Bold", "ra", al)
+            y += 64
+        # the dial
+        cx, cy, r = 1560, 400, 190
+        al = fade(t, 2.0, 999, 0.6, 0.1) * a
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=CU.AXIS + (int(255 * al),), width=6)
+        for deg in range(0, 180, 15):
+            tt = math.radians(deg)
+            for sg in (1, -1):
+                d.line([(cx + sg * (r - 14) * math.cos(tt), cy - sg * (r - 14) * math.sin(tt)),
+                        (cx + sg * r * math.cos(tt), cy - sg * r * math.sin(tt))], fill=INK2 + (int(200 * al),), width=3)
+        d.line([(cx - r * 0.9, cy), (cx + r * 0.9, cy)], fill=CU.AXIS + (int(255 * al),), width=10)
+        text(d, (cx, cy + r + 20), "the dial always started at 180°", 22, INK2, "SemiBold", "ma", al)
+        al = fade(t, 9.5, 999, 0.6, 0.1) * a
+        para(d, 100, 570, "The phoropter's axis dial started at 180° for every patient, and most young people's "
+                          "astigmatism sits near 180°. Turning the dial only pays off after several moves in a row, so "
+                          "it never found out it should.", 27, 1760, INK, "Medium", al, lh=1.35)
+        al = fade(t, 16.0, 999, 0.6, 0.1) * a
+        para(d, 100, 720, "So the clinic changed one thing: the dial now starts wherever the last patient left it, as it "
+                          "would in a real practice. Overnight its score fell from "
+                          f"{A['summary']['net']:+.0f} to {B['summary']['net']:+.0f} points per patient.", 27, 1760, INK,
+             "Medium", al, lh=1.35)
+        al = fade(t, 23.0, 999, 0.6, 0.1) * a
+        para(d, 100, 870, "The mentor came back for a while. Same AI, more practice.", 30, 1760, GOLD, "SemiBold", al)
+        return np.asarray(im)
+
+
 # ======================================================================== step-by-step, side by side
 ACT_KIND = {}
 for _a in (E3.SP25, E3.SM25, E3.SP100, E3.SM100, E3.OU_P, E3.OU_M):
@@ -637,8 +719,11 @@ def sections():
                                  note="Most people need real glasses. Plano-ish isn't glasses.")
     # learning
     tb_net = R["textbook"]["summary"]["net"]
-    S["curve"] = PracticeCurve(refs=[("Plano for everyone", R["plano"]["summary"]["net"], GREY),
-                                     ("Textbook script", tb_net, TB_COL)], notes=NOTES.get("curve", []))
+    refs = [("Plano for everyone", R["plano"]["summary"]["net"], GREY), ("Textbook script", tb_net, TB_COL)]
+    S["curve"] = PracticeCurve(refs, notes=NOTES.get("curve", []), x_to=TERM1_END, dur=30.0, draw_secs=13.0)
+    S["shortcut"] = Shortcut(R)
+    S["curve2"] = PracticeCurve(refs, notes=NOTES.get("curve2", []), x_from=TERM1_END, dur=18.0, draw_secs=8.0,
+                                title="MORE PRACTICE, A REALISTIC DIAL")
     stg = {r["exams"]: r for r in R["stages"]}
     picks = STAGE_PICKS or [r["exams"] for r in R["stages"][1::max(1, len(R["stages"]) // 3)]][:3]
     S["grids"] = OutcomeGrid("THE SAME CLINIC, LATER", "500 patients at each stage of practice, one square each",
@@ -675,7 +760,8 @@ def sections():
 
 NOTES = {}
 STAGE_PICKS = []
-ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "grids",
+ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "shortcut",
+         "curve2", "grids",
          "ai_title", "ai_exam", "tb_card", "tb_exam", "sidebyside", "timelines", "habits", "results", "real", "outro"]
 
 
@@ -737,7 +823,7 @@ def assemble():
     g = lambda k, dflt=0.0: O.get(k, dflt)
     energy = [(0, 0.3), (g("toolbox"), 0.35), (g("patient"), 0.35), (g("wants"), 0.4), (g("learn"), 0.35),
               (g("day1_title"), 0.45), (g("day1_exam"), 0.3), (g("day1_grid"), 0.4), (g("curve"), 0.6),
-              (g("grids"), 0.65), (g("ai_title"), 0.5), (g("ai_exam"), 0.4), (g("tb_card"), 0.35), (g("tb_exam"), 0.35),
+              (g("shortcut"), 0.35), (g("curve2"), 0.6), (g("grids"), 0.65), (g("ai_title"), 0.5), (g("ai_exam"), 0.4), (g("tb_card"), 0.35), (g("tb_exam"), 0.35),
               (g("timelines"), 0.45), (g("habits"), 0.45), (g("results"), 0.8), (g("real"), 0.5), (g("outro"), 0.4),
               (total, 0.0)]
     energy = sorted(energy)

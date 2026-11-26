@@ -11,7 +11,8 @@ from policy import load
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TR = os.path.join(HERE, "data", "traces")
-RUN = os.path.join(HERE, "runs", "f", "ckpt")
+RUN = os.path.join(HERE, "runs", "f2", "ckpt")
+RUN1 = os.path.join(HERE, "runs", "f", "ckpt")
 
 
 def latest():
@@ -30,8 +31,8 @@ def save(name, ex):
 
 
 def main():
-    ag0, _ = load(os.path.join(RUN, "exams_0.pt"))
-    save("f_day1", record3(ag0, greedy=False, seed=5))           # seed fixed before looking at the exam
+    ag0, _ = load(os.path.join(RUN1, "exams_0.pt"))
+    save("f_day1", record3(ag0, greedy=False, seed=5, rand_dial=False))   # term 1: the dial started at 180
     p = latest()
     ag, meta = load(p)
     ex = record3(ag, greedy=True)

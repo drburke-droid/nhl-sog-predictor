@@ -327,9 +327,9 @@ class HowItLearns(Section):
         ai = fade(t, B[4], 99, 0.6, 0.1) * a_all
         rr(d, [960, 680, 1850, 900], 16, fill=CARD + (int(255 * ai),), outline=LINE + (int(255 * ai),), width=2)
         text(d, (982, 700), "TRAINING WHEELS", 24, INK, "Bold", a=ai)
-        para(d, 982, 744, "For the first 15% of practice, a mentor also whispered “warmer” or “colder” after each "
-                          "button: did the lenses get closer to the truth? Then the mentor left. After that: only "
-                          "the clinic score.", 22, 850, INK2, "Medium", ai)
+        para(d, 982, 744, "Early on, a mentor also whispered “warmer” or “colder” after each button: did the lenses "
+                          "get closer to the truth? The hint faded out, then the mentor left. After that: only the "
+                          "clinic score.", 22, 850, INK2, "Medium", ai)
         ai = fade(t, B[5], 99, 0.6, 0.1) * a_all
         big_title(d, W / 2, 950, "No rules about eyes. No textbook. Just practice and a score.", 36, ai, GOLD, "SemiBold")
         return np.asarray(im)

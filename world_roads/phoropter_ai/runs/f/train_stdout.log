@@ -250,3 +250,61 @@
 [shape 0.00] up 1245/3051 steps 81.6M exams 1,262,971 59.4 min | train err 0.537 within 0.25 len 52.1 ent 0.50 pts +12.1 min 2.9
 [shape 0.00] up 1250/3051 steps 81.9M exams 1,269,123 59.6 min | train err 0.543 within 0.25 len 52.9 ent 0.50 pts +11.6 min 2.9 | EVAL pts +19.9 min 2.9 happy 0.44 | EVAL err 0.485 within 0.295 exact 0.197 steps 51.3 overminus_y 0.21
 [shape 0.00] up 1255/3051 steps 82.2M exams 1,275,393 59.8 min | train err 0.544 within 0.25 len 52.4 ent 0.49 pts +11.3 min 2.9
+[shape 0.00] up 1260/3051 steps 82.6M exams 1,281,708 60.1 min | train err 0.517 within 0.26 len 52.4 ent 0.49 pts +13.5 min 2.9
+[shape 0.00] up 1265/3051 steps 82.9M exams 1,287,984 60.3 min | train err 0.554 within 0.26 len 52.5 ent 0.49 pts +9.7 min 2.9
+[shape 0.00] up 1270/3051 steps 83.2M exams 1,294,253 60.5 min | train err 0.505 within 0.27 len 52.3 ent 0.49 pts +13.3 min 2.9
+[shape 0.00] up 1275/3051 steps 83.6M exams 1,300,483 60.9 min | train err 0.508 within 0.27 len 52.0 ent 0.49 pts +15.0 min 2.9 | EVAL pts +20.0 min 2.8 happy 0.44 | EVAL err 0.492 within 0.296 exact 0.199 steps 51.4 overminus_y 0.20
+[shape 0.00] up 1280/3051 steps 83.9M exams 1,306,686 61.2 min | train err 0.525 within 0.25 len 52.6 ent 0.50 pts +12.6 min 2.9
+[shape 0.00] up 1285/3051 steps 84.2M exams 1,312,976 61.4 min | train err 0.518 within 0.26 len 52.6 ent 0.50 pts +14.2 min 2.9
+[shape 0.00] up 1290/3051 steps 84.5M exams 1,319,212 61.6 min | train err 0.552 within 0.27 len 53.2 ent 0.50 pts +10.4 min 3.0
+[shape 0.00] up 1295/3051 steps 84.9M exams 1,325,416 61.8 min | train err 0.538 within 0.30 len 52.4 ent 0.49 pts +15.5 min 3.0
+[shape 0.00] up 1300/3051 steps 85.2M exams 1,331,658 62.0 min | train err 0.521 within 0.27 len 52.6 ent 0.50 pts +14.6 min 3.0 | EVAL pts +20.4 min 2.9 happy 0.44 | EVAL err 0.488 within 0.307 exact 0.214 steps 51.1 overminus_y 0.18
+[shape 0.00] up 1305/3051 steps 85.5M exams 1,337,868 62.2 min | train err 0.540 within 0.26 len 52.8 ent 0.49 pts +10.3 min 3.0
+[shape 0.00] up 1310/3051 steps 85.9M exams 1,343,995 62.4 min | train err 0.515 within 0.26 len 53.0 ent 0.48 pts +14.4 min 3.0
+[shape 0.00] up 1315/3051 steps 86.2M exams 1,350,232 62.6 min | train err 0.530 within 0.26 len 52.1 ent 0.49 pts +12.6 min 2.9
+[shape 0.00] up 1320/3051 steps 86.5M exams 1,356,459 62.8 min | train err 0.522 within 0.27 len 52.3 ent 0.49 pts +15.2 min 2.9
+[shape 0.00] up 1325/3051 steps 86.8M exams 1,362,743 63.1 min | train err 0.531 within 0.25 len 51.8 ent 0.49 pts +11.2 min 2.9 | EVAL pts +20.6 min 2.9 happy 0.45 | EVAL err 0.500 within 0.302 exact 0.215 steps 50.9 overminus_y 0.13
+[shape 0.00] up 1330/3051 steps 87.2M exams 1,369,042 63.3 min | train err 0.560 within 0.26 len 52.6 ent 0.48 pts +9.4 min 2.9
+[shape 0.00] up 1335/3051 steps 87.5M exams 1,375,339 63.4 min | train err 0.522 within 0.28 len 51.5 ent 0.48 pts +13.4 min 2.9
+[shape 0.00] up 1340/3051 steps 87.8M exams 1,381,780 63.7 min | train err 0.520 within 0.28 len 51.0 ent 0.47 pts +14.6 min 2.9
+[shape 0.00] up 1345/3051 steps 88.1M exams 1,388,051 63.9 min | train err 0.545 within 0.27 len 52.2 ent 0.48 pts +11.7 min 2.9
+[shape 0.00] up 1350/3051 steps 88.5M exams 1,394,342 64.1 min | train err 0.525 within 0.26 len 52.4 ent 0.49 pts +12.6 min 2.9 | EVAL pts +21.5 min 2.9 happy 0.45 | EVAL err 0.472 within 0.298 exact 0.213 steps 50.5 overminus_y 0.13
+[shape 0.00] up 1355/3051 steps 88.8M exams 1,400,616 64.3 min | train err 0.523 within 0.26 len 51.4 ent 0.48 pts +13.7 min 2.9
+[shape 0.00] up 1360/3051 steps 89.1M exams 1,406,935 64.5 min | train err 0.550 within 0.26 len 51.8 ent 0.49 pts +11.6 min 2.9
+[shape 0.00] up 1365/3051 steps 89.5M exams 1,413,276 64.7 min | train err 0.507 within 0.27 len 52.0 ent 0.49 pts +15.6 min 3.0
+[shape 0.00] up 1370/3051 steps 89.8M exams 1,419,556 64.9 min | train err 0.493 within 0.27 len 52.0 ent 0.49 pts +16.0 min 2.9
+[shape 0.00] up 1375/3051 steps 90.1M exams 1,425,836 65.1 min | train err 0.547 within 0.27 len 52.1 ent 0.49 pts +12.0 min 2.9 | EVAL pts +20.5 min 2.9 happy 0.44 | EVAL err 0.500 within 0.297 exact 0.207 steps 50.3 overminus_y 0.19
+[shape 0.00] up 1380/3051 steps 90.4M exams 1,432,083 65.3 min | train err 0.533 within 0.25 len 52.5 ent 0.49 pts +14.0 min 3.0
+[shape 0.00] up 1385/3051 steps 90.8M exams 1,438,328 65.5 min | train err 0.519 within 0.28 len 52.9 ent 0.48 pts +14.5 min 3.0
+[shape 0.00] up 1390/3051 steps 91.1M exams 1,444,547 65.7 min | train err 0.527 within 0.26 len 52.7 ent 0.48 pts +14.9 min 3.0
+[shape 0.00] up 1395/3051 steps 91.4M exams 1,450,770 65.9 min | train err 0.515 within 0.25 len 52.6 ent 0.48 pts +13.8 min 3.0
+[shape 0.00] up 1400/3051 steps 91.8M exams 1,456,949 66.1 min | train err 0.501 within 0.27 len 52.8 ent 0.48 pts +15.7 min 3.0 | EVAL pts +21.9 min 2.9 happy 0.45 | EVAL err 0.472 within 0.316 exact 0.222 steps 51.0 overminus_y 0.18
+[shape 0.00] up 1405/3051 steps 92.1M exams 1,463,164 66.3 min | train err 0.499 within 0.30 len 52.5 ent 0.47 pts +15.0 min 3.0
+[shape 0.00] up 1410/3051 steps 92.4M exams 1,469,422 66.6 min | train err 0.516 within 0.25 len 52.3 ent 0.46 pts +14.0 min 3.0
+[shape 0.00] up 1415/3051 steps 92.7M exams 1,475,659 66.8 min | train err 0.538 within 0.25 len 52.5 ent 0.47 pts +8.4 min 3.0
+[shape 0.00] up 1420/3051 steps 93.1M exams 1,481,850 67.0 min | train err 0.538 within 0.28 len 52.2 ent 0.46 pts +12.6 min 3.0
+[shape 0.00] up 1425/3051 steps 93.4M exams 1,488,078 67.2 min | train err 0.518 within 0.25 len 52.9 ent 0.46 pts +15.3 min 3.0 | EVAL pts +21.6 min 2.9 happy 0.45 | EVAL err 0.474 within 0.305 exact 0.218 steps 50.3 overminus_y 0.17
+[shape 0.00] up 1430/3051 steps 93.7M exams 1,494,297 67.4 min | train err 0.551 within 0.25 len 54.0 ent 0.47 pts +9.7 min 3.1
+[shape 0.00] up 1435/3051 steps 94.0M exams 1,500,485 67.6 min | train err 0.545 within 0.25 len 53.3 ent 0.47 pts +11.9 min 3.1
+[shape 0.00] up 1440/3051 steps 94.4M exams 1,506,697 67.8 min | train err 0.515 within 0.26 len 53.0 ent 0.47 pts +12.0 min 3.0
+[shape 0.00] up 1445/3051 steps 94.7M exams 1,512,874 68.0 min | train err 0.523 within 0.27 len 52.2 ent 0.48 pts +11.6 min 3.0
+[shape 0.00] up 1450/3051 steps 95.0M exams 1,519,135 68.2 min | train err 0.530 within 0.28 len 53.2 ent 0.47 pts +12.5 min 3.0 | EVAL pts +22.0 min 2.9 happy 0.45 | EVAL err 0.480 within 0.310 exact 0.221 steps 50.5 overminus_y 0.16
+[shape 0.00] up 1455/3051 steps 95.4M exams 1,525,411 68.4 min | train err 0.508 within 0.29 len 52.1 ent 0.47 pts +13.7 min 3.0
+[shape 0.00] up 1460/3051 steps 95.7M exams 1,531,675 68.6 min | train err 0.499 within 0.31 len 53.1 ent 0.47 pts +16.1 min 3.1
+[shape 0.00] up 1465/3051 steps 96.0M exams 1,537,922 68.8 min | train err 0.508 within 0.28 len 51.7 ent 0.47 pts +14.9 min 3.0
+[shape 0.00] up 1470/3051 steps 96.3M exams 1,544,164 69.0 min | train err 0.521 within 0.27 len 52.6 ent 0.48 pts +12.7 min 3.0
+[shape 0.00] up 1475/3051 steps 96.7M exams 1,550,412 69.2 min | train err 0.548 within 0.25 len 53.2 ent 0.48 pts +11.2 min 3.0 | EVAL pts +22.2 min 2.9 happy 0.45 | EVAL err 0.472 within 0.302 exact 0.211 steps 50.7 overminus_y 0.13
+[shape 0.00] up 1480/3051 steps 97.0M exams 1,556,598 69.4 min | train err 0.517 within 0.26 len 53.4 ent 0.48 pts +10.3 min 3.0
+[shape 0.00] up 1485/3051 steps 97.3M exams 1,562,727 69.6 min | train err 0.491 within 0.29 len 53.4 ent 0.48 pts +17.8 min 3.1
+[shape 0.00] up 1490/3051 steps 97.6M exams 1,568,932 69.8 min | train err 0.542 within 0.29 len 53.4 ent 0.49 pts +12.6 min 3.1
+[shape 0.00] up 1495/3051 steps 98.0M exams 1,575,003 70.0 min | train err 0.499 within 0.30 len 54.0 ent 0.49 pts +15.2 min 3.1
+[shape 0.00] up 1500/3051 steps 98.3M exams 1,581,111 70.2 min | train err 0.535 within 0.26 len 53.5 ent 0.47 pts +11.7 min 3.0 | EVAL pts +20.5 min 2.9 happy 0.45 | EVAL err 0.481 within 0.302 exact 0.206 steps 50.9 overminus_y 0.18
+[shape 0.00] up 1505/3051 steps 98.6M exams 1,587,278 70.5 min | train err 0.526 within 0.26 len 53.5 ent 0.47 pts +12.5 min 3.0
+[shape 0.00] up 1510/3051 steps 99.0M exams 1,593,425 70.7 min | train err 0.527 within 0.25 len 53.5 ent 0.47 pts +12.2 min 3.0
+[shape 0.00] up 1515/3051 steps 99.3M exams 1,599,557 71.1 min | train err 0.509 within 0.25 len 53.0 ent 0.48 pts +13.7 min 3.0
+[shape 0.00] up 1520/3051 steps 99.6M exams 1,605,608 71.3 min | train err 0.500 within 0.27 len 55.0 ent 0.48 pts +14.8 min 3.1
+[shape 0.00] up 1525/3051 steps 99.9M exams 1,611,803 71.6 min | train err 0.491 within 0.27 len 52.7 ent 0.49 pts +16.8 min 3.0 | EVAL pts +21.5 min 2.9 happy 0.45 | EVAL err 0.478 within 0.297 exact 0.216 steps 50.3 overminus_y 0.20
+[shape 0.00] up 1530/3051 steps 100.3M exams 1,618,046 71.8 min | train err 0.524 within 0.25 len 52.1 ent 0.47 pts +12.8 min 2.9
+[shape 0.00] up 1535/3051 steps 100.6M exams 1,624,264 72.0 min | train err 0.558 within 0.25 len 53.2 ent 0.47 pts +8.9 min 3.0
+[shape 0.00] up 1540/3051 steps 100.9M exams 1,630,473 72.2 min | train err 0.553 within 0.27 len 53.2 ent 0.47 pts +12.7 min 3.0
+[shape 0.00] up 1545/3051 steps 101.3M exams 1,636,752 72.4 min | train err 0.524 within 0.27 len 51.5 ent 0.47 pts +11.8 min 2.9

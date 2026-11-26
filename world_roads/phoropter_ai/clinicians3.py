@@ -242,10 +242,11 @@ def plano(env, i):
 
 
 # ---------------------------------------------------------------- runner
-def run3(make=None, test=None, n_par=500, seed=7, agent=None, greedy=True, record_actions=False, start="plano"):
+def run3(make=None, test=None, n_par=500, seed=7, agent=None, greedy=True, record_actions=False, start="plano",
+         rand_dial=True):
     """Run a script (make) or an AI (agent) on a test set in lock-step; returns per-patient arrays."""
     from clinicians import collect
-    env = ClinicEnv(n_par, seed=seed, sampler=test.sampler, record=agent is None, start_mode=start)
+    env = ClinicEnv(n_par, seed=seed, sampler=test.sampler, record=agent is None, start_mode=start, rand_dial=rand_dial)
     obs = env.obs()
     gens, acts = [None] * n_par, np.zeros(n_par, np.int64)
     if agent is None:

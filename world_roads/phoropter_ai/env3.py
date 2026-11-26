@@ -65,10 +65,14 @@ ANSWERS = {
 
 
 def plano_pair(rng, n, hard=0.0):
+    """Two-eyed patients for the clinic: both eyes start at plano. The axis dial starts wherever the last
+    patient left it (uniform 1-180), which with no cylinder in the phoropter changes nothing optically."""
     p = sample_pair(rng, n, hard=hard)
     for k in ("S0", "C0", "S0_os", "C0_os"):
         p[k] = np.zeros(n)
     p["ax0"], p["ax0_os"] = np.full(n, 180.0), np.full(n, 180.0)
+    p["dial0"] = rng.integers(1, 181, n).astype(float)
+    p["dial0_os"] = rng.integers(1, 181, n).astype(float)
     return p
 
 
@@ -78,10 +82,23 @@ class PlanoPairTestSet(PairTestSet):
         for k in ("S0", "C0", "S0_os", "C0_os"):
             self.pool[k][:] = 0.0
         self.pool["ax0"][:], self.pool["ax0_os"][:] = 180.0, 180.0
+        r = np.random.default_rng(seed + 7)
+        self.pool["dial0"] = r.integers(1, 181, size).astype(float)
+        self.pool["dial0_os"] = r.integers(1, 181, size).astype(float)
+
+    def sampler(self, rng, n):
+        take = np.arange(self.next, self.next + n)
+        self.next += n
+        out = plano_pair(rng, n)
+        out["pid"] = np.full(n, -1.0)
+        real = take < self.size
+        for k, v in self.pool.items():
+            out[k][real] = v[take[real]]
+        return out
 
 
 class ClinicEnv(BinocularEnv):
-    def __init__(self, n, seed=0, sampler=plano_pair, record=False, start_mode="plano"):
+    def __init__(self, n, seed=0, sampler=plano_pair, record=False, start_mode="plano", rand_dial=True):
         self.n = n
         self.rng = np.random.default_rng(seed)
         self.sampler = sampler
@@ -104,6 +121,7 @@ class ClinicEnv(BinocularEnv):
         self.start_pv = z(2, 3)
         self.shaping, self.gamma, self.t_max, self.cyl_weight = 0.0, 0.995, T_MAX3, 2.0
         self.secs_max = SECS_MAX
+        self.rand_dial = rand_dial                           # practice term 1 used False: the dial always at 180
         self.start_mode = start_mode                       # "objective": start at the sampler's S0/C0/ax0 (calibration)
         self.rows = np.arange(n)
         self._reset(np.arange(n))
@@ -117,6 +135,8 @@ class ClinicEnv(BinocularEnv):
                 self.P[k] = np.zeros(self.n)
             self.P[k][idx] = v
         self.S[idx], self.C[idx], self.ax[idx] = 0.0, 0.0, 180.0          # plano, both eyes
+        if self.rand_dial and "dial0" in p:                                 # the dial where the last patient left it
+            self.ax[idx, 0], self.ax[idx, 1] = p["dial0"], p["dial0_os"]
         if self.start_mode == "objective":
             self.S[idx, 0], self.C[idx, 0], self.ax[idx, 0] = p["S0"], p["C0"], p["ax0"]
             self.S[idx, 1], self.C[idx, 1], self.ax[idx, 1] = p["S0_os"], p["C0_os"], p["ax0_os"]

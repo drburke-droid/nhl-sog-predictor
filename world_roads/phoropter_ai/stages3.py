@@ -15,19 +15,20 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 def main(n=600):
     rows = []
-    for ex_n, p in ckpt_list():
+    for ex_n, p, rd in ckpt_list():
         ag, _ = load(p)
-        res = run3(agent=ag, test=PlanoPairTestSet(n, seed=SEED), n_par=n, greedy=False, record_actions=True)
+        res = run3(agent=ag, test=PlanoPairTestSet(n, seed=SEED), n_par=n, greedy=False, record_actions=True,
+                   rand_dial=rd)
         s = summary3(res)
         s.update(se_stats(res))
         h = habits(res["actions"])
         lens_moved = np.array([any(a in (E3.SP25, E3.SM25, E3.SP100, E3.SM100, E3.CYL_MORE, E3.CYL_LESS, E3.OU_P,
                                          E3.OU_M, E3.R_P, E3.L_P) for a in seq) for seq in res["actions"]])
         cyl_given = np.mean(np.r_[res["C"], res["C_os"]] < 0)
-        rows.append(dict(exams=ex_n, net=s["net"], minutes=s["minutes"], happy=s["happy"], se=s["se_within_025"],
+        rows.append(dict(exams=ex_n, term=2 if rd else 1, net=s["net"], minutes=s["minutes"], happy=s["happy"], se=s["se_within_025"],
                          vec=s["vec_within_025"], plano_rx=float(1 - lens_moved.mean()), cyl_given=float(cyl_given),
                          buttons=s["steps"], habits=h["mean_count"], used=h["used_pct"], reached=h["reached_stage"],
-                         switches=h["sph_cyl_switches"]))
+                         switches=h["sph_cyl_switches"], axis=h["mean_count"]["axis"]))
         r = rows[-1]
         print(f"{ex_n:>9,}  net {r['net']:+6.1f}  min {r['minutes']:4.1f}  happy {r['happy']:.2f}  SE {r['se']:.2f}  "
               f"vec {r['vec']:.2f}  plano {r['plano_rx']:.2f}  cyl {r['cyl_given']:.2f}  "

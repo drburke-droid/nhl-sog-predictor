@@ -13,8 +13,8 @@ import clinic
 
 # The showcase patient (chosen before any exam was filmed; the same 24-year-old as before, now with no
 # autorefractor): OD -2.25 -1.00 x 170, OS -2.50 -0.75 x 010, thinks minus looks "crisper", some proximal
-# accommodation behind the phoropter, right-eye dominant.
-SHOWCASE3 = dict(SHOWCASE2)
+# accommodation behind the phoropter, right-eye dominant. The phoropter's axis dials were left at 90.
+SHOWCASE3 = dict(SHOWCASE2, dial0=90.0, dial0_os=90.0)     # the axis dials left at 90 by the last patient
 
 
 def line_cat(k, n):
@@ -22,8 +22,8 @@ def line_cat(k, n):
     return 0 if k == n else (1 if 2 * k > n else (3 if k == 0 else 2))
 
 
-def record3(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max_steps=200):
-    env = ClinicEnv(1, seed=seed, sampler=fixed_pair(**patient), record=True)
+def record3(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max_steps=200, rand_dial=True):
+    env = ClinicEnv(1, seed=seed, sampler=fixed_pair(**patient), record=True, rand_dial=rand_dial)
     obs = env.obs()
     gen = script(env, 0) if script else None
     a = next(gen) if gen else None

@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MILESTONES = [0, 1_000, 3_000, 10_000, 30_000, 100_000, 300_000, 1_000_000, 2_000_000, 3_000_000,
               5_000_000, 8_000_000]
 CLINIC_MILESTONES = [0, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 200_000, 300_000, 500_000, 750_000,
-                     1_000_000, 1_500_000, 2_000_000, 3_000_000, 4_000_000]
+                     1_000_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 3_000_000, 4_000_000]
 
 
 def main():
@@ -49,6 +49,9 @@ def main():
     ap.add_argument("--resume", default=None,
                     help="checkpoint to continue from (latest.pt has the optimizer; an exams_*.pt restarts it)")
     ap.add_argument("--t_max", type=int, default=60, help="moves before an exam times out")
+    ap.add_argument("--exams_offset", type=int, default=0,
+                    help="continue counting practice exams (and steps) from an earlier run, e.g. a second practice term")
+    ap.add_argument("--steps_offset", type=int, default=0)
     ap.add_argument("--shape_frac", type=float, default=0.0,
                     help="fraction of training with the warmer/colder hint; its weight falls linearly 1 -> 0")
     args = ap.parse_args()
@@ -85,8 +88,8 @@ def main():
     E, T = args.envs, args.rollout
     n_up = int(args.steps // (E * T))
     obs = torch.as_tensor(env.obs())
-    exams, steps, t0 = 0, 0, time.time()
-    ms_done = set()
+    exams, steps, t0 = args.exams_offset, args.steps_offset, time.time()
+    ms_done = {m for m in MILESTONES if m <= exams} if args.exams_offset else set()
     start_up = 1
     header = ["update", "steps", "exams", "hours", "shaping", "hard", "train_err", "train_within", "train_len",
               "entropy", "eval_err", "eval_within", "eval_exact", "eval_steps", "eval_over_minus_young", "eval_points",
@@ -131,9 +134,11 @@ def main():
         os.replace(os.path.join(ck, "latest.tmp"), os.path.join(ck, "latest.pt"))
 
     cur_up = [0]
-    if not args.resume:
+    if not args.resume and not args.exams_offset:
         save(0)
         ms_done.add(0)
+    if args.exams_offset and not args.resume:
+        save(exams)
     NO = agent.n_obs
     buf_o = torch.zeros(T, E, NO)
     buf_a = torch.zeros(T, E, dtype=torch.long)

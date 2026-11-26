@@ -14,7 +14,9 @@ from optics import to_pv
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-RUN = os.path.join(HERE, "runs", "f")
+RUN = os.path.join(HERE, "runs", "f2")             # practice term 2 (the final AI)
+RUN1 = os.path.join(HERE, "runs", "f")             # practice term 1 (the axis dial always started at 180)
+TERM1_END = 1_630_473
 SEED = 2026
 
 GROUPS = {"sphere lens": (E3.SP25, E3.SM25, E3.SP100, E3.SM100, E3.OU_P, E3.OU_M, E3.R_P, E3.L_P),
@@ -100,10 +102,43 @@ def sampled_outcomes(res, seed=11):
 
 
 def ckpt_list():
-    out = []
-    for p in glob.glob(os.path.join(RUN, "ckpt", "exams_*.pt")):
-        out.append((int(re.findall(r"exams_(\d+)", p)[0]), p))
-    return sorted(out)
+    """Every practice checkpoint of both terms: (exams, path, rand_dial). Term-1 checkpoints are scored in the
+    clinic they practised in (dial at 180)."""
+    out = {}
+    for run, term2 in ((RUN1, False), (RUN, True)):
+        for p in glob.glob(os.path.join(run, "ckpt", "exams_*.pt")):
+            n = int(re.findall(r"exams_(\d+)", p)[0])
+            if n not in out:
+                out[n] = (n, p, term2 and n > TERM1_END)
+    return [out[k] for k in sorted(out)]
+
+
+def term1_shortcut(n=2000):
+    """The end of term 1: its habits in its own clinic (dial at 180), by astigmatism orientation, and what
+    happened when the dial started anywhere."""
+    ag, _ = load(os.path.join(RUN1, "ckpt", f"exams_{TERM1_END}.pt"))
+    out = {}
+    for name, rd in (("dial180", False), ("random_dial", True)):
+        res = run3(agent=ag, test=PlanoPairTestSet(n, seed=SEED), n_par=1000, record_actions=True, rand_dial=rd)
+        s = summary3(res)
+        s.update(se_stats(res))
+        h = habits(res["actions"])
+        C = np.concatenate([res["C"], res["C_os"]])
+        ax = np.concatenate([res["ax"], res["ax_os"]])
+        tC = np.concatenate([res["tC"], res["tC_os"]])
+        tax = np.concatenate([res["tax"], res["tax_os"]]) % 180
+        err = np.concatenate([res["err"], res["err_os"]])
+        wtr = ((tax < 30) | (tax >= 150)) & (tC <= -0.75)
+        atr = (tax >= 60) & (tax < 120) & (tC <= -0.75)
+        obl = ~((tax < 30) | (tax >= 150)) & ~((tax >= 60) & (tax < 120)) & (tC <= -0.75)
+        out[name] = dict(summary=s, axis_turns=h["mean_count"]["axis"], cyl_given=float(np.mean(C < 0)),
+                         cyl_at_180=float(np.mean(np.abs(((ax[C < 0] + 90) % 180) - 90) < 0.5)) if (C < 0).any() else 0.0,
+                         wtr_within=float(np.mean(err[wtr] <= 0.25 + 1e-9)), atr_within=float(np.mean(err[atr] <= 0.25 + 1e-9)),
+                         obl_within=float(np.mean(err[obl] <= 0.25 + 1e-9)),
+                         n_wtr=int(wtr.sum()), n_atr=int(atr.sum()), n_obl=int(obl.sum()))
+        print("term 1", name, {k: (round(v, 3) if isinstance(v, float) else v) for k, v in out[name].items() if k != "summary"},
+              flush=True)
+    return out
 
 
 def main(n_test=5000, n_stage=2000, tag="f"):
@@ -113,6 +148,7 @@ def main(n_test=5000, n_stage=2000, tag="f"):
     final = os.path.join(RUN, "ckpt", "final.pt")
     if not os.path.exists(final):
         final = ckpt_list()[-1][1]
+    R["meta"]["term1_end"] = TERM1_END
     agent, meta = load(final)
     R["meta"].update(exams=meta["exams"], steps=meta["steps"], ckpt=os.path.basename(final))
     for name, kw in (("plano", dict(make=plano)), ("textbook", dict(make=textbook3)), ("ai", dict(agent=agent))):
@@ -130,13 +166,15 @@ def main(n_test=5000, n_stage=2000, tag="f"):
             entry["repeat"] = repeat(r1, r2)
         R[name] = entry
         print(name, {k: round(v, 3) for k, v in s.items() if isinstance(v, float)}, flush=True)
-    # practice checkpoints (sampled, as it practised; and greedy, its best guess)
+    R["term1"] = term1_shortcut(min(2000, n_test))
+    # practice checkpoints (sampled, as it practised; and greedy, its best guess), each in its own term's clinic
     R["stages"] = []
-    for ex_n, p in ckpt_list():
+    for ex_n, p, rd in ckpt_list():
         ag, m = load(p)
-        row = dict(exams=ex_n, ckpt=os.path.basename(p))
+        row = dict(exams=ex_n, ckpt=os.path.basename(p), term=2 if rd else 1)
         for mode, greedy in (("sampled", False), ("greedy", True)):
-            res = run3(agent=ag, test=PlanoPairTestSet(n_stage, seed=SEED), n_par=min(1000, n_stage), greedy=greedy)
+            res = run3(agent=ag, test=PlanoPairTestSet(n_stage, seed=SEED), n_par=min(1000, n_stage), greedy=greedy,
+                       rand_dial=rd)
             s = summary3(res)
             s.update(se_stats(res))
             row[mode] = s
