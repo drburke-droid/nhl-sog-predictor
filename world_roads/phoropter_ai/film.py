@@ -76,7 +76,7 @@ def sections():
     t0 = trace("a_0")
     S["a_exam0"] = Exam(t0, "EXAM 1", "Untrained: a random network pressing random buttons", speed=0.55,
                         notes=[(0, "It has no idea what any button does."),
-                               (4, "It asks the patient to read the chart… and learns nothing from it.")])
+                               (5, "It asks the patient to read the chart… and learns nothing from it.")])
     ta = trace("a_exams_107079")
     S["a_c1"] = Counter(0, ta["meta"]["exams"], "practice exams later…")
     S["a_exam1"] = Exam(ta, f"AFTER {fmt_n(ta['meta']['exams'])} PRACTICE EXAMS", "Attempt 1", outro=5.5,
