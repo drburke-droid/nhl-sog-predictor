@@ -437,7 +437,7 @@ function renderHeat() {
       tag = `<span class="role-tag">${ROLE[perm[s]]} · ${pct(rc[s][perm[s]] / tot)}</span>`;
       sub = `plays ${ROLE_LONG[ROLE[perm[s]]]} in ${pct(rc[s][perm[s]] / tot)} of 5-on-5 frames`;
     } else if (s === 5) { sub = "on the ice only while the goalie is pulled"; }
-    else { sub = "the goalie network"; }
+    else { sub = "scripted: stays square to the puck, cuts the angle"; }
     card.innerHTML = `<div class="t"><b>${slotName(s)}</b>${tag}</div><canvas aria-label="Heatmap for ${slotName(s)}"></canvas><div class="s">${sub}</div>`;
     host.appendChild(card);
     const cv = card.querySelector("canvas");
@@ -622,5 +622,29 @@ fetch("data.json").then(r => { if (!r.ok) throw new Error(r.status); return r.js
 <script>
 // Narrative copy, written after the run finished.
 window.LEDE = "";
-window.METHOD = [];
+window.METHOD = [
+  { h: "The rink and the rules", li: [
+    "200 × 85 ft rink with 28 ft corners, blue lines 25 ft from centre, 6 ft nets and creases. Players are discs with momentum: they accelerate, coast, bounce off the boards and bump each other.",
+    "Hard-coded rules: goals, offside (immediate whistle), no-touch icing, goalie freezes, and faceoffs with every player on his own side of the dot.",
+    "After every goal each skater is dropped at a random spot in his own half, so no line-up is ever imposed.",
+    "A coach can pull the goalie at any moment for an extra attacker (slot 6). The goalie can only come back at a stoppage.",
+  ] },
+  { h: "The puck", li: [
+    "A loose puck goes to the first stick that reaches it. A carrier skates 10% slower and can be stripped by a checker within 3 ft (about 55% a second for one checker) or knocked off the puck by a hard hit.",
+    "With the puck, a skater can keep it, shoot, dump it into either corner, or pass to any teammate. Passes travel at 60 ft/s to the receiver's interception point. Other sticks near the lane pick them off 25–85% of the time, but never in the first 0.1 s.",
+    "Goalies are scripted: square to the puck, out to cut the angle, 10 ft/s laterally. Set shots score about 10% of the time and a quick cross-ice pass into a one-timer about 50%, so puck movement pays.",
+  ] },
+  { h: "Learning", li: [
+    "Self-play PPO: both teams use the same networks. One skater network drives all six skater slots; its only way to tell them apart is a slot id among its inputs.",
+    "Every 0.1 s each skater picks one of 8 skating directions, glide or brake, plus a puck action when he has it. Each team sees the game rotated so it always attacks to the right.",
+    "Skaters are rewarded +1 for a goal for and −1 for a goal against. The coach acts once a second and is rewarded only for the result: +1 win, 0 tie, −1 loss. It starts learning once the players can play.",
+    "For the first 4M steps a small team-level bonus helps learning get started. It pays when the team's closest skater gets nearer a loose puck, when the puck moves toward the goal mouth, and a little for possession. It fades to zero by 12M steps. It never says which player should do anything.",
+  ] },
+  { h: "Caveats", li: [
+    "The role labels are relative: the two deepest skaters in a frame are called defence. A high score means slots keep the same relative jobs, not that their play matches the NHL in detail.",
+    "Both teams share one network, so this is one style of hockey meeting itself. A population of different opponents might settle on other systems.",
+    "Hours of game time, not seasons: roughly 25M decisions on a 4-core CPU. Longer training could change the picture.",
+    "Several rules were tuned during development after the agents found exploits: roaming goalies, impossible passes, and parking the puck behind the net. The README lists each one.",
+  ] },
+];
 </script>
