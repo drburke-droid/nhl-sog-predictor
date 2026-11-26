@@ -1,2 +1,4 @@
 out/
 __pycache__/
+# attempt 3 is still training; committed in full when the run finishes
+runs/c/
