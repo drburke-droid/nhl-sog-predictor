@@ -10,11 +10,12 @@
     while they read more or smaller letters, and stop when no more letters come; go two lines bigger (about
     20/40) for the cross-cylinder; power first, stop when unsure or they backtrack; then axis the same way;
     if the axis moved more than 10 degrees, power again; other eye. Binocular balance: prism-split, 20/40,
-    both eyes +0.50, add +0.25 to the clearer eye until they are the same, prism out, take the +0.50 back
-    off both eyes, and check 20/20 both eyes.
+    both eyes +0.50, add +0.25 to the clearer eye until they are the same, prism out. Then binocular MPMVA
+    (added at the optometrist's request): take the +0.50 off both eyes 0.25 at a time, reading the chart, and
+    keep the most plus lens that gives the most letters.
   On a flip in the balance answer, the right eye is left the slightly clearer one (the optometrist's rule:
-  most people are right-eye dominant). Two details the description leaves open are filled the standard way: with no cylinder in the phoropter, cylinder is searched for at four axes; and if
-  both eyes together do not read as well as the better eye did alone, -0.25 both eyes (up to twice).
+  most people are right-eye dominant). One detail the description leaves open is filled the standard way:
+  with no cylinder in the phoropter, cylinder is searched for at four axes.
 
 Each examiner is a generator that yields actions and receives (code, va, letters correct, letters on line, line).
 """
@@ -225,14 +226,9 @@ def mine(env, i):
     yield OU_P                                               # +0.50 both eyes
     yield from balance(env, i, keep_right_clearer=True)
     yield BOTH                                               # prism out
-    yield OU_M
-    yield OU_M                                               # take the +0.50 back off
-    code, v, *_ = yield READ                                 # check 20/20 both eyes
-    for _ in range(2):                                       # not as good as the better eye alone: a little minus
-        if v <= min(best_eye) + 0.02 + 1e-9:
-            break
-        yield OU_M
-        code, v, *_ = yield READ
+    # binocular MPMVA: take the +0.50 off a quarter at a time, reading the chart; keep the most plus lens that
+    # gives the most letters (the optometrist's letter rule: stop when no more letters come)
+    yield from mpmva_ou(env, i, patience=1, tol=0.0)
     yield DONE
 
 

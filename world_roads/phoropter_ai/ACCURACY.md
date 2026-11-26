@@ -144,10 +144,21 @@ eye looks 0.02 logMAR clearer than it is.
   1. Both eyes +0.75 on the 20/40 line, prism-split.
   2. +0.25 to the clearer eye until equal. A flip takes the last +0.25 back.
   3. Prism out, then binocular MPMVA (stop at the first −0.25 that gains no letters).
-* **The optometrist's routine.** As described by the optometrist (text in `clinicians2.py`). Gaps
-  were filled the standard way, as noted there. The final "20/20 OU?" check acts: if both eyes
-  together read worse than the better eye did alone, −0.25 OU (up to twice). With the check only
-  looked at, the routine scored 33% within 0.25 D instead of 41%.
+* **The optometrist's routine.** As described by the optometrist (text in `clinicians2.py`). The one
+  gap, a cylinder search when there is none, was filled the standard way.
+  * At the optometrist's request it ends with a **binocular MPMVA**: after the balance, the +0.50 comes
+    off both eyes a quarter at a time with a chart reading each time. It keeps the most plus lens that
+    gives the most letters, using the optometrist's own rule (stop when no more letters come).
+  * Versions tried on 3,000 two-eyed patients (within 0.25 D, per eye):
+
+    | Ending | Within 0.25 D |
+    |---|---|
+    | −0.50 OU and a look at 20/20 | 32.9% |
+    | −0.50 OU and a 20/20 check that adds minus if needed | 39.3% |
+    | Binocular MPMVA (the version used) | 43.9% |
+    | Binocular MPMVA with a one-letter tolerance | 45.4% |
+    | Monocular MPMVA re-checks instead | 38.9% |
+    | Textbook, for reference | 46.2% |
 
 ## 3. The scripted examiners
 
