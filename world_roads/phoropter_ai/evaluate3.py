@@ -187,9 +187,34 @@ def main(n_test=5000, n_stage=2000, tag="f"):
     print(f"wrote data/results_{tag}.json")
 
 
+def redo(name):
+    """Re-run one examiner (textbook or plano) on the test set and patch it into data/results_f.json."""
+    p = os.path.join(DATA, "results_f.json")
+    R = json.load(open(p))
+    seqs = json.load(open(os.path.join(DATA, "seqs_f.json")))
+    kw = dict(make=textbook3) if name == "textbook" else dict(make=plano)
+    n_test = R["meta"]["test_patients"]
+    res = run3(test=PlanoPairTestSet(n_test, seed=SEED), n_par=1000, record_actions=name != "plano", **kw)
+    s = summary3(res)
+    s.update(se_stats(res))
+    entry = dict(summary=s, outcomes=sampled_outcomes(res))
+    if name != "plano":
+        entry["habits"] = habits(res["actions"])
+        seqs[name] = res["actions"][:300]
+        r1 = run3(test=PlanoPairTestSet(2000, seed=SEED), n_par=1000, seed=7, **kw)
+        r2 = run3(test=PlanoPairTestSet(2000, seed=SEED), n_par=1000, seed=8, **kw)
+        entry["repeat"] = repeat(r1, r2)
+    R[name] = entry
+    json.dump(R, open(p, "w"), indent=1)
+    json.dump(seqs, open(os.path.join(DATA, "seqs_f.json"), "w"))
+    print(name, {k: round(v, 3) for k, v in s.items() if isinstance(v, float)})
+
+
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "quick":
+    if len(sys.argv) > 2 and sys.argv[1] == "redo":
+        redo(sys.argv[2])
+    elif len(sys.argv) > 1 and sys.argv[1] == "quick":
         main(400, 200, tag="f_quick")
     else:
         main()

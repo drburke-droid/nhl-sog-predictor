@@ -37,7 +37,7 @@ the length of (spherical-equivalent error, leftover cylinder in full dioptres).
 | Annoyed | +30 | "not quite crisp", may not return |
 | Rx check | −80 | an unpaid 15-minute re-check (60 points of chair time), doesn't return |
 | Rx check + bad review | −150 | re-check, never returns, one-star review |
-| Walked out | −150 | the exam ran past 15 minutes (or 200 buttons): no glasses |
+| Walked out | −150 | the exam ran past 15 minutes: no glasses. (There is also a safety cap of 400 buttons. The AI trained with a 200-button cap and never came near it. The textbook script needs more than 200 for some patients, so the evaluation uses 400.) |
 | Chair time | −4 per minute | what a minute of a 25-minute appointment earns |
 
 Chance of each outcome by patient error (linear in between):

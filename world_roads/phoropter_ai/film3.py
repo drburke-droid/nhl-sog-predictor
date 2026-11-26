@@ -725,12 +725,16 @@ def sections():
     S["curve2"] = PracticeCurve(refs, notes=NOTES.get("curve2", []), x_from=TERM1_END, dur=18.0, draw_secs=8.0,
                                 title="MORE PRACTICE, A REALISTIC DIAL")
     stg = {r["exams"]: r for r in R["stages"]}
-    picks = STAGE_PICKS or [r["exams"] for r in R["stages"][1::max(1, len(R["stages"]) // 3)]][:3]
+    picks = [e for e in STAGE_PICKS if e in stg] or [r["exams"] for r in R["stages"][1::max(1, len(R["stages"]) // 3)]][:3]
     S["grids"] = OutcomeGrid("THE SAME CLINIC, LATER", "500 patients at each stage of practice, one square each",
                              [(f"After {fmt_n(e)} patients", stg[e]["sampled_outcomes"], stg[e]["sampled"]["net"],
                                stg[e]["sampled"]["minutes"]) for e in picks], dur=14.0, n=500)
     # the graduate
     ai_tr = trace("f_ai")
+    tb_tr = trace("f_textbook")
+    NOTES.update(make_notes(R, ai_tr, tb_tr))
+    S["curve"].notes = NOTES.get("curve", [])
+    S["curve2"].notes = NOTES.get("curve2", [])
     S["ai_title"] = Card("After " + fmt_n(R["meta"]["exams"]) + " patients",
                          [(0.8, "The same first patient, again.", 34, INK2, "Medium"),
                           (2.4, "Hidden from the AI: right −2.25 −1.00 × 170, left −2.50 −0.75 × 010.", 28, MUTED,
@@ -739,7 +743,6 @@ def sections():
                          notes=NOTES.get("ai_exam", {}), outro=8.0)
     # the textbook
     S["tb_card"] = TextbookCard()
-    tb_tr = trace("f_textbook")
     S["tb_exam"] = Exam3(tb_tr, "THE TEXTBOOK", "the same patient, the textbook script", who="TEXTBOOK",
                          show_ai_probs=False, panel_title="THE SAME BUTTONS", speed=0.45,
                          notes=NOTES.get("tb_exam", {}), outro=7.0)
@@ -759,7 +762,99 @@ def sections():
 
 
 NOTES = {}
-STAGE_PICKS = []
+STAGE_PICKS = [50_564, 500_299, 2_697_295]
+
+
+def make_notes(R, ai_tr, tb_tr):
+    """Captions and commentary, built from the results so every number matches the data."""
+    A, T = R["ai"], R["textbook"]
+    Ah, Th = A["habits"]["mean_count"], T["habits"]["mean_count"]
+    As, Ts = A["summary"], T["summary"]
+    st1 = R["term1"]["dial180"]
+    N = {}
+    # the graduate's exam: find the moments to caption
+    steps = ai_tr["steps"]
+    first = lambda cond, lo=0: next((k for k in range(lo, len(steps)) if cond(steps[k])), None)
+    k_jump = first(lambda s: s["a"] == E3.SM100)
+    k_axis = first(lambda s: s["a"] in (E3.AXP15, E3.AXM15, E3.AXP5, E3.AXM5, E3.AXP2, E3.AXM2))
+    k_jcc = first(lambda s: s["a"] == E3.JCC_PW)
+    k_plus = first(lambda s: s["a"] == E3.SP100, (k_jcc or 0))
+    k_next = first(lambda s: s["a"] == E3.NEXT)
+    k_bal = first(lambda s: s["a"] == E3.BALANCE)
+    k_ou = first(lambda s: s["a"] == E3.OU_M, (k_bal or 0))
+    k_cmp = first(lambda s: s["a"] in (E3.CMP_M, E3.CMP_P), (k_bal or 0))
+    k_rx = len(steps) - 1
+    ex = {}
+    if k_jump is not None:
+        ex[k_jump + 2] = "Big −1.00 steps, far past what this eye needs. Too much minus still looks clear: the eye just focuses harder."
+    if k_axis is not None:
+        ex[k_axis] = "It turns the dial back toward 180°, where most astigmatism sits. It never asks which way."
+    if k_jcc is not None:
+        ex[k_jcc] = "Cross-cylinder: more cylinder or less? It keeps adding while the answer is “one”."
+    if k_plus is not None:
+        ex[k_plus] = "Now plus back, 1.00 at a time, reading the chart, until it blurs. It leaves the eye fogged on purpose."
+    if k_next is not None:
+        ex[k_next] = "Left eye: the same routine."
+    if k_bal is not None:
+        ex[k_bal] = "Both eyes open, both fogged. Prism split: +0.25 to whichever eye is clearer…"
+    if k_ou is not None:
+        ex[k_ou] = "…and −0.25 on both. It balances the two eyes while it unfogs them."
+    if k_cmp is not None:
+        ex[k_cmp] = "Last: “clearer with −0.25?” It takes more minus only while the answer is a confident yes."
+    N["ai_exam"] = ex
+    tsteps = tb_tr["steps"]
+    tfirst = lambda cond, lo=0: next((k for k in range(lo, len(tsteps)) if cond(tsteps[k])), None)
+    kt_fog = tfirst(lambda s: s["a"] == E3.SP25)
+    kt_jcc = tfirst(lambda s: s["a"] in (E3.JCC_PW, E3.JCC_AX))
+    kt_ax = tfirst(lambda s: s["a"] == E3.JCC_AX)
+    kt_next = tfirst(lambda s: s["a"] == E3.NEXT)
+    kt_bal = tfirst(lambda s: s["a"] == E3.BALANCE)
+    kt_ou = tfirst(lambda s: s["a"] == E3.OU_M, (kt_bal or 0))
+    N["tb_exam"] = {k: v for k, v in {
+        0: "Step 0: no autorefractor, so it finds a starting sphere 1.00 D at a time, reading the chart.",
+        kt_fog: "Step 1: fog with plus, then take it off a quarter at a time, reading the chart after every click.",
+        kt_jcc: "Step 2: one line bigger, then the cross-cylinder. First it searches for any cylinder.",
+        kt_ax: "Cross-cylinder axis: “1 or 2?” says which way to turn the dial.",
+        kt_next: "Step 4: the left eye, all over again.",
+        kt_bal: "Step 5: fog both eyes, split the line with prism, balance them.",
+        kt_ou: "Step 6: take the fog off both eyes together. Then prescribe."}.items() if k is not None}
+    # side by side and timelines
+    N["sidebyside"] = [
+        (14.0, "The textbook finds each eye's sphere on its own, by reading the chart after every quarter step. The AI "
+               "never looks for a one-eye endpoint: it leaves each eye fogged and finds the sphere with both eyes open."),
+        (20.0, "Both eyes open is where the eyes focus most naturally (less of the extra focusing behind a phoropter), so "
+               "its balanced unfog lands closer to the true sphere."),
+        (26.0, "Astigmatism: the textbook asks the axis question and turns the dial. The AI only turns the dial back "
+               "toward 180° and asks about power.")]
+    N["timelines"] = [
+        (8.0, f"The textbook reads the chart {Th['chart reading']:.0f} times per patient: at 8 seconds a reading, about "
+              f"{Th['chart reading'] * 8 / 60:.0f} minutes. The AI reads it {Ah['chart reading']:.0f} times."),
+        (15.0, f"Interleaving costs time. Within each eye, the textbook switches between sphere and cylinder work "
+               f"{T['habits']['sph_cyl_switches']:.1f} times per exam (sphere, cylinder, sphere again); the AI "
+               f"{A['habits']['sph_cyl_switches']:.1f} times. Neither goes back and forth: the AI does sphere, then "
+               f"cylinder, then plus back, once."),
+        (24.0, "Where the AI does interleave is with both eyes open: balance and unfog in the same few clicks, instead "
+               "of balancing first and unfogging after.")]
+    N["habits"] = [
+        (6.0, f"The AI asks the cross-cylinder power question {Ah['cross-cylinder']:.0f} times per patient and never the "
+              f"axis question. The textbook asks {Th['cross-cylinder']:.0f} cross-cylinder questions, axis and power."),
+        (12.0, f"It turns the axis only to bring the dial back near 180°. With-the-rule astigmatism gets corrected; "
+               f"against-the-rule and oblique astigmatism mostly don't."),
+        (18.0, f"It spends {Ah['balance']:.0f} prism questions per patient balancing the eyes; the textbook "
+               f"{Th['balance']:.0f}.")]
+    # the practice curve: what it learned when (from data/stages_f.json)
+    N["curve"] = CURVE_NOTES
+    N["curve2"] = [(2_000_000, "With the dial anywhere, it learned to turn it back toward 180° before adding cylinder."),
+                   (2_600_000, f"Final: {As['net']:+.0f} points per patient, {mmss(As['minutes'])} per exam.")]
+    return N
+
+
+CURVE_NOTES = [(20_000, "Around 20,000 patients: it starts asking “1 or 2?”."),
+               (50_000, "By 50,000 it never hands out plano any more."),
+               (200_000, "By 200,000: cross-cylinder power questions, cylinder at 180°."),
+               (1_000_000, "By a million: the two eyes balanced with prism, exams down to 3 minutes.")]
+
+
 ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "shortcut",
          "curve2", "grids",
          "ai_title", "ai_exam", "tb_card", "tb_exam", "sidebyside", "timelines", "habits", "results", "real", "outro"]

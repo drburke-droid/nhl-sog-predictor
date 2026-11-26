@@ -50,7 +50,7 @@ MASK[2, [READ, READ_LINE, LINE_SM, LINE_LG, CMP_P, CMP_M, OU_P, OU_M, BALANCE, R
 
 QS = (READ, READ_LINE, CMP_P, CMP_M, JCC_AX, JCC_PW)          # answers remembered per stage
 COMPARE = (CMP_P, CMP_M, JCC_AX, JCC_PW, BALANCE)
-T_MAX3 = 200                                                  # button presses
+T_MAX3 = 400                                                  # button presses (a safety cap: the 15-minute limit is the real one; the AI trained with 200 and never came near it)
 SECS_MAX = 900.0                                              # 15 minutes: the exam is cut short
 H3 = 16
 F3 = N_ACT3 + 5 + 3 + 5

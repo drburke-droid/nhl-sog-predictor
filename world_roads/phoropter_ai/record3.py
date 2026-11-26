@@ -22,7 +22,7 @@ def line_cat(k, n):
     return 0 if k == n else (1 if 2 * k > n else (3 if k == 0 else 2))
 
 
-def record3(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max_steps=200, rand_dial=True):
+def record3(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max_steps=400, rand_dial=True):
     env = ClinicEnv(1, seed=seed, sampler=fixed_pair(**patient), record=True, rand_dial=rand_dial)
     obs = env.obs()
     gen = script(env, 0) if script else None

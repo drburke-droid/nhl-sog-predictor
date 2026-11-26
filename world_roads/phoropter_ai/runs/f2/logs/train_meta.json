@@ -1,0 +1,33 @@
+{
+ "exams": 2697295,
+ "steps": 170917888,
+ "hours": 0.7501032125949859,
+ "args": {
+  "steps": 70000000.0,
+  "envs": 1024,
+  "rollout": 64,
+  "epochs": 3,
+  "mb": 8192,
+  "lr": 0.0002,
+  "gamma": 1.0,
+  "lam": 0.95,
+  "ent": 0.01,
+  "seed": 0,
+  "eval_every": 25,
+  "out": "runs/f2",
+  "cyl_weight": 2.0,
+  "start": "autoref",
+  "hard_frac": 0.4,
+  "flag": false,
+  "letters": false,
+  "binocular": false,
+  "clinic": true,
+  "init": "runs/f/ckpt/term1_full.pt",
+  "critic_warmup": 5,
+  "resume": null,
+  "t_max": 60,
+  "exams_offset": 1630473,
+  "steps_offset": 100925440,
+  "shape_frac": 0.4
+ }
+}
