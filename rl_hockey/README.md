@@ -100,6 +100,8 @@ count table.
 pip install torch numpy                      # CPU is fine
 python train.py --run runs/main --hours 2 --lr 5e-4 --ent 0.005   # resumes from runs/main/latest.pt
 python analyze.py --run runs/main            # writes runs/main/analysis.json
+python coach_check.py runs/main                              # optional: 6-on-5 test
+python head_to_head.py runs/main/latest.pt runs/main/ckpt_00200.pt runs/main/head_to_head.json
 python viewer/build_data.py runs/main/analysis.json viewer/data.json
 # then serve viewer/ (index.html + data.json) with any static web server
 ```
@@ -109,4 +111,10 @@ Training throughput on a 4-core CPU is about 3.5k game steps per second
 
 ## Results
 
-See `RESULTS.md` (written once the main run finished).
+They invented a full line-up early (LW, C, RW and a defence pair by ~3M
+decisions), then traded it for rotating, positionless play. The rotating team
+beat the line-up version 120–0–8. Details, the goalie-pull analysis and the
+development notes are in `RESULTS.md`; the interactive page is `viewer/`.
+
+Other scripts: `coach_check.py` (was never pulling the goalie right?) and
+`head_to_head.py` (one checkpoint against another).

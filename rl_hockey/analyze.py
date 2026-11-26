@@ -166,6 +166,8 @@ def main():
     ap.add_argument("--replays", type=int, default=3)
     ap.add_argument("--snapshots", type=int, default=6, help="checkpoints sampled for the evolution view")
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--peak", default="auto", help="checkpoint to evaluate in full as the 'peak positions' view: "
+                    "a path, 'auto' (checkpoint nearest the smoothed peak of role consistency) or 'none'")
     args = ap.parse_args()
     torch.set_num_threads(args.threads)
     out = {}
@@ -180,6 +182,20 @@ def main():
     print("stats", json.dumps(out["final"]["stats"], indent=None))
 
     cks = sorted(glob.glob(os.path.join(args.run, "ckpt_*.pt")))
+    log_ = [json.loads(l) for l in open(os.path.join(args.run, "log.jsonl"))]
+    peak = args.peak
+    if peak == "auto" and cks:
+        rs = np.array([r["role_consistency"] for r in log_])
+        k = 15
+        sm = np.convolve(rs, np.ones(k) / k, mode="same")
+        i = int(np.argmax(sm[k:-k])) + k
+        its = np.array([int(os.path.basename(c)[5:10]) for c in cks])
+        peak = cks[int(np.argmin(np.abs(its - log_[i]["it"])))]
+    if peak not in ("none", "auto"):
+        pol, it_p, st_p = load_policy(peak)
+        out["peak"] = run_eval(pol, args.envs, 1, replay_games=args.replays)
+        out["peak"]["it"], out["peak"]["steps"] = it_p, st_p
+        print(f"peak view {peak}: roles {out['peak']['role_consistency']:.3f} D/F {out['peak']['df_consistency']:.3f}")
     if cks:
         pick = sorted(set(np.linspace(0, len(cks) - 1, args.snapshots).round().astype(int)))
         out["snapshots"] = []

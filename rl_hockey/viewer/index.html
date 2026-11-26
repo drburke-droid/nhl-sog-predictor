@@ -118,7 +118,7 @@ thead th { font-family: var(--font-display); font-weight: 600; font-size: 0.95re
 tbody tr:last-child td { border-bottom: 0; }
 td.cell { font-family: var(--font-data); font-size: 0.88rem; }
 td.best { box-shadow: inset 0 0 0 2px var(--ink); }
-.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.two { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 14px; }
 .chart { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 12px; min-width: 0; position: relative; }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .chart text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
@@ -148,6 +148,7 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
       <h2>Watch the trained agents play</h2>
       <p class="muted">Overhead view, one dot per player. Blue attacks to the right. Numbers are slot ids, the only identity an agent has. Every slot runs the same network; the slot number is one of its inputs. After every goal each skater is dropped at a random spot in his own half, so any structure you see they rebuild themselves.</p>
     </div>
+    <div class="controls viewsel" role="group" aria-label="Which policy"></div>
     <div class="panel">
       <div class="hud">
         <div class="board"><span class="team"><span class="chip" style="background:var(--team-a)"></span><span id="sa">0</span></span><span class="muted">–</span><span class="team"><span id="sb">0</span><span class="chip" style="background:var(--team-b)"></span></span></div>
@@ -171,6 +172,7 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
       <h2>Where each slot spends its time</h2>
       <p class="muted" id="pos-text">Each rink is drawn from that slot's team's point of view, attacking to the right, pooled over both teams and every evaluation game. Darker means more time spent there.</p>
     </div>
+    <div class="controls viewsel" role="group" aria-label="Which policy"></div>
     <div class="controls"><div class="seg" id="phase" role="group" aria-label="Game situation"></div><div class="ramp" id="ramp1"></div></div>
     <div class="grid-sm" id="heat"></div>
     <h3>Which real position does each slot match?</h3>
@@ -185,7 +187,8 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
       <p class="muted">Role consistency is the share of frames in which each slot holds its own position, under the best slot-to-position match. The defence/forward line asks only whether the same two slots are the deepest. The dashed lines show what positionless play would score.</p>
     </div>
     <div class="chart" id="evo"></div>
-    <h3>Average spot of each slot, at points during training</h3>
+    <h3>Each slot's average spot relative to the puck, at points during training</h3>
+    <p class="note">With the puck on the centre dot, attacking to the right, while the slot's team has the puck. Early on the slots spread into distinct spots. Later their averages bunch together: every slot takes turns at every spot, so on average they all sit in the same place.</p>
     <div class="grid-sm" id="snaps"></div>
   </section>
 
@@ -193,11 +196,11 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
     <div class="sec-head">
       <div class="eyebrow">Systems</div>
       <h2>Shape with and without the puck</h2>
-      <p class="muted">The average position of each slot when its team has the puck and when the other team has it. The small dark disc is the puck's average position.</p>
+      <p class="muted">The average position of each slot when its team has the puck and when the other team has it, for the policy picked above (<span id="form-view"></span>). The small dark disc is the puck's average position.</p>
     </div>
     <div class="two" id="form"></div>
     <h3>Team shape, whoever fills it</h3>
-    <p class="note">Each frame the five skaters are sorted from deepest to highest, ignoring who they are, and their distance from the puck is averaged. A defence pair shows up as two dots well behind the other three, whether or not the same slots fill those spots.</p>
+    <p class="note">Each frame the five skaters are sorted from deepest to highest, ignoring who they are, and their distance from the puck is averaged. A defence pair would show up as two dots well behind the other three, whether or not the same slots fill those spots.</p>
     <div class="chart" id="shape"></div>
   </section>
 
@@ -214,9 +217,17 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
     <div class="sec-head">
       <div class="eyebrow">Box score</div>
       <h2>What kind of hockey they play</h2>
-      <p class="muted">Averages per team per 3-minute game from the evaluation games.</p>
+      <p class="muted">Averages per team per 3-minute game from the evaluation games, for the policy picked above (<span id="stats-view"></span>).</p>
     </div>
     <div class="tbl-wrap"><table id="stats"></table></div>
+  </section>
+
+  <section id="why">
+    <div class="sec-head">
+      <div class="eyebrow">Reading it</div>
+      <h2>Why the positions came and went</h2>
+    </div>
+    <div class="cols" id="why-cols"></div>
   </section>
 
   <section id="method">
@@ -239,6 +250,16 @@ const pct = (v, d = 0) => (100 * v).toFixed(d) + "%";
 const slotName = i => i < 5 ? "Slot " + (i + 1) : (i === 5 ? "Slot 6 (extra attacker)" : "Goalie");
 const slotLabel = i => i < 5 ? String(i + 1) : (i === 5 ? "6" : "G");
 let D = null;
+let VIEW = "peak";
+const V = () => D[VIEW] || D.final;
+function viewLabel(v) { const x = D[v]; return `${v === "peak" ? "Peak positions" : "Final policy"} · ${(x.steps / 1e6).toFixed(1)}M steps`; }
+function renderViewSel() {
+  if (!D.peak) { VIEW = "final"; document.querySelectorAll(".viewsel").forEach(e => e.hidden = true); return; }
+  document.querySelectorAll(".viewsel").forEach(host => {
+    host.innerHTML = `<span class="eyebrow">Showing</span>` + ["peak", "final"].map(v => `<button data-v="${v}" aria-pressed="${v === VIEW}">${viewLabel(v)}</button>`).join("");
+    host.onclick = e => { const b = e.target.closest("button"); if (!b || b.dataset.v === VIEW) return; VIEW = b.dataset.v; RP.g = 0; RP.f = 0; replayInit(); renderAll(); };
+  });
+}
 
 // ---------------------------------------------------------------- tooltip
 const tip = $("#tip");
@@ -330,7 +351,7 @@ function drawPlayer(ctx, g, x, y, fill, label, opt = {}) {
   ctx.fillStyle = fill; ctx.fill();
   ctx.lineWidth = Math.max(1, g.s * 0.35); ctx.strokeStyle = css("--ice"); ctx.stroke();
   if (opt.ring) { ctx.beginPath(); ctx.arc(g.tx(x), g.ty(y), r + g.s * 0.9, 0, 2 * Math.PI); ctx.lineWidth = Math.max(1.5, g.s * 0.45); ctx.strokeStyle = css("--ink"); ctx.stroke(); }
-  if (label && r > 5) {
+  if (label && r > 4.5) {
     ctx.fillStyle = css("--on-team"); ctx.font = `700 ${Math.round(r * 1.15)}px ${css("--font-display")}`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(label, g.tx(x), g.ty(y) + r * 0.06);
   }
@@ -338,16 +359,16 @@ function drawPlayer(ctx, g, x, y, fill, label, opt = {}) {
 
 // ---------------------------------------------------------------- header figures
 function renderHeader() {
-  const f = D.final;
-  const steps = f.steps, gameHours = steps * 0.1 / 3600;
-  const cons = f.role_consistency, df = f.df_consistency;
+  const f = D.final, p = D.peak || D.final;
+  const games = Math.round(f.steps / 1800), hours = f.steps * 0.1 / 3600;
   const figs = [
-    { v: pct(cons), l: "role consistency: how often each slot is in its own position", scale: [[0.2, "20% = none"], [1, "100% = rigid"]], at: cons },
-    { v: pct(df), l: "defence/forward consistency: are the same two slots the deepest?", scale: [[0.52, "52% = none"], [1, "100% = rigid"]], at: df },
-    { v: (steps / 1e6).toFixed(0) + "M", l: `game steps of self-play, about ${Math.round(gameHours)} hours of game time` },
-    { v: f.stats.games, l: "full evaluation games behind the charts below" },
+    { v: pct(p.role_consistency), l: `role consistency at the peak, ${(p.steps / 1e6).toFixed(1)}M steps: how often each slot is in its own position`, scale: [[0.2, "20% = none"], [1, "100% = rigid"]], at: p.role_consistency },
+    { v: pct(f.role_consistency), l: `role consistency at the end of training, ${(f.steps / 1e6).toFixed(1)}M steps`, scale: [[0.2, "20% = none"], [1, "100% = rigid"]], at: f.role_consistency },
+    D.head_to_head ? { v: `${D.head_to_head.a_wins}–${D.head_to_head.b_wins}–${D.head_to_head.ties}`, l: `final policy against the peak-positions policy, wins–losses–ties over ${D.head_to_head.games} games (average score ${D.head_to_head.a_goals.toFixed(1)}–${D.head_to_head.b_goals.toFixed(1)})` }
+      : { v: `${p.stats.goals.toFixed(1)} → ${f.stats.goals.toFixed(1)}`, l: "goals per team per game, peak positions → final" },
+    { v: games.toLocaleString(), l: `self-play games (${(f.steps / 1e6).toFixed(1)}M decisions, about ${Math.round(hours)} hours of game time)` },
   ];
-  $("#figs").innerHTML = figs.map(x => `<div class="fig"><div class="v">${x.v}</div><div class="l">${x.l}</div>${x.scale ? `<div class="scale-wrap"><div class="scale">${x.scale.map(([p, t]) => `<span class="${p >= 1 ? "end" : ""}" style="left:${p * 100}%">${t}</span>`).join("")}<i style="left:calc(${x.at * 100}% - 1.5px)"></i></div></div>` : ""}</div>`).join("");
+  $("#figs").innerHTML = figs.map(x => `<div class="fig"><div class="v">${x.v}</div><div class="l">${x.l}</div>${x.scale ? `<div class="scale-wrap"><div class="scale">${x.scale.map(([q, t]) => `<span class="${q >= 1 ? "end" : ""}" style="left:${q * 100}%">${t}</span>`).join("")}<i style="left:calc(${x.at * 100}% - 1.5px)"></i></div></div>` : ""}</div>`).join("");
   if (window.LEDE) $("#lede").textContent = window.LEDE;
 }
 
@@ -356,20 +377,20 @@ const RP = { g: 0, f: 0, playing: false, speed: 1, last: 0, evtUntil: -1, evtTex
 const EVN = { 1: "Goal", 2: "Offside", 3: "Icing", 4: "Goalie freeze" };
 function replayInit() {
   const sel = $("#gamesel");
-  sel.innerHTML = D.replays.map((r, i) => `<option value="${i}">Game ${i + 1} · final ${r.final[0]}–${r.final[1]}</option>`).join("");
+  sel.innerHTML = V().replays.map((r, i) => `<option value="${i}">Game ${i + 1} · final ${r.final[0]}–${r.final[1]}</option>`).join("");
   sel.onchange = () => { RP.g = +sel.value; RP.f = 0; setupTimeline(); drawFrame(); };
   $("#speeds").innerHTML = [0.5, 1, 2, 4].map(s => `<button data-s="${s}" aria-pressed="${s === 1}">${s}×</button>`).join("");
   $("#speeds").onclick = e => { const b = e.target.closest("button"); if (!b) return; RP.speed = +b.dataset.s; $("#speeds").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
   $("#play").onclick = () => { RP.playing = !RP.playing; $("#play").textContent = RP.playing ? "Pause" : "Play"; $("#play").setAttribute("aria-pressed", RP.playing); RP.last = performance.now(); if (RP.playing) requestAnimationFrame(tick); };
   $("#scrub").oninput = e => { RP.f = +e.target.value; drawFrame(); };
-  const perm = D.final.role_perm, rc = D.final.role_counts;
+  const perm = V().role_perm, rc = V().role_counts;
   $("#rlegend").innerHTML = perm.map((r, i) => { const tot = rc[i].reduce((a, b) => a + b, 0) || 1; return `<span class="k"><span class="dot" style="background:var(--team-a)">${i + 1}</span>slot ${i + 1} · mostly ${ROLE[r]} (${pct(rc[i][r] / tot)})</span>`; }).join("")
     + `<span class="k"><span class="dot" style="background:var(--team-a)">6</span>extra attacker</span><span class="k"><span class="dot" style="background:var(--team-a)">G</span>goalie</span><span class="k"><span class="dot" style="background:var(--ink);width:10px;height:10px"></span>ring = puck carrier</span>`;
   setupTimeline();
   drawFrame();
 }
 function setupTimeline() {
-  const R = D.replays[RP.g];
+  const R = V().replays[RP.g];
   $("#scrub").max = R.n - 1; $("#scrub").value = Math.round(RP.f);
   $("#ticks").innerHTML = R.E.filter(e => e[1] === 1).map(([i]) => {
     const sc = R.S.slice(2 * (i + 1), 2 * (i + 1) + 2), prev = R.S.slice(2 * i, 2 * i + 2);
@@ -380,7 +401,7 @@ function setupTimeline() {
 function tick(now) {
   if (!RP.playing) return;
   const dt = Math.min(0.1, (now - RP.last) / 1000); RP.last = now;
-  const R = D.replays[RP.g];
+  const R = V().replays[RP.g];
   const prev = Math.floor(RP.f);
   RP.f += dt * 10 * RP.speed;
   if (RP.f >= R.n - 1) { RP.f = R.n - 1; RP.playing = false; $("#play").textContent = "Play"; $("#play").setAttribute("aria-pressed", false); }
@@ -390,7 +411,7 @@ function tick(now) {
   if (RP.playing) requestAnimationFrame(tick);
 }
 function drawFrame() {
-  const R = D.replays[RP.g], cv = $("#rink");
+  const R = V().replays[RP.g], cv = $("#rink");
   const W = cv.parentElement.clientWidth - 28;
   const g = rinkGeom(W, 6);
   const ctx = setupCanvas(cv, W, g.H);
@@ -426,7 +447,7 @@ function drawFrame() {
 let phase = 0;
 const NX = 50, NY = 22, BIN = 4;
 function renderHeat() {
-  const f = D.final, perm = f.role_perm, rc = f.role_counts;
+  const f = V(), perm = f.role_perm, rc = f.role_counts;
   $("#phase").innerHTML = PHASES.map((p, i) => `<button data-p="${i}" aria-pressed="${i === phase}">${p}</button>`).join("");
   $("#phase").onclick = e => { const b = e.target.closest("button"); if (!b) return; phase = +b.dataset.p; renderHeat(); };
   $("#ramp1").innerHTML = `less time <i style="background:${rampCss("h", 7)}"></i> more time`;
@@ -471,7 +492,7 @@ function renderHeat() {
 
 // ---------------------------------------------------------------- role table
 function renderRoles() {
-  const f = D.final, rc = f.role_counts, perm = f.role_perm, col = ramp("h", 7);
+  const f = V(), rc = f.role_counts, perm = f.role_perm, col = ramp("h", 7);
   let html = `<thead><tr><th>Slot</th>${ROLE.map(r => `<th title="${ROLE_LONG[r]}">${r}</th>`).join("")}<th>Best match</th></tr></thead><tbody>`;
   rc.forEach((row, i) => {
     const tot = row.reduce((a, b) => a + b, 0) || 1;
@@ -488,7 +509,7 @@ function smooth(arr, k) { return arr.map((_, i) => { const a = arr.slice(Math.ma
 function renderEvo() {
   const host = $("#evo"); const W = host.clientWidth - 24, H = Math.max(240, Math.min(340, W * 0.42));
   const L = D.log; if (!L.length) return;
-  const m = { l: 44, r: 92, t: 16, b: 40 };
+  const m = { l: 44, r: 128, t: 16, b: 40 };
   const xs = L.map(r => r.steps / 1e6), xmax = xs[xs.length - 1];
   const k = Math.max(2, Math.round(L.length / 120));
   const s1 = smooth(L.map(r => r.roles), k), s2 = smooth(L.map(r => r.df), k);
@@ -540,7 +561,7 @@ function meanRink(host, title, sub, pos, opt = {}) {
   const cv = card.querySelector("canvas"), W = card.clientWidth - (opt.big ? 24 : 20), g = rinkGeom(W, 3), ctx = setupCanvas(cv, W, g.H);
   drawRink(ctx, g, { faint: true });
   if (opt.puck) { ctx.beginPath(); ctx.arc(g.tx(opt.puck[0]), g.ty(opt.puck[1]), Math.max(3, g.s * 1.4), 0, 2 * Math.PI); ctx.fillStyle = css("--puck"); ctx.fill(); }
-  pos.forEach((p, s) => { if (p && (p[0] || p[1])) drawPlayer(ctx, g, p[0], p[1], css("--team-a"), slotLabel(s), { r: opt.big ? 2.6 : 3.2 }); });
+  pos.forEach((p, s) => { if (p && (p[0] || p[1])) drawPlayer(ctx, g, p[0], p[1], css("--team-a"), slotLabel(s), { r: opt.big ? 2.6 : 4.6 }); });
   cv.onmousemove = e => {
     const rect = cv.getBoundingClientRect();
     const x = (e.clientX - rect.left - g.pad) / g.s - 100, y = 42.5 - (e.clientY - rect.top - g.pad) / g.s;
@@ -554,11 +575,16 @@ function meanRink(host, title, sub, pos, opt = {}) {
 }
 function renderSnaps() {
   const host = $("#snaps"); host.innerHTML = "";
-  (D.snapshots || []).forEach(sn => meanRink(host, `${(sn.steps / 1e6).toFixed(1)}M steps`, `roles ${pct(sn.role_consistency)}`, sn.mean_pos[0].slice(0, 5)));
+  // each slot's average offset from the puck while its team has it, drawn with the puck on the centre dot
+  (D.snapshots || []).forEach(sn => {
+    const rel = sn.rel_puck[1].slice(0, 5).map(([x, y]) => [Math.max(-98, Math.min(98, x)), Math.max(-41, Math.min(41, y))]);
+    meanRink(host, `${(sn.steps / 1e6).toFixed(1)}M steps`, `roles ${pct(sn.role_consistency)}`, rel, { puck: [0, 0] });
+  });
 }
 function renderForm() {
   const host = $("#form"); host.innerHTML = "";
-  const f = D.final;
+  const f = V();
+  $("#form-view").textContent = viewLabel(VIEW).replace(/^\w/, c => c.toLowerCase());
   [[1, "When we have the puck"], [2, "When they have the puck"]].forEach(([ph, t]) => {
     const mp = f.mean_pos[ph], rp = f.rel_puck[ph];
     const puck = [mp[0][0] - rp[0][0], mp[0][1] - rp[0][1]];
@@ -588,6 +614,15 @@ function renderCoach() {
   tk.forEach(s => { const c = cols - 1 - C.seconds_left.findIndex(v => Math.abs(v - s) < 2.6); svg += `<text x="${m.l + (c + 0.5) * cw}" y="${m.t + rows.length * ch + 16}" text-anchor="middle">${s === 0 ? "0:00" : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`}</text>`; });
   svg += `<text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle">time left in the 3-minute game</text></svg>`;
   host.innerHTML = `<div class="ramp" style="margin:2px 0 10px 4px">P(goalie out) 0% <i style="background:${rampCss("o", 6)}"></i> 60%+</div>` + svg;
+  const cc = D.coach_check;
+  if (cc) {
+    const rows = cc.rows.filter(r => [5, 10, 20, 30, 60].includes(r.t));
+    host.insertAdjacentHTML("beforeend", `<h3 style="margin:18px 4px 6px">Was it right? Down a goal, chance to tie it before the horn</h3>
+      <p class="note" style="margin:0 4px 10px">Measured with the trained skaters. With the goalie forced out, the extra attacker's team scored <b class="mono">${(60 * cc.lam6_for).toFixed(2)}</b> goals a minute and gave up <b class="mono">${(60 * cc.lam6_against).toFixed(2)}</b> into the empty net. At 5-on-5 each team scores <b class="mono">${(60 * cc.lam5).toFixed(2)}</b> a minute.</p>
+      <div class="tbl-wrap" style="border:0"><table><thead><tr><th>Time left</th>${rows.map(r => `<th>${r.t} s</th>`).join("")}</tr></thead><tbody>
+      <tr><td>Goalie in (5-on-5)</td>${rows.map(r => `<td class="mono">${pct(r.p_tie_5v5, 1)}</td>`).join("")}</tr>
+      <tr><td>Goalie pulled (6-on-5)</td>${rows.map(r => `<td class="mono">${pct(r.p_tie_pulled, 1)}</td>`).join("")}</tr></tbody></table></div>`);
+  }
   host.querySelectorAll("rect[data-d]").forEach(el => {
     el.onmousemove = e => { const d = +el.dataset.d, c = +el.dataset.c, p = C.p_pull[C.diffs.indexOf(d)][c]; showTip(e, `<b>${name(d)}, ${C.seconds_left[c].toFixed(0)} s left</b><br>coach picks goalie out ${pct(p, 1)} of the time`); };
     el.onmouseleave = hideTip;
@@ -596,7 +631,8 @@ function renderCoach() {
 
 // ---------------------------------------------------------------- stats
 function renderStats() {
-  const s = D.final.stats;
+  const s = V().stats;
+  $("#stats-view").textContent = viewLabel(VIEW).replace(/^\w/, c => c.toLowerCase());
   const rows = [
     ["Goals", s.goals.toFixed(2)], ["Shot attempts", s.shots.toFixed(2)], ["Shots on goal", s.sog.toFixed(2)],
     ["Save percentage", s.save_pct.toFixed(3)], ["Shooting percentage (goals ÷ attempts)", pct(s.shooting_pct, 1)],
@@ -611,11 +647,12 @@ function renderMethod() {
   const cols = window.METHOD || [];
   $("#method-cols").innerHTML = cols.map(c => `<div><h3>${c.h}</h3><ul>${c.li.map(x => `<li>${x}</li>`).join("")}</ul></div>`).join("");
   if (window.POS_TEXT) $("#pos-text").textContent = window.POS_TEXT;
+  $("#why-cols").innerHTML = (window.WHY || []).map(c => `<div><h3>${c.h}</h3><ul>${c.li.map(x => `<li>${x}</li>`).join("")}</ul></div>`).join("");
   if (window.COACH_TEXT) $("#coach-text").textContent = window.COACH_TEXT;
 }
 
 function renderShape() {
-  const f = D.final, host = $("#shape"); if (!f.shape) { host.hidden = true; return; }
+  const f = V(), host = $("#shape"); if (!f.shape) { host.hidden = true; return; }
   const W = host.clientWidth - 24, rowH = 54, m = { l: 128, r: 20, t: 18, b: 40 }, H = m.t + 2 * rowH + m.b;
   const all = f.shape.flat(), lo = Math.min(-100, Math.floor(Math.min(...all) / 10) * 10), hi = Math.max(20, Math.ceil(Math.max(...all) / 10) * 10);
   const X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r);
@@ -628,15 +665,15 @@ function renderShape() {
     svg += `<text x="8" y="${y + 4}" style="fill:var(--ink)">${t}</text>`;
     svg += `<line x1="${X(d[0])}" x2="${X(d[4])}" y1="${y}" y2="${y}" stroke="${css("--axis")}" stroke-width="2"/>`;
     d.forEach((v, i) => { svg += `<circle cx="${X(v)}" cy="${y}" r="9" fill="${css("--team-a")}" stroke="${css("--surface")}" stroke-width="2"><title>${["Deepest", "2nd deepest", "3rd", "4th", "Highest"][i]}: ${v.toFixed(0)} ft</title></circle><text x="${X(v)}" y="${y + 4}" text-anchor="middle" style="fill:#fff;font-weight:600;font-size:11px">${i + 1}</text>`; });
-    const gap = d[2] - d[1];
-    svg += `<text x="${(X(d[1]) + X(d[2])) / 2}" y="${y - 14}" text-anchor="middle">${gap.toFixed(0)} ft gap</text>`;
+    let gi = 0; for (let i = 1; i < 4; i++) if (d[i + 1] - d[i] > d[gi + 1] - d[gi]) gi = i;
+    svg += `<text x="${(X(d[gi]) + X(d[gi + 1])) / 2}" y="${y - 14}" text-anchor="middle">largest gap ${(d[gi + 1] - d[gi]).toFixed(0)} ft: ${gi + 1} back, ${4 - gi} up</text>`;
   });
   svg += `</svg>`;
   const runs = f.df_run_seconds || [];
   host.innerHTML = svg + (runs.length ? `<p class="note" style="margin:10px 4px 2px">How long each slot keeps its defence-or-forward label before swapping, on average: ${runs.map((v, i) => `slot ${i + 1} <b class="mono">${v.toFixed(1)} s</b>`).join(" · ")}.</p>` : "");
 }
 
-function renderAll() { renderHeader(); renderHeat(); renderRoles(); renderEvo(); renderSnaps(); renderForm(); renderShape(); renderCoach(); renderStats(); renderMethod(); drawFrame(); }
+function renderAll() { renderViewSel(); renderHeader(); renderHeat(); renderRoles(); renderEvo(); renderSnaps(); renderForm(); renderShape(); renderCoach(); renderStats(); renderMethod(); drawFrame(); }
 
 fetch("data.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
   D = d; replayInit(); renderAll();
@@ -647,7 +684,35 @@ fetch("data.json").then(r => { if (!r.ok) throw new Error(r.status); return r.js
 </script>
 <script>
 // Narrative copy, written after the run finished.
-window.LEDE = "";
+window.LEDE = "Yes, at first. Two teams of agents learned hockey from scratch over 15,400 games against themselves, with only the rules coded in. About three million decisions in, the five skater slots had sorted themselves into a textbook line: a left winger, a centre, a right winger and a defence pair, one of them a stay-at-home defenceman. Then they kept improving and gave the fixed positions up. By the end every skater rotates through every spot every few seconds, and that positionless team beat the version with positions in 120 of 128 games, with no losses.";
+window.POS_TEXT = "Each rink shows one slot from its own team's point of view, attacking to the right, pooled over both teams and every evaluation game. Darker means more time spent there. Switch between the peak and the final policy to see the line-up form and then dissolve.";
+window.WHY = [
+  { h: "What emerged, and when", li: [
+    "First 3M decisions, while the bootstrap reward was still on: a full line-up. Slot 1 played left wing 70% of the time, slot 2 centre, slot 5 right wing, and slots 3 and 4 formed the defence pair. Slot 3 was defence 97% of the time and kept that label for about two minutes at a stretch.",
+    "That team attacked three back and two up, with its deepest skater almost 100 ft behind the puck. It was safe, slow hockey: 0.6 goals and 2 passes per team per game, and 2.2 offsides.",
+    "From there the reward became goals only, and the slots slowly traded fixed jobs for rotation. Role consistency fell from about 67% at the peak to 28%, close to the 20% that interchangeable players would score.",
+  ] },
+  { h: "What the final team does instead", li: [
+    "It keeps a staggered shape, not a 2-and-3. With the puck the five skaters sit at about +4, −17, −27, −36 and −48 ft from it, a ladder of support options roughly 10 ft apart.",
+    "Whoever is deepest changes every 7 to 10 seconds. One identity survives: slot 2 is the highest skater 45% of the time, a stretch forward.",
+    "It moves the puck: 11.5 passes per team per game with 83% completed, offsides down from 2.2 to 0.5, and three times the goals of the peak line-up.",
+    "Without the puck it does not retreat. On average every skater is up-ice of the puck, waiting to break out, and the goalie handles the shot.",
+  ] },
+  { h: "Why fixed positions may not pay here", li: [
+    "The players are clones. Real positions rest on different players: left and right shots, big defencemen, faceoff centres, fast wingers. Every agent here skates, shoots and passes the same, so a fixed role buys coordination and nothing else.",
+    "One shared network can coordinate by situation instead of by name: the nearest skater takes the puck, the others fill the next rungs of the ladder. That is how the final team plays.",
+    "No fatigue, no line changes and no penalties. In real hockey those make staying in your lane cheaper and getting caught up-ice costlier.",
+    "These are hypotheses. Each one can be tested by adding the missing ingredient and re-running the experiment.",
+  ] },
+  { h: "Experiments worth running next", li: [
+    "Handedness: give each slot a left or right shot that changes its shooting angle, and see whether wingers settle on their strong side or their off side.",
+    "Different builds: a heavier, slower body for some slots. Do the heavy slots become defencemen?",
+    "Fatigue and line changes, so staying deep has a reason beyond the score.",
+    "A league instead of a mirror: train against a population of past and present opponents, so the strategy has to hold up against more than one style.",
+    "More 6-on-5 practice, so the coach's pull decision is learned against a team that knows how to use the extra attacker.",
+  ] },
+];
+window.COACH_TEXT = "The coach decides once per second of game time whether the goalie should be on the bench. It is the only agent rewarded for winning: +1 for a win, 0 for a tie, −1 for a loss. It learned never to pull, not even down a goal with seconds left. The grid shows its chance of picking goalie out by score and time left, with its team carrying the puck in the offensive zone. The table below shows why it was right: these skaters never learned to use an extra attacker, so pulling cut their scoring.";
 window.METHOD = [
   { h: "The rink and the rules", li: [
     "200 × 85 ft rink with 28 ft corners, blue lines 25 ft from centre, 6 ft nets and creases. Players are discs with momentum: they accelerate, coast, bounce off the boards and bump each other.",

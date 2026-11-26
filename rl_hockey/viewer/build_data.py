@@ -3,6 +3,7 @@
 python viewer/build_data.py runs/main/analysis.json viewer/data.json
 """
 import json
+import os
 import sys
 
 
@@ -25,13 +26,18 @@ def pack_replay(r):
 def main(src, dst):
     a = json.load(open(src))
     fin = a["final"]
-    out = dict(
-        final={k: v for k, v in fin.items() if k != "replays"},
-        replays=[pack_replay(r) for r in fin["replays"]],
-        coach=a["coach"],
-        snapshots=a.get("snapshots", []),
-        log=a["log"],
-    )
+    def view(v):
+        d = {k: x for k, x in v.items() if k != "replays"}
+        reps = sorted(v["replays"], key=lambda r: -sum(r["final"]))   # liveliest recorded games first
+        d["replays"] = [pack_replay(r) for r in reps]
+        return d
+    out = dict(final=view(fin), coach=a["coach"], snapshots=a.get("snapshots", []), log=a["log"])
+    if "peak" in a:
+        out["peak"] = view(a["peak"])
+    for key in ("coach_check", "head_to_head"):
+        p = os.path.join(os.path.dirname(src), key + ".json")
+        if os.path.exists(p):
+            out[key] = json.load(open(p))
     with open(dst, "w") as f:
         json.dump(out, f, separators=(",", ":"))
 
