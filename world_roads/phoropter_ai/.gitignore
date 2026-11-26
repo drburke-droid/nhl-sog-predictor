@@ -1,5 +1,7 @@
 out/
 __pycache__/
+# results are small and every number in the video comes from them (the parent .gitignore excludes data/)
+!data/
 # still training; committed in full when each run finishes
-runs/c/
 runs/d/
+runs/*/ckpt/latest.pt

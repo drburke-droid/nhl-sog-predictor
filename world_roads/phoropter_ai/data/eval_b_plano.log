@@ -1,0 +1,19 @@
+  exams_0.pt             within 0.025 exact 0.009 steps 10.3
+  exams_4150.pt          within 0.025 exact 0.009 steps 80.0
+  exams_10324.pt         within 0.025 exact 0.009 steps 80.0
+  exams_34239.pt         within 0.025 exact 0.009 steps 1.0
+  exams_116490.pt        within 0.025 exact 0.009 steps 1.0
+  exams_304153.pt        within 0.025 exact 0.011 steps 1.4
+  exams_1000774.pt       within 0.104 exact 0.080 steps 31.7
+  exams_2002626.pt       within 0.125 exact 0.104 steps 31.9
+  [half-cyl score] ai        within 0.437 exact 0.102
+  [half-cyl score] textbook  within 0.580 exact 0.447
+  [half-cyl score] start     within 0.062 exact 0.008
+ai        within 0.119 exact 0.102 mean err 0.997 steps 31.8 over-minus(<40) 0.158 over-plus 0.198
+textbook  within 0.526 exact 0.418 mean err 0.385 steps 52.3 over-minus(<40) 0.380 over-plus 0.229
+start     within 0.022 exact 0.008 mean err 1.893 steps 0.0 over-minus(<40) 0.297 over-plus 0.544
+AI questions/exam 22.6236 lens moves 8.2546
+used %: {'Sphere +0.25': 0.67, 'Sphere -0.25': 0.77, 'Sphere +1.00': 0.0, 'Sphere -1.00': 0.0, 'Cylinder -0.25': 0.0, 'Cylinder +0.25': 0.44, 'Axis +5°': 0.0, 'Axis -5°': 0.0, 'Axis +15°': 0.0, 'Axis -15°': 0.0, 'Read the chart': 1.0, '1 or 2? (+0.25)': 1.0, '1 or 2? (-0.25)': 0.91, 'Cross-cyl: axis': 0.0, 'Cross-cyl: power': 1.0, 'Done': 0.96, 'Line smaller': 0.0, 'Line larger': 0.0, 'Read this line': 0.0}
+first move: {'Cross-cyl: power': 1.0}
+net sphere young -0.7666438668490652 old -0.3122550765942287 autoref dM young 0.9583333333333334
+bias split AI {'over_minus_young_high_bias': 0.22739361702127658, 'over_minus_young_low_bias': 0.09317585301837271} textbook {'over_minus_young_high_bias': 0.39228723404255317, 'over_minus_young_low_bias': 0.3858267716535433}

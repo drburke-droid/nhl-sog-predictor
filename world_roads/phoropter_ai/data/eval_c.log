@@ -1,0 +1,23 @@
+  exams_0.pt             within 0.066 exact 0.034 steps 30.4
+  exams_3498.pt          within 0.102 exact 0.054 steps 1.0
+  exams_14237.pt         within 0.102 exact 0.054 steps 1.0
+  exams_34926.pt         within 0.102 exact 0.054 steps 1.0
+  exams_102163.pt        within 0.136 exact 0.062 steps 6.3
+  exams_300805.pt        within 0.172 exact 0.084 steps 11.3
+  exams_1000488.pt       within 0.835 exact 0.752 steps 25.9
+  exams_2000177.pt       within 0.850 exact 0.768 steps 24.7
+  exams_3000418.pt       within 0.875 exact 0.792 steps 24.5
+  exams_3509820.pt       within 0.870 exact 0.795 steps 24.5
+  [half-cyl score] ai        within 0.919 exact 0.858
+  [half-cyl score] textbook  within 0.682 exact 0.534
+  [half-cyl score] pleaser   within 0.441 exact 0.295
+  [half-cyl score] autoref   within 0.359 exact 0.086
+ai        within 0.874 exact 0.797 mean err 0.092 steps 24.3 over-minus(<40) 0.064 over-plus 0.035
+textbook  within 0.590 exact 0.500 mean err 0.224 steps 39.0 over-minus(<40) 0.263 over-plus 0.196
+pleaser   within 0.355 exact 0.261 mean err 0.427 steps 12.6 over-minus(<40) 0.742 over-plus 0.059
+autoref   within 0.106 exact 0.051 mean err 0.498 steps 0.0 over-minus(<40) 0.580 over-plus 0.187
+AI questions/exam 15.6664 lens moves 7.5958
+used %: {'Sphere +0.25': 0.76, 'Sphere -0.25': 0.83, 'Sphere +1.00': 0.06, 'Sphere -1.00': 0.02, 'Cylinder -0.25': 0.37, 'Cylinder +0.25': 0.64, 'Axis +5°': 0.45, 'Axis -5°': 0.54, 'Axis +15°': 0.14, 'Axis -15°': 0.0, 'Read the chart': 1.0, '1 or 2? (+0.25)': 1.0, '1 or 2? (-0.25)': 0.98, 'Cross-cyl: axis': 1.0, 'Cross-cyl: power': 1.0, 'Done': 0.99, 'Line smaller': 0.0, 'Line larger': 0.0, 'Read this line': 0.02}
+first move: {'Read the chart': 0.28, 'Cross-cyl: axis': 0.57, 'Cross-cyl: power': 0.14}
+net sphere young 0.17202462380300956 old -0.03464552903455646 autoref dM young -0.25894892840857275
+bias split AI {'over_minus_young_high_bias': 0.11835106382978723, 'over_minus_young_low_bias': 0.013123359580052493} textbook {'over_minus_young_high_bias': 0.29654255319148937, 'over_minus_young_low_bias': 0.24934383202099739}

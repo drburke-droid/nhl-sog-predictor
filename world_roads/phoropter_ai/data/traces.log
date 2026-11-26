@@ -1,0 +1,76 @@
+== a_0: 13 moves, error 2.019 D
+   0 Sphere -0.25                    -> -3.00 -0.75 x 4
+   1 Sphere -1.00                    -> -4.00 -0.75 x 4
+   2 Axis -5°                        -> -4.00 -0.75 x 179
+   3 1 or 2? (-0.25)    2            -> -4.00 -0.75 x 179
+   4 Cross-cyl: axis    2            -> -4.00 -0.75 x 179
+   5 Read the chart     logMAR 0.0   -> -4.00 -0.75 x 179
+   6 Cross-cyl: power   1            -> -4.00 -0.75 x 179
+   7 Axis -15°                       -> -4.00 -0.75 x 164
+   8 Axis +15°                       -> -4.00 -0.75 x 179
+   9 Sphere -0.25                    -> -4.25 -0.75 x 179
+  10 1 or 2? (-0.25)    2            -> -4.25 -0.75 x 179
+  11 Axis +15°                       -> -4.25 -0.75 x 14
+  12 Done                            -> -4.25 -0.75 x 14
+== a_exams_107079: 1 moves, error 0.615 D
+   0 Done                            -> -2.75 -0.75 x 4
+== a_exams_301936: 5 moves, error 0.504 D
+   0 Sphere +0.25                    -> -2.50 -0.75 x 4
+   1 1 or 2? (+0.25)    same         -> -2.50 -0.75 x 4
+   2 Sphere +0.25                    -> -2.25 -0.75 x 4
+   3 1 or 2? (+0.25)    1            -> -2.25 -0.75 x 4
+   4 Done                            -> -2.25 -0.75 x 4
+== a_exams_1002464: 8 moves, error 0.504 D
+   0 Cross-cyl: power   1            -> -2.75 -0.75 x 4
+   1 1 or 2? (+0.25)    same         -> -2.75 -0.75 x 4
+   2 Sphere +0.25                    -> -2.50 -0.75 x 4
+   3 1 or 2? (+0.25)    1            -> -2.50 -0.75 x 4
+   4 1 or 2? (+0.25)    1            -> -2.50 -0.75 x 4
+   5 1 or 2? (+0.25)    1            -> -2.50 -0.75 x 4
+   6 1 or 2? (+0.25)    1            -> -2.50 -0.75 x 4
+   7 Done                            -> -2.50 -0.75 x 4
+== c_final: 28 moves, error 0.035 D
+   0 Read the chart     logMAR 0.1   -> -2.75 -0.75 x 4
+   1 Sphere +0.25                    -> -2.50 -0.75 x 4
+   2 Cross-cyl: axis    2            -> -2.50 -0.75 x 4
+   3 Axis -5°                        -> -2.50 -0.75 x 179
+   4 Cross-cyl: power   1            -> -2.50 -0.75 x 179
+   5 Cylinder -0.25                  -> -2.50 -1.00 x 179
+   6 Cross-cyl: axis    2            -> -2.50 -1.00 x 179
+   7 Axis -5°                        -> -2.50 -1.00 x 174
+   8 Sphere +0.25                    -> -2.25 -1.00 x 174
+   9 Cross-cyl: power   same         -> -2.25 -1.00 x 174
+  10 Read the chart     logMAR 0.0   -> -2.25 -1.00 x 174
+  11 Sphere +0.25                    -> -2.00 -1.00 x 174
+  12 Cross-cyl: axis    2            -> -2.00 -1.00 x 174
+  13 Axis -5°                        -> -2.00 -1.00 x 169
+  14 1 or 2? (+0.25)    1            -> -2.00 -1.00 x 169
+  15 Cross-cyl: axis    1            -> -2.00 -1.00 x 169
+  16 Axis +5°                        -> -2.00 -1.00 x 174
+  17 Read the chart     logMAR 0.1   -> -2.00 -1.00 x 174
+  18 1 or 2? (-0.25)    2            -> -2.00 -1.00 x 174
+  19 Sphere -0.25                    -> -2.25 -1.00 x 174
+  20 1 or 2? (+0.25)    1            -> -2.25 -1.00 x 174
+  21 Cross-cyl: axis    2            -> -2.25 -1.00 x 174
+  22 Cross-cyl: axis    2            -> -2.25 -1.00 x 174
+  23 Axis -5°                        -> -2.25 -1.00 x 169
+  24 Cross-cyl: power   same         -> -2.25 -1.00 x 169
+  25 Cross-cyl: axis    same         -> -2.25 -1.00 x 169
+  26 1 or 2? (+0.25)    1            -> -2.25 -1.00 x 169
+  27 Done                            -> -2.25 -1.00 x 169
+== c_noauto: 55 moves, error 0.000 D
+Traceback (most recent call last):
+  File "/home/user/nhl-sog-predictor/world_roads/phoropter_ai/traces.py", line 56, in <module>
+    main()
+    ~~~~^^
+  File "/home/user/nhl-sog-predictor/world_roads/phoropter_ai/traces.py", line 52, in main
+    save(tr, "c_noauto")
+    ~~~~^^^^^^^^^^^^^^^^
+  File "/home/user/nhl-sog-predictor/world_roads/phoropter_ai/traces.py", line 24, in save
+    show(tr, name)
+    ~~~~^^^^^^^^^^
+  File "/home/user/nhl-sog-predictor/world_roads/phoropter_ai/traces.py", line 17, in show
+    ans = {-1: "", 0: "1", 1: "2", 2: "same", 3: f"logMAR {s['va']:.1f}"}[s["code"]]
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: 4
+PIPELINE_DONE
