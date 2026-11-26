@@ -38,6 +38,7 @@ def main():
     ap.add_argument("--hard_frac", type=float, default=0.0,
                     help="fraction of training with harder practice patients (bigger cylinders, worse axes), fading")
     ap.add_argument("--flag", action="store_true", help="tell the AI whether there is an autorefractor reading")
+    ap.add_argument("--letters", action="store_true", help="letter-by-letter projector chart with line buttons")
     ap.add_argument("--t_max", type=int, default=60, help="moves before an exam times out")
     ap.add_argument("--shape_frac", type=float, default=0.0,
                     help="fraction of training with the warmer/colder hint; its weight falls linearly 1 -> 0")
@@ -53,11 +54,11 @@ def main():
     from functools import partial
     from patients import sample_patients
     state = {"hard": 0.0}
-    env = RefractionEnv(args.envs, seed=args.seed + 1, flag=args.flag,
+    env = RefractionEnv(args.envs, seed=args.seed + 1, flag=args.flag, letters=args.letters,
                         sampler=lambda rng, n: sample_patients(rng, n, start=args.start, hard=state["hard"]))
     env.cyl_weight = args.cyl_weight
     env.t_max = args.t_max
-    agent = Agent(N_OBS + (1 if args.flag else 0))
+    agent = Agent(env.n_obs, env.n_act, args.flag)
     opt = torch.optim.Adam(agent.parameters(), lr=args.lr, eps=1e-5)
     E, T = args.envs, args.rollout
     n_up = int(args.steps // (E * T))
@@ -72,7 +73,8 @@ def main():
 
     def save(tag_exams):
         torch.save({"model": {k: v.half() for k, v in agent.state_dict().items()},
-                    "meta": {"exams": int(tag_exams), "steps": int(steps), "n_obs": agent.n_obs}},
+                    "meta": {"exams": int(tag_exams), "steps": int(steps), "n_obs": agent.n_obs, "n_act": agent.n_act,
+                             "flag": agent.flag}},
                    os.path.join(ck, f"exams_{int(tag_exams)}.pt"))
 
     save(0)
@@ -164,7 +166,8 @@ def main():
             print(msg, flush=True)
     save(exams)
     torch.save({"model": {k: v.half() for k, v in agent.state_dict().items()},
-                "meta": {"exams": int(exams), "steps": int(steps), "n_obs": agent.n_obs}}, os.path.join(ck, "final.pt"))
+                "meta": {"exams": int(exams), "steps": int(steps), "n_obs": agent.n_obs, "n_act": agent.n_act,
+                         "flag": agent.flag}}, os.path.join(ck, "final.pt"))
     json.dump({"exams": exams, "steps": steps, "hours": (time.time() - t0) / 3600, "args": vars(args)},
               open(os.path.join(lg, "train_meta.json"), "w"), indent=1)
 

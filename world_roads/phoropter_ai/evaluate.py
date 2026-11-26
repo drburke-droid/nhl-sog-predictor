@@ -7,7 +7,7 @@ import os, sys, json, glob, re
 from collections import Counter
 import numpy as np
 from patients import TestSet
-from clinicians import run_scripted, textbook, textbook_scratch, pleaser, summary
+from clinicians import run_scripted, textbook, textbook_letters, textbook_scratch, pleaser, summary
 from policy import load, run_policy
 from env import N_ACT, ACT_NAME, READ, CMP_P, CMP_M, JCC_AX, JCC_PW, DONE
 from optics import to_pv
@@ -31,12 +31,13 @@ def by_age(res, edges=(8, 20, 40, 60, 81)):
 def strategy(res, test):
     acts = res["actions"]
     L = max(len(a) for a in acts)
-    heat = np.zeros((N_ACT, L))
+    NA = len(ACT_NAME)                                   # all 19 buttons (16 for attempts 1-2, never pressed above)
+    heat = np.zeros((NA, L))
     for a in acts:
         for i, x in enumerate(a):
             heat[x, i] += 1
     alive = heat.sum(0)
-    count = np.array([[a.count(k) for k in range(N_ACT)] for a in acts])
+    count = np.array([[a.count(k) for k in range(NA)] for a in acts])
     pool = test.pool
     young = pool["age"] < 40
     first = np.array([a[0] for a in acts])
@@ -44,13 +45,15 @@ def strategy(res, test):
     dS = res["S"] - pool["S0"]
     return dict(
         heat=(heat / np.maximum(alive, 1)).round(4).tolist(), alive=alive.astype(int).tolist(),
-        mean_count={ACT_NAME[k]: float(count[:, k].mean()) for k in range(N_ACT)},
-        used_pct={ACT_NAME[k]: float((count[:, k] > 0).mean()) for k in range(N_ACT)},
-        first_move={ACT_NAME[k]: float((first == k).mean()) for k in range(N_ACT)},
+        mean_count={ACT_NAME[k]: float(count[:, k].mean()) for k in range(NA)},
+        used_pct={ACT_NAME[k]: float((count[:, k] > 0).mean()) for k in range(NA)},
+        first_move={ACT_NAME[k]: float((first == k).mean()) for k in range(NA)},
         net_sphere_young=float(dS[young].mean()), net_sphere_old=float(dS[~young].mean()),
         autoref_dM_young=float(np.mean(pool["S0"][young] + pool["C0"][young] / 2
                                        - (pool["S"][young] + pool["C"][young] / 2))),
-        questions=float(count[:, 10:15].sum(1).mean()), lens_moves=float(count[:, :10].sum(1).mean()),
+        questions=float(count[:, [10, 11, 12, 13, 14] + ([18] if NA > 18 else [])].sum(1).mean()),
+        lens_moves=float(count[:, :10].sum(1).mean()),
+        chart_moves=float(count[:, 16:18].sum(1).mean()) if NA > 17 else 0.0,
     )
 
 
@@ -78,10 +81,13 @@ def main(ck, name, start="autoref"):
     vecs = {"ai": err_vectors(ai)}
     out["ai"] = dict(summary=summary(ai), summary_half=summary(ai, "err_half"), by_age=by_age(ai),
                      strategy=strategy(ai, test), meta=meta, bias=bias_split(ai, test))
-    scripts = (("textbook", textbook), ("pleaser", pleaser)) if start == "autoref" else (("textbook", textbook_scratch),)
+    # scripts read the same kind of chart as the AI (whole lines for attempts 1-2, letters for attempt 3)
+    tb = textbook_letters if agent.letters else textbook
+    scripts = (("textbook", tb), ("pleaser", pleaser)) if start == "autoref" else (("textbook", textbook_scratch),)
+    out["letters"] = bool(agent.letters)
     for nm, fn in scripts:
         t = TestSet(N_TEST, seed=SEED, start=start)
-        r = run_scripted(fn, t, record_actions=True, t_max=t_max)
+        r = run_scripted(fn, t, record_actions=True, t_max=t_max, letters=agent.letters)
         vecs[nm] = err_vectors(r)
         out[nm] = dict(summary=summary(r), summary_half=summary(r, "err_half"), by_age=by_age(r),
                        bias=bias_split(r, t), strategy=strategy(r, t))

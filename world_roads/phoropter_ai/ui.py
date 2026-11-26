@@ -72,9 +72,41 @@ def chart():
     return ink, ys
 
 
+@lru_cache(64)
+def proj_chart(top):
+    """A projector screen showing chart.LINES[top] and the smaller lines below it (as many as fit), each with
+    chart.n_letters letters one letter-width apart. Returns (ink, [(line index, y centre, letter height)])."""
+    import chart as CH
+    ss = 4
+    im = Image.new("L", (CHART_W * ss, CHART_H * ss), 0)
+    d = ImageDraw.Draw(im)
+    ref = ImageFont.truetype(os.path.join(ST.FD, "Inter-Bold.otf"), 1000)
+    cap = ref.getbbox("H")[3] - ref.getbbox("H")[1]
+    sloan = "CDHKNORSVZ"
+    y, rows = 0.0, []
+    for li in range(top, len(CH.LINES)):                   # lay out first, then centre vertically
+        h = 5 * 10 ** CH.LINES[li] / PX
+        if y + h > CHART_H - 60 and rows:
+            break
+        rows.append((li, y + h / 2, h))
+        y += h + max(0.75 * h, 14)
+    used = rows[-1][1] + rows[-1][2] / 2
+    dy = (CHART_H - used) / 2
+    rows = [(li, yc + dy, h) for li, yc, h in rows]
+    for li, yc, h in rows:
+        f = ImageFont.truetype(os.path.join(ST.FD, "Inter-Bold.otf"), int(round(1000 * h * ss / cap)))
+        n = int(CH.N_PER_LINE[li])
+        x = (CHART_W - (2 * n - 1) * h) / 2
+        letters = np.random.default_rng(100 + li).choice(10, n, replace=False)    # fixed per line, no repeats
+        for k in range(n):
+            d.text(((x + (2 * k + 0.5) * h) * ss, yc * ss), sloan[letters[k]], fill=255, font=f, anchor="mm")
+    ink = np.asarray(im, np.float32).reshape(CHART_H, ss, CHART_W, ss).mean(axis=(1, 3)) / 255.0
+    return ink, rows
+
+
 @lru_cache(4096)
-def _view(M, J0, J45, pupil):
-    ink, _ = chart()
+def _view(M, J0, J45, pupil, which=None):
+    ink = chart()[0] if which is None else proj_chart(which)[0]
     if abs(M) < 1e-4 and abs(J0) < 1e-4 and abs(J45) < 1e-4:
         h = psf(0.0, 0.0, 0.0, pupil, PX)
     else:
@@ -85,12 +117,13 @@ def _view(M, J0, J45, pupil):
     return to_srgb(lin)
 
 
-def patient_view(true_pv, lens_pv, pupil, amp):
-    """What the patient sees through lens_pv (they accommodate if it helps). Returns (uint8 image, accommodation)."""
+def patient_view(true_pv, lens_pv, pupil, amp, which=None):
+    """What the patient sees through lens_pv (they accommodate if it helps). which: None for the wall chart, or
+    the index of the top line on the projector screen. Returns (uint8 image, accommodation)."""
     Mr = true_pv[0] - lens_pv[0]
     Me, acc = effective_residual(Mr, amp)
     key = (round(float(Me), 3), round(float(true_pv[1] - lens_pv[1]), 3), round(float(true_pv[2] - lens_pv[2]), 3),
-           round(float(pupil), 2))
+           round(float(pupil), 2), which)
     return _view(*key), float(acc)
 
 

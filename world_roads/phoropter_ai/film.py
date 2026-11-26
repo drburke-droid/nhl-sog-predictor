@@ -160,12 +160,14 @@ def sections():
     if C3:
         Cf = C3["ai"]["summary"]
         S["c_title"] = Card("Attempt 3: training wheels", [
-            (0.8, "Harder practice patients at first: bigger cylinders, autorefractor axes further off.", 32, INK2,
+            (0.8, "Harder practice patients at first: bigger cylinders, autorefractor axes further off.", 30, INK2,
              "Medium"),
-            (3.6, "And a \u201cwarmer\u201d or \u201ccolder\u201d after every move.", 32, INK2, "Medium"),
-            (6.0, "Both fade to nothing by 30% of practice. The final score is the fair one.", 32, INK2, "Medium"),
-            (8.8, "Half of its practice exams also had no autorefractor reading at all.", 32, GOLD, "SemiBold")],
-            13.5, kicker="PRACTICE ROUND")
+            (3.4, "And a \u201cwarmer\u201d or \u201ccolder\u201d after every move.", 30, INK2, "Medium"),
+            (5.6, "Both fade to nothing by 30% of practice. The final score is the fair one.", 30, INK2, "Medium"),
+            (8.4, "A real projector chart, read letter by letter, with three new buttons: show a smaller line, "
+                  "show a bigger line, \u201cread this line.\u201d", 30, INK2, "Medium"),
+            (12.4, "And half of its practice exams had no autorefractor reading at all.", 30, GOLD, "SemiBold")],
+            17.0, kicker="PRACTICE ROUND")
         tf = trace("c_final")
         S["c_exam"] = Exam(tf, f"AFTER {fmt_n(tf['meta']['exams'])} PRACTICE EXAMS", "Attempt 3, training wheels "
                            "long gone", notes=notes("c_final"), outro=6.0)

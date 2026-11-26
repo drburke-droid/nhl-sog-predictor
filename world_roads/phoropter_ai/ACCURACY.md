@@ -57,6 +57,23 @@ rendered view also ignores higher-order aberrations and chromatic blur.
 * Chart reading adds noise σ = 0.05 logMAR and reports the nearest 0.1-logMAR line.
 * Accommodation is instant and exact (up to the amplitude).
 
+**The letter chart (attempt 3 and its scripts, `chart.py`).** Attempts 1–2 heard a whole line
+("20/25"). From attempt 3 on, the chart is a projector chart read letter by letter.
+* Lines run from logMAR 1.0 to −0.3 in 0.1 steps. Small lines have 5 letters; big lines have as many
+  as fit 110 arcmin of screen, one letter-width apart (1–4).
+* Each letter is recognised with probability 0.1 + 0.9 / (1 + exp(−(L − T)/0.04)). Here L is the
+  line's logMAR, T is the patient's blur-limited acuity jittered by N(0, 0.02) per reading, and 0.1 is
+  guessing among 10 Sloan letters. At their threshold they get 55%; one line bigger, 93%; one line
+  smaller, 17%.
+* "Read the smallest line you can": the patient reads down and stops at the first line where they get
+  half or fewer. The answer is the line before it and the letters missed on it ("20/25, missed 2").
+  The examiner then isolates that line.
+* "Read this line" returns letters correct out of the number on the line.
+* "Line smaller / larger" moves the screen one line. It costs the same chair time as a lens click.
+* The letter-by-letter score is line + 0.02 per missed letter on it, which is what the scripts compare.
+* The slope and the jitter are assumptions, chosen to give ≈ ±0.05 logMAR test–retest, as for a
+  real letter chart.
+
 **Not modelled.** Slow or lagging accommodation, latent hyperopia, fatigue, the duochrome test,
 binocular balance, the second eye, near adds, ±0.50 D cross-cylinders for poor responders,
 retinoscopy, and the patient's habitual glasses.
@@ -97,6 +114,14 @@ They are scripts, not people. A skilled clinician adapts in ways they do not.
 * **Patient-pleaser script.** Starts at the autorefractor reading and gives whatever the patient
   says is clearer. Then it runs the same cross-cylinder steps. No fog, and no push-plus check.
 * **Autorefractor alone.** Prescribes the starting reading.
+* **Textbook script on the letter chart** (`textbook_letters`, used against attempt 3). It runs the
+  same sequence with two changes:
+  * MPMVA keeps the most plus lens within one letter (0.02) of the best reading. Without that
+    tolerance, a single lucky letter pulled the script toward minus.
+  * At the end: isolate the smallest line, add +0.25, and keep it unless a letter is lost.
+
+  This was the best of six letter-chart variants (57.7% within 0.25 D, versus 54.2% for the
+  whole-line script on the same patients).
 * **Textbook script with no autorefractor** (`textbook_scratch`), starting at plano:
   1. Read the chart.
   2. If they can't read the top line, compare −2.00 D with +2.00 D to choose a direction.
@@ -144,6 +169,10 @@ They are scripts, not people. A skilled clinician adapts in ways they do not.
     strategy unchanged. It changes only when credit arrives.
   * **No autorefractor for half its practice exams** (`--start mix`; those start at plano). An extra
     input tells it whether a reading exists (`--flag`). Exams may run to 80 moves (`--t_max 80`).
+  * **The letter chart and its three buttons** (`--letters`; see above).
+
+  A first version of attempt 3 without the letter chart (`runs/old_c_line_chart`, log only) was
+  stopped after about 6M steps when the letter chart was added.
 
   The last 70% of its training is on normal patients with the fair end score only.
 * **An abandoned run** (`runs/old_b_shaping_halfcyl`, log only). It kept the half-weight score and

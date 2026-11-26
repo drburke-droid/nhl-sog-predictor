@@ -20,16 +20,21 @@ The AI is not told what the cross-cylinder answers mean; it has to learn that to
 import numpy as np
 from optics import to_pv, from_pv, pv_dist, rx_error, blur_strength, logmar, jcc_pv
 from patients import sample_patients
+import chart
 
-N_ACT = 16
-SPH_D = np.array([0.25, -0.25, 1.0, -1.0] + [0] * 12, np.float64)
-CYL_D = np.array([0] * 4 + [-0.25, 0.25] + [0] * 10, np.float64)
-AX_D = np.array([0] * 6 + [5, -5, 15, -15] + [0] * 6, np.float64)
+N_ACT = 16                   # attempts 1-2 (whole-line chart)
+N_ACT_LETTERS = 19           # attempt 3 adds the projector buttons
+SPH_D = np.array([0.25, -0.25, 1.0, -1.0] + [0] * 15, np.float64)
+CYL_D = np.array([0] * 4 + [-0.25, 0.25] + [0] * 13, np.float64)
+AX_D = np.array([0] * 6 + [5, -5, 15, -15] + [0] * 9, np.float64)
+LINE_D = np.array([0] * 16 + [-0.1, 0.1, 0], np.float64)
 READ, CMP_P, CMP_M, JCC_AX, JCC_PW, DONE = 10, 11, 12, 13, 14, 15
+LINE_SM, LINE_LG, READ_LINE = 16, 17, 18
 QUESTIONS = (READ, CMP_P, CMP_M, JCC_AX, JCC_PW)
 ACT_NAME = ["Sphere +0.25", "Sphere -0.25", "Sphere +1.00", "Sphere -1.00", "Cylinder -0.25", "Cylinder +0.25",
             "Axis +5°", "Axis -5°", "Axis +15°", "Axis -15°", "Read the chart",
-            "1 or 2? (+0.25)", "1 or 2? (-0.25)", "Cross-cyl: axis", "Cross-cyl: power", "Done"]
+            "1 or 2? (+0.25)", "1 or 2? (-0.25)", "Cross-cyl: axis", "Cross-cyl: power", "Done",
+            "Line smaller", "Line larger", "Read this line"]
 
 COST_LENS, COST_Q = 0.002, 0.005
 T_MAX = 60
@@ -43,9 +48,15 @@ def final_reward(err):
 
 
 class RefractionEnv:
-    def __init__(self, n, seed=0, sampler=sample_patients, record=False, flag=False):
+    def __init__(self, n, seed=0, sampler=sample_patients, record=False, flag=False, letters=False):
         self.n = n
         self.flag = flag            # add a "has an autorefractor reading" input (attempt 3)
+        self.letters = letters      # letter-by-letter projector chart with line buttons (attempt 3)
+        self.n_act = N_ACT_LETTERS if letters else N_ACT
+        self.questions = QUESTIONS + ((READ_LINE,) if letters else ())
+        nq = len(self.questions)
+        self.R = 5 if letters else 4                 # response: (line or va, letters fraction | -, 1, 2, same)
+        self.n_obs = 12 + 5 + nq * 10 + H * (self.n_act + self.R + 5) + int(letters) + int(flag)
         self.rng = np.random.default_rng(seed)
         self.sampler = sampler
         self.record = record
@@ -53,8 +64,9 @@ class RefractionEnv:
         self.P = {}
         self.S, self.C, self.ax, self.t = z(), z(), z(), z()
         self.hist_a = np.full((n, H), -1, np.int64)
-        self.hist_r, self.hist_l = z(H, 4), z(H, 5)
-        self.lq_ans, self.lq_on, self.lq_l, self.lq_t = z(5, 3), z(5), z(5, 5), z(5)
+        self.hist_r, self.hist_l = z(H, self.R), z(H, 5)
+        self.lq_ans, self.lq_on, self.lq_l, self.lq_t = z(nq, 3), z(nq), z(nq, 5), z(nq)
+        self.line = np.full(n, 0.3)                  # the line on the projector screen (logMAR)
         self.best_va, self.best_on, self.best_l = z(), z(), z(5)
         self.start_pv = z(3)
         self.shaping, self.gamma = 0.0, 0.995       # optional "warmer/colder" hint weight (training only)
@@ -94,6 +106,7 @@ class RefractionEnv:
         self.best_va[idx] = 0
         self.best_on[idx] = 0
         self.best_l[idx] = 0
+        self.line[idx] = 0.3
         self.start_pv[idx] = np.stack(to_pv(p["S0"], p["C0"], p["ax0"]), -1)
 
     # ---------------------------------------------------------------- the patient
@@ -140,8 +153,8 @@ class RefractionEnv:
         a = np.asarray(a, np.int64)
         n = self.n
         self.t += 1
-        is_q = np.isin(a, QUESTIONS)
-        rew = -np.where(a < 10, COST_LENS, np.where(is_q, COST_Q, 0.0))
+        is_q = np.isin(a, self.questions)
+        rew = -np.where((a < 10) | (a == LINE_SM) | (a == LINE_LG), COST_LENS, np.where(is_q, COST_Q, 0.0))
         if self.shaping:
             phi0 = -2.0 * rx_error(self.lens_pv(), self.true_pv(), self.cyl_weight)
 
@@ -149,20 +162,41 @@ class RefractionEnv:
         self.S = np.clip(self.S + SPH_D[a], -20, 20)
         self.C = np.clip(self.C + CYL_D[a], -6, 0)
         self.ax = ((self.ax + AX_D[a] - 1) % 180) + 1
+        self.line = np.round(np.clip(self.line + LINE_D[a], -0.3, 1.0), 1)
 
         # questions
-        resp = np.zeros((n, 4))
+        resp = np.zeros((n, self.R))
         L = self.lens_pv()
-        va = self.read_chart(L)
+        rd = a == READ
+        rl = a == READ_LINE
+        cm = is_q & ~rd & ~rl
+        kk, nn, line_read = np.zeros(n), np.ones(n), self.line.copy()
+        if not self.letters:
+            va = self.read_chart(L)                        # (random draws in the original order: chart, then 1-or-2)
         A, B = self.presentations(a)
         ans = self.compare(A, B)
-        rd = a == READ
-        cm = is_q & ~rd
-        resp[rd, 0] = va[rd]
-        resp[cm, 1 + ans[cm]] = 1.0
-        code = np.where(rd, 3, np.where(cm, ans, -1))
+        if not self.letters:
+            resp[rd, 0] = va[rd]
+            resp[cm, 1 + ans[cm]] = 1.0
+        else:
+            T = self.quality(L)
+            va = np.zeros(n)
+            if rd.any():                                   # "read the smallest line you can"
+                ln, k, m = chart.read_all(T[rd], self.rng)
+                va[rd] = chart.score(ln, k, m)
+                kk[rd], nn[rd], line_read[rd] = k, m, ln
+                self.line[rd] = np.minimum(ln, 1.0)        # the examiner isolates that line next
+            if rl.any():                                   # "read this line"
+                k, m = chart.read_line(self.line[rl], T[rl], self.rng)
+                kk[rl], nn[rl] = k, m
+                va[rl] = self.line[rl]
+            resp[rd | rl, 0] = line_read[rd | rl]
+            resp[rd | rl, 1] = (kk / nn)[rd | rl]
+            resp[cm, 2 + ans[cm]] = 1.0
+        code = np.where(rd, 3, np.where(rl, 4, np.where(cm, ans, -1)))
         if self.record:
-            self.last = dict(a=a.copy(), code=code, va=va, A=A, B=B, L=L)
+            self.last = dict(a=a.copy(), code=code, va=va, A=A, B=B, L=L, k=kk, nl=nn, line=line_read,
+                             screen=self.line.copy())
 
         # memory
         lf = self._lens_feat()
@@ -172,13 +206,14 @@ class RefractionEnv:
         self.hist_a[:, 0] = a
         self.hist_r[:, 0] = resp
         self.hist_l[:, 0] = lf
-        for k, act in enumerate(QUESTIONS):
+        for k, act in enumerate(self.questions):
             m = a == act
             if m.any():
-                if act == READ:
-                    self.lq_ans[m, k] = np.stack([va[m], 0 * va[m], 0 * va[m]], -1)
+                if act in (READ, READ_LINE):
+                    frac = (kk / nn)[m] if self.letters else 0 * va[m]
+                    self.lq_ans[m, k] = np.stack([va[m], frac, 0 * va[m]], -1)
                 else:
-                    self.lq_ans[m, k] = resp[m, 1:4]
+                    self.lq_ans[m, k] = resp[m, self.R - 3:]
                 self.lq_on[m, k] = 1
                 self.lq_l[m, k] = lf[m]
                 self.lq_t[m, k] = self.t[m]
@@ -224,11 +259,13 @@ class RefractionEnv:
         lq = np.concatenate([self.lq_ans, on, (self.lq_l[..., :3] - cur[:, None]) * on, self.lq_l[..., 3:] * on,
                              ((self.t[:, None] - self.lq_t) / T_MAX * self.lq_on)[..., None]], 2).reshape(n, -1)
         valid = (self.hist_a >= 0)[..., None]
-        onehot = np.zeros((n, H, N_ACT))
+        onehot = np.zeros((n, H, self.n_act))
         np.put_along_axis(onehot, np.maximum(self.hist_a, 0)[..., None], 1.0, 2)
         hist = np.concatenate([onehot, self.hist_r, self.hist_l[..., :3] - cur[:, None], self.hist_l[..., 3:]], 2)
         hist = (hist * valid).reshape(n, -1)
         parts = [glob, best, lq, hist]
+        if self.letters:
+            parts.append(self.line[:, None])
         if self.flag:
             parts.append(self.P["has_reading"][:, None])
         o = np.concatenate(parts, 1)

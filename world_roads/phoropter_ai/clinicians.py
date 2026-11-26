@@ -10,7 +10,7 @@ Each examiner is a generator: it yields an action and receives (code, va) back, 
 0 = "1", 1 = "2", 2 = "same", 3 = a chart reading (va = logMAR line), -1 = no answer (a lens change).
 """
 import numpy as np
-from env import RefractionEnv, READ, CMP_P, CMP_M, JCC_AX, JCC_PW, DONE
+from env import RefractionEnv, READ, CMP_P, CMP_M, JCC_AX, JCC_PW, DONE, READ_LINE
 
 SP25, SM25, SP100, SM100, CYL_MORE, CYL_LESS, AXP5, AXM5, AXP15, AXM15 = range(10)
 
@@ -18,7 +18,7 @@ SP25, SM25, SP100, SM100, CYL_MORE, CYL_LESS, AXP5, AXM5, AXP15, AXM15 = range(1
 def _jcc_axis(env, i):
     step, last_dir, reversals = (15 if abs(env.C[i]) <= 0.5 else 5), 0, 0
     for _ in range(10):
-        code, _ = yield JCC_AX
+        code, _, *_ = yield JCC_AX
         if code == 2:
             return
         d = 1 if code == 0 else -1                     # follow the minus axis of the preferred flip
@@ -35,7 +35,7 @@ def _jcc_axis(env, i):
 def _jcc_power(env, i):
     clicks, last = 0, 0
     for _ in range(10):
-        code, _ = yield JCC_PW
+        code, _, *_ = yield JCC_PW
         if code == 2:
             return
         d = -1 if code == 0 else 1                       # 1 = more minus cylinder, 2 = less
@@ -54,7 +54,7 @@ def _jcc_power(env, i):
 def _cyl_search(env, i):
     """No cylinder in the phoropter: test for it at four orientations 45 degrees apart."""
     for k in range(4):
-        code, _ = yield JCC_PW
+        code, _, *_ = yield JCC_PW
         if code == 0:
             yield CYL_MORE
             return True
@@ -64,20 +64,32 @@ def _cyl_search(env, i):
     return False
 
 
-def _mpmva(env, i, patience=2):
-    """From a fogged lens, step -0.25 reading the chart each time; end on the most plus lens with the best line."""
-    code, best = yield READ
-    best_at, k, since = 0, 0, 0
+def _mpmva(env, i, patience=2, tol=0.0):
+    """From a fogged lens, step -0.25 reading the chart each time; end on the most plus lens whose reading is
+    within tol of the best (tol = 0.02 is one letter on the letter chart)."""
+    code, v0, *_ = yield READ
+    scores, k, since, best = [v0], 0, 0, v0
     while since < patience and k < 16:
         yield SM25
         k += 1
-        code, v = yield READ
-        if v < best:
-            best, best_at, since = v, k, 0
+        code, v, *_ = yield READ
+        scores.append(v)
+        if v < best - 1e-9:
+            best, since = v, 0
         else:
             since += 1
-    for _ in range(k - best_at):
+    target = min(j for j, sc in enumerate(scores) if sc <= best + tol + 1e-9)
+    for _ in range(k - target):
         yield SP25
+
+
+def _line_check(env, i):
+    """Letter chart: isolate the smallest line they can read, add +0.25, and keep it unless they lose a letter."""
+    code, v, k0, n0, line = yield READ
+    yield SP25
+    code, v, k1, n1, _ = yield READ_LINE
+    if k1 < k0:
+        yield SM25
 
 
 def textbook(env, i):
@@ -98,15 +110,15 @@ def textbook(env, i):
 def textbook_scratch(env, i):
     """No autorefractor: the phoropter starts at plano. Find the sphere by chart in 1.00 D steps, then the
     textbook sequence (fog, MPMVA, cylinder search, cross-cylinder, MPMVA re-check)."""
-    code, best = yield READ
+    code, best, *_ = yield READ
     go = 0
     if best >= 0.95:                                     # can't read the top line: compare -2.00 with +2.00
         yield SM100
         yield SM100
-        code, vm = yield READ
+        code, vm, *_ = yield READ
         for _ in range(4):
             yield SP100
-        code, vp = yield READ
+        code, vp, *_ = yield READ
         yield SM100
         yield SM100
         go = -1 if vm <= vp else 1
@@ -114,7 +126,7 @@ def textbook_scratch(env, i):
     if go <= 0:
         for _ in range(10):                              # myopia: more minus while the line improves
             yield SM100                                  # (or while a myope still can't read the top line)
-            code, v = yield READ
+            code, v, *_ = yield READ
             if v < best or (go == -1 and v <= best and best >= 0.95):
                 best, moved = min(best, v), moved + 1
             else:
@@ -123,14 +135,15 @@ def textbook_scratch(env, i):
     if go == 1 or (go == 0 and moved <= 1):              # plus: more plus until the chart clearly drops
         for _ in range(9):
             yield SP100
-            code, v = yield READ
+            code, v, *_ = yield READ
             if v <= best + 0.1:
                 best = min(best, v)
             else:
                 yield SM100
                 break
+    tol = 0.02 if env.letters else 0.0
     yield SP100                                          # fog, then MPMVA
-    yield from _mpmva(env, i)
+    yield from _mpmva(env, i, tol=tol)
     found = yield from _cyl_search(env, i)
     if found:
         yield from _jcc_axis(env, i)
@@ -138,17 +151,37 @@ def textbook_scratch(env, i):
             yield from _jcc_power(env, i)
         yield from _jcc_axis(env, i)
     yield SP25
-    yield from _mpmva(env, i, patience=1)
+    yield from _mpmva(env, i, patience=1, tol=tol)
+    if env.letters:
+        yield from _line_check(env, i)
+    yield DONE
+
+
+def textbook_letters(env, i):
+    """The textbook sequence on the letter chart: MPMVA with a one-letter tolerance, and a final isolated-line
+    push-plus check ("add +0.25: did you lose any letters?")."""
+    yield SP100
+    yield from _mpmva(env, i, tol=0.02)
+    found = env.C[i] < 0
+    if not found:
+        found = yield from _cyl_search(env, i)
+    if found:
+        yield from _jcc_axis(env, i)
+        yield from _jcc_power(env, i)
+        yield from _jcc_axis(env, i)
+    yield SP25
+    yield from _mpmva(env, i, patience=1, tol=0.02)
+    yield from _line_check(env, i)
     yield DONE
 
 
 def pleaser(env, i):
     for _ in range(16):
-        code, _ = yield CMP_M
+        code, _, *_ = yield CMP_M
         if code == 1:
             yield SM25
             continue
-        code, _ = yield CMP_P
+        code, _, *_ = yield CMP_P
         if code == 1:
             yield SP25
             continue
@@ -159,9 +192,10 @@ def pleaser(env, i):
     yield DONE
 
 
-def run_scripted(make, test, n_par=500, seed=7, record_actions=False, t_max=60):
-    """Run a scripted examiner over a TestSet. Returns a dict of arrays indexed by patient id."""
-    env = RefractionEnv(n_par, seed=seed, sampler=test.sampler, record=True)
+def run_scripted(make, test, n_par=500, seed=7, record_actions=False, t_max=60, letters=False):
+    """Run a scripted examiner over a TestSet. Returns a dict of arrays indexed by patient id.
+    Each examiner receives (code, va, letters correct, letters on the line, line) after every move."""
+    env = RefractionEnv(n_par, seed=seed, sampler=test.sampler, record=True, letters=letters)
     env.t_max = t_max
     gens, acts = [], np.zeros(n_par, np.int64)
     for i in range(n_par):
@@ -191,7 +225,8 @@ def run_scripted(make, test, n_par=500, seed=7, record_actions=False, t_max=60):
                 acts[i] = next(gens[i])
             else:
                 try:
-                    acts[i] = gens[i].send((int(last["code"][i]), float(last["va"][i])))
+                    acts[i] = gens[i].send((int(last["code"][i]), float(last["va"][i]), int(last["k"][i]),
+                                            int(last["nl"][i]), float(last["line"][i])))
                 except StopIteration:
                     acts[i] = DONE
     res = collect(out, test.size)

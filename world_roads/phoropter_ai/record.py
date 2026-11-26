@@ -13,7 +13,7 @@ SHOWCASE = dict(age=24, S=-2.25, C=-1.00, axis=170, S0=-2.75, C0=-0.75, ax0=4, m
 
 def record(agent, patient=SHOWCASE, greedy=True, seed=3, max_steps=60, t_max=60):
     env = RefractionEnv(1, seed=seed, sampler=fixed_patient(**patient), record=True,
-                        flag=agent is not None and agent.flag)
+                        flag=agent is not None and agent.flag, letters=agent is not None and agent.letters)
     env.t_max = t_max
     obs = env.obs()
     true = env.true_pv()
@@ -25,6 +25,9 @@ def record(agent, patient=SHOWCASE, greedy=True, seed=3, max_steps=60, t_max=60)
         obs, r, done, info = env.step(np.array([a]))
         last = env.last
         st = dict(a=a, name=ACT_NAME[a], code=int(last["code"][0]), va=float(last["va"][0]),
+                  k=int(last["k"][0]) if "k" in last else 0, nl=int(last["nl"][0]) if "nl" in last else 0,
+                  line=float(last["line"][0]) if "line" in last else 0.0,
+                  screen=float(last["screen"][0]) if "screen" in last else 0.0, letters=env.letters,
                   before=lens_before, A=[float(x[0]) for x in last["A"]], B=[float(x[0]) for x in last["B"]],
                   L=[float(x[0]) for x in last["L"]], probs=probs)
         if done[0]:

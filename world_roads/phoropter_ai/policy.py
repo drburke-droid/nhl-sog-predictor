@@ -18,11 +18,12 @@ def mlp(i, o, h=HID, gain=1.0):
 
 
 class Agent(nn.Module):
-    def __init__(self, n_obs=N_OBS):
+    def __init__(self, n_obs=N_OBS, n_act=N_ACT, flag=None):
         super().__init__()
-        self.n_obs = n_obs
-        self.flag = n_obs == N_OBS + 1                     # attempt 3 also sees "has an autorefractor reading"
-        self.pi = mlp(n_obs, N_ACT, gain=0.01)
+        self.n_obs, self.n_act = n_obs, n_act
+        self.letters = n_act > N_ACT                       # attempt 3: letter chart and projector buttons
+        self.flag = (n_obs == N_OBS + 1) if flag is None else flag   # sees "has an autorefractor reading"
+        self.pi = mlp(n_obs, n_act, gain=0.01)
         self.v = mlp(n_obs, 1, gain=1.0)
 
     def dist(self, obs):
@@ -42,7 +43,8 @@ class Agent(nn.Module):
 
 def load(path):
     sd = torch.load(path, map_location="cpu", weights_only=False)
-    a = Agent(sd.get("meta", {}).get("n_obs", N_OBS))
+    meta = sd.get("meta", {})
+    a = Agent(meta.get("n_obs", N_OBS), meta.get("n_act", N_ACT), meta.get("flag"))
     a.load_state_dict({k: v.float() for k, v in sd["model"].items()})
     a.eval()
     return a, sd.get("meta", {})
@@ -51,7 +53,7 @@ def load(path):
 def run_policy(agent, test, n_par=1000, seed=7, greedy=True, record_actions=False, t_max=60):
     """Score an agent on a TestSet; returns arrays indexed by patient id (same format as run_scripted)."""
     from clinicians import collect
-    env = RefractionEnv(n_par, seed=seed, sampler=test.sampler, flag=agent.flag)
+    env = RefractionEnv(n_par, seed=seed, sampler=test.sampler, flag=agent.flag, letters=agent.letters)
     env.t_max = t_max
     obs = env.obs()
     out, n_real = {}, 0

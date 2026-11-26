@@ -18,13 +18,15 @@ DOING = ["Sphere +0.25", "Sphere −0.25", "Sphere +1.00", "Sphere −1.00", "Cy
          "Cylinder +0.25 (less)", "Rotate axis +5°", "Rotate axis −5°", "Rotate axis +15°",
          "Rotate axis −15°", "“Read the smallest line you can.”", "“Which is clearer, 1 or 2?”",
          "“Which is clearer, 1 or 2?”", "“Which is clearer, 1 or 2?”",
-         "“Which is clearer, 1 or 2?”", "Done: prescribe this"]
+         "“Which is clearer, 1 or 2?”", "Done: prescribe this", "Show a smaller line", "Show a bigger line",
+         "“Read this line.”"]
 NOTE = {11: "2 adds +0.25 sphere", 12: "2 adds −0.25 sphere", 13: "cross-cylinder flip, straddling the axis",
         14: "cross-cylinder flip, on the axis"}
 CHIP = {0: ("SPH +", CYAN), 1: ("SPH \u2212", CYAN), 2: ("SPH +1", CYAN), 3: ("SPH \u22121", CYAN),
         4: ("CYL \u2212", GREEN), 5: ("CYL +", GREEN), 6: ("AX +5", GOLD), 7: ("AX \u22125", GOLD), 8: ("AX +15", GOLD),
         9: ("AX \u221215", GOLD), 10: ("READ", INK), 11: ("1/2 +", INK2), 12: ("1/2 \u2212", INK2),
-        13: ("JCC ax", RED), 14: ("JCC pwr", RED), 15: ("DONE", GREEN)}
+        13: ("JCC ax", RED), 14: ("JCC pwr", RED), 15: ("DONE", GREEN), 16: ("LINE \u2212", MUTED),
+        17: ("LINE +", MUTED), 18: ("READ LINE", INK)}
 
 CH_X, CH_Y = 110, 214                               # patient-view chart position
 
@@ -76,13 +78,14 @@ class Exam(Section):
         self.truncated = max_steps is not None and max_steps < len(trace["steps"])
         self.notes = dict(notes)
         self.show_probs = show_probs
+        self.letters = bool(steps[0].get("letters"))      # attempt 3: projector chart, read letter by letter
         self.beats = []
         t = intro
         for k, s in enumerate(steps):
             a = s["a"]
-            if a < 10:
+            if a < 10 or a in (16, 17):
                 d = 0.9
-            elif a == 10:
+            elif a in (10, 18):
                 d = 1.9
             elif a < 15:
                 d = 2.7
@@ -113,9 +116,18 @@ class Exam(Section):
         k = len(self.steps) - 1
         return dict(k=k, u=1.0, dt=99, d=1, lens=self.steps[k]["after"], a=self.steps[k]["a"], done=True)
 
-    def view(self, lens_pv):
-        img, acc = ui.patient_view(self.E, lens_pv, self.p["pupil"], self.p["amp"])
+    def view(self, lens_pv, screen=None):
+        which = None
+        if self.letters:
+            import chart as CH
+            which = max(0, int(np.argmin(np.abs(CH.LINES - min(screen, 1.0)))) - 1)
+        img, acc = ui.patient_view(self.E, lens_pv, self.p["pupil"], self.p["amp"], which)
         return img, acc
+
+    def screens(self, k):
+        """Projector line before and after step k."""
+        before = self.steps[k - 1].get("screen", 0.3) if k > 0 else 0.3
+        return before, (self.steps[k].get("screen", 0.3) if k >= 0 else 0.3)
 
     # ---------------------------------------------------------------- drawing
     def frame(self, t):
@@ -124,26 +136,33 @@ class Exam(Section):
         k, a = st["k"], st["a"]
         step = self.steps[k] if k >= 0 else None
 
-        # which lens the patient is looking through
+        # which lens the patient is looking through, and (letter chart) which line is on the screen
         badge = None
+        sb, sa = self.screens(k) if k >= 0 else (0.3, 0.3)
+        if st.get("done"):
+            sb = sa
+        screen = sb
         if a is None:
             L = to_pv(*st["lens"])
-            img, acc = self.view(L)
-        elif a < 10 or a == 15:
+            img, acc = self.view(L, sb)
+        elif a < 10 or a in (15, 16, 17):
             L0, L1 = to_pv(*step["before"]), to_pv(*step["after"])
-            i0, a0 = self.view(L0)
-            i1, a1 = self.view(L1)
+            i0, a0 = self.view(L0, sb)
+            i1, a1 = self.view(L1, sa)
             m = smooth((st.get("dt", 99) - 0.1) / 0.3)
             img = (i0 * (1 - m) + i1 * m).astype(np.uint8)
             acc = a1 if m > 0.5 else a0
-        elif a == 10:
-            img, acc = self.view(tuple(step["L"]))
+            screen = sa if m > 0.5 else sb
+        elif a in (10, 18):
+            late = st["dt"] > st["d"] * 0.45
+            screen = sa if (late and a == 10) else sb
+            img, acc = self.view(tuple(step["L"]), screen)
         else:
             dt = st["dt"]
             seg = st["d"] / 3
-            iA, aA = self.view(tuple(step["A"]))
-            iB, aB = self.view(tuple(step["B"]))
-            iC, aC = self.view(tuple(step["L"]))
+            iA, aA = self.view(tuple(step["A"]), sb)
+            iB, aB = self.view(tuple(step["B"]), sb)
+            iC, aC = self.view(tuple(step["L"]), sb)
             if dt < seg:
                 m = smooth(dt / 0.25)
                 img = (iC * (1 - m) + iA * m).astype(np.uint8)
@@ -161,10 +180,22 @@ class Exam(Section):
         rr(d, [CH_X - 10, CH_Y - 10, CH_X + ui.CHART_W + 10, CH_Y + ui.CHART_H + 10], 14, fill=(30, 36, 48))
         im.paste(Image.fromarray(img), (CH_X, CH_Y))
         d = ImageDraw.Draw(im, "RGBA")
-        ui.snellen_labels(d, CH_X + ui.CHART_W + 24, CH_Y, size=19)
+        if self.letters:
+            import chart as CH
+            top = max(0, int(np.argmin(np.abs(CH.LINES - min(screen, 1.0)))) - 1)
+            for li, yc, h in ui.proj_chart(top)[1]:
+                on = abs(CH.LINES[li] - screen) < 0.01
+                text(d, (CH_X + ui.CHART_W + 24, CH_Y + yc), CH.snellen_of(CH.LINES[li]), 19, GOLD if on else MUTED,
+                     "SemiBold" if on else "Medium", "lm")
+                if on:
+                    strong = a in (10, 18) and st["dt"] > st["d"] * 0.45
+                    d.rounded_rectangle([CH_X - 4, CH_Y + yc - h / 2 - 10, CH_X + ui.CHART_W + 4, CH_Y + yc + h / 2 + 10],
+                                        10, outline=GOLD + (230 if strong else 120,), width=4 if strong else 2)
+        else:
+            ui.snellen_labels(d, CH_X + ui.CHART_W + 24, CH_Y, size=19)
         if badge:
             ui.badge(d, CH_X + 46, CH_Y + 46, badge, GOLD, r=34)
-        if a == 10 and st["dt"] > 0.7 * st["d"] * 0.45:
+        if a == 10 and not self.letters and st["dt"] > 0.7 * st["d"] * 0.45:
             li = chart_line_for(step["va"])
             if li is not None:
                 _, ys = ui.chart()
@@ -184,7 +215,7 @@ class Exam(Section):
         text(d, (1410, 82), fmt_rx(self.p["S"], self.p["C"], self.p["axis"]), 32, INK2, "SemiBold")
 
         # ---- right: phoropter and readout
-        S, C, ax = (step["after"] if (a is not None and (a < 10 or a == 15) and st.get("dt", 99) > 0.15)
+        S, C, ax = (step["after"] if (a is not None and (a < 10 or a >= 15) and st.get("dt", 99) > 0.15)
                     else (step["before"] if step else st["lens"]))
         jcc = None
         if a in (13, 14):
@@ -207,20 +238,35 @@ class Exam(Section):
         if step is not None and a is not None:
             text(d, (820, 618), "AI", 22, CYAN, "Bold")
             text(d, (870, 610), DOING[a], 36, INK, "SemiBold")
-            if a in NOTE:
-                text(d, (870, 660), NOTE[a], 22, MUTED, "Medium")
-            show_ans = (a == 10 and st["dt"] > st["d"] * 0.45) or (10 < a < 15 and st["dt"] > 2 * st["d"] / 3)
+            note = NOTE.get(a)
+            if self.letters and a in (16, 17, 18):
+                import chart as CH
+                note = f"the {CH.snellen_of(sa if a != 18 else sb)} line"
+            if note:
+                text(d, (870, 660), note, 22, MUTED, "Medium")
+            show_ans = (a in (10, 18) and st["dt"] > st["d"] * 0.45) or (10 < a < 15 and st["dt"] > 2 * st["d"] / 3)
             if show_ans:
                 text(d, (820, 712), "PATIENT", 22, GOLD, "Bold")
-                if a == 10:
+                if a == 10 and self.letters:
+                    import chart as CH
+                    ln, kk, nl = step["line"], step["k"], step["nl"]
+                    if ln > 1.05:
+                        ans = "“I can’t read the top line.”"
+                    elif kk == nl:
+                        ans = f"“All of the {CH.snellen_of(ln)} line.”"
+                    else:
+                        ans = f"“The {CH.snellen_of(ln)} line, but I missed {nl - kk}.”"
+                elif a == 10:
                     li = chart_line_for(step["va"])
                     ans = (f"“I can read {ui.CHART_LINES[li][1]}.”" if li is not None
                            else "“I can’t read any of it.”")
+                elif a == 18:
+                    ans = f"“I got {step['k']} of the {step['nl']}.”"
                 else:
                     ans = SAY[step["code"]]
                 text(d, (950, 702), ans, 36, GOLD, "SemiBold")
         # move strip
-        nq = sum(1 for s in self.steps[:k + 1] if 10 <= s["a"] < 15) if k >= 0 else 0
+        nq = sum(1 for s in self.steps[:k + 1] if 10 <= s["a"] < 15 or s["a"] == 18) if k >= 0 else 0
         text(d, (820, 790), f"MOVE {max(k + 1, 0)}" + (f"  ·  {nq} QUESTION{'S' if nq != 1 else ''} ASKED" if nq else ""),
              20, MUTED, "SemiBold")
         x, y = 820, 826
