@@ -178,8 +178,9 @@ class Habits(Section):
     """Typical exam strips plus a few counted habits. strips: [(label, seq, share, colour)];
     facts: [(big, small)]"""
 
-    def __init__(self, title, subtitle, strips, facts, dur=16.0):
+    def __init__(self, title, subtitle, strips, facts, dur=16.0, chip=None):
         self.title, self.subtitle, self.strips, self.facts, self.dur = title, subtitle, strips, facts, dur
+        self.chip = chip or CHIP
 
     def frame(self, t):
         im, d = ui.new_frame()
@@ -196,7 +197,7 @@ class Habits(Section):
             x = 80
             for j, m in enumerate(seq):
                 show = smooth((t - 0.8 - 1.2 * i - 0.06 * j) / 0.2) * al
-                lab2, c = CHIP[m]
+                lab2, c = self.chip[m]
                 w = d.textlength(lab2, font=f) + 18
                 if x + w > 1840:
                     x, y = 80, y + 40

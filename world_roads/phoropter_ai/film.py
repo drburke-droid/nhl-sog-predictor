@@ -16,6 +16,7 @@ import ui
 from ui import INK, INK2, MUTED, GOLD, GREEN, RED, CARD, LINE, text, rr, fade, smooth
 from scenes import Section, Hook, Rules, Counter, Exam, para, wrap
 import results_scenes as RS
+from scenes2 import CHIP as CHIP2
 
 OUT = ui.OUT
 XF = 0.5
@@ -52,6 +53,48 @@ class Card(Section):
                 text(d, (960, y), ln, size, col, wt, "ma", al)
                 y += size * 1.35
             y += 26
+        return np.asarray(im)
+
+
+class SamePatient(Section):
+    """One two-eyed patient, three examiners: final prescriptions and how far each eye is from the truth."""
+
+    def __init__(self, entries, dur=13.0):
+        self.entries, self.dur = entries, dur
+
+    def frame(self, t):
+        from optics import to_pv, rx_error
+        import math
+        im, d = ui.new_frame()
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        p = self.entries[0][1]["patient"]
+        text(d, (80, 56), "THE SAME PATIENT, THREE EXAMINERS", 44, INK, "Bold", a=a)
+        text(d, (80, 114), "True Rx  R " + ui.fmt_rx(p["S"], p["C"], p["axis"]) + "   L " +
+             ui.fmt_rx(p["S_os"], p["C_os"], p["axis_os"]), 26, MUTED, "Medium", a=a)
+        E = [to_pv(p["S"], p["C"], p["axis"]), to_pv(p["S_os"], p["C_os"], p["axis_os"])]
+        r2 = lambda v: math.floor(abs(v) * 100 + 0.5) / 100
+        for j, h in enumerate(("RIGHT EYE", "LEFT EYE")):
+            text(d, (700 + j * 560, 200), h, 20, MUTED, "SemiBold", a=a)
+        text(d, (1820, 200), "MOVES", 20, MUTED, "SemiBold", "ra", a)
+        for i, (name, tr, col) in enumerate(self.entries):
+            al = fade(t, 0.6 + 1.0 * i, 999, 0.5, 0.1) * a
+            y = 270 + i * 190
+            rr(d, [60, y - 30, 1860, y + 140], 18, fill=CARD + (int(255 * al),), outline=col + (int(255 * al),), width=3)
+            text(d, (100, y + 40), name, 32, INK, "SemiBold", "lm", al)
+            last = tr["steps"][-1]["after"]
+            for e in (0, 1):
+                S, C, ax = last[e]
+                L = to_pv(S, C, ax)
+                err = rx_error(L, E[e])
+                dse = L[0] - E[e][0]
+                c2 = GREEN if err < 0.13 else (GOLD if err <= 0.25 + 1e-9 else RED)
+                x = 700 + e * 560
+                text(d, (x, y + 8), ui.fmt_rx(S, C, ax), 34, INK, "SemiBold", a=al)
+                txt = "exact" if err < 0.13 else f"off {r2(err):.2f} D"
+                if err >= 0.13 and abs(dse) >= 0.12:
+                    txt += f" ({'too minus' if dse < 0 else 'too plus'})"
+                text(d, (x, y + 62), txt, 26, c2, "SemiBold", a=al)
+            text(d, (1820, y + 40), str(len(tr["steps"])), 36, INK2, "SemiBold", "rm", al)
         return np.asarray(im)
 
 
@@ -214,6 +257,61 @@ def sections():
         S["n_score"] = RS.Scoreboard("NO AUTOREFRACTOR: 5,000 PATIENTS", "The same patients, starting at plano.",
                                      rows_n, dur=14.0, note="Fair score. Exact: within half a click (0.13 D).")
         S["c_habits"] = habits(C3, "ATTEMPT 3: ITS HABITS", "AI, attempt 3", "c", facts("c"))
+    # ---------------- attempt 4: the real exam (two eyes, one line at a time, binocular balance)
+    has_d = all(os.path.exists(os.path.join(HERE, "data", f)) for f in ("results_d.json", "errors_d.npz",
+                                                                         "traces/d_ai.json", "traces/d_mine.json",
+                                                                         "traces/d_textbook.json"))
+    if has_d:
+        from scenes2 import Exam2
+        D = results("d")
+        MINE = (0x00, 0xA8, 0x88)
+        S["d_title"] = Card("Attempt 4: the real exam", [
+            (0.8, "Two eyes. One projected line at a time.", 32, INK2, "Medium"),
+            (3.0, "How well a patient can judge blur depends on the letters: sphere is easiest near the smallest line "
+                  "they can read, the cross-cylinder a couple of lines bigger.", 30, INK2, "Medium"),
+            (7.6, "Behind the phoropter, a covered-up patient keeps focusing a little, so one-eye results drift toward "
+                  "minus. That is what binocular balancing is for.", 30, INK2, "Medium"),
+            (12.4, "Three examiners on the same patients: the textbook, my own routine, and a fresh AI.", 32, GOLD,
+             "SemiBold")], 17.0, kicker="THE OPTOMETRIST\u2019S NOTES")
+        tm = trace("d_mine")
+        tm["who"] = "ME"
+        S["d_mine"] = Exam2(tm, "MY ROUTINE", "Scripted exactly as I do it, on a new two-eyed patient", speed=0.3,
+                            notes=notes("d_mine"))
+        ta = trace("d_ai")
+        S["d_exam"] = Exam2(ta, f"AI, ATTEMPT 4: AFTER {fmt_n(ta['meta']['exams'])} PRACTICE EXAMS",
+                            "The same patient", speed=0.3, notes=notes("d_ai"))
+        S["d_same"] = SamePatient([("Textbook script", trace("d_textbook"), RS.TB_ORANGE),
+                                   ("My routine", tm, MINE), ("AI, attempt 4", ta, RS.AI_BLUE)])
+        xd, yd, shd = RS.load_curve(os.path.join(HERE, "runs", "d", "logs", "train.csv"))
+        end_d = xd[np.argmax(shd <= 0.0)] if (shd <= 0).any() else xd[-1]
+        Dt, Dm = D["textbook"]["summary"], D["mine"]["summary"]
+        S["d_curve"] = RS.Curve("ATTEMPT 4: THE LEARNING CURVE", "Share of eyes within 0.25 D, 1,000 two-eyed check "
+                                "patients", [("AI", xd, yd, RS.AI_BLUE, 5)],
+                                [("Textbook script", Dt["within_025"], RS.TB_ORANGE),
+                                 ("My routine", Dm["within_025"], MINE)],
+                                dur=12.0, draw_secs=7.0, shade=(xd[0], end_d, "TRAINING WHEELS FADING"))
+        rows_d = [("Autorefractor reading alone", D["autoref"]["summary"], RS.GREY, False),
+                  ("Script: textbook", Dt, RS.TB_ORANGE, False),
+                  ("Script: my routine", Dm, MINE, False),
+                  ("AI, attempt 4", D["ai"]["summary"], RS.AI_BLUE, True)]
+        S["d_score"] = RS.Scoreboard("5,000 TWO-EYED PATIENTS", "The full exam: both eyes, binocular balance, "
+                                     "one projected line at a time.", rows_d, dur=15.0,
+                                     note="Within 0.25 D and exact: per eye. Over-minused: eyes of patients under 40, "
+                                          "at least 0.25 D too minus.")
+        ed = np.load(os.path.join(HERE, "data", "errors_d.npz"))
+        S["d_clouds"] = RS.ErrorClouds("WHERE THE ERRORS LAND", "Each dot is one eye of 5,000 two-eyed patients",
+                                       [("Textbook script", ed["textbook"], RS.TB_ORANGE, stat(ed["textbook"])),
+                                        ("My routine", ed["mine"], MINE, stat(ed["mine"])),
+                                        ("AI, attempt 4", ed["ai"], RS.AI_BLUE, stat(ed["ai"]))], dur=14.0,
+                                       note="Gold ring: 0.25 D. Bars: spherical-equivalent error (prescription minus "
+                                            "truth); left of 0 = too much minus.")
+        S["d_habits"] = RS.Habits("ATTEMPT 4: ITS HABITS", "Each chip is one move",
+                                  [("AI, attempt 4: its most common exam", D["ai"]["habits"]["common_seq"],
+                                    f"{D['ai']['habits']['common_n']} of 5,000 exams went exactly like this",
+                                    RS.AI_BLUE),
+                                   ("My routine: a typical exam", D["mine"]["habits"]["common_seq"],
+                                    f"{D['mine']['habits']['common_n']} of 5,000 exams went exactly like this", MINE)],
+                                  facts("d"), dur=16.0, chip=CHIP2)
     S["outro"] = Card("The fine print", [
         (0.6, "Every patient here was simulated. The optics are real physics; the people are a model.", 34, INK2,
          "Medium"),
@@ -247,7 +345,8 @@ def facts(tag):
 
 ORDER = ["hook", "rules", "a_title", "a_exam0", "a_c1", "a_exam1", "a_c2", "a_exam2", "a_c3", "a_exam3", "a_curve",
          "a_score", "a_habits", "a_twist", "vector", "a_rescore", "b_title", "b_clouds", "b_why", "c_title", "c_exam",
-         "c_curve", "c_score", "c_clouds", "n_title", "n_exam", "n_score", "c_habits", "outro"]
+         "c_curve", "c_score", "c_clouds", "n_title", "n_exam", "n_score", "c_habits", "d_title", "d_mine", "d_exam",
+         "d_same", "d_curve", "d_score", "d_clouds", "d_habits", "outro"]
 
 
 def order():

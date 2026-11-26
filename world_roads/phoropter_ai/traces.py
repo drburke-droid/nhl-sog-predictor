@@ -2,7 +2,7 @@
 
     python traces.py
 """
-import os, json
+import os, sys, json
 from policy import load
 from record import record, SHOWCASE
 from env import DONE
@@ -52,5 +52,27 @@ def main():
         save(tr, "c_noauto")
 
 
+
+
+def main_d():
+    """The two-eye showcase: attempt 4, the textbook script and the optometrist's routine on the same patient."""
+    from record import record2
+    from clinicians2 import textbook2, mine
+    for nm, kw in (("d_textbook", dict(script=textbook2)), ("d_mine", dict(script=mine))):
+        tr = record2(**kw)
+        json.dump(tr, open(os.path.join(OUT, f"{nm}.json"), "w"))
+        print(f"== {nm}: {len(tr['steps'])} moves, errors {tr['steps'][-1]['err']}")
+    p = os.path.join(HERE, "runs", "d", "ckpt", "final.pt")
+    if os.path.exists(p):
+        ag, m = load(p)
+        tr = record2(agent=ag)
+        tr["meta"] = m
+        json.dump(tr, open(os.path.join(OUT, "d_ai.json"), "w"))
+        print(f"== d_ai: {len(tr['steps'])} moves, errors {tr['steps'][-1]['err']}")
+
+
 if __name__ == "__main__":
-    main()
+    if "d" in sys.argv[1:]:
+        main_d()
+    else:
+        main()
