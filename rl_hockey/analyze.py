@@ -35,10 +35,13 @@ def run_eval(policy, n_envs=64, games=1, seed=123, replay_games=0, max_steps=Non
     rel_sum = np.zeros((3, E, 2)); rel_n = np.zeros((3, E))
     abs_sum = np.zeros((3, E, 2))
     pair_gap = []                                # how far apart are the two deepest vs the forwards
+    shape = np.zeros((2, 5)); shape_n = np.zeros(2)   # sorted depth rel. puck, by phase (identity-free)
+    df_switch = np.zeros(5); df_frames = np.zeros(5)  # how long a slot keeps its D / F label
     stats, pulls, results, replays = [], [], [], []
     for g in range(games):
         o = env.reset()
         want = np.zeros((n_envs, 2), bool)
+        prev_df = np.full((n_envs, 2, 5), -1)
         rec = [dict(frames=[]) for _ in range(replay_games if g == 0 else 0)]
         steps = env.T_steps if max_steps is None else min(env.T_steps, max_steps)
         for t in range(steps):
@@ -67,6 +70,17 @@ def run_eval(policy, n_envs=64, games=1, seed=123, replay_games=0, max_steps=Non
                     rel_n[ph] += mm.sum(0)
                 ok = live & ~env.pulled[:, T]
                 if ok.any():
+                    rr_ = role_assign(tf[:, T, :5, 0], tf[:, T, :5, 1])
+                    dfl = (rr_ < 2).astype(int)
+                    sw = ok[:, None] & (prev_df[:, T] >= 0) & (prev_df[:, T] != dfl)
+                    df_switch += sw.sum(0)
+                    df_frames += np.where(ok[:, None] & (prev_df[:, T] >= 0), 1, 0).sum(0)
+                    prev_df[:, T] = np.where(ok[:, None], dfl, -1)
+                    for ph, pm in ((0, ok & att), (1, ok & dfd)):
+                        if pm.any():
+                            relx = np.sort(tf[pm, T, :5, 0] - (env.ppos[pm, 0] * SIGN[T])[:, None], -1)
+                            shape[ph] += relx.sum(0)
+                            shape_n[ph] += pm.sum()
                     x5, y5 = tf[ok, T, :5, 0], tf[ok, T, :5, 1]
                     r = role_assign(x5, y5)
                     role_counts += np.bincount((np.arange(5)[None] * 5 + r).ravel(), minlength=25).reshape(5, 5)
@@ -117,6 +131,8 @@ def run_eval(policy, n_envs=64, games=1, seed=123, replay_games=0, max_steps=Non
         rel_puck=(rel_sum / np.maximum(rel_n, 1)[..., None]).round(2).tolist(),
         mean_pos=(abs_sum / np.maximum(rel_n, 1)[..., None]).round(2).tolist(),
         gaps=np.mean(pair_gap, 0).round(2).tolist() if pair_gap else [],
+        shape=(shape / np.maximum(shape_n, 1)[:, None]).round(2).tolist(),
+        df_run_seconds=(DT / np.maximum(df_switch / np.maximum(df_frames, 1), 1e-9)).round(2).tolist(),
         stats=per_team, pulls=[[round(a, 4), b] for a, b in pulls], replays=replays,
     )
     return out
@@ -159,6 +175,8 @@ def main():
     out["final"]["it"], out["final"]["steps"] = it, steps
     out["coach"] = coach_grid(policy)
     print("role consistency", round(out["final"]["role_consistency"], 3), "D/F", round(out["final"]["df_consistency"], 3))
+    print("shape (sorted depth rel. puck) attacking", out["final"]["shape"][0], "defending", out["final"]["shape"][1])
+    print("sorted-depth gaps", out["final"]["gaps"], " D/F label run (s) per slot", out["final"]["df_run_seconds"])
     print("stats", json.dumps(out["final"]["stats"], indent=None))
 
     cks = sorted(glob.glob(os.path.join(args.run, "ckpt_*.pt")))
@@ -170,8 +188,9 @@ def main():
             r = run_eval(pol, 32, 1, seed=7, max_steps=900)
             out["snapshots"].append(dict(it=it_i, steps=st_i, heat=r["heat"][0], role_counts=r["role_counts"],
                                          role_consistency=r["role_consistency"], df_consistency=r["df_consistency"],
-                                         rel_puck=r["rel_puck"], mean_pos=r["mean_pos"], stats=r["stats"]))
-            print(f"  snapshot it {it_i}: roles {r['role_consistency']:.3f}  D/F {r['df_consistency']:.3f}")
+                                         rel_puck=r["rel_puck"], mean_pos=r["mean_pos"], shape=r["shape"],
+                                         df_run_seconds=r["df_run_seconds"], gaps=r["gaps"], stats=r["stats"]))
+            print(f"  snapshot it {it_i}: roles {r['role_consistency']:.3f}  D/F {r['df_consistency']:.3f}  gaps {r['gaps']}  runs {r['df_run_seconds']}")
     log = [json.loads(l) for l in open(os.path.join(args.run, "log.jsonl"))]
     out["log"] = [dict(it=r["it"], steps=r["steps"], shaping=r["shaping"], roles=round(r["role_consistency"], 4),
                        df=round(r["df_consistency"], 4), ent=round(r["sk"]["ent"], 3),

@@ -123,6 +123,7 @@ td.best { box-shadow: inset 0 0 0 2px var(--ink); }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .chart text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
 .note { font-size: 0.9rem; color: var(--ink-2); max-width: 75ch; }
+.note b.mono { font-size: 0.88em; color: var(--ink); }
 .tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 0.82rem; line-height: 1.35; padding: 6px 9px; border-radius: 5px; max-width: 260px; }
 .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px 28px; }
 .cols h3 { margin-bottom: 6px; }
@@ -195,6 +196,9 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 0.9rem; }
       <p class="muted">The average position of each slot when its team has the puck and when the other team has it. The small dark disc is the puck's average position.</p>
     </div>
     <div class="two" id="form"></div>
+    <h3>Team shape, whoever fills it</h3>
+    <p class="note">Each frame the five skaters are sorted from deepest to highest, ignoring who they are, and their distance from the puck is averaged. A defence pair shows up as two dots well behind the other three, whether or not the same slots fill those spots.</p>
+    <div class="chart" id="shape"></div>
   </section>
 
   <section id="coach">
@@ -610,7 +614,29 @@ function renderMethod() {
   if (window.COACH_TEXT) $("#coach-text").textContent = window.COACH_TEXT;
 }
 
-function renderAll() { renderHeader(); renderHeat(); renderRoles(); renderEvo(); renderSnaps(); renderForm(); renderCoach(); renderStats(); renderMethod(); drawFrame(); }
+function renderShape() {
+  const f = D.final, host = $("#shape"); if (!f.shape) { host.hidden = true; return; }
+  const W = host.clientWidth - 24, rowH = 54, m = { l: 128, r: 20, t: 18, b: 40 }, H = m.t + 2 * rowH + m.b;
+  const all = f.shape.flat(), lo = Math.min(-100, Math.floor(Math.min(...all) / 10) * 10), hi = Math.max(20, Math.ceil(Math.max(...all) / 10) * 10);
+  const X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sorted skater depth relative to the puck">`;
+  for (let v = lo; v <= hi; v += 20) svg += `<line x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${H - m.b}" stroke="${css("--hair")}"/><text x="${X(v)}" y="${H - m.b + 16}" text-anchor="middle">${v > 0 ? "+" + v : v}</text>`;
+  svg += `<text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle">feet behind (−) or ahead of (+) the puck, toward the goal being attacked</text>`;
+  svg += `<line x1="${X(0)}" x2="${X(0)}" y1="${m.t - 6}" y2="${H - m.b}" stroke="${css("--ink")}" stroke-width="1.5"/><text x="${X(0)}" y="${m.t - 8}" text-anchor="middle" style="fill:var(--ink)">puck</text>`;
+  [["With the puck", 0], ["Without the puck", 1]].forEach(([t, ph], r) => {
+    const y = m.t + r * rowH + rowH / 2, d = f.shape[ph];
+    svg += `<text x="8" y="${y + 4}" style="fill:var(--ink)">${t}</text>`;
+    svg += `<line x1="${X(d[0])}" x2="${X(d[4])}" y1="${y}" y2="${y}" stroke="${css("--axis")}" stroke-width="2"/>`;
+    d.forEach((v, i) => { svg += `<circle cx="${X(v)}" cy="${y}" r="9" fill="${css("--team-a")}" stroke="${css("--surface")}" stroke-width="2"><title>${["Deepest", "2nd deepest", "3rd", "4th", "Highest"][i]}: ${v.toFixed(0)} ft</title></circle><text x="${X(v)}" y="${y + 4}" text-anchor="middle" style="fill:#fff;font-weight:600;font-size:11px">${i + 1}</text>`; });
+    const gap = d[2] - d[1];
+    svg += `<text x="${(X(d[1]) + X(d[2])) / 2}" y="${y - 14}" text-anchor="middle">${gap.toFixed(0)} ft gap</text>`;
+  });
+  svg += `</svg>`;
+  const runs = f.df_run_seconds || [];
+  host.innerHTML = svg + (runs.length ? `<p class="note" style="margin:10px 4px 2px">How long each slot keeps its defence-or-forward label before swapping, on average: ${runs.map((v, i) => `slot ${i + 1} <b class="mono">${v.toFixed(1)} s</b>`).join(" · ")}.</p>` : "");
+}
+
+function renderAll() { renderHeader(); renderHeat(); renderRoles(); renderEvo(); renderSnaps(); renderForm(); renderShape(); renderCoach(); renderStats(); renderMethod(); drawFrame(); }
 
 fetch("data.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
   D = d; replayInit(); renderAll();
