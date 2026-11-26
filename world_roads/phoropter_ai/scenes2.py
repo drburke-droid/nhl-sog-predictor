@@ -3,6 +3,7 @@ import math
 import numpy as np
 from PIL import Image, ImageDraw
 import ui
+import phoropter_art as PA
 import chart as CH
 from ui import (W, H, BG, INK, INK2, MUTED, GOLD, RED, GREEN, CYAN, PANEL, CARD, LINE, text, rr, fmt_rx, fmt_d, smooth,
                 fade)
@@ -236,10 +237,10 @@ class Exam2(Section):
         # ---- top: titles and the hidden answer
         text(d, (80, 50), self.title, 44, INK, "Bold")
         text(d, (80, 108), self.subtitle, 26, MUTED, "Medium")
-        rr(d, [1390, 30, 1850, 150], 16, fill=CARD, outline=LINE, width=2)
-        text(d, (1410, 44), "HIDDEN FROM THE AI: TRUE Rx", 17, MUTED, "SemiBold")
-        text(d, (1410, 72), "R  " + fmt_rx(self.p["S"], self.p["C"], self.p["axis"]), 26, INK2, "SemiBold")
-        text(d, (1410, 106), "L  " + fmt_rx(self.p["S_os"], self.p["C_os"], self.p["axis_os"]), 26, INK2, "SemiBold")
+        rr(d, [1500, 30, 1850, 150], 16, fill=CARD, outline=LINE, width=2)
+        text(d, (1520, 44), "HIDDEN FROM THE AI: TRUE Rx", 17, MUTED, "SemiBold")
+        text(d, (1520, 72), "R  " + fmt_rx(self.p["S"], self.p["C"], self.p["axis"]), 26, INK2, "SemiBold")
+        text(d, (1520, 106), "L  " + fmt_rx(self.p["S_os"], self.p["C_os"], self.p["axis_os"]), 26, INK2, "SemiBold")
 
         # ---- right: phoropter and both readouts
         jcc = None
@@ -252,7 +253,8 @@ class Exam2(Section):
             elif st["dt"] < 2 * seg:
                 jcc = axc + off[1]
         occl = None if binm else (1 - cur)
-        phoropter2(d, 1300, 290, 0.74, [(x[2], x[1]) for x in lenses], occl, cur, jcc)
+        PA.draw(im, 1270, 286, 0.58, [tuple(x) for x in lenses], occluded=occl, cur=cur,
+                jcc=(cur_b, jcc) if jcc is not None else None, prism=(a == 24 and not st.get("done")))
         y0 = 440
         rr(d, [820, y0, 1780, y0 + 150], 18, fill=CARD, outline=LINE, width=2)
         for j, lab in enumerate(("SPHERE", "CYLINDER", "AXIS")):

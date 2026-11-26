@@ -6,6 +6,7 @@ import os, sys, json, math, subprocess
 import numpy as np
 from PIL import Image, ImageDraw
 import ui
+import phoropter_art as PA
 from ui import (W, H, FPS, BG, INK, INK2, MUTED, GOLD, RED, GREEN, CYAN, PANEL, CARD, LINE, text, rr, fmt_rx, fmt_d,
                 smooth, fade)
 from optics import to_pv, snellen, pv_dist, rx_error
@@ -210,9 +211,9 @@ class Exam(Section):
         # ---- top: titles and the hidden answer
         text(d, (80, 50), self.title, 44, INK, "Bold")
         text(d, (80, 108), self.subtitle, 26, MUTED, "Medium")
-        rr(d, [1390, 40, 1850, 132], 16, fill=CARD, outline=LINE, width=2)
-        text(d, (1410, 56), "HIDDEN FROM THE AI: TRUE Rx", 17, MUTED, "SemiBold")
-        text(d, (1410, 82), fmt_rx(self.p["S"], self.p["C"], self.p["axis"]), 32, INK2, "SemiBold")
+        rr(d, [1500, 40, 1850, 132], 16, fill=CARD, outline=LINE, width=2)
+        text(d, (1520, 56), "HIDDEN FROM THE AI: TRUE Rx", 17, MUTED, "SemiBold")
+        text(d, (1520, 82), fmt_rx(self.p["S"], self.p["C"], self.p["axis"]), 32, INK2, "SemiBold")
 
         # ---- right: phoropter and readout
         S, C, ax = (step["after"] if (a is not None and (a < 10 or a >= 15) and st.get("dt", 99) > 0.15)
@@ -226,7 +227,8 @@ class Exam(Section):
             elif dt < 2 * seg:
                 jcc = ax + off[1]
         RX = 1300
-        ui.phoropter(d, RX, 300, 0.78, ax, C, jcc=jcc)
+        PA.draw(im, 1270, 286, 0.58, [(S, C, ax), (0.0, 0.0, 180)], occluded=1, cur=0,
+                jcc=(0, jcc) if jcc is not None else None)
         y0 = 450
         rr(d, [820, y0, 1780, y0 + 128], 18, fill=CARD, outline=LINE, width=2)
         for i, (lab, val) in enumerate((("SPHERE", fmt_d(S)), ("CYLINDER", fmt_d(C, plus=False) if C < 0 else "0.00"),
@@ -382,13 +384,13 @@ class Hook(Section):
         im.paste(Image.fromarray(img), (CH_X, CH_Y))
         d = ImageDraw.Draw(im, "RGBA")
         S, C, ax = self.LENSES[k]
-        ui.phoropter(d, 1300, 260, 0.78, ax, C)
-        rr(d, [920, 410, 1680, 500], 16, fill=CARD, outline=LINE, width=2)
+        PA.draw(im, 1300, 262, 0.62, [(S, C, ax), (0.0, 0.0, 180)], occluded=1, cur=0)
+        rr(d, [920, 426, 1680, 516], 16, fill=CARD, outline=LINE, width=2)
         for i, (lab, val) in enumerate((("SPHERE", fmt_d(S)), ("CYLINDER", fmt_d(C, False) if C < 0 else "0.00"),
                                          ("AXIS", f"{ax:03d}\u00b0" if C < 0 else "\u2014"))):
             cx = 1046 + i * 254
-            text(d, (cx, 424), lab, 16, MUTED, "SemiBold", "ma")
-            text(d, (cx, 446), val, 36, INK, "SemiBold", "ma")
+            text(d, (cx, 440), lab, 16, MUTED, "SemiBold", "ma")
+            text(d, (cx, 462), val, 36, INK, "SemiBold", "ma")
         big_title(d, 1300, 600, "I gave an AI a phoropter.", 66, fade(t, 0.5, 99, 0.6, 0.1))
         big_title(d, 1300, 700, "It has never seen an eye, a lens,", 40, fade(t, 3.6, 99, 0.6, 0.1), INK2, "SemiBold")
         big_title(d, 1300, 752, "or an eye chart.", 40, fade(t, 3.6, 99, 0.6, 0.1), INK2, "SemiBold")
