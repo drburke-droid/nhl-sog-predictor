@@ -12,6 +12,7 @@ Thumbnails are in each folder's `thumbnails/`; titles, descriptions and tags alr
 | glasses_work_by_slowing_light_SHORT_68s.mp4 | vertical | 1:08 | Your glasses work by slowing light down (lenses, refraction, thin vs thick lens, the Mariana Trench) |
 | blur_adaptation_7m09s.mp4 | 16:9 | 7:09 | Blur adaptation. Copy: `copy/blur_adaptation_YOUTUBE.md`, thumbnails blur_adaptation_thumb_A/B/C |
 | blur_adaptation_we_didnt_start_the_fire_edition_7m16s.mp4 | 16:9 | 7:16 | Same film, "We Didn't Start the Fire" edition (pick one of the two). Copy: `copy/blur_adaptation_fire_edition_YOUTUBE.md`, thumbnails blur_adaptation_fire_thumb_A/B/C |
+| phoropter_ai_11m42s.mp4 | 16:9 | 11:42 | I gave an AI a phoropter: five attempts at teaching an AI subjective refraction on simulated patients, ending with the two-eye exam against the textbook and my own routine. Built by `world_roads/phoropter_ai/` (README, ACCURACY, RESULTS). Copy: `copy/phoropter_ai_YOUTUBE.md`, thumbnails phoropter_ai_thumb_A/B/C |
 
 Not here, because neither was saved to any repository: the BVD video (binocular vision dysfunction; AI-voice and
 no-voice versions plus Shorts, made with the neurogaze project) and the video of glasses lenses growing thicker up to -39D.
