@@ -164,15 +164,9 @@ def ppo_update(net, opt, data, args, n_mb, ent_coef):
             pg = -(torch.min(ratio * a, ratio.clamp(1 - args.clip, 1 + args.clip) * a) * mm).sum() / denom
             v = net.value(obs[mb])
             vf = 0.5 * ((v - ret[mb]) ** 2).mean()
-            # each head's entropy is averaged over the samples where it is a real choice
-            # (the puck head only matters for the carrier, ~1 skater in 10)
-            en = 0
-            for h, e in enumerate(ents):
-                if h == 1 and masks is not None:
-                    real = mm * (masks[mb].sum(-1) > 1).float()
-                    en = en + (e * real).sum() / real.sum().clamp(min=1.0)
-                else:
-                    en = en + (e * mm).sum() / denom
+            # entropy averaged over the same samples as the policy-gradient term, so each
+            # head's exploration bonus is on the same footing as its learning signal
+            en = sum((e * mm).sum() for e in ents) / denom
             loss = pg + args.vf_coef * vf - ent_coef * en
             opt.zero_grad()
             loss.backward()
