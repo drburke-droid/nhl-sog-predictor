@@ -380,7 +380,7 @@ def main():
                       active=torch.ones(rc.size, dtype=torch.bool))
         t1 = time.time()
         st_s = ppo_update(sk, opt_s, data_s, args, n_mb=8, ent_coef=args.ent)
-        st_g = ppo_update(gk, opt_g, data_g, args, n_mb=2, ent_coef=args.ent)
+        st_g = ppo_update(gk, opt_g, data_g, args, n_mb=8, ent_coef=args.ent)
         st_c = (ppo_update(co, opt_c, data_c, args, n_mb=2, ent_coef=args.ent_coach)
                 if steps >= args.coach_start else {"pg": 0.0, "vf": 0.0, "ent": 0.0, "kl": 0.0, "clip": 0.0})
         t_upd = time.time() - t1
