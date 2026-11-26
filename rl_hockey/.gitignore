@@ -3,3 +3,4 @@ runs/*/latest.pt
 runs/*/latest.pt.tmp
 runs/*/stdout.txt
 runs/*/analysis.json
+runs/*/log.jsonl
