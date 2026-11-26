@@ -13,6 +13,8 @@ Each outcome has a value in clinic points:
 and the chance of each outcome depends on the patient error (OUTCOME_P, interpolated linearly between the
 knots). These numbers are a plausible made-up scorecard, not measured data; see ACCURACY.md.
 
+If the exam runs past 15 minutes the patient walks out without glasses: -150.
+
 Chair time: every minute of the exam costs 4 points (what a minute of a 25-minute appointment earns), so
 the AI is paid to be quick as well as right. Action durations are in env3.SECS.
 
@@ -38,6 +40,7 @@ OUTCOME_P = np.array([            # rows: knots; columns: happy, annoyed, rechec
     [0.00, 0.00, 0.05, 0.95],
 ])
 POINTS_PER_MIN = 4.0
+WALKOUT = -150.0                  # the exam ran out of time (15 minutes): no glasses, a bad review
 SCALE = 100.0                     # reward = points / SCALE
 
 

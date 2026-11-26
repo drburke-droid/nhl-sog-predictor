@@ -315,16 +315,17 @@ class ClinicEnv(BinocularEnv):
         # end of exam
         timeout = (self.t >= self.t_max) | (self.secs >= self.secs_max)
         done = (a == RX) | timeout
-        if self.shaping:
-            phi1 = np.where(done, 0.0, -2.0 * self.err(self.cyl_weight).mean(1))
-            rew = rew + self.shaping * (self.gamma * phi1 - phi0)
+        if self.shaping:                                   # the mentor's "warmer / colder": closer lenses, a bonus
+            phi1 = -2.0 * self.err(self.cyl_weight).mean(1)
+            rew = rew + self.shaping * (phi1 - phi0)
         info = {}
         if done.any():
             idx = np.nonzero(done)[0]
             e = self.err()[idx]
             ept = clinic.patient_error(e[:, 0], e[:, 1])
-            pts = clinic.expected_points(ept)
-            rew[idx] += pts / clinic.SCALE - 0.3 * (a[idx] != RX)          # timed out: the patient leaves fed up
+            walked = a[idx] != RX                              # out of time: the patient walks out without glasses
+            pts = np.where(walked, clinic.WALKOUT, clinic.expected_points(ept))
+            rew[idx] += pts / clinic.SCALE
             E0, E1 = self.true_pv(0, idx), self.true_pv(1, idx)
             F0, F1 = self.lens_pv(0, idx), self.lens_pv(1, idx)
             zero = (np.zeros(len(idx)),) * 3
