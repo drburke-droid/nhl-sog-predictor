@@ -215,3 +215,4 @@
 [shape 0.00] up 1070/3051 steps 70.1M exams 1,046,648 52.3 min | train err 0.545 within 0.25 len 54.6 ent 0.51 pts +9.6 min 3.2
 [shape 0.00] up 1075/3051 steps 70.5M exams 1,052,731 52.6 min | train err 0.523 within 0.26 len 54.0 ent 0.51 pts +12.6 min 3.1 | EVAL pts +17.4 min 3.0 happy 0.42 | EVAL err 0.500 within 0.274 exact 0.177 steps 51.8 overminus_y 0.25
 [shape 0.00] up 1080/3051 steps 70.8M exams 1,058,821 52.8 min | train err 0.538 within 0.25 len 54.4 ent 0.52 pts +9.4 min 3.1
+[shape 0.00] up 1085/3051 steps 71.1M exams 1,064,938 53.0 min | train err 0.517 within 0.26 len 53.0 ent 0.51 pts +13.6 min 3.0
