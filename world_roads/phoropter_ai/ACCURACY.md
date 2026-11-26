@@ -171,6 +171,25 @@ the chart. On 20/40, a 0.25 D sphere step is hard to judge for most patients, so
 told it little, and by 1M exams it only shrank cylinders (24% of eyes within 0.25 D). It was stopped
 there. The scripts always read the chart first, so where the projector starts does not affect them.
 
+The restarted attempt 4 was stopped for good at 1,273,013 exams (23.6M steps). A second machine restart
+ended it, and by then the optometrist had chosen to try attempt 5 instead. It had learned to read the
+chart, ask sphere and cross-cylinder questions and test the left eye. But it had not found the
+binocular steps, and it scored 29% of eyes within 0.25 D on its check set (textbook 46%). The video
+shows it as that: the AI teaching itself the full exam, and falling short.
+
+**Attempt 5** (`runs/e`): watch the textbook, then practise.
+1. **Watching** (`imitate.py`, behaviour cloning). The two-eye textbook script examined 97,103
+   simulated patients, about 10M moves. The network saw exactly what the AI sees (never the true
+   prescription) and learned to predict the script's next move. It matched 99.2% of moves. On its own
+   it scored 45.5% of eyes within 0.25 D on the check set, the same as the textbook.
+2. **Practising** (`train.py --init`). Ordinary reinforcement learning on the fair end score, starting
+   from that network:
+   * no hints and no harder patients;
+   * the first 30 updates train only the value estimate;
+   * then learning rate 1e-4 and entropy bonus 0.002, for 70M steps.
+
+   Attempt 5 is "learned from the textbook, then improved on it", not "taught itself".
+
 ## 3. The scripted examiners
 
 They are scripts, not people. A skilled clinician adapts in ways they do not.

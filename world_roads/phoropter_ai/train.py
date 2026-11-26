@@ -40,6 +40,9 @@ def main():
     ap.add_argument("--flag", action="store_true", help="tell the AI whether there is an autorefractor reading")
     ap.add_argument("--letters", action="store_true", help="letter-by-letter projector chart with line buttons")
     ap.add_argument("--binocular", action="store_true", help="two eyes and binocular balance (env2.py)")
+    ap.add_argument("--init", default=None, help="start from these weights (e.g. the watched-the-textbook network)")
+    ap.add_argument("--critic_warmup", type=int, default=0,
+                    help="first N updates train only the value estimate, so the starting habits are not disturbed")
     ap.add_argument("--resume", default=None,
                     help="checkpoint to continue from (latest.pt has the optimizer; an exams_*.pt restarts it)")
     ap.add_argument("--t_max", type=int, default=60, help="moves before an exam times out")
@@ -77,6 +80,10 @@ def main():
     start_up = 1
     header = ["update", "steps", "exams", "hours", "shaping", "hard", "train_err", "train_within", "train_len",
               "entropy", "eval_err", "eval_within", "eval_exact", "eval_steps", "eval_over_minus_young"]
+    if args.init:
+        sd0 = torch.load(args.init, map_location="cpu", weights_only=False)
+        agent.load_state_dict({k: v.float() for k, v in sd0["model"].items()})
+        print(f"initialised from {args.init} {sd0.get('meta', {})}", flush=True)
     if args.resume:
         sd = torch.load(args.resume, map_location="cpu", weights_only=False)
         agent.load_state_dict({k: v.float() for k, v in sd["model"].items()})
@@ -172,6 +179,8 @@ def main():
                 vl = 0.5 * (agent.v(bo[i]).squeeze(-1) - bret[i]).pow(2).mean()
                 ent = d.entropy().mean()
                 loss = pl + 0.5 * vl - ent_c * ent
+                if up < start_up + args.critic_warmup:
+                    loss = 0.5 * vl                          # warm-up: only the value estimate learns
                 opt.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(agent.parameters(), 0.5)
