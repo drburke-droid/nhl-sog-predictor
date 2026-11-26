@@ -257,61 +257,79 @@ def sections():
         S["n_score"] = RS.Scoreboard("NO AUTOREFRACTOR: 5,000 PATIENTS", "The same patients, starting at plano.",
                                      rows_n, dur=14.0, note="Fair score. Exact: within half a click (0.13 D).")
         S["c_habits"] = habits(C3, "ATTEMPT 3: ITS HABITS", "AI, attempt 3", "c", facts("c"))
-    # ---------------- attempt 4: the real exam (two eyes, one line at a time, binocular balance)
-    has_d = all(os.path.exists(os.path.join(HERE, "data", f)) for f in ("results_d.json", "errors_d.npz",
-                                                                         "traces/d_ai.json", "traces/d_mine.json",
+    # ---------------- attempt 4: the real exam (two eyes, one line at a time, binocular balance); attempt 5
+    has_d = all(os.path.exists(os.path.join(HERE, "data", f)) for f in ("results_d.json", "traces/d_mine.json",
                                                                          "traces/d_textbook.json"))
+    has_e = all(os.path.exists(os.path.join(HERE, "data", f)) for f in ("results_e.json", "errors_e.npz",
+                                                                         "traces/e_ai.json"))
     if has_d:
         from scenes2 import Exam2
         D = results("d")
         MINE = (0x00, 0xA8, 0x88)
+        Dt, Dm = D["textbook"]["summary"], D["mine"]["summary"]
         S["d_title"] = Card("Attempt 4: the real exam", [
             (0.8, "Two eyes. One projected line at a time.", 32, INK2, "Medium"),
             (3.0, "How well a patient can judge blur depends on the letters: sphere is easiest near the smallest line "
                   "they can read, the cross-cylinder a couple of lines bigger.", 30, INK2, "Medium"),
             (7.6, "Behind the phoropter, a covered-up patient keeps focusing a little, so one-eye results drift toward "
-                  "minus. That is what binocular balancing is for.", 30, INK2, "Medium"),
-            (12.4, "Three examiners on the same patients: the textbook, my own routine, and a fresh AI.", 32, GOLD,
+                  "minus. That is what binocular balancing and a binocular plus check are for.", 30, INK2, "Medium"),
+            (12.6, "Examiners on the same patients: the textbook, my own routine, and a fresh AI.", 32, GOLD,
              "SemiBold")], 17.0, kicker="THE OPTOMETRIST\u2019S NOTES")
         tm = trace("d_mine")
         tm["who"] = "ME"
         S["d_mine"] = Exam2(tm, "MY ROUTINE", "Scripted exactly as I do it, on a new two-eyed patient", speed=0.3,
                             notes=notes("d_mine"))
-        ta = trace("d_ai")
-        S["d_exam"] = Exam2(ta, f"AI, ATTEMPT 4: AFTER {fmt_n(ta['meta']['exams'])} PRACTICE EXAMS",
-                            "The same patient", speed=0.3, notes=notes("d_ai"))
-        S["d_same"] = SamePatient([("Textbook script", trace("d_textbook"), RS.TB_ORANGE),
-                                   ("My routine", tm, MINE), ("AI, attempt 4", ta, RS.AI_BLUE)])
         xd, yd, shd = RS.load_curve(os.path.join(HERE, "runs", "d", "logs", "train.csv"))
         end_d = xd[np.argmax(shd <= 0.0)] if (shd <= 0).any() else xd[-1]
-        Dt, Dm = D["textbook"]["summary"], D["mine"]["summary"]
-        S["d_curve"] = RS.Curve("ATTEMPT 4: THE LEARNING CURVE", "Share of eyes within 0.25 D, 1,000 two-eyed check "
-                                "patients", [("AI", xd, yd, RS.AI_BLUE, 5)],
+        S["d_curve"] = RS.Curve("ATTEMPT 4: TEACHING ITSELF THE FULL EXAM", "Share of eyes within 0.25 D, 1,000 "
+                                "two-eyed check patients", [("AI", xd, yd, RS.AI_BLUE, 5)],
                                 [("Textbook script", Dt["within_025"], RS.TB_ORANGE),
                                  ("My routine", Dm["within_025"], MINE)],
-                                dur=12.0, draw_secs=7.0, shade=(xd[0], end_d, "TRAINING WHEELS FADING"))
+                                dur=12.0, draw_secs=7.0, shade=(xd[0], xd[-1], "TRAINING WHEELS STILL ON"),
+                                notes=[(8.0, 11.8, 2e5, "Reads the chart, asks questions, tests both eyes\u2026\n"
+                                        "but never found the binocular steps", 0.72)])
+    if has_d and has_e:
+        Ex = results("e")
+        S["e_title"] = Card("Attempt 5: watch the textbook first", [
+            (0.8, f"It watched the textbook script examine {fmt_n(trace('e_ai')['meta'].get('watched', 97103))} "
+                  "simulated patients and learned to copy its moves.", 32, INK2, "Medium"),
+            (4.6, "The copy was 99% faithful, and it scored just like the textbook.", 32, INK2, "Medium"),
+            (7.6, "Then it practised on its own, scored only on how close each final prescription was.", 32, GOLD,
+             "SemiBold")], 12.5, kicker="PRACTICE ROUND")
+        te = trace("e_ai")
+        S["e_exam"] = Exam2(te, f"AI, ATTEMPT 5: AFTER {fmt_n(te['meta']['exams'])} PRACTICE EXAMS",
+                            "Watched the textbook, then practised \u00b7 the same two-eyed patient", speed=0.3,
+                            notes=notes("e_ai"))
+        S["d_same"] = SamePatient([("Textbook script", trace("d_textbook"), RS.TB_ORANGE),
+                                   ("My routine", tm, MINE), ("AI, attempt 5", te, RS.AI_BLUE)])
+        xe, ye, _ = RS.load_curve(os.path.join(HERE, "runs", "e", "logs", "train.csv"))
+        S["e_curve"] = RS.Curve("ATTEMPT 5: PRACTISING AFTER WATCHING", "Share of eyes within 0.25 D, 1,000 two-eyed "
+                                "check patients", [("AI", xe, ye, RS.AI_BLUE, 5)],
+                                [("Textbook script", Dt["within_025"], RS.TB_ORANGE),
+                                 ("My routine", Dm["within_025"], MINE)], dur=12.0, draw_secs=7.0)
         rows_d = [("Autorefractor reading alone", D["autoref"]["summary"], RS.GREY, False),
                   ("Script: textbook", Dt, RS.TB_ORANGE, False),
                   ("Script: my routine", Dm, MINE, False),
-                  ("AI, attempt 4", D["ai"]["summary"], RS.AI_BLUE, True)]
+                  ("AI, attempt 4 (taught itself)", D["ai"]["summary"], RS.GREY, False),
+                  ("AI, attempt 5 (watched, then practised)", Ex["ai"]["summary"], RS.AI_BLUE, True)]
         S["d_score"] = RS.Scoreboard("5,000 TWO-EYED PATIENTS", "The full exam: both eyes, binocular balance, "
                                      "one projected line at a time.", rows_d, dur=15.0,
                                      note="Within 0.25 D and exact: per eye. Over-minused: eyes of patients under 40, "
                                           "at least 0.25 D too minus.")
-        ed = np.load(os.path.join(HERE, "data", "errors_d.npz"))
+        ee = np.load(os.path.join(HERE, "data", "errors_e.npz"))
         S["d_clouds"] = RS.ErrorClouds("WHERE THE ERRORS LAND", "Each dot is one eye of 5,000 two-eyed patients",
-                                       [("Textbook script", ed["textbook"], RS.TB_ORANGE, stat(ed["textbook"])),
-                                        ("My routine", ed["mine"], MINE, stat(ed["mine"])),
-                                        ("AI, attempt 4", ed["ai"], RS.AI_BLUE, stat(ed["ai"]))], dur=14.0,
+                                       [("Textbook script", ee["textbook"], RS.TB_ORANGE, stat(ee["textbook"])),
+                                        ("My routine", ee["mine"], MINE, stat(ee["mine"])),
+                                        ("AI, attempt 5", ee["ai"], RS.AI_BLUE, stat(ee["ai"]))], dur=14.0,
                                        note="Gold ring: 0.25 D. Bars: spherical-equivalent error (prescription minus "
                                             "truth); left of 0 = too much minus.")
-        S["d_habits"] = RS.Habits("ATTEMPT 4: ITS HABITS", "Each chip is one move",
-                                  [("AI, attempt 4: its most common exam", D["ai"]["habits"]["common_seq"],
-                                    f"{D['ai']['habits']['common_n']} of 5,000 exams went exactly like this",
+        S["e_habits"] = RS.Habits("ATTEMPT 5: WHAT PRACTICE CHANGED", "Each chip is one move",
+                                  [("AI, attempt 5: its most common exam", Ex["ai"]["habits"]["common_seq"][:60],
+                                    f"{Ex['ai']['habits']['common_n']} of 5,000 exams went exactly like this",
                                     RS.AI_BLUE),
-                                   ("My routine: a typical exam", D["mine"]["habits"]["common_seq"],
-                                    f"{D['mine']['habits']['common_n']} of 5,000 exams went exactly like this", MINE)],
-                                  facts("d"), dur=16.0, chip=CHIP2)
+                                   ("Textbook script: a typical exam", Ex["textbook"]["habits"]["common_seq"][:60],
+                                    "the routine it copied", RS.TB_ORANGE)],
+                                  facts("e"), dur=16.0, chip=CHIP2)
     S["outro"] = Card("The fine print", [
         (0.6, "Every patient here was simulated. The optics are real physics; the people are a model.", 34, INK2,
          "Medium"),
@@ -345,8 +363,8 @@ def facts(tag):
 
 ORDER = ["hook", "rules", "a_title", "a_exam0", "a_c1", "a_exam1", "a_c2", "a_exam2", "a_c3", "a_exam3", "a_curve",
          "a_score", "a_habits", "a_twist", "vector", "a_rescore", "b_title", "b_clouds", "b_why", "c_title", "c_exam",
-         "c_curve", "c_score", "c_clouds", "n_title", "n_exam", "n_score", "c_habits", "d_title", "d_mine", "d_exam",
-         "d_same", "d_curve", "d_score", "d_clouds", "d_habits", "outro"]
+         "c_curve", "c_score", "c_clouds", "n_title", "n_exam", "n_score", "c_habits", "d_title", "d_mine", "d_curve",
+         "e_title", "e_exam", "d_same", "e_curve", "d_score", "d_clouds", "e_habits", "outro"]
 
 
 def order():
@@ -435,6 +453,9 @@ def assemble():
               (g("b_why"), 0.3), (g("c_title", total), 0.45), (g("c_exam", total), 0.4), (g("c_curve", total), 0.7),
               (g("c_score", total), 0.8), (g("c_clouds", total), 0.65), (g("n_title", total), 0.45),
               (g("n_exam", total), 0.4), (g("n_score", total), 0.75), (g("c_habits", total), 0.55),
+              (g("d_title", total), 0.4), (g("d_mine", total), 0.35), (g("d_curve", total), 0.45),
+              (g("e_title", total), 0.5), (g("e_exam", total), 0.4), (g("e_curve", total), 0.7),
+              (g("d_score", total), 0.85), (g("e_habits", total), 0.6),
               (g("outro"), 0.45), (total, 0.0)]
     energy = sorted(energy)
     impacts = [(g("a_curve"), 0.6)] + ([(g("c_curve"), 0.8), (g("n_score"), 0.6)] if "c_curve" in O else [])

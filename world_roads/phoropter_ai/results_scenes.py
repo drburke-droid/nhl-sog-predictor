@@ -130,11 +130,22 @@ class Curve(Section):
             text(d, (x, Y0 + 16), lab, 20, MUTED, "Medium", "ma", a)
         text(d, ((X0 + X1) / 2, Y0 + 56), "PRACTICE EXAMS (log scale)", 20, MUTED, "SemiBold", "ma", a)
         text(d, (X0 - 16, Y1 - 48), "WITHIN 0.25 D", 20, MUTED, "SemiBold", "ra", a)
-        for lab, v, col in self.refs:
-            _, y = self.px(1, v)
+        # reference lines; labels nudged apart so close values never overlap
+        ys = [self.px(1, v)[1] for _, v, _ in self.refs]
+        order = sorted(range(len(ys)), key=lambda i: ys[i])
+        ly = {}
+        for j in order:
+            y = ys[j]
+            prev = [ly[i] for i in ly]
+            while any(abs(y - q) < 30 for q in prev):
+                y += 30
+            ly[j] = y
+        for j, (lab, v, col) in enumerate(self.refs):
+            y = ys[j]
             for xx in range(X0, X1, 22):
                 d.line([(xx, y), (min(xx + 12, X1), y)], fill=col + (int(220 * a),), width=3)
-            text(d, (X1 + 14, y), f"{lab} {pct(v)}", 22, INK2, "SemiBold", "lm", a)
+            d.line([(X1 + 4, y), (X1 + 10, ly[j])], fill=col + (int(220 * a),), width=2)
+            text(d, (X1 + 14, ly[j]), f"{lab} {pct(v)}", 22, INK2, "SemiBold", "lm", a)
         u = smooth((t - self.draw_from) / self.draw_secs)
         for k, (lab, xs, ys, col, wid) in enumerate(self.series):
             lx = np.log10(np.maximum(xs, 10 ** self.lx0))

@@ -62,13 +62,13 @@ def main_d():
         tr = record2(**kw)
         json.dump(tr, open(os.path.join(OUT, f"{nm}.json"), "w"))
         print(f"== {nm}: {len(tr['steps'])} moves, errors {tr['steps'][-1]['err']}")
-    p = os.path.join(HERE, "runs", "d", "ckpt", "final.pt")
+    p = os.path.join(HERE, "runs", "e", "ckpt", "final.pt")
     if os.path.exists(p):
         ag, m = load(p)
         tr = record2(agent=ag)
         tr["meta"] = m
-        json.dump(tr, open(os.path.join(OUT, "d_ai.json"), "w"))
-        print(f"== d_ai: {len(tr['steps'])} moves, errors {tr['steps'][-1]['err']}")
+        json.dump(tr, open(os.path.join(OUT, "e_ai.json"), "w"))
+        print(f"== e_ai: {len(tr['steps'])} moves, errors {tr['steps'][-1]['err']}")
 
 
 if __name__ == "__main__":
