@@ -485,6 +485,132 @@ def mmss(m):
     return f"{m_}:{s_:02d}"
 
 
+# ======================================================================== step-by-step, side by side
+ACT_KIND = {}
+for _a in (E3.SP25, E3.SM25, E3.SP100, E3.SM100, E3.OU_P, E3.OU_M):
+    ACT_KIND[_a] = "sphere"
+ACT_KIND[E3.R_P] = ACT_KIND[E3.L_P] = "balance"
+for _a in (E3.CMP_P, E3.CMP_M):
+    ACT_KIND[_a] = "sphere?"
+for _a in (E3.READ, E3.READ_LINE):
+    ACT_KIND[_a] = "chart"
+for _a in (E3.CYL_MORE, E3.CYL_LESS, E3.AXP2, E3.AXM2, E3.AXP5, E3.AXM5, E3.AXP15, E3.AXM15, E3.JCC_AX, E3.JCC_PW):
+    ACT_KIND[_a] = "cyl"
+ACT_KIND[E3.BALANCE] = "balance"
+
+
+def summarize(tr):
+    """Turn an exam into a short list of steps per stage: runs of sphere work, chart work, cylinder work and
+    balancing, with what changed. Returns [(stage, [(kind, text)])]."""
+    stages = [[], [], []]
+    cur, run = 0, []
+
+    def flush(stage, run):
+        if not run:
+            return
+        kinds = [ACT_KIND.get(s["a"]) for s in run]
+        k0 = run[0]
+        b, a = k0["before"], run[-1]["after"]
+        e = min(stage, 1)
+        n = len(run)
+        nq = sum(1 for s in run if s["a"] in (E3.READ, E3.READ_LINE, E3.CMP_P, E3.CMP_M, E3.JCC_AX, E3.JCC_PW, E3.BALANCE))
+        if "cyl" in kinds:
+            kind = "cyl"
+            if stage < 2:
+                txt = (f"Cylinder: {nq} cross-cyl question{'s' if nq != 1 else ''} → "
+                       + (fmt_rx(*a[e]) if a[e][1] < 0 else "no cylinder"))
+            else:
+                txt = "Cylinder"
+        elif "balance" in kinds:
+            kind = "balance"
+            nb = sum(1 for s in run if s["a"] == E3.BALANCE)
+            if nb:
+                txt = f"Balance: {nb} prism question{'s' if nb != 1 else ''} → R {ui.fmt_d(a[0][0])}, L {ui.fmt_d(a[1][0])}"
+            else:
+                txt = f"+0.25 to one eye, no prism → R {ui.fmt_d(a[0][0])}, L {ui.fmt_d(a[1][0])}"
+        else:
+            nchart = sum(1 for s in run if s["a"] in (E3.READ, E3.READ_LINE))
+            ncmp = sum(1 for s in run if s["a"] in (E3.CMP_P, E3.CMP_M))
+            parts = []
+            if nchart:
+                parts.append(f"{nchart} chart reading{'s' if nchart != 1 else ''}")
+            if ncmp:
+                parts.append(f"{ncmp} “1 or 2?”")
+            kind = "sphere"
+            if stage < 2:
+                txt = f"Sphere: {' + '.join(parts) or 'lens clicks'} → {ui.fmt_d(a[e][0])}"
+            else:
+                txt = f"Both eyes: {' + '.join(parts) or 'lens clicks'} → R {ui.fmt_d(a[0][0])}, L {ui.fmt_d(a[1][0])}"
+        stages[stage].append((kind, txt, n))
+
+    for s in tr["steps"]:
+        if s["a"] in (E3.NEXT, E3.RX):
+            flush(cur, run)
+            run = []
+            cur = min(cur + 1, 2) if s["a"] == E3.NEXT else cur
+            continue
+        k = ACT_KIND.get(s["a"])
+        prev = [ACT_KIND.get(x["a"]) for x in run]
+        rtype = "cyl" if "cyl" in prev else ("balance" if "balance" in prev else ("sphere" if prev else None))
+        brk = ((rtype == "cyl" and k in ("sphere?", "chart")) or (rtype == "sphere" and k in ("cyl", "balance")) or
+               (rtype == "balance" and k in ("sphere?", "chart")))
+        if run and brk:
+            flush(cur, run)
+            run = []
+        run.append(s)
+    flush(cur, run)
+    return stages
+
+
+class SideBySide(Section):
+    """What the textbook does and what the AI did, stage by stage, for the same patient."""
+
+    def __init__(self, ai_trace, tb_trace, notes=(), dur=40.0):
+        self.ai, self.tb = summarize(ai_trace), summarize(tb_trace)
+        self.ai_tr, self.tb_tr = ai_trace, tb_trace
+        self.notes, self.dur = notes, dur
+
+    def col(self, d, x, stages, col, t0, t, title, tr):
+        a0 = fade(t, t0, 999, 0.5, 0.1)
+        text(d, (x, 150), title, 30, col, "Bold", a=a0)
+        last = tr["steps"][-1]
+        text(d, (x, 192), f"{len(tr['steps'])} buttons · {mmss(last['secs'] / 60)}", 21, MUTED, "Medium", a=a0)
+        y = 236
+        k = 0
+        for si, (lab, items) in enumerate(zip(("RIGHT EYE", "LEFT EYE", "BOTH EYES"), stages)):
+            a1 = fade(t, t0 + 0.4 + 2.0 * si, 999, 0.5, 0.1)
+            text(d, (x, y), lab, 19, MUTED, "Bold", a=a1)
+            y += 32
+            for kind, txt, n in items:
+                c = {"sphere": CU.SPHERE, "cyl": CU.JCC, "balance": CU.PRISM}[kind]
+                rr(d, [x, y + 4, x + 8, y + 30], 3, fill=tuple(c) + (int(255 * a1),))
+                text(d, (x + 22, y + 2), txt, 22, INK, "Medium", a=a1)
+                y += 36
+                k += 1
+            if not items:
+                text(d, (x + 22, y + 2), "skipped", 22, MUTED, "Medium", a=a1)
+                y += 36
+            y += 12
+        return y
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        text(d, (60, 30), "STEP BY STEP: THE TEXTBOOK AND THE AI, SAME PATIENT", 36, INK, "Bold", a=a)
+        text(d, (60, 82), "Blue: sphere and chart work.  Red: cylinder (cross-cylinder, axis, power).  Orange: balancing "
+                          "the two eyes.", 22, MUTED, "Medium", a=a)
+        y1 = self.col(d, 60, self.tb, TB_COL, 0.6, t, "THE TEXTBOOK", self.tb_tr)
+        y2 = self.col(d, 980, self.ai, AI_COL, 6.5, t, "THE AI", self.ai_tr)
+        y = max(y1, y2) + 10
+        for t0, s in self.notes:
+            al = fade(t, t0, 999, 0.6, 0.1) * a
+            if al <= 0:
+                continue
+            text(d, (64, y + 2), "•", 26, GOLD, "Bold", a=al)
+            y = para(d, 96, y, s, 24, 1760, GOLD, "SemiBold", al, lh=1.3) + 10
+        return fade_frame(im, a)
+
+
 # ======================================================================== the film
 def load(name):
     return json.load(open(os.path.join(DATA, name)))
@@ -532,6 +658,7 @@ def sections():
     S["tb_exam"] = Exam3(tb_tr, "THE TEXTBOOK", "the same patient, the textbook script", who="TEXTBOOK",
                          show_ai_probs=False, panel_title="THE SAME BUTTONS", speed=0.45,
                          notes=NOTES.get("tb_exam", {}), outro=7.0)
+    S["sidebyside"] = SideBySide(ai_tr, tb_tr, NOTES.get("sidebyside", []))
     S["timelines"] = Timelines(ai_tr, tb_tr, NOTES.get("timelines", []))
     S["habits"] = HabitsTable(R, NOTES.get("habits", []))
     S["results"] = Results3(R)
@@ -549,7 +676,7 @@ def sections():
 NOTES = {}
 STAGE_PICKS = []
 ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "grids",
-         "ai_title", "ai_exam", "tb_card", "tb_exam", "timelines", "habits", "results", "real", "outro"]
+         "ai_title", "ai_exam", "tb_card", "tb_exam", "sidebyside", "timelines", "habits", "results", "real", "outro"]
 
 
 def order():
@@ -651,3 +778,4 @@ if __name__ == "__main__":
         assemble()
     elif cmd == "assemble":
         assemble()
+
