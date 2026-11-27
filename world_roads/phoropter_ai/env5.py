@@ -9,7 +9,8 @@ Like env3.py (both eyes start at plano, the axis dial wherever the last patient 
 The cross-cylinder refinements are still there: "cylinder axis: which way?" and "cylinder power: more or less?".
 * "It's still blurry": before they leave, the patient reads the chart with each eye through the new glasses. If
   either eye sees clearly worse than it could (about two lines), they say so ("my left eye is still blurry") and
-  the exam goes on: Prescribe doesn't end it. (env.complain = False turns this off.)
+  the exam goes on: Prescribe doesn't end it. Being told "we're done" while it is still blurry costs the
+  patient's confidence: 20 points each time, as well as the 10 seconds. (env.complain = False turns this off.)
 * The occluder cycles: right eye, left eye, both eyes, then back to the right eye, so either eye can be redone.
 
 The patient's smile (optional, env.smile = weight): when the letters get clearer for either eye (the average
@@ -64,6 +65,7 @@ SECS_MAX = 900.0                                              # 15 minutes: the 
 BLURRY = 0.2                                                  # "still blurry": two lines worse than the eye could see
 BLUR_SD = 0.05                                                # (patients differ in what they notice)
 SECS_COMPLAIN = 10.0                                          # reading with each eye, and the complaint
+COMPLAIN_PTS = 20.0                                           # ...and the patient's confidence in the examiner
 H3 = 16
 F3 = N_ACT3 + 6 + 3 + 5
 N_OBS3 = 8 + 14 + 10 + 3 * len(QS) * 11 + 8 + 3 + H3 * F3 + N_ACT3
@@ -100,7 +102,7 @@ class ClinicEnv(BinocularEnv):
         nq = len(QS)
         self.lq_ans, self.lq_on, self.lq_l, self.lq_t = z(3, nq, 4), z(3, nq), z(3, nq, 5), z(3, nq)
         self.bal_ans, self.bal_on, self.bal_m, self.bal_t = z(4), z(), z(2), z()
-        self.comp_on, self.comp_t = z(2), z()
+        self.comp_on, self.comp_t, self.n_comp = z(2), z(), z()
         self.complain = True
         self.best_va, self.best_on, self.best_l = z(2), z(2), z(2, 5)
         self.start_pv = z(2, 3)
@@ -131,7 +133,7 @@ class ClinicEnv(BinocularEnv):
         self.hist_a[idx] = -1
         for arr in (self.hist_r, self.hist_m, self.hist_l, self.lq_ans, self.lq_on, self.lq_l, self.lq_t, self.bal_ans,
                     self.bal_on, self.bal_m, self.bal_t, self.best_va, self.best_on, self.best_l, self.start_pv,
-                    self.comp_on, self.comp_t):
+                    self.comp_on, self.comp_t, self.n_comp):
             arr[idx] = 0
 
     def clarity(self):
@@ -368,7 +370,8 @@ class ClinicEnv(BinocularEnv):
         refused = blurry.any(1)
         if refused.any():
             self.secs[refused] += SECS_COMPLAIN
-            rew = rew - refused * SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 / clinic.SCALE
+            rew = rew - refused * (SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 + COMPLAIN_PTS) / clinic.SCALE
+            self.n_comp[refused] += 1
             resp[refused, 2:4] = blurry[refused]
             code = np.where(refused, np.where(blurry[:, 0] & blurry[:, 1], 9, np.where(blurry[:, 0], 7, 8)), code)
             self.comp_on[refused] = blurry[refused]
@@ -428,12 +431,14 @@ class ClinicEnv(BinocularEnv):
             ept = clinic.patient_error(e[:, 0], e[:, 1])
             walked = ~accepted[idx]                            # out of time: the patient walks out without glasses
             pts = np.where(walked, clinic.WALKOUT, clinic.expected_points(ept))
-            rew[idx] += pts / clinic.SCALE
+            rew[idx] += pts / clinic.SCALE                     # (complaints were charged when they happened)
+            pts = pts - COMPLAIN_PTS * self.n_comp[idx]
             E0, E1 = self.true_pv(0, idx), self.true_pv(1, idx)
             F0, F1 = self.lens_pv(0, idx), self.lens_pv(1, idx)
             zero = (np.zeros(len(idx)),) * 3
             pr = clinic.outcome_probs(ept)
             info = dict(idx=idx, err=e[:, 0], err_os=e[:, 1], e_pt=ept, points=pts, secs=self.secs[idx].copy(),
+                        complaints=self.n_comp[idx].copy(),
                         p_happy=pr[:, 0], p_annoyed=pr[:, 1], p_recheck=pr[:, 2], p_review=pr[:, 3],
                         phase_end=self.phase[idx].astype(float), timeout=timeout[idx].astype(float),
                         steps=self.t[idx].copy(), dM=F0[0] - E0[0], dM_os=F1[0] - E1[0], age=self.P["age"][idx].copy(),
