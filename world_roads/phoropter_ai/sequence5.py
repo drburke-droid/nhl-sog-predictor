@@ -72,9 +72,10 @@ def steps_of(tr):
                 cur["n"] += 1
             continue
         # merge rules: turning the axis belongs to an axis refinement; cylinder clicks to a power refinement or a
-        # check; sphere quarter steps inside a power refinement keep the spherical equivalent
+        # check; sphere quarter steps (clicks, no question) inside a power refinement or a spin keep the spherical
+        # equivalent
         if cur is not None:
-            if (cur["kind"] == "axis" and k == "turn") or (cur["kind"] == "power" and k in ("cyl", "sph_fine")
+            if (cur["kind"] == "axis" and k == "turn") or (cur["kind"] in ("power", "spin") and k in ("cyl", "sph_fine")
                                                           and a not in (E5.READ, E5.READ_LINE, E5.CMP_P, E5.CMP_M)) \
                     or (cur["kind"] == "chk" and k == "cyl") or (cur["kind"] == "spin" and k == "turn") \
                     or (cur["kind"] == "sph_big" and a in (E5.READ, E5.READ_LINE)):
@@ -117,12 +118,13 @@ def steps_of(tr):
 
 
 def tidy(out):
-    """Readability merges: a one- or two-click axis turn right before adding cylinder belongs to it; spin and
-    cylinder-power questions alternating (two rounds or more) become one row."""
+    """Readability merges: an axis turn right before adding cylinder belongs to it (one or two clicks, or any number
+    while there is no cylinder in, when turning the dial does nothing); spin and cylinder-power questions
+    alternating (two rounds or more) become one row."""
     res = []
     for st in out:
-        if res and res[-1]["kind"] == "turn" and res[-1]["n"] <= 2 and st["kind"] == "cyl" \
-                and res[-1]["visit"] == st["visit"]:
+        if res and res[-1]["kind"] == "turn" and st["kind"] == "cyl" and res[-1]["visit"] == st["visit"] and \
+                (res[-1]["n"] <= 2 or res[-1]["before"][min(st["stage"], 1)][1] == 0):
             prev = res.pop()
             st = dict(st, n=st["n"] + prev["n"], acts=prev["acts"] + st["acts"], before=prev["before"])
         res.append(st)

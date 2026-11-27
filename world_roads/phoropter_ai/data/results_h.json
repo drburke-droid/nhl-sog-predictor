@@ -1,200 +1,250 @@
 {
  "meta": {
-  "test_patients": 200,
+  "test_patients": 5000,
   "seed": 2026,
   "start": "plano",
-  "exams": 1000094,
-  "steps": 55967744,
-  "ckpt": "exams_1000094.pt"
+  "exams": 1812949,
+  "steps": 117964800,
+  "ckpt": "final.pt"
  },
  "plano": {
   "summary": {
-   "exams": 200,
-   "eyes": 400,
-   "mean_err": 1.9007866927287902,
-   "within_025": 0.01,
-   "exact": 0.005,
-   "both_within": 0.0,
-   "steps": 60.31,
-   "over_minus_young": 0.3103448275862069,
-   "over_plus": 0.535,
-   "start_within_025": 0.01,
-   "points": -125.57153913689658,
-   "minutes": 9.993333333333334,
-   "happy": 0.02934204200967611,
-   "annoyed": 0.07552028833704325,
-   "recheck": 0.24640219143462277,
-   "review": 0.6487354782186577,
-   "timeout": 0.65,
-   "e_pt": 1.9536606777183296,
-   "net": -165.5448724702299,
-   "se_within_025": 0.1025,
-   "se_within_050": 0.1975,
-   "cyl_within_025": 0.37,
-   "vec_within_025": 0.01,
-   "vec_within_050": 0.075,
-   "mean_dM": 0.4928125
+   "exams": 5000,
+   "eyes": 10000,
+   "mean_err": 1.9131188043767149,
+   "within_025": 0.0282,
+   "exact": 0.0095,
+   "both_within": 0.014,
+   "steps": 1.0,
+   "over_minus_young": 0.29867761057911535,
+   "over_plus": 0.5462,
+   "start_within_025": 0.0282,
+   "points": -107.42469643873982,
+   "minutes": 0.0,
+   "happy": 0.0463644932103858,
+   "annoyed": 0.08042101156096254,
+   "recheck": 0.2358342596812924,
+   "review": 0.6373802355473592,
+   "timeout": 0.0,
+   "e_pt": 1.970017801113977,
+   "net": -107.42469643873982,
+   "se_within_025": 0.1207,
+   "se_within_050": 0.21,
+   "cyl_within_025": 0.4149,
+   "vec_within_025": 0.0282,
+   "vec_within_050": 0.0985,
+   "mean_dM": 0.4599875
   },
   "outcomes": [
-   6,
-   9,
-   28,
-   27,
-   130
+   228,
+   396,
+   1184,
+   3192,
+   0
   ],
   "orient": {
    "wtr_within": 0.0,
    "atr_within": 0.0,
    "obl_within": 0.0
-  }
+  },
+  "complaints": 0.0,
+  "complaints_any": 0.0,
+  "walkouts": 0.0
  },
  "textbook": {
   "summary": {
-   "exams": 200,
-   "eyes": 400,
-   "mean_err": 0.39256850882872724,
-   "within_025": 0.42,
-   "exact": 0.315,
-   "both_within": 0.235,
-   "steps": 156.58,
-   "over_minus_young": 0.5344827586206896,
-   "over_plus": 0.2,
-   "start_within_025": 0.01,
-   "points": 28.663055618280882,
-   "minutes": 9.389916666666666,
-   "happy": 0.5295352024494736,
-   "annoyed": 0.2256666689231167,
-   "recheck": 0.1437970435755605,
-   "review": 0.1010010850518492,
-   "timeout": 0.045,
-   "e_pt": 0.47510269220957146,
-   "net": -8.896611048385783,
-   "se_within_025": 0.7275,
-   "se_within_050": 0.8525,
-   "cyl_within_025": 0.8075,
-   "vec_within_025": 0.42,
-   "vec_within_050": 0.76,
-   "mean_dM": -0.1578125
+   "exams": 5000,
+   "eyes": 10000,
+   "mean_err": 0.37585276030337655,
+   "within_025": 0.4291,
+   "exact": 0.3283,
+   "both_within": 0.267,
+   "steps": 155.691,
+   "over_minus_young": 0.4639762881896945,
+   "over_plus": 0.1918,
+   "start_within_025": 0.0282,
+   "points": 34.11429822447634,
+   "minutes": 9.315343333333335,
+   "happy": 0.5595445341114249,
+   "annoyed": 0.2247860193195112,
+   "recheck": 0.13209885850027436,
+   "review": 0.08357058806878954,
+   "timeout": 0.0528,
+   "e_pt": 0.4527124297053211,
+   "net": -3.1470751088569955,
+   "se_within_025": 0.7455,
+   "se_within_050": 0.8736,
+   "cyl_within_025": 0.82,
+   "vec_within_025": 0.4291,
+   "vec_within_050": 0.7766,
+   "mean_dM": -0.1192375
   },
   "outcomes": [
-   114,
-   34,
-   26,
-   17,
-   9
+   2757,
+   1071,
+   561,
+   347,
+   264
   ],
   "orient": {
-   "wtr_within": 0.32222222222222224,
-   "atr_within": 0.29310344827586204,
-   "obl_within": 0.375
+   "wtr_within": 0.31459040232670865,
+   "atr_within": 0.3236111111111111,
+   "obl_within": 0.3333333333333333
   },
+  "complaints": 0.1244,
+  "complaints_any": 0.1078,
+  "walkouts": 0.0528,
   "habits": {
    "mean_count": {
-    "sphere lens": 71.015,
+    "sphere lens": 71.2108,
     "sphere 1-or-2": 0.0,
-    "chart reading": 50.145,
-    "line size": 5.2,
-    "cylinder": 6.7,
-    "axis turns": 3.17,
-    "astigmatism check": 2.44,
-    "check 180/90": 2.03,
-    "check 45/135": 0.41,
+    "chart reading": 49.8138,
+    "line size": 5.1278,
+    "cylinder": 6.408,
+    "axis turns": 3.1836,
+    "astigmatism check": 2.4232,
+    "check 180/90": 2.0286,
+    "check 45/135": 0.3946,
     "spin": 0.0,
-    "cyl axis (cross-cyl)": 5.085,
-    "cyl power (cross-cyl)": 6.93,
-    "balance": 2.47,
-    "next eye": 2.34
+    "cyl axis (cross-cyl)": 5.0684,
+    "cyl power (cross-cyl)": 6.6648,
+    "balance": 2.3908,
+    "next eye": 2.3282
    },
    "used_pct": {
     "sphere lens": 1.0,
     "sphere 1-or-2": 0.0,
     "chart reading": 1.0,
     "line size": 1.0,
-    "cylinder": 0.975,
-    "axis turns": 0.8,
+    "cylinder": 0.9596,
+    "axis turns": 0.807,
     "astigmatism check": 1.0,
     "check 180/90": 1.0,
-    "check 45/135": 0.32,
+    "check 45/135": 0.301,
     "spin": 0.0,
-    "cyl axis (cross-cyl)": 0.975,
-    "cyl power (cross-cyl)": 0.975,
+    "cyl axis (cross-cyl)": 0.9596,
+    "cyl power (cross-cyl)": 0.9596,
     "balance": 1.0,
     "next eye": 1.0
    },
    "stage_buttons": [
-    59.5,
-    61.735,
-    35.345
+    63.7398,
+    63.8544,
+    28.0968
    ],
    "stage_minutes": [
-    3.6010833333333334,
-    3.7625,
-    2.0046666666666666
+    3.85282,
+    3.860606666666667,
+    1.5811833333333332
    ],
    "first_cyl_step": {
     "chk": 1.0
    },
+   "visit_orders": [
+    [
+     "R L B",
+     0.8922
+    ],
+    [
+     "R L B R B",
+     0.036
+    ],
+    [
+     "R L B L B",
+     0.0348
+    ],
+    [
+     "R L B R L",
+     0.0094
+    ],
+    [
+     "R L B R L B",
+     0.006
+    ],
+    [
+     "R L B R B R",
+     0.0042
+    ],
+    [
+     "R L B L",
+     0.004
+    ],
+    [
+     "R L B R",
+     0.0034
+    ]
+   ],
+   "top_exams": [
+    [
+     "R: sph_fine > sph_big > chk > cyl > power > axis > turn | L: sph_fine > sph_big > chk > cyl > power > axis > turn | B: ou > balance",
+     0.4246
+    ],
+    [
+     "R: sph_fine > sph_big > chk > cyl > power > axis | L: sph_fine > sph_big > chk > cyl > power > axis > turn | B: ou > balance",
+     0.113
+    ],
+    [
+     "R: sph_fine > sph_big > chk > cyl > power > axis > turn | L: sph_fine > sph_big > chk > cyl > power > axis | B: ou > balance",
+     0.109
+    ],
+    [
+     "R: sph_fine > sph_big > chk > cyl > power > axis | L: sph_fine > sph_big > chk > cyl > power > axis | B: ou > balance",
+     0.0788
+    ],
+    [
+     "R: sph_fine > sph_big > chk > cyl > power > axis > turn | L: sph_fine > sph_big > chk | B: ou > balance",
+     0.0398
+    ],
+    [
+     "R: sph_fine > sph_big > chk | L: sph_fine > sph_big > chk | B: ou > balance",
+     0.0392
+    ],
+    [
+     "R: sph_fine > sph_big > chk > cyl > power > axis | L: sph_fine > sph_big > chk | B: ou > balance",
+     0.0382
+    ],
+    [
+     "R: sph_fine > sph_big > chk | L: sph_fine > sph_big > chk > cyl > power > axis > turn | B: ou > balance",
+     0.0254
+    ]
+   ],
    "top_patterns": [
     [
      [
       "sph_fine > sph_big > chk > cyl > power > axis > turn",
-      0.625
+      0.6522
      ],
      [
       "sph_fine > sph_big > chk > cyl > power > axis",
-      0.31
+      0.2546
      ],
      [
       "sph_fine > sph_big > chk",
-      0.065
+      0.0932
      ]
     ],
     [
      [
       "sph_fine > sph_big > chk > cyl > power > axis > turn",
-      0.61
+      0.6414
      ],
      [
       "sph_fine > sph_big > chk > cyl > power > axis",
-      0.265
+      0.2348
      ],
      [
       "sph_fine > sph_big > chk",
-      0.125
+      0.1236
+     ],
+     [
+      "sph_fine > sph_big > chk > cyl > power",
+      0.0002
      ]
     ],
     [
      [
       "ou > balance",
-      0.895
-     ],
-     [
-      "ou > balance > sph_big > power > cyl > axis > turn",
-      0.02
-     ],
-     [
-      "ou > balance > sph_big > power > cyl > axis",
-      0.02
-     ],
-     [
-      "ou > balance > sph_big > power > axis > turn",
-      0.015
-     ],
-     [
-      "ou > balance > sph_big > chk",
-      0.01
-     ],
-     [
-      "ou > balance > sph_big > chk > cyl > power > axis",
-      0.01
-     ],
-     [
-      "ou > balance > sph_big > axis > power > cyl > turn",
-      0.005
-     ],
-     [
-      "ou > balance > sph_big > power > axis",
-      0.005
+      1.0
      ]
     ]
    ]
@@ -209,68 +259,71 @@
  },
  "ai": {
   "summary": {
-   "exams": 200,
-   "eyes": 400,
-   "mean_err": 0.2788867774676128,
-   "within_025": 0.375,
-   "exact": 0.23,
-   "both_within": 0.15,
-   "steps": 74.49,
-   "over_minus_young": 0.3505747126436782,
-   "over_plus": 0.215,
-   "start_within_025": 0.01,
-   "points": 58.504104995644596,
-   "minutes": 3.1646666666666667,
-   "happy": 0.6018301275367074,
-   "annoyed": 0.2831617535845822,
-   "recheck": 0.10110653523204234,
-   "review": 0.013901583646668133,
-   "timeout": 0.0,
-   "e_pt": 0.31969063412056103,
-   "net": 45.84543832897793,
-   "se_within_025": 0.875,
-   "se_within_050": 0.97,
-   "cyl_within_025": 0.74,
-   "vec_within_025": 0.375,
-   "vec_within_050": 0.8725,
-   "mean_dM": -0.0109375
+   "exams": 5000,
+   "eyes": 10000,
+   "mean_err": 0.2654488127148874,
+   "within_025": 0.4608,
+   "exact": 0.2965,
+   "both_within": 0.2422,
+   "steps": 79.3608,
+   "over_minus_young": 0.3059735522115823,
+   "over_plus": 0.1984,
+   "start_within_025": 0.0282,
+   "points": 63.796802418838695,
+   "minutes": 3.2290966666666665,
+   "happy": 0.6502508787985811,
+   "annoyed": 0.2556614582301297,
+   "recheck": 0.07478710113803375,
+   "review": 0.019300561833255462,
+   "timeout": 0.0024,
+   "e_pt": 0.30989144576804806,
+   "net": 50.88041575217203,
+   "se_within_025": 0.9059,
+   "se_within_050": 0.9773,
+   "cyl_within_025": 0.8064,
+   "vec_within_025": 0.4608,
+   "vec_within_050": 0.9081,
+   "mean_dM": -0.039325
   },
   "outcomes": [
-   126,
-   50,
-   23,
-   1,
-   0
+   3272,
+   1275,
+   361,
+   80,
+   12
   ],
   "orient": {
-   "wtr_within": 0.4111111111111111,
-   "atr_within": 0.29310344827586204,
-   "obl_within": 0.3333333333333333
+   "wtr_within": 0.38923897237033445,
+   "atr_within": 0.33819444444444446,
+   "obl_within": 0.3549382716049383
   },
+  "complaints": 0.2352,
+  "complaints_any": 0.1358,
+  "walkouts": 0.0024,
   "habits": {
    "mean_count": {
-    "sphere lens": 29.745,
-    "sphere 1-or-2": 5.71,
-    "chart reading": 9.84,
-    "line size": 2.925,
-    "cylinder": 8.745,
-    "axis turns": 0.365,
+    "sphere lens": 33.9142,
+    "sphere 1-or-2": 3.4736,
+    "chart reading": 11.5634,
+    "line size": 4.631,
+    "cylinder": 7.2946,
+    "axis turns": 1.8156,
     "astigmatism check": 0.0,
     "check 180/90": 0.0,
     "check 45/135": 0.0,
-    "spin": 3.85,
+    "spin": 4.0438,
     "cyl axis (cross-cyl)": 0.0,
-    "cyl power (cross-cyl)": 6.54,
+    "cyl power (cross-cyl)": 6.258,
     "balance": 0.0,
-    "next eye": 5.3
+    "next eye": 5.1338
    },
    "used_pct": {
     "sphere lens": 1.0,
     "sphere 1-or-2": 1.0,
     "chart reading": 1.0,
-    "line size": 0.81,
+    "line size": 0.963,
     "cylinder": 1.0,
-    "axis turns": 0.315,
+    "axis turns": 0.8358,
     "astigmatism check": 0.0,
     "check 180/90": 0.0,
     "check 45/135": 0.0,
@@ -281,63 +334,173 @@
     "next eye": 1.0
    },
    "stage_buttons": [
-    1.0,
-    1.0,
-    72.49
+    13.9266,
+    13.8136,
+    51.6206
    ],
    "stage_minutes": [
-    0.03333333333333333,
-    0.03333333333333333,
-    3.0196666666666667
+    0.55275,
+    0.6276066666666666,
+    2.00954
    ],
    "first_cyl_step": {
-    "none": 1.0
+    "turn": 0.648,
+    "cyl": 0.3516,
+    "spin": 0.0004
    },
+   "visit_orders": [
+    [
+     "B R L B",
+     0.9752
+    ],
+    [
+     "B R L B R L B",
+     0.0174
+    ],
+    [
+     "B R L B R L B R L B",
+     0.003
+    ],
+    [
+     "B R L B R L B R L B R L B",
+     0.0014
+    ],
+    [
+     "B R L B R L B R L B R L B R L B R L B R L B",
+     0.0006
+    ],
+    [
+     "B R L B R L B R L B R L B R L B",
+     0.0006
+    ],
+    [
+     "B R L B R L B R L B R L B R L B R L B R L B R L",
+     0.0004
+    ],
+    [
+     "B R L B R L B R L B R L B R L B R L B R L B R L B R",
+     0.0004
+    ]
+   ],
+   "top_exams": [
+    [
+     "B: ou | R: turn > cyl > spin > power > sph_fine | L: cyl > spin > power > sph_fine | B: ou",
+     0.2096
+    ],
+    [
+     "B: ou | R: turn > cyl > spin > power | L: turn > cyl > spin > power | B: ou",
+     0.1198
+    ],
+    [
+     "B: ou | R: cyl > spin > power | L: turn > cyl > spin > power | B: ou",
+     0.1082
+    ],
+    [
+     "B: ou | R: cyl > spin > power > sph_fine | L: cyl > spin > power > sph_fine | B: ou",
+     0.0768
+    ],
+    [
+     "B: ou | R: turn > cyl > spin > power | L: cyl > spin > power | B: ou",
+     0.038
+    ],
+    [
+     "B: ou | R: turn > cyl > spin > power | L: turn > cyl > spin > power > sph_fine | B: ou",
+     0.0368
+    ],
+    [
+     "B: ou | R: turn > cyl > spin > power > sph_fine | L: cyl > spin > power > sph_fine | B: ou > balance",
+     0.0322
+    ],
+    [
+     "B: ou | R: turn > cyl > spin > power > sph_fine | L: cyl > spin > power | B: ou",
+     0.0306
+    ]
+   ],
    "top_patterns": [
     [
      [
-      "",
-      1.0
+      "turn > cyl > spin > power > sph_fine",
+      0.3512
+     ],
+     [
+      "turn > cyl > spin > power",
+      0.233
+     ],
+     [
+      "cyl > spin > power",
+      0.1834
+     ],
+     [
+      "cyl > spin > power > sph_fine",
+      0.123
+     ],
+     [
+      "turn > cyl > spin > sph_fine > power",
+      0.0638
+     ],
+     [
+      "cyl > spin > sph_fine > power",
+      0.0412
+     ],
+     [
+      "cyl > spin > sph_fine > power > turn",
+      0.0012
+     ],
+     [
+      "cyl > spin > power > sph_fine > turn",
+      0.001
      ]
     ],
     [
      [
-      "",
-      1.0
+      "cyl > spin > power > sph_fine",
+      0.4016
+     ],
+     [
+      "turn > cyl > spin > power",
+      0.2928
+     ],
+     [
+      "cyl > spin > power",
+      0.1212
+     ],
+     [
+      "turn > cyl > spin > power > sph_fine",
+      0.112
+     ],
+     [
+      "cyl > spin > sph_fine > power",
+      0.0502
+     ],
+     [
+      "cyl > spin > power > sph_fine > turn",
+      0.0054
+     ],
+     [
+      "turn > cyl > spin > sph_fine > power",
+      0.005
+     ],
+     [
+      "cyl > spin > power > turn",
+      0.0038
      ]
     ],
     [
      [
-      "ou > cyl > spin > power",
-      0.6
+      "ou",
+      0.8658
      ],
      [
-      "ou > cyl > spin > power > turn",
-      0.275
-     ],
-     [
-      "ou > cyl > spin > power > balance",
-      0.085
-     ],
-     [
-      "ou > turn > cyl > spin > power",
-      0.015
-     ],
-     [
-      "ou > cyl > spin > power > balance > turn",
-      0.015
-     ],
-     [
-      "ou > cyl > spin > power > turn > balance",
-      0.01
+      "ou > balance",
+      0.1342
      ]
     ]
    ]
   },
   "repeat": {
-   "within_025": 0.8775,
-   "within_050": 0.96825,
-   "sd": 0.40967265419325954,
+   "within_025": 0.87325,
+   "within_050": 0.971,
+   "sd": 0.3618178711382289,
    "p025": -0.5,
    "p975": 0.5
   }
@@ -347,457 +510,1186 @@
    "exams": 0,
    "ckpt": "exams_0.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 3.0145788053962224,
-    "within_025": 0.045,
-    "exact": 0.01,
-    "both_within": 0.02,
-    "steps": 220.38,
-    "over_minus_young": 0.4125,
-    "over_plus": 0.57,
-    "start_within_025": 0.035,
-    "points": -123.01004118410087,
-    "minutes": 10.29,
-    "happy": 0.03714629372049867,
-    "annoyed": 0.06077758041929909,
-    "recheck": 0.13753145667583794,
-    "review": 0.7645446691843645,
-    "timeout": 0.64,
-    "e_pt": 3.5205524339795518,
-    "net": -164.17004118410085,
-    "se_within_025": 0.12,
-    "se_within_050": 0.2,
-    "cyl_within_025": 0.29,
-    "vec_within_025": 0.045,
-    "vec_within_050": 0.105,
-    "mean_dM": 1.01
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 3.15368234561606,
+    "within_025": 0.0215,
+    "exact": 0.00925,
+    "both_within": 0.0055,
+    "steps": 236.393,
+    "over_minus_young": 0.38258877434135163,
+    "over_plus": 0.527,
+    "start_within_025": 0.0275,
+    "points": -129.13886560995658,
+    "minutes": 11.098008333333333,
+    "happy": 0.024121950525465338,
+    "annoyed": 0.04768723212959773,
+    "recheck": 0.15078496292570415,
+    "review": 0.7774058544192327,
+    "timeout": 0.6755,
+    "e_pt": 3.7076048005940154,
+    "net": -173.5308989432899,
+    "se_within_025": 0.10875,
+    "se_within_050": 0.19175,
+    "cyl_within_025": 0.259,
+    "vec_within_025": 0.0215,
+    "vec_within_050": 0.08825,
+    "mean_dM": 1.085
    },
    "sampled_outcomes": [
-    6,
-    3,
-    11,
-    16,
-    64
-   ]
+    50,
+    87,
+    195,
+    317,
+    1351
+   ],
+   "habits": {
+    "both_first": 0.0,
+    "order": [
+     "R",
+     0.106
+    ],
+    "used": {
+     "sphere lens": 0.9535,
+     "sphere 1-or-2": 0.932,
+     "chart reading": 0.9285,
+     "line size": 0.93,
+     "cylinder": 0.919,
+     "axis turns": 0.9695,
+     "astigmatism check": 0.927,
+     "check 180/90": 0.88,
+     "check 45/135": 0.8895,
+     "spin": 0.882,
+     "cyl axis (cross-cyl)": 0.883,
+     "cyl power (cross-cyl)": 0.878,
+     "balance": 0.745,
+     "next eye": 0.887
+    },
+    "count": {
+     "sphere lens": 44.3475,
+     "sphere 1-or-2": 22.101,
+     "chart reading": 22.29,
+     "line size": 22.269,
+     "cylinder": 15.2685,
+     "axis turns": 46.005,
+     "astigmatism check": 15.3815,
+     "check 180/90": 7.697,
+     "check 45/135": 7.6845,
+     "spin": 7.6955,
+     "cyl axis (cross-cyl)": 7.574,
+     "cyl power (cross-cyl)": 7.6805,
+     "balance": 3.4685,
+     "next eye": 11.214
+    },
+    "complaints": 10.7735,
+    "walkouts": 0.6755
+   }
   },
   {
    "exams": 2551,
    "ckpt": "exams_2551.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 7.7323660051437635,
-    "within_025": 0.01,
-    "exact": 0.005,
-    "both_within": 0.0,
-    "steps": 364.55,
-    "over_minus_young": 0.25,
-    "over_plus": 0.795,
-    "start_within_025": 0.035,
-    "points": -142.68653046992347,
-    "minutes": 11.730166666666666,
-    "happy": 0.00512056444118948,
-    "annoyed": 0.019426714304933864,
-    "recheck": 0.08123599778415844,
-    "review": 0.8942167234697184,
-    "timeout": 0.9,
-    "e_pt": 9.668934197930138,
-    "net": -189.60719713659012,
-    "se_within_025": 0.035,
-    "se_within_050": 0.05,
-    "cyl_within_025": 0.26,
-    "vec_within_025": 0.01,
-    "vec_within_050": 0.02,
-    "mean_dM": 6.75625
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 7.717694113330428,
+    "within_025": 0.00475,
+    "exact": 0.00225,
+    "both_within": 0.0005,
+    "steps": 373.9625,
+    "over_minus_young": 0.14432989690721648,
+    "over_plus": 0.82575,
+    "start_within_025": 0.0275,
+    "points": -145.27226715929817,
+    "minutes": 12.106950000000001,
+    "happy": 0.0050139049707501795,
+    "annoyed": 0.010849986886436735,
+    "recheck": 0.0696641785173639,
+    "review": 0.9144719296254491,
+    "timeout": 0.926,
+    "e_pt": 9.709838055853208,
+    "net": -193.70006715929816,
+    "se_within_025": 0.043,
+    "se_within_050": 0.074,
+    "cyl_within_025": 0.27375,
+    "vec_within_025": 0.00475,
+    "vec_within_050": 0.03025,
+    "mean_dM": 7.0025
    },
    "sampled_outcomes": [
-    2,
-    1,
-    3,
-    4,
-    90
-   ]
+    9,
+    25,
+    40,
+    74,
+    1852
+   ],
+   "habits": {
+    "both_first": 0.0,
+    "order": [
+     "R L B",
+     0.014
+    ],
+    "used": {
+     "sphere lens": 0.9915,
+     "sphere 1-or-2": 0.982,
+     "chart reading": 0.979,
+     "line size": 0.988,
+     "cylinder": 0.9875,
+     "axis turns": 0.9925,
+     "astigmatism check": 0.979,
+     "check 180/90": 0.949,
+     "check 45/135": 0.969,
+     "spin": 0.967,
+     "cyl axis (cross-cyl)": 0.9515,
+     "cyl power (cross-cyl)": 0.9665,
+     "balance": 0.9325,
+     "next eye": 0.991
+    },
+    "count": {
+     "sphere lens": 94.572,
+     "sphere 1-or-2": 22.1515,
+     "chart reading": 28.378,
+     "line size": 45.6475,
+     "cylinder": 29.557,
+     "axis turns": 87.4645,
+     "astigmatism check": 12.578,
+     "check 180/90": 4.4105,
+     "check 45/135": 8.1675,
+     "spin": 7.855,
+     "cyl axis (cross-cyl)": 5.1935,
+     "cyl power (cross-cyl)": 8.564,
+     "balance": 4.193,
+     "next eye": 26.085
+    },
+    "complaints": 1.6495,
+    "walkouts": 0.926
+   }
   },
   {
    "exams": 5060,
    "ckpt": "exams_5060.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 2.470436174669898,
-    "within_025": 0.01,
-    "exact": 0.005,
-    "both_within": 0.0,
-    "steps": 362.68,
-    "over_minus_young": 0.775,
-    "over_plus": 0.165,
-    "start_within_025": 0.035,
-    "points": -144.2068911799526,
-    "minutes": 9.029833333333332,
-    "happy": 0.004545036128786357,
-    "annoyed": 0.031657324262114706,
-    "recheck": 0.19945159488395592,
-    "review": 0.7643460447251432,
-    "timeout": 0.79,
-    "e_pt": 2.6652787511713614,
-    "net": -180.32622451328592,
-    "se_within_025": 0.09,
-    "se_within_050": 0.165,
-    "cyl_within_025": 0.41,
-    "vec_within_025": 0.01,
-    "vec_within_050": 0.06,
-    "mean_dM": -1.835625
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 2.368073191615205,
+    "within_025": 0.02125,
+    "exact": 0.0085,
+    "both_within": 0.004,
+    "steps": 354.598,
+    "over_minus_young": 0.7646048109965635,
+    "over_plus": 0.15425,
+    "start_within_025": 0.0275,
+    "points": -139.224015081619,
+    "minutes": 8.822991666666667,
+    "happy": 0.026527018500153782,
+    "annoyed": 0.05125668262138112,
+    "recheck": 0.19550000295910117,
+    "review": 0.7267162959193638,
+    "timeout": 0.7745,
+    "e_pt": 2.570199158713236,
+    "net": -174.51598174828567,
+    "se_within_025": 0.121,
+    "se_within_050": 0.19725,
+    "cyl_within_025": 0.408,
+    "vec_within_025": 0.02125,
+    "vec_within_050": 0.09625,
+    "mean_dM": -1.802
    },
    "sampled_outcomes": [
-    1,
-    0,
-    7,
-    13,
-    79
-   ]
+    25,
+    41,
+    120,
+    265,
+    1549
+   ],
+   "habits": {
+    "both_first": 0.0,
+    "order": [
+     "R L B",
+     0.0105
+    ],
+    "used": {
+     "sphere lens": 0.999,
+     "sphere 1-or-2": 0.978,
+     "chart reading": 0.9885,
+     "line size": 0.993,
+     "cylinder": 0.9905,
+     "axis turns": 0.9955,
+     "astigmatism check": 0.3885,
+     "check 180/90": 0.168,
+     "check 45/135": 0.2685,
+     "spin": 0.581,
+     "cyl axis (cross-cyl)": 0.1495,
+     "cyl power (cross-cyl)": 0.785,
+     "balance": 0.556,
+     "next eye": 0.9995
+    },
+    "count": {
+     "sphere lens": 120.275,
+     "sphere 1-or-2": 13.9965,
+     "chart reading": 23.869,
+     "line size": 52.7525,
+     "cylinder": 31.7855,
+     "axis turns": 73.1155,
+     "astigmatism check": 0.498,
+     "check 180/90": 0.1855,
+     "check 45/135": 0.3125,
+     "spin": 1.1555,
+     "cyl axis (cross-cyl)": 0.17,
+     "cyl power (cross-cyl)": 2.4425,
+     "balance": 0.904,
+     "next eye": 32.8115
+    },
+    "complaints": 0.5965,
+    "walkouts": 0.7745
+   }
   },
   {
    "exams": 10114,
    "ckpt": "exams_10114.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 1.9229660172618934,
-    "within_025": 0.045,
-    "exact": 0.015,
-    "both_within": 0.0,
-    "steps": 195.02,
-    "over_minus_young": 0.75,
-    "over_plus": 0.24,
-    "start_within_025": 0.035,
-    "points": -103.43837056085592,
-    "minutes": 5.679,
-    "happy": 0.06666422570539676,
-    "annoyed": 0.10004578481715319,
-    "recheck": 0.23751854596548624,
-    "review": 0.5957714435119638,
-    "timeout": 0.33,
-    "e_pt": 2.076538805795329,
-    "net": -126.15437056085591,
-    "se_within_025": 0.24,
-    "se_within_050": 0.38,
-    "cyl_within_025": 0.44,
-    "vec_within_025": 0.045,
-    "vec_within_050": 0.18,
-    "mean_dM": -1.078125
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 1.9191209455144485,
+    "within_025": 0.05525,
+    "exact": 0.01725,
+    "both_within": 0.018,
+    "steps": 200.7485,
+    "over_minus_young": 0.7754868270332188,
+    "over_plus": 0.23875,
+    "start_within_025": 0.0275,
+    "points": -99.6297302708157,
+    "minutes": 5.891191666666667,
+    "happy": 0.07510735231322589,
+    "annoyed": 0.11639468364507648,
+    "recheck": 0.23720707982714243,
+    "review": 0.5712908842145553,
+    "timeout": 0.345,
+    "e_pt": 2.063786803580532,
+    "net": -123.19449693748237,
+    "se_within_025": 0.23225,
+    "se_within_050": 0.3535,
+    "cyl_within_025": 0.42125,
+    "vec_within_025": 0.05525,
+    "vec_within_050": 0.18525,
+    "mean_dM": -0.94621875
    },
    "sampled_outcomes": [
-    9,
-    7,
-    14,
-    37,
-    33
-   ]
+    150,
+    207,
+    379,
+    574,
+    690
+   ],
+   "habits": {
+    "both_first": 0.23,
+    "order": [
+     "B",
+     0.1565
+    ],
+    "used": {
+     "sphere lens": 0.986,
+     "sphere 1-or-2": 0.8445,
+     "chart reading": 0.891,
+     "line size": 0.962,
+     "cylinder": 0.591,
+     "axis turns": 0.7675,
+     "astigmatism check": 0.0125,
+     "check 180/90": 0.001,
+     "check 45/135": 0.0115,
+     "spin": 0.023,
+     "cyl axis (cross-cyl)": 0.0075,
+     "cyl power (cross-cyl)": 0.016,
+     "balance": 0.0685,
+     "next eye": 0.9995
+    },
+    "count": {
+     "sphere lens": 90.0435,
+     "sphere 1-or-2": 11.819,
+     "chart reading": 14.9095,
+     "line size": 51.6595,
+     "cylinder": 2.561,
+     "axis turns": 13.1655,
+     "astigmatism check": 0.0125,
+     "check 180/90": 0.001,
+     "check 45/135": 0.0115,
+     "spin": 0.0245,
+     "cyl axis (cross-cyl)": 0.0075,
+     "cyl power (cross-cyl)": 0.017,
+     "balance": 0.079,
+     "next eye": 8.8255
+    },
+    "complaints": 6.9695,
+    "walkouts": 0.345
+   }
   },
   {
    "exams": 20200,
    "ckpt": "exams_20200.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 1.7804632707406431,
-    "within_025": 0.08,
-    "exact": 0.025,
-    "both_within": 0.04,
-    "steps": 120.79,
-    "over_minus_young": 0.7125,
-    "over_plus": 0.295,
-    "start_within_025": 0.035,
-    "points": -73.49994976138349,
-    "minutes": 4.938166666666667,
-    "happy": 0.12691634818731348,
-    "annoyed": 0.16664248885626942,
-    "recheck": 0.2626416183561057,
-    "review": 0.44379954460031146,
-    "timeout": 0.23,
-    "e_pt": 1.8747661427955467,
-    "net": -93.25261642805016,
-    "se_within_025": 0.34,
-    "se_within_050": 0.49,
-    "cyl_within_025": 0.44,
-    "vec_within_025": 0.08,
-    "vec_within_050": 0.245,
-    "mean_dM": -0.539375
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 1.6329816477255872,
+    "within_025": 0.08925,
+    "exact": 0.0325,
+    "both_within": 0.0405,
+    "steps": 117.573,
+    "over_minus_young": 0.672966781214204,
+    "over_plus": 0.275,
+    "start_within_025": 0.0275,
+    "points": -69.85474860147477,
+    "minutes": 4.788591666666666,
+    "happy": 0.13093704887047383,
+    "annoyed": 0.17766526292431642,
+    "recheck": 0.26277033127584243,
+    "review": 0.4286273569293674,
+    "timeout": 0.2325,
+    "e_pt": 1.741388554859504,
+    "net": -89.00911526814143,
+    "se_within_025": 0.32325,
+    "se_within_050": 0.494,
+    "cyl_within_025": 0.4305,
+    "vec_within_025": 0.08925,
+    "vec_within_050": 0.28225,
+    "mean_dM": -0.64209375
    },
    "sampled_outcomes": [
-    18,
-    9,
-    25,
-    25,
-    23
-   ]
+    275,
+    342,
+    445,
+    473,
+    465
+   ],
+   "habits": {
+    "both_first": 0.6255,
+    "order": [
+     "B",
+     0.5115
+    ],
+    "used": {
+     "sphere lens": 0.8825,
+     "sphere 1-or-2": 0.4975,
+     "chart reading": 0.6385,
+     "line size": 0.7125,
+     "cylinder": 0.29,
+     "axis turns": 0.302,
+     "astigmatism check": 0.002,
+     "check 180/90": 0.0,
+     "check 45/135": 0.002,
+     "spin": 0.007,
+     "cyl axis (cross-cyl)": 0.002,
+     "cyl power (cross-cyl)": 0.0045,
+     "balance": 0.0455,
+     "next eye": 0.998
+    },
+    "count": {
+     "sphere lens": 49.703,
+     "sphere 1-or-2": 11.637,
+     "chart reading": 10.1545,
+     "line size": 27.729,
+     "cylinder": 1.4495,
+     "axis turns": 1.5985,
+     "astigmatism check": 0.002,
+     "check 180/90": 0.0,
+     "check 45/135": 0.002,
+     "spin": 0.008,
+     "cyl axis (cross-cyl)": 0.002,
+     "cyl power (cross-cyl)": 0.0045,
+     "balance": 0.0495,
+     "next eye": 3.7115
+    },
+    "complaints": 10.7565,
+    "walkouts": 0.2325
+   }
   },
   {
    "exams": 50282,
    "ckpt": "exams_50282.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 1.5303350258013335,
-    "within_025": 0.085,
-    "exact": 0.02,
-    "both_within": 0.04,
-    "steps": 72.6,
-    "over_minus_young": 0.6125,
-    "over_plus": 0.28,
-    "start_within_025": 0.035,
-    "points": -63.65752956939123,
-    "minutes": 3.816666666666667,
-    "happy": 0.13002625344519467,
-    "annoyed": 0.20625529142934165,
-    "recheck": 0.2933029205304065,
-    "review": 0.3704155345950572,
-    "timeout": 0.2,
-    "e_pt": 1.6008726944261504,
-    "net": -78.9241962360579,
-    "se_within_025": 0.34,
-    "se_within_050": 0.515,
-    "cyl_within_025": 0.445,
-    "vec_within_025": 0.085,
-    "vec_within_050": 0.28,
-    "mean_dM": -0.503125
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 1.337033756263615,
+    "within_025": 0.105,
+    "exact": 0.042,
+    "both_within": 0.049,
+    "steps": 73.4595,
+    "over_minus_young": 0.5996563573883161,
+    "over_plus": 0.24425,
+    "start_within_025": 0.0275,
+    "points": -56.02883639706174,
+    "minutes": 3.8556916666666665,
+    "happy": 0.16411437134256449,
+    "annoyed": 0.20364120961129362,
+    "recheck": 0.2683162249042391,
+    "review": 0.3639281941419028,
+    "timeout": 0.1825,
+    "e_pt": 1.4118698467437603,
+    "net": -71.4516030637284,
+    "se_within_025": 0.39325,
+    "se_within_050": 0.5905,
+    "cyl_within_025": 0.4315,
+    "vec_within_025": 0.105,
+    "vec_within_050": 0.339,
+    "mean_dM": -0.683625
    },
    "sampled_outcomes": [
-    16,
-    21,
-    19,
-    24,
-    20
-   ]
+    347,
+    389,
+    487,
+    412,
+    365
+   ],
+   "habits": {
+    "both_first": 0.573,
+    "order": [
+     "B",
+     0.4825
+    ],
+    "used": {
+     "sphere lens": 0.7585,
+     "sphere 1-or-2": 0.3225,
+     "chart reading": 0.409,
+     "line size": 0.407,
+     "cylinder": 0.187,
+     "axis turns": 0.2055,
+     "astigmatism check": 0.003,
+     "check 180/90": 0.0005,
+     "check 45/135": 0.0025,
+     "spin": 0.016,
+     "cyl axis (cross-cyl)": 0.003,
+     "cyl power (cross-cyl)": 0.009,
+     "balance": 0.204,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 31.913,
+     "sphere 1-or-2": 6.3915,
+     "chart reading": 10.3775,
+     "line size": 6.0655,
+     "cylinder": 0.6845,
+     "axis turns": 1.463,
+     "astigmatism check": 0.003,
+     "check 180/90": 0.0005,
+     "check 45/135": 0.0025,
+     "spin": 0.0175,
+     "cyl axis (cross-cyl)": 0.003,
+     "cyl power (cross-cyl)": 0.0095,
+     "balance": 0.6575,
+     "next eye": 4.487
+    },
+    "complaints": 10.5695,
+    "walkouts": 0.1825
+   }
   },
   {
    "exams": 100240,
    "ckpt": "exams_100240.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 1.3185284583750316,
-    "within_025": 0.085,
-    "exact": 0.045,
-    "both_within": 0.04,
-    "steps": 64.28,
-    "over_minus_young": 0.6375,
-    "over_plus": 0.205,
-    "start_within_025": 0.035,
-    "points": -59.33425798417747,
-    "minutes": 3.0484999999999998,
-    "happy": 0.15016735609889842,
-    "annoyed": 0.19750154123621455,
-    "recheck": 0.30209674801678293,
-    "review": 0.3502343546481041,
-    "timeout": 0.1,
-    "e_pt": 1.3912064498906027,
-    "net": -71.52825798417747,
-    "se_within_025": 0.385,
-    "se_within_050": 0.555,
-    "cyl_within_025": 0.45,
-    "vec_within_025": 0.085,
-    "vec_within_050": 0.305,
-    "mean_dM": -0.835
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 1.3171726590979806,
+    "within_025": 0.11625,
+    "exact": 0.04625,
+    "both_within": 0.06,
+    "steps": 66.1145,
+    "over_minus_young": 0.6460481099656358,
+    "over_plus": 0.204,
+    "start_within_025": 0.0275,
+    "points": -52.10465705674232,
+    "minutes": 3.1182083333333335,
+    "happy": 0.17560889351413392,
+    "annoyed": 0.20539633005118624,
+    "recheck": 0.26931742679378096,
+    "review": 0.3496773496408989,
+    "timeout": 0.1065,
+    "e_pt": 1.396116779962723,
+    "net": -64.57749039007565,
+    "se_within_025": 0.40825,
+    "se_within_050": 0.593,
+    "cyl_within_025": 0.439,
+    "vec_within_025": 0.11625,
+    "vec_within_050": 0.349,
+    "mean_dM": -0.82234375
    },
    "sampled_outcomes": [
-    20,
-    18,
-    22,
-    30,
-    10
-   ]
+    361,
+    397,
+    502,
+    527,
+    213
+   ],
+   "habits": {
+    "both_first": 0.5985,
+    "order": [
+     "B",
+     0.533
+    ],
+    "used": {
+     "sphere lens": 0.749,
+     "sphere 1-or-2": 0.2855,
+     "chart reading": 0.4455,
+     "line size": 0.3335,
+     "cylinder": 0.198,
+     "axis turns": 0.2025,
+     "astigmatism check": 0.086,
+     "check 180/90": 0.0105,
+     "check 45/135": 0.0815,
+     "spin": 0.1935,
+     "cyl axis (cross-cyl)": 0.134,
+     "cyl power (cross-cyl)": 0.135,
+     "balance": 0.08,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 25.1725,
+     "sphere 1-or-2": 4.426,
+     "chart reading": 7.134,
+     "line size": 6.2205,
+     "cylinder": 2.8035,
+     "axis turns": 4.74,
+     "astigmatism check": 0.131,
+     "check 180/90": 0.0115,
+     "check 45/135": 0.1195,
+     "spin": 2.557,
+     "cyl axis (cross-cyl)": 0.297,
+     "cyl power (cross-cyl)": 0.439,
+     "balance": 0.113,
+     "next eye": 4.6665
+    },
+    "complaints": 6.521,
+    "walkouts": 0.1065
+   }
   },
   {
    "exams": 201126,
    "ckpt": "exams_201126.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 1.0342611582422945,
-    "within_025": 0.11,
-    "exact": 0.05,
-    "both_within": 0.05,
-    "steps": 50.43,
-    "over_minus_young": 0.5875,
-    "over_plus": 0.21,
-    "start_within_025": 0.035,
-    "points": -45.85536005994728,
-    "minutes": 2.402,
-    "happy": 0.17820854501062705,
-    "annoyed": 0.23440769174375015,
-    "recheck": 0.30190098104087726,
-    "review": 0.28548278220474566,
-    "timeout": 0.05,
-    "e_pt": 1.0948209932700634,
-    "net": -55.46336005994728,
-    "se_within_025": 0.43,
-    "se_within_050": 0.615,
-    "cyl_within_025": 0.485,
-    "vec_within_025": 0.11,
-    "vec_within_050": 0.36,
-    "mean_dM": -0.573125
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.9819703738967479,
+    "within_025": 0.11825,
+    "exact": 0.0525,
+    "both_within": 0.0555,
+    "steps": 51.404,
+    "over_minus_young": 0.6013745704467354,
+    "over_plus": 0.20325,
+    "start_within_025": 0.0275,
+    "points": -41.57860847285112,
+    "minutes": 2.44875,
+    "happy": 0.19152139945954935,
+    "annoyed": 0.23305459001723644,
+    "recheck": 0.29239639342867735,
+    "review": 0.28302761709453683,
+    "timeout": 0.054,
+    "e_pt": 1.0427832137129673,
+    "net": -51.373608472851124,
+    "se_within_025": 0.46,
+    "se_within_050": 0.656,
+    "cyl_within_025": 0.44575,
+    "vec_within_025": 0.11825,
+    "vec_within_050": 0.379,
+    "mean_dM": -0.5334375
    },
    "sampled_outcomes": [
-    20,
-    21,
-    27,
-    27,
-    5
-   ]
+    406,
+    442,
+    548,
+    496,
+    108
+   ],
+   "habits": {
+    "both_first": 0.6815,
+    "order": [
+     "B",
+     0.5075
+    ],
+    "used": {
+     "sphere lens": 0.76,
+     "sphere 1-or-2": 0.309,
+     "chart reading": 0.4525,
+     "line size": 0.305,
+     "cylinder": 0.248,
+     "axis turns": 0.2515,
+     "astigmatism check": 0.1535,
+     "check 180/90": 0.066,
+     "check 45/135": 0.1415,
+     "spin": 0.248,
+     "cyl axis (cross-cyl)": 0.027,
+     "cyl power (cross-cyl)": 0.1795,
+     "balance": 0.004,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 19.5955,
+     "sphere 1-or-2": 2.4585,
+     "chart reading": 4.49,
+     "line size": 2.6755,
+     "cylinder": 3.4795,
+     "axis turns": 4.4345,
+     "astigmatism check": 0.5945,
+     "check 180/90": 0.106,
+     "check 45/135": 0.4885,
+     "spin": 2.361,
+     "cyl axis (cross-cyl)": 0.0345,
+     "cyl power (cross-cyl)": 1.2315,
+     "balance": 0.004,
+     "next eye": 3.9645
+    },
+    "complaints": 5.1345,
+    "walkouts": 0.054
+   }
   },
   {
    "exams": 300843,
    "ckpt": "exams_300843.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 0.8502814719868111,
-    "within_025": 0.095,
-    "exact": 0.04,
-    "both_within": 0.05,
-    "steps": 49.33,
-    "over_minus_young": 0.6375,
-    "over_plus": 0.225,
-    "start_within_025": 0.035,
-    "points": -35.4456676476118,
-    "minutes": 2.1621666666666663,
-    "happy": 0.19341686978601924,
-    "annoyed": 0.2605486772206684,
-    "recheck": 0.3023984915556936,
-    "review": 0.2436359614376188,
-    "timeout": 0.03,
-    "e_pt": 0.9061794100456853,
-    "net": -44.09433431427846,
-    "se_within_025": 0.425,
-    "se_within_050": 0.635,
-    "cyl_within_025": 0.455,
-    "vec_within_025": 0.095,
-    "vec_within_050": 0.395,
-    "mean_dM": -0.3725
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.832264148603045,
+    "within_025": 0.12575,
+    "exact": 0.05225,
+    "both_within": 0.0585,
+    "steps": 47.651,
+    "over_minus_young": 0.5956471935853379,
+    "over_plus": 0.2115,
+    "start_within_025": 0.0275,
+    "points": -30.75641543914928,
+    "minutes": 2.093583333333333,
+    "happy": 0.21330223154587757,
+    "annoyed": 0.2568535139974826,
+    "recheck": 0.29444906670654675,
+    "review": 0.2353951877500931,
+    "timeout": 0.022,
+    "e_pt": 0.8898934684301707,
+    "net": -39.13074877248261,
+    "se_within_025": 0.496,
+    "se_within_050": 0.70275,
+    "cyl_within_025": 0.46975,
+    "vec_within_025": 0.12575,
+    "vec_within_050": 0.424,
+    "mean_dM": -0.39990625
    },
    "sampled_outcomes": [
-    25,
-    27,
-    21,
-    24,
-    3
-   ]
+    449,
+    493,
+    584,
+    430,
+    44
+   ],
+   "habits": {
+    "both_first": 0.7125,
+    "order": [
+     "B",
+     0.4955
+    ],
+    "used": {
+     "sphere lens": 0.751,
+     "sphere 1-or-2": 0.329,
+     "chart reading": 0.5315,
+     "line size": 0.307,
+     "cylinder": 0.2545,
+     "axis turns": 0.25,
+     "astigmatism check": 0.032,
+     "check 180/90": 0.0035,
+     "check 45/135": 0.031,
+     "spin": 0.2545,
+     "cyl axis (cross-cyl)": 0.0115,
+     "cyl power (cross-cyl)": 0.249,
+     "balance": 0.0005,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 21.857,
+     "sphere 1-or-2": 1.8755,
+     "chart reading": 3.0325,
+     "line size": 2.7445,
+     "cylinder": 3.177,
+     "axis turns": 2.229,
+     "astigmatism check": 0.0405,
+     "check 180/90": 0.0035,
+     "check 45/135": 0.037,
+     "spin": 2.008,
+     "cyl axis (cross-cyl)": 0.013,
+     "cyl power (cross-cyl)": 1.65,
+     "balance": 0.0005,
+     "next eye": 3.636
+    },
+    "complaints": 4.4095,
+    "walkouts": 0.022
+   }
   },
   {
    "exams": 501297,
    "ckpt": "exams_501297.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 0.8378097469368774,
-    "within_025": 0.11,
-    "exact": 0.045,
-    "both_within": 0.05,
-    "steps": 42.56,
-    "over_minus_young": 0.55,
-    "over_plus": 0.275,
-    "start_within_025": 0.035,
-    "points": -20.01794614186288,
-    "minutes": 1.9020000000000001,
-    "happy": 0.23313927722800215,
-    "annoyed": 0.2897567657395,
-    "recheck": 0.2821556203545513,
-    "review": 0.1949483366779467,
-    "timeout": 0.02,
-    "e_pt": 0.887366790406003,
-    "net": -27.62594614186288,
-    "se_within_025": 0.485,
-    "se_within_050": 0.715,
-    "cyl_within_025": 0.505,
-    "vec_within_025": 0.11,
-    "vec_within_050": 0.455,
-    "mean_dM": -0.398125
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.8052016156963229,
+    "within_025": 0.1505,
+    "exact": 0.066,
+    "both_within": 0.067,
+    "steps": 43.3335,
+    "over_minus_young": 0.5297823596792669,
+    "over_plus": 0.2155,
+    "start_within_025": 0.0275,
+    "points": -16.791428811735546,
+    "minutes": 1.9728416666666668,
+    "happy": 0.2637873441728427,
+    "annoyed": 0.27361664648458056,
+    "recheck": 0.2620715227602798,
+    "review": 0.20052448658229705,
+    "timeout": 0.016,
+    "e_pt": 0.8583441891618326,
+    "net": -24.682795478402213,
+    "se_within_025": 0.555,
+    "se_within_050": 0.74425,
+    "cyl_within_025": 0.514,
+    "vec_within_025": 0.1505,
+    "vec_within_050": 0.49575,
+    "mean_dM": -0.40009375
    },
    "sampled_outcomes": [
-    27,
-    29,
-    24,
-    18,
-    2
-   ]
+    541,
+    553,
+    507,
+    367,
+    32
+   ],
+   "habits": {
+    "both_first": 0.7305,
+    "order": [
+     "B",
+     0.4525
+    ],
+    "used": {
+     "sphere lens": 0.7495,
+     "sphere 1-or-2": 0.3915,
+     "chart reading": 0.513,
+     "line size": 0.305,
+     "cylinder": 0.297,
+     "axis turns": 0.2495,
+     "astigmatism check": 0.041,
+     "check 180/90": 0.0,
+     "check 45/135": 0.041,
+     "spin": 0.296,
+     "cyl axis (cross-cyl)": 0.013,
+     "cyl power (cross-cyl)": 0.296,
+     "balance": 0.0,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 19.7045,
+     "sphere 1-or-2": 1.957,
+     "chart reading": 3.08,
+     "line size": 1.2,
+     "cylinder": 4.236,
+     "axis turns": 0.985,
+     "astigmatism check": 0.1005,
+     "check 180/90": 0.0,
+     "check 45/135": 0.1005,
+     "spin": 1.861,
+     "cyl axis (cross-cyl)": 0.0155,
+     "cyl power (cross-cyl)": 2.0885,
+     "balance": 0.0,
+     "next eye": 3.436
+    },
+    "complaints": 3.6855,
+    "walkouts": 0.016
+   }
   },
   {
    "exams": 751332,
    "ckpt": "exams_751332.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 0.6372130546513659,
-    "within_025": 0.16,
-    "exact": 0.07,
-    "both_within": 0.06,
-    "steps": 46.33,
-    "over_minus_young": 0.5375,
-    "over_plus": 0.205,
-    "start_within_025": 0.035,
-    "points": 0.18517528567112782,
-    "minutes": 1.9815,
-    "happy": 0.3217485143070967,
-    "annoyed": 0.2948291585521084,
-    "recheck": 0.2382685452788205,
-    "review": 0.14515378186197442,
-    "timeout": 0.0,
-    "e_pt": 0.6825292151975624,
-    "net": -7.740824714328872,
-    "se_within_025": 0.56,
-    "se_within_050": 0.755,
-    "cyl_within_025": 0.6,
-    "vec_within_025": 0.16,
-    "vec_within_050": 0.59,
-    "mean_dM": -0.283125
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.6784214214397166,
+    "within_025": 0.1795,
+    "exact": 0.09075,
+    "both_within": 0.0655,
+    "steps": 47.2665,
+    "over_minus_young": 0.4793814432989691,
+    "over_plus": 0.22,
+    "start_within_025": 0.0275,
+    "points": -1.7268834073745558,
+    "minutes": 2.05155,
+    "happy": 0.32732803870064925,
+    "annoyed": 0.28322420812727167,
+    "recheck": 0.226777345548799,
+    "review": 0.16267040762328014,
+    "timeout": 0.012,
+    "e_pt": 0.7313522916380167,
+    "net": -9.933083407374557,
+    "se_within_025": 0.605,
+    "se_within_050": 0.78575,
+    "cyl_within_025": 0.5505,
+    "vec_within_025": 0.1795,
+    "vec_within_050": 0.58225,
+    "mean_dM": -0.29659375
    },
    "sampled_outcomes": [
-    32,
-    35,
-    19,
-    14,
-    0
-   ]
+    661,
+    592,
+    420,
+    303,
+    24
+   ],
+   "habits": {
+    "both_first": 0.7325,
+    "order": [
+     "B R L B",
+     0.3255
+    ],
+    "used": {
+     "sphere lens": 0.753,
+     "sphere 1-or-2": 0.45,
+     "chart reading": 0.528,
+     "line size": 0.3635,
+     "cylinder": 0.4445,
+     "axis turns": 0.191,
+     "astigmatism check": 0.0005,
+     "check 180/90": 0.0,
+     "check 45/135": 0.0005,
+     "spin": 0.4445,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 0.4445,
+     "balance": 0.0,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 21.0005,
+     "sphere 1-or-2": 2.4465,
+     "chart reading": 3.4115,
+     "line size": 1.4125,
+     "cylinder": 5.6245,
+     "axis turns": 0.3285,
+     "astigmatism check": 0.0005,
+     "check 180/90": 0.0,
+     "check 45/135": 0.0005,
+     "spin": 2.157,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 3.0535,
+     "balance": 0.0,
+     "next eye": 3.918
+    },
+    "complaints": 2.9255,
+    "walkouts": 0.012
+   }
   },
   {
    "exams": 1000094,
    "ckpt": "exams_1000094.pt",
    "sampled": {
-    "exams": 100,
-    "eyes": 200,
-    "mean_err": 0.2788878961755001,
-    "within_025": 0.435,
-    "exact": 0.275,
-    "both_within": 0.23,
-    "steps": 77.75,
-    "over_minus_young": 0.325,
-    "over_plus": 0.21,
-    "start_within_025": 0.035,
-    "points": 58.94859891647118,
-    "minutes": 3.2486666666666664,
-    "happy": 0.6151925213768146,
-    "annoyed": 0.26988263790286604,
-    "recheck": 0.09387991071073813,
-    "review": 0.02104493000958138,
-    "timeout": 0.0,
-    "e_pt": 0.3219515401995202,
-    "net": 45.95393224980451,
-    "se_within_025": 0.89,
-    "se_within_050": 0.96,
-    "cyl_within_025": 0.765,
-    "vec_within_025": 0.435,
-    "vec_within_050": 0.86,
-    "mean_dM": -0.031875
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.33117137868103064,
+    "within_025": 0.366,
+    "exact": 0.23,
+    "both_within": 0.159,
+    "steps": 77.2155,
+    "over_minus_young": 0.32875143184421535,
+    "over_plus": 0.22825,
+    "start_within_025": 0.0275,
+    "points": 53.78363277839507,
+    "minutes": 3.2502750000000002,
+    "happy": 0.5842957135870477,
+    "annoyed": 0.2812906670826287,
+    "recheck": 0.10363342488444233,
+    "review": 0.030780194445881436,
+    "timeout": 0.008,
+    "e_pt": 0.3779285258533744,
+    "net": 40.782532778395066,
+    "se_within_025": 0.84925,
+    "se_within_050": 0.961,
+    "cyl_within_025": 0.749,
+    "vec_within_025": 0.366,
+    "vec_within_050": 0.865,
+    "mean_dM": -0.0316875
    },
    "sampled_outcomes": [
-    64,
-    26,
-    9,
-    1,
-    0
-   ]
+    1184,
+    552,
+    208,
+    40,
+    16
+   ],
+   "habits": {
+    "both_first": 0.9930000000000001,
+    "order": [
+     "B R L B",
+     0.937
+    ],
+    "used": {
+     "sphere lens": 1.0,
+     "sphere 1-or-2": 1.0,
+     "chart reading": 1.0,
+     "line size": 0.9185,
+     "cylinder": 0.9975,
+     "axis turns": 0.737,
+     "astigmatism check": 0.0,
+     "check 180/90": 0.0,
+     "check 45/135": 0.0,
+     "spin": 0.9975,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 0.9975,
+     "balance": 0.0,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 30.6645,
+     "sphere 1-or-2": 5.8355,
+     "chart reading": 10.2285,
+     "line size": 3.3895,
+     "cylinder": 8.347,
+     "axis turns": 1.6125,
+     "astigmatism check": 0.0,
+     "check 180/90": 0.0,
+     "check 45/135": 0.0,
+     "spin": 3.982,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 6.4245,
+     "balance": 0.0,
+     "next eye": 5.2735
+    },
+    "complaints": 0.466,
+    "walkouts": 0.008
+   }
+  },
+  {
+   "exams": 1500133,
+   "ckpt": "exams_1500133.pt",
+   "sampled": {
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.28548932566903396,
+    "within_025": 0.426,
+    "exact": 0.25725,
+    "both_within": 0.2125,
+    "steps": 74.544,
+    "over_minus_young": 0.3356242840778923,
+    "over_plus": 0.21025,
+    "start_within_025": 0.0275,
+    "points": 59.59131587162962,
+    "minutes": 3.08365,
+    "happy": 0.6218009466387558,
+    "annoyed": 0.2668036084256229,
+    "recheck": 0.08770760626750035,
+    "review": 0.02368783866812097,
+    "timeout": 0.003,
+    "e_pt": 0.33038985350954997,
+    "net": 47.256715871629616,
+    "se_within_025": 0.88825,
+    "se_within_050": 0.97125,
+    "cyl_within_025": 0.78375,
+    "vec_within_025": 0.426,
+    "vec_within_050": 0.8955,
+    "mean_dM": -0.045
+   },
+   "sampled_outcomes": [
+    1265,
+    520,
+    171,
+    38,
+    6
+   ],
+   "habits": {
+    "both_first": 0.998,
+    "order": [
+     "B R L B",
+     0.971
+    ],
+    "used": {
+     "sphere lens": 1.0,
+     "sphere 1-or-2": 1.0,
+     "chart reading": 1.0,
+     "line size": 0.947,
+     "cylinder": 0.999,
+     "axis turns": 0.794,
+     "astigmatism check": 0.0075,
+     "check 180/90": 0.0075,
+     "check 45/135": 0.0,
+     "spin": 1.0,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 1.0,
+     "balance": 0.0,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 31.8855,
+     "sphere 1-or-2": 3.576,
+     "chart reading": 10.6895,
+     "line size": 3.279,
+     "cylinder": 7.033,
+     "axis turns": 1.4965,
+     "astigmatism check": 0.0075,
+     "check 180/90": 0.0075,
+     "check 45/135": 0.0,
+     "spin": 4.08,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 6.1045,
+     "balance": 0.0,
+     "next eye": 5.144
+    },
+    "complaints": 0.2515,
+    "walkouts": 0.003
+   }
+  },
+  {
+   "exams": 1750166,
+   "ckpt": "exams_1750166.pt",
+   "sampled": {
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.2891778751490357,
+    "within_025": 0.446,
+    "exact": 0.28225,
+    "both_within": 0.2165,
+    "steps": 81.384,
+    "over_minus_young": 0.32646048109965636,
+    "over_plus": 0.205,
+    "start_within_025": 0.0275,
+    "points": 59.651188017473196,
+    "minutes": 3.320891666666667,
+    "happy": 0.6241748690607636,
+    "annoyed": 0.26476969219076135,
+    "recheck": 0.08667431315597533,
+    "review": 0.024381125592499716,
+    "timeout": 0.0055,
+    "e_pt": 0.3367817836033972,
+    "net": 46.36762135080653,
+    "se_within_025": 0.88725,
+    "se_within_050": 0.9705,
+    "cyl_within_025": 0.78275,
+    "vec_within_025": 0.446,
+    "vec_within_050": 0.894,
+    "mean_dM": -0.048625
+   },
+   "sampled_outcomes": [
+    1247,
+    554,
+    157,
+    31,
+    11
+   ],
+   "habits": {
+    "both_first": 0.9965,
+    "order": [
+     "B R L B",
+     0.9715
+    ],
+    "used": {
+     "sphere lens": 1.0,
+     "sphere 1-or-2": 1.0,
+     "chart reading": 1.0,
+     "line size": 0.978,
+     "cylinder": 1.0,
+     "axis turns": 0.908,
+     "astigmatism check": 0.0,
+     "check 180/90": 0.0,
+     "check 45/135": 0.0,
+     "spin": 1.0,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 1.0,
+     "balance": 0.0,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 32.92,
+     "sphere 1-or-2": 3.93,
+     "chart reading": 11.486,
+     "line size": 5.739,
+     "cylinder": 7.3375,
+     "axis turns": 2.88,
+     "astigmatism check": 0.0,
+     "check 180/90": 0.0,
+     "check 45/135": 0.0,
+     "spin": 4.297,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 6.3535,
+     "balance": 0.0,
+     "next eye": 5.1695
+    },
+    "complaints": 0.277,
+    "walkouts": 0.0055
+   }
+  },
+  {
+   "exams": 1812949,
+   "ckpt": "exams_1812949.pt",
+   "sampled": {
+    "exams": 2000,
+    "eyes": 4000,
+    "mean_err": 0.27968333530178324,
+    "within_025": 0.44725,
+    "exact": 0.28325,
+    "both_within": 0.227,
+    "steps": 81.5305,
+    "over_minus_young": 0.2983963344788087,
+    "over_plus": 0.211,
+    "start_within_025": 0.0275,
+    "points": 60.946229254702146,
+    "minutes": 3.285166666666667,
+    "happy": 0.6337583486645026,
+    "annoyed": 0.25995865909562066,
+    "recheck": 0.08314189215552145,
+    "review": 0.02314110008435537,
+    "timeout": 0.006,
+    "e_pt": 0.3266040318615481,
+    "net": 47.80556258803548,
+    "se_within_025": 0.8935,
+    "se_within_050": 0.97525,
+    "cyl_within_025": 0.78625,
+    "vec_within_025": 0.44725,
+    "vec_within_050": 0.8975,
+    "mean_dM": -0.0333125
+   },
+   "sampled_outcomes": [
+    1287,
+    525,
+    139,
+    37,
+    12
+   ],
+   "habits": {
+    "both_first": 0.996,
+    "order": [
+     "B R L B",
+     0.9655
+    ],
+    "used": {
+     "sphere lens": 1.0,
+     "sphere 1-or-2": 1.0,
+     "chart reading": 1.0,
+     "line size": 0.968,
+     "cylinder": 1.0,
+     "axis turns": 0.92,
+     "astigmatism check": 0.0005,
+     "check 180/90": 0.0005,
+     "check 45/135": 0.0,
+     "spin": 1.0,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 1.0,
+     "balance": 0.0,
+     "next eye": 1.0
+    },
+    "count": {
+     "sphere lens": 33.892,
+     "sphere 1-or-2": 3.652,
+     "chart reading": 11.175,
+     "line size": 5.452,
+     "cylinder": 7.41,
+     "axis turns": 2.814,
+     "astigmatism check": 0.001,
+     "check 180/90": 0.001,
+     "check 45/135": 0.0,
+     "spin": 4.321,
+     "cyl axis (cross-cyl)": 0.0,
+     "cyl power (cross-cyl)": 6.3085,
+     "balance": 0.0,
+     "next eye": 5.2085
+    },
+    "complaints": 0.3025,
+    "walkouts": 0.006
+   }
   }
  ]
 }

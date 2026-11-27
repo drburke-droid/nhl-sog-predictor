@@ -1,0 +1,41 @@
+plano {'mean_err': 1.913, 'within_025': 0.028, 'exact': 0.009, 'both_within': 0.014, 'steps': 1.0, 'over_minus_young': 0.299, 'over_plus': 0.546, 'start_within_025': 0.028, 'points': -107.425, 'minutes': 0.0, 'happy': 0.046, 'annoyed': 0.08, 'recheck': 0.236, 'review': 0.637, 'timeout': 0.0, 'e_pt': 1.97, 'net': -107.425, 'se_within_025': 0.121, 'se_within_050': 0.21, 'cyl_within_025': 0.415, 'vec_within_025': 0.028, 'vec_within_050': 0.099, 'mean_dM': 0.46} {'wtr_within': 0.0, 'atr_within': 0.0, 'obl_within': 0.0}
+textbook {'mean_err': 0.376, 'within_025': 0.429, 'exact': 0.328, 'both_within': 0.267, 'steps': 155.691, 'over_minus_young': 0.464, 'over_plus': 0.192, 'start_within_025': 0.028, 'points': 34.114, 'minutes': 9.315, 'happy': 0.56, 'annoyed': 0.225, 'recheck': 0.132, 'review': 0.084, 'timeout': 0.053, 'e_pt': 0.453, 'net': -3.147, 'se_within_025': 0.746, 'se_within_050': 0.874, 'cyl_within_025': 0.82, 'vec_within_025': 0.429, 'vec_within_050': 0.777, 'mean_dM': -0.119} {'wtr_within': 0.31459040232670865, 'atr_within': 0.3236111111111111, 'obl_within': 0.3333333333333333}
+   used {'sphere lens': 1.0, 'sphere 1-or-2': 0.0, 'chart reading': 1.0, 'line size': 1.0, 'cylinder': 0.96, 'axis turns': 0.81, 'astigmatism check': 1.0, 'check 180/90': 1.0, 'check 45/135': 0.3, 'spin': 0.0, 'cyl axis (cross-cyl)': 0.96, 'cyl power (cross-cyl)': 0.96, 'balance': 1.0, 'next eye': 1.0}
+   count {'sphere lens': 71.2, 'sphere 1-or-2': 0.0, 'chart reading': 49.8, 'line size': 5.1, 'cylinder': 6.4, 'axis turns': 3.2, 'astigmatism check': 2.4, 'check 180/90': 2.0, 'check 45/135': 0.4, 'spin': 0.0, 'cyl axis (cross-cyl)': 5.1, 'cyl power (cross-cyl)': 6.7, 'balance': 2.4, 'next eye': 2.3}
+   minutes by stage [3.85, 3.86, 1.58] first cyl step {'chk': 1.0}
+   stage 0 [('sph_fine > sph_big > chk > cyl > power > axis > turn', 0.6522), ('sph_fine > sph_big > chk > cyl > power > axis', 0.2546), ('sph_fine > sph_big > chk', 0.0932)]
+   stage 1 [('sph_fine > sph_big > chk > cyl > power > axis > turn', 0.6414), ('sph_fine > sph_big > chk > cyl > power > axis', 0.2348), ('sph_fine > sph_big > chk', 0.1236), ('sph_fine > sph_big > chk > cyl > power', 0.0002)]
+   stage 2 [('ou > balance', 1.0)]
+   visit orders [('R L B', 0.8922), ('R L B R B', 0.036), ('R L B L B', 0.0348), ('R L B R L', 0.0094), ('R L B R L B', 0.006)]
+   0.42  R: sph_fine > sph_big > chk > cyl > power > axis > turn | L: sph_fine > sph_big > chk > cyl > power > axis > turn | B: ou > balance
+   0.11  R: sph_fine > sph_big > chk > cyl > power > axis | L: sph_fine > sph_big > chk > cyl > power > axis > turn | B: ou > balance
+   0.11  R: sph_fine > sph_big > chk > cyl > power > axis > turn | L: sph_fine > sph_big > chk > cyl > power > axis | B: ou > balance
+   0.08  R: sph_fine > sph_big > chk > cyl > power > axis | L: sph_fine > sph_big > chk > cyl > power > axis | B: ou > balance
+ai {'mean_err': 0.265, 'within_025': 0.461, 'exact': 0.296, 'both_within': 0.242, 'steps': 79.361, 'over_minus_young': 0.306, 'over_plus': 0.198, 'start_within_025': 0.028, 'points': 63.797, 'minutes': 3.229, 'happy': 0.65, 'annoyed': 0.256, 'recheck': 0.075, 'review': 0.019, 'timeout': 0.002, 'e_pt': 0.31, 'net': 50.88, 'se_within_025': 0.906, 'se_within_050': 0.977, 'cyl_within_025': 0.806, 'vec_within_025': 0.461, 'vec_within_050': 0.908, 'mean_dM': -0.039} {'wtr_within': 0.38923897237033445, 'atr_within': 0.33819444444444446, 'obl_within': 0.3549382716049383}
+   used {'sphere lens': 1.0, 'sphere 1-or-2': 1.0, 'chart reading': 1.0, 'line size': 0.96, 'cylinder': 1.0, 'axis turns': 0.84, 'astigmatism check': 0.0, 'check 180/90': 0.0, 'check 45/135': 0.0, 'spin': 1.0, 'cyl axis (cross-cyl)': 0.0, 'cyl power (cross-cyl)': 1.0, 'balance': 0.0, 'next eye': 1.0}
+   count {'sphere lens': 33.9, 'sphere 1-or-2': 3.5, 'chart reading': 11.6, 'line size': 4.6, 'cylinder': 7.3, 'axis turns': 1.8, 'astigmatism check': 0.0, 'check 180/90': 0.0, 'check 45/135': 0.0, 'spin': 4.0, 'cyl axis (cross-cyl)': 0.0, 'cyl power (cross-cyl)': 6.3, 'balance': 0.0, 'next eye': 5.1}
+   minutes by stage [0.55, 0.63, 2.01] first cyl step {'turn': 0.648, 'cyl': 0.3516, 'spin': 0.0004}
+   stage 0 [('turn > cyl > spin > power > sph_fine', 0.3512), ('turn > cyl > spin > power', 0.233), ('cyl > spin > power', 0.1834), ('cyl > spin > power > sph_fine', 0.123)]
+   stage 1 [('cyl > spin > power > sph_fine', 0.4016), ('turn > cyl > spin > power', 0.2928), ('cyl > spin > power', 0.1212), ('turn > cyl > spin > power > sph_fine', 0.112)]
+   stage 2 [('ou', 0.8658), ('ou > balance', 0.1342)]
+   visit orders [('B R L B', 0.9752), ('B R L B R L B', 0.0174), ('B R L B R L B R L B', 0.003), ('B R L B R L B R L B R L B', 0.0014), ('B R L B R L B R L B R L B R L B R L B R L B', 0.0006)]
+   0.21  B: ou | R: turn > cyl > spin > power > sph_fine | L: cyl > spin > power > sph_fine | B: ou
+   0.12  B: ou | R: turn > cyl > spin > power | L: turn > cyl > spin > power | B: ou
+   0.11  B: ou | R: cyl > spin > power | L: turn > cyl > spin > power | B: ou
+   0.08  B: ou | R: cyl > spin > power > sph_fine | L: cyl > spin > power > sph_fine | B: ou
+stage 0 sampled net -173.5 both first 0.0 spin 0.88 cyl 0.92 complaints 10.77 walkouts 0.68
+stage 2551 sampled net -193.7 both first 0.0 spin 0.97 cyl 0.99 complaints 1.65 walkouts 0.93
+stage 5060 sampled net -174.5 both first 0.0 spin 0.58 cyl 0.99 complaints 0.6 walkouts 0.77
+stage 10114 sampled net -123.2 both first 0.23 spin 0.02 cyl 0.59 complaints 6.97 walkouts 0.34
+stage 20200 sampled net -89.0 both first 0.63 spin 0.01 cyl 0.29 complaints 10.76 walkouts 0.23
+stage 50282 sampled net -71.5 both first 0.57 spin 0.02 cyl 0.19 complaints 10.57 walkouts 0.18
+stage 100240 sampled net -64.6 both first 0.6 spin 0.19 cyl 0.2 complaints 6.52 walkouts 0.11
+stage 201126 sampled net -51.4 both first 0.68 spin 0.25 cyl 0.25 complaints 5.13 walkouts 0.05
+stage 300843 sampled net -39.1 both first 0.71 spin 0.25 cyl 0.25 complaints 4.41 walkouts 0.02
+stage 501297 sampled net -24.7 both first 0.73 spin 0.3 cyl 0.3 complaints 3.69 walkouts 0.02
+stage 751332 sampled net -9.9 both first 0.73 spin 0.44 cyl 0.44 complaints 2.93 walkouts 0.01
+stage 1000094 sampled net 40.8 both first 0.99 spin 1.0 cyl 1.0 complaints 0.47 walkouts 0.01
+stage 1500133 sampled net 47.3 both first 1.0 spin 1.0 cyl 1.0 complaints 0.25 walkouts 0.0
+stage 1750166 sampled net 46.4 both first 1.0 spin 1.0 cyl 1.0 complaints 0.28 walkouts 0.01
+stage 1812949 sampled net 47.8 both first 1.0 spin 1.0 cyl 1.0 complaints 0.3 walkouts 0.01
+wrote data/results_h.json

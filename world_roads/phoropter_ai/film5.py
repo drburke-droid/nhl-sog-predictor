@@ -108,10 +108,10 @@ class Learn5(Learn4):
 class Practice5(F3.PracticeCurve):
     """Points per patient while it practised (glasses minus chair time), one caption at a time."""
 
-    def __init__(self, refs, notes, dur=30.0, draw_secs=18.0):
+    def __init__(self, refs, notes, dur=30.0, draw_secs=18.0, max_exams=None):
         xs, ys, mins = [], [], []
         for r in csv.DictReader(open(os.path.join(RUN, "logs", "train.csv"))):
-            if r.get("train_points"):
+            if r.get("train_points") and (max_exams is None or int(r["exams"]) <= max_exams):
                 xs.append(int(r["exams"]))
                 ys.append(float(r["train_points"]) - clinic.POINTS_PER_MIN * float(r["train_minutes"]))
                 mins.append(float(r["train_minutes"]))
@@ -304,7 +304,115 @@ class Results5(Results4):
 
 
 # ======================================================================== the film
-NOTES = {}
+def make_notes(R, ai, tb):
+    """Captions, placed by finding the moments in the traces and the practice checkpoints (so they follow the data)."""
+    def first(tr, cond, lo=0):
+        st = tr["steps"]
+        return next((k for k in range(lo, len(st)) if cond(st[k])), None)
+
+    def nth_next(tr, n):
+        ks = [k for k, s in enumerate(tr["steps"]) if s["a"] == E5.NEXT]
+        return ks[n] if len(ks) > n else None
+
+    N = {}
+    A, T = R["ai"]["habits"], R["textbook"]["habits"]
+    # ---- the practice curve
+    st = R["stages"]
+    pick = lambda cond: next((x["exams"] for x in st if cond(x)), None)
+    xs, ys = [], []
+    for r in csv.DictReader(open(os.path.join(RUN, "logs", "train.csv"))):
+        if r.get("train_points"):
+            xs.append(int(r["exams"]))
+            ys.append(float(r["train_points"]) - clinic.POINTS_PER_MIN * float(r["train_minutes"]))
+    ys = np.convolve(np.concatenate([np.full(4, ys[0]), ys, np.full(4, ys[-1])]), np.ones(9) / 9, "valid")
+    tb_net = R["textbook"]["summary"]["net"]
+    x_pass = next((x for x, y in zip(xs, ys) if y > tb_net), None)
+    x_ask = pick(lambda x: x["exams"] >= 5000 and x["habits"]["complaints"] >= 5)
+    x_both = pick(lambda x: x["habits"]["both_first"] >= 0.5)
+    x_spin = pick(lambda x: x["habits"]["used"]["spin"] >= 0.5 and x["exams"] > 0)
+    curve = [(1000, "Day one: random buttons. Almost every patient walks out.")]
+    if x_ask:
+        curve.append((x_ask, "It learns the final check talks back: some minus, check, more minus, check again…"))
+    if x_both:
+        curve.append((x_both, "It starts every exam with both eyes open."))
+    if x_spin and x_pass and abs(math.log10(x_spin / x_pass)) < 0.15:
+        curve.append((min(x_spin, x_pass), "It finds astigmatism: cylinder in, spin the axis. Now it beats the textbook."))
+    else:
+        if x_spin:
+            curve.append((x_spin, "It finds astigmatism: put in some cylinder, spin the axis, ask about power."))
+        if x_pass:
+            curve.append((x_pass, "It passes the textbook script."))
+    N["curve"] = sorted(curve)
+    # ---- the AI's exam
+    p = ai["patient"]
+    s_ai = ai["steps"]
+    k_om = first(ai, lambda s: s["a"] == E5.OU_M)
+    n_r, n_l, n_b = nth_next(ai, 2), nth_next(ai, 3), nth_next(ai, 4)
+    far = min(range(k_om or 0, n_r or len(s_ai)), key=lambda k: s_ai[k]["after"][0][0]) if k_om is not None else None
+    k_cyl = first(ai, lambda s: s["a"] == E5.CYL_MORE, n_r or 0)
+    k_spin = first(ai, lambda s: s["a"] == E5.SPIN, n_r or 0)
+    k_pw = first(ai, lambda s: s["a"] == E5.JCC_PW, n_r or 0)
+    k_sph = first(ai, lambda s: s["a"] == E5.SP25, k_pw or 0)
+    k_back = first(ai, lambda s: s["a"] == E5.OU_P, n_b or 0)
+    k_too = first(ai, lambda s: s["a"] in (E5.CMP_P, E5.CMP_M), k_back or 0)
+    k_rx = len(s_ai) - 1
+    ax_r = int(round(s_ai[k_spin]["after"][0][2])) % 180 or 180 if k_spin is not None else None
+    err = s_ai[-1]["err"]
+    if err[0] < 0.01 and err[1] < 0.01:
+        end_s = "Both eyes exactly right."
+    elif max(err) <= 0.26:
+        end_s = "Both eyes within a quarter dioptre of the truth."
+    else:
+        end_s = "Close, not perfect."
+    far_s = ui.fmt_d(s_ai[far]["after"][0][0]) if far is not None else ""
+    N["ai_exam"] = {k: v for k, v in {
+        0: "First move: uncover both eyes. The textbook starts with one eye covered.",
+        k_om: "Minus on both eyes, a quarter at a time, reading the chart every few clicks.",
+        far: f"It keeps going past clear, to {far_s}. A young eye can focus through extra minus: the letters stay sharp.",
+        n_r: "Now one eye at a time: the right eye, left eye covered.",
+        k_cyl: "No astigmatism question. It just puts in a little cylinder…",
+        k_spin: f"…and spins the axis. “Stop! There.” {ax_r}°.",
+        k_pw: "Then the cross-cylinder for POWER: more cylinder, or less? Spin again, power again, until they settle.",
+        k_sph: "As the cylinder goes up, it takes a little minus off the sphere, as the textbook does.",
+        n_l: "The left eye, right eye covered: the same recipe.",
+        n_b: "Both eyes open again. Now the extra minus comes off, a quarter at a time.",
+        k_too: "“1 or 2?” Too far: it puts some minus back.",
+        k_rx: f"The final check: “That’s clear.” {end_s}"}.items() if k is not None}
+    N["ai_slow"] = tuple(range(0, 6)) + tuple(range(n_r or 0, (n_r or 0) + 10)) + tuple(range(n_l or 0, (n_l or 0) + 4))
+    # ---- the textbook's exam
+    t_trial = first(tb, lambda s: s["a"] == E5.SM100)
+    t_fog = first(tb, lambda s: s["a"] == E5.SP25)
+    t_chk = first(tb, lambda s: s["a"] in (E5.CHK_180, E5.CHK_45))
+    t_pw = first(tb, lambda s: s["a"] == E5.JCC_PW)
+    t_ax = first(tb, lambda s: s["a"] == E5.JCC_AX)
+    t_l, t_b = nth_next(tb, 0), nth_next(tb, 1)
+    t_bal = first(tb, lambda s: s["a"] == E5.BALANCE)
+    t_clear = first(tb, lambda s: s["a"] == E5.OU_M, t_bal or 0)
+    N["tb_exam"] = {k: v for k, v in {
+        0: "Right eye first, left eye covered. “Read the smallest line you can.”",
+        t_trial: "Trial lenses: −2.00, then +2.00. Minus helps. Then a whole dioptre at a time, reading the chart.",
+        t_fog: "Best sphere: plus to blur, then minus a quarter at a time, reading the chart after every click.",
+        t_chk: "Astigmatism check: the cross-cylinder at 180° or 90°?",
+        t_pw: "Cylinder POWER: more or less? (Small cylinder: power first.)",
+        t_ax: "Cylinder AXIS: which way? It turns toward the clearer side.",
+        t_l: "The left eye, right eye covered: all of it again.",
+        t_b: "Both eyes open: fog both, split the chart with prism, make the two eyes equal…",
+        t_clear: "…then clear the fog together, and the final check."}.items() if k is not None}
+    N["tb_slow"] = tuple(range(0, 4))
+    # ---- the side-by-side
+    order = A["visit_orders"][0]
+    tm, am = R["textbook"]["summary"]["minutes"], R["ai"]["summary"]["minutes"]
+    N["sequences"] = [
+        (2.0, "The textbook: one eye at a time, each eye covered in turn, then both eyes together."),
+        (14.0, "The AI: both eyes open first. Then each eye alone, then both again."),
+        (21.0, f"Its first move is to overshoot: {far_s} in both eyes. The younger the patient, the further it goes. "
+               "Extra minus that a young eye can focus through costs nothing yet."),
+        (30.0, "Astigmatism: never the 180/90 check, never the cross-cylinder for AXIS. Cylinder in, spin the axis "
+               "until the patient says stop, then cross-cylinder POWER. Back and forth."),
+        (39.0, f"The extra minus comes off at the end, both eyes together. On {fmt_n(R['meta']['test_patients'])} "
+               f"new patients it took this same route {100 * order[1]:.0f}% of the time."),
+        (45.0, f"Average time in the chair: textbook {mmss(tm)}, AI {mmss(am)}.")]
+    return N
 
 
 def sections():
@@ -330,8 +438,9 @@ def sections():
                                       st0["sampled"]["minutes"])], dur=11.0,
                                     note="Random glasses never pass the final check. Almost everyone walks out.")
     refs = [("Textbook", R["textbook"]["summary"]["net"], TB_COL)]
-    S["curve"] = Practice5(refs, NOTES.get("curve", []))
     ai, tb = trace("h_ai"), trace("h_textbook")
+    NOTES = make_notes(R, ai, tb)
+    S["curve"] = Practice5(refs, NOTES.get("curve", []), max_exams=R["meta"]["exams"])
     S["ai_title"] = Say([(0.4, f"After {R['meta']['exams'] / 1e6:.1f} million patients", 60, INK, "Bold"),
                          (1.6, "The same first patient, again.", 36, INK2, "Medium")], 6.0)
     S["ai_exam"] = Exam5(ai, "THE AI", f"after {fmt_n(R['meta']['exams'])} practice patients",

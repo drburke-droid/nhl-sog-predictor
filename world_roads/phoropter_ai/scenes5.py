@@ -261,8 +261,8 @@ class Exam5(Exam3):
             if last.get("walked"):
                 n_c = sum(x["code"] in (7, 8, 9) for x in self.steps)
                 text(d, (W / 2, 700), "The patient walks out. No glasses.", 56, RED, "Bold", "ma", al)
-                text(d, (W / 2, 790), f"It tried “Prescribe” {n_c} times. Every time: “It’s still blurry.”" if n_c else
-                     "It never prescribed.", 34, INK2, "SemiBold", "ma", al)
+                text(d, (W / 2, 790), f"It tried the final check {n_c} times. Every time: “It’s still blurry.”" if n_c else
+                     "It never tried the final check.", 34, INK2, "SemiBold", "ma", al)
                 m2, s2 = divmod(int(round(last["secs"])), 60)
                 net = last["points"] - clinic.POINTS_PER_MIN * last["secs"] / 60
                 text(d, (80, 950), f"{len(self.steps)} buttons  ·  {m2}:{s2:02d} in the chair", 28, INK2, "SemiBold", a=al)
