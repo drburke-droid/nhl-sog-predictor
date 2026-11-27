@@ -6,7 +6,8 @@ Based on scenes4.py.
 * Left: the real phoropter, only the part being used lit up, with the lens values on it.
 * Right: what the patient sees. For "1 or 2?" both choices sit side by side, labelled 1 and 2.
 * Bottom: one line of dialogue, what the examiner did or asked, then what the patient said and how sure.
-* Top: chair time, and a progress bar through the three stages (right eye, left eye, both eyes).
+* Top: chair time, and a progress bar through the stages (right eye, left eye, both eyes; an eye can come
+  back after a complaint).
 * Key moments play slowly with a caption; repetitive stretches fast-forward with a ▶▶ badge.
 """
 import math
@@ -143,24 +144,29 @@ class Exam5(Exam3):
         text(d, (1880, 26), f"{m_}:{s_:02d}", 40, INK, "Bold", "ra")
         text(d, (1880 - d.textlength(f"{m_}:{s_:02d}", font=ui.font(40, "Bold")) - 14, 40), "chair time", 20, MUTED,
              "Medium", "ra")
-        # progress through the stages
+        # progress through the stages: one segment per stretch between occluder changes (the occluder cycles
+        # right -> left -> both -> right, so an eye can come back)
         x0, x1, yb = 40, 1880, 92
-        st_secs = [0.0, None, None]
-        for j, sx in enumerate(self.steps):
-            if sx["a"] == E3.NEXT:
-                st_secs[1 if st_secs[1] is None else 2] = sx["secs"]
         tot = max(self.total_secs, 1)
-        bounds = [0.0] + [b for b in st_secs[1:] if b is not None] + [tot]
+        bounds, phs, p_ = [0.0], [0], 0
+        for sx in self.steps:
+            if sx["a"] == E3.NEXT:
+                bounds.append(sx["secs"])
+                p_ = (p_ + 1) % 3
+                phs.append(p_)
+        bounds.append(tot)
         labs = ["RIGHT EYE", "LEFT EYE", "BOTH EYES"]
         for j in range(len(bounds) - 1):
             xa = x0 + (x1 - x0) * bounds[j] / tot
             xb = x0 + (x1 - x0) * bounds[j + 1] / tot
-            on = j == ph
-            rr(d, [xa + 2, yb, xb - 2, yb + 30], 6, fill=(255, 255, 255, 40 if on else 14))
+            on = bounds[j] <= secs < bounds[j + 1] or (j == len(bounds) - 2 and secs >= bounds[j])
+            rr(d, [xa + 2, yb, max(xa + 3, xb - 2), yb + 30], 6, fill=(255, 255, 255, 40 if on else 14))
             fillw = (x1 - x0) * min(max(secs - bounds[j], 0), bounds[j + 1] - bounds[j]) / tot
             if fillw > 1:
                 rr(d, [xa + 2, yb, xa + 2 + fillw, yb + 30], 6, fill=tuple(self.who_col) + (150,))
-            text(d, ((xa + xb) / 2, yb + 15), labs[j], 16, INK if on else MUTED, "Bold", "mm")
+            lab = labs[phs[j]]
+            if xb - xa > d.textlength(lab, font=ui.font(16, "Bold")) + 12:
+                text(d, ((xa + xb) / 2, yb + 15), lab, 16, INK if on else MUTED, "Bold", "mm")
 
         # ---- which eye is doing what
         for e, (lab, x) in enumerate((("RIGHT EYE", 60), ("LEFT EYE", 520))):
@@ -252,6 +258,16 @@ class Exam5(Exam3):
             last = self.steps[-1]
             rr(d, [40, 640, 1880, 1060], 20, fill=PANEL + (int(250 * al),), outline=LINE + (int(255 * al),), width=3)
             r2 = lambda v: math.floor(abs(v) * 100 + 0.5) / 100
+            if last.get("walked"):
+                n_c = sum(x["code"] in (7, 8, 9) for x in self.steps)
+                text(d, (W / 2, 700), "The patient walks out. No glasses.", 56, RED, "Bold", "ma", al)
+                text(d, (W / 2, 790), f"It tried “Prescribe” {n_c} times. Every time: “It’s still blurry.”" if n_c else
+                     "It never prescribed.", 34, INK2, "SemiBold", "ma", al)
+                m2, s2 = divmod(int(round(last["secs"])), 60)
+                net = last["points"] - clinic.POINTS_PER_MIN * last["secs"] / 60
+                text(d, (80, 950), f"{len(self.steps)} buttons  ·  {m2}:{s2:02d} in the chair", 28, INK2, "SemiBold", a=al)
+                text(d, (1840, 950), f"{net:+.0f} points", 44, INK, "Bold", "ra", al)
+                return np.asarray(im)
             for e in (0, 1):
                 S, C, ax = last["after"][e]
                 err = rx_error(to_pv(S, C, ax), self.E[e])
