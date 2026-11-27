@@ -1,4 +1,47 @@
-# Results: the clinic video
+# Results: the clinic video (autorefractor start)
+
+5,000 new simulated patients (seed 2026). Every exam starts at the patient's autorefractor reading (env3.ar_pair). The AI is the final network after 3,426,009 practice patients (`runs/f4/ckpt/final.pt`), choosing its most likely button at each step. The textbook script starts from the same reading. Net points = points for the glasses minus 4 per minute of chair time. See CLINIC.md.
+
+| Examiner | Net points | Points for the glasses | Chair time | Buttons | SE within 0.25 D | Cylinder within 0.25 D | Whole Rx within 0.25 D | Exact (<0.13 D) | Happy | Rx check + review | Over-minused, under 40 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Autorefractor reading alone | +3.5 | +3.5 | 0:00 | 1 | 57.1% | 44.0% | 10.5% | 5.4% | 28.9% | 36.4% | 58.1% |
+| Textbook script | +25.5 | +50.4 | 6:14 | 105 | 75.8% | 88.0% | 45.2% | 34.0% | 59.8% | 16.5% | 43.1% |
+| AI | +69.0 | +80.0 | 2:45 | 51 | 96.8% | 85.3% | 65.9% | 51.6% | 77.9% | 3.9% | 12.5% |
+
+Astigmatism of 0.75 D or more, eyes within 0.25 D by orientation:
+
+| Examiner | With the rule | Against the rule | Oblique |
+|---|---:|---:|---:|
+| Autorefractor reading alone | 10.7% | 10.7% | 7.4% |
+| Textbook script | 41.2% | 43.5% | 43.8% |
+| AI | 64.7% | 57.2% | 54.3% |
+
+Repeatability (the same 2,000 patients twice, fresh answers; spherical equivalent):
+
+| Examiner | Agree within 0.25 D | Within 0.50 D |
+|---|---:|---:|
+| Textbook script | 64.5% | 84.6% |
+| AI | 95.0% | 99.2% |
+
+Habits per exam (mean):
+
+| | AI | Textbook |
+|---|---:|---:|
+| sphere lens | 14.5 | 46.1 |
+| sphere 1-or-2 | 1.9 | 0.0 |
+| chart reading | 8.9 | 32.8 |
+| line size | 2.0 | 4.8 |
+| cylinder | 4.2 | 3.1 |
+| axis | 3.1 | 3.3 |
+| cross-cylinder | 10.9 | 10.0 |
+| balance | 3.0 | 2.1 |
+| next eye | 2.0 | 2.0 |
+| cross-cylinder axis questions | 5.0 | 4.7 |
+
+---
+
+# Earlier: the plano-start comparison (after practice term 2)
+
 
 5,000 new simulated patients (seed 2026), every exam starting at plano, the axis dial where the last patient left it. The AI is the final network after 2,697,295 practice patients (`runs/f2/ckpt/final.pt`), choosing its most likely button at each step. Error is optics.rx_error; SE is the spherical equivalent. Points are clinic points (clinic.py); net = points for the glasses minus 4 per minute of chair time. See CLINIC.md.
 

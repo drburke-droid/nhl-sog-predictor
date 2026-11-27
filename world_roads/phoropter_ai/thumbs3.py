@@ -42,10 +42,10 @@ def grid(d, x0, y0, counts, n=300, cols=20, cell=16):
                     fill=OUTC[colors[j]])
 
 
-def thumb_B(R):
+def thumb_B(R, first=None, tag="thumb3_B"):
     """Day one vs graduation: 300 patients each, one square per patient."""
     im, d = canvas()
-    first = R["stages"][0]["sampled_outcomes"]
+    first = first or R["stages"][0]["sampled_outcomes"]
     last = R["ai"]["outcomes"]
     grid(d, 80, 196, first, cols=15, cell=25)
     grid(d, 825, 196, last, cols=15, cell=25)
@@ -53,10 +53,10 @@ def thumb_B(R):
     shadow_text(d, (267, 118), "DAY ONE", 52, CU.OUT_COL["review"])
     shadow_text(d, (1012, 124), f"{R['meta']['exams'] / 1e6:.1f} MILLION PATIENTS LATER", 34, CU.OUT_COL["happy"])
     d.polygon([(500, 420), (720, 420), (720, 385), (790, 445), (720, 505), (720, 470), (500, 470)], fill=ui.GOLD)
-    im.save(os.path.join(ui.OUT, "thumb3_B.png"))
+    im.save(os.path.join(ui.OUT, f"{tag}.png"))
 
 
-def thumb_C(R):
+def thumb_C(R, tag="thumb3_C"):
     """AI vs the textbook: minutes and happy patients."""
     im, d = canvas()
     ai, tb = R["ai"]["summary"], R["textbook"]["summary"]
@@ -69,7 +69,7 @@ def thumb_C(R):
         d.text((x, 450), "minutes in the chair", font=ui.ST.font(30, "SemiBold"), fill=ui.INK2, anchor="mm")
         shadow_text(d, (x, 500), f"{100 * s['happy']:.0f}%", 84, CU.OUT_COL["happy"])
         d.text((x, 630), "happy patients", font=ui.ST.font(30, "SemiBold"), fill=ui.INK2, anchor="mm")
-    im.save(os.path.join(ui.OUT, "thumb3_C.png"))
+    im.save(os.path.join(ui.OUT, f"{tag}.png"))
 
 
 if __name__ == "__main__":
@@ -80,4 +80,9 @@ if __name__ == "__main__":
         R = json.load(open(p))
         thumb_B(R)
         thumb_C(R)
+        g = os.path.join(HERE, "data", "results_g.json")
+        if os.path.exists(g):
+            G = json.load(open(g))
+            thumb_B(G, first=R["stages"][0]["sampled_outcomes"], tag="thumb4_B")
+            thumb_C(G, tag="thumb4_C")
     print("thumbnails written")

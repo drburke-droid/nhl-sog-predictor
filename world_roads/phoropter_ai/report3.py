@@ -13,6 +13,39 @@ def mmss(m):
     return f"{a}:{b:02d}"
 
 
+def ar_section(G):
+    m = G["meta"]
+    L = ["# Results: the clinic video (autorefractor start)", "",
+         f"{m['test_patients']:,} new simulated patients (seed {m['seed']}). Every exam starts at the patient's "
+         "autorefractor reading (env3.ar_pair). The AI is the final network after "
+         f"{m['exams']:,} practice patients (`runs/f4/ckpt/final.pt`), choosing its most likely button at each step. "
+         "The textbook script starts from the same reading. Net points = points for the glasses minus 4 per minute "
+         "of chair time. See CLINIC.md.", "",
+         "| Examiner | Net points | Points for the glasses | Chair time | Buttons | SE within 0.25 D | Cylinder within "
+         "0.25 D | Whole Rx within 0.25 D | Exact (<0.13 D) | Happy | Rx check + review | Over-minused, under 40 |",
+         "|---|" + "---:|" * 11]
+    for name, key in (("Autorefractor reading alone", "ar"), ("Textbook script", "textbook"), ("AI", "ai")):
+        s = G[key]["summary"]
+        L.append(f"| {name} | {s['net']:+.1f} | {s['points']:+.1f} | {mmss(s['minutes'])} | {s['steps']:.0f} | "
+                 f"{pct(s['se_within_025'])} | {pct(s['cyl_within_025'])} | {pct(s['vec_within_025'])} | {pct(s['exact'])} | "
+                 f"{pct(s['happy'])} | {pct(s['recheck'] + s['review'])} | {pct(s['over_minus_young'])} |")
+    L += ["", "Astigmatism of 0.75 D or more, eyes within 0.25 D by orientation:", "",
+          "| Examiner | With the rule | Against the rule | Oblique |", "|---|---:|---:|---:|"]
+    for name, key in (("Autorefractor reading alone", "ar"), ("Textbook script", "textbook"), ("AI", "ai")):
+        o = G[key]["orient"]
+        L.append(f"| {name} | {pct(o['wtr_within'])} | {pct(o['atr_within'])} | {pct(o['obl_within'])} |")
+    L += ["", "Repeatability (the same 2,000 patients twice, fresh answers; spherical equivalent):", "",
+          "| Examiner | Agree within 0.25 D | Within 0.50 D |", "|---|---:|---:|"]
+    for name, key in (("Textbook script", "textbook"), ("AI", "ai")):
+        r = G[key]["repeat"]
+        L.append(f"| {name} | {pct(r['within_025'])} | {pct(r['within_050'])} |")
+    L += ["", "Habits per exam (mean):", "", "| | AI | Textbook |", "|---|---:|---:|"]
+    for gname in G["ai"]["habits"]["mean_count"]:
+        L.append(f"| {gname} | {G['ai']['habits']['mean_count'][gname]:.1f} | {G['textbook']['habits']['mean_count'][gname]:.1f} |")
+    L.append(f"| cross-cylinder axis questions | {G['ai']['jcc_axis']:.1f} | {G['textbook']['jcc_axis']:.1f} |")
+    return L
+
+
 def main():
     R = json.load(open(os.path.join(HERE, "data", "results_f.json")))
     st = json.load(open(os.path.join(HERE, "data", "stages_f.json")))
@@ -68,6 +101,10 @@ def main():
         L.append(f"| {r['exams']:,} | {r['term']} | {r['net']:+.1f} | {mmss(r['minutes'])} | {pct(r['happy'])} | {pct(r['se'])} | "
                  f"{pct(r['vec'])} | {pct(r['plano_rx'])} | {h['sphere 1-or-2']:.1f} | {h['chart reading']:.1f} | "
                  f"{h['cross-cylinder']:.1f} | {h['axis']:.1f} | {h['balance']:.1f} |")
+    g = os.path.join(HERE, "data", "results_g.json")
+    if os.path.exists(g):
+        G = json.load(open(g))
+        L = ar_section(G) + ["", "---", "", "# Earlier: the plano-start comparison (after practice term 2)", ""] + L[1:]
     open(os.path.join(HERE, "RESULTS_CLINIC.md"), "w").write("\n".join(L) + "\n")
     print("wrote RESULTS_CLINIC.md")
 
