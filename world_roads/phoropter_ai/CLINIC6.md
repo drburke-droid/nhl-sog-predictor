@@ -21,7 +21,8 @@ Code: `env6.py`, `clinicians5.py` (`borish`), `train.py --clinic --env6`, `evalu
 | What | How |
 |---|---|
 | Spin the axis | The patient watches the dial turn and compares what they see with what they saw a moment ago, not two lenses flipped side by side. Their judgement noise is 3× their noise on a "1 or 2?" question (`SPIN_K`), and "stop!" comes late: the dial turns on by N(6°, 4°) (never backwards) before it stops. A lapse stops it anywhere. |
-| Remarks (instead of the smile) | After a lens change, if the change in what they see is at least a line (through their usual noise), the patient sometimes says so, each patient with their own chattiness (5–40% of noticeable changes): "Oh, that's clear!" (better, and within a line of the best they can see), "Better… but it's not that clear." (better, still more than a line off), "Hmm, that's not as clear." (worse). The AI sees the remark (which one, the lenses then, how long ago). It is never reward. |
+| Remarks (instead of the smile) | After a lens change, if the change in what they see is at least a line (through their usual noise), the patient sometimes says so, each patient with their own chattiness (5–40% of noticeable changes): "Oh, that's clear!" (better, and within a line of the best they can see), "Better… but it's not that clear." (better, still more than a line off), "Hmm, that's not as clear." (worse). The AI sees the remark (which one, the lenses then, how long ago). In training each remark also counts: 5 points per line the patient's vision (both eyes, each through its own lens) improved since their previous remark, or lost. Summed over an exam that is the change from the start to the last remark, so going back and forth earns nothing. On average a remark comes on about 1 button in 50. |
+| Only the clock | The patient walks out at 15 minutes. env5 also ended the exam at 400 buttons (a safety cap); at 1 second a lens click, that was a walkout after 7 minutes, cheaper than 15. |
 | Reliability dial | Each patient's answer noise and lapse rate are multiplied by a factor: in practice drawn per patient, log-uniform between 0.5 and 2.5; in the tests fixed at 0.5 (reliable), 1 (typical: the version-5 patient) or 2 (unreliable). Chart reading and the final check are unchanged. |
 | Everything else | As in version 5: graded answers ("much / a little / the same"), the power-search check, the final check ("my left eye is still blurry", 10 seconds, the exam goes on), the occluder cycling right → left → both, 15 minutes or 400 buttons and the patient walks out. |
 
@@ -71,8 +72,19 @@ by 0.5 D or more 24% → 13%; walkouts 5.4% → 8.1% (the exam is longer: 9.7 mi
 ## 3. Training
 
 ```bash
-python train.py --clinic --env6 --gamma 1.0 --steps 200e6 --ent 0.01 --lr 3e-4 --eval_every 20 --out runs/i
+python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 200e6 --ent 0.01 --lr 3e-4 --eval_every 20 --out runs/j
 ```
 
 One run from random weights. No mentor, no smile, no curriculum. The held-out checks during training use
 typical patients (dial 1).
+
+Two false starts first (both from random weights):
+
+- **Remarks as information only** (`runs/i0`, 40,000 patients). With no feedback until the final check, it
+  learned within 5,000 patients to stop pressing the final check (each refusal costs 10 seconds; at first
+  almost nothing passes), then to click lens buttons until the 400-button cap: every patient walked out, but
+  after 7 minutes instead of 15. At 40,000 patients it still never prescribed (−146 points per patient; the
+  version-5 run was at −78 by then).
+- **Remarks counting, button cap still on** (`runs/j`, first try, 23,000 patients, not kept): the same
+  shortcut. With the cap lifted (walkout only at 15 minutes), the same settings learned to prescribe within
+  20,000 patients.
