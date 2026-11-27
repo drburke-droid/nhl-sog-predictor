@@ -9,8 +9,9 @@ Like env3.py (both eyes start at plano, the axis dial wherever the last patient 
 The cross-cylinder refinements are still there: "cylinder axis: which way?" and "cylinder power: more or less?".
 * "It's still blurry": before they leave, the patient reads the chart with each eye through the new glasses. If
   either eye sees clearly worse than it could (about two lines), they say so ("my left eye is still blurry") and
-  the exam goes on: Prescribe doesn't end it. Being told "we're done" while it is still blurry costs the
-  patient's confidence: 20 points each time, as well as the 10 seconds. (env.complain = False turns this off.)
+  the exam goes on: Prescribe doesn't end it. It costs 10 seconds. The first complaint is just information;
+  after that, each time the patient is told "we're done" while it is still blurry costs their confidence in
+  the examiner: 20 points. (env.complain = False turns this off.)
 * The occluder cycles: right eye, left eye, both eyes, then back to the right eye, so either eye can be redone.
 
 The patient's smile (optional, env.smile = weight): when the letters get clearer for either eye (the average
@@ -370,7 +371,8 @@ class ClinicEnv(BinocularEnv):
         refused = blurry.any(1)
         if refused.any():
             self.secs[refused] += SECS_COMPLAIN
-            rew = rew - refused * (SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 + COMPLAIN_PTS) / clinic.SCALE
+            again = refused & (self.n_comp >= 1)             # the first complaint costs only its 10 seconds
+            rew = rew - (refused * SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 + again * COMPLAIN_PTS) / clinic.SCALE
             self.n_comp[refused] += 1
             resp[refused, 2:4] = blurry[refused]
             code = np.where(refused, np.where(blurry[:, 0] & blurry[:, 1], 9, np.where(blurry[:, 0], 7, 8)), code)
@@ -432,7 +434,7 @@ class ClinicEnv(BinocularEnv):
             walked = ~accepted[idx]                            # out of time: the patient walks out without glasses
             pts = np.where(walked, clinic.WALKOUT, clinic.expected_points(ept))
             rew[idx] += pts / clinic.SCALE                     # (complaints were charged when they happened)
-            pts = pts - COMPLAIN_PTS * self.n_comp[idx]
+            pts = pts - COMPLAIN_PTS * np.maximum(self.n_comp[idx] - 1, 0)
             E0, E1 = self.true_pv(0, idx), self.true_pv(1, idx)
             F0, F1 = self.lens_pv(0, idx), self.lens_pv(1, idx)
             zero = (np.zeros(len(idx)),) * 3
