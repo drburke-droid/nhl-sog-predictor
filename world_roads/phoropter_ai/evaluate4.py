@@ -36,8 +36,10 @@ def main(n_test=5000):
     R = {"meta": {"test_patients": n_test, "seed": SEED, "start": "autorefractor"}}
     F = json.load(open(os.path.join(DATA, "results_f.json")))
     for k in ("term1", "term2"):
-        R[k] = F[k]
+        if k in F:
+            R[k] = F[k]
     R["meta"].update(term1_end=F["meta"]["term1_end"], term2_end=F["meta"].get("term2_end", 2_697_295))
+    R["meta"]["term3_end"] = 3_098_047
     final = os.path.join(RUN4, "ckpt", "final.pt")
     agent, meta = load(final)
     R["meta"].update(exams=meta["exams"], steps=meta["steps"], ckpt="final.pt")

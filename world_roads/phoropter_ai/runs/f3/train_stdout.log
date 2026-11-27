@@ -131,3 +131,12 @@ initialised from runs/f2/ckpt/final.pt {'exams': 2697295, 'steps': 170917888, 'n
 [shape 0.00] up 645/1220 steps 213.2M exams 3,063,713 42.4 min | train err 0.274 within 0.39 len 106.7 ent 1.55 pts +54.9 min 5.3
 [shape 0.00] up 650/1220 steps 213.5M exams 3,066,718 42.7 min | train err 0.285 within 0.39 len 110.0 ent 1.59 pts +52.6 min 5.4 | EVAL pts +67.3 min 4.3 happy 0.68 | EVAL err 0.226 within 0.511 exact 0.378 steps 79.8 overminus_y 0.20
 [shape 0.00] up 655/1220 steps 213.8M exams 3,069,767 43.0 min | train err 0.262 within 0.44 len 108.4 ent 1.55 pts +55.3 min 5.4
+[shape 0.00] up 660/1220 steps 214.2M exams 3,072,854 43.3 min | train err 0.276 within 0.42 len 104.5 ent 1.50 pts +55.3 min 5.3
+[shape 0.00] up 665/1220 steps 214.5M exams 3,076,045 43.5 min | train err 0.261 within 0.42 len 103.6 ent 1.45 pts +57.9 min 5.3
+[shape 0.00] up 670/1220 steps 214.8M exams 3,079,234 43.8 min | train err 0.247 within 0.45 len 102.5 ent 1.47 pts +58.8 min 5.3
+[shape 0.00] up 675/1220 steps 215.2M exams 3,082,418 44.1 min | train err 0.267 within 0.43 len 102.6 ent 1.50 pts +57.1 min 5.3 | EVAL pts +69.3 min 4.5 happy 0.70 | EVAL err 0.222 within 0.568 exact 0.423 steps 78.4 overminus_y 0.14
+[shape 0.00] up 680/1220 steps 215.5M exams 3,085,502 44.4 min | train err 0.275 within 0.44 len 107.8 ent 1.51 pts +57.9 min 5.5
+[shape 0.00] up 685/1220 steps 215.8M exams 3,088,608 44.7 min | train err 0.255 within 0.44 len 105.1 ent 1.49 pts +59.0 min 5.4
+[shape 0.00] up 690/1220 steps 216.1M exams 3,091,770 44.9 min | train err 0.290 within 0.43 len 104.7 ent 1.51 pts +56.1 min 5.4
+[shape 0.00] up 695/1220 steps 216.5M exams 3,094,891 45.2 min | train err 0.264 within 0.41 len 105.6 ent 1.50 pts +55.3 min 5.4
+[shape 0.00] up 700/1220 steps 216.8M exams 3,098,047 45.5 min | train err 0.271 within 0.43 len 103.7 ent 1.47 pts +58.9 min 5.3 | EVAL pts +68.6 min 4.3 happy 0.69 | EVAL err 0.218 within 0.533 exact 0.408 steps 76.6 overminus_y 0.16

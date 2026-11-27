@@ -123,6 +123,54 @@ class Curve4(F3.PracticeCurve):
         return np.asarray(im)
 
 
+class LinearCurve(Section):
+    """The later practice terms on a linear axis: where the clinic changed, and how the AI recovered each time."""
+
+    def __init__(self, notes, marks, x_from, dur=24.0, draw_secs=13.0):
+        self.xs, self.ys, self.mins, self.sh = F3.practice_curve()
+        m = self.xs >= x_from
+        self.xs, self.ys, self.sh = self.xs[m], self.ys[m], self.sh[m]
+        self.notes, self.marks, self.dur, self.draw_secs = notes, marks, dur, draw_secs
+        self.x0, self.x1 = x_from, self.xs.max()
+        self.X0, self.X1, self.Y0, self.Y1 = 200, 1720, 880, 200
+        self.v0, self.v1 = -120, 80
+
+    def px(self, ex, v):
+        return (self.X0 + (self.X1 - self.X0) * (ex - self.x0) / (self.x1 - self.x0),
+                self.Y0 + (self.Y1 - self.Y0) * (v - self.v0) / (self.v1 - self.v0))
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        text(d, (60, 30), "MORE PRACTICE", 40, INK, "Bold", a=a)
+        text(d, (60, 86), "Points per patient while it practised (glasses minus chair time)", 24, MUTED, "Medium", a=a)
+        X0, X1, Y0, Y1 = self.X0, self.X1, self.Y0, self.Y1
+        for v in range(-100, 81, 50):
+            _, y = self.px(self.x0, v)
+            d.line([(X0, y), (X1, y)], fill=F3.GRID + (int(255 * a),), width=1)
+            text(d, (X0 - 14, y), f"{v:+d}" if v else "0", 20, MUTED, "Medium", "rm", a)
+        for e in np.arange(1.5e6, self.x1 + 1, 0.5e6):
+            x, _ = self.px(e, 0)
+            text(d, (x, Y0 + 14), f"{e / 1e6:.1f} million", 19, MUTED, "Medium", "ma", a)
+        prog = smooth((t - 1.0) / self.draw_secs)
+        cut = self.x0 + (self.x1 - self.x0) * prog
+        for i, (xe, lab) in enumerate(self.marks):
+            if cut >= xe:
+                xm, _ = self.px(xe, 0)
+                d.line([(xm, Y1 - 10), (xm, Y0)], fill=GOLD + (int(220 * a),), width=3)
+                ui.badge(d, xm, Y1 - 40, str(i + 1), GOLD, a=a, r=26)
+        m = self.xs <= cut
+        P = [self.px(x, y) for x, y in zip(self.xs[m], self.ys[m])]
+        if len(P) > 1:
+            d.line(P, fill=AI_COL + (int(255 * a),), width=5, joint="curve")
+            d.ellipse([P[-1][0] - 8, P[-1][1] - 8, P[-1][0] + 8, P[-1][1] + 8], fill=AI_COL + (int(255 * a),))
+            text(d, (P[-1][0] + 14, P[-1][1] - 34), f"{self.ys[m][-1]:+.0f}", 30, INK, "Bold", "la", a)
+        cur = [s_ for ex_n, s_ in self.notes if cut >= ex_n]
+        if cur:
+            big_title(d, W / 2, 960, cur[-1], 34, a, GOLD, "SemiBold")
+        return np.asarray(im)
+
+
 # ======================================================================== the textbook, short
 class Textbook4(Section):
     STEPS = [("Start", "at the autorefractor reading"),
@@ -262,17 +310,19 @@ def sections():
                                     note="Most people need real glasses. Random ones aren't glasses.")
     refs = [("Plano for everyone", RF["plano"]["summary"]["net"], (0x6B, 0x76, 0x89)),
             ("Textbook (from plano)", RF["textbook"]["summary"]["net"], TB_COL)]
-    term3_end = R["meta"].get("term3_end")
+    term3_end = R["meta"].get("term3_end", F3.TERM3_END)
     S["curve1"] = Curve4(refs, [(20_000, "It starts asking “1 or 2?”"),
                                 (50_000, "It stops handing out plano"),
                                 (200_000, "It starts using the cross-cylinder"),
                                 (1_000_000, "It balances the two eyes with prism, and gets faster")],
                          dur=26.0, draw_secs=16.0, x_to=TERM1_END, term3_end=term3_end)
     S["changes"] = Changes()
-    S["curve2"] = Curve4(refs, [(1_700_000, "1: the dial anywhere. It crashes, then recovers"),
-                                (2_750_000, "2: astigmatism at every angle. It learns to refine the cylinder"),
-                                ((term3_end or 4e6) + 30_000, "3: the autorefractor. Shorter exams")],
-                         dur=22.0, draw_secs=12.0, x_from=TERM1_END, title="LEARNING ON THE JOB", term3_end=term3_end)
+    S["curve2"] = LinearCurve([(1_400_000, "Fast, good at sphere, never turns the axis"),
+                               (TERM1_END, "1: the dial starts anywhere. It crashes, then recovers"),
+                               (TERM2_END, "2: astigmatism at every angle. It learns to refine the cylinder"),
+                               (term3_end, "3: the autorefractor. Every exam starts closer")],
+                              [(TERM1_END, "dial"), (TERM2_END, "astigmatism"), (term3_end, "autorefractor")],
+                              x_from=1_400_000, dur=26.0, draw_secs=15.0)
     ai = trace("g_ai")
     tb = trace("g_textbook")
     S["ai_title"] = Say([(0.4, f"After {R['meta']['exams'] / 1e6:.1f} million patients", 60, INK, "Bold"),

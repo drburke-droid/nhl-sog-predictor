@@ -1,0 +1,8 @@
+initialised from runs/f3/ckpt/term3_full.pt {'exams': 3098047, 'steps': 216793088, 'n_obs': 886, 'n_act': 27, 'flag': False, 'masked': True, 'kind': 'clinic', 'update': 700}
+[shape 0.00] up 1/915 steps 216.9M exams 3,098,488 0.2 min | train err 0.225 within 0.49 len 53.2 ent 1.50 pts +65.7 min 2.9 | EVAL pts +71.9 min 3.4 happy 0.71 | EVAL err 0.206 within 0.541 exact 0.422 steps 57.2 overminus_y 0.15
+[shape 0.00] up 5/915 steps 217.1M exams 3,102,007 0.4 min | train err 0.248 within 0.46 len 74.5 ent 1.49 pts +61.1 min 3.9
+[shape 0.00] up 10/915 steps 217.4M exams 3,106,442 0.7 min | train err 0.247 within 0.46 len 72.2 ent 1.38 pts +63.2 min 3.9
+[shape 0.00] up 15/915 steps 217.8M exams 3,111,175 1.1 min | train err 0.232 within 0.51 len 70.0 ent 1.34 pts +65.8 min 3.9
+[shape 0.00] up 20/915 steps 218.1M exams 3,115,890 2.6 min | train err 0.240 within 0.48 len 70.1 ent 1.35 pts +64.7 min 3.9
+[shape 0.00] up 25/915 steps 218.4M exams 3,120,739 3.0 min | train err 0.223 within 0.50 len 68.2 ent 1.30 pts +68.4 min 3.8 | EVAL pts +74.4 min 3.3 happy 0.73 | EVAL err 0.194 within 0.568 exact 0.427 steps 54.5 overminus_y 0.10
+[shape 0.00] up 30/915 steps 218.8M exams 3,125,652 3.3 min | train err 0.226 within 0.50 len 64.3 ent 1.24 pts +67.3 min 3.6

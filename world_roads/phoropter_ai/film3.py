@@ -128,6 +128,7 @@ class OutcomeGrid(Section):
 # ======================================================================== the practice curve
 TERM1_END = 1_630_473          # practice term 1 ended here (the axis dial always started at 180)
 TERM2_END = 2_697_295          # practice term 2 ended here (then term 3: astigmatism at every angle)
+TERM3_END = 3_098_047          # practice term 3 ended here (then term 4: the autorefractor)
 
 
 def practice_curve():
@@ -135,7 +136,8 @@ def practice_curve():
     xs, ys, mins, sh = [], [], [], []
     for path, lo, hi in ((os.path.join(HERE, "runs", "f", "logs", "train.csv"), 0, TERM1_END),
                          (os.path.join(HERE, "runs", "f2", "logs", "train.csv"), TERM1_END + 1, TERM2_END),
-                         (os.path.join(HERE, "runs", "f3", "logs", "train.csv"), TERM2_END + 1, 10 ** 9)):
+                         (os.path.join(HERE, "runs", "f3", "logs", "train.csv"), TERM2_END + 1, TERM3_END),
+                         (os.path.join(HERE, "runs", "f4", "logs", "train.csv"), TERM3_END + 1, 10 ** 9)):
         if not os.path.exists(path):
             continue
         for r in csv.DictReader(open(path)):
@@ -149,7 +151,8 @@ def practice_curve():
     ker = np.ones(k) / k
     pad = lambda v: np.concatenate([np.full(k // 2, v[0]), v, np.full(k // 2, v[-1])])
     sm = lambda v: np.convolve(pad(v), ker, "valid")
-    terms = [xs <= TERM1_END, (xs > TERM1_END) & (xs <= TERM2_END), xs > TERM2_END]   # smooth each term on its own
+    terms = [xs <= TERM1_END, (xs > TERM1_END) & (xs <= TERM2_END), (xs > TERM2_END) & (xs <= TERM3_END),
+             xs > TERM3_END]                                # smooth each term on its own
     ys = np.concatenate([sm(ys[m]) for m in terms if m.any()])
     mins = np.concatenate([sm(mins[m]) for m in terms if m.any()])
     return xs, ys, mins, sh
