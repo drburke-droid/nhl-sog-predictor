@@ -44,6 +44,12 @@ def main():
     ap.add_argument("--letters", action="store_true", help="letter-by-letter projector chart with line buttons")
     ap.add_argument("--binocular", action="store_true", help="two eyes and binocular balance (env2.py)")
     ap.add_argument("--clinic", action="store_true", help="the clinic exam (env3.py): plano start, clinic points")
+    ap.add_argument("--env5", action="store_true", help="with --clinic: the version-5 exam (env5.py): graded answers, "
+                    "cylinder checks at fixed orientations, axis spin")
+    ap.add_argument("--smile", type=float, default=0.0,
+                    help="env5: reward when the patient's letters get clearer (per 10 lines of acuity)")
+    ap.add_argument("--easy_frac", type=float, default=0.0,
+                    help="clinic: fraction of training whose patients start mild (small prescriptions), fading")
     ap.add_argument("--init", default=None, help="start from these weights (e.g. the watched-the-textbook network)")
     ap.add_argument("--critic_warmup", type=int, default=0,
                     help="first N updates train only the value estimate, so the starting habits are not disturbed")
@@ -69,16 +75,32 @@ def main():
 
     from functools import partial
     from patients import sample_patients
-    state = {"hard": 0.0, "axis_mix": 0.0}
+    state = {"hard": 0.0, "axis_mix": 0.0, "easy": 0.0}
     if args.clinic:
         global MILESTONES
         MILESTONES = CLINIC_MILESTONES
         from env3 import ClinicEnv, plano_pair, ar_pair, PlanoPairTestSet, ARPairTestSet
         from clinicians3 import run3, summary3
+        if args.env5:
+            from env5 import ClinicEnv
+            from clinicians5 import run3, summary3
+        from patients import q as quant
+
+        def mild(p, f):
+            """Simpler patients (the clinic books easy cases first): prescriptions scaled toward plano by f."""
+            if f <= 0:
+                return p
+            for suf in ("", "_os"):
+                M = p["S" + suf] + p["C" + suf] / 2
+                C = quant(p["C" + suf] * (1 - f))
+                p["C" + suf] = C
+                p["S" + suf] = quant(M * (1 - f) - C / 2)
+            return p
         ar = args.start == "objective"                   # term 4: every exam starts at the autorefractor reading
         env = ClinicEnv(args.envs, seed=args.seed + 1, start_mode="objective" if ar else "plano",
-                        sampler=lambda rng, n: (ar_pair if ar else plano_pair)(rng, n, hard=state["hard"],
-                                                                              axis_mix=state["axis_mix"]))
+                        sampler=lambda rng, n: mild((ar_pair if ar else plano_pair)(rng, n, hard=state["hard"],
+                                                                                   axis_mix=state["axis_mix"]),
+                                                    0.6 * state["easy"]))
     elif args.binocular:
         from env2 import BinocularEnv
         from patients import sample_pair, PairTestSet
@@ -88,6 +110,8 @@ def main():
         env = RefractionEnv(args.envs, seed=args.seed + 1, flag=args.flag, letters=args.letters,
                             sampler=lambda rng, n: sample_patients(rng, n, start=args.start, hard=state["hard"]))
     env.cyl_weight = args.cyl_weight
+    if args.smile:
+        env.smile = args.smile
     if not args.clinic:
         env.t_max = args.t_max
     agent = Agent(env.n_obs, env.n_act, args.flag, masked=args.clinic, kind="clinic" if args.clinic else None)
@@ -159,6 +183,7 @@ def main():
         env.shaping = max(0.0, 1.0 - prog / args.shape_frac) if args.shape_frac > 0 else 0.0
         state["hard"] = max(0.0, 1.0 - prog / args.hard_frac) if args.hard_frac > 0 else 0.0
         state["axis_mix"] = args.axis_mix0 * max(0.0, 1.0 - prog / args.axis_frac) if args.axis_frac > 0 else 0.0
+        state["easy"] = max(0.0, 1.0 - prog / args.easy_frac) if args.easy_frac > 0 else 0.0
         env.gamma = args.gamma
         errs, wins, lens, pts, secs = [], [], [], [], []
         cur_up[0] = up
