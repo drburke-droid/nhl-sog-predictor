@@ -98,17 +98,25 @@ reasonable time. (Checkpoint `runs/j/ckpt/exams_904847.pt`; `evaluate6.py` repor
 ### From the third video's AI (`runs/m`)
 
 ```bash
-python init6.py            # runs/h/ckpt/final.pt -> runs/m/init.pt (seven new inputs, zero weights)
+python init6.py --nudge    # runs/h/ckpt/final.pt -> runs/m/init.pt (seven new inputs, zero weights; the nudge)
 python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 100e6 --ent 0.01 --lr 3e-4 --eval_every 20 \
        --init runs/m/init.pt --critic_warmup 20 --out runs/m
 ```
 
 The AI that practised on 1.8 million version-5 patients walks into the version-6 clinic: no smile, a rough
 spin, the occasional remark, patients of every reliability. `init6.py` gives its first layer seven new input
-columns (the remark) set to zero, so at the start it behaves exactly as in the third video (checked: same
-choices, same value estimates). The first 20 updates retrain only its value estimate (the smile it used to
-expect is gone). The question for this run: does it find the cross-cylinder for the axis, now that the spin
-is rough?
+columns (the remark) set to zero, so at the start it behaves as in the third video (checked: same choices,
+same value estimates). The first 20 updates retrain only its value estimate (the smile it used to expect is
+gone).
 
 On the new patients, before any practice here: held-out points +41, happy 50% (on the version-5 patients it
 had +66 and 67%).
+
+**The nudge.** A first attempt without it (`runs/m0`, 195,000 patients) changed little: points +41 → +42,
+happy 50% → 51%, the axis no closer (64% of astigmatic eyes within 10°, before and after). It spun the axis
+more and turned it by hand more (16 turns an exam instead of 2), but never tried the cross-cylinder for the
+axis: the third video's AI had dropped that button altogether (its chance of pressing it, wherever it is
+allowed: under 1 in 100,000), so practice could never find out what it does now. `--nudge` gives that one
+button the same outputs as the cross-cylinder *power* button, which the AI uses in every exam, at a quarter of
+its chance (about 5% wherever it is allowed, against 19% for power). Its most likely button never changes, so
+its exam before practice is the same. Practice decides whether it keeps the button.
