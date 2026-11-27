@@ -24,7 +24,7 @@ Code: `env6.py`, `clinicians5.py` (`borish`), `train.py --clinic --env6`, `evalu
 | Remarks (instead of the smile) | After a lens change, if the change in what they see is at least a line (through their usual noise), the patient sometimes says so, each patient with their own chattiness (5–40% of noticeable changes): "Oh, that's clear!" (better, and within a line of the best they can see), "Better… but it's not that clear." (better, still more than a line off), "Hmm, that's not as clear." (worse). The AI sees the remark (which one, the lenses then, how long ago). In training each remark also counts: 5 points per line the patient's vision (both eyes, each through its own lens) improved since their previous remark, or lost. Summed over an exam that is the change from the start to the last remark, so going back and forth earns nothing. On average a remark comes on about 1 button in 50. |
 | Only the clock | The patient walks out at 15 minutes. env5 also ended the exam at 400 buttons (a safety cap); at 1 second a lens click, that was a walkout after 7 minutes, cheaper than 15. |
 | Reliability dial | Each patient's answer noise and lapse rate are multiplied by a factor: in practice drawn per patient, log-uniform between 0.5 and 2.5; in the tests fixed at 0.5 (reliable), 1 (typical: the version-5 patient) or 2 (unreliable). Chart reading and the final check are unchanged. |
-| Everything else | As in version 5: graded answers ("much / a little / the same"), the power-search check, the final check ("my left eye is still blurry", 10 seconds, the exam goes on), the occluder cycling right → left → both, 15 minutes or 400 buttons and the patient walks out. |
+| Everything else | As in version 5: graded answers ("much / a little / the same"), the power-search check, the final check ("my left eye is still blurry", 10 seconds, the exam goes on), the occluder cycling right → left → both, and at 15 minutes the patient walks out. |
 
 How much rougher the spin is (`clinicians5` Borish script on 1,500 patients, eyes with at least 0.75 D of
 cylinder; the axis step done by cross-cylinder, by one spin, or both):
@@ -54,8 +54,9 @@ power-search check, cross-cylinder axis and power, binocular fog, prism balance 
   stopped after 1.50 D, so a young patient over-minused by 3 D from the trial lenses was never fogged and
   left with far too much minus.)
 
-On 2,000 typical patients (env6, dial 1): net points −4.3 → +3.4, happy 55% → 60%, eyes under 40 over-minused
-by 0.5 D or more 24% → 13%; walkouts 5.4% → 8.1% (the exam is longer: 9.7 minutes).
+On 2,000 typical patients (env6, dial 1): net points −3.7 → +3.7, happy 56% → 62%, eyes under 40 over-minused
+by 0.5 D or more 26% → 15% (by 0.25 D or more 50% → 34%); walkouts 5.4% → 8.4% (the exam is longer: 9.4 → 9.8
+minutes).
 
 **Why the third video's textbook over-minused the showcase patient's left eye** (OS −3.00 −0.50 × 10 against
 −2.50 −0.75 × 10). Two things, both in the simulation on purpose:
@@ -78,8 +79,18 @@ python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 200e6 --ent 0.0
 One run from random weights. No mentor, no smile, no curriculum. The held-out checks during training use
 typical patients (dial 1).
 
-Two settings were started side by side from random weights: `runs/k` with the remarks as information only,
-and `runs/j` with the remarks also counting as feedback (`--remark 0.5`).
+Two settings were started side by side from random weights: `runs/k` with the remarks as information only
+(the only score is the clinic's points at the end of the exam), and `runs/j` with the remarks also counting
+as feedback (`--remark 0.5`). After 160 updates (10.5 million buttons each):
+
+| Run | Exams | Practice points | Held-out points | Happy | Minutes |
+|---|---:|---:|---:|---:|---:|
+| `runs/k`, remarks as information | 18,524 | −119 | −150 | 0% | 15.0 (every patient walks out) |
+| `runs/j`, remarks count | 33,047 | −61 | −48 | 18% | 3.7 |
+
+With nothing but the end-of-exam score, the AI had not yet found that prescribing ends the exam better than
+the walkout; with the occasional remark it had. `runs/k` was stopped there and `runs/j` trained on. (The
+smile of version 5 was a running signal on every button; a remark comes on about 1 button in 50.)
 
 (Two earlier runs, `runs/i0` and a first `runs/j`, are not reported: env6 put its seven new inputs after the
 button mask, which the policy reads from the end of its inputs, so those AIs saw a scrambled list of which
