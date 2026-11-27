@@ -185,48 +185,59 @@ class TextbookSteps(Section):
 
 # ======================================================================== the centrepiece: the two sequences
 class Sequences(Section):
-    """The textbook's steps and the AI's, stage by stage, for the same patient. Rows scale to fit; each stage header
-    gives both sides' chair time for that stage."""
-    TOP, BOTTOM = 196, 944                            # rows live here; the commentary box sits below
+    """The textbook's steps and the AI's for the same patient, each column a sequence of occluder visits (which eye
+    is open, which covered), with the time spent on each visit. Rows scale to fit."""
+    TOP, BOTTOM = 190, 944                            # rows live here; the commentary box sits below
+    HEAD = 40
 
-    def __init__(self, tb, ai, notes, dur=None, stage_t=(1.5, 11.0, 19.0)):
-        self.tb, self.ai = SQ.steps_of(tb), SQ.steps_of(ai)
+    def __init__(self, tb, ai, notes, dur=None, reveal=(1.5, 14.0)):
         self.tb_tr, self.ai_tr = tb, ai
+        self.cols = [self.blocks(tb), self.blocks(ai)]
         self.notes = notes
-        self.stage_t = stage_t
-        self.dur = dur or 48.0
-        n_tb = [sum(1 for s in self.tb if s["stage"] == i) for i in range(3)]
-        n_ai = [sum(1 for s in self.ai if s["stage"] == i) for i in range(3)]
-        self.need = [max(1, a_, b_) for a_, b_ in zip(n_tb, n_ai)]
-        head, gap = 40, 10
-        self.rh = min(52.0, (self.BOTTOM - self.TOP - 3 * (head + gap)) / sum(self.need))
-        self.rows_y, y = [], self.TOP
-        for si in range(3):
-            self.rows_y.append((y, y + head))
-            y += head + self.need[si] * self.rh + gap
-        self.st_tb, self.st_ai = self.stage_secs(tb), self.stage_secs(ai)
+        self.reveal = reveal                         # (textbook starts, AI starts)
+        self.dur = dur or 50.0
+        need = [sum(self.HEAD + 8 + len(sts) * 1.0 for _, sts, _ in c) for c in self.cols]
+        n_rows = [sum(len(sts) for _, sts, _ in c) for c in self.cols]
+        n_heads = [len(c) for c in self.cols]
+        avail = self.BOTTOM - self.TOP
+        self.rh = min(50.0, min((avail - nh * (self.HEAD + 8)) / max(1, nr) for nr, nh in zip(n_rows, n_heads)))
 
     @staticmethod
-    def stage_secs(tr):
-        out, prev = [0.0, 0.0, 0.0], 0.0
+    def blocks(tr):
+        """[(stage, steps, seconds)] per occluder visit, with the chair time of the visit."""
+        st = SQ.steps_of(tr)
+        vis = SQ.visits(st)
+        # seconds per visit from the trace: count NEXT presses
+        secs, v, prev = {}, 0, 0.0
         for s in tr["steps"]:
-            out[min(s["phase_before"], 2)] += s["secs"] - prev
+            secs[v] = secs.get(v, 0.0) + s["secs"] - prev
             prev = s["secs"]
+            if s["a"] == E5.NEXT:
+                v += 1
+        out, vi = [], 0
+        for stg, sts in vis:
+            out.append((stg, sts, secs.get(sts[0]["visit"], 0.0)))
         return out
 
-    def col(self, d, x, w, steps, tr, title, colr, t):
+    def col(self, d, x, w, blocks, tr, title, colr, t, t0):
         a_all = fade(t, 0, self.dur, 0.5, 0.5)
         last = tr["steps"][-1]
-        text(d, (x, 116), title, 32, colr, "Bold", a=a_all)
-        text(d, (x + w, 124), f"{len(tr['steps'])} buttons  ·  {mmss(last['secs'] / 60)} in the chair", 22, MUTED,
-             "Medium", "ra", a_all)
+        text(d, (x, 112), title, 32, colr, "Bold", a=a_all * fade(t, t0 - 0.8, 999, 0.5, 0.1))
+        text(d, (x + w, 120), f"{len(tr['steps'])} buttons  ·  {mmss(last['secs'] / 60)} in the chair", 22, MUTED,
+             "Medium", "ra", a_all * fade(t, t0 - 0.8, 999, 0.5, 0.1))
         rh = self.rh
         fs = int(max(16, min(21, rh * 0.44)))
-        for si in range(3):
-            items = [s for s in steps if s["stage"] == si]
-            y = self.rows_y[si][1]
-            for j, st in enumerate(items):
-                aj = fade(t, self.stage_t[si] + 0.3 * j, 999, 0.4, 0.1) * a_all
+        y, k = self.TOP, 0
+        for stg, sts, secs in blocks:
+            ah = fade(t, t0 + 0.45 * k, 999, 0.4, 0.1) * a_all
+            eye_col = GOLD if stg < 2 else (120, 200, 255)
+            text(d, (x, y + 6), SQ.STAGES[stg], 22, eye_col, "Bold", a=ah)
+            text(d, (x + w, y + 6), mmss(secs / 60), 22, colr, "Bold", "ra", ah)
+            d.line([x, y + self.HEAD - 4, x + w, y + self.HEAD - 4], fill=eye_col + (int(110 * ah),), width=1)
+            y += self.HEAD
+            for st in sts:
+                k += 1
+                aj = fade(t, t0 + 0.45 * k, 999, 0.4, 0.1) * a_all
                 col = CU.GROUP_COL[SQ.KIND_GROUP[st["kind"]]]
                 rr(d, [x, y, x + w, y + rh - 5], 6, fill=CARD + (int(255 * aj),))
                 d.rectangle([x, y, x + 7, y + rh - 5], fill=tuple(col) + (int(255 * aj),))
@@ -234,22 +245,15 @@ class Sequences(Section):
                 text(d, (x + w - 12, y + (rh - 5) / 2), SQ.detail(st).split("→")[-1].strip(), fs - 1, INK2, "Medium",
                      "rm", aj)
                 y += rh
+            y += 8
+            k += 1
 
     def frame(self, t):
         im, d = ui.new_frame()
         a = fade(t, 0, self.dur, 0.5, 0.5)
-        big_title(d, W / 2, 28, "The same patient: the textbook's steps and the AI's", 44, a)
-        for si in range(3):
-            al = fade(t, self.stage_t[si], 999, 0.5, 0.1) * a
-            y = self.rows_y[si][0]
-            d.line([60, y + 30, 1860, y + 30], fill=GOLD + (int(90 * al),), width=1)
-            text(d, (60, y + 4), mmss(self.st_tb[si] / 60), 22, TB_COL, "Bold", a=al)
-            text(d, (1860, y + 4), mmss(self.st_ai[si] / 60), 22, AI_COL, "Bold", "ra", al)
-            tw = d.textlength(SQ.STAGES[si], font=ui.font(23, "Bold"))
-            d.rectangle([W / 2 - tw / 2 - 16, y, W / 2 + tw / 2 + 16, y + 34], fill=BG)
-            text(d, (W / 2, y + 3), SQ.STAGES[si], 23, GOLD, "Bold", "ma", al)
-        self.col(d, 60, 860, self.tb, self.tb_tr, "THE TEXTBOOK", TB_COL, t)
-        self.col(d, 1000, 860, self.ai, self.ai_tr, "THE AI", AI_COL, t)
+        big_title(d, W / 2, 26, "The same patient: the textbook's steps and the AI's", 44, a)
+        self.col(d, 60, 860, self.cols[0], self.tb_tr, "THE TEXTBOOK", TB_COL, t, self.reveal[0])
+        self.col(d, 1000, 860, self.cols[1], self.ai_tr, "THE AI", AI_COL, t, self.reveal[1])
         cur = [(t0, s) for t0, s in self.notes if t >= t0]
         if cur:
             t0, s = cur[-1]
