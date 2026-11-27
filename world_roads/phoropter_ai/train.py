@@ -48,6 +48,8 @@ def main():
                     "cylinder checks at fixed orientations, axis spin")
     ap.add_argument("--env6", action="store_true", help="with --clinic: the version-6 exam (env6.py): a rougher spin, "
                     "occasional remarks instead of a smile, patients of mixed reliability (evaluated at typical)")
+    ap.add_argument("--remark", type=float, default=0.0,
+                    help="env6: each patient remark counts this x (clarity now - clarity at the previous remark)")
     ap.add_argument("--smile", type=float, default=0.0,
                     help="env5: reward when the patient's letters get clearer (per 10 lines of acuity)")
     ap.add_argument("--easy_frac", type=float, default=0.0,
@@ -118,6 +120,8 @@ def main():
     env.cyl_weight = args.cyl_weight
     if args.smile:
         env.smile = args.smile
+    if args.remark:
+        env.remark_w = args.remark
     if not args.clinic:
         env.t_max = args.t_max
     agent = Agent(env.n_obs, env.n_act, args.flag, masked=args.clinic, kind="clinic" if args.clinic else None)

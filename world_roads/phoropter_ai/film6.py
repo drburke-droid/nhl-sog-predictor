@@ -21,7 +21,7 @@ from scenes5 import Exam5
 
 DATA = os.path.join(HERE, "data")
 TR = os.path.join(DATA, "traces")
-RUN = os.path.join(HERE, "runs", "i")
+RUN = os.path.join(HERE, "runs", "j")
 BORISH = "Borish method"
 DIAL_NAMES = {"0.5": "RELIABLE", "1.0": "TYPICAL", "2.0": "UNRELIABLE"}
 

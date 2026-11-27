@@ -14,7 +14,12 @@ blurry", the cycling occluder), except:
     "Oh, that's clear!"                 (better, and now within a line of the best they can see)
     "Better... but it's not that clear." (better, still more than a line from their best)
     "Hmm, that's not as clear."          (worse)
-  The remarks are information for the AI (it sees them), never reward.
+  The AI sees the remarks. With `env.remark_w` > 0 (the fourth video's training: 0.5) they are also its only
+  feedback during the exam: each remark counts in proportion to how much clearer the patient's vision got
+  (both eyes, each through its own lens) since their previous remark (or since the start). Because each
+  remark counts the change since the last one, over an exam they add up to the change between the start and
+  the last remark: going back and forth earns nothing. (A first run with remarks as information only,
+  `runs/i0`, learned to keep clicking lenses until the button limit and never prescribe.)
 * **A reliability dial.** Each patient's answer noise and lapse rate are multiplied by a reliability factor:
   `dial=None` (practice) draws it per patient, log-uniform in DIAL; a number puts every patient at that
   setting (0.5 reliable, 1 typical as in env5, 2 unreliable).
@@ -50,6 +55,8 @@ class ClinicEnv6(E5.ClinicEnv):
         self.dial = dial
         self.rem_on, self.rem_l, self.rem_t = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros(n)
         self._tv0 = np.zeros(n)
+        self.remark_w = 0.0
+        self.rem_clar, self._rem_rew = np.zeros(n), np.zeros(n)
         super().__init__(n, seed=seed, sampler=sampler, record=record, start_mode=start_mode, rand_dial=rand_dial)
         self.n_obs = N_OBS6
 
@@ -70,6 +77,7 @@ class ClinicEnv6(E5.ClinicEnv):
         self.P["lapse"][idx] = np.minimum(self.P["lapse"][idx] * rel, LAPSE_MAX)
         self.P["talk"][idx] = self.rng.uniform(*P_TALK, k)
         self.rem_on[idx], self.rem_l[idx], self.rem_t[idx] = 0, 0, 0
+        self.rem_clar[idx] = self.clarity()[idx]                 # what they see at the start (plano)
 
     # ------------------------------------------------------------ spinning the axis: rougher than a flip
     def spin(self, rows, c):
@@ -116,6 +124,11 @@ class ClinicEnv6(E5.ClinicEnv):
         kind = np.where(talk & (d <= -REMARK) & (T1 > best + NEAR_BEST), 1, kind)
         kind = np.where(talk & (d >= REMARK), 2, kind)
         said = kind >= 0
+        self._rem_rew = np.zeros(n)
+        if said.any() and self.remark_w:
+            cl = self.clarity()
+            self._rem_rew = np.where(said, self.remark_w * (cl - self.rem_clar), 0.0)
+            self.rem_clar = np.where(said, cl, self.rem_clar)
         if said.any():
             resp = resp.copy()
             resp[said, 2:5] = 0
@@ -126,6 +139,11 @@ class ClinicEnv6(E5.ClinicEnv):
             self.rem_l[said] = now[said]
             self.rem_t[said] = self.t[said]
         return resp, code, dict(remark=kind)
+
+    def step(self, a):
+        self._rem_rew = np.zeros(self.n)
+        o, rew, done, info = super().step(a)
+        return o, (rew + self._rem_rew).astype(np.float32), done, info
 
     @staticmethod
     def _slot_pv(c, b, L0, L1, Lc):

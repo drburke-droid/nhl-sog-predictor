@@ -12,7 +12,7 @@ from evaluate6 import final_ckpt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TR = os.path.join(HERE, "data", "traces")
-RUN = os.path.join(HERE, "runs", "i", "ckpt")
+RUN = os.path.join(HERE, "runs", "j", "ckpt")
 EK = dict(env_cls=ClinicEnv6, dial=1.0)
 
 

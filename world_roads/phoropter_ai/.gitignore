@@ -5,3 +5,4 @@ __pycache__/
 runs/*/ckpt/latest.pt
 runs_h.log
 runs_i.log
+runs_j.log

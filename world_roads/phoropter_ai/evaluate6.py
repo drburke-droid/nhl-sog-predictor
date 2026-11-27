@@ -22,7 +22,7 @@ import clinic
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-RUN = os.path.join(HERE, "runs", "i")
+RUN = os.path.join(HERE, "runs", "j")
 SEED = 2026
 DIALS = (0.5, 1.0, 2.0)
 EK = dict(env_cls=ClinicEnv6)
