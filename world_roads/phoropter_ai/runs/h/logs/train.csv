@@ -1,2 +1,4 @@
 update,steps,exams,hours,shaping,hard,train_err,train_within,train_len,entropy,eval_err,eval_within,eval_exact,eval_steps,eval_over_minus_young,eval_points,eval_minutes,train_points,train_minutes
 1,65536,249,0.0078,0.000,0.000,1.4101,0.0241,20.39,3.1251,3.1534,0.0160,0.0060,400.0000,0.4596,-150.00,7.239,-88.01,0.807
+2,131072,317,0.0096,0.000,0.000,1.4607,0.0441,75.53,3.0582,,,,,,,,-114.21,3.181
+3,196608,334,0.0112,0.000,0.000,1.5369,0.0000,102.76,3.0386,,,,,,,,-106.35,4.341
