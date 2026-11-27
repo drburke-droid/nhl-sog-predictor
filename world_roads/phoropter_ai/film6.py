@@ -20,6 +20,12 @@ from ui import W, H, BG, INK, INK2, MUTED, GOLD, GREEN, RED, CARD, LINE, PANEL, 
 from scenes import Section, wrap, big_title
 from scenes5 import Exam5
 
+# env6: the cross-cylinder axis button also turns the axis toward the clearer side
+_ax = (E5.JCC_AX, "Axis?", "which way?", "Cylinder AXIS: which way?",
+       "cross-cylinder either side of the axis: the axis turns toward the clearer side", "jcc")
+CU.BUTTONS[:] = [_ax if b[0] == E5.JCC_AX else b for b in CU.BUTTONS]
+CU.BTN[E5.JCC_AX] = _ax
+
 DATA = os.path.join(HERE, "data")
 TR = os.path.join(DATA, "traces")
 RUN = os.path.join(HERE, "runs", "m")
@@ -297,7 +303,7 @@ def make_notes(R, ai, tb, d1):
         t_fog: "Best sphere: plus until the letters blur, then minus a quarter at a time, reading the chart each time.",
         t_chk: "Astigmatism check: the cross-cylinder at 180° or 90°?",
         t_pw: "Cylinder POWER: more or less? (Small cylinder: power first.)",
-        t_ax: "Cylinder AXIS: which way? It turns toward the clearer side.",
+        t_ax: "Cylinder AXIS: “1 or 2?” The axis turns toward the clearer side, until the answers reverse.",
         t_push: "“+0.25: 1 or 2?” If the extra plus is no worse, keep it: no more minus than the eye needs.",
         t_l: "The left eye, right eye covered: all of it again.",
         t_b: "Both eyes open: fog both, split the chart with prism, make the two eyes equal…",
@@ -318,7 +324,7 @@ def make_notes(R, ai, tb, d1):
     if k_sp is not None and (k_ax is None or k_sp < k_ax):
         na[k_sp] = "A spin of the axis first: a rough answer, but it gets close."
     if k_ax is not None:
-        na[k_ax] = "Then the cross-cylinder for the axis: “1 or 2?”, turning toward the clearer side."
+        na[k_ax] = "Then the cross-cylinder for the axis: “1 or 2?”, and the axis turns toward the clearer side."
     k_rm = first(ai, lambda s: s.get("remark", -1) >= 0)
     if k_rm is not None and k_rm not in na:
         na[k_rm] = "A remark from the patient. The AI sees it, and what lenses were in."
@@ -356,6 +362,14 @@ def sections():
                         (8.0, "The smile had been doing a lot of the teaching.", 40, GOLD, "SemiBold"),
                         (10.5, f"So: last video's AI, after {H3['meta']['exams'] / 1e6:.1f} million patients, walks into "
                                "the new clinic.", 38, INK, "SemiBold")], 16.0)
+    S["nudge"] = Say([(0.5, "One button changed", 56, INK, "Bold"),
+                      (2.2, "The cross-cylinder for the axis: “1 or 2?”, flipped either side of the axis.", 36, INK2,
+                       "Medium"),
+                      (4.6, "Last video's AI had stopped pressing it. Its spin was good enough.", 36, INK2, "Medium"),
+                      (7.4, "Now the button also turns the axis toward the side the patient picks, the way the spin "
+                            "sets the axis at “stop!”.", 36, INK2, "Medium"),
+                      (11.0, "And at the start, the AI is nudged to try it now and then.", 36, INK2, "Medium"),
+                      (13.4, "Practice decides whether it keeps it.", 42, GOLD, "SemiBold")], 18.0)
     d1 = trace("m_day1")
     ai, tb = trace("m_ai"), trace("m_borish")
     NOTES = make_notes(R, ai, tb, d1)
@@ -399,7 +413,8 @@ def sections():
     return S
 
 
-ORDER = ["hook", "changes", "toolbox", "patient", "wants", "learn", "scratch", "day1_title", "day1_exam", "day1_grid",
+ORDER = ["hook", "changes", "toolbox", "patient", "wants", "learn", "scratch", "nudge", "day1_title", "day1_exam",
+         "day1_grid",
          "curve", "ai_title",
          "ai_exam", "tb_card", "tb_exam", "sequences", "results", "points", "consistency", "real", "outro"]
 

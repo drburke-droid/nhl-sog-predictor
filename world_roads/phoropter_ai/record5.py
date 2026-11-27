@@ -31,7 +31,8 @@ def record5(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max
                   line=float(L["line"][0]), screen=float(L["screen"][0]), phase=int(L["phase"][0]), phase_before=ph0,
                   screen_before=scr0, secs_before=secs0, secs=float(L["secs"][0]), before=before,
                   ai_probs=None if probs is None else [round(float(p), 4) for p in probs],
-                  remark=int(L["remark"][0]) if "remark" in L else -1)
+                  remark=int(L["remark"][0]) if "remark" in L else -1,
+                  jturn=float(L["jturn"][0]) if "jturn" in L else 0.0)
         if "probs" in L:
             st["ans_probs"] = [float(x) for x in L["probs"][0]]
         if "right" in L:

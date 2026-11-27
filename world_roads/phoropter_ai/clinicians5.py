@@ -144,6 +144,20 @@ def jcc_axis(env, i):
     (15 -> 5 -> 2 for cylinders of 1.00 D or more, where a few degrees matter); stop at 'same' or after the
     smallest step has reversed."""
     e = int(env.cur[i])
+    if getattr(env, "jcc_turns", False):                  # env6: the button turns the axis itself (5°, then 2°)
+        last, rev, moved = 0, 0, 0
+        for _ in range(12):
+            code, *_ = yield JCC_AX
+            if code == 2:
+                break
+            d = 1 if code == 0 else -1
+            moved += float(env.jturn[i])
+            if last and d != last:
+                rev += 1
+                if rev >= 2:
+                    break
+            last = d
+        return abs(moved)
     big = abs(env.C[i, e]) >= 1.0
     steps = [15, 5, 2] if abs(env.C[i, e]) <= 0.5 else ([5, 2] if big else [5])
     if not big and steps[0] == 15:

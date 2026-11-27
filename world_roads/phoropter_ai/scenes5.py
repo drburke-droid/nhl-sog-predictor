@@ -72,6 +72,8 @@ def action_line(a, ph, before, after):
         return f"+0.25 on the {'right' if a == E3.R_P else 'left'} eye only"
     if a == E3.SPIN:
         return f"Spins the cylinder axis: “Say stop when it’s sharpest”  →  {int(round(after[e][2])) % 180 or 180}°"
+    if a == E3.JCC_AX and ph < 2 and abs(after[e][2] - before[e][2]) > 0.5:     # (env6: the button turns the axis)
+        return f"Cylinder AXIS: “1 or 2?”  →  turns toward the clearer side: {int(round(after[e][2])) % 180 or 180}°"
     return {E3.READ: "“Read the smallest line you can.”", E3.READ_LINE: "“Read this line.”",
             E3.LINE_SM: "Shows smaller letters", E3.LINE_LG: "Shows bigger letters",
             E3.CMP_P: "Sphere: “Which is clearer, 1 or 2?”   (2 adds +0.25)",

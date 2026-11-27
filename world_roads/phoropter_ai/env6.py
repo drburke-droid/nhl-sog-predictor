@@ -19,6 +19,10 @@ blurry", the cycling occluder), except:
   (both eyes, each through its own lens) since their previous remark (or since the start). Because each
   remark counts the change since the last one, over an exam they add up to the change between the start and
   the last remark: going back and forth earns nothing.
+* **The cross-cylinder axis button turns the axis.** "Axis? which way": the patient compares the cross-cylinder
+  flipped either side of the axis, and the axis turns toward the clearer side (5°; 2° once the answer has
+  reversed for that eye), as the spin button sets the axis from "stop!". "The same": no turn. A spin resets the
+  step to 5°. (In env5 the AI had to press a turn button itself after the answer.)
 * **Only the clock.** The patient walks out at 15 minutes. (env5 also ended the exam at 400 buttons, a safety cap;
   clicking 1-second lens buttons, an AI could reach it in 7 minutes: the same walkout for less chair time.)
 * **A reliability dial.** Each patient's answer noise and lapse rate are multiplied by a reliability factor:
@@ -30,7 +34,8 @@ to now, and how long ago: 1,081.
 """
 import numpy as np
 import env5 as E5
-from env5 import (N_ACT3, SP25, SM25, SP100, SM100, CYL_MORE, CYL_LESS, AXP5, AXM5, AXP15, AXM15, AXP2, AXM2,
+import clinic
+from env5 import (JCC_AX, N_ACT3, SP25, SM25, SP100, SM100, CYL_MORE, CYL_LESS, AXP5, AXM5, AXP15, AXM15, AXP2, AXM2,
                   OU_P, OU_M, R_P, L_P, SPIN, CHK_180, CHK_45, SPH, CYL, AXD, OUD, RD, LD)
 from env3 import plano_pair, PlanoPairTestSet
 from optics import to_pv
@@ -43,6 +48,8 @@ P_TALK = (0.05, 0.4)               # each patient's chance of remarking on a cha
 DIAL = (0.5, 2.5)                  # practice: reliability factor, log-uniform
 LAPSE_MAX = 0.3
 REMARKS = ("“Oh, that's clear!”", "“Better… but it's not that clear.”", "“Hmm, that's not as clear.”")
+JCC_STEP = (5.0, 2.0)               # the axis button's turn: 5 degrees, 2 once the answer has reversed
+SECS_TURN = 1.0                    # the turn: one lens click
 T_MAX6 = 1000                      # buttons: high enough that the 15-minute limit always comes first (in env5 the
                                    # 400-button cap let a fast clicker "walk out" after 7 minutes: a cheaper way to fail)
 N_EXTRA = 7
@@ -50,7 +57,7 @@ N_OBS6 = E5.N_OBS3 + N_EXTRA
 
 LENS_ACTS = np.zeros(N_ACT3, bool)
 LENS_ACTS[[SP25, SM25, SP100, SM100, CYL_MORE, CYL_LESS, AXP5, AXM5, AXP15, AXM15, AXP2, AXM2, OU_P, OU_M, R_P, L_P,
-           SPIN]] = True
+           SPIN, JCC_AX]] = True
 
 
 class ClinicEnv6(E5.ClinicEnv):
@@ -60,6 +67,8 @@ class ClinicEnv6(E5.ClinicEnv):
         self._tv0 = np.zeros(n)
         self.remark_w = 0.0
         self.rem_clar, self._rem_rew = np.zeros(n), np.zeros(n)
+        self.jlast, self.jstep, self.jturn = np.zeros((n, 2)), np.full((n, 2), JCC_STEP[0]), np.zeros(n)
+        self.jcc_turns = True
         super().__init__(n, seed=seed, sampler=sampler, record=record, start_mode=start_mode, rand_dial=rand_dial)
         self.n_obs = N_OBS6
         self.t_max = T_MAX6
@@ -81,6 +90,7 @@ class ClinicEnv6(E5.ClinicEnv):
         self.P["lapse"][idx] = np.minimum(self.P["lapse"][idx] * rel, LAPSE_MAX)
         self.P["talk"][idx] = self.rng.uniform(*P_TALK, k)
         self.rem_on[idx], self.rem_l[idx], self.rem_t[idx] = 0, 0, 0
+        self.jlast[idx], self.jstep[idx] = 0, JCC_STEP[0]
         self.rem_clar[idx] = self.clarity()[idx]                 # what they see at the start (plano)
 
     # ------------------------------------------------------------ spinning the axis: rougher than a flip
@@ -101,6 +111,31 @@ class ClinicEnv6(E5.ClinicEnv):
         ax = np.where(lapse, self.rng.uniform(0, 180, m), ax)
         return np.round((ax - 1) % 180) + 1
 
+    # ------------------------------------------------------------ the cross-cylinder axis button turns the axis
+    def _turn(self, a, ans, spun):
+        n, r, c = self.n, self.rows, self.cur
+        self.jturn = np.zeros(n)
+        sp = np.nonzero(spun)[0]
+        self.jlast[sp, c[sp]], self.jstep[sp, c[sp]] = 0, JCC_STEP[0]
+        if not self.jcc_turns:
+            return 0.0
+        m = (a == JCC_AX) & (self.C[r, c] < 0) & (ans < 2)
+        if not m.any():
+            return 0.0
+        rows = np.nonzero(m)[0]
+        cc = c[rows]
+        d = np.where(ans[rows] == 0, 1.0, -1.0)
+        rev = (self.jlast[rows, cc] != 0) & (self.jlast[rows, cc] != d)
+        self.jstep[rows, cc] = np.where(rev, JCC_STEP[1], self.jstep[rows, cc])
+        st = self.jstep[rows, cc]
+        self.ax[rows, cc] = ((self.ax[rows, cc] + d * st - 1) % 180) + 1
+        self.jlast[rows, cc] = d
+        self.jturn[rows] = d * st
+        self.secs[rows] += SECS_TURN
+        cost = np.zeros(n)
+        cost[rows] = SECS_TURN * clinic.POINTS_PER_MIN / 60 / clinic.SCALE
+        return cost
+
     # ------------------------------------------------------------ occasional remarks
     def _view_T(self):
         c, b, L0, L1, Lc, Tm, t0, t1, tb = self._views()
@@ -115,7 +150,7 @@ class ClinicEnv6(E5.ClinicEnv):
         T1 = np.where(b, tb, Tm)
         changed = LENS_ACTS[a]
         if not changed.any():
-            return resp, code, {}
+            return resp, code, dict(remark=np.full(n, -1), jturn=self.jturn.copy())
         d = T1 - self._tv0 + self.rng.normal(0, 1, n) * self.P["sigma"] * np.sqrt(2)
         # the best they can see with the viewing eye(s): through their true prescription
         tpv = self._tpv(c)
@@ -142,7 +177,7 @@ class ClinicEnv6(E5.ClinicEnv):
             now = self._slot_pv(c, b, L0, L1, Lc)
             self.rem_l[said] = now[said]
             self.rem_t[said] = self.t[said]
-        return resp, code, dict(remark=kind)
+        return resp, code, dict(remark=kind, jturn=self.jturn.copy())
 
     def step(self, a):
         self._rem_rew = np.zeros(self.n)

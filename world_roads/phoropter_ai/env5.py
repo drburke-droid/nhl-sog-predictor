@@ -153,6 +153,11 @@ class ClinicEnv(BinocularEnv):
     def _after(self, a, resp, code, V):
         return resp, code, {}
 
+    def _turn(self, a, ans, spun):
+        """After the answers, before the views are recomputed: a later version may turn the axis here (returns the
+        extra time cost, in reward units)."""
+        return 0.0
+
     # ---------------------------------------------------------------- the patient's view of each question
     def _views(self):
         c, b = self.cur, self.bin > 0
@@ -367,6 +372,7 @@ class ClinicEnv(BinocularEnv):
             spin_ax[ms] = new
         resp[a == SPIN, 2] = spun[a == SPIN].astype(float)
         code = np.where(a == SPIN, np.where(spun, 5, 6), code)
+        rew = rew - self._turn(a, ans, spun)
         if cm.any() or spun.any():
             V = self._views()
             c, b, L0, L1, Lc, Tm, t0, t1, tb = V
