@@ -1,6 +1,6 @@
 # YouTube copy: Day one at AI Optometry (v2, simpler, autorefractor start)
 
-Upload `ai_optometry_v2_{LEN}.mp4`: {LEN_COLON}, 1920×1080, 30 fps, caption-only, with an original synthesized
+Upload `ai_optometry_v2_9m54s.mp4`: 9:54, 1920×1080, 30 fps, caption-only, with an original synthesized
 score. This version replaces `ai_optometry_12m48s.mp4`. It is simpler (one idea per screen), and the AI has two
 more practice terms: astigmatism at every angle, then exams starting from an autorefractor. Everything behind
 it is in `world_roads/phoropter_ai/`: CLINIC.md, RESULTS_CLINIC.md and PUBLISHED.md.
@@ -35,7 +35,22 @@ How its exam differs from the textbook's: the textbook finds each eye's best sph
 
 How does that compare with real optometrists? Two real refractions agree within 0.25 D about 80% of the time; our textbook script 64%, the AI 95%. A real refraction takes about 5 minutes. Our simulated patients are harder than real ones and our scorecard is made up, so compare the AI with the textbook script, not with your own optometrist.
 
-{CHAPTERS}
+0:00 Day one at AI Optometry
+0:13 What the AI can do
+0:54 What the patient can say
+1:37 What the AI wants
+2:06 How practice works
+2:46 Day one
+3:23 Learning on the job
+3:49 Three changes to the clinic
+4:18 More practice
+4:44 The AI's exam
+6:14 What the textbook says
+6:44 The textbook's exam
+7:55 Step by step: AI vs textbook
+8:29 5,000 new patients
+9:04 And real optometrists?
+9:40 The fine print
 
 Every patient is simulated. The optics are real (power vectors, accommodation, a wave-optics model of the blur); the answers are a model. The AI is reinforcement learning (PPO) on a 4-core computer, no GPU. It has never examined a real person. This is a demonstration of machine learning, not a clinical tool, and nothing here is advice about your own eyes. If your vision changes, see your optometrist.
 
