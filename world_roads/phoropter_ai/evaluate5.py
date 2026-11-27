@@ -149,11 +149,18 @@ def main(n_test=5000, n_stage=2000):
     R["stages"] = []
     for ex_n, p in ckpts():
         ag, m = load(p)
-        res = run3(agent=ag, test=PlanoPairTestSet(n_stage, seed=SEED), n_par=1000, greedy=False)
+        res = run3(agent=ag, test=PlanoPairTestSet(n_stage, seed=SEED), n_par=1000, greedy=False, record_actions=True)
         s = summary3(res)
         s.update(se_stats(res))
-        R["stages"].append(dict(exams=ex_n, ckpt=os.path.basename(p), sampled=s, sampled_outcomes=sampled_outcomes(res)))
-        print("stage", ex_n, "sampled net", round(s["net"], 1), flush=True)
+        h = habits(res["actions"])
+        hab = dict(both_first=float(sum(v for k, v in h["visit_orders"] if k.startswith("B"))),
+                   order=h["visit_orders"][0], used=h["used_pct"], count=h["mean_count"],
+                   complaints=float(res["complaints"].mean()), walkouts=float(res["timeout"].mean()))
+        R["stages"].append(dict(exams=ex_n, ckpt=os.path.basename(p), sampled=s, sampled_outcomes=sampled_outcomes(res),
+                                habits=hab))
+        print("stage", ex_n, "sampled net", round(s["net"], 1), "both first", round(hab["both_first"], 2),
+              "spin", round(h["used_pct"]["spin"], 2), "cyl", round(h["used_pct"]["cylinder"], 2),
+              "complaints", round(hab["complaints"], 2), "walkouts", round(hab["walkouts"], 2), flush=True)
     json.dump(R, open(os.path.join(DATA, "results_h.json"), "w"), indent=1)
     json.dump(seqs, open(os.path.join(DATA, "seqs_h.json"), "w"))
     print("wrote data/results_h.json")
