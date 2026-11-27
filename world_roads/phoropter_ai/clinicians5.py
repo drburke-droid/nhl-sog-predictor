@@ -92,10 +92,12 @@ def find_sphere(env, i):
             break
 
 
-def mpmva(env, i, fog=3, patience=2, tol=None, down=SM25, up=SP25, read_first=True):
+def mpmva(env, i, fog=3, patience=2, tol=None, down=SM25, up=SP25, read_first=True, big=None):
     """Fog until the patient has lost at least 1.5 lines, then reduce the plus 0.25 at a time reading the chart.
     Stop after `patience` steps with no better reading, but never while the reading is still more than two
-    lines worse than before the fog. End on the most plus lens within one letter of the best reading."""
+    lines worse than before the fog. End on the most plus lens within one letter of the best reading.
+    big (the Borish script): if two more quarters haven't fogged them, add plus a dioptre at a time (a young,
+    over-minused eye focuses through small amounts of fog), up to 8 more steps."""
     base = None
     if read_first:
         code, base, *_ = yield READ
@@ -103,8 +105,8 @@ def mpmva(env, i, fog=3, patience=2, tol=None, down=SM25, up=SP25, read_first=Tr
         yield up
     code, v0, *_ = yield READ
     extra = 0
-    while base is not None and v0 < base + 0.15 and extra < 6 and v0 < 1.0:
-        yield up                                         # not fogged yet (they were over-minused): more plus
+    while base is not None and v0 < base + 0.15 and extra < (8 if big else 6) and v0 < 1.0:
+        yield big if (big is not None and extra >= 2) else up   # not fogged yet (they were over-minused): more plus
         extra += 1
         code, v0, *_ = yield READ
     scores, k, since, best = [v0], 0, 0, v0
@@ -187,6 +189,18 @@ def jcc_power(env, i, rounds=12):
     return abs(net) * 0.25
 
 
+def push_plus(env, i, up=SP25, rounds=3):
+    """The maximum-plus endpoint check: "+0.25: is 1 or 2 clearer?" If the extra plus looks the same or clearer,
+    keep it and ask again; stop when the patient prefers the lens without it."""
+    for _ in range(rounds):
+        code, *_ = yield CMP_P
+        if code == 0:
+            return
+        yield up
+        if code == 2:                                    # "the same": take the plus, and stop there
+            return
+
+
 def balance(env, i, max_rounds=6):
     last = None
     for _ in range(max_rounds):
@@ -197,11 +211,12 @@ def balance(env, i, max_rounds=6):
         yield R_P if code == 0 else L_P
 
 
-def mono(env, i, objective=False):
-    """One eye, the other covered: starting sphere, best sphere, cylinder, best sphere again if it changed."""
+def mono(env, i, objective=False, push=False):
+    """One eye, the other covered: starting sphere, best sphere, cylinder, best sphere again if it changed
+    (push: then the maximum-plus check)."""
     if not objective:
         yield from find_sphere(env, i)
-    yield from mpmva(env, i)
+    yield from mpmva(env, i, big=SP100 if push else None)
     yield LINE_LG                                        # cross-cylinder one line bigger than the best
     e = int(env.cur[i])
     found = env.C[i, e] < 0 or (yield from cyl_search(env, i))
@@ -218,25 +233,29 @@ def mono(env, i, objective=False):
             changed += yield from jcc_power(env, i)
     if changed >= 0.5 or (found and moved >= 10):
         yield from mpmva(env, i, fog=2, patience=1)
+    if push:
+        yield from push_plus(env, i)
 
 
-def bino(env, i):
-    """Both eyes open: fog, balance with prism, then clear the fog together."""
+def bino(env, i, push=False):
+    """Both eyes open: fog, balance with prism, then clear the fog together (push: then the maximum-plus check)."""
     code, base, *_ = yield READ                          # binocular acuity before the fog
     for _ in range(3):
         yield OU_P
     yield from to_line(env, i, 0.3)
     yield from balance(env, i)
     yield from descend(env, i, base, OU_M, OU_P, patience=2)
+    if push:
+        yield from push_plus(env, i, up=OU_P)
 
 
-def textbook3(env, i, objective=False):
+def textbook3(env, i, objective=False, push=False):
     for eye in (0, 1):
         if eye == 1:
             yield NEXT
-        yield from mono(env, i, objective)
+        yield from mono(env, i, objective, push)
     yield NEXT                                           # both eyes open
-    yield from bino(env, i)
+    yield from bino(env, i, push)
     for _ in range(2):
         code, *_ = yield RX
         # still here: "it's still blurry" (7 right eye, 8 left eye, 9 both). Redo that eye, then both eyes again.
@@ -246,11 +265,16 @@ def textbook3(env, i, objective=False):
             while ph != e:
                 yield NEXT
                 ph = (ph + 1) % 3
-            yield from mono(env, i)
+            yield from mono(env, i, push=push)
         while ph != 2:
             yield NEXT
             ph = (ph + 1) % 3
-        yield from bino(env, i)
+        yield from bino(env, i, push)
+
+
+def borish(env, i):
+    """The Borish sequence (the fourth video): textbook3 with the maximum-plus check at each endpoint."""
+    return textbook3(env, i, push=True)
 
 
 def descend(env, i, base, down, up, patience=2, tol=None):
@@ -282,11 +306,13 @@ def plano(env, i):
 
 # ---------------------------------------------------------------- runner
 def run3(make=None, test=None, n_par=500, seed=7, agent=None, greedy=True, record_actions=False, start="plano",
-         rand_dial=True, complain=True):
+         rand_dial=True, complain=True, env_cls=None, **env_kw):
     """Run a script (make) or an AI (agent) on a test set in lock-step; returns per-patient arrays.
-    complain=False switches off the final check (the patient takes whatever is prescribed)."""
+    complain=False switches off the final check (the patient takes whatever is prescribed). env_cls: another
+    exam room (env6.ClinicEnv6), with its own keywords (dial=...)."""
     from clinicians import collect
-    env = ClinicEnv(n_par, seed=seed, sampler=test.sampler, record=agent is None, start_mode=start, rand_dial=rand_dial)
+    env = (env_cls or ClinicEnv)(n_par, seed=seed, sampler=test.sampler, record=agent is None, start_mode=start,
+                                 rand_dial=rand_dial, **env_kw)
     env.complain = complain
     obs = env.obs()
     gens, acts = [None] * n_par, np.zeros(n_par, np.int64)

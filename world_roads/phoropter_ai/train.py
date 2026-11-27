@@ -46,6 +46,8 @@ def main():
     ap.add_argument("--clinic", action="store_true", help="the clinic exam (env3.py): plano start, clinic points")
     ap.add_argument("--env5", action="store_true", help="with --clinic: the version-5 exam (env5.py): graded answers, "
                     "cylinder checks at fixed orientations, axis spin")
+    ap.add_argument("--env6", action="store_true", help="with --clinic: the version-6 exam (env6.py): a rougher spin, "
+                    "occasional remarks instead of a smile, patients of mixed reliability (evaluated at typical)")
     ap.add_argument("--smile", type=float, default=0.0,
                     help="env5: reward when the patient's letters get clearer (per 10 lines of acuity)")
     ap.add_argument("--easy_frac", type=float, default=0.0,
@@ -81,9 +83,13 @@ def main():
         MILESTONES = CLINIC_MILESTONES
         from env3 import ClinicEnv, plano_pair, ar_pair, PlanoPairTestSet, ARPairTestSet
         from clinicians3 import run3, summary3
-        if args.env5:
+        if args.env5 or args.env6:
             from env5 import ClinicEnv
             from clinicians5 import run3, summary3
+        if args.env6:
+            import env6
+            ClinicEnv = env6.ClinicEnv6
+            run3 = partial(run3, env_cls=env6.ClinicEnv6, dial=1.0)
         from patients import q as quant
 
         def mild(p, f):

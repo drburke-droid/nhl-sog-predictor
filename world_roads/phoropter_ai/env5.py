@@ -146,6 +146,13 @@ class ClinicEnv(BinocularEnv):
     def mask(self):
         return MASK[self.phase]
 
+    # hooks for later versions (env6): before the buttons act, and after the answers (to add remarks)
+    def _before(self, a):
+        pass
+
+    def _after(self, a, resp, code, V):
+        return resp, code, {}
+
     # ---------------------------------------------------------------- the patient's view of each question
     def _views(self):
         c, b = self.cur, self.bin > 0
@@ -277,6 +284,7 @@ class ClinicEnv(BinocularEnv):
         n, r = self.n, self.rows
         ok = MASK[self.phase, a]
         a = np.where(ok, a, RX)                               # (the policy never picks a masked button)
+        self._before(a)
         self.t += 1
         self.secs += SECS[a]
         rew = -SECS[a] * clinic.POINTS_PER_MIN / 60 / clinic.SCALE
@@ -378,9 +386,10 @@ class ClinicEnv(BinocularEnv):
             code = np.where(refused, np.where(blurry[:, 0] & blurry[:, 1], 9, np.where(blurry[:, 0], 7, 8)), code)
             self.comp_on[refused] = blurry[refused]
             self.comp_t[refused] = self.t[refused]
+        resp, code, extra = self._after(a, resp, code, V)
         if self.record:
             self.last = dict(a=a.copy(), code=code, strength=strength, spin_ax=spin_ax, va=va, k=kk, nl=nn,
-                             blurry=blurry,
+                             blurry=blurry, **extra,
                              line=line_read, screen=self.line.copy(),
                              cur=self.cur.copy(), bin=self.bin.copy(), phase=self.phase.copy(), T0=t0, T1=t1,
                              Tview=Tview, secs=self.secs.copy(), **rec)

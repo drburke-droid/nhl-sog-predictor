@@ -10,8 +10,8 @@ from record3 import SHOWCASE3, line_cat
 from optics import to_pv
 
 
-def record5(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max_steps=400):
-    env = E5.ClinicEnv(1, seed=seed, sampler=fixed_pair(**patient), record=True)
+def record5(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max_steps=400, env_cls=None, **env_kw):
+    env = (env_cls or E5.ClinicEnv)(1, seed=seed, sampler=fixed_pair(**patient), record=True, **env_kw)
     obs = env.obs()
     gen = script(env, 0) if script else None
     a = next(gen) if gen else None
@@ -30,7 +30,8 @@ def record5(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max
                   spin_ax=float(L["spin_ax"][0]), va=float(L["va"][0]), k=int(L["k"][0]), nl=int(L["nl"][0]),
                   line=float(L["line"][0]), screen=float(L["screen"][0]), phase=int(L["phase"][0]), phase_before=ph0,
                   screen_before=scr0, secs_before=secs0, secs=float(L["secs"][0]), before=before,
-                  ai_probs=None if probs is None else [round(float(p), 4) for p in probs])
+                  ai_probs=None if probs is None else [round(float(p), 4) for p in probs],
+                  remark=int(L["remark"][0]) if "remark" in L else -1)
         if "probs" in L:
             st["ans_probs"] = [float(x) for x in L["probs"][0]]
         if "right" in L:
