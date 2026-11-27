@@ -9,8 +9,9 @@ Like env3.py (both eyes start at plano, the axis dial wherever the last patient 
 The cross-cylinder refinements are still there: "cylinder axis: which way?" and "cylinder power: more or less?".
 * "It's still blurry": before they leave, the patient reads the chart with each eye through the new glasses. If
   either eye sees clearly worse than it could (about two lines), they say so ("my left eye is still blurry") and
-  the exam goes on: Prescribe doesn't end it. It costs 10 seconds. After the third "still blurry" the patient
-  gives up and walks out (-150, like the 15-minute limit). (env.complain = False turns this off.)
+  the exam goes on: Prescribe doesn't end it. It costs 10 seconds. In effect, Prescribe is "final check: read
+  with each eye; if both are clear, these are the glasses". (env.complain = False turns this off;
+  env.max_complaints = 3 makes the patient give up after the third complaint, a variant tried and dropped.)
 * The occluder cycles: right eye, left eye, both eyes, then back to the right eye, so either eye can be redone.
 
 The patient's smile (optional, env.smile = weight): when the letters get clearer for either eye (the average
@@ -65,7 +66,7 @@ SECS_MAX = 900.0                                              # 15 minutes: the 
 BLURRY = 0.2                                                  # "still blurry": two lines worse than the eye could see
 BLUR_SD = 0.05                                                # (patients differ in what they notice)
 SECS_COMPLAIN = 10.0                                          # reading with each eye, and the complaint
-MAX_COMPLAINTS = 3                                            # the third "still blurry": the patient gives up and leaves
+MAX_COMPLAINTS = 10 ** 9                                      # (no limit; runs/h2 tried 3: the patient gave up and left)
 H3 = 16
 F3 = N_ACT3 + 6 + 3 + 5
 N_OBS3 = 8 + 14 + 10 + 3 * len(QS) * 11 + 8 + 3 + H3 * F3 + N_ACT3
@@ -103,6 +104,7 @@ class ClinicEnv(BinocularEnv):
         self.lq_ans, self.lq_on, self.lq_l, self.lq_t = z(3, nq, 4), z(3, nq), z(3, nq, 5), z(3, nq)
         self.bal_ans, self.bal_on, self.bal_m, self.bal_t = z(4), z(), z(2), z()
         self.comp_on, self.comp_t, self.n_comp = z(2), z(), z()
+        self.max_complaints = MAX_COMPLAINTS
         self.complain = True
         self.best_va, self.best_on, self.best_l = z(2), z(2), z(2, 5)
         self.start_pv = z(2, 3)
@@ -416,7 +418,7 @@ class ClinicEnv(BinocularEnv):
         self.best_l[r[better], c[better]] = lf[better]
 
         # end of exam
-        gave_up = refused & (self.n_comp >= MAX_COMPLAINTS)
+        gave_up = refused & (self.n_comp >= self.max_complaints)
         timeout = (self.t >= self.t_max) | (self.secs >= self.secs_max) | gave_up
         accepted = rx & ~refused
         done = accepted | timeout

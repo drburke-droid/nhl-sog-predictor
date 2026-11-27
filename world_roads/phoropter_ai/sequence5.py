@@ -13,7 +13,7 @@ KIND_NAME = {"sph_big": "Find the sphere (big steps)", "sph_fine": "Fine-tune th
              "power": "Cylinder POWER (cross-cylinder)", "cyl": "Add or remove cylinder",
              "turn": "Turn the axis", "balance": "Balance the two eyes (prism)", "ou": "Both eyes: fine-tune the sphere",
              "ou_fog": "Fog both eyes", "ou_clear": "Clear the fog, both eyes together",
-             "rx_no": "Prescribes. Patient: “Still blurry!”"}
+             "rx_no": "Final check: “Still blurry!”"}
 KIND_GROUP = {"sph_big": "sphere", "sph_fine": "sphere", "fog": "sphere", "ou": "sphere", "chk": "jcc", "axis": "jcc",
               "power": "jcc", "spin": "axis", "turn": "axis", "cyl": "cyl", "balance": "prism", "ou_fog": "sphere",
               "ou_clear": "sphere", "rx_no": "rx"}

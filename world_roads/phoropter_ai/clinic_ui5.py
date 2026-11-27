@@ -43,7 +43,8 @@ BUTTONS = [
     (E5.READ_LINE, "Read", "this line", "“Read this line”", "how many letters on this line?", "chart"),
     (E5.LINE_SM, "Smaller", "letters", "Smaller line", "show smaller letters", "chart"),
     (E5.LINE_LG, "Bigger", "letters", "Bigger line", "show bigger letters", "chart"),
-    (E5.RX, "Prescribe", "done?", "Prescribe", "these are the glasses, unless the patient says it's still blurry", "rx"),
+    (E5.RX, "Final check", "prescribe", "Final check, then prescribe",
+     "the patient reads with each eye: both clear, these are the glasses; if not, they say which eye is blurry", "rx"),
 ]
 BTN = {b[0]: b for b in BUTTONS}
 assert len(BUTTONS) == E5.N_ACT3, (len(BUTTONS), E5.N_ACT3)

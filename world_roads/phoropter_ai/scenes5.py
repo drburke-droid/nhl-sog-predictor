@@ -42,8 +42,8 @@ def said(s):
     if a == E3.SPIN:
         return ("“Stop! There.”", None) if code == 5 else ("“Nothing changes.”", None)
     if a == E3.RX:
-        return {7: "“Wait, my right eye is still blurry.”", 8: "“Wait, my left eye is still blurry.”",
-                9: "“Wait, it’s still blurry. Both eyes.”"}.get(code, "“Thanks!”"), None
+        return {7: "“My right eye is still blurry.”", 8: "“My left eye is still blurry.”",
+                9: "“It’s still blurry. Both eyes.”"}.get(code, "“That’s clear. Thanks!”"), None
     st = s.get("strength", 1)
     if a == E3.BALANCE:
         word = {0: "The top one", 1: "The bottom one", 2: "They look the same"}[code]
@@ -80,7 +80,7 @@ def action_line(a, ph, before, after):
             E3.NEXT: {0: "Covers the right eye: now the left eye", 1: "Opens both eyes",
                       2: "Covers the left eye: back to the right eye"}.get(ph, "Next"),
             E3.BALANCE: "Prism splits the chart: “Top or bottom, which is clearer?”",
-            E3.RX: "Prescribes: “Here are your new glasses.”"}[a]
+            E3.RX: "Final check: “Read with each eye.”  All clear → these are the glasses"}[a]
 
 
 class Exam5(Exam3):

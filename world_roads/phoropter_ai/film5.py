@@ -50,8 +50,8 @@ class Toolbox5(Toolbox4):
              ("prism", "PRISM", "Splits the chart into two copies, one per eye, to compare the eyes."),
              ("occ", "OCCLUDER", "Covers one eye: right eye first, then left, then both open."),
              ("chart", "THE CHART", "“Read the smallest line you can.” Bigger or smaller letters."),
-             ("rx", "PRESCRIBE", "Whatever is in the phoropter becomes the glasses, unless the patient says it's "
-                                 "still blurry.")]
+             ("rx", "FINAL CHECK", "The patient reads with each eye. Both clear: these are the glasses. If not, "
+                                   "they say which eye is still blurry.")]
 
     def frame(self, t):
         fr = super().frame(t)
@@ -68,7 +68,7 @@ class Toolbox5(Toolbox4):
 class PatientSays5(PatientSays4):
     ANSWERS = [("“One, much clearer.”  “Two… a little.”  “They look the same.”", CU.SPHERE),
                ("“I can read down to 20/40.”", CU.CHART), ("“Stop! There.”  (as the axis spins)", CU.AXIS),
-               ("“Wait, my left eye is still blurry.”", CU.RXC)]
+               ("“My left eye is still blurry.”  (the final check)", CU.RXC)]
     GOLD_Y = 850
 
 
@@ -101,6 +101,7 @@ class Wants5(Wants4):
 
 class Learn5(Learn4):
     LAST = "The patient smiles when the letters get clearer, and won't leave seeing blurry. That's all the help it gets."
+
 
 
 # ======================================================================== the practice curve, one run
@@ -155,7 +156,7 @@ class TextbookSteps(Section):
               ("LEFT EYE  ·  right eye covered", [("", "sph_fine", "Steps 1 to 6 again")]),
               ("BOTH EYES OPEN", [("7", "balance", "Fog both eyes, split the chart with prism, make the two eyes equal"),
                                   ("8", "ou_clear", "Clear the fog, both eyes together. Prescribe."),
-                                  ("", "rx_no", "“Still blurry”? Redo that eye, then both eyes again")])]
+                                  ("", "rx_no", "Final check “still blurry”? Redo that eye, then both eyes again")])]
     dur = 32.0
 
     def frame(self, t):
