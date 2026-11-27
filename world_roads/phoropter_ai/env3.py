@@ -83,6 +83,52 @@ def plano_pair(rng, n, hard=0.0, axis_mix=0.0):
     return p
 
 
+def ar_pair(rng, n, hard=0.0, axis_mix=0.0):
+    """Two-eyed patients whose exam starts at their autorefractor readings. The same autorefractor model as
+    patients.py: spherical-equivalent error N(mu, 0.30) with mu = -0.25 D under 40 (instrument myopia), -0.10 D
+    to 55, 0 after; astigmatism error N(0, 0.10) per J component; 12% poor readings (0.9 D and 0.3 D). The left
+    eye's error is correlated with the right's. Use with ClinicEnv(start_mode="objective")."""
+    from optics import to_pv, from_pv
+    from patients import q as quant
+    p = plano_pair(rng, n, hard=hard, axis_mix=axis_mix)
+    age = p["age"]
+    mu = np.where(age < 40, -0.25, np.where(age < 55, -0.10, 0.0))
+    errs = {}
+    for suf in ("", "_os"):
+        bad = rng.uniform(size=n) < 0.12
+        sM, sJ = np.where(bad, 0.9, 0.30), np.where(bad, 0.30, 0.10)
+        if suf == "":
+            dM = rng.normal(mu, sM)
+            errs["od"] = dM
+        else:
+            dM = 0.5 * (errs["od"] - mu) + mu + rng.normal(0, sM * 0.85)
+        E = to_pv(p["S" + suf], p["C" + suf], p["axis" + suf])
+        S0, C0, a0 = from_pv(E[0] + dM, E[1] + rng.normal(0, sJ), E[2] + rng.normal(0, sJ))
+        p["S0" + suf], p["C0" + suf], p["ax0" + suf] = quant(S0), quant(C0), wrap_axis(a0)
+    return p
+
+
+class ARPairTestSet(PairTestSet):
+    """A fixed set of two-eyed patients with autorefractor readings (exams start there)."""
+
+    def __init__(self, size, seed=12345):
+        self.size = size
+        self.start = "objective"
+        self.pool = ar_pair(np.random.default_rng(seed), size)
+        self.pool["pid"] = np.arange(size, dtype=np.float64)
+        self.next = 0
+
+    def sampler(self, rng, n):
+        take = np.arange(self.next, self.next + n)
+        self.next += n
+        out = ar_pair(rng, n)
+        out["pid"] = np.full(n, -1.0)
+        real = take < self.size
+        for k, v in self.pool.items():
+            out[k][real] = v[take[real]]
+        return out
+
+
 class PlanoPairTestSet(PairTestSet):
     def __init__(self, size, seed=12345):
         super().__init__(size, seed)

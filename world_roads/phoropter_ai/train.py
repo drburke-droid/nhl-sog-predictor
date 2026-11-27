@@ -73,10 +73,12 @@ def main():
     if args.clinic:
         global MILESTONES
         MILESTONES = CLINIC_MILESTONES
-        from env3 import ClinicEnv, plano_pair, PlanoPairTestSet
+        from env3 import ClinicEnv, plano_pair, ar_pair, PlanoPairTestSet, ARPairTestSet
         from clinicians3 import run3, summary3
-        env = ClinicEnv(args.envs, seed=args.seed + 1,
-                        sampler=lambda rng, n: plano_pair(rng, n, hard=state["hard"], axis_mix=state["axis_mix"]))
+        ar = args.start == "objective"                   # term 4: every exam starts at the autorefractor reading
+        env = ClinicEnv(args.envs, seed=args.seed + 1, start_mode="objective" if ar else "plano",
+                        sampler=lambda rng, n: (ar_pair if ar else plano_pair)(rng, n, hard=state["hard"],
+                                                                              axis_mix=state["axis_mix"]))
     elif args.binocular:
         from env2 import BinocularEnv
         from patients import sample_pair, PairTestSet
@@ -222,7 +224,8 @@ def main():
         ev = {}
         if up % args.eval_every == 0 or up == 1 or up == n_up:
             if args.clinic:
-                ev = summary3(run3(agent=agent, test=PlanoPairTestSet(1000, seed=999), n_par=1000))
+                ev = summary3(run3(agent=agent, test=(ARPairTestSet if ar else PlanoPairTestSet)(1000, seed=999),
+                                   n_par=1000, start="objective" if ar else "plano"))
             elif args.binocular:
                 ev = summary2(run_policy(agent, PairTestSet(1000, seed=999), n_par=1000, t_max=args.t_max))
             else:
