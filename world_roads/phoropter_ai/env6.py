@@ -18,11 +18,9 @@ blurry", the cycling occluder), except:
   feedback during the exam: each remark counts in proportion to how much clearer the patient's vision got
   (both eyes, each through its own lens) since their previous remark (or since the start). Because each
   remark counts the change since the last one, over an exam they add up to the change between the start and
-  the last remark: going back and forth earns nothing. (A first run with remarks as information only,
-  `runs/i0`, learned to keep clicking lenses until the button limit and never prescribe.)
+  the last remark: going back and forth earns nothing.
 * **Only the clock.** The patient walks out at 15 minutes. (env5 also ended the exam at 400 buttons, a safety cap;
-  clicking 1-second lens buttons, an AI could reach it in 7 minutes, the same walkout for less chair time.
-  A first run here found that shortcut before anything else and never learned to prescribe.)
+  clicking 1-second lens buttons, an AI could reach it in 7 minutes: the same walkout for less chair time.)
 * **A reliability dial.** Each patient's answer noise and lapse rate are multiplied by a reliability factor:
   `dial=None` (practice) draws it per patient, log-uniform in DIAL; a number puts every patient at that
   setting (0.5 reliable, 1 typical as in env5, 2 unreliable).
@@ -165,7 +163,9 @@ class ClinicEnv6(E5.ClinicEnv):
         on = self.rem_on.max(1, keepdims=True)
         extra = np.concatenate([self.rem_on, (self.rem_l - self._slot_pv(c, b, L0, L1, Lc)) * on,
                                 ((self.t - self.rem_t) / 60)[:, None] * on], 1)
-        return np.concatenate([o, np.clip(extra, -6, 6).astype(np.float32)], 1)
+        # (the policy reads the last N_ACT3 inputs as the button mask: keep it last)
+        k = E5.N_ACT3
+        return np.concatenate([o[:, :-k], np.clip(extra, -6, 6).astype(np.float32), o[:, -k:]], 1)
 
 
 ClinicEnv = ClinicEnv6

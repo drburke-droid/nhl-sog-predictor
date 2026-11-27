@@ -78,13 +78,9 @@ python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 200e6 --ent 0.0
 One run from random weights. No mentor, no smile, no curriculum. The held-out checks during training use
 typical patients (dial 1).
 
-Two false starts first (both from random weights):
+Two settings were started side by side from random weights: `runs/k` with the remarks as information only,
+and `runs/j` with the remarks also counting as feedback (`--remark 0.5`).
 
-- **Remarks as information only** (`runs/i0`, 40,000 patients). With no feedback until the final check, it
-  learned within 5,000 patients to stop pressing the final check (each refusal costs 10 seconds; at first
-  almost nothing passes), then to click lens buttons until the 400-button cap: every patient walked out, but
-  after 7 minutes instead of 15. At 40,000 patients it still never prescribed (−146 points per patient; the
-  version-5 run was at −78 by then).
-- **Remarks counting, button cap still on** (`runs/j`, first try, 23,000 patients, not kept): the same
-  shortcut. With the cap lifted (walkout only at 15 minutes), the same settings learned to prescribe within
-  20,000 patients.
+(Two earlier runs, `runs/i0` and a first `runs/j`, are not reported: env6 put its seven new inputs after the
+button mask, which the policy reads from the end of its inputs, so those AIs saw a scrambled list of which
+buttons work. Fixed: the mask is the last 30 inputs again, checked by a test.)
