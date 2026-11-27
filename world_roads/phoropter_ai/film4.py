@@ -325,6 +325,7 @@ def sections():
                               x_from=1_400_000, dur=26.0, draw_secs=15.0)
     ai = trace("g_ai")
     tb = trace("g_textbook")
+    NOTES.update(make_notes(R, ai, tb))
     S["ai_title"] = Say([(0.4, f"After {R['meta']['exams'] / 1e6:.1f} million patients", 60, INK, "Bold"),
                          (1.6, "The same first patient. Now the exam starts at the autorefractor reading.", 34, INK2,
                           "Medium")], 6.5)
@@ -332,7 +333,7 @@ def sections():
                          notes=NOTES.get("ai_exam", {}), slow=slow_steps(ai, 2))
     S["tb_card"] = Textbook4()
     S["tb_exam"] = Exam4(tb, "THE TEXTBOOK", "the same patient", who="TEXTBOOK", who_col=TB_COL,
-                         notes=NOTES.get("tb_exam", {}), slow=slow_steps(tb, 1))
+                         notes=NOTES.get("tb_exam", {}), slow=slow_steps(tb, 1), fast_beat=0.24)
     S["sidebyside"] = F3.SideBySide(ai, tb, NOTES.get("sidebyside", []), dur=34.0)
     S["results"] = Results4(R, [
         ("Time in the chair", "per patient", lambda e: e["summary"]["minutes"], mmss, 0, 10),
@@ -353,6 +354,51 @@ def sections():
 
 
 NOTES = {}
+
+
+def make_notes(R, ai, tb):
+    def first(tr, cond, lo=0):
+        st = tr["steps"]
+        return next((k for k in range(lo, len(st)) if cond(st[k])), None)
+    N = {}
+    A = R["ai"]["habits"]["mean_count"]
+    T = R["textbook"]["habits"]["mean_count"]
+    k_pw = first(ai, lambda s: s["a"] == E3.JCC_PW)
+    k_ax = first(ai, lambda s: s["a"] == E3.JCC_AX)
+    k_fog = first(ai, lambda s: s["a"] == E3.SP100)
+    k_next = first(ai, lambda s: s["a"] == E3.NEXT)
+    k_bal = first(ai, lambda s: s["a"] == E3.BALANCE)
+    k_ou = first(ai, lambda s: s["a"] == E3.OU_M, k_bal or 0)
+    p = ai["patient"]
+    N["ai_exam"] = {k: v for k, v in {
+        0: f"It starts from the autorefractor's reading: right eye {fmt_rx(p['S0'], p['C0'], p['ax0'])}.",
+        k_pw: "Cross-cylinder, power: “1 or 2?” More cylinder, or less?",
+        k_ax: "Cross-cylinder, axis: the answer says which way to turn the dial.",
+        k_fog: "Then +1.00 at a time, reading the chart, until it blurs. It leaves the eye fogged on purpose.",
+        k_next: "The left eye.",
+        k_bal: "Both eyes open, both fogged. Prism split: +0.25 to whichever eye is clearer…",
+        k_ou: "…and −0.25 on both. It balances and unfogs at the same time."}.items() if k is not None}
+    t_fog = 0
+    t_jcc = first(tb, lambda s: s["a"] in (E3.JCC_AX, E3.JCC_PW))
+    t_next = first(tb, lambda s: s["a"] == E3.NEXT)
+    t_bal = first(tb, lambda s: s["a"] == E3.BALANCE)
+    t_ou = first(tb, lambda s: s["a"] == E3.OU_M, t_bal or 0)
+    N["tb_exam"] = {k: v for k, v in {
+        t_fog: "Step 1: fog with plus, then take it off a quarter at a time, reading the chart after every click.",
+        t_jcc: "Step 2: one line bigger, then the cross-cylinder: axis and power.",
+        t_next: "Step 4: the left eye, all over again.",
+        t_bal: "Step 5: fog both eyes, split the chart with prism, make the two eyes equal.",
+        t_ou: "Step 6: take the fog off both eyes together. Then prescribe."}.items() if k is not None}
+    N["sidebyside"] = [
+        (12.0, f"Both start at the autorefractor. The textbook reads the chart {T['chart reading']:.0f} times per patient, "
+               f"after almost every quarter step. The AI reads it {A['chart reading']:.0f} times."),
+        (18.0, "The textbook finds each eye's best sphere on its own. The AI leaves each eye fogged and finds the sphere "
+               "with both eyes open, balancing as it goes."),
+        (24.0, f"Both refine the cylinder with the cross-cylinder: {T['cross-cylinder']:.0f} questions per patient for "
+               f"the textbook, {A['cross-cylinder']:.0f} for the AI.")]
+    return N
+
+
 ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve1", "changes",
          "curve2", "ai_title", "ai_exam", "tb_card", "tb_exam", "sidebyside", "results", "real", "outro"]
 

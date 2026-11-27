@@ -146,6 +146,48 @@ python train.py --clinic --gamma 1.0 --init runs/f/ckpt/term1_full.pt --exams_of
   updates. `runs/f/ckpt/term1_full.pt` holds term 1's final weights and optimizer, which is where term 2
   starts.
 
+
+### Practice term 3: astigmatism at every angle (`runs/f3`)
+
+At the end of term 2 the AI turned the dial, but only back toward 180°, then asked about cylinder power. It
+never asked the cross-cylinder axis question (0.0 per exam). On a normal clinic's patients it got 0% of
+against-the-rule and oblique astigmatism (0.75 D or more) within 0.25 D.
+
+```bash
+python train.py --clinic --gamma 1.0 --init runs/f2/ckpt/final.pt --exams_offset 2697295 --steps_offset 170917888 \
+    --steps 80e6 --shape_frac 0.4 --hard_frac 0.5 --axis_mix0 0.8 --axis_frac 0.5 --ent 0.02 --lr 2e-4 \
+    --critic_warmup 5 --eval_every 25 --out runs/f3      # stopped at update 700 of 1,220 (3,098,047 patients)
+```
+
+- **Practice patients.** At the start, 80% have their astigmatism at any angle (uniform, `env3.plano_pair`
+  `axis_mix`) and bigger cylinders (`hard`). Both fade to the normal clinic mix by half-way.
+- **Mentor and exploration.** The mentor's hint was on for the first 40%, and the exploration bonus was raised
+  (entropy 0.02).
+- **Why it stopped early.** It ran on the normal mix for 90 updates after the astigmatism patients had faded
+  out, and term 4 continues on the normal mix.
+- **Result.** On a normal clinic's patients, from plano:
+  - 9.2 cross-cylinder axis questions per exam.
+  - Within 0.25 D: with-the-rule 50%, against-the-rule 43%, oblique 29%. The textbook script gets 27%, 29% and
+    29%.
+  - Whole prescription within 0.25 D: 51%, against 40% for the textbook.
+
+### Practice term 4: the clinic buys an autorefractor (`runs/f4`)
+
+```bash
+python train.py --clinic --start objective --gamma 1.0 --init runs/f3/ckpt/term3_full.pt --exams_offset 3098047 \
+    --steps_offset 216793088 --steps 60e6 --ent 0.01 --lr 1.5e-4 --critic_warmup 5 --eval_every 25 --out runs/f4
+    # stopped at update 300 of 915
+```
+
+- **Starting point.** Every exam starts at the autorefractor reading (`env3.ar_pair`). This is the same
+  autorefractor model as the first video: spherical-equivalent error N(mu, 0.30) D, with mu = −0.25 D under 40,
+  −0.10 D to 55 and 0 after; astigmatism error N(0, 0.10) D per J component; 12% poor readings; the left eye's
+  error correlated with the right's.
+- **No mentor.** The normal clinic mix throughout.
+- **The final comparison** (`evaluate4.py`, `data/results_g.json`, RESULTS_CLINIC.md) is on 5,000 new
+  patients, all starting at the autorefractor: the reading alone, the textbook script from the reading (steps
+  1–7, no trial-sphere search), and the AI.
+
 ## 5. Evaluation (`evaluate3.py`)
 
 - 5,000 new simulated patients (seed 2026), all starting at plano. The AI uses its best guess at each step
