@@ -854,7 +854,8 @@ def make_notes(R, ai_tr, tb_tr):
                f"{Th['balance']:.0f}.")]
     # the practice curve: what it learned when (from data/stages_f.json)
     N["curve"] = CURVE_NOTES
-    N["curve2"] = [(1_700_000, "The realistic dial cost it about 20 points per patient."),
+    N["curve2"] = [(1_700_000, "A dial anywhere, plus a stretch of harder practice patients (more astigmatism): its "
+                               "score crashed."),
                    (2_000_000, "It learned to turn the dial back toward 180° before adding cylinder."),
                    (2_600_000, f"Final, on new patients: {As['net']:+.0f} points per patient, {mmss(As['minutes'])} per exam.")]
     return N

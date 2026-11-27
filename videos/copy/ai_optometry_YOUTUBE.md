@@ -1,6 +1,6 @@
 # YouTube copy: Day one at AI Optometry
 
-Upload `ai_optometry_{LEN}.mp4`: {LEN_COLON}, 1920×1080, 30 fps, caption-only, with an original synthesized score.
+Upload `ai_optometry_12m48s.mp4`: 12:48, 1920×1080, 30 fps, caption-only, with an original synthesized score.
 Everything behind it is in `world_roads/phoropter_ai/`: CLINIC.md, RESULTS_CLINIC.md and PUBLISHED.md. Every
 number on screen is there too.
 
@@ -45,7 +45,24 @@ What it never learned: the cross-cylinder axis test. It turns the dial back towa
 
 How does that compare with real optometrists? Two real refractions agree within 0.25 D about 80% of the time; ours: textbook script 59%, AI 87%. A real refraction takes about 5 minutes. About 2% of real glasses come back. Our simulated patients are harder than real ones, so compare the AI with the textbook script, not with your own optometrist.
 
-{CHAPTERS}
+0:00 Day one at AI Optometry
+0:13 The AI's 27 buttons
+0:52 What the patient can say
+1:38 What the AI wants: clinic points
+2:18 How practice works
+3:21 Day one
+3:58 Learning on the job
+4:27 The shortcut
+5:01 More practice, a realistic dial
+5:32 Graduation day: the AI's exam
+7:15 What the textbook says
+7:50 The textbook's exam
+9:19 Step by step: AI vs textbook
+9:59 Minute by minute
+10:44 How each one spends an exam
+11:14 5,000 new patients
+11:47 Compared with real optometrists
+12:33 The fine print
 
 How it was made: every patient is simulated. The optics are real: power vectors, accommodation, and a wave-optics model of the blur the patient sees. The patients' answers are a model, and the clinic scorecard is made up. The AI is reinforcement learning (PPO) on a 4-core CPU, no GPU.
 
