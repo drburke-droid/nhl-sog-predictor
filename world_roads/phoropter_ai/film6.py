@@ -333,10 +333,15 @@ def make_notes(R, ai, tb, d1):
     st = R["stages"]
     cv = [(1000, f"Day one here: {R['day1']['summary']['net']:+.0f} points a patient "
                  f"(last video's patients: {R['h_ai_net']:+.0f}).")]
-    jcc = [(x["exams"], x["habits"]["used"]["cyl axis (cross-cyl)"]) for x in st]
-    k = next((ex for ex, u in jcc if u >= 0.5 and ex > 0), None)
+    jcc = [(x["exams"], x["habits"]["used"]["cyl axis (cross-cyl)"], x["axis"]["within_10"]) for x in st]
+    k = next((ex for ex, u, _ in jcc if u >= 0.9 and ex > 0), None)
+    if jcc and jcc[0][0] == 0:
+        cv.append((3000, f"It tries the cross-cylinder for the axis now and then (the nudge), and turns the dial "
+                         f"by hand. Axis within 10°: {100 * jcc[0][2]:.0f}% of astigmatic eyes."))
     if k:
-        cv.append((k, f"By {fmt_n(k)} patients it refines the axis with the cross-cylinder in most exams."))
+        w10 = next(w for ex, _, w in jcc if ex == k)
+        cv.append((k, f"By {fmt_n(k)} patients: the cross-cylinder for the axis in every exam, right after the spin. "
+                      f"Axis within 10°: {100 * w10:.0f}%."))
     N["curve"] = cv
     return N
 

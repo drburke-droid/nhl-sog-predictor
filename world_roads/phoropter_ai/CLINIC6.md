@@ -110,8 +110,9 @@ columns (the remark) set to zero, so at the start it behaves as in the third vid
 same value estimates). The first 20 updates retrain only its value estimate (the smile it used to expect is
 gone).
 
-On the new patients, before any practice here: held-out points +41, happy 50% (on the version-5 patients it
-had +66 and 67%).
+On the new patients, before any practice here (the training log's held-out check, 1,000 typical patients):
+glasses points +41 (net of chair time about +27), happy 50%; on the version-5 patients it had +66 (net +51)
+and 67%. (The log's "pts" is what the glasses earn; the net subtracts 4 points a minute.)
 
 **Two changes, after two attempts.**
 
