@@ -121,8 +121,9 @@ class PatientSays4(Section):
         if t < self.T_INTRO:
             al = fade(t, 0.3, self.T_INTRO, 0.5, 0.5)
             big_title(d, W / 2, 200, "The patient can only answer", 54, al)
-            answers = [("“1.”  “2.”  “They look the same.”", CU.SPHERE), ("“I can read down to 20/40.”", CU.CHART),
-                       ("“The top one.”  “The bottom one.”", CU.PRISM)]
+            answers = getattr(self, "ANSWERS", None) or [
+                ("“1.”  “2.”  “They look the same.”", CU.SPHERE), ("“I can read down to 20/40.”", CU.CHART),
+                ("“The top one.”  “The bottom one.”", CU.PRISM)]
             for j, (s_, col) in enumerate(answers):
                 aj = fade(t, 1.4 + 1.1 * j, self.T_INTRO, 0.5, 0.5)
                 big_title(d, W / 2, 360 + 110 * j, s_, 48, aj, col, "SemiBold")
@@ -241,8 +242,8 @@ class Learn4(Section):
         big_title(d, W / 2, 880, "Every patient is simulated: 1,024 exam rooms at once, on one computer.", 32, al, INK2,
                   "Medium")
         al = fade(t, 25.0, 999, 0.6, 0.1) * a_all
-        big_title(d, W / 2, 950, "Early on, a mentor also whispered “warmer” or “colder” after each button.", 32, al,
-                  INK2, "Medium")
+        big_title(d, W / 2, 950, getattr(self, "LAST", "Early on, a mentor also whispered “warmer” or “colder” after "
+                                                       "each button."), 32, al, INK2, "Medium")
         return np.asarray(im)
 
 
