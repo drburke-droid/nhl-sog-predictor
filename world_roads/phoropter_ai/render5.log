@@ -1,1 +1,37 @@
   sequences: exit 0
+  ai_exam: exit 0
+  tb_exam: exit 0
+  learn: exit 0
+  day1_exam: exit 0
+  results: exit 0
+  patient: exit 0
+  real: exit 0
+  toolbox: exit 0
+  tb_card: exit 0
+  wants: exit 0
+  outro: exit 0
+  day1_grid: exit 0
+  day1_title: exit 0
+  ai_title: exit 0
+  curve: exit 0
+  hook: exit 0
+  hook            0.00 +  13.00
+  toolbox        12.50 +  41.10
+  patient        53.10 +  43.50
+  wants          96.10 +  30.00
+  learn         125.60 +  40.00
+  day1_title    165.10 +   6.00
+  day1_exam     170.60 +  45.63
+  day1_grid     215.73 +  11.00
+  curve         226.23 +  30.00
+  ai_title      255.73 +   6.00
+  ai_exam       261.23 + 103.17
+  tb_card       363.90 +  32.00
+  tb_exam       395.40 +  87.00
+  sequences     481.90 +  50.00
+  results       531.40 +  36.00
+  real          566.90 +  36.00
+  outro         602.40 +  15.00
+total 617.40 s (10:17.4)
+wrote /home/user/nhl-sog-predictor/world_roads/phoropter_ai/out/score5.wav
+wrote /home/user/nhl-sog-predictor/world_roads/phoropter_ai/out/ai_optometry_v3.mp4
