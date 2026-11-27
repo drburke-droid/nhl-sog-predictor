@@ -82,6 +82,21 @@ class Changes6(Changes):
         return np.asarray(im)
 
 
+class Grid6(F3.OutcomeGrid):
+    """The outcome grid with its note under the subtitle (two panels fill the bottom of the frame)."""
+
+    def frame(self, t):
+        note, self.note = self.note, None
+        fr = super().frame(t)
+        self.note = note
+        im = Image.fromarray(fr)
+        d = ImageDraw.Draw(im, "RGBA")
+        if note:
+            al = fade(t, 3.5, 999, 0.6, 0.1) * fade(t, 0, self.dur, 0.5, 0.5)
+            text(d, (W - 60, 92), note, 26, GOLD, "SemiBold", "ra", al)
+        return np.asarray(im)
+
+
 # ======================================================================== explainers
 class PatientSays6(PatientSays5):
     ANSWERS = [("“One, much clearer.”  “Two… a little.”  “They look the same.”", CU.SPHERE),
@@ -318,17 +333,28 @@ def make_notes(R, ai, tb, d1):
             break
     N["day1_exam"] = n1
     # ---- the AI after practice here
-    na = {0: "Its first patient again."}
-    k_ax = first(ai, lambda s: s["a"] == E5.JCC_AX)
-    k_sp = first(ai, lambda s: s["a"] == E5.SPIN)
-    if k_sp is not None and (k_ax is None or k_sp < k_ax):
-        na[k_sp] = "A spin of the axis first: a rough answer, but it gets close."
-    if k_ax is not None:
-        na[k_ax] = "Then the cross-cylinder for the axis: “1 or 2?”, and the axis turns toward the clearer side."
-    k_rm = first(ai, lambda s: s.get("remark", -1) >= 0)
-    if k_rm is not None and k_rm not in na:
-        na[k_rm] = "A remark from the patient. The AI sees it, and what lenses were in."
-    N["ai_exam"], N["ai_slow"], N["sequences"] = na, tuple(range(0, 6)), []
+    def ax_after(tr, k):
+        st = tr["steps"][k]
+        return int(round(st["after"][min(st["phase"], 1)][2])) % 180 or 180
+
+    na = {0: "Its first patient again. Both eyes open first: minus a quarter at a time while the letters improve, "
+             "and then some more."}
+    for eye, name in ((0, "Right eye"), (1, "Left eye")):
+        k_sp = first(ai, lambda s: s["a"] == E5.SPIN and s["code"] == 5 and s["phase"] == eye)
+        if k_sp is None:
+            continue
+        ks = [k for k, s in enumerate(ai["steps"]) if s["a"] == E5.JCC_AX and s["phase"] == eye and k > k_sp]
+        tax = true_axis(ai, k_sp)
+        na[k_sp] = (f"{name}: a little cylinder, then spin the axis. “Stop!” …at {ax_after(ai, k_sp)}°. "
+                    f"(The true axis: {tax:.0f}°.)")
+        if ks:
+            na[ks[0]] = (f"Then the cross-cylinder for the axis: “1 or 2?”, and the axis turns toward the clearer "
+                         f"side. It ends at {ax_after(ai, ks[-1])}°.")
+    k_l = max((k for k, s in enumerate(ai["steps"]) if s["phase"] == 1), default=0)     # after the left eye
+    k_back = first(ai, lambda s: s["a"] == E5.OU_P and s["phase"] == 2, k_l)
+    if k_back is not None:
+        na[k_back] = "Both eyes again: the extra minus comes off, a quarter at a time. Then the final check."
+    N["ai_exam"], N["ai_slow"], N["sequences"] = na, tuple(range(0, 4)), []
     # ---- the practice curve
     st = R["stages"]
     cv = [(1000, f"Day one here: {R['day1']['summary']['net']:+.0f} points a patient "
@@ -340,7 +366,7 @@ def make_notes(R, ai, tb, d1):
                          f"by hand. Axis within 10°: {100 * jcc[0][2]:.0f}% of astigmatic eyes."))
     if k:
         w10 = next(w for ex, _, w in jcc if ex == k)
-        cv.append((k, f"By {fmt_n(k)} patients: the cross-cylinder for the axis in every exam, right after the spin. "
+        cv.append((k, f"By {fmt_n(round(k, -4))} patients: the cross-cylinder for the axis in every exam, right after the spin. "
                       f"Axis within 10°: {100 * w10:.0f}%."))
     N["curve"] = cv
     return N
@@ -383,15 +409,15 @@ def sections():
     S["day1_exam"] = Exam5(d1, "DAY ONE", "last video's AI, in the new clinic", notes=NOTES["day1_exam"],
                            slow=range(4), outro=6.0)
     h_ai, d1s = H3["ai"], R["day1"]
-    S["day1_grid"] = F3.OutcomeGrid(
+    S["day1_grid"] = Grid6(
         "LAST VIDEO'S AI, 1,000 PATIENTS EACH", "One square per patient.",
         [("Last video's patients", h_ai["outcomes"], h_ai["summary"]["net"], h_ai["summary"]["minutes"]),
          ("The new patients", d1s["outcomes"], d1s["summary"]["net"], d1s["summary"]["minutes"])], dur=13.0,
-        note=(f"Same AI. Astigmatic eyes with the axis more than 10° off: {100 * d1s['axis']['off_10']:.0f}% "
-              f"with the new patients. Fewer happy patients: {100 * h_ai['summary']['happy']:.0f}% → "
-              f"{100 * d1s['summary']['happy']:.0f}%."))
+        note=(f"Same AI. With the new patients, {100 * d1s['axis']['off_10']:.0f}% of astigmatic eyes end up "
+              f"with the axis more than 10° off."))
     refs = [(BORISH, R["textbook"]["summary"]["net"], TB_COL)]
     S["curve"] = Practice5(refs, NOTES.get("curve", []), max_exams=R["meta"]["exams"], run=RUN)
+    S["curve"].v0, S["curve"].v1 = -50, 80
     S["ai_title"] = Say([(0.4, f"After {fmt_n(R['meta']['exams'])} patients in the new clinic", 60, INK, "Bold"),
                          (1.6, "The same first patient, again.", 36, INK2, "Medium")], 6.0)
     S["ai_exam"] = Exam5(ai, "THE AI", f"after {fmt_n(R['meta']['exams'])} patients in the new clinic",
