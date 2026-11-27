@@ -50,7 +50,8 @@ class Toolbox5(Toolbox4):
              ("prism", "PRISM", "Splits the chart into two copies, one per eye, to compare the eyes."),
              ("occ", "OCCLUDER", "Covers one eye: right eye first, then left, then both open."),
              ("chart", "THE CHART", "“Read the smallest line you can.” Bigger or smaller letters."),
-             ("rx", "PRESCRIBE", "Done. Whatever is in the phoropter becomes the glasses.")]
+             ("rx", "PRESCRIBE", "Whatever is in the phoropter becomes the glasses, unless the patient says it's "
+                                 "still blurry.")]
 
     def frame(self, t):
         fr = super().frame(t)
@@ -65,13 +66,41 @@ class Toolbox5(Toolbox4):
 
 
 class PatientSays5(PatientSays4):
-    ANSWERS = [("“One, much clearer.”  “One… a little.”  “They look the same.”", CU.SPHERE),
-               ("“I can read down to 20/40.”", CU.CHART), ("“Stop! There.”  (spinning the axis)", CU.AXIS),
-               ("“The top one.”  “The bottom one.”", CU.PRISM)]
+    ANSWERS = [("“One, much clearer.”  “Two… a little.”  “They look the same.”", CU.SPHERE),
+               ("“I can read down to 20/40.”", CU.CHART), ("“Stop! There.”  (as the axis spins)", CU.AXIS),
+               ("“Wait, my left eye is still blurry.”", CU.RXC)]
+    GOLD_Y = 850
+
+
+class Wants5(Wants4):
+    """Wants4 plus the walkout: the patient who says it's still blurry stays in the chair, up to 15 minutes."""
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a_all = fade(t, 0, self.dur, 0.5, 0.5)
+        big_title(d, W / 2, 40, "What the AI wants: points", 54, fade(t, 0.3, 999, 0.5, 0.1) * a_all)
+        rows = [(o, name, desc, pts, CU.OUT_COL[o]) for o, name, desc, pts in self.ROWS]
+        rows += [("min", "Every minute", "in the chair", "−4", CU.CHART),
+                 ("walk", "Walks out", "still in the chair at 15 minutes, no glasses", "−150", (200, 70, 70))]
+        y = 150
+        for i, (o, name, desc, pts, col) in enumerate(rows):
+            al = fade(t, 1.5 + 1.5 * i, 999, 0.5, 0.1) * a_all
+            rr(d, [260, y, 1660, y + 100], 18, fill=CARD + (int(255 * al),), outline=tuple(col) + (int(255 * al),),
+               width=3)
+            text(d, (300, y + 50), name, 40, col, "Bold", "lm", al)
+            text(d, (620, y + 50), desc, 30, INK2, "Medium", "lm", al)
+            text(d, (1620, y + 50), pts, 52, col, "Bold", "rm", al)
+            y += 114
+        al = fade(t, 11.5, 999, 0.6, 0.1) * a_all
+        big_title(d, W / 2, 870, "The closer the glasses, the more likely “happy”.", 40, al, INK, "SemiBold")
+        al = fade(t, 15.5, 999, 0.6, 0.1) * a_all
+        big_title(d, W / 2, 950, "Right glasses, happy patients, quick exams. Nobody tells it how.", 34, al, GOLD,
+                  "SemiBold")
+        return np.asarray(im)
 
 
 class Learn5(Learn4):
-    LAST = "And the patient smiles when the letters get clearer. That's all the help it gets."
+    LAST = "The patient smiles when the letters get clearer, and won't leave seeing blurry. That's all the help it gets."
 
 
 # ======================================================================== the practice curve, one run
@@ -121,11 +150,12 @@ class TextbookSteps(Section):
                   ("2", "fog", "Best sphere: fog with plus, then take it off a quarter at a time"),
                   ("3", "chk", "Astigmatism check: cross-cylinder at 180/90, then at 45/135"),
                   ("4", "axis", "Cylinder AXIS: flip either side of the axis, turn toward the clearer one"),
-                  ("5", "power", "Cylinder POWER: flip along the axis, more or less cylinder"),
+                  ("5", "power", "Cylinder POWER: flip along the axis, more or less  (small cylinder: power first)"),
                   ("6", "sph_fine", "Best sphere again")]),
               ("LEFT EYE  ·  right eye covered", [("", "sph_fine", "Steps 1 to 6 again")]),
               ("BOTH EYES OPEN", [("7", "balance", "Fog both eyes, split the chart with prism, make the two eyes equal"),
-                                  ("8", "ou_clear", "Clear the fog, both eyes together. Prescribe.")])]
+                                  ("8", "ou_clear", "Clear the fog, both eyes together. Prescribe."),
+                                  ("", "rx_no", "“Still blurry”? Redo that eye, then both eyes again")])]
     dur = 32.0
 
     def frame(self, t):
@@ -242,7 +272,7 @@ def sections():
     S["hook"] = Hook3()
     S["toolbox"] = Toolbox5()
     S["patient"] = PatientSays5()
-    S["wants"] = Wants4()
+    S["wants"] = Wants5()
     S["learn"] = Learn5()
     S["day1_title"] = Say([(0.5, "Day one", 72, INK, "Bold"),
                            (1.6, "Its first patient. It has never seen an eye.", 38, INK2, "Medium")], 6.0)

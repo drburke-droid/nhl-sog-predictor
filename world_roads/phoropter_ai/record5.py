@@ -26,6 +26,7 @@ def record5(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max
         obs, r, done, info = env.step(np.array([a]))
         L = env.last
         st = dict(a=int(a), name=E5.ACTS[a], code=int(L["code"][0]), strength=int(L["strength"][0]),
+                  blurry=[bool(x) for x in L["blurry"][0]],
                   spin_ax=float(L["spin_ax"][0]), va=float(L["va"][0]), k=int(L["k"][0]), nl=int(L["nl"][0]),
                   line=float(L["line"][0]), screen=float(L["screen"][0]), phase=int(L["phase"][0]), phase_before=ph0,
                   screen_before=scr0, secs_before=secs0, secs=float(L["secs"][0]), before=before,
@@ -59,7 +60,8 @@ def record5(agent=None, script=None, patient=SHOWCASE3, greedy=True, seed=3, max
 def show(ex):
     for k, s in enumerate(ex["steps"]):
         ans = {-1: "", 0: "1", 1: "2", 2: "same", 3: f"reads {s['line']:.1f}", 4: f"{s['k']}/{s['nl']}",
-               5: f"stop {s['spin_ax']:.0f}", 6: "no change"}[s["code"]]
+               5: f"stop {s['spin_ax']:.0f}", 6: "no change", 7: "BLURRY right", 8: "BLURRY left",
+               9: "BLURRY both"}[s["code"]]
         if s["code"] in (0, 1):
             ans += " (much)" if s["strength"] == 2 else " (a little)"
         (S0, C0, a0), (S1, C1, a1) = s["after"]

@@ -127,7 +127,7 @@ class PatientSays4(Section):
             for j, (s_, col) in enumerate(answers):
                 aj = fade(t, 1.4 + 1.1 * j, self.T_INTRO, 0.5, 0.5)
                 big_title(d, W / 2, 360 + 110 * j, s_, 48, aj, col, "SemiBold")
-            big_title(d, W / 2, 760, "How sure they are depends on how close the lenses are.", 38,
+            big_title(d, W / 2, getattr(self, "GOLD_Y", 760), "How sure they are depends on how close the lenses are.", 38,
                       fade(t, 5.0, self.T_INTRO, 0.5, 0.5), GOLD, "SemiBold")
             return fade_frame(im, a_all)
         i = min(int((t - self.T_INTRO) // self.STEP), 2)

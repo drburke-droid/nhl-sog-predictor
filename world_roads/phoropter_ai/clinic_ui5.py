@@ -37,12 +37,13 @@ BUTTONS = [
      "cross-cylinder along the axis: “1 or 2?” says more or less cylinder", "jcc"),
     (E5.BALANCE, "Top or", "bottom?", "Balance: top or bottom?", "prism splits the chart: right eye top, left bottom",
      "prism"),
-    (E5.NEXT, "Next eye", "R → L → both", "Next eye", "cover one eye: right, then left, then both open", "occ"),
+    (E5.NEXT, "Next eye", "R → L → both", "Next eye", "cover one eye: right, then left, then both open, then back to the right",
+     "occ"),
     (E5.READ, "Read the", "smallest line", "“Read the smallest line”", "how far down the chart can they read?", "chart"),
     (E5.READ_LINE, "Read", "this line", "“Read this line”", "how many letters on this line?", "chart"),
     (E5.LINE_SM, "Smaller", "letters", "Smaller line", "show smaller letters", "chart"),
     (E5.LINE_LG, "Bigger", "letters", "Bigger line", "show bigger letters", "chart"),
-    (E5.RX, "Prescribe", "done", "Prescribe", "the exam is over: these are the glasses", "rx"),
+    (E5.RX, "Prescribe", "done?", "Prescribe", "these are the glasses, unless the patient says it's still blurry", "rx"),
 ]
 BTN = {b[0]: b for b in BUTTONS}
 assert len(BUTTONS) == E5.N_ACT3, (len(BUTTONS), E5.N_ACT3)

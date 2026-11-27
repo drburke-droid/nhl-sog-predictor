@@ -19,7 +19,8 @@ import env5 as E3
 import clinic_ui5 as CU
 from ui import W, H, BG, INK, INK2, MUTED, GOLD, RED, GREEN, CARD, LINE, PANEL, text, rr, fmt_rx, fmt_d, smooth, fade
 from scenes3 import Exam3, EYE
-QUESTIONS = (E3.READ, E3.READ_LINE, E3.CMP_P, E3.CMP_M, E3.JCC_AX, E3.JCC_PW, E3.CHK_180, E3.CHK_45, E3.BALANCE, E3.SPIN)
+QUESTIONS = (E3.READ, E3.READ_LINE, E3.CMP_P, E3.CMP_M, E3.JCC_AX, E3.JCC_PW, E3.CHK_180, E3.CHK_45, E3.BALANCE, E3.SPIN,
+             E3.RX)                                       # a refused prescription: the patient's complaint
 COMPARES = (E3.CMP_P, E3.CMP_M, E3.JCC_AX, E3.JCC_PW, E3.CHK_180, E3.CHK_45, E3.BALANCE)
 from optics import to_pv, from_pv, rx_error, jcc_pv
 
@@ -39,6 +40,9 @@ def said(s):
         return f"“I got {s['k']} of the {s['nl']} letters.”", None
     if a == E3.SPIN:
         return ("“Stop! There.”", None) if code == 5 else ("“Nothing changes.”", None)
+    if a == E3.RX:
+        return {7: "“Wait, my right eye is still blurry.”", 8: "“Wait, my left eye is still blurry.”",
+                9: "“Wait, it’s still blurry. Both eyes.”"}.get(code, "“Thanks!”"), None
     st = s.get("strength", 1)
     if a == E3.BALANCE:
         word = {0: "The top one", 1: "The bottom one", 2: "They look the same"}[code]
@@ -72,9 +76,10 @@ def action_line(a, ph, before, after):
             E3.JCC_PW: "Cylinder POWER: “1 or 2?”   (more or less cylinder)",
             E3.CHK_180: "Astigmatism check, 180° or 90°: “1 or 2?”",
             E3.CHK_45: "Astigmatism check, 45° or 135°: “1 or 2?”",
-            E3.NEXT: {0: "Covers the right eye: now the left eye", 1: "Opens both eyes"}.get(ph, "Next"),
+            E3.NEXT: {0: "Covers the right eye: now the left eye", 1: "Opens both eyes",
+                      2: "Covers the left eye: back to the right eye"}.get(ph, "Next"),
             E3.BALANCE: "Prism splits the chart: “Top or bottom, which is clearer?”",
-            E3.RX: "Prescribes"}[a]
+            E3.RX: "Prescribes: “Here are your new glasses.”"}[a]
 
 
 class Exam5(Exam3):

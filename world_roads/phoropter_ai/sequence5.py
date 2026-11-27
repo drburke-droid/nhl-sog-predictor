@@ -12,10 +12,11 @@ KIND_NAME = {"sph_big": "Find the sphere (big steps)", "sph_fine": "Fine-tune th
              "axis": "Cylinder AXIS (cross-cylinder)", "spin": "Spin the axis, patient says stop",
              "power": "Cylinder POWER (cross-cylinder)", "cyl": "Add or remove cylinder",
              "turn": "Turn the axis", "balance": "Balance the two eyes (prism)", "ou": "Both eyes: fine-tune the sphere",
-             "ou_fog": "Fog both eyes", "ou_clear": "Clear the fog, both eyes together"}
+             "ou_fog": "Fog both eyes", "ou_clear": "Clear the fog, both eyes together",
+             "rx_no": "Prescribes. Patient: “Still blurry!”"}
 KIND_GROUP = {"sph_big": "sphere", "sph_fine": "sphere", "fog": "sphere", "ou": "sphere", "chk": "jcc", "axis": "jcc",
               "power": "jcc", "spin": "axis", "turn": "axis", "cyl": "cyl", "balance": "prism", "ou_fog": "sphere",
-              "ou_clear": "sphere"}
+              "ou_clear": "sphere", "rx_no": "rx"}
 
 
 def kind_of(a, ph):
@@ -50,10 +51,15 @@ def steps_of(tr):
     for s in tr["steps"]:
         a = s["a"]
         if a == E5.NEXT:
-            ph = min(ph + 1, 2)
+            ph = (ph + 1) % 3
             cur = None
             continue
         if a == E5.RX:
+            if s.get("code", -1) in (7, 8, 9):            # refused: "it's still blurry"
+                cur = dict(stage=s["phase_before"], kind="rx_no", n=1, q=1, before=s["before"], after=s["after"],
+                           acts=[a], code=s["code"])
+                out.append(cur)
+                cur = None
             continue
         k = kind_of(a, s["phase_before"])
         if k is None:
@@ -111,6 +117,8 @@ def detail(st):
         return f"{qs}  →  axis {int(round(ax)) % 180 or 180}°"
     if k in ("power", "cyl"):
         return f"{qs}  →  cylinder {ui.fmt_d(C, False) if C < 0 else '0.00'}"
+    if k == "rx_no":
+        return "  →  " + {7: "right eye", 8: "left eye", 9: "both eyes"}[st["code"]]
     if k in ("balance", "ou", "ou_fog", "ou_clear"):
         (S0, _, _), (S1, _, _) = st["after"]
         return f"{qs}  →  R {ui.fmt_d(S0)}, L {ui.fmt_d(S1)}"
