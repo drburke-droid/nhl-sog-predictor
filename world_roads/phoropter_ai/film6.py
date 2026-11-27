@@ -42,7 +42,11 @@ class PatientSays6(PatientSays5):
 
 
 class Learn6(Learn5):
-    LAST = "Now and then the patient says “Oh, that’s clear!”, and won't leave seeing blurry. That's all the help it gets."
+    STEPS = [Learn5.STEPS[0],
+             ("2", "It gets the score", "Points for the glasses, minus the chair time. Along the way, a patient's "
+                                        "occasional “Oh, that’s clear!” or “Hmm, that’s not as clear” counts a little too."),
+             Learn5.STEPS[2]]
+    LAST = "No smile, no mentor: just a remark now and then, and a patient who won't leave seeing blurry."
 
 
 class BorishSteps(TextbookSteps):
