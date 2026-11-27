@@ -133,3 +133,65 @@ and 67%. (The log's "pts" is what the glasses earn; the net subtracts 4 points a
    whether to use it, when, for which eyes and how many times. The Borish script uses the same button and
    stops where it stopped before (reversal on the smallest step); its results are unchanged within noise
    (textbook script on 1,500 patients: −8.4 with its own turns, −8.5 with the button).
+
+`runs/m` was stopped at 585,322 patients (held-out points level since about 250,000).
+
+## 4. Results (`evaluate6.py` → `data/results_m.json`)
+
+5,000 new patients, typical reliability (dial 1), every exam starting at plano. "Day one" is the third
+video's AI before any practice in the new clinic; "AI" is the same AI after 585,322 patients there.
+
+| | Plano | Day one | Borish script | AI |
+|---|---:|---:|---:|---:|
+| Net points per patient | −107 | +23 | +1 | **+51** |
+| … glasses | −107 | +37 | +41 | +67 |
+| … chair time (4 a minute) | 0 | −14 | −39 | −16 |
+| Time in the chair | 0:00 | 3:31 | 9:48 | 4:01 |
+| Happy | 5% | 48% | 60% | **69%** |
+| Walked out (15 minutes) | 0% | 0.8% | 9.1% | 0.3% |
+| Spherical equivalent within 0.25 D | 12% | 86% | 79% | 91% |
+| Whole prescription within 0.25 D (power vector) | 3% | 31% | 46% | 57% |
+| Astigmatic eyes (≥ 0.75 D): axis within 10° | | 64% | 94% | 94% |
+| … median axis error | | 8° | 2° | 2° |
+| Eyes under 40 over-minused by 0.25 D or more | 30% | 39% | 36% | 15% |
+
+**The Borish script's negative points are chair time.** Its glasses earn +41 a patient, a little more than
+day one's; its 9:48 in the chair costs 39. That and 9% of patients walking out at 15 minutes (mostly the
+unreliable ones it keeps re-checking) leave it at +1.
+
+**What practice changed.** The AI's exam was already "both eyes first, then each eye, then both eyes"; in
+the new clinic it added the cross-cylinder for the axis after the spin, in every exam (2.3 spins, 6.4 axis
+cross-cylinder and 6.7 power cross-cylinder questions an exam). Per eye, most often: a little cylinder in,
+spin ("stop!"), the cross-cylinder for the axis two or three times, then the power; with the textbook's own
+bracketing steps the axis ends as close as the Borish script's (94% within 10°). It also took less minus
+off at the end than before: eyes under 40 over-minused 39% → 15%.
+
+**Consistency: the same 2,000 patients examined twice** (fresh answers each time), how often the two
+prescriptions agree:
+
+| Patients (reliability dial) | Borish: SE within 0.25 D | AI: SE within 0.25 D | Borish: whole Rx within 0.25 D | AI: whole Rx within 0.25 D | Borish net | AI net |
+|---|---:|---:|---:|---:|---:|---:|
+| Reliable (0.5) | 75% | 91% | 64% | 65% | +16 | +57 |
+| Typical (1) | 68% | 88% | 55% | 63% | +1 | +51 |
+| Unreliable (2) | 61% | 83% | 46% | 58% | −27 | +34 |
+
+Published test-retest for real optometrists, spherical equivalent within 0.25 D: about 80% (Goss &
+Grosvenor 1996; Shah et al. 2009). Consistency alone is not accuracy: prescribing plano to everyone would
+agree 100% of the time. Read it next to the happy patients.
+
+**The AI from nothing** (`runs/j`, 905,000 patients, remarks only): net −48, happy 19%, whole prescription
+within 0.25 D 12%; in half its exams it never covered an eye.
+
+## 5. The exams shown (`traces6.py`)
+
+The showcase patient of the earlier videos (24 years old, OD −2.25 −1.00 × 170, OS −2.50 −0.75 × 10,
+0.35 D of instrument myopia), typical reliability:
+
+| | Buttons | Time | Prescribed | Points |
+|---|---:|---:|---|---:|
+| Day one | 62 | 2:24 | OD −2.50 −1.00 × 174, OS −2.75 −0.75 × 7 | +73 |
+| AI | 75 | 3:00 | OD −2.00 −1.00 × 169, OS −2.25 −0.75 × 13 | +78 |
+| Borish script | 205 | 12:12 | OD −2.25 −1.00 × 170, OS −2.50 −0.75 × 10 | +97 |
+
+The Borish script's push-plus checks took this patient's extra quarter of minus back: the prescription is
+exact (in the third video's exam it left OS 0.50 D too minus).

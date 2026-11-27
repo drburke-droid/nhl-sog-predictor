@@ -3,6 +3,35 @@
 A reinforcement-learning agent teaches itself subjective refraction on simulated patients, and the videos
 of how it learned.
 
+## The fourth video: more realistic patients, the Borish method (`runs/m`, [CLINIC6.md](CLINIC6.md))
+
+The third video's AI walks into a clinic with patients more like real ones: no smile, a rough answer when the
+axis spins, only the occasional remark ("Oh, that's clear!"), and a reliability dial (some patients steady,
+some not). A new AI trained from nothing on these patients got stuck at a shortcut (`runs/j`), so the third
+video's AI practises here instead, with one button changed (the cross-cylinder for the axis now turns the
+axis toward the side the patient picks) and a nudge to try it. After 585,000 patients it refines every
+astigmatic eye the textbook way after its spin: the cross-cylinder for the axis, then the power. On 5,000 new
+patients against the Borish script: 4:01 in the chair against 9:48, 69% happy against 60%, +51 points
+against +1 (the script's are eaten by chair time); the same patient examined twice agrees within 0.25 D 88%
+of the time against 68%.
+
+| File | What it does |
+|---|---|
+| `env6.py` | The exam: rough spin, occasional remarks, reliability dial, the turning axis button, only the 15-minute clock |
+| `clinicians5.py` (`borish`) | The Borish script: maximum-plus checks at each endpoint, fog until it blurs |
+| `init6.py` | The third video's AI widened for env6's inputs, with the nudge |
+| `evaluate6.py`, `traces6.py` | 5,000-patient comparison, test-retest at three reliability settings, habits, checkpoints |
+| `film6.py`, `thumbs6.py` | The fourth video |
+
+```bash
+python init6.py --nudge
+python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 100e6 --ent 0.01 --lr 3e-4 --eval_every 20 \
+       --init runs/m/init.pt --critic_warmup 20 --out runs/m          # stopped at 585k patients
+python evaluate6.py && python traces6.py
+python film6.py all          # -> out/ai_optometry_v4.mp4
+python thumbs6.py
+```
+
 ## The third video: no mentor, plano start (`runs/h`, [CLINIC5.md](CLINIC5.md))
 
 One AI, starting from nothing, every exam at plano. No mentor hints and no curriculum: its only help is the
