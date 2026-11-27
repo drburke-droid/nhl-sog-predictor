@@ -4,3 +4,4 @@ initialised from runs/f2/ckpt/final.pt {'exams': 2697295, 'steps': 170917888, 'n
 [shape 0.98] up 10/1220 steps 171.6M exams 2,706,751 0.7 min | train err 1.246 within 0.10 len 66.9 ent 0.38 pts -48.1 min 3.4
 [shape 0.97] up 15/1220 steps 171.9M exams 2,711,594 1.2 min | train err 1.174 within 0.12 len 68.9 ent 0.42 pts -46.5 min 3.6
 [shape 0.96] up 20/1220 steps 172.2M exams 2,716,310 1.5 min | train err 1.231 within 0.12 len 69.9 ent 0.45 pts -51.2 min 3.6
+[shape 0.95] up 25/1220 steps 172.6M exams 2,720,957 2.0 min | train err 1.244 within 0.11 len 72.6 ent 0.47 pts -53.7 min 3.7 | EVAL pts +26.3 min 3.2 happy 0.47 | EVAL err 0.439 within 0.318 exact 0.218 steps 57.9 overminus_y 0.08
