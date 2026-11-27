@@ -1,7 +1,32 @@
 # I gave an AI a phoropter
 
-A reinforcement-learning agent teaches itself subjective refraction on simulated patients, and two videos
+A reinforcement-learning agent teaches itself subjective refraction on simulated patients, and the videos
 of how it learned.
+
+## The third video: no mentor, plano start (`runs/h`, [CLINIC5.md](CLINIC5.md))
+
+One AI, starting from nothing, every exam at plano. No mentor hints and no curriculum: its only help is the
+patient (how sure they are, a smile when the letters get clearer, and "it's still blurry" at the final
+check). It can search for astigmatism the textbook way (cross-cylinder at 180/90 and 45/135) or put in some
+cylinder and spin the axis until the patient says stop. After 1.8 million practice patients it works out its
+own sequence (both eyes first, deliberately over-minused; then each eye: cylinder in, spin, cross-cylinder
+power; then both eyes to take the extra minus off) and is compared with the textbook sequence side by side.
+On 5,000 new patients: 3:14 in the chair against 9:19, 65% happy against 56%, +51 points against −3.
+
+| File | What it does |
+|---|---|
+| `env5.py` | The exam: graded answers, the power-search check, spin, the final check ("still blurry"), cycling occluder |
+| `clinicians5.py` | The textbook script for it (trial lenses ±2/±4/±6, power-search check, redo an eye after a complaint) |
+| `evaluate5.py`, `overshoot5.py` | 5,000-patient comparison, habits, practice checkpoints; the overshoot by age |
+| `record5.py`, `traces5.py`, `sequence5.py` | Record exams step by step; name the steps per occluder visit |
+| `clinic_ui5.py`, `scenes5.py`, `film5.py`, `thumbs5.py` | The third video |
+
+```bash
+python train.py --clinic --env5 --smile 0.5 --gamma 1.0 --steps 200e6 --ent 0.01 --lr 3e-4 --eval_every 20 --out runs/h
+python evaluate5.py && python overshoot5.py && python traces5.py
+python film5.py all          # -> out/ai_optometry_v3.mp4
+python thumbs5.py
+```
 
 ## The second video: "Day one at AI Optometry" (`runs/f`, [CLINIC.md](CLINIC.md))
 

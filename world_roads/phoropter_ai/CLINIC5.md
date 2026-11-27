@@ -91,3 +91,106 @@ A pilot with only the smile (no complaint rule) showed it escapes the trap that 
 attempt (prescribing plano at once, −107 points): −56 points by 122,000 practice patients. With the complaint
 rule added, day one is worse (every random exam ends in a walkout), but the AI learned faster: −51 points on
 held-out patients after 57,000 and −20 after 445,000.
+
+**How it ended.** Training was stopped at update 1,800 (1,812,949 practice patients, 2 h 20 min after the
+resume on 4 CPU cores) because the held-out score had been flat at about +65 clinic points (before chair time) for
+300 updates. `runs/h/ckpt/final.pt` is that network (`latest.pt` at update 1,800, saved in half precision).
+
+## 4. Results (`evaluate5.py` → `data/results_h.json`)
+
+5,000 new simulated patients (seed 2026), every exam starting at plano. The AI picks its most likely button
+at each step. "Plano" prescribes plano for everyone with the final check switched off (otherwise every blurry
+patient refuses it and walks out): the do-nothing reference.
+
+| | Plano | Textbook script | AI |
+|---|---:|---:|---:|
+| Time in the chair | 0:00 | 9:19 | **3:14** |
+| Buttons per exam | 1 | 156 | 79 |
+| Glasses within 0.25 D (power vector, every eye) | 3% | 43% | **46%** |
+| Glasses within 0.50 D | 10% | 78% | **91%** |
+| Spherical equivalent within 0.25 D | 12% | 75% | **91%** |
+| Cylinder within 0.25 D | 42% | **82%** | 81% |
+| Happy patients | 5% | 56% | **65%** |
+| Clinic points (glasses) | −107 | +34 | **+64** |
+| **Net points per patient** (glasses − 4/min) | −107 | −3 | **+51** |
+| Walked out (15 min or 400 buttons) | — | 5.3% | 0.2% |
+| Exams with a "still blurry" complaint | — | 10.8% | 13.6% |
+| Two exams of the same eye agree within 0.25 D (2,000 patients, SE) | — | 64% | **87%** |
+
+Astigmatism by orientation (within 0.25 D, power vector): with-the-rule 31% / 39%, against-the-rule 32% / 34%,
+oblique 33% / 35% (textbook / AI): no orientation is left behind.
+
+### How its exam differs from the textbook's (habits on the 5,000 patients)
+
+| | Textbook script | AI |
+|---|---|---|
+| Order of occluder visits | right, left, both (89%) | **both, right, left, both (97.5%)** |
+| Time per stage (right / left / both) | 3.9 / 3.9 / 1.6 min | 0.6 / 0.6 / 2.0 min |
+| Chart readings per exam | 50 | 12 |
+| Sphere "1 or 2?" | never | 3.5 per exam |
+| Astigmatism check (180/90, 45/135) | every exam | **never** |
+| Cylinder AXIS (cross-cylinder) | 96% of exams, 5.1 per exam | **never** |
+| Spin the axis ("say stop") | never | **every exam, 4.0 per exam** |
+| Cylinder POWER (cross-cylinder) | 96%, 6.7 per exam | every exam, 6.3 per exam |
+| Prism balance | every exam | never (adjusts one eye with both open in 13%) |
+
+In words: it opens both eyes, adds minus to both until the chart stops improving, and deliberately goes
+past it. Then it covers each eye in turn, puts in a quarter of cylinder without asking anything, spins the
+axis until the patient says stop, and alternates spin and cross-cylinder POWER until both settle, taking
+minus off the sphere as the cylinder goes up. Finally it opens both eyes and takes the extra minus off
+together, a quarter at a time, with the chart and "1 or 2?", and presses the final check.
+
+**The overshoot depends on age** (`overshoot5.py` → `data/overshoot_h.json`, 1,500 new patients; extra minus
+beyond the true spherical equivalent, both eyes averaged, when it first covers an eye):
+
+| Age | under 20 | 20s | 30s | 40s | 50s | 60+ |
+|---|---:|---:|---:|---:|---:|---:|
+| Extra minus (mean) | 3.3 D | 2.6 D | 1.8 D | 1.4 D | 0.9 D | −0.1 D |
+
+A young eye focuses through extra minus, so the letters stay sharp while it does the cylinder; an older eye
+cannot, and the AI doesn't overshoot it. This may simply follow from "keep adding minus while the chart
+improves or holds": young eyes hold for longer. In the final glasses the AI over-minuses young patients less
+often than the textbook script: 31% against 46% of patients under 40 leave with the right eye over-minused by
+0.25 D or more (`over_minus_young`).
+
+### How it got there (`R["stages"]`, 2,000 patients per checkpoint, sampling buttons as it practised)
+
+| Practice patients | Net points | Happy | Most common visit order | Spin used | Complaints per exam | Walked out |
+|---:|---:|---:|---|---:|---:|---:|
+| 0 | −174 | 2% | random | (random) | 10.8 | 68% |
+| 10,114 | −123 | 8% | both only (16%) | 2% | 7.0 | 34% |
+| 20,200 | −89 | 13% | both only (51%) | 1% | 10.8 | 23% |
+| 100,240 | −65 | 18% | both only (53%) | 19% | 6.5 | 11% |
+| 501,297 | −25 | 26% | both only (45%) | 30% | 3.7 | 2% |
+| 751,332 | −10 | 33% | both, R, L, both (33%) | 44% | 2.9 | 1% |
+| 1,000,094 | +41 | 58% | both, R, L, both (94%) | 100% | 0.5 | 1% |
+| 1,812,949 | +48 | 63% | both, R, L, both (97%) | 100% | 0.3 | 1% |
+
+From about 10,000 to 750,000 patients its usual exam never covered an eye: sphere only, both eyes open, using
+the final check as a guide ("still blurry" → more minus → check again). Between 750,000 and 1,000,000 it began
+covering each eye to put in cylinder, and the score jumped by 50 points. The training curve (sampled
+buttons, smoothed) crosses the textbook script's −3 at about 800,000 patients.
+
+## 5. The exams shown (`traces5.py`)
+
+One showcase patient, 24 years old: OD −2.25 −1.00 × 170, OS −2.50 −0.75 × 10.
+
+- Day one (`exams_0.pt`, sampling): 276 buttons, 21 "still blurry" complaints, walked out at 15 minutes.
+- The textbook script: 193 buttons, 11:33, OD −2.50 −1.00 × 170, OS −3.00 −0.50 × 10; +42 points before chair time.
+- The AI (`final.pt`): 95 buttons, 3:49, OD −2.00 −1.00 × 170, OS −2.50 −0.75 × 10 (left eye exact, right a
+  quarter short); +88 points before chair time, +72 net.
+
+The side-by-side groups each exam into named steps per occluder visit (`sequence5.py`). Two readability
+merges apply to both columns: quarter-dioptre sphere clicks (no question) inside a cylinder-power or spin step
+belong to it (keeping the spherical equivalent), and axis turns made while no cylinder is in (they do nothing)
+belong to the "put in some cylinder" step that follows. Alternating spin and cylinder-power steps (three or more)
+are one row, "Spin the axis, cylinder POWER, back and forth".
+
+## 6. Limits
+
+- The patients are a model. Real patients answer less consistently, tire, and have reasons for their answers
+  the model doesn't have. The overshoot strategy relies on accommodation behaving as modelled; a real latent
+  hyperope or a patient with accommodative spasm may not.
+- The scorecard is made up, and the AI optimises it: a different scorecard would give a different exam.
+- The textbook script is a script, not an optometrist: it reads the chart after almost every click, so it is
+  slower than a clinician (about 5 minutes in published reports). Compare the AI with the script.

@@ -337,9 +337,10 @@ def make_notes(R, ai, tb):
     if x_ask:
         curve.append((x_ask, "It learns the final check talks back: some minus, check, more minus, check again…"))
     if x_both:
-        curve.append((x_both, "It starts every exam with both eyes open."))
+        curve.append((x_both, "Most exams now: both eyes open the whole time, sphere only. No astigmatism."))
     if x_spin and x_pass and abs(math.log10(x_spin / x_pass)) < 0.15:
-        curve.append((min(x_spin, x_pass), "It finds astigmatism: cylinder in, spin the axis. Now it beats the textbook."))
+        curve.append((min(x_spin, x_pass), "It covers each eye in turn: cylinder in, spin the axis. Now it beats the "
+                                           "textbook."))
     else:
         if x_spin:
             curve.append((x_spin, "It finds astigmatism: put in some cylinder, spin the axis, ask about power."))
