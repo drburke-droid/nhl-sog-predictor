@@ -1,0 +1,6 @@
+initialised from runs/f2/ckpt/final.pt {'exams': 2697295, 'steps': 170917888, 'n_obs': 886, 'n_act': 27, 'flag': False, 'masked': True, 'kind': 'clinic'}
+[shape 1.00] up 1/1220 steps 171.0M exams 2,698,052 0.1 min | train err 0.423 within 0.31 len 50.1 ent 0.34 pts +26.8 min 2.8 | EVAL pts +24.4 min 3.1 happy 0.47 | EVAL err 0.452 within 0.334 exact 0.236 steps 56.8 overminus_y 0.11
+[shape 0.99] up 5/1220 steps 171.2M exams 2,701,865 0.4 min | train err 1.237 within 0.12 len 68.4 ent 0.36 pts -53.3 min 3.5
+[shape 0.98] up 10/1220 steps 171.6M exams 2,706,751 0.7 min | train err 1.246 within 0.10 len 66.9 ent 0.38 pts -48.1 min 3.4
+[shape 0.97] up 15/1220 steps 171.9M exams 2,711,594 1.2 min | train err 1.174 within 0.12 len 68.9 ent 0.42 pts -46.5 min 3.6
+[shape 0.96] up 20/1220 steps 172.2M exams 2,716,310 1.5 min | train err 1.231 within 0.12 len 69.9 ent 0.45 pts -51.2 min 3.6

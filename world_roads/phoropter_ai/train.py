@@ -17,7 +17,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MILESTONES = [0, 1_000, 3_000, 10_000, 30_000, 100_000, 300_000, 1_000_000, 2_000_000, 3_000_000,
               5_000_000, 8_000_000]
 CLINIC_MILESTONES = [0, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 200_000, 300_000, 500_000, 750_000,
-                     1_000_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 3_000_000, 4_000_000]
+                     1_000_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 2_750_000, 3_000_000,
+                     3_250_000, 3_500_000, 3_750_000, 4_000_000]
 
 
 def main():
@@ -49,6 +50,9 @@ def main():
     ap.add_argument("--resume", default=None,
                     help="checkpoint to continue from (latest.pt has the optimizer; an exams_*.pt restarts it)")
     ap.add_argument("--t_max", type=int, default=60, help="moves before an exam times out")
+    ap.add_argument("--axis_mix0", type=float, default=0.0,
+                    help="clinic term 3: fraction of practice patients with astigmatism at any angle, at the start")
+    ap.add_argument("--axis_frac", type=float, default=0.0, help="...fading linearly to 0 over this fraction of training")
     ap.add_argument("--exams_offset", type=int, default=0,
                     help="continue counting practice exams (and steps) from an earlier run, e.g. a second practice term")
     ap.add_argument("--steps_offset", type=int, default=0)
@@ -65,13 +69,14 @@ def main():
 
     from functools import partial
     from patients import sample_patients
-    state = {"hard": 0.0}
+    state = {"hard": 0.0, "axis_mix": 0.0}
     if args.clinic:
         global MILESTONES
         MILESTONES = CLINIC_MILESTONES
         from env3 import ClinicEnv, plano_pair, PlanoPairTestSet
         from clinicians3 import run3, summary3
-        env = ClinicEnv(args.envs, seed=args.seed + 1, sampler=lambda rng, n: plano_pair(rng, n, hard=state["hard"]))
+        env = ClinicEnv(args.envs, seed=args.seed + 1,
+                        sampler=lambda rng, n: plano_pair(rng, n, hard=state["hard"], axis_mix=state["axis_mix"]))
     elif args.binocular:
         from env2 import BinocularEnv
         from patients import sample_pair, PairTestSet
@@ -151,6 +156,7 @@ def main():
         prog = (up - 1) / n_up
         env.shaping = max(0.0, 1.0 - prog / args.shape_frac) if args.shape_frac > 0 else 0.0
         state["hard"] = max(0.0, 1.0 - prog / args.hard_frac) if args.hard_frac > 0 else 0.0
+        state["axis_mix"] = args.axis_mix0 * max(0.0, 1.0 - prog / args.axis_frac) if args.axis_frac > 0 else 0.0
         env.gamma = args.gamma
         errs, wins, lens, pts, secs = [], [], [], [], []
         cur_up[0] = up

@@ -11,7 +11,7 @@ from policy import load
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TR = os.path.join(HERE, "data", "traces")
-RUN = os.path.join(HERE, "runs", "f2", "ckpt")
+RUN = os.path.join(HERE, "runs", "f3", "ckpt")
 RUN1 = os.path.join(HERE, "runs", "f", "ckpt")
 
 

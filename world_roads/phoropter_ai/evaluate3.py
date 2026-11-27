@@ -14,9 +14,11 @@ from optics import to_pv
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-RUN = os.path.join(HERE, "runs", "f2")             # practice term 2 (the final AI)
+RUN = os.path.join(HERE, "runs", "f3")             # practice term 3 (the final AI)
+RUN2 = os.path.join(HERE, "runs", "f2")            # practice term 2 (the dial where the last patient left it)
 RUN1 = os.path.join(HERE, "runs", "f")             # practice term 1 (the axis dial always started at 180)
 TERM1_END = 1_630_473
+TERM2_END = 2_697_295
 SEED = 2026
 
 GROUPS = {"sphere lens": (E3.SP25, E3.SM25, E3.SP100, E3.SM100, E3.OU_P, E3.OU_M, E3.R_P, E3.L_P),
@@ -105,12 +107,33 @@ def ckpt_list():
     """Every practice checkpoint of both terms: (exams, path, rand_dial). Term-1 checkpoints are scored in the
     clinic they practised in (dial at 180)."""
     out = {}
-    for run, term2 in ((RUN1, False), (RUN, True)):
+    for run, later in ((RUN1, False), (RUN2, True), (RUN, True)):
         for p in glob.glob(os.path.join(run, "ckpt", "exams_*.pt")):
             n = int(re.findall(r"exams_(\d+)", p)[0])
             if n not in out:
-                out[n] = (n, p, term2 and n > TERM1_END)
+                out[n] = (n, p, later and n > TERM1_END)
     return [out[k] for k in sorted(out)]
+
+
+def cyl_breakdown(path, n=2000, rand_dial=True):
+    """How a checkpoint handles astigmatism, on the normal clinic mix: cross-cylinder questions, axis turns, and
+    eyes within 0.25 D by orientation (cylinder 0.75 D or more)."""
+    ag, _ = load(path)
+    res = run3(agent=ag, test=PlanoPairTestSet(n, seed=SEED), n_par=1000, record_actions=True, rand_dial=rand_dial)
+    acts = res["actions"]
+    cnt = lambda A: float(np.mean([sum(a in A for a in seq) for seq in acts]))
+    tax = np.concatenate([res["tax"], res["tax_os"]]) % 180
+    tC = np.concatenate([res["tC"], res["tC_os"]])
+    err = np.concatenate([res["err"], res["err_os"]])
+    wtr = ((tax < 30) | (tax >= 150)) & (tC <= -0.75)
+    atr = (tax >= 60) & (tax < 120) & (tC <= -0.75)
+    obl = ~((tax < 30) | (tax >= 150)) & ~((tax >= 60) & (tax < 120)) & (tC <= -0.75)
+    s = summary3(res)
+    s.update(se_stats(res))
+    return dict(summary=s, jcc_axis=cnt((E3.JCC_AX,)), jcc_power=cnt((E3.JCC_PW,)),
+                axis_turns=cnt((E3.AXP2, E3.AXM2, E3.AXP5, E3.AXM5, E3.AXP15, E3.AXM15)),
+                wtr_within=float(np.mean(err[wtr] <= 0.25 + 1e-9)), atr_within=float(np.mean(err[atr] <= 0.25 + 1e-9)),
+                obl_within=float(np.mean(err[obl] <= 0.25 + 1e-9)))
 
 
 def term1_shortcut(n=2000):
@@ -141,6 +164,21 @@ def term1_shortcut(n=2000):
     return out
 
 
+def textbook_cyl(n=2000):
+    res = run3(make=textbook3, test=PlanoPairTestSet(n, seed=SEED), n_par=1000, record_actions=True)
+    acts = res["actions"]
+    cnt = lambda A: float(np.mean([sum(a in A for a in seq) for seq in acts]))
+    tax = np.concatenate([res["tax"], res["tax_os"]]) % 180
+    tC = np.concatenate([res["tC"], res["tC_os"]])
+    err = np.concatenate([res["err"], res["err_os"]])
+    wtr = ((tax < 30) | (tax >= 150)) & (tC <= -0.75)
+    atr = (tax >= 60) & (tax < 120) & (tC <= -0.75)
+    obl = ~((tax < 30) | (tax >= 150)) & ~((tax >= 60) & (tax < 120)) & (tC <= -0.75)
+    return dict(jcc_axis=cnt((E3.JCC_AX,)), jcc_power=cnt((E3.JCC_PW,)),
+                wtr_within=float(np.mean(err[wtr] <= 0.25 + 1e-9)), atr_within=float(np.mean(err[atr] <= 0.25 + 1e-9)),
+                obl_within=float(np.mean(err[obl] <= 0.25 + 1e-9)))
+
+
 def main(n_test=5000, n_stage=2000, tag="f"):
     os.makedirs(DATA, exist_ok=True)
     R = {"meta": {"test_patients": n_test, "seed": SEED}}
@@ -149,6 +187,7 @@ def main(n_test=5000, n_stage=2000, tag="f"):
     if not os.path.exists(final):
         final = ckpt_list()[-1][1]
     R["meta"]["term1_end"] = TERM1_END
+    R["meta"]["term2_end"] = TERM2_END
     agent, meta = load(final)
     R["meta"].update(exams=meta["exams"], steps=meta["steps"], ckpt=os.path.basename(final))
     for name, kw in (("plano", dict(make=plano)), ("textbook", dict(make=textbook3)), ("ai", dict(agent=agent))):
@@ -167,6 +206,11 @@ def main(n_test=5000, n_stage=2000, tag="f"):
         R[name] = entry
         print(name, {k: round(v, 3) for k, v in s.items() if isinstance(v, float)}, flush=True)
     R["term1"] = term1_shortcut(min(2000, n_test))
+    R["term2"] = cyl_breakdown(os.path.join(RUN2, "ckpt", "final.pt"), min(2000, n_test))
+    R["final_cyl"] = cyl_breakdown(final, min(2000, n_test))
+    R["textbook_cyl"] = textbook_cyl(min(2000, n_test))
+    print("term 2 end", {k: round(v, 3) for k, v in R["term2"].items() if k != "summary"})
+    print("final", {k: round(v, 3) for k, v in R["final_cyl"].items() if k != "summary"})
     # practice checkpoints (sampled, as it practised; and greedy, its best guess), each in its own term's clinic
     R["stages"] = []
     for ex_n, p, rd in ckpt_list():

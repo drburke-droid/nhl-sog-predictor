@@ -15,7 +15,7 @@ a preference for minus, lapses), with both eyes starting at plano. The projector
 """
 import numpy as np
 from optics import to_pv, rx_error, jcc_pv
-from patients import sample_pair, PairTestSet
+from patients import sample_pair, PairTestSet, wrap_axis
 from env2 import BinocularEnv, gain
 import chart
 import clinic
@@ -64,10 +64,17 @@ ANSWERS = {
 }
 
 
-def plano_pair(rng, n, hard=0.0):
+def plano_pair(rng, n, hard=0.0, axis_mix=0.0):
     """Two-eyed patients for the clinic: both eyes start at plano. The axis dial starts wherever the last
-    patient left it (uniform 1-180), which with no cylinder in the phoropter changes nothing optically."""
+    patient left it (uniform 1-180), which with no cylinder in the phoropter changes nothing optically.
+    axis_mix (practice term 3 only): this fraction of patients get their astigmatism at any angle (uniform),
+    instead of mostly near 180 or 90; their left eye is the usual near-mirror image."""
     p = sample_pair(rng, n, hard=hard)
+    if axis_mix > 0:
+        m = rng.uniform(size=n) < axis_mix
+        ax = rng.uniform(0, 180, n)
+        p["axis"] = np.where(m, wrap_axis(ax), p["axis"])
+        p["axis_os"] = np.where(m, wrap_axis(180 - ax + rng.normal(0, 8, n)), p["axis_os"])
     for k in ("S0", "C0", "S0_os", "C0_os"):
         p[k] = np.zeros(n)
     p["ax0"], p["ax0_os"] = np.full(n, 180.0), np.full(n, 180.0)
