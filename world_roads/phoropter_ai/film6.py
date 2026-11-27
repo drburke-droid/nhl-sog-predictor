@@ -323,6 +323,14 @@ def make_notes(R, ai, tb, d1):
         t_l: "The left eye, right eye covered: all of it again.",
         t_b: "Both eyes open: fog both, split the chart with prism, make the two eyes equal…",
         t_clear: "…then clear the fog together, and the final check."}.items() if k is not None}
+    # two of the patient's remarks, at full speed
+    rem = [(k, st["remark"]) for k, st in enumerate(tb["steps"]) if st.get("remark", -1) >= 0 and k not in N["tb_exam"]]
+    k1 = next((k for k, r in rem if r == 1), None)
+    k0 = next((k for k, r in rem if r == 0 and (k1 is None or k > k1 + 10)), None)
+    if k1 is not None:
+        N["tb_exam"][k1] = "A remark. No smile, no running commentary: now and then, the patient says what they notice."
+    if k0 is not None:
+        N["tb_exam"][k0] = "They noticed the cylinder: now within a line of the best they can see."
     N["tb_slow"] = tuple(range(0, 4))
     # ---- day one: the third video's AI, as it was
     n1 = {0: "Last video's AI, exactly as it left. Both eyes open first, then each eye."}

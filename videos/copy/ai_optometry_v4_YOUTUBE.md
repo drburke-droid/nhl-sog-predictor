@@ -1,6 +1,6 @@
 # YouTube copy: an AI's eye exam with more realistic patients, against the Borish method (v4)
 
-Upload `ai_optometry_v4_LENGTH.mp4`: LENGTH, 1920×1080, 30 fps, caption-only, with an original synthesized score.
+Upload `ai_optometry_v4_11m23s.mp4`: 11:23, 1920×1080, 30 fps, caption-only, with an original synthesized score.
 The third video's AI walks into a clinic with patients more like real ones (no smile, a rough spin, the
 occasional remark, some unreliable) and practises there; it is compared with the Borish method, step by step
 and on 5,000 new patients. Everything behind it is in `world_roads/phoropter_ai/`: CLINIC6.md (method and
@@ -10,9 +10,9 @@ The phoropter photo was supplied by the optometrist. Check you have the rights t
 
 | | Thumbnail | Title |
 |---|---|---|
-| A | `ai_optometry_v4_thumb_A.png`: IT FOUND THE CROSS-CYLINDER, astigmatism axis within 10°: 64% before, 94% after practice | Harder Patients Taught the AI the Cross-Cylinder |
+| A | `ai_optometry_v4_thumb_A.png`: IT LEARNED THE CROSS-CYLINDER, astigmatism axis within 10°: 64% before, 94% after practice | Harder Patients Taught the AI the Cross-Cylinder |
 | C | `ai_optometry_v4_thumb_C.png`: AI vs THE BORISH METHOD, 4:01 vs 9:48 in the chair, 69% vs 60% happy | AI vs the Borish Method: 4 Minutes vs 10 |
-| D | `ai_optometry_v4_thumb_D.png`: the Borish method's steps vs the AI's for the same patient, coloured bars | An AI's Eye Exam vs the Borish Method, Step by Step |
+| D | `ai_optometry_v4_thumb_D.png`: AI vs BORISH, STEP BY STEP: the same patient's steps as coloured bars, 12:12 vs 2:57 | An AI's Eye Exam vs the Borish Method, Step by Step |
 
 **Description**
 
@@ -41,7 +41,25 @@ On 5,000 new patients, every exam starting at plano (Borish / AI):
 
 Our simulated patients are harder than real ones and our scorecard is made up, so compare the AI with the Borish script, not with your own optometrist. The script reads the chart after almost every click; a real refraction takes about 5 minutes.
 
-CHAPTERS
+0:00 Last time, an AI worked out its own eye exam
+0:16 What changed in the clinic
+0:45 What the AI can do
+1:26 What the patient can say
+2:10 What the AI wants
+2:39 How practice works
+3:19 Why not start from nothing again?
+3:34 One button changed
+3:52 Day one in the new clinic
+4:49 Learning on the job
+5:19 After 585,000 patients: the AI's exam
+6:24 The Borish method
+6:56 The Borish method's exam
+8:37 Side by side: the Borish method's steps and the AI's
+9:26 5,000 new patients
+9:53 Where the points come from
+10:13 Same patient, tested twice
+10:38 And real optometrists?
+11:08 The fine print
 
 Every patient is simulated. The optics are real (power vectors, accommodation, a wave-optics model of the blur); the answers are a model. The AI is reinforcement learning (PPO) on a 4-core computer, no GPU. It has never examined a real person. This is a demonstration of machine learning, not a clinical tool, and nothing here is advice about your own eyes. If your vision changes, see your optometrist.
 

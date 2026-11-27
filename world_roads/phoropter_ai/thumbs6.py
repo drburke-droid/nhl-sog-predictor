@@ -19,14 +19,14 @@ TB_COL, AI_COL = (0xE7, 0x66, 0x24), (0x33, 0x8C, 0xED)
 def thumb_A(R):
     """Before and after practice in the new clinic: astigmatic eyes with the axis within 10 degrees."""
     im, d = canvas()
-    shadow_text(d, (640, 20), "IT FOUND THE CROSS-CYLINDER", 72, ui.INK)
+    shadow_text(d, (640, 20), "IT LEARNED THE CROSS-CYLINDER", 68, ui.INK)
     b, a = R["day1"]["axis"]["within_10"], R["ai"]["axis"]["within_10"]
     for x, lab, v, col in ((330, "BEFORE", b, CU.OUT_COL["review"]), (950, "AFTER PRACTICE", a, CU.OUT_COL["happy"])):
         d.rounded_rectangle([x - 260, 170, x + 260, 640], 30, fill=(8, 10, 16, 235), outline=col + (255,), width=8)
         shadow_text(d, (x, 196), lab, 52, col)
         shadow_text(d, (x, 300), f"{100 * v:.0f}%", 170, ui.INK)
         d.text((x, 560), "astigmatism axis within 10°", font=ui.ST.font(32, "SemiBold"), fill=ui.INK2, anchor="mm")
-    d.polygon([(600, 405), (660, 405), (660, 375), (712, 420), (660, 465), (660, 435), (600, 435)], fill=ui.GOLD)
+    d.polygon([(604, 405), (650, 405), (650, 375), (684, 420), (650, 465), (650, 435), (604, 435)], fill=ui.GOLD)
     shadow_text(d, (640, 660), "no smiles, rough answers, a few remarks", 34, ui.GOLD)
     im.save(os.path.join(ui.OUT, "thumb6_A.png"))
 
@@ -77,5 +77,5 @@ if __name__ == "__main__":
     R = json.load(open(os.path.join(HERE, "data", "results_m.json")))
     thumb_A(R)
     thumb_C(R)
-    thumb_D(R)
+    thumb_D(R, title="AI vs BORISH, STEP BY STEP")
     print("thumbnails written")
