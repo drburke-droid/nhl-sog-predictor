@@ -156,15 +156,15 @@ video's AI before any practice in the new clinic; "AI" is the same AI after 585,
 | Eyes under 40 over-minused by 0.25 D or more | 30% | 39% | 36% | 15% |
 
 **The Borish script's negative points are chair time.** Its glasses earn +41 a patient, a little more than
-day one's; its 9:48 in the chair costs 39. That and 9% of patients walking out at 15 minutes (mostly the
-unreliable ones it keeps re-checking) leave it at +1.
+day one's; its 9:48 in the chair costs 39. That and 9% of patients walking out at 15 minutes (16% of
+unreliable patients, 5% of reliable ones) leave it at +1.
 
 **What practice changed.** The AI's exam was already "both eyes first, then each eye, then both eyes"; in
 the new clinic it added the cross-cylinder for the axis after the spin, in every exam (2.3 spins, 6.4 axis
 cross-cylinder and 6.7 power cross-cylinder questions an exam). Per eye, most often: a little cylinder in,
 spin ("stop!"), the cross-cylinder for the axis two or three times, then the power; with the textbook's own
-bracketing steps the axis ends as close as the Borish script's (94% within 10°). It also took less minus
-off at the end than before: eyes under 40 over-minused 39% → 15%.
+bracketing steps the axis ends as close as the Borish script's (94% within 10°). It also ends with less extra
+minus than before: eyes under 40 over-minused 39% → 15%.
 
 **Consistency: the same 2,000 patients examined twice** (fresh answers each time), how often the two
 prescriptions agree:
@@ -189,9 +189,9 @@ The showcase patient of the earlier videos (24 years old, OD −2.25 −1.00 × 
 
 | | Buttons | Time | Prescribed | Points |
 |---|---:|---:|---|---:|
-| Day one | 62 | 2:24 | OD −2.50 −1.00 × 174, OS −2.75 −0.75 × 7 | +73 |
-| AI | 75 | 3:00 | OD −2.00 −1.00 × 169, OS −2.25 −0.75 × 13 | +78 |
+| Day one | 62 | 2:25 | OD −2.50 −1.00 × 174, OS −2.75 −0.75 × 7 | +73 |
+| AI | 75 | 2:57 | OD −2.00 −1.00 × 169, OS −2.25 −0.75 × 13 | +78 |
 | Borish script | 205 | 12:12 | OD −2.25 −1.00 × 170, OS −2.50 −0.75 × 10 | +97 |
 
 The Borish script's push-plus checks took this patient's extra quarter of minus back: the prescription is
-exact (in the third video's exam it left OS 0.50 D too minus).
+exact (in the third video's exam it left the left eye's sphere 0.50 D too minus).
