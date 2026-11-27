@@ -7,8 +7,9 @@ The textbook sequence follows Wilkinson 2016 (University of Iowa EyeRounds; the 
 PUBLISHED.md section 4. Textbooks start from retinoscopy or an autorefractor. Here there is neither, so step 0
 finds a starting sphere by trial, as a clinician would with a trial frame:
 
-0. Starting sphere: read the smallest line. If they can't read 20/200, compare -2.00 with +2.00 and go the
-   better way. Then 1.00 D steps while the chart improves (minus), or while it doesn't get worse (plus).
+0. Starting sphere: read the smallest line. If they can't read 20/200, compare -2.00 with +2.00 (then -4.00
+   with +4.00, then -6.00 with +6.00) and start from the lens that helps. Then 1.00 D steps while the chart
+   improves (minus), or while it doesn't get worse (plus).
 For each eye (right, then left):
 1. Monocular MPMVA: fog +0.75, then -0.25 at a time reading the chart; keep the most plus lens within one
    letter of the best reading.
@@ -20,7 +21,7 @@ Then both eyes:
 4. Binocular balance: +0.75 both eyes, 20/40 line, prism split (top = right eye), +0.25 to the clearer eye
    until they look equal; if the answer flips, stop there.
 5. Binocular MPMVA: -0.25 both eyes at a time, reading the chart; no extra minus without a better reading.
-Prescribe.
+Prescribe. If the patient says an eye is still blurry: redo that eye (steps 0-3), then 4-5 again (twice at most).
 
 Each script is a generator: it yields a button and receives (code, va, letters right, letters on line, line).
 """
@@ -40,19 +41,31 @@ def to_line(env, i, target):
 
 
 def find_sphere(env, i):
-    """No objective starting point: find a starting sphere by trial, 1.00 D at a time."""
+    """No objective starting point: find a starting sphere by trial, 1.00 D at a time. If they can't read the top
+    line, try -2.00 against +2.00, then -4.00 against +4.00, then -6.00 against +6.00, and start from the first
+    lens that lets them read more; myopia first when it's a tie."""
     code, best, *_ = yield READ
     go = 0
-    if best >= 0.95:                                     # can't read the top line: compare -2.00 with +2.00
-        yield SM100
-        yield SM100
-        code, vm, *_ = yield READ
-        for _ in range(4):
-            yield SP100
-        code, vp, *_ = yield READ
-        yield SM100
-        yield SM100
-        go = -1 if vm <= vp else 1
+    if best >= 0.95:
+        for s in (2, 4, 6):
+            for _ in range(s):
+                yield SM100
+            code, vm, *_ = yield READ
+            for _ in range(2 * s):
+                yield SP100
+            code, vp, *_ = yield READ
+            if min(vm, vp) < best - 0.05:
+                if vm <= vp:
+                    for _ in range(2 * s):
+                        yield SM100
+                    best, go = vm, -1
+                else:
+                    best, go = vp, 1
+                break
+            for _ in range(s):                           # back to plano, try further out
+                yield SM100
+        if go == 0:
+            return                                       # nothing helped: leave it to the fog (very rare)
     if go <= 0:                                          # minus: keep going while it is no worse (2 tries)
         k, since, at_best = 0, 0, 0
         for _ in range(12):
@@ -61,7 +74,7 @@ def find_sphere(env, i):
             code, v, *_ = yield READ
             if v < best - 1e-9:
                 best, since, at_best = v, 0, k
-            else:
+            elif best < 0.95:                            # (while they only see the big E, keep going)
                 since += 1
                 if since >= 2:
                     break
@@ -72,7 +85,7 @@ def find_sphere(env, i):
     for _ in range(9):                                   # plus: more plus until the chart clearly drops
         yield SP100
         code, v, *_ = yield READ
-        if v <= best + 0.1:
+        if v <= best + 0.1 and v < 1.15:                 # (stop if they can't read anything)
             best = min(best, v)
         else:
             yield SM100
@@ -184,36 +197,60 @@ def balance(env, i, max_rounds=6):
         yield R_P if code == 0 else L_P
 
 
-def textbook3(env, i, objective=False):
-    for eye in (0, 1):
-        if eye == 1:
-            yield NEXT
-        if not objective:
-            yield from find_sphere(env, i)
-        yield from mpmva(env, i)
-        yield LINE_LG                                    # cross-cylinder one line bigger than the best
-        e = int(env.cur[i])
-        found = env.C[i, e] < 0 or (yield from cyl_search(env, i))
-        changed = 0.25 if found else 0.0
-        if found:
-            if abs(env.C[i, e]) >= 1.0:
-                moved = yield from jcc_axis(env, i)
-                changed += yield from jcc_power(env, i)
-            else:
-                changed += yield from jcc_power(env, i)
-                moved = yield from jcc_axis(env, i)
-            if moved >= 10:
-                changed += yield from jcc_power(env, i)
-        if changed >= 0.5 or (found and moved >= 10):
-            yield from mpmva(env, i, fog=2, patience=1)
-    yield NEXT                                           # both eyes open
+def mono(env, i, objective=False):
+    """One eye, the other covered: starting sphere, best sphere, cylinder, best sphere again if it changed."""
+    if not objective:
+        yield from find_sphere(env, i)
+    yield from mpmva(env, i)
+    yield LINE_LG                                        # cross-cylinder one line bigger than the best
+    e = int(env.cur[i])
+    found = env.C[i, e] < 0 or (yield from cyl_search(env, i))
+    changed = 0.25 if found else 0.0
+    moved = 0
+    if found:
+        if abs(env.C[i, e]) >= 1.0:
+            moved = yield from jcc_axis(env, i)
+            changed += yield from jcc_power(env, i)
+        else:
+            changed += yield from jcc_power(env, i)
+            moved = yield from jcc_axis(env, i)
+        if moved >= 10:
+            changed += yield from jcc_power(env, i)
+    if changed >= 0.5 or (found and moved >= 10):
+        yield from mpmva(env, i, fog=2, patience=1)
+
+
+def bino(env, i):
+    """Both eyes open: fog, balance with prism, then clear the fog together."""
     code, base, *_ = yield READ                          # binocular acuity before the fog
     for _ in range(3):
         yield OU_P
     yield from to_line(env, i, 0.3)
     yield from balance(env, i)
     yield from descend(env, i, base, OU_M, OU_P, patience=2)
-    yield RX
+
+
+def textbook3(env, i, objective=False):
+    for eye in (0, 1):
+        if eye == 1:
+            yield NEXT
+        yield from mono(env, i, objective)
+    yield NEXT                                           # both eyes open
+    yield from bino(env, i)
+    for _ in range(2):
+        code, *_ = yield RX
+        # still here: "it's still blurry" (7 right eye, 8 left eye, 9 both). Redo that eye, then both eyes again.
+        eyes = {7: (0,), 8: (1,)}.get(code, (0, 1))
+        ph = 2
+        for e in eyes:
+            while ph != e:
+                yield NEXT
+                ph = (ph + 1) % 3
+            yield from mono(env, i)
+        while ph != 2:
+            yield NEXT
+            ph = (ph + 1) % 3
+        yield from bino(env, i)
 
 
 def descend(env, i, base, down, up, patience=2, tol=None):

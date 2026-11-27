@@ -3,3 +3,4 @@ __pycache__/
 # results are small and every number in the video comes from them (the parent .gitignore excludes data/)
 !data/
 runs/*/ckpt/latest.pt
+runs_h.log

@@ -115,86 +115,116 @@ class Practice5(F3.PracticeCurve):
 
 # ======================================================================== the textbook, step by step
 class TextbookSteps(Section):
-    STEPS = [("0", "No autorefractor: find the sphere in 1.00 D steps, reading the chart"),
-             ("1", "Best sphere: fog with plus, then take it off a quarter at a time, reading the chart"),
-             ("2", "Astigmatism check: cross-cylinder at 180/90, then at 45/135"),
-             ("3", "Cylinder axis: cross-cylinder either side of the axis, turn the way the patient prefers"),
-             ("4", "Cylinder power: cross-cylinder along the axis, more or less cylinder"),
-             ("5", "Best sphere again"),
-             ("6", "The other eye"),
-             ("7", "Both eyes: fog, split the chart with prism, make the two eyes equal"),
-             ("8", "Clear the fog on both eyes together. Prescribe.")]
-    dur = 34.0
+    """The textbook sequence from plano, grouped by what each eye is doing, coloured like the side-by-side."""
+    STAGES = [("RIGHT EYE  ·  left eye covered", [
+                  ("1", "sph_big", "Find the sphere: 1.00 D steps, reading the chart"),
+                  ("2", "fog", "Best sphere: fog with plus, then take it off a quarter at a time"),
+                  ("3", "chk", "Astigmatism check: cross-cylinder at 180/90, then at 45/135"),
+                  ("4", "axis", "Cylinder AXIS: flip either side of the axis, turn toward the clearer one"),
+                  ("5", "power", "Cylinder POWER: flip along the axis, more or less cylinder"),
+                  ("6", "sph_fine", "Best sphere again")]),
+              ("LEFT EYE  ·  right eye covered", [("", "sph_fine", "Steps 1 to 6 again")]),
+              ("BOTH EYES OPEN", [("7", "balance", "Fog both eyes, split the chart with prism, make the two eyes equal"),
+                                  ("8", "ou_clear", "Clear the fog, both eyes together. Prescribe.")])]
+    dur = 32.0
 
     def frame(self, t):
         im, d = ui.new_frame()
         a = fade(t, 0, self.dur, 0.5, 0.5)
-        big_title(d, W / 2, 40, "What the textbook says", 54, fade(t, 0.3, 999, 0.5, 0.1) * a, TB_COL)
-        text(d, (W / 2, 112), "The standard sequence (Borish), as a script: same buttons, same patients.", 26, MUTED,
-             "Medium", "ma", a)
-        y = 190
-        for i, (n, s) in enumerate(self.STEPS):
-            al = fade(t, 1.2 + 2.0 * i, 999, 0.5, 0.1) * a
-            text(d, (240, y), n, 34, TB_COL, "Bold", "ra", al)
-            text(d, (280, y), s, 33, INK, "Medium", a=al)
-            y += 92
+        big_title(d, W / 2, 34, "What the textbook says", 54, fade(t, 0.3, 999, 0.5, 0.1) * a, TB_COL)
+        text(d, (W / 2, 106), "The standard sequence, written as a script: same buttons, same patients as the AI.", 26,
+             MUTED, "Medium", "ma", a)
+        y, k = 170, 0
+        for head, rows in self.STAGES:
+            ah = fade(t, 1.0 + 1.6 * k, 999, 0.5, 0.1) * a
+            text(d, (200, y), head, 26, GOLD, "Bold", a=ah)
+            y += 48
+            for n, kind, s in rows:
+                al = fade(t, 1.0 + 1.6 * k, 999, 0.5, 0.1) * a
+                col = CU.GROUP_COL[SQ.KIND_GROUP[kind]]
+                rr(d, [200, y, 1720, y + 58], 10, fill=CARD + (int(255 * al),))
+                d.rectangle([200, y, 210, y + 58], fill=tuple(col) + (int(255 * al),))
+                text(d, (262, y + 29), n, 30, tuple(col), "Bold", "rm", al)
+                text(d, (290, y + 29), s, 30, INK, "Medium", "lm", al)
+                y += 68
+                k += 1
+            y += 18
         return np.asarray(im)
 
 
 # ======================================================================== the centrepiece: the two sequences
 class Sequences(Section):
-    """The textbook's steps and the AI's, stage by stage, for the same patient."""
+    """The textbook's steps and the AI's, stage by stage, for the same patient. Rows scale to fit; each stage header
+    gives both sides' chair time for that stage."""
+    TOP, BOTTOM = 196, 944                            # rows live here; the commentary box sits below
 
-    def __init__(self, tb, ai, notes, dur=None):
+    def __init__(self, tb, ai, notes, dur=None, stage_t=(1.5, 11.0, 19.0)):
         self.tb, self.ai = SQ.steps_of(tb), SQ.steps_of(ai)
         self.tb_tr, self.ai_tr = tb, ai
         self.notes = notes
-        self.stage_t = [1.5, 12.0, 21.0]               # when each stage appears
+        self.stage_t = stage_t
         self.dur = dur or 48.0
+        n_tb = [sum(1 for s in self.tb if s["stage"] == i) for i in range(3)]
+        n_ai = [sum(1 for s in self.ai if s["stage"] == i) for i in range(3)]
+        self.need = [max(1, a_, b_) for a_, b_ in zip(n_tb, n_ai)]
+        head, gap = 40, 10
+        self.rh = min(52.0, (self.BOTTOM - self.TOP - 3 * (head + gap)) / sum(self.need))
+        self.rows_y, y = [], self.TOP
+        for si in range(3):
+            self.rows_y.append((y, y + head))
+            y += head + self.need[si] * self.rh + gap
+        self.st_tb, self.st_ai = self.stage_secs(tb), self.stage_secs(ai)
 
-    def col(self, d, x, w, steps, tr, title, colr, t, rows_y):
+    @staticmethod
+    def stage_secs(tr):
+        out, prev = [0.0, 0.0, 0.0], 0.0
+        for s in tr["steps"]:
+            out[min(s["phase_before"], 2)] += s["secs"] - prev
+            prev = s["secs"]
+        return out
+
+    def col(self, d, x, w, steps, tr, title, colr, t):
         a_all = fade(t, 0, self.dur, 0.5, 0.5)
         last = tr["steps"][-1]
-        text(d, (x, 120), title, 32, colr, "Bold", a=a_all)
-        text(d, (x + w, 128), f"{len(tr['steps'])} buttons  ·  {mmss(last['secs'] / 60)}", 22, MUTED, "Medium", "ra", a_all)
+        text(d, (x, 116), title, 32, colr, "Bold", a=a_all)
+        text(d, (x + w, 124), f"{len(tr['steps'])} buttons  ·  {mmss(last['secs'] / 60)} in the chair", 22, MUTED,
+             "Medium", "ra", a_all)
+        rh = self.rh
+        fs = int(max(16, min(21, rh * 0.44)))
         for si in range(3):
             items = [s for s in steps if s["stage"] == si]
-            y = rows_y[si]
-            al = fade(t, self.stage_t[si], 999, 0.5, 0.1) * a_all
+            y = self.rows_y[si][1]
             for j, st in enumerate(items):
-                aj = fade(t, self.stage_t[si] + 0.35 * j, 999, 0.4, 0.1) * a_all
+                aj = fade(t, self.stage_t[si] + 0.3 * j, 999, 0.4, 0.1) * a_all
                 col = CU.GROUP_COL[SQ.KIND_GROUP[st["kind"]]]
-                rr(d, [x, y, x + w, y + 46], 8, fill=CARD + (int(255 * aj),))
-                d.rectangle([x, y, x + 8, y + 46], fill=tuple(col) + (int(255 * aj),))
-                text(d, (x + 22, y + 23), SQ.KIND_NAME[st["kind"]], 21, INK, "SemiBold", "lm", aj)
-                text(d, (x + w - 14, y + 23), SQ.detail(st).split("→")[-1].strip(), 20, INK2, "Medium", "rm", aj)
-                y += 52
+                rr(d, [x, y, x + w, y + rh - 5], 6, fill=CARD + (int(255 * aj),))
+                d.rectangle([x, y, x + 7, y + rh - 5], fill=tuple(col) + (int(255 * aj),))
+                text(d, (x + 20, y + (rh - 5) / 2), SQ.KIND_NAME[st["kind"]], fs, INK, "SemiBold", "lm", aj)
+                text(d, (x + w - 12, y + (rh - 5) / 2), SQ.detail(st).split("→")[-1].strip(), fs - 1, INK2, "Medium",
+                     "rm", aj)
+                y += rh
 
     def frame(self, t):
         im, d = ui.new_frame()
         a = fade(t, 0, self.dur, 0.5, 0.5)
-        big_title(d, W / 2, 30, "The same patient: the textbook's steps and the AI's", 44, a)
-        # rows: each stage gets the height of its longer column
-        n_tb = [sum(1 for s in self.tb if s["stage"] == i) for i in range(3)]
-        n_ai = [sum(1 for s in self.ai if s["stage"] == i) for i in range(3)]
-        need = [max(a_, b_) for a_, b_ in zip(n_tb, n_ai)]
-        rows_y, y = [], 220
-        avail = 1020 - 220 - 3 * 44
-        scale = min(1.0, avail / max(1, sum(need) * 52))
+        big_title(d, W / 2, 28, "The same patient: the textbook's steps and the AI's", 44, a)
         for si in range(3):
             al = fade(t, self.stage_t[si], 999, 0.5, 0.1) * a
-            text(d, (W / 2, y + 2), SQ.STAGES[si], 22, GOLD, "Bold", "ma", al)
-            rows_y.append(y + 36)
-            y += 36 + need[si] * 52 * scale + 10
-        self.col(d, 60, 860, self.tb, self.tb_tr, "THE TEXTBOOK", TB_COL, t, rows_y)
-        self.col(d, 1000, 860, self.ai, self.ai_tr, "THE AI", AI_COL, t, rows_y)
-        # commentary, one at a time, over the bottom
-        cur = [s for t0, s in self.notes if t >= t0]
+            y = self.rows_y[si][0]
+            d.line([60, y + 30, 1860, y + 30], fill=GOLD + (int(90 * al),), width=1)
+            text(d, (60, y + 4), mmss(self.st_tb[si] / 60), 22, TB_COL, "Bold", a=al)
+            text(d, (1860, y + 4), mmss(self.st_ai[si] / 60), 22, AI_COL, "Bold", "ra", al)
+            tw = d.textlength(SQ.STAGES[si], font=ui.font(23, "Bold"))
+            d.rectangle([W / 2 - tw / 2 - 16, y, W / 2 + tw / 2 + 16, y + 34], fill=BG)
+            text(d, (W / 2, y + 3), SQ.STAGES[si], 23, GOLD, "Bold", "ma", al)
+        self.col(d, 60, 860, self.tb, self.tb_tr, "THE TEXTBOOK", TB_COL, t)
+        self.col(d, 1000, 860, self.ai, self.ai_tr, "THE AI", AI_COL, t)
+        cur = [(t0, s) for t0, s in self.notes if t >= t0]
         if cur:
-            t0 = max(t0 for t0, s in self.notes if t >= t0)
+            t0, s = cur[-1]
             al = fade(t, t0, 999, 0.5, 0.1) * a
-            rr(d, [60, 960, 1860, 1060], 16, fill=(10, 14, 24, int(240 * al)), outline=GOLD + (int(255 * al),), width=2)
-            lines = wrap(d, cur[-1], 28, 1720, "SemiBold")
+            rr(d, [60, 958, 1860, 1062], 16, fill=(10, 14, 24, int(240 * al)), outline=GOLD + (int(255 * al),), width=2)
+            lines = wrap(d, s, 28, 1720, "SemiBold")
             yy = 1010 - 18 * len(lines)
             for ln in lines:
                 text(d, (W / 2, yy), ln, 28, GOLD, "SemiBold", "ma", al)

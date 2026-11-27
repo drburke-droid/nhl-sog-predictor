@@ -7,6 +7,10 @@ Like env3.py (both eyes start at plano, the axis dial wherever the last patient 
 * "Spin the axis: say when it's clearest": with some cylinder in, the patient watches the dial turn and stops
   it where the letters look sharpest (with their usual noise).
 The cross-cylinder refinements are still there: "cylinder axis: which way?" and "cylinder power: more or less?".
+* "It's still blurry": before they leave, the patient reads the chart with each eye through the new glasses. If
+  either eye sees clearly worse than it could (about two lines), they say so ("my left eye is still blurry") and
+  the exam goes on: Prescribe doesn't end it. (env.complain = False turns this off.)
+* The occluder cycles: right eye, left eye, both eyes, then back to the right eye, so either eye can be redone.
 
 The patient's smile (optional, env.smile = weight): when the letters get clearer for either eye (the average
 of the two eyes' acuity, each through its own lens, focusing as it naturally would), the patient smiles and
@@ -49,7 +53,7 @@ LD = np.zeros(N_ACT3); LD[L_P] = 0.25
 MASK = np.zeros((3, N_ACT3), bool)
 MASK[0, list(range(0, NEXT + 1)) + [RX]] = True              # one eye open: lenses, chart, questions, next, prescribe
 MASK[1] = MASK[0]
-MASK[2, [READ, READ_LINE, LINE_SM, LINE_LG, CMP_P, CMP_M, OU_P, OU_M, BALANCE, R_P, L_P, RX]] = True
+MASK[2, [READ, READ_LINE, LINE_SM, LINE_LG, CMP_P, CMP_M, NEXT, OU_P, OU_M, BALANCE, R_P, L_P, RX]] = True
 
 QS = (READ, READ_LINE, CMP_P, CMP_M, JCC_AX, JCC_PW, CHK_180, CHK_45, SPIN)   # answers remembered per stage
 COMPARE = (CMP_P, CMP_M, JCC_AX, JCC_PW, CHK_180, CHK_45, BALANCE)
@@ -57,9 +61,12 @@ CHK_ORIENT = {CHK_180: (180, 90), CHK_45: (45, 135)}
 MUCH = 0.06                                                   # beyond the "same" band by this much: "much clearer"
 T_MAX3 = 400                                                  # button presses (a safety cap: the 15-minute limit is the real one; the AI trained with 200 and never came near it)
 SECS_MAX = 900.0                                              # 15 minutes: the exam is cut short
+BLURRY = 0.2                                                  # "still blurry": two lines worse than the eye could see
+BLUR_SD = 0.05                                                # (patients differ in what they notice)
+SECS_COMPLAIN = 10.0                                          # reading with each eye, and the complaint
 H3 = 16
 F3 = N_ACT3 + 6 + 3 + 5
-N_OBS3 = 8 + 14 + 10 + 3 * len(QS) * 11 + 8 + H3 * F3 + N_ACT3
+N_OBS3 = 8 + 14 + 10 + 3 * len(QS) * 11 + 8 + 3 + H3 * F3 + N_ACT3
 
 # what the patient can say
 ANSWERS = {
@@ -93,6 +100,8 @@ class ClinicEnv(BinocularEnv):
         nq = len(QS)
         self.lq_ans, self.lq_on, self.lq_l, self.lq_t = z(3, nq, 4), z(3, nq), z(3, nq, 5), z(3, nq)
         self.bal_ans, self.bal_on, self.bal_m, self.bal_t = z(4), z(), z(2), z()
+        self.comp_on, self.comp_t = z(2), z()
+        self.complain = True
         self.best_va, self.best_on, self.best_l = z(2), z(2), z(2, 5)
         self.start_pv = z(2, 3)
         self.shaping, self.gamma, self.t_max, self.cyl_weight = 0.0, 0.995, T_MAX3, 2.0
@@ -121,7 +130,8 @@ class ClinicEnv(BinocularEnv):
         self.t[idx], self.secs[idx] = 0, 0
         self.hist_a[idx] = -1
         for arr in (self.hist_r, self.hist_m, self.hist_l, self.lq_ans, self.lq_on, self.lq_l, self.lq_t, self.bal_ans,
-                    self.bal_on, self.bal_m, self.bal_t, self.best_va, self.best_on, self.best_l, self.start_pv):
+                    self.bal_on, self.bal_m, self.bal_t, self.best_va, self.best_on, self.best_l, self.start_pv,
+                    self.comp_on, self.comp_t):
             arr[idx] = 0
 
     def clarity(self):
@@ -280,7 +290,7 @@ class ClinicEnv(BinocularEnv):
         self.S[:, 0] = np.clip(self.S[:, 0] + RD[a], -20, 20)
         self.S[:, 1] = np.clip(self.S[:, 1] + LD[a], -20, 20)
         self.line = np.round(np.clip(self.line + LND[a], -0.3, 1.0), 1)
-        self.phase = np.where(a == NEXT, np.minimum(self.phase + 1, 2), self.phase)
+        self.phase = np.where(a == NEXT, (self.phase + 1) % 3, self.phase)
         self.cur = np.minimum(self.phase, 1)
         self.bin = (self.phase == 2).astype(float)
         V = self._views()
@@ -348,8 +358,24 @@ class ClinicEnv(BinocularEnv):
         if cm.any() or spun.any():
             V = self._views()
             c, b, L0, L1, Lc, Tm, t0, t1, tb = V
+        # "It's still blurry": prescribing, the patient reads with each eye; two lines worse than it could see, and
+        # they say so and stay in the chair
+        blurry = np.zeros((n, 2), bool)
+        rx = a == RX
+        if self.complain and rx.any():
+            lost = np.stack([self.mono_T(e, self.lens_pv(e)) - self.mono_T(e, self.true_pv(e)) for e in (0, 1)], 1)
+            blurry = rx[:, None] & (lost + self.rng.normal(0, BLUR_SD, (n, 2)) > BLURRY)
+        refused = blurry.any(1)
+        if refused.any():
+            self.secs[refused] += SECS_COMPLAIN
+            rew = rew - refused * SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 / clinic.SCALE
+            resp[refused, 2:4] = blurry[refused]
+            code = np.where(refused, np.where(blurry[:, 0] & blurry[:, 1], 9, np.where(blurry[:, 0], 7, 8)), code)
+            self.comp_on[refused] = blurry[refused]
+            self.comp_t[refused] = self.t[refused]
         if self.record:
             self.last = dict(a=a.copy(), code=code, strength=strength, spin_ax=spin_ax, va=va, k=kk, nl=nn,
+                             blurry=blurry,
                              line=line_read, screen=self.line.copy(),
                              cur=self.cur.copy(), bin=self.bin.copy(), phase=self.phase.copy(), T0=t0, T1=t1,
                              Tview=Tview, secs=self.secs.copy(), **rec)
@@ -388,7 +414,8 @@ class ClinicEnv(BinocularEnv):
 
         # end of exam
         timeout = (self.t >= self.t_max) | (self.secs >= self.secs_max)
-        done = (a == RX) | timeout
+        accepted = rx & ~refused
+        done = accepted | timeout
         if self.shaping:                                   # the mentor's "warmer / colder": closer lenses, a bonus
             phi1 = -2.0 * self.err(self.cyl_weight).mean(1)
             rew = rew + self.shaping * (phi1 - phi0)
@@ -399,7 +426,7 @@ class ClinicEnv(BinocularEnv):
             idx = np.nonzero(done)[0]
             e = self.err()[idx]
             ept = clinic.patient_error(e[:, 0], e[:, 1])
-            walked = a[idx] != RX                              # out of time: the patient walks out without glasses
+            walked = ~accepted[idx]                            # out of time: the patient walks out without glasses
             pts = np.where(walked, clinic.WALKOUT, clinic.expected_points(ept))
             rew[idx] += pts / clinic.SCALE
             E0, E1 = self.true_pv(0, idx), self.true_pv(1, idx)
@@ -442,6 +469,7 @@ class ClinicEnv(BinocularEnv):
         bal = np.concatenate([self.bal_ans, self.bal_on[:, None],
                               (self.bal_m - cur_pv[:, :, 0]) * self.bal_on[:, None],
                               ((self.t - self.bal_t) / 60 * self.bal_on)[:, None]], 1)
+        comp = np.concatenate([self.comp_on, ((self.t - self.comp_t) / 60 * self.comp_on.max(1))[:, None]], 1)
         valid = (self.hist_a >= 0)[..., None]
         onehot = np.zeros((n, H3, N_ACT3))
         np.put_along_axis(onehot, np.maximum(self.hist_a, 0)[..., None], 1.0, 2)
@@ -449,7 +477,7 @@ class ClinicEnv(BinocularEnv):
         hist = np.concatenate([onehot, self.hist_r, self.hist_m, self.hist_l[..., :3] - now[:, None],
                                self.hist_l[..., 3:]], 2)
         hist = (hist * valid).reshape(n, -1)
-        o = np.concatenate([glob] + eyes + [best, lq, bal, hist, self.mask().astype(float)], 1)
+        o = np.concatenate([glob] + eyes + [best, lq, bal, comp, hist, self.mask().astype(float)], 1)
         return np.clip(o, -6, 6).astype(np.float32)
 
 
