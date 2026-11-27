@@ -251,7 +251,7 @@ def make_notes(R, ai, tb):
 
 # ======================================================================== the film
 def sections():
-    R = json.load(open(os.path.join(DATA, "results_i.json")))
+    R = json.load(open(os.path.join(DATA, "results_j.json")))
     S = {}
     S["hook"] = Hook3()
     S["toolbox"] = Toolbox5()
@@ -260,7 +260,7 @@ def sections():
     S["learn"] = Learn6()
     S["day1_title"] = Say([(0.5, "Day one", 72, INK, "Bold"),
                            (1.6, "Its first patient. It has never seen an eye.", 38, INK2, "Medium")], 6.0)
-    d1 = trace("i_day1")
+    d1 = trace("j_day1")
     k1 = next((k for k, x in enumerate(d1["steps"]) if x["code"] in (7, 8, 9)), None)
     d1_notes = {0: "It has no idea what any button does. It presses them at random."}
     if k1 is not None:
@@ -273,7 +273,7 @@ def sections():
                                       st0["sampled"]["minutes"])], dur=11.0,
                                     note="Random glasses never pass the final check. Almost everyone walks out.")
     refs = [(BORISH, R["textbook"]["summary"]["net"], TB_COL)]
-    ai, tb = trace("i_ai"), trace("i_borish")
+    ai, tb = trace("j_ai"), trace("j_borish")
     NOTES = make_notes(R, ai, tb)
     S["curve"] = Practice5(refs, NOTES.get("curve", []), max_exams=R["meta"]["exams"], run=RUN)
     S["ai_title"] = Say([(0.4, f"After {R['meta']['exams'] / 1e6:.1f} million patients", 60, INK, "Bold"),
@@ -312,14 +312,14 @@ def order():
 
 def render(name):
     _, S = order()
-    S[name].render("i_" + name)
+    S[name].render("j_" + name)
 
 
 def render_all(names=None, par=4):
     names = names or order()[0]
 
     def one(nm):
-        log = open(os.path.join(OUT, f"i_{nm}.log"), "w")
+        log = open(os.path.join(OUT, f"j_{nm}.log"), "w")
         r = subprocess.run([sys.executable, "film6.py", "render", nm], cwd=HERE, stdout=log, stderr=subprocess.STDOUT)
         print(f"  {nm}: exit {r.returncode}", flush=True)
         return r.returncode
@@ -334,7 +334,7 @@ def render_all(names=None, par=4):
 def assemble():
     import film
     names, S = order()
-    paths = [os.path.join(OUT, f"i_{s}.mp4") for s in names]
+    paths = [os.path.join(OUT, f"j_{s}.mp4") for s in names]
     ds = [film.dur(p) for p in paths]
     off = [0.0]
     for dd in ds[:-1]:

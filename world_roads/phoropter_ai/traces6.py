@@ -1,7 +1,7 @@
 """Record the showcase patient's version-6 exams (plano start, typical reliability): day one, the final AI, the
 Borish script.
 
-    python traces6.py [show]      -> data/traces/i_day1.json, i_ai.json, i_borish.json
+    python traces6.py [show]      -> data/traces/j_day1.json, j_ai.json, j_borish.json
 """
 import os, sys, json
 from record5 import record5, show
@@ -28,12 +28,12 @@ def main():
     ag0, m0 = load(os.path.join(RUN, "exams_0.pt"))
     d1 = record5(ag0, greedy=False, seed=5, max_steps=400, **EK)
     d1["exams"] = 0
-    save("i_day1", d1)
+    save("j_day1", d1)
     ag, meta = load(final_ckpt())
     ex = record5(ag, **EK)
     ex["exams"] = meta["exams"]
-    save("i_ai", ex)
-    save("i_borish", record5(script=borish, **EK))
+    save("j_ai", ex)
+    save("j_borish", record5(script=borish, **EK))
     if len(sys.argv) > 1:
         show(ex)
 

@@ -20,6 +20,9 @@ blurry", the cycling occluder), except:
   remark counts the change since the last one, over an exam they add up to the change between the start and
   the last remark: going back and forth earns nothing. (A first run with remarks as information only,
   `runs/i0`, learned to keep clicking lenses until the button limit and never prescribe.)
+* **Only the clock.** The patient walks out at 15 minutes. (env5 also ended the exam at 400 buttons, a safety cap;
+  clicking 1-second lens buttons, an AI could reach it in 7 minutes, the same walkout for less chair time.
+  A first run here found that shortcut before anything else and never learned to prescribe.)
 * **A reliability dial.** Each patient's answer noise and lapse rate are multiplied by a reliability factor:
   `dial=None` (practice) draws it per patient, log-uniform in DIAL; a number puts every patient at that
   setting (0.5 reliable, 1 typical as in env5, 2 unreliable).
@@ -42,6 +45,8 @@ P_TALK = (0.05, 0.4)               # each patient's chance of remarking on a cha
 DIAL = (0.5, 2.5)                  # practice: reliability factor, log-uniform
 LAPSE_MAX = 0.3
 REMARKS = ("“Oh, that's clear!”", "“Better… but it's not that clear.”", "“Hmm, that's not as clear.”")
+T_MAX6 = 1000                      # buttons: high enough that the 15-minute limit always comes first (in env5 the
+                                   # 400-button cap let a fast clicker "walk out" after 7 minutes: a cheaper way to fail)
 N_EXTRA = 7
 N_OBS6 = E5.N_OBS3 + N_EXTRA
 
@@ -59,6 +64,7 @@ class ClinicEnv6(E5.ClinicEnv):
         self.rem_clar, self._rem_rew = np.zeros(n), np.zeros(n)
         super().__init__(n, seed=seed, sampler=sampler, record=record, start_mode=start_mode, rand_dial=rand_dial)
         self.n_obs = N_OBS6
+        self.t_max = T_MAX6
 
     def _reset(self, idx):
         super()._reset(idx)

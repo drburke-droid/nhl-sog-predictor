@@ -6,7 +6,7 @@ remarks, no smile, mixed reliability) against the Borish script and against pres
   dial (0.5 reliable, 1 typical, 2 unreliable): how often the two prescriptions agree.
 * Habits (which buttons, in what order), and each practice checkpoint on 2,000 patients.
 
-    python evaluate6.py            -> data/results_i.json, data/seqs_i.json
+    python evaluate6.py            -> data/results_j.json, data/seqs_j.json
 """
 import os, json, glob, re
 import numpy as np
@@ -121,9 +121,9 @@ def main(n_test=5000, n_stage=2000, n_rep=2000):
               "spin", round(h["used_pct"]["spin"], 2), "jcc axis", round(h["used_pct"]["cyl axis (cross-cyl)"], 2),
               "cyl", round(h["used_pct"]["cylinder"], 2), "complaints", round(hab["complaints"], 2),
               "walkouts", round(hab["walkouts"], 2), "order", hab["order"], flush=True)
-    json.dump(R, open(os.path.join(DATA, "results_i.json"), "w"), indent=1)
-    json.dump(seqs, open(os.path.join(DATA, "seqs_i.json"), "w"))
-    print("wrote data/results_i.json")
+    json.dump(R, open(os.path.join(DATA, "results_j.json"), "w"), indent=1)
+    json.dump(seqs, open(os.path.join(DATA, "seqs_j.json"), "w"))
+    print("wrote data/results_j.json")
 
 
 if __name__ == "__main__":
