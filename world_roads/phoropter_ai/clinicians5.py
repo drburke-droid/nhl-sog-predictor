@@ -144,7 +144,9 @@ def jcc_axis(env, i):
     (15 -> 5 -> 2 for cylinders of 1.00 D or more, where a few degrees matter); stop at 'same' or after the
     smallest step has reversed."""
     e = int(env.cur[i])
-    if getattr(env, "jcc_turns", False):                  # env6: the button turns the axis itself (5°, then 2°)
+    if getattr(env, "jcc_turns", False):                  # env6: the button turns the axis itself, by these steps
+        from env6 import jcc_ladder
+        n_rungs = len(jcc_ladder(env.C[i, e]))
         last, rev, moved = 0, 0, 0
         for _ in range(12):
             code, *_ = yield JCC_AX
@@ -154,7 +156,7 @@ def jcc_axis(env, i):
             moved += float(env.jturn[i])
             if last and d != last:
                 rev += 1
-                if rev >= 2:
+                if rev >= n_rungs:                         # reversed on the smallest step: done
                     break
             last = d
         return abs(moved)

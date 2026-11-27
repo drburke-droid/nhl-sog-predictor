@@ -20,9 +20,10 @@ blurry", the cycling occluder), except:
   remark counts the change since the last one, over an exam they add up to the change between the start and
   the last remark: going back and forth earns nothing.
 * **The cross-cylinder axis button turns the axis.** "Axis? which way": the patient compares the cross-cylinder
-  flipped either side of the axis, and the axis turns toward the clearer side (5°; 2° once the answer has
-  reversed for that eye), as the spin button sets the axis from "stop!". "The same": no turn. A spin resets the
-  step to 5°. (In env5 the AI had to press a turn button itself after the answer.)
+  flipped either side of the axis, and the axis turns toward the clearer side, as the spin button sets the axis
+  from "stop!". The steps are the textbook's bracketing (`jcc_ladder`): 15° then 5° for cylinders of 0.50 D or
+  less, 5° for 0.75 D, 5° then 2° for 1.00 D or more, a rung smaller each time the answer reverses. "The same":
+  no turn. A spin starts the ladder again. (In env5 the AI had to press a turn button itself after the answer.)
 * **Only the clock.** The patient walks out at 15 minutes. (env5 also ended the exam at 400 buttons, a safety cap;
   clicking 1-second lens buttons, an AI could reach it in 7 minutes: the same walkout for less chair time.)
 * **A reliability dial.** Each patient's answer noise and lapse rate are multiplied by a reliability factor:
@@ -48,7 +49,12 @@ P_TALK = (0.05, 0.4)               # each patient's chance of remarking on a cha
 DIAL = (0.5, 2.5)                  # practice: reliability factor, log-uniform
 LAPSE_MAX = 0.3
 REMARKS = ("“Oh, that's clear!”", "“Better… but it's not that clear.”", "“Hmm, that's not as clear.”")
-JCC_STEP = (5.0, 2.0)               # the axis button's turn: 5 degrees, 2 once the answer has reversed
+def jcc_ladder(C):
+    """The axis button's steps for a cylinder of C dioptres (the textbook's bracketing, clinicians5.jcc_axis)."""
+    C = abs(C)
+    return (15.0, 5.0) if C <= 0.5 + 1e-9 else ((5.0,) if C < 1.0 - 1e-9 else (5.0, 2.0))
+
+
 SECS_TURN = 1.0                    # the turn: one lens click
 T_MAX6 = 1000                      # buttons: high enough that the 15-minute limit always comes first (in env5 the
                                    # 400-button cap let a fast clicker "walk out" after 7 minutes: a cheaper way to fail)
@@ -67,7 +73,7 @@ class ClinicEnv6(E5.ClinicEnv):
         self._tv0 = np.zeros(n)
         self.remark_w = 0.0
         self.rem_clar, self._rem_rew = np.zeros(n), np.zeros(n)
-        self.jlast, self.jstep, self.jturn = np.zeros((n, 2)), np.full((n, 2), JCC_STEP[0]), np.zeros(n)
+        self.jlast, self.jrung, self.jturn = np.zeros((n, 2)), np.zeros((n, 2), np.int64), np.zeros(n)
         self.jcc_turns = True
         super().__init__(n, seed=seed, sampler=sampler, record=record, start_mode=start_mode, rand_dial=rand_dial)
         self.n_obs = N_OBS6
@@ -90,7 +96,7 @@ class ClinicEnv6(E5.ClinicEnv):
         self.P["lapse"][idx] = np.minimum(self.P["lapse"][idx] * rel, LAPSE_MAX)
         self.P["talk"][idx] = self.rng.uniform(*P_TALK, k)
         self.rem_on[idx], self.rem_l[idx], self.rem_t[idx] = 0, 0, 0
-        self.jlast[idx], self.jstep[idx] = 0, JCC_STEP[0]
+        self.jlast[idx], self.jrung[idx] = 0, 0
         self.rem_clar[idx] = self.clarity()[idx]                 # what they see at the start (plano)
 
     # ------------------------------------------------------------ spinning the axis: rougher than a flip
@@ -116,7 +122,7 @@ class ClinicEnv6(E5.ClinicEnv):
         n, r, c = self.n, self.rows, self.cur
         self.jturn = np.zeros(n)
         sp = np.nonzero(spun)[0]
-        self.jlast[sp, c[sp]], self.jstep[sp, c[sp]] = 0, JCC_STEP[0]
+        self.jlast[sp, c[sp]], self.jrung[sp, c[sp]] = 0, 0
         if not self.jcc_turns:
             return 0.0
         m = (a == JCC_AX) & (self.C[r, c] < 0) & (ans < 2)
@@ -126,8 +132,9 @@ class ClinicEnv6(E5.ClinicEnv):
         cc = c[rows]
         d = np.where(ans[rows] == 0, 1.0, -1.0)
         rev = (self.jlast[rows, cc] != 0) & (self.jlast[rows, cc] != d)
-        self.jstep[rows, cc] = np.where(rev, JCC_STEP[1], self.jstep[rows, cc])
-        st = self.jstep[rows, cc]
+        self.jrung[rows, cc] += rev
+        st = np.array([lad[min(k, len(lad) - 1)] for lad, k in
+                       zip((jcc_ladder(x) for x in self.C[rows, cc]), self.jrung[rows, cc])])
         self.ax[rows, cc] = ((self.ax[rows, cc] + d * st - 1) % 180) + 1
         self.jlast[rows, cc] = d
         self.jturn[rows] = d * st
