@@ -127,13 +127,15 @@ class OutcomeGrid(Section):
 
 # ======================================================================== the practice curve
 TERM1_END = 1_630_473          # practice term 1 ended here (the axis dial always started at 180)
+TERM2_END = 2_697_295          # practice term 2 ended here (then term 3: astigmatism at every angle)
 
 
 def practice_curve():
     """Both practice terms, joined: runs/f up to the end of term 1, then runs/f2."""
     xs, ys, mins, sh = [], [], [], []
     for path, lo, hi in ((os.path.join(HERE, "runs", "f", "logs", "train.csv"), 0, TERM1_END),
-                         (os.path.join(HERE, "runs", "f2", "logs", "train.csv"), TERM1_END + 1, 10 ** 9)):
+                         (os.path.join(HERE, "runs", "f2", "logs", "train.csv"), TERM1_END + 1, TERM2_END),
+                         (os.path.join(HERE, "runs", "f3", "logs", "train.csv"), TERM2_END + 1, 10 ** 9)):
         if not os.path.exists(path):
             continue
         for r in csv.DictReader(open(path)):
@@ -147,9 +149,9 @@ def practice_curve():
     ker = np.ones(k) / k
     pad = lambda v: np.concatenate([np.full(k // 2, v[0]), v, np.full(k // 2, v[-1])])
     sm = lambda v: np.convolve(pad(v), ker, "valid")
-    t1 = xs <= TERM1_END                                  # smooth each term on its own (no blur across the change)
-    ys = np.concatenate([sm(ys[t1]), sm(ys[~t1])]) if (~t1).any() else sm(ys)
-    mins = np.concatenate([sm(mins[t1]), sm(mins[~t1])]) if (~t1).any() else sm(mins)
+    terms = [xs <= TERM1_END, (xs > TERM1_END) & (xs <= TERM2_END), xs > TERM2_END]   # smooth each term on its own
+    ys = np.concatenate([sm(ys[m]) for m in terms if m.any()])
+    mins = np.concatenate([sm(mins[m]) for m in terms if m.any()])
     return xs, ys, mins, sh
 
 
@@ -192,11 +194,14 @@ class PracticeCurve(Section):
                 j = k2 + 1
             else:
                 j += 1
-        if (self.xs > TERM1_END).any() and (self.x_to is None or self.x_to > TERM1_END):
-            xm, _ = self.px(TERM1_END, 0)
-            d.line([(xm, Y1), (xm, Y0)], fill=INK2 + (int(200 * a),), width=2)
-            text(d, (xm - 8, Y1 + 36), "dial no longer", 17, INK2, "SemiBold", "ra", a)
-            text(d, (xm - 8, Y1 + 58), "starts at 180°", 17, INK2, "SemiBold", "ra", a)
+        for xe, l1, l2 in ((TERM1_END, "dial no longer", "starts at 180°"), (TERM2_END, "astigmatism", "practice")):
+            if (self.xs > xe).any() and (self.x_to is None or self.x_to > xe):
+                xm, _ = self.px(xe, 0)
+                d.line([(xm, Y1), (xm, Y0)], fill=INK2 + (int(200 * a),), width=2)
+                anc = "ra" if xe == TERM1_END else "la"
+                dx = -8 if xe == TERM1_END else 8
+                text(d, (xm + dx, Y1 + 36), l1, 17, INK2, "SemiBold", anc, a)
+                text(d, (xm + dx, Y1 + 58), l2, 17, INK2, "SemiBold", anc, a)
         for v in range(-150, 81, 50):
             _, y = self.px(1e4, v)
             d.line([(X0, y), (X1, y)], fill=GRID + (int(255 * a),), width=1)
@@ -571,6 +576,43 @@ class Shortcut(Section):
         return np.asarray(im)
 
 
+class Shortcut2(Section):
+    """End of practice term 2: it turns the dial, but only back toward 180°; no cross-cylinder axis question."""
+
+    def __init__(self, R, dur=26.0):
+        self.T, self.dur, self.n2 = R["term2"], dur, R["meta"]["term2_end"]
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        A = self.T
+        text(d, (60, 30), "A SECOND SHORTCUT", 40, GOLD, "Bold", a=a)
+        text(d, (60, 86), f"After {fmt_n(self.n2)} practice patients, on a normal clinic's patients:", 24, MUTED, "Medium",
+             a=a)
+        rows = [("Times it turned the axis, per exam", f"{A['axis_turns']:.1f}", INK),
+                ("Cross-cylinder axis questions, per exam", f"{A['jcc_axis']:.1f}", RED),
+                ("With-the-rule astigmatism: within 0.25 D", f"{100 * A['wtr_within']:.0f}%", INK2),
+                ("Against-the-rule: within 0.25 D", f"{100 * A['atr_within']:.0f}%", RED),
+                ("Oblique: within 0.25 D", f"{100 * A['obl_within']:.0f}%", RED)]
+        y = 170
+        for i, (lab, v, col) in enumerate(rows):
+            al = fade(t, 0.8 + 1.1 * i, 999, 0.5, 0.1) * a
+            text(d, (100, y), lab, 28, INK2, "Medium", a=al)
+            text(d, (1300, y - 4), v, 38, col, "Bold", "ra", al)
+            y += 66
+        al = fade(t, 7.0, 999, 0.6, 0.1) * a
+        para(d, 100, 540, "It did learn to turn the dial, but only back toward 180°, then ask about power. It never "
+                          "asked the cross-cylinder which way to turn, so astigmatism at any other angle went "
+                          "uncorrected.", 28, 1720, INK, "Medium", al, lh=1.35)
+        al = fade(t, 13.0, 999, 0.6, 0.1) * a
+        para(d, 100, 720, "So for its third term, the clinic booked it a run of patients with astigmatism at every "
+                          "angle, easing back to the normal mix by half-way. The mentor came back for a while.", 28,
+             1720, INK, "Medium", al, lh=1.35)
+        al = fade(t, 19.0, 999, 0.6, 0.1) * a
+        para(d, 100, 880, "Same AI. Same buttons. Same scorecard.", 32, 1720, GOLD, "SemiBold", al)
+        return np.asarray(im)
+
+
 # ======================================================================== step-by-step, side by side
 ACT_KIND = {}
 for _a in (E3.SP25, E3.SM25, E3.SP100, E3.SM100, E3.OU_P, E3.OU_M):
@@ -726,8 +768,11 @@ def sections():
     refs = [("Plano for everyone", R["plano"]["summary"]["net"], GREY), ("Textbook script", tb_net, TB_COL)]
     S["curve"] = PracticeCurve(refs, notes=NOTES.get("curve", []), x_to=TERM1_END, dur=30.0, draw_secs=13.0)
     S["shortcut"] = Shortcut(R)
-    S["curve2"] = PracticeCurve(refs, notes=NOTES.get("curve2", []), x_from=TERM1_END, dur=18.0, draw_secs=8.0,
-                                title="MORE PRACTICE, A REALISTIC DIAL")
+    S["curve2"] = PracticeCurve(refs, notes=NOTES.get("curve2", []), x_from=TERM1_END, x_to=TERM2_END, dur=15.0,
+                                draw_secs=7.0, title="MORE PRACTICE, A REALISTIC DIAL")
+    S["shortcut2"] = Shortcut2(R)
+    S["curve3"] = PracticeCurve(refs, notes=NOTES.get("curve3", []), x_from=TERM2_END, dur=18.0, draw_secs=8.0,
+                                title="THIRD TERM: ASTIGMATISM AT EVERY ANGLE")
     stg = {r["exams"]: r for r in R["stages"]}
     picks = [e for e in STAGE_PICKS if e in stg] or [r["exams"] for r in R["stages"][1::max(1, len(R["stages"]) // 3)]][:3]
     S["grids"] = OutcomeGrid("THE SAME CLINIC, LATER", "500 patients at each stage of practice, one square each",
@@ -739,6 +784,7 @@ def sections():
     NOTES.update(make_notes(R, ai_tr, tb_tr))
     S["curve"].notes = NOTES.get("curve", [])
     S["curve2"].notes = NOTES.get("curve2", [])
+    S["curve3"].notes = NOTES.get("curve3", [])
     S["ai_title"] = Card("After " + fmt_n(R["meta"]["exams"]) + " patients",
                          [(0.8, "The same first patient, again.", 34, INK2, "Medium"),
                           (2.4, "Hidden from the AI: right −2.25 −1.00 × 170, left −2.50 −0.75 × 010.", 28, MUTED,
@@ -869,7 +915,7 @@ CURVE_NOTES = [(20_000, "About 20,000 patients: it starts asking “1 or 2?”, 
 
 
 ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "shortcut",
-         "curve2", "grids",
+         "curve2", "shortcut2", "curve3", "grids",
          "ai_title", "ai_exam", "tb_card", "tb_exam", "sidebyside", "timelines", "habits", "results", "real", "outro"]
 
 
@@ -931,7 +977,8 @@ def assemble():
     g = lambda k, dflt=0.0: O.get(k, dflt)
     energy = [(0, 0.3), (g("toolbox"), 0.35), (g("patient"), 0.35), (g("wants"), 0.4), (g("learn"), 0.35),
               (g("day1_title"), 0.45), (g("day1_exam"), 0.3), (g("day1_grid"), 0.4), (g("curve"), 0.6),
-              (g("shortcut"), 0.35), (g("curve2"), 0.6), (g("grids"), 0.65), (g("ai_title"), 0.5), (g("ai_exam"), 0.4), (g("tb_card"), 0.35), (g("tb_exam"), 0.35),
+              (g("shortcut"), 0.35), (g("curve2"), 0.6), (g("shortcut2"), 0.35), (g("curve3"), 0.6),
+              (g("grids"), 0.65), (g("ai_title"), 0.5), (g("ai_exam"), 0.4), (g("tb_card"), 0.35), (g("tb_exam"), 0.35),
               (g("timelines"), 0.45), (g("habits"), 0.45), (g("results"), 0.8), (g("real"), 0.5), (g("outro"), 0.4),
               (total, 0.0)]
     energy = sorted(energy)
