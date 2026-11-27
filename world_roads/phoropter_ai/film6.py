@@ -1,6 +1,6 @@
-"""The clinic film, version 4 (env6): one AI, plano start, no mentor and no smile, a rougher spin and patients
-who only now and then remark on what they see. Its sequence against the Borish method's; consistency on the
-same patients with a reliability dial; where the points come from.
+"""The clinic film, version 4 (env6): the third video's AI walks into a clinic with patients more like real ones
+(no smile, a rough spin, only the occasional remark, some unreliable), and practises there. Its sequence against
+the Borish method's; consistency on the same patients with a reliability dial; where the points come from.
 
     python film6.py list | render <name> | frame <name> <t> | all | assemble     -> out/ai_optometry_v4.mp4
 """
@@ -14,20 +14,66 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import film5 as F5                                   # (also installs the version-5 buttons in the shared scenes)
 from film5 import (Toolbox5, PatientSays5, Wants5, Learn5, Practice5, TextbookSteps, Sequences, Results5, Hook3, Say,
-                   F3, CU, SQ, E5, ui, clinic, mmss, fmt_n, AI_COL, TB_COL, PL_COL, XF, OUT)
+                   F3, CU, SQ, E5, ui, clinic, mmss, fmt_n, AI_COL, TB_COL, PL_COL, XF, OUT, fade_frame)
+from film4 import Changes
 from ui import W, H, BG, INK, INK2, MUTED, GOLD, GREEN, RED, CARD, LINE, PANEL, text, rr, fade, smooth
 from scenes import Section, wrap, big_title
 from scenes5 import Exam5
 
 DATA = os.path.join(HERE, "data")
 TR = os.path.join(DATA, "traces")
-RUN = os.path.join(HERE, "runs", "j")
+RUN = os.path.join(HERE, "runs", "m")
 BORISH = "Borish method"
 DIAL_NAMES = {"0.5": "RELIABLE", "1.0": "TYPICAL", "2.0": "UNRELIABLE"}
 
 
 def trace(name):
     return json.load(open(os.path.join(TR, f"{name}.json")))
+
+
+# ======================================================================== the opening
+class Hook6(Hook3):
+    dur = 16.0
+    LINES = [(4.2, 150, "Last time, an AI worked out its own eye exam.", 60, INK, "Bold"),
+             (6.4, 270, "But its patients made it easy.", 44, INK2, "SemiBold"),
+             (7.8, 340, "They smiled whenever the letters got clearer,", 40, INK2, "Medium"),
+             (9.2, 400, "and stopped a spinning axis right where it was sharpest.", 40, INK2, "Medium"),
+             (11.4, 520, "Today: patients more like real ones.", 56, GOLD, "Bold")]
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a_all = fade(t, 0, self.dur, 0.6, 0.5)
+        lit = None
+        for t0, b in self.flash:
+            if t0 <= t < t0 + 0.32:
+                lit = b
+        g = CU.BTN[lit][5] if lit is not None else None
+        hot = (g, int(self.rng.integers(0, 2))) if g not in (None, "chart", "rx") else None
+        CU.draw_phoropter(im, 450, 30, 0.7, None, hot=hot, rings=True)
+        d = ImageDraw.Draw(im, "RGBA")
+        CU.draw_buttons(d, 40, 800, 1840, 260, pressed=lit, mask=None, title=False)
+        rr(d, [0, 0, W, 790], 0, fill=BG + (int(222 * smooth((t - 4.0) / 1.0)),))
+        for t0, y, s_, size, col, wt in self.LINES:
+            big_title(d, W / 2, y, s_, size, fade(t, t0, 99, 0.6, 0.1), col, wt)
+        return fade_frame(im, a_all)
+
+
+class Changes6(Changes):
+    ITEMS = [("Patients don't smile.", "Last time, the patient smiled whenever the letters got clearer: a running score.",
+              "Now and then one says “Oh, that's clear!” or “Hmm, not as clear.” That's all."),
+             ("Spinning the axis was too easy.", "The patient stopped the dial almost exactly where it was sharpest.",
+              "Now “stop!” comes late and rough, as it does watching a turning dial."),
+             ("Every patient answered alike.", "The same amount of guessing for everyone.",
+              "Now some patients are steady and some aren't: a reliability dial.")]
+
+    def frame(self, t):
+        fr = super().frame(t)
+        im = Image.fromarray(fr)
+        d = ImageDraw.Draw(im, "RGBA")
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        rr(d, [0, 20, W, 130], 0, fill=BG + (255,))
+        big_title(d, W / 2, 60, "What changed in the clinic", 50, fade(t, 0.3, 999, 0.5, 0.1) * a)
+        return np.asarray(im)
 
 
 # ======================================================================== explainers
@@ -215,7 +261,12 @@ class Real6(Section):
 
 
 # ======================================================================== captions
-def make_notes(R, ai, tb):
+def axis_err(a, b):
+    d = abs(a - b) % 180
+    return min(d, 180 - d)
+
+
+def make_notes(R, ai, tb, d1):
     """Captions, placed by finding the moments in the traces and the practice checkpoints."""
     def first(tr, cond, lo=0):
         st = tr["steps"]
@@ -224,6 +275,10 @@ def make_notes(R, ai, tb):
     def nth_next(tr, n):
         ks = [k for k, s in enumerate(tr["steps"]) if s["a"] == E5.NEXT]
         return ks[n] if len(ks) > n else None
+
+    def true_axis(tr, k):
+        eye = tr["steps"][k]["phase"]
+        return tr["patient"]["axis" if eye == 0 else "axis_os"]
 
     N = {}
     # ---- the Borish exam
@@ -248,52 +303,91 @@ def make_notes(R, ai, tb):
         t_b: "Both eyes open: fog both, split the chart with prism, make the two eyes equal…",
         t_clear: "…then clear the fog together, and the final check."}.items() if k is not None}
     N["tb_slow"] = tuple(range(0, 4))
-    N["ai_exam"], N["ai_slow"], N["sequences"] = {0: "Its first patient again."}, tuple(range(0, 6)), []
-    N["curve"] = [(1000, "Day one: random buttons. Almost every patient walks out.")]
+    # ---- day one: the third video's AI, as it was
+    n1 = {0: "Last video's AI, exactly as it left. Both eyes open first, then each eye."}
+    for k, st in enumerate(d1["steps"]):
+        if st["a"] == E5.SPIN and st["code"] == 5:
+            n1[k] = (f"Cylinder in, spin the axis. “Stop!” …at {st['spin_ax']:.0f}°. "
+                     f"(The true axis: {true_axis(d1, k):.0f}°.)")
+            break
+    N["day1_exam"] = n1
+    # ---- the AI after practice here
+    na = {0: "Its first patient again."}
+    k_ax = first(ai, lambda s: s["a"] == E5.JCC_AX)
+    k_sp = first(ai, lambda s: s["a"] == E5.SPIN)
+    if k_sp is not None and (k_ax is None or k_sp < k_ax):
+        na[k_sp] = "A spin of the axis first: a rough answer, but it gets close."
+    if k_ax is not None:
+        na[k_ax] = "Then the cross-cylinder for the axis: “1 or 2?”, turning toward the clearer side."
+    k_rm = first(ai, lambda s: s.get("remark", -1) >= 0)
+    if k_rm is not None and k_rm not in na:
+        na[k_rm] = "A remark from the patient. The AI sees it, and what lenses were in."
+    N["ai_exam"], N["ai_slow"], N["sequences"] = na, tuple(range(0, 6)), []
+    # ---- the practice curve
+    st = R["stages"]
+    cv = [(1000, f"Day one here: {R['day1']['summary']['net']:+.0f} points a patient "
+                 f"(last video's patients: {R['h_ai_net']:+.0f}).")]
+    jcc = [(x["exams"], x["habits"]["used"]["cyl axis (cross-cyl)"]) for x in st]
+    k = next((ex for ex, u in jcc if u >= 0.5 and ex > 0), None)
+    if k:
+        cv.append((k, f"By {fmt_n(k)} patients it refines the axis with the cross-cylinder in most exams."))
+    N["curve"] = cv
     return N
 
 
 # ======================================================================== the film
 def sections():
-    R = json.load(open(os.path.join(DATA, "results_j.json")))
+    R = json.load(open(os.path.join(DATA, "results_m.json")))
+    H3 = json.load(open(os.path.join(DATA, "results_h.json")))
+    R["h_ai_net"] = H3["ai"]["summary"]["net"]
     S = {}
-    S["hook"] = Hook3()
+    S["hook"] = Hook6()
+    S["changes"] = Changes6()
     S["toolbox"] = Toolbox5()
     S["patient"] = PatientSays6()
     S["wants"] = Wants5()
     S["learn"] = Learn6()
-    S["day1_title"] = Say([(0.5, "Day one", 72, INK, "Bold"),
-                           (1.6, "Its first patient. It has never seen an eye.", 38, INK2, "Medium")], 6.0)
-    d1 = trace("j_day1")
-    k1 = next((k for k, x in enumerate(d1["steps"]) if x["code"] in (7, 8, 9)), None)
-    d1_notes = {0: "It has no idea what any button does. It presses them at random."}
-    if k1 is not None:
-        d1_notes[k1] = "It tries the final check. The patient can't see: the exam goes on."
-    S["day1_exam"] = Exam5(d1, "DAY ONE", "before any practice", slow=range(8), notes=d1_notes, outro=6.0,
-                           fast_beat=0.06)
-    st0 = R["stages"][0]
-    S["day1_grid"] = F3.OutcomeGrid("1,000 PATIENTS ON DAY ONE", "Random buttons. One square per patient.",
-                                    [("Day one", st0["sampled_outcomes"], st0["sampled"]["net"],
-                                      st0["sampled"]["minutes"])], dur=11.0,
-                                    note="Random glasses never pass the final check. Almost everyone walks out.")
+    sc = R["scratch"]
+    S["scratch"] = Say([(0.5, "Why not start from nothing again?", 56, INK, "Bold"),
+                        (2.2, "We tried: a new AI, with only the occasional remark.", 36, INK2, "Medium"),
+                        (4.4, f"After {sc['exams'] / 1000:.0f},000 patients it was stuck at a shortcut: minus with both "
+                              f"eyes open, and prescribe. {100 * sc['summary']['happy']:.0f}% happy patients.", 36, INK2,
+                         "Medium"),
+                        (8.0, "The smile had been doing a lot of the teaching.", 40, GOLD, "SemiBold"),
+                        (10.5, f"So: last video's AI, after {H3['meta']['exams'] / 1e6:.1f} million patients, walks into "
+                               "the new clinic.", 38, INK, "SemiBold")], 16.0)
+    d1 = trace("m_day1")
+    ai, tb = trace("m_ai"), trace("m_borish")
+    NOTES = make_notes(R, ai, tb, d1)
+    S["day1_title"] = Say([(0.5, "Day one in the new clinic", 72, INK, "Bold"),
+                           (1.6, "Last video's AI. Its first patient here.", 38, INK2, "Medium")], 6.0)
+    S["day1_exam"] = Exam5(d1, "DAY ONE", "last video's AI, in the new clinic", notes=NOTES["day1_exam"],
+                           slow=range(4), outro=6.0)
+    h_ai, d1s = H3["ai"], R["day1"]
+    S["day1_grid"] = F3.OutcomeGrid(
+        "LAST VIDEO'S AI, 1,000 PATIENTS EACH", "One square per patient.",
+        [("Last video's patients", h_ai["outcomes"], h_ai["summary"]["net"], h_ai["summary"]["minutes"]),
+         ("The new patients", d1s["outcomes"], d1s["summary"]["net"], d1s["summary"]["minutes"])], dur=13.0,
+        note=(f"Same AI. Astigmatic eyes with the axis more than 10° off: {100 * d1s['axis']['off_10']:.0f}% "
+              f"with the new patients. Fewer happy patients: {100 * h_ai['summary']['happy']:.0f}% → "
+              f"{100 * d1s['summary']['happy']:.0f}%."))
     refs = [(BORISH, R["textbook"]["summary"]["net"], TB_COL)]
-    ai, tb = trace("j_ai"), trace("j_borish")
-    NOTES = make_notes(R, ai, tb)
     S["curve"] = Practice5(refs, NOTES.get("curve", []), max_exams=R["meta"]["exams"], run=RUN)
-    S["ai_title"] = Say([(0.4, f"After {R['meta']['exams'] / 1e6:.1f} million patients", 60, INK, "Bold"),
+    S["ai_title"] = Say([(0.4, f"After {fmt_n(R['meta']['exams'])} patients in the new clinic", 60, INK, "Bold"),
                          (1.6, "The same first patient, again.", 36, INK2, "Medium")], 6.0)
-    S["ai_exam"] = Exam5(ai, "THE AI", f"after {fmt_n(R['meta']['exams'])} practice patients",
+    S["ai_exam"] = Exam5(ai, "THE AI", f"after {fmt_n(R['meta']['exams'])} patients in the new clinic",
                          notes=NOTES.get("ai_exam", {}), slow=NOTES.get("ai_slow", ()))
     S["tb_card"] = BorishSteps()
     S["tb_exam"] = Exam5(tb, "THE BORISH METHOD", "the same patient", who="BORISH", who_col=TB_COL,
                          notes=NOTES.get("tb_exam", {}), slow=NOTES.get("tb_slow", ()), fast_beat=0.2)
     S["sequences"] = Sequences6(tb, ai, NOTES.get("sequences", []))
-    Rr = dict(R, day1=dict(summary=R["stages"][0]["sampled"]))
-    S["results"] = Results6(Rr, [
+    S["results"] = Results6(R, [
         ("Time in the chair", "per patient", lambda e: e["summary"]["minutes"], mmss, 0, 16),
+        ("Astigmatism axis within 10°", "eyes with 0.75 D of cylinder or more", lambda e: e["axis"]["within_10"],
+         lambda v: f"{100 * v:.0f}%", 0, 1),
         ("Happy patients", "sees clearly, comes back, refers a friend", lambda e: e["summary"]["happy"],
          lambda v: f"{100 * v:.0f}%", 0, 1)])
-    S["points"] = PointsSplit(Rr)
+    S["points"] = PointsSplit(R)
     S["consistency"] = Consistency(R)
     S["real"] = Real6(R)
     S["outro"] = F3.Card("The fine print", [
@@ -305,7 +399,8 @@ def sections():
     return S
 
 
-ORDER = ["hook", "toolbox", "patient", "wants", "learn", "day1_title", "day1_exam", "day1_grid", "curve", "ai_title",
+ORDER = ["hook", "changes", "toolbox", "patient", "wants", "learn", "scratch", "day1_title", "day1_exam", "day1_grid",
+         "curve", "ai_title",
          "ai_exam", "tb_card", "tb_exam", "sequences", "results", "points", "consistency", "real", "outro"]
 
 
@@ -316,14 +411,14 @@ def order():
 
 def render(name):
     _, S = order()
-    S[name].render("j_" + name)
+    S[name].render("m_" + name)
 
 
 def render_all(names=None, par=4):
     names = names or order()[0]
 
     def one(nm):
-        log = open(os.path.join(OUT, f"j_{nm}.log"), "w")
+        log = open(os.path.join(OUT, f"m_{nm}.log"), "w")
         r = subprocess.run([sys.executable, "film6.py", "render", nm], cwd=HERE, stdout=log, stderr=subprocess.STDOUT)
         print(f"  {nm}: exit {r.returncode}", flush=True)
         return r.returncode
@@ -338,7 +433,7 @@ def render_all(names=None, par=4):
 def assemble():
     import film
     names, S = order()
-    paths = [os.path.join(OUT, f"j_{s}.mp4") for s in names]
+    paths = [os.path.join(OUT, f"m_{s}.mp4") for s in names]
     ds = [film.dur(p) for p in paths]
     off = [0.0]
     for dd in ds[:-1]:

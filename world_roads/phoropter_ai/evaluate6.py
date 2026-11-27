@@ -1,12 +1,13 @@
-"""Version 6 (the fourth clinic video): the AI that practised on env6 patients (a rougher spin, occasional
-remarks, no smile, mixed reliability) against the Borish script and against prescribing plano.
+"""Version 6 (the fourth clinic video): the third video's AI after practice on env6 patients (a rougher spin,
+occasional remarks, no smile, mixed reliability), against the same AI before that practice ("day one" in the new
+clinic), the Borish script, and prescribing plano. Also the AI trained from nothing on env6 (runs/j), stopped.
 
 * 5,000 new patients at typical reliability (dial 1): time, outcomes, points split into glasses and chair time.
 * Consistency: the same 2,000 patients examined twice (fresh answers), at three settings of the reliability
   dial (0.5 reliable, 1 typical, 2 unreliable): how often the two prescriptions agree.
 * Habits (which buttons, in what order), and each practice checkpoint on 2,000 patients.
 
-    python evaluate6.py            -> data/results_j.json, data/seqs_j.json
+    python evaluate6.py            -> data/results_m.json, data/seqs_m.json
 """
 import os, json, glob, re
 import numpy as np
@@ -22,7 +23,8 @@ import clinic
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-RUN = os.path.join(HERE, "runs", "j")
+RUN = os.path.join(HERE, "runs", "m")
+SCRATCH = os.path.join(HERE, "runs", "j", "ckpt", "exams_904847.pt")
 SEED = 2026
 DIALS = (0.5, 1.0, 2.0)
 EK = dict(env_cls=ClinicEnv6)
@@ -55,8 +57,19 @@ def agree(res_a, res_b):
     return out
 
 
+def axis_stats(res):
+    """Eyes with at least 0.75 D of astigmatism: how far the prescribed axis is from the true one (no cylinder
+    prescribed counts as 90° off)."""
+    tC = np.abs(np.concatenate([res["tC"], res["tC_os"]]))
+    C = np.abs(np.concatenate([res["C"], res["C_os"]]))
+    d = np.abs(np.concatenate([res["ax"], res["ax_os"]]) - np.concatenate([res["tax"], res["tax_os"]])) % 180
+    d = np.where(C > 0.01, np.minimum(d, 180 - d), 90.0)[tC >= 0.75]
+    return dict(eyes=int(len(d)), median=float(np.median(d)), within_5=float(np.mean(d <= 5)),
+                within_10=float(np.mean(d <= 10)), off_10=float(np.mean(d > 10)))
+
+
 def entry_of(res, s):
-    return dict(summary=s, outcomes=sampled_outcomes(res), orient=by_orientation(res),
+    return dict(summary=s, outcomes=sampled_outcomes(res), orient=by_orientation(res), axis=axis_stats(res),
                 complaints=float(res["complaints"].mean()), complaints_any=float((res["complaints"] > 0).mean()),
                 walkouts=float(res["timeout"].mean()),
                 split=dict(glasses=s["points"], time=-clinic.POINTS_PER_MIN * s["minutes"], net=s["net"]))
@@ -70,8 +83,9 @@ def main(n_test=5000, n_stage=2000, n_rep=2000):
     agent, meta = load(final)
     R["meta"].update(exams=meta["exams"], steps=meta["steps"], ckpt=os.path.basename(final))
     # "textbook" is the Borish script (the key keeps the shared scenes working)
+    agent0, _ = load(os.path.join(RUN, "ckpt", "exams_0.pt"))          # the third video's AI, before practice here
     for name, kw in (("plano", dict(make=plano, complain=False)), ("textbook", dict(make=borish)),
-                     ("ai", dict(agent=agent))):
+                     ("day1", dict(agent=agent0)), ("ai", dict(agent=agent))):
         res = run3(test=PlanoPairTestSet(n_test, seed=SEED), n_par=1000, record_actions=name != "plano", dial=1.0,
                    **EK, **kw)
         s = summary3(res)
@@ -80,6 +94,7 @@ def main(n_test=5000, n_stage=2000, n_rep=2000):
         if name != "plano":
             entry["habits"] = habits(res["actions"])
             seqs[name] = res["actions"][:300]
+        if name in ("textbook", "ai"):
             entry["by_dial"] = {}
             for dial in DIALS:
                 r1 = run3(test=PlanoPairTestSet(n_rep, seed=SEED), n_par=1000, seed=7, dial=dial, **EK, **kw)
@@ -93,7 +108,8 @@ def main(n_test=5000, n_stage=2000, n_rep=2000):
             entry["repeat"] = dict(within_025=entry["by_dial"]["1.0"]["agree"]["se_025"],
                                    within_050=entry["by_dial"]["1.0"]["agree"]["se_050"])
         R[name] = entry
-        print(name, {k: round(v, 3) for k, v in s.items() if isinstance(v, float)}, entry["orient"], flush=True)
+        print(name, {k: round(v, 3) for k, v in s.items() if isinstance(v, float)}, entry["orient"], entry["axis"],
+              flush=True)
         if name != "plano":
             h = entry["habits"]
             print("   used", {k: round(v, 2) for k, v in h["used_pct"].items()})
@@ -104,6 +120,13 @@ def main(n_test=5000, n_stage=2000, n_rep=2000):
             print("   visit orders", h["visit_orders"][:5])
             for k, v in h["top_exams"][:4]:
                 print(f"   {v:.2f}  {k}")
+    ag_s, m_s = load(SCRATCH)                                           # from nothing, remarks only: stopped
+    res = run3(agent=ag_s, test=PlanoPairTestSet(2000, seed=SEED), n_par=1000, record_actions=True, dial=1.0, **EK)
+    s = summary3(res)
+    s.update(se_stats(res))
+    R["scratch"] = dict(entry_of(res, s), habits=habits(res["actions"]), exams=m_s["exams"])
+    print("scratch", m_s["exams"], {k: round(v, 3) for k, v in s.items() if isinstance(v, float)},
+          R["scratch"]["habits"]["visit_orders"][:3], flush=True)
     R["stages"] = []
     for ex_n, p in ckpts():
         ag, m = load(p)
@@ -116,14 +139,14 @@ def main(n_test=5000, n_stage=2000, n_rep=2000):
                    order=h["visit_orders"][0], used=h["used_pct"], count=h["mean_count"],
                    complaints=float(res["complaints"].mean()), walkouts=float(res["timeout"].mean()))
         R["stages"].append(dict(exams=ex_n, ckpt=os.path.basename(p), sampled=s, sampled_outcomes=sampled_outcomes(res),
-                                habits=hab))
+                                habits=hab, axis=axis_stats(res)))
         print("stage", ex_n, "sampled net", round(s["net"], 1), "both first", round(hab["both_first"], 2),
               "spin", round(h["used_pct"]["spin"], 2), "jcc axis", round(h["used_pct"]["cyl axis (cross-cyl)"], 2),
               "cyl", round(h["used_pct"]["cylinder"], 2), "complaints", round(hab["complaints"], 2),
               "walkouts", round(hab["walkouts"], 2), "order", hab["order"], flush=True)
-    json.dump(R, open(os.path.join(DATA, "results_j.json"), "w"), indent=1)
-    json.dump(seqs, open(os.path.join(DATA, "seqs_j.json"), "w"))
-    print("wrote data/results_j.json")
+    json.dump(R, open(os.path.join(DATA, "results_m.json"), "w"), indent=1)
+    json.dump(seqs, open(os.path.join(DATA, "seqs_m.json"), "w"))
+    print("wrote data/results_m.json")
 
 
 if __name__ == "__main__":

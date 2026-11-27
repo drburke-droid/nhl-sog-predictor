@@ -1,7 +1,7 @@
-"""Record the showcase patient's version-6 exams (plano start, typical reliability): day one, the final AI, the
-Borish script.
+"""Record the showcase patient's version-6 exams (plano start, typical reliability): day one in the new clinic
+(the third video's AI), the AI after practice here, the Borish script.
 
-    python traces6.py [show]      -> data/traces/j_day1.json, j_ai.json, j_borish.json
+    python traces6.py [show]      -> data/traces/m_day1.json, m_ai.json, m_borish.json
 """
 import os, sys, json
 from record5 import record5, show
@@ -12,7 +12,7 @@ from evaluate6 import final_ckpt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TR = os.path.join(HERE, "data", "traces")
-RUN = os.path.join(HERE, "runs", "j", "ckpt")
+RUN = os.path.join(HERE, "runs", "m", "ckpt")
 EK = dict(env_cls=ClinicEnv6, dial=1.0)
 
 
@@ -26,14 +26,14 @@ def save(name, ex):
 
 def main():
     ag0, m0 = load(os.path.join(RUN, "exams_0.pt"))
-    d1 = record5(ag0, greedy=False, seed=5, max_steps=400, **EK)
+    d1 = record5(ag0, **EK)
     d1["exams"] = 0
-    save("j_day1", d1)
+    save("m_day1", d1)
     ag, meta = load(final_ckpt())
     ex = record5(ag, **EK)
     ex["exams"] = meta["exams"]
-    save("j_ai", ex)
-    save("j_borish", record5(script=borish, **EK))
+    save("m_ai", ex)
+    save("m_borish", record5(script=borish, max_steps=1000, **EK))
     if len(sys.argv) > 1:
         show(ex)
 

@@ -72,12 +72,11 @@ minutes).
 
 ## 3. Training
 
+### From nothing, with only the remarks: stuck (`runs/j`)
+
 ```bash
 python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 200e6 --ent 0.01 --lr 3e-4 --eval_every 20 --out runs/j
 ```
-
-One run from random weights. No mentor, no smile, no curriculum. The held-out checks during training use
-typical patients (dial 1).
 
 Two settings were started side by side from random weights: `runs/k` with the remarks as information only
 (the only score is the clinic's points at the end of the exam), and `runs/j` with the remarks also counting
@@ -88,10 +87,28 @@ as feedback (`--remark 0.5`). After 160 updates (10.5 million buttons each):
 | `runs/k`, remarks as information | 18,524 | −119 | −150 | 0% | 15.0 (every patient walks out) |
 | `runs/j`, remarks count | 33,047 | −61 | −48 | 18% | 3.7 |
 
-With nothing but the end-of-exam score, the AI had not yet found that prescribing ends the exam better than
-the walkout; with the occasional remark it had. `runs/k` was stopped there and `runs/j` trained on. (The
-smile of version 5 was a running signal on every button; a remark comes on about 1 button in 50.)
+`runs/k` was stopped there. `runs/j` trained on to 905,000 patients and stalled at a shortcut: both eyes open,
+minus a quarter at a time while the chart improves, a little cylinder now and then, prescribe. Held-out points
+went from −48 (200,000 patients) to −40 (900,000); happy patients stayed at 19%, prescriptions within 0.25 D
+at 12%, and it never used the cross-cylinder. The third video's AI (`runs/h`, with the smile) was at −30 by
+300,000 patients and passed zero at 700,000. The smile, a signal on every button, was doing much of the
+teaching; a remark on about 1 button in 50 is not enough to find a full refraction from random buttons in a
+reasonable time. (Checkpoint `runs/j/ckpt/exams_904847.pt`; `evaluate6.py` reports it as `scratch`.)
 
-(Two earlier runs, `runs/i0` and a first `runs/j`, are not reported: env6 put its seven new inputs after the
-button mask, which the policy reads from the end of its inputs, so those AIs saw a scrambled list of which
-buttons work. Fixed: the mask is the last 30 inputs again, checked by a test.)
+### From the third video's AI (`runs/m`)
+
+```bash
+python init6.py            # runs/h/ckpt/final.pt -> runs/m/init.pt (seven new inputs, zero weights)
+python train.py --clinic --env6 --remark 0.5 --gamma 1.0 --steps 100e6 --ent 0.01 --lr 3e-4 --eval_every 20 \
+       --init runs/m/init.pt --critic_warmup 20 --out runs/m
+```
+
+The AI that practised on 1.8 million version-5 patients walks into the version-6 clinic: no smile, a rough
+spin, the occasional remark, patients of every reliability. `init6.py` gives its first layer seven new input
+columns (the remark) set to zero, so at the start it behaves exactly as in the third video (checked: same
+choices, same value estimates). The first 20 updates retrain only its value estimate (the smile it used to
+expect is gone). The question for this run: does it find the cross-cylinder for the axis, now that the spin
+is rough?
+
+On the new patients, before any practice here: held-out points +41, happy 50% (on the version-5 patients it
+had +66 and 67%).
