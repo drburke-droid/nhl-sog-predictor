@@ -112,11 +112,22 @@ gone).
 On the new patients, before any practice here: held-out points +41, happy 50% (on the version-5 patients it
 had +66 and 67%).
 
-**The nudge.** A first attempt without it (`runs/m0`, 195,000 patients) changed little: points +41 → +42,
-happy 50% → 51%, the axis no closer (64% of astigmatic eyes within 10°, before and after). It spun the axis
-more and turned it by hand more (16 turns an exam instead of 2), but never tried the cross-cylinder for the
-axis: the third video's AI had dropped that button altogether (its chance of pressing it, wherever it is
-allowed: under 1 in 100,000), so practice could never find out what it does now. `--nudge` gives that one
-button the same outputs as the cross-cylinder *power* button, which the AI uses in every exam, at a quarter of
-its chance (about 5% wherever it is allowed, against 19% for power). Its most likely button never changes, so
-its exam before practice is the same. Practice decides whether it keeps the button.
+**Two changes, after two attempts.**
+
+1. *Without help* (`runs/m0`, 195,000 patients) it changed little: points +41 → +42, happy 50% → 51%, the axis
+   no closer (64% of astigmatic eyes within 10°, before and after). It spun the axis more and turned it by
+   hand more (16 turns an exam instead of 2), but never tried the cross-cylinder for the axis: the third
+   video's AI had dropped that button altogether (its chance of pressing it, wherever it is allowed: under 1
+   in 100,000), so practice could never find out what it does now.
+2. *With a nudge* (`runs/m1`, 187,000 patients): `init6.py --nudge` gives that one button the same outputs as
+   the cross-cylinder *power* button, which the AI uses in every exam, at a quarter of its chance (about 5%
+   wherever it is allowed, against 19% for power). Its most likely button never changes, so its exam before
+   practice is the same. Practice dropped the button again within 50,000 patients (4.5% → 0.1% → 0.01%):
+   an answer to "1 or 2?" only helps if the next button turns the axis the right way, and with points only at
+   the end of the exam (and a remark now and then) it never learned that pairing. Each press was wasted time.
+3. *The button turns the axis* (`runs/m`, with the nudge): in env6 "Axis? which way" turns the axis toward the
+   side the patient picks, by the textbook's bracketing steps (15° then 5° for 0.50 D of cylinder or less, 5°
+   for 0.75 D, 5° then 2° for 1.00 D or more), the way the spin sets the axis at "stop!". The AI still decides
+   whether to use it, when, for which eyes and how many times. The Borish script uses the same button and
+   stops where it stopped before (reversal on the smallest step); its results are unchanged within noise
+   (textbook script on 1,500 patients: −8.4 with its own turns, −8.5 with the button).
