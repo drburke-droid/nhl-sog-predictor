@@ -108,9 +108,9 @@ class Learn5(Learn4):
 class Practice5(F3.PracticeCurve):
     """Points per patient while it practised (glasses minus chair time), one caption at a time."""
 
-    def __init__(self, refs, notes, dur=30.0, draw_secs=18.0, max_exams=None):
+    def __init__(self, refs, notes, dur=30.0, draw_secs=18.0, max_exams=None, run=None):
         xs, ys, mins = [], [], []
-        for r in csv.DictReader(open(os.path.join(RUN, "logs", "train.csv"))):
+        for r in csv.DictReader(open(os.path.join(run or RUN, "logs", "train.csv"))):
             # (the first few updates only see exams short enough to finish in the first rollouts: start at 1,000)
             if r.get("train_points") and 1000 <= int(r["exams"]) <= (max_exams or 1e12):
                 xs.append(int(r["exams"]))
@@ -160,13 +160,14 @@ class TextbookSteps(Section):
                                   ("8", "ou_clear", "Clear the fog, both eyes together. Prescribe."),
                                   ("", "rx_no", "Final check “still blurry”? Redo that eye, then both eyes again")])]
     dur = 32.0
+    TITLE = "What the textbook says"
+    SUB = "The standard sequence, written as a script: same buttons, same patients as the AI."
 
     def frame(self, t):
         im, d = ui.new_frame()
         a = fade(t, 0, self.dur, 0.5, 0.5)
-        big_title(d, W / 2, 34, "What the textbook says", 54, fade(t, 0.3, 999, 0.5, 0.1) * a, TB_COL)
-        text(d, (W / 2, 106), "The standard sequence, written as a script: same buttons, same patients as the AI.", 26,
-             MUTED, "Medium", "ma", a)
+        big_title(d, W / 2, 34, self.TITLE, 54, fade(t, 0.3, 999, 0.5, 0.1) * a, TB_COL)
+        text(d, (W / 2, 106), self.SUB, 26, MUTED, "Medium", "ma", a)
         y, k = 170, 0
         for head, rows in self.STAGES:
             ah = fade(t, 1.0 + 1.6 * k, 999, 0.5, 0.1) * a
@@ -191,6 +192,8 @@ class Sequences(Section):
     is open, which covered), with the time spent on each visit. Rows scale to fit."""
     TOP, BOTTOM = 190, 944                            # rows live here; the commentary box sits below
     HEAD = 40
+    TB_NAME = "THE TEXTBOOK"
+    TITLE = "The same patient: the textbook's steps and the AI's"
 
     def __init__(self, tb, ai, notes, dur=None, reveal=(1.5, 14.0)):
         self.tb_tr, self.ai_tr = tb, ai
@@ -253,8 +256,8 @@ class Sequences(Section):
     def frame(self, t):
         im, d = ui.new_frame()
         a = fade(t, 0, self.dur, 0.5, 0.5)
-        big_title(d, W / 2, 26, "The same patient: the textbook's steps and the AI's", 44, a)
-        self.col(d, 60, 860, self.cols[0], self.tb_tr, "THE TEXTBOOK", TB_COL, t, self.reveal[0])
+        big_title(d, W / 2, 26, self.TITLE, 44, a)
+        self.col(d, 60, 860, self.cols[0], self.tb_tr, self.TB_NAME, TB_COL, t, self.reveal[0])
         self.col(d, 1000, 860, self.cols[1], self.ai_tr, "THE AI", AI_COL, t, self.reveal[1])
         cur = [(t0, s) for t0, s in self.notes if t >= t0]
         if cur:
@@ -272,6 +275,7 @@ class Sequences(Section):
 class Results5(Results4):
     """Results4 for the plano-start exam: day one, the textbook and the AI."""
     HEAD = "EVERY EXAM STARTS AT PLANO"
+    NAMES = ("Day one", "Textbook", "AI")
 
     def frame(self, t):
         im, d = ui.new_frame()
@@ -284,8 +288,8 @@ class Results5(Results4):
              "Bold", "ma", a)
         big_title(d, W / 2, 120, title, 56, al)
         text(d, (W / 2, 205), sub, 28, INK2, "Medium", "ma", al)
-        rows = [("Day one", self.R["day1"], PL_COL), ("Textbook", self.R["textbook"], TB_COL),
-                ("AI", self.R["ai"], AI_COL)]
+        rows = [(self.NAMES[0], self.R["day1"], PL_COL), (self.NAMES[1], self.R["textbook"], TB_COL),
+                (self.NAMES[2], self.R["ai"], AI_COL)]
         g = smooth((tt - 0.6) / 1.2)
         X0, X1 = 640, 1700
         for j, (name, e, col) in enumerate(rows):

@@ -25,6 +25,7 @@ QUESTIONS = (E3.READ, E3.READ_LINE, E3.CMP_P, E3.CMP_M, E3.JCC_AX, E3.JCC_PW, E3
 COMPARES = (E3.CMP_P, E3.CMP_M, E3.JCC_AX, E3.JCC_PW, E3.CHK_180, E3.CHK_45, E3.BALANCE)
 from optics import to_pv, from_pv, rx_error, jcc_pv
 
+REMARKS = ("“Oh, that’s clear!”", "“Better… but it’s not that clear.”", "“Hmm, that’s not as clear.”")
 AI_COL = (0x33, 0x8C, 0xED)
 TB_COL = (0xE7, 0x66, 0x24)
 
@@ -32,6 +33,8 @@ TB_COL = (0xE7, 0x66, 0x24)
 def said(s):
     """What the patient said, in their own words (how sure they were is part of the answer)."""
     a, code = s["a"], s["code"]
+    if s.get("remark", -1) >= 0 and a not in QUESTIONS:      # (env6) a remark after a lens change
+        return REMARKS[s["remark"]], None
     if a == E3.READ:
         ln, kk, nl = s["line"], s["k"], s["nl"]
         if ln > 1.05:
@@ -239,7 +242,7 @@ class Exam5(Exam3):
             rr(d, [xw, DY + 10, xw + 16, DY + 46], 4, fill=tuple(col) + (255,))
             text(d, (xw + 32, DY + 8), action_line(a, ph_b, lenses_b, lenses_a), 34, INK, "SemiBold")
             reply_at = st["d"] * (0.62 if a in COMPARES else 0.45)
-            if a in QUESTIONS and (fast or st["dt"] > reply_at):
+            if (a in QUESTIONS or s.get("remark", -1) >= 0) and (fast or st["dt"] > reply_at):
                 rep, sure = said(s)
                 text(d, (70, DY + 96), "PATIENT", 26, GOLD, "Bold")
                 text(d, (230, DY + 90), rep, 38, GOLD, "SemiBold")

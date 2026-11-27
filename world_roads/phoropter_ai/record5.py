@@ -62,7 +62,7 @@ def show(ex):
     for k, s in enumerate(ex["steps"]):
         ans = {-1: "", 0: "1", 1: "2", 2: "same", 3: f"reads {s['line']:.1f}", 4: f"{s['k']}/{s['nl']}",
                5: f"stop {s['spin_ax']:.0f}", 6: "no change", 7: "BLURRY right", 8: "BLURRY left",
-               9: "BLURRY both"}[s["code"]]
+               9: "BLURRY both", 10: "“clear!”", 11: "“better, not clear”", 12: "“not as clear”"}[s["code"]]
         if s["code"] in (0, 1):
             ans += " (much)" if s["strength"] == 2 else " (a little)"
         (S0, C0, a0), (S1, C1, a1) = s["after"]
