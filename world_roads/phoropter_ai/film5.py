@@ -127,7 +127,7 @@ class Practice5(F3.PracticeCurve):
         self.title = "LEARNING ON THE JOB"
         self.X0, self.X1, self.Y0, self.Y1 = 230, 1500, 900, 220
         self.lx0, self.lx1 = 3.0, math.log10(self.xs.max()) + 0.08
-        self.v0, self.v1 = -160, 80
+        self.v0, self.v1 = -230, 90
         self.cap_notes = notes
 
     def frame(self, t):
@@ -267,6 +267,42 @@ class Sequences(Section):
         return np.asarray(im)
 
 
+class Results5(Results4):
+    """Results4 for the plano-start exam: day one, the textbook and the AI."""
+    HEAD = "EVERY EXAM STARTS AT PLANO"
+
+    def frame(self, t):
+        im, d = ui.new_frame()
+        a = fade(t, 0, self.dur, 0.5, 0.5)
+        i = min(int(t // self.STEP), len(self.beats) - 1)
+        tt = t - self.STEP * i
+        title, sub, fn, fmt, lo, hi = self.beats[i]
+        al = fade(tt, 0, self.STEP, 0.4, 0.4) * a if i < len(self.beats) - 1 else fade(tt, 0, 999, 0.4, 0.1) * a
+        text(d, (W / 2, 40), f"{fmt_n(self.R['meta']['test_patients'])} NEW PATIENTS  ·  {self.HEAD}", 24, MUTED,
+             "Bold", "ma", a)
+        big_title(d, W / 2, 120, title, 56, al)
+        text(d, (W / 2, 205), sub, 28, INK2, "Medium", "ma", al)
+        rows = [("Day one", self.R["day1"], PL_COL), ("Textbook", self.R["textbook"], TB_COL),
+                ("AI", self.R["ai"], AI_COL)]
+        g = smooth((tt - 0.6) / 1.2)
+        X0, X1 = 640, 1700
+        for j, (name, e, col) in enumerate(rows):
+            y = 330 + j * 190
+            v = fn(e)
+            text(d, (X0 - 40, y + 50), name, 40, INK, "SemiBold", "rm", al)
+            vc = min(max(v, lo), hi)
+            z = X0 + (X1 - X0) * (0 - lo) / (hi - lo)
+            xv = X0 + (X1 - X0) * (vc * g - lo) / (hi - lo)
+            if abs(xv - z) > 1:
+                d.rectangle([min(z, xv), y, max(z, xv), y + 100], fill=col + (int(255 * al),))
+            lab = fmt(v)
+            if v >= 0 or lo >= 0:
+                text(d, (max(z, xv) + 20, y + 50), lab, 52, INK, "Bold", "lm", al * min(1, g * 2))
+            else:
+                text(d, (min(z, xv) - 20, y + 50), lab, 52, INK, "Bold", "rm", al * min(1, g * 2))
+        return np.asarray(im)
+
+
 # ======================================================================== the film
 NOTES = {}
 
@@ -282,14 +318,18 @@ def sections():
     S["day1_title"] = Say([(0.5, "Day one", 72, INK, "Bold"),
                            (1.6, "Its first patient. It has never seen an eye.", 38, INK2, "Medium")], 6.0)
     d1 = trace("h_day1")
-    S["day1_exam"] = Exam5(d1, "DAY ONE", "before any practice", slow=range(len(d1["steps"])),
-                           notes={0: "It has no idea what any button does. It presses them at random."}, outro=6.0)
+    k1 = next((k for k, x in enumerate(d1["steps"]) if x["code"] in (7, 8, 9)), None)
+    d1_notes = {0: "It has no idea what any button does. It presses them at random."}
+    if k1 is not None:
+        d1_notes[k1] = "It tries the final check. The patient can't see: the exam goes on."
+    S["day1_exam"] = Exam5(d1, "DAY ONE", "before any practice", slow=range(8), notes=d1_notes, outro=6.0,
+                           fast_beat=0.06)
     st0 = R["stages"][0]
-    S["day1_grid"] = F3.OutcomeGrid("1,000 PATIENTS ON DAY ONE", "Random buttons, then “Prescribe”. One square per "
-                                    "patient.", [("Day one", st0["sampled_outcomes"], st0["sampled"]["net"],
-                                                  st0["sampled"]["minutes"])], dur=11.0,
-                                    note="Most people need real glasses. Random ones aren't glasses.")
-    refs = [("Plano for everyone", R["plano"]["summary"]["net"], PL_COL), ("Textbook", R["textbook"]["summary"]["net"], TB_COL)]
+    S["day1_grid"] = F3.OutcomeGrid("1,000 PATIENTS ON DAY ONE", "Random buttons. One square per patient.",
+                                    [("Day one", st0["sampled_outcomes"], st0["sampled"]["net"],
+                                      st0["sampled"]["minutes"])], dur=11.0,
+                                    note="Random glasses never pass the final check. Almost everyone walks out.")
+    refs = [("Textbook", R["textbook"]["summary"]["net"], TB_COL)]
     S["curve"] = Practice5(refs, NOTES.get("curve", []))
     ai, tb = trace("h_ai"), trace("h_textbook")
     S["ai_title"] = Say([(0.4, f"After {R['meta']['exams'] / 1e6:.1f} million patients", 60, INK, "Bold"),
@@ -300,15 +340,15 @@ def sections():
     S["tb_exam"] = Exam5(tb, "THE TEXTBOOK", "the same patient", who="TEXTBOOK", who_col=TB_COL,
                          notes=NOTES.get("tb_exam", {}), slow=NOTES.get("tb_slow", ()), fast_beat=0.2)
     S["sequences"] = Sequences(tb, ai, NOTES.get("sequences", []))
-    Rr = dict(R, ar=R["plano"])
-    res = Results4(Rr, [
-        ("Time in the chair", "per patient", lambda e: e["summary"]["minutes"], mmss, 0, 10),
+    Rr = dict(R, day1=dict(summary=R["stages"][0]["sampled"]))
+    res = Results5(Rr, [
+        ("Time in the chair", "per patient", lambda e: e["summary"]["minutes"], mmss, 0, 16),
         ("Glasses within 0.25 D", "of the true prescription, every eye counted",
          lambda e: e["summary"]["vec_within_025"], lambda v: f"{100 * v:.0f}%", 0, 1),
         ("Happy patients", "sees clearly, comes back, refers a friend", lambda e: e["summary"]["happy"],
          lambda v: f"{100 * v:.0f}%", 0, 1),
-        ("Points per patient", "glasses minus chair time", lambda e: e["summary"]["net"], lambda v: f"{v:+.0f}", -120,
-         80)])
+        ("Points per patient", "glasses minus chair time", lambda e: e["summary"]["net"], lambda v: f"{v:+.0f}", -230,
+         90)])
     S["results"] = res
     S["real"] = Real4(R)
     S["outro"] = F3.Card("The fine print", [
