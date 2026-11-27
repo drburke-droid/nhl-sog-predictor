@@ -33,13 +33,14 @@ cylinder; the axis step done by cross-cylinder, by one spin, or both):
 |---|---|---:|---:|---:|
 | env5 (v3) | cross-cylinder | 2° | 3% | −5.5 |
 | env5 (v3) | one spin | 4° | 11% | −20.1 |
-| env6, typical | cross-cylinder | 2° | 3% | −2.1 |
+| env6, typical | cross-cylinder | 2° | 4% | −8.5 |
 | env6, typical | one spin | 9° | 41% | −44.6 |
-| env6, unreliable | cross-cylinder | 3° | 9% | −23.8 |
+| env6, unreliable | cross-cylinder | 3° | 9% | −28.4 |
 | env6, unreliable | one spin | 11° | 54% | −72.2 |
 
-With the version-6 patient, refining the axis with the cross-cylinder is worth about 40 points a patient over
-trusting the spin.
+With the version-6 patient, refining the axis with the cross-cylinder is worth about 36 points a patient over
+trusting the spin. (env6 rows: the cross-cylinder button turns the axis itself, by the same steps the script
+used to press; section 3.)
 
 ## 2. The Borish script (`clinicians5.borish`)
 
@@ -54,8 +55,8 @@ power-search check, cross-cylinder axis and power, binocular fog, prism balance 
   stopped after 1.50 D, so a young patient over-minused by 3 D from the trial lenses was never fogged and
   left with far too much minus.)
 
-On 2,000 typical patients (env6, dial 1): net points −3.7 → +3.7, happy 56% → 62%, eyes under 40 over-minused
-by 0.5 D or more 26% → 15% (by 0.25 D or more 50% → 34%); walkouts 5.4% → 8.4% (the exam is longer: 9.4 → 9.8
+On 2,000 typical patients (env6, dial 1): net points −4.6 → +0.5, happy 55% → 60%, eyes under 40 over-minused
+by 0.5 D or more 26% → 14% (by 0.25 D or more 49% → 36%); walkouts 5.0% → 9.1% (the exam is longer: 9.3 → 9.8
 minutes).
 
 **Why the third video's textbook over-minused the showcase patient's left eye** (OS −3.00 −0.50 × 10 against
