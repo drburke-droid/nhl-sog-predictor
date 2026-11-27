@@ -111,7 +111,8 @@ class Practice5(F3.PracticeCurve):
     def __init__(self, refs, notes, dur=30.0, draw_secs=18.0, max_exams=None):
         xs, ys, mins = [], [], []
         for r in csv.DictReader(open(os.path.join(RUN, "logs", "train.csv"))):
-            if r.get("train_points") and (max_exams is None or int(r["exams"]) <= max_exams):
+            # (the first few updates only see exams short enough to finish in the first rollouts: start at 1,000)
+            if r.get("train_points") and 1000 <= int(r["exams"]) <= (max_exams or 1e12):
                 xs.append(int(r["exams"]))
                 ys.append(float(r["train_points"]) - clinic.POINTS_PER_MIN * float(r["train_minutes"]))
                 mins.append(float(r["train_minutes"]))
@@ -129,6 +130,7 @@ class Practice5(F3.PracticeCurve):
         self.lx0, self.lx1 = 3.0, math.log10(self.xs.max()) + 0.08
         self.v0, self.v1 = -230, 90
         self.cap_notes = notes
+        self.marks = ()
 
     def frame(self, t):
         fr = super().frame(t)
@@ -329,7 +331,8 @@ def make_notes(R, ai, tb):
     x_pass = next((x for x, y in zip(xs, ys) if y > tb_net), None)
     x_ask = pick(lambda x: x["exams"] >= 5000 and x["habits"]["complaints"] >= 5)
     x_both = pick(lambda x: x["habits"]["both_first"] >= 0.5)
-    x_spin = pick(lambda x: x["habits"]["used"]["spin"] >= 0.5 and x["exams"] > 0)
+    # (random buttons on day one press "spin" too: count it only once the exam has a shape, after both-eyes-first)
+    x_spin = pick(lambda x: x["habits"]["used"]["spin"] >= 0.5 and x["exams"] >= (x_both or 0))
     curve = [(1000, "Day one: random buttons. Almost every patient walks out.")]
     if x_ask:
         curve.append((x_ask, "It learns the final check talks back: some minus, check, more minus, check again…"))
@@ -368,17 +371,19 @@ def make_notes(R, ai, tb):
     N["ai_exam"] = {k: v for k, v in {
         0: "First move: uncover both eyes. The textbook starts with one eye covered.",
         k_om: "Minus on both eyes, a quarter at a time, reading the chart every few clicks.",
-        far: f"It keeps going past clear, to {far_s}. A young eye can focus through extra minus: the letters stay sharp.",
+        far: f"It keeps going past clear, to {far_s}. This patient is {p['age']:.0f}: a young eye focuses through extra "
+             "minus, so the letters stay sharp.",
         n_r: "Now one eye at a time: the right eye, left eye covered.",
         k_cyl: "No astigmatism question. It just puts in a little cylinder…",
-        k_spin: f"…and spins the axis. “Stop! There.” {ax_r}°.",
+        k_spin: f"…and turns the axis until the patient says stop: {ax_r}°. No cross-cylinder for the axis.",
         k_pw: "Then the cross-cylinder for POWER: more cylinder, or less? Spin again, power again, until they settle.",
         k_sph: "As the cylinder goes up, it takes a little minus off the sphere, as the textbook does.",
         n_l: "The left eye, right eye covered: the same recipe.",
         n_b: "Both eyes open again. Now the extra minus comes off, a quarter at a time.",
         k_too: "“1 or 2?” Too far: it puts some minus back.",
         k_rx: f"The final check: “That’s clear.” {end_s}"}.items() if k is not None}
-    N["ai_slow"] = tuple(range(0, 6)) + tuple(range(n_r or 0, (n_r or 0) + 10)) + tuple(range(n_l or 0, (n_l or 0) + 4))
+    N["ai_slow"] = tuple(range(0, 6)) + tuple(range(k_cyl or 0, (k_cyl or 0) + 6)) + \
+        tuple(range(n_l or 0, (n_l or 0) + 4))
     # ---- the textbook's exam
     t_trial = first(tb, lambda s: s["a"] == E5.SM100)
     t_fog = first(tb, lambda s: s["a"] == E5.SP25)
@@ -401,12 +406,16 @@ def make_notes(R, ai, tb):
     N["tb_slow"] = tuple(range(0, 4))
     # ---- the side-by-side
     order = A["visit_orders"][0]
+    ov = json.load(open(os.path.join(DATA, "overshoot_h.json")))["bands"]
+    s_end = s_ai[(n_r or 1) - 1]["after"][0][0]                  # the sphere when it first covers an eye
+    extra = round((np.mean([m for m, _, _ in ai["true_pv"]]) - s_end) * 4) / 4
     tm, am = R["textbook"]["summary"]["minutes"], R["ai"]["summary"]["minutes"]
     N["sequences"] = [
         (2.0, "The textbook: one eye at a time, each eye covered in turn, then both eyes together."),
         (14.0, "The AI: both eyes open first. Then each eye alone, then both again."),
-        (21.0, f"Its first move is to overshoot: {far_s} in both eyes. The younger the patient, the further it goes. "
-               "Extra minus that a young eye can focus through costs nothing yet."),
+        (21.0, f"Its first move is to overshoot: {ui.fmt_d(s_end)} in both eyes, {extra:.2f} D more minus than this "
+               f"patient needs. The younger the patient, the further it goes (about {ov[0]['mean']:.0f} D for "
+               "teenagers, none over 60)."),
         (30.0, "Astigmatism: never the 180/90 check, never the cross-cylinder for AXIS. Cylinder in, spin the axis "
                "until the patient says stop, then cross-cylinder POWER. Back and forth."),
         (39.0, f"The extra minus comes off at the end, both eyes together. On {fmt_n(R['meta']['test_patients'])} "

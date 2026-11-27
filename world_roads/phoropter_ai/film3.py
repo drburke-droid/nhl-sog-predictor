@@ -197,7 +197,9 @@ class PracticeCurve(Section):
                 j = k2 + 1
             else:
                 j += 1
-        for xe, l1, l2 in ((TERM1_END, "dial no longer", "starts at 180°"), (TERM2_END, "astigmatism", "practice")):
+        marks = getattr(self, "marks", ((TERM1_END, "dial no longer", "starts at 180°"),
+                                        (TERM2_END, "astigmatism", "practice")))
+        for xe, l1, l2 in marks:
             if (self.xs > xe).any() and (self.x_to is None or self.x_to > xe):
                 xm, _ = self.px(xe, 0)
                 d.line([(xm, Y1), (xm, Y0)], fill=INK2 + (int(200 * a),), width=2)
@@ -205,7 +207,7 @@ class PracticeCurve(Section):
                 dx = -8 if xe == TERM1_END else 8
                 text(d, (xm + dx, Y1 + 36), l1, 17, INK2, "SemiBold", anc, a)
                 text(d, (xm + dx, Y1 + 58), l2, 17, INK2, "SemiBold", anc, a)
-        for v in range(-150, 81, 50):
+        for v in range(int(math.ceil(self.v0 / 50)) * 50, self.v1 + 1, 50):
             _, y = self.px(1e4, v)
             d.line([(X0, y), (X1, y)], fill=GRID + (int(255 * a),), width=1)
             text(d, (X0 - 14, y), f"{v:+d}" if v else "0", 18, MUTED, "Medium", "rm", a)
