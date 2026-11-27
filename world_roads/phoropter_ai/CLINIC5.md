@@ -21,7 +21,7 @@ per button) except what is listed here. Code: `env5.py`, `clinicians5.py`, `trai
 | Astigmatism check (the power-search method) | Two new questions: the cross-cylinder at 180 vs 90, and at 45 vs 135. With no cylinder in yet, a preference sets the axis dial to the preferred orientation. |
 | Spin the axis | With some cylinder in, the patient watches the axis dial turn and says "stop" where the letters look sharpest (with their usual noise: 36 orientations, each judged with the same blur model as every other question). 6 seconds. |
 | The cross-cylinder refinements | Unchanged but named plainly: **Cylinder AXIS: which way to turn?** and **Cylinder POWER: more or less?** |
-| "It's still blurry" | On **Prescribe**, the patient reads with each eye through the new glasses. If either eye sees more than two lines (0.2 logMAR, with patient-to-patient noise SD 0.05) worse than it could through its true prescription, they say so ("Wait, my left eye is still blurry") and stay in the chair. Prescribe does not end the exam. Each complaint costs 10 seconds. The first is just information; **each one after that costs 20 points of the patient's confidence** in the examiner. The patient walks out at 15 minutes, or after 400 buttons (−150 points). |
+| "It's still blurry" | On **Prescribe**, the patient reads with each eye through the new glasses. If either eye sees more than two lines (0.2 logMAR, with patient-to-patient noise SD 0.05) worse than it could through its true prescription, they say so ("Wait, my left eye is still blurry") and stay in the chair. Prescribe does not end the exam; each complaint costs 10 seconds. **After the third "still blurry" the patient gives up and walks out** (−150 points, the same as the 15-minute limit or the 400-button cap). |
 | The occluder cycles | Right eye, left eye, both eyes, then back to the right eye, so either eye can be redone after a complaint. |
 | What the AI sees | As before, plus the strength of each answer, which eye the last complaint was about, and how long ago. 30 buttons, 1,074 numbers. |
 
@@ -67,13 +67,21 @@ One run from random weights. No mentor, no curriculum, no changes to the clinic 
 300,000 practice patients it had learned to skip the one-eye steps and use Prescribe as a free yes/no question:
 −0.25 on both eyes, Prescribe, "still blurry", more minus, Prescribe again, until the patient stopped
 complaining. It ignored astigmatism. A real patient told "we're done" three times while still seeing blurry
-would lose confidence in the examiner. Charging 20 points for every complaint (second attempt) went wrong the
-other way: early on almost every Prescribe is refused, so by 20,000 practice patients the AI had learned never to
-press it, and every patient walked out at the 400-button cap. The rule in the final run (`runs/h`): the first
-complaint costs only its 10 seconds; every further one costs 20 points of confidence. Trying Prescribe once is
-never punished; using it as a repeated question is. Both examiners play by the same rule. The textbook script
-draws a complaint in 12% of exams and a second one in 1.8%; its net is −3.2 points per patient (2,000 test
-patients).
+would lose confidence in the examiner.
+
+**Second and third attempts: charging for complaints.** 20 points for every complaint taught it never to press
+Prescribe (every patient walked out at the 400-button cap; not kept). Making the first complaint free and
+charging 20 points for each further one (`runs/h1`) got it prescribing again, but slowly, and by 50,000 practice patients it had
+settled into a blind habit: −3.00 in both eyes for everyone, no questions at all. Young eyes focus through the
+extra minus, so most patients didn't complain; only the clinic outcome said the glasses were wrong, and that
+signal alone was too weak. Charging for complaints had removed the cheap feedback loop that made the first run
+learn quickly.
+
+**The rule in the final run (`runs/h`): three strikes.** Complaints cost only their 10 seconds, but after the
+third "still blurry" the patient gives up and leaves (−150). Checking with the patient once or twice is fine;
+prescribing as a guessing game is not. Both examiners play by the same rule. The textbook script draws a
+complaint in 13% of exams and a second one in 1.8%; 5.1% of its exams end in a walkout (the 15-minute limit
+while redoing an eye, or a third complaint); its net is −2.7 points per patient (2,000 test patients).
 
 A pilot with only the smile (no complaint rule) showed it escapes the trap that stopped the earlier no-mentor
 attempt (prescribing plano at once, −107 points): −56 points by 122,000 practice patients. With the complaint

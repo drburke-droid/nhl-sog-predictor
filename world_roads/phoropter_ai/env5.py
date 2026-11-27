@@ -9,9 +9,8 @@ Like env3.py (both eyes start at plano, the axis dial wherever the last patient 
 The cross-cylinder refinements are still there: "cylinder axis: which way?" and "cylinder power: more or less?".
 * "It's still blurry": before they leave, the patient reads the chart with each eye through the new glasses. If
   either eye sees clearly worse than it could (about two lines), they say so ("my left eye is still blurry") and
-  the exam goes on: Prescribe doesn't end it. It costs 10 seconds. The first complaint is just information;
-  after that, each time the patient is told "we're done" while it is still blurry costs their confidence in
-  the examiner: 20 points. (env.complain = False turns this off.)
+  the exam goes on: Prescribe doesn't end it. It costs 10 seconds. After the third "still blurry" the patient
+  gives up and walks out (-150, like the 15-minute limit). (env.complain = False turns this off.)
 * The occluder cycles: right eye, left eye, both eyes, then back to the right eye, so either eye can be redone.
 
 The patient's smile (optional, env.smile = weight): when the letters get clearer for either eye (the average
@@ -66,7 +65,7 @@ SECS_MAX = 900.0                                              # 15 minutes: the 
 BLURRY = 0.2                                                  # "still blurry": two lines worse than the eye could see
 BLUR_SD = 0.05                                                # (patients differ in what they notice)
 SECS_COMPLAIN = 10.0                                          # reading with each eye, and the complaint
-COMPLAIN_PTS = 20.0                                           # ...and the patient's confidence in the examiner
+MAX_COMPLAINTS = 3                                            # the third "still blurry": the patient gives up and leaves
 H3 = 16
 F3 = N_ACT3 + 6 + 3 + 5
 N_OBS3 = 8 + 14 + 10 + 3 * len(QS) * 11 + 8 + 3 + H3 * F3 + N_ACT3
@@ -371,8 +370,7 @@ class ClinicEnv(BinocularEnv):
         refused = blurry.any(1)
         if refused.any():
             self.secs[refused] += SECS_COMPLAIN
-            again = refused & (self.n_comp >= 1)             # the first complaint costs only its 10 seconds
-            rew = rew - (refused * SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 + again * COMPLAIN_PTS) / clinic.SCALE
+            rew = rew - refused * SECS_COMPLAIN * clinic.POINTS_PER_MIN / 60 / clinic.SCALE
             self.n_comp[refused] += 1
             resp[refused, 2:4] = blurry[refused]
             code = np.where(refused, np.where(blurry[:, 0] & blurry[:, 1], 9, np.where(blurry[:, 0], 7, 8)), code)
@@ -418,7 +416,8 @@ class ClinicEnv(BinocularEnv):
         self.best_l[r[better], c[better]] = lf[better]
 
         # end of exam
-        timeout = (self.t >= self.t_max) | (self.secs >= self.secs_max)
+        gave_up = refused & (self.n_comp >= MAX_COMPLAINTS)
+        timeout = (self.t >= self.t_max) | (self.secs >= self.secs_max) | gave_up
         accepted = rx & ~refused
         done = accepted | timeout
         if self.shaping:                                   # the mentor's "warmer / colder": closer lenses, a bonus
@@ -433,8 +432,7 @@ class ClinicEnv(BinocularEnv):
             ept = clinic.patient_error(e[:, 0], e[:, 1])
             walked = ~accepted[idx]                            # out of time: the patient walks out without glasses
             pts = np.where(walked, clinic.WALKOUT, clinic.expected_points(ept))
-            rew[idx] += pts / clinic.SCALE                     # (complaints were charged when they happened)
-            pts = pts - COMPLAIN_PTS * np.maximum(self.n_comp[idx] - 1, 0)
+            rew[idx] += pts / clinic.SCALE
             E0, E1 = self.true_pv(0, idx), self.true_pv(1, idx)
             F0, F1 = self.lens_pv(0, idx), self.lens_pv(1, idx)
             zero = (np.zeros(len(idx)),) * 3
