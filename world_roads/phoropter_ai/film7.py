@@ -652,7 +652,7 @@ def sections():
     S["reliability"] = Reliability7(R)
     S["outro"] = Say([(0.5, "Dr. Borish built his sequence from years of teaching and practice.", 42, INK, "SemiBold"),
                       (3.0, "The AI needed 2.4 million simulated patients to find one of its own,", 42, INK, "SemiBold"),
-                      (5.2, "and it ended up using the textbook's own tools: the cross-cylinder and “1 or 2?”.", 42,
+                      (5.2, "and it ends up using the textbook's tools: the cross-cylinder and “1 or 2?”.", 40,
                        GOLD, "SemiBold"),
                       (9.0, "Every patient here is simulated. The AI has never examined a real person: this is a "
                             "demonstration, not a clinical tool. If your vision changes, see your optometrist.", 28,

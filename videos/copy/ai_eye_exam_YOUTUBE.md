@@ -1,6 +1,6 @@
 # YouTube copy: an AI learns the eye exam, next to the textbook sequence
 
-Upload `ai_eye_exam_LENGTH.mp4`: LENGTH, 1920×1080, 30 fps, caption-only, with an original synthesized score.
+Upload `ai_eye_exam_10m40s.mp4`: 10:40, 1920×1080, 30 fps, caption-only, with an original synthesized score.
 A standalone video: an optometrist hires an AI to do the refractions; the textbook sequence (based on Borish's
 Clinical Refraction) as numbered steps and its published accuracy; patients who aren't perfect; the AI learning
 from its mistakes, written in the same step numbers; its finished sequence next to the textbook's. Everything
@@ -42,7 +42,23 @@ On 5,000 new simulated patients (where the true prescription is known): overall 
 
 Dr. Borish built his sequence from years of teaching and practice. The AI needed 2.4 million simulated patients to find one of its own, and it ended up using the textbook's own tools.
 
-CHAPTERS
+0:00 Which is clearer: 1 or 2?
+0:15 An optometrist hires an AI
+0:30 The phoropter
+0:58 The textbook sequence (Borish)
+1:39 How well the textbook works
+2:01 Patients aren't perfect
+2:42 The AI starts with nothing
+2:53 Its score
+3:22 How it learns
+4:02 Patient #1
+4:41 Learning from mistakes
+6:15 After 2.4 million practice patients
+7:21 The textbook, same patient
+8:52 Side by side: the textbook's steps and the AI's
+9:38 How close did the AI get?
+10:01 When patients are less sure
+10:23 Borish and the AI
 
 The optics are real (power vectors, accommodation, a wave-optics model of the blur); the patients' answers are a model and the scorecard is made up. The AI is reinforcement learning (PPO) on a 4-core computer, no GPU. This is a demonstration of machine learning, not a clinical tool, and nothing here is advice about your own eyes. If your vision changes, see your optometrist.
 
