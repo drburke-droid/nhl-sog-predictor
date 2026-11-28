@@ -3,6 +3,30 @@
 A reinforcement-learning agent teaches itself subjective refraction on simulated patients, and the videos
 of how it learned.
 
+## The standalone film: an AI learns the eye exam, next to the textbook (`film7.py`)
+
+A self-contained cut for a general and an optometric audience, told as one story: an optometrist hires an AI to
+do the refractions. It lays out the textbook sequence (based on Borish's *Clinical Refraction*, 1949) as
+numbered steps, quotes its published accuracy (Shah et al. 2009: overall lens power within 0.25 D of an expert
+benchmark 81% of the time, within 0.50 D 97%), shows how simulated patients answer "1 or 2?" (a green glow as
+bright as the chance they pick each lens), then follows one patient through the AI's practice, each exam
+written in the same step numbers, with the patient's reaction, the score, and "better/worse than usual: these
+choices become a little more/less likely". It ends with the AI's sequence next to the textbook's on the same
+patient. The AI is the `runs/m` AI (CLINIC6.md): practice on 1,812,949 patients who smiled (`runs/h`), then
+585,322 realistic ones, with the nudge and the turning axis button disclosed on screen.
+
+| File | What it does |
+|---|---|
+| `steps7.py` | The step legend: every button belongs to one numbered textbook step (S = spin, not in the textbook) |
+| `montage7.py` | The showcase patient examined at checkpoints through practice → `data/montage7.json` |
+| `film7.py`, `thumbs7.py` | The film and its thumbnails |
+
+```bash
+python montage7.py
+python film7.py all          # -> out/ai_eye_exam.mp4
+python thumbs7.py
+```
+
 ## The fourth video: more realistic patients, the Borish method (`runs/m`, [CLINIC6.md](CLINIC6.md))
 
 The third video's AI walks into a clinic with patients more like real ones: no smile, a rough answer when the
