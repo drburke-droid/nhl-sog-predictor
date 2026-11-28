@@ -18,7 +18,8 @@ MILESTONES = [0, 1_000, 3_000, 10_000, 30_000, 100_000, 300_000, 1_000_000, 2_00
               5_000_000, 8_000_000]
 CLINIC_MILESTONES = [0, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 200_000, 300_000, 500_000, 750_000,
                      1_000_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 2_750_000, 3_000_000,
-                     3_250_000, 3_500_000, 3_750_000, 4_000_000]
+                     3_250_000, 3_500_000, 3_750_000, 4_000_000, 5_000_000, 6_000_000, 7_000_000, 8_000_000,
+                     10_000_000, 12_000_000, 15_000_000, 20_000_000, 25_000_000, 30_000_000]
 
 
 def main():
@@ -48,6 +49,8 @@ def main():
                     "cylinder checks at fixed orientations, axis spin")
     ap.add_argument("--env6", action="store_true", help="with --clinic: the version-6 exam (env6.py): a rougher spin, "
                     "occasional remarks instead of a smile, patients of mixed reliability (evaluated at typical)")
+    ap.add_argument("--env7", action="store_true", help="with --clinic: the version-7 exam (env7.py): the full phoropter, "
+                    "no spin, no smile, occasional remarks")
     ap.add_argument("--remark", type=float, default=0.0,
                     help="env6: each patient remark counts this x (clarity now - clarity at the previous remark)")
     ap.add_argument("--smile", type=float, default=0.0,
@@ -92,6 +95,11 @@ def main():
             import env6
             ClinicEnv = env6.ClinicEnv6
             run3 = partial(run3, env_cls=env6.ClinicEnv6, dial=1.0)
+        if args.env7:
+            import env7
+            from clinicians5 import run3, summary3
+            ClinicEnv = env7.ClinicEnv7
+            run3 = partial(run3, env_cls=env7.ClinicEnv7, dial=1.0)
         from patients import q as quant
 
         def mild(p, f):
@@ -231,6 +239,7 @@ def main():
         badv, bret = adv.reshape(-1), ret.reshape(-1)
         n = bo.shape[0]
         ents = []
+        bad = [False]
         for _ in range(args.epochs):
             perm = torch.randperm(n)
             for s in range(0, n, args.mb):
@@ -246,11 +255,26 @@ def main():
                 loss = pl + 0.5 * vl - ent_c * ent
                 if up < start_up + args.critic_warmup:
                     loss = 0.5 * vl                          # warm-up: only the value estimate learns
+                if not torch.isfinite(loss):                 # a numerical blow-up: skip, and roll back below
+                    bad[0] = True
+                    break
                 opt.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(agent.parameters(), 0.5)
                 opt.step()
                 ents.append(ent.item())
+            if bad[0]:
+                break
+        if bad[0] or not all(torch.isfinite(p_).all() for p_ in agent.parameters()):
+            lp_ = os.path.join(ck, "latest.pt")
+            if os.path.exists(lp_):
+                sd_ = torch.load(lp_, map_location="cpu", weights_only=False)
+                agent.load_state_dict({k: v.float() for k, v in sd_["model"].items()})
+                if "opt" in sd_:
+                    opt.load_state_dict(sd_["opt"])
+            print(f"update {up}: non-finite loss or weights; rolled back to latest.pt", flush=True)
+            bad[0] = False
+            ents = ents or [float("nan")]
 
         for m in MILESTONES:
             if m not in ms_done and exams >= m:
