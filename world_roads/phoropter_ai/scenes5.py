@@ -224,8 +224,19 @@ class Exam5(Exam3):
             text(d, (PX0 + (PW + 400) / 2 + 16, PY0 + PH * 0.75), "BOTTOM: left eye", 22, GOLD, "SemiBold", "lm")
         elif asking:
             iA, iB = self._options(a, lenses_b, both, eye, screen)
-            self._panel(im, d, iA, PX0, PY0 + 4, 420, PH - 8, "1")
-            self._panel(im, d, iB, PX0 + 450, PY0 + 4, 420, PH - 8, "2")
+            rA = self._panel(im, d, iA, PX0, PY0 + 4, 420, PH - 8, "1")
+            rB = self._panel(im, d, iB, PX0 + 450, PY0 + 4, 420, PH - 8, "2")
+            pr = s.get("ans_probs") if s is not None else None
+            if getattr(self, "halo", False) and pr is not None:        # how likely the patient is to pick each one
+                d = ImageDraw.Draw(im, "RGBA")
+                for (ox, oy, tw, th), p in ((rA, pr[0]), (rB, pr[1])):
+                    for g in range(7):
+                        al = int(255 * min(1.0, p) * (0.95 - 0.13 * g))
+                        if al > 4:
+                            d.rounded_rectangle([ox - 8 - 3 * g, oy - 8 - 3 * g, ox + tw + 8 + 3 * g, oy + th + 8 + 3 * g],
+                                                12 + 3 * g, outline=(110, 230, 140, al), width=3)
+                text(d, (PX0 + PW / 2, PY0 + PH + 14), "green glow = how likely the patient is to pick it", 20, MUTED,
+                     "SemiBold", "ma")
         else:
             imgs, shown, which = self.view(lenses, both, screen, eye)
             self._panel(im, d, imgs[shown], PX0 + (PW - 420) / 2, PY0 + 4, 420, PH - 8, None, screen=screen,
@@ -241,8 +252,14 @@ class Exam5(Exam3):
             rr(d, [40, DY - 8, 1880, DY + 206], 18, fill=CARD + (235,), outline=LINE + (255,), width=2)
             text(d, (70, DY + 14), self.who, 26, self.who_col, "Bold")
             xw = 70 + d.textlength(self.who, font=ui.font(26, "Bold")) + 24
-            rr(d, [xw, DY + 10, xw + 16, DY + 46], 4, fill=tuple(col) + (255,))
-            text(d, (xw + 32, DY + 8), action_line(a, ph_b, lenses_b, lenses_a), 34, INK, "SemiBold")
+            sn = getattr(self, "step_no", None)
+            if sn is not None:                                         # the step number from the video's legend
+                lab, scol = sn(a)
+                ui.badge(d, xw + 22, DY + 28, lab, scol, r=22)
+                text(d, (xw + 56, DY + 8), action_line(a, ph_b, lenses_b, lenses_a), 34, INK, "SemiBold")
+            else:
+                rr(d, [xw, DY + 10, xw + 16, DY + 46], 4, fill=tuple(col) + (255,))
+                text(d, (xw + 32, DY + 8), action_line(a, ph_b, lenses_b, lenses_a), 34, INK, "SemiBold")
             reply_at = st["d"] * (0.62 if a in COMPARES else 0.45)
             if (a in QUESTIONS or s.get("remark", -1) >= 0) and (fast or st["dt"] > reply_at):
                 rep, sure = said(s)
@@ -337,6 +354,7 @@ class Exam5(Exam3):
                     text(d2, (ox + tw + 14, oy + yc * scale), CH.snellen_of(CH.LINES[li]), 22, GOLD, "Bold", "lm")
         if badge:
             ui.badge(d2, ox + 44, oy + 44, badge, GOLD, r=34)
+        return ox, oy, tw, th
 
 
 if __name__ == "__main__":
